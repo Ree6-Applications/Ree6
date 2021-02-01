@@ -9,7 +9,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 public class Info extends Command {
 
@@ -32,8 +34,8 @@ public class Info extends Command {
                     em.setThumbnail(target.getAvatarUrl());
 
                     em.addField("**UserTag**", target.getAsTag(), true);
-                    em.addField("**Created Date**", new SimpleDateFormat("dd.MM.yyyy").format(target.getTimeCreated().toLocalDate()), true);
-                    em.addField("**Joined Date**", new SimpleDateFormat("dd.MM.yyyy").format(m.getGuild().getMember(target).getTimeJoined().toLocalDate()), true);
+                    em.addField("**Created Date**", target.getTimeCreated().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
+                    em.addField("**Joined Date**", m.getGuild().getMember(target).getTimeJoined().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
 
                     em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
