@@ -24,7 +24,7 @@ public class DogImage extends Command {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setTitle("Random Dog Image!", BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setTitle("Random Dog Image!");
         em.setColor(BotUtil.randomEmbedColor());
         em.setImage(js.getString("message"));
         em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());

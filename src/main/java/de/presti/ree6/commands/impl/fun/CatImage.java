@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class CatImage extends Command {
@@ -20,13 +21,13 @@ public class CatImage extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
-        JSONObject js = JSONApi.GetData(Requests.GET, "https://api.thecatapi.com/v1/images/search");
+        JSONArray js = JSONApi.GetData2(Requests.GET, "https://api.thecatapi.com/v1/images/search");
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setTitle("Random Cat Image!", BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setTitle("Random Cat Image!");
         em.setColor(BotUtil.randomEmbedColor());
-        em.setImage(js.getString("url"));
+        em.setImage(js.getString(2));
         em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
         sendMessage(em, m);

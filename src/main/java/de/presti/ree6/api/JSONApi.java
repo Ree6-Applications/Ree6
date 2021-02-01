@@ -21,9 +21,13 @@ public class JSONApi {
 	public static JSONObject GetData(Requests type, String url) {
 		return GetData(type, url, "");
 	}
+	@SuppressWarnings("unused")
+	public static JSONArray GetData2(Requests type, String url) {
+		return GetData2(type, url, "");
+	}
 
 	@SuppressWarnings("deprecation")
-	static JSONArray GetData2(Requests type, String url, String post) {
+	public static JSONArray GetData2(Requests type, String url, String post) {
 		Date start = new Date();
 		Date preconnect = start;
 		Date postconnect = start;

@@ -31,7 +31,7 @@ public class MemeImage extends Command {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setTitle("Random Meme Image!", BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setTitle("Random Meme Image!");
         em.setColor(BotUtil.randomEmbedColor());
         em.setImage(gay.getString("image"));
         em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
