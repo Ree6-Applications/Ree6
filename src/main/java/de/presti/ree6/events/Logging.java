@@ -7,6 +7,7 @@ import de.presti.ree6.bot.*;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.TimeUtil;
+import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
@@ -38,6 +39,8 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class Logging extends ListenerAdapter {
 
@@ -46,6 +49,9 @@ public class Logging extends ListenerAdapter {
 
         if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
             return;
+
+        //Future InviteLogger
+        //event.getGuild().retrieveInvites().queue(invites -> invites.get(0).getUses());
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -82,12 +88,18 @@ public class Logging extends ListenerAdapter {
 
         String finalString = "";
 
+        int sex = 0;
         for (Role r : event.getRoles()) {
-            finalString += "\n:white_check_mark: " + r.getName();
+            if(event.getRoles().size() - 1 == sex) {
+                finalString += ":white_check_mark: " + r.getName();
+            } else {
+                finalString += ":white_check_mark: " + r.getName() + "\n";
+            }
+            sex++;
         }
 
         we.setDescription(":writing_hand: " + event.getMember().getUser().getAsMention() + " **has been updated.**");
-        we.addField(new WebhookEmbed.EmbedField(true, "**Rollen:**", finalString));
+        we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString));
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
@@ -142,12 +154,18 @@ public class Logging extends ListenerAdapter {
 
         String finalString = "";
 
+        int sex = 0;
         for (Role r : event.getRoles()) {
-            finalString += "\n:no_entry: " + r.getName();
+            if(event.getRoles().size() - 1 == sex) {
+                finalString += ":no_entry: " + r.getName();
+            } else {
+                finalString += ":no_entry: " + r.getName() + "\n";
+            }
+            sex++;
         }
 
         we.setDescription(":writing_hand: " + event.getMember().getUser().getAsMention() + " **has been updated.**");
-        we.addField(new WebhookEmbed.EmbedField(true, "**Rollen:**", finalString));
+        we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString));
 
         wm.addEmbeds(we.build());
 
@@ -189,6 +207,8 @@ public class Logging extends ListenerAdapter {
         if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
             return;
 
+        boolean gay = true;
+
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
         wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
@@ -215,12 +235,16 @@ public class Logging extends ListenerAdapter {
 
             we.setDescription(":house: **Voicechannel Permissions updated:** ``" + event.getChannel().getName() + "``");
             we.addField(new WebhookEmbed.EmbedField(true, "**Updated**", finalString));
+        } else {
+            gay = false;
         }
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
-        Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+        if(gay) {
+            String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
+            Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+        }
 
     }
 
@@ -229,6 +253,8 @@ public class Logging extends ListenerAdapter {
 
         if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
             return;
+
+        boolean gay = true;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -263,12 +289,16 @@ public class Logging extends ListenerAdapter {
 
             we.setDescription(":house: **TextChannel updated:** ``" + event.getChannel().getName() + "``");
             we.addField(new WebhookEmbed.EmbedField(true, "**Updated**", finalString));
+        } else {
+            gay = false;
         }
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
-        Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+        if(gay) {
+            String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
+            Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+        }
 
     }
 
@@ -379,7 +409,7 @@ public class Logging extends ListenerAdapter {
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), "https://google.com"));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
-        we.setDescription(event.getEntity().getUser().getAsMention() + " **switched the Vocechannel from** ``" + event.getChannelLeft().getName() + "`` **to** ``" + event.getChannelJoined().getName() + "``**.**");
+        we.setDescription(event.getEntity().getUser().getAsMention() + " **switched the Voicechannel from** ``" + event.getChannelLeft().getName() + "`` **to** ``" + event.getChannelJoined().getName() + "``**.**");
 
         wm.addEmbeds(we.build());
 

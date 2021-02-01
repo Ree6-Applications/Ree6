@@ -2,6 +2,7 @@ package de.presti.ree6.commands.impl;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.music.MusikWorker;
@@ -15,7 +16,7 @@ import java.awt.*;
 public class Songlist extends Command {
 
     public Songlist() {
-        super("songlist", "Shows you every Song in the Queue!");
+        super("songlist", "Shows you every Song in the Queue!", Category.MUSIC);
     }
 
     @Override

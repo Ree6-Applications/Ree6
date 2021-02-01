@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl;
 
+import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -11,7 +12,7 @@ import java.util.function.Consumer;
 public class Setup extends Command {
 
     public Setup() {
-        super("setup", "Setup the Welcome and Log Channel!");
+        super("setup", "Setup the Welcome and Log Channel!", Category.MOD);
     }
 
     @Override

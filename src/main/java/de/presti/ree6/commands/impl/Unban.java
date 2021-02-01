@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl;
 
+import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -9,7 +10,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 public class Unban extends Command {
 
     public Unban() {
-        super("unban", "Unban a User from the Server!");
+        super("unban", "Unban a User from the Server!", Category.MOD);
     }
 
     @Override

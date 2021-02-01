@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl;
 
+import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -12,7 +13,7 @@ import java.util.List;
 public class Clear extends Command {
 
     public Clear() {
-        super("clear", "Clear the Chat!");
+        super("clear", "Clear the Chat!", Category.MOD);
     }
 
     @Override

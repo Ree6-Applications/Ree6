@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl;
 
+import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -12,7 +13,7 @@ import java.sql.SQLException;
 public class Kick extends Command {
 
     public Kick() {
-        super("kick", "Kick the User from the Server!");
+        super("kick", "Kick the User from the Server!", Category.MOD);
     }
 
     @Override

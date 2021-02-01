@@ -1,6 +1,7 @@
 package de.presti.ree6.commands.impl;
 
 import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.music.MusikWorker;
@@ -14,7 +15,7 @@ import java.awt.*;
 public class Disconnect extends Command {
 
     public Disconnect() {
-        super("dc", "Disconnect the Bot!");
+        super("dc", "Disconnect the Bot!", Category.MUSIC);
     }
 
     @Override

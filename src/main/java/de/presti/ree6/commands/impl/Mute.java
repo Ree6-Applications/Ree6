@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl;
 
+import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -8,7 +9,7 @@ import net.dv8tion.jda.api.entities.*;
 public class Mute extends Command {
 
     public Mute() {
-        super("mute", "Mute a User on the Server!");
+        super("mute", "Mute a User on the Server!", Category.MUSIC);
     }
 
     @Override

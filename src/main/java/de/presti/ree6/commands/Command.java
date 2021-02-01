@@ -13,10 +13,12 @@ public abstract class Command {
 
     String cmd;
     String desc;
+    Category cat;
 
-    public Command(String command, String description) {
+    public Command(String command, String description, Category category) {
         cmd = command;
         desc = description;
+        cat = category;
     }
 
     public abstract void onPerform(Member sender, Message messageSelf,String[] args, TextChannel m);
@@ -28,6 +30,8 @@ public abstract class Command {
     public String getDesc() {
         return desc;
     }
+
+    public Category getCategory() { return cat; }
 
     public void sendMessage(String msg, MessageChannel m) {
         m.sendMessage(msg).queue();

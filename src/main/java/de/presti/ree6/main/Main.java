@@ -13,6 +13,7 @@ import de.presti.ree6.sql.SQLWorker;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.Config;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,8 +48,6 @@ public class Main {
         } catch (Exception ex) {
             System.out.println("Error while init: " + ex.getMessage());
         }
-
-        insance.createCheckerThread();
         insance.addHooks();
 
     }
@@ -82,6 +81,18 @@ public class Main {
 
                         BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Server", Activity.ActivityType.WATCHING);
 
+                        System.out.println();
+                        System.out.println("Todays Stats:");
+                        System.out.println("Guilds: " + BotInfo.botInstance.getGuilds().size());
+
+                        int i = 0;
+
+                        for(Guild guild : BotInfo.botInstance.getGuilds()) {
+                            i += guild.getMemberCount();
+                        }
+
+                        System.out.println("Overall Users: " + i);
+
                         lastday = new SimpleDateFormat("dd").format(new Date());
                     }
 
@@ -94,5 +105,4 @@ public class Main {
         });
         checker.start();
     }
-
 }

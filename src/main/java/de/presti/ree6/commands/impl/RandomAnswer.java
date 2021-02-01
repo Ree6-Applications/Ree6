@@ -1,27 +1,22 @@
 package de.presti.ree6.commands.impl;
 
-import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
-import de.presti.ree6.main.Data;
-import de.presti.ree6.music.MusikWorker;
 import de.presti.ree6.utils.ArrayUtil;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-import java.awt.*;
+import java.util.Random;
 
-public class Skip extends Command {
+public class RandomAnswer extends Command {
 
-    public Skip() {
-        super("skip", "Skip a song!", Category.MUSIC);
+    public RandomAnswer() {
+        super("8ball", "Let the Magic 8Ball answer your Question!", Category.FUN);
     }
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
-        MusikWorker.skipTrack(m);
-        messageSelf.delete().queue();
+        sendMessage(ArrayUtil.answers[new Random().nextInt((ArrayUtil.answers.length - 1))], 5, m);
     }
 }

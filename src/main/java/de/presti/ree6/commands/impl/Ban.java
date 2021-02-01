@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl;
 
+import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -11,7 +12,7 @@ import javax.xml.soap.Text;
 public class Ban extends Command {
 
     public Ban() {
-        super("ban", "Ban the User from the Server!");
+        super("ban", "Ban the User from the Server!", Category.MOD);
     }
 
     @Override

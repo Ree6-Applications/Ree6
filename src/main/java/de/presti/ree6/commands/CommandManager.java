@@ -20,8 +20,12 @@ public class CommandManager {
 
     public CommandManager() {
 
+        //Informativ
         addCommand(new Help());
+        addCommand(new Stats());
+        addCommand(new Invite());
 
+        //Moderativ
         addCommand(new Clear());
         addCommand(new Setup());
         addCommand(new Mute());
@@ -30,6 +34,7 @@ public class CommandManager {
         addCommand(new Ban());
         addCommand(new Unban());
 
+        //Music
         addCommand(new Play());
         addCommand(new Pause());
         addCommand(new Resume());
@@ -41,6 +46,8 @@ public class CommandManager {
         addCommand(new Clearqueue());
         addCommand(new Songlist());
 
+        //Fun
+        addCommand(new RandomAnswer());
     }
 
     public void addCommand(Command c) {
