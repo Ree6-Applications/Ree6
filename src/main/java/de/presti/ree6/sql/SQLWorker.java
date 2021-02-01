@@ -1,17 +1,33 @@
 package de.presti.ree6.sql;
 
+import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Webhook;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class SQLWorker {
 
     public void setLogWebhook(String gid, String cid, String token) throws SQLException {
         if(hasLogSetuped(gid)) {
-            Main.insance.sqlConnector.query("UPDATE LogWebhooks SET CID='" + cid + "' AND TOKEN='" + token + "' WHERE GID='" + gid + "'");
+
+            String[] d = getLogwebhook(gid);
+
+            BotInfo.botInstance.getGuildById(gid).retrieveWebhooks().queue(webhooks -> {
+                for(Webhook wb : webhooks) {
+                    if(wb.getId().equalsIgnoreCase(d[0]) && wb.getToken().equalsIgnoreCase(d[1])) {
+                        wb.delete().queue();
+                    }
+                }
+            });
+
+            Main.insance.sqlConnector.query("DELETE FROM LogWebhooks WHERE GID='" + gid + "'");
+            Main.insance.sqlConnector.query("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
         } else {
             Main.insance.sqlConnector.query("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
         }
@@ -62,8 +78,19 @@ public class SQLWorker {
     }
 
     public void setWelcomeWebhook(String gid, String cid, String token) throws SQLException {
-        if(hasWeclomeSetuped(gid)) {
-            Main.insance.sqlConnector.query("UPDATE WelcomeWebhooks SET CID='" + cid + "' AND TOKEN='" + token + "' WHERE GID='" + gid + "'");
+        if (hasWeclomeSetuped(gid)) {
+
+            String[] d = getWelcomewebhook(gid);
+
+            BotInfo.botInstance.getGuildById(gid).retrieveWebhooks().queue(webhooks -> {
+                for(Webhook wb : webhooks) {
+                    if(wb.getId().equalsIgnoreCase(d[0]) && wb.getToken().equalsIgnoreCase(d[1])) {
+                        wb.delete().queue();
+                    }
+                }
+            });
+            Main.insance.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
+            Main.insance.sqlConnector.query("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
         } else {
             Main.insance.sqlConnector.query("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
         }
