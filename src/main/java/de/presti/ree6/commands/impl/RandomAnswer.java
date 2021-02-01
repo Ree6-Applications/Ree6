@@ -17,6 +17,6 @@ public class RandomAnswer extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
-        sendMessage(ArrayUtil.answers[new Random().nextInt((ArrayUtil.answers.length - 1))], 5, m);
+        sendMessage(ArrayUtil.answers[new Random().nextInt((ArrayUtil.answers.length - 1))], m);
     }
 }
