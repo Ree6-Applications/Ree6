@@ -1,4 +1,4 @@
-package de.presti.ree6.commands.impl;
+package de.presti.ree6.commands.impl.info;
 
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;

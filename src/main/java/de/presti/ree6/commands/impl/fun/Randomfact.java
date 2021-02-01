@@ -1,4 +1,4 @@
-package de.presti.ree6.commands.impl;
+package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.api.JSONApi;
 import de.presti.ree6.api.Requests;

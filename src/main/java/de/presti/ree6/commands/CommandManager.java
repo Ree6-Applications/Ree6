@@ -1,6 +1,12 @@
 package de.presti.ree6.commands;
 
-import de.presti.ree6.commands.impl.*;
+import de.presti.ree6.commands.impl.fun.*;
+import de.presti.ree6.commands.impl.info.Help;
+import de.presti.ree6.commands.impl.info.Info;
+import de.presti.ree6.commands.impl.info.Invite;
+import de.presti.ree6.commands.impl.info.Stats;
+import de.presti.ree6.commands.impl.mod.*;
+import de.presti.ree6.commands.impl.music.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -20,12 +26,13 @@ public class CommandManager {
 
     public CommandManager() {
 
-        //Informativ
+        //Informative
         addCommand(new Help());
+        addCommand(new Info());
         addCommand(new Stats());
         addCommand(new Invite());
 
-        //Moderativ
+        //Moderate
         addCommand(new Clear());
         addCommand(new Setup());
         addCommand(new Mute());
@@ -49,6 +56,10 @@ public class CommandManager {
         //Fun
         addCommand(new RandomAnswer());
         addCommand(new Randomfact());
+        addCommand(new CatImage());
+        addCommand(new DogImage());
+        addCommand(new MemeImage());
+
     }
 
     public void addCommand(Command c) {
@@ -63,10 +74,12 @@ public class CommandManager {
             return;
 
         msg = msg.substring(prefix.length());
+
         String[] oldargs = msg.split(" ");
+
         for (Command cmd : getCommands()) {
             if (cmd.getCmd().equalsIgnoreCase(oldargs[0])) {
-                String[] args = (String[]) Arrays.copyOfRange(oldargs, 1, oldargs.length);
+                String[] args = Arrays.copyOfRange(oldargs, 1, oldargs.length);
                 cmd.onPerform(sender, messageSelf, args, m);
                 break;
             }

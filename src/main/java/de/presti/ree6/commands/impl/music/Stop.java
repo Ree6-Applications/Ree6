@@ -1,4 +1,4 @@
-package de.presti.ree6.commands.impl;
+package de.presti.ree6.commands.impl.music;
 
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
@@ -12,27 +12,33 @@ import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.awt.*;
 
-public class Resume extends Command {
-    
-    public Resume() {
-        super("resume", "Resume a stopped Song!", Category.MUSIC);
+public class Stop extends Command {
+
+    public Stop() {
+        super("stop", "Stop the song!", Category.MUSIC);
     }
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+
         EmbedBuilder em = new EmbedBuilder();
         
-        MusikWorker.getGuildAudioPlayer(m.getGuild()).player.setPaused(false);
+        MusikWorker.getGuildAudioPlayer(m.getGuild()).player.stopTrack();
+
+        MusikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.clearqueue();
+
+        MusikWorker.disconnect(m.getGuild());
 
         em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
                 BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription("Song is going to be resumed!");
+        em.setDescription("Music Player has been stopped!");
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
-
+        
         sendMessage(em, 5, m);
+
         messageSelf.delete().queue();
     }
 }

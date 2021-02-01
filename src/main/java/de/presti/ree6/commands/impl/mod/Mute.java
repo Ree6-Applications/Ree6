@@ -1,4 +1,4 @@
-package de.presti.ree6.commands.impl;
+package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
