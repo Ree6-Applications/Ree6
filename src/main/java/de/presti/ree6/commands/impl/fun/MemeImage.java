@@ -23,7 +23,7 @@ public class MemeImage extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
-        JSONObject js = JSONApi.GetData(Requests.GET, "http://alpha-meme-maker.herokuapp.com/");
+        JSONObject js = JSONApi.GetData(Requests.GET, "https://alpha-meme-maker.herokuapp.com/");
 
         JSONArray jsa = js.getJSONArray("data");
 
