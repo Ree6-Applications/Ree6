@@ -48,6 +48,7 @@ public class CommandManager {
 
         //Fun
         addCommand(new RandomAnswer());
+        addCommand(new Randomfact());
     }
 
     public void addCommand(Command c) {
