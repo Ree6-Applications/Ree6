@@ -24,7 +24,7 @@ public class Setup extends Command {
                         sendMessage("No Channel mentioned!", 5, m);
                         sendMessage("Use ree!setup log #Log-Channel", 5, m);
                     } else {
-                        m.createWebhook("Ree6-Log").queue(w -> {
+                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-Log").queue(w -> {
                             try {
                                 Main.sqlWorker.setLogWebhook(sender.getGuild().getId(), w.getId(), w.getToken());
                             } catch (SQLException throwables) {
@@ -38,7 +38,7 @@ public class Setup extends Command {
                         sendMessage("No Channel mentioned!", 5, m);
                         sendMessage("Use ree!setup welcome #Welcome-Channel", 5, m);
                     } else {
-                        m.createWebhook("Ree6-Welcome").queue(w -> {
+                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-Welcome").queue(w -> {
                             try {
                                 Main.sqlWorker.setWelcomeWebhook(sender.getGuild().getId(), w.getId(), w.getToken());
                             } catch (SQLException throwables) {

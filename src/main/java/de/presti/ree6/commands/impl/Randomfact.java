@@ -18,6 +18,6 @@ public class Randomfact extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
         JSONObject js = JSONApi.GetData(Requests.GET, "https://useless-facts.sameerkumar.website/api");
-        sendMessage(js.getString("data"), 5, m);
+        sendMessage(js.getString("data"), m);
     }
 }
