@@ -16,6 +16,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
+import java.sql.SQLException;
+import java.util.Random;
 
 public class BotManagingEvent extends ListenerAdapter {
 
@@ -48,7 +50,29 @@ public class BotManagingEvent extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
-        Main.cm.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel());
+
+        if(!Main.cm.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel())) {
+            if(!ArrayUtil.timeout.contains(event.getMember())) {
+
+
+                try {
+                    Main.sqlWorker.addXP(event.getGuild().getId(), event.getAuthor().getId(), new Random().nextInt(25) + 1);
+                } catch (SQLException throwables) {}
+
+                ArrayUtil.timeout.add(event.getMember());
+
+                new Thread(() -> {
+
+                    try {
+                        Thread.sleep(30000);
+                    } catch (InterruptedException e) {}
+
+                    ArrayUtil.timeout.remove(event.getMember());
+
+                }).start();
+
+            }
+        }
 
         if(!ArrayUtil.messageIDwithMessage.containsKey(event.getMessageId())) {
             ArrayUtil.messageIDwithMessage.put(event.getMessageId(), event.getMessage().getContentRaw());

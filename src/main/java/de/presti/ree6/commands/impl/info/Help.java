@@ -39,6 +39,5 @@ public class Help extends Command {
         }
 
         m.sendMessage(em.build()).queue();
-        messageSelf.delete().queue();
     }
 }

@@ -60,6 +60,7 @@ public class Logging extends ListenerAdapter {
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
+        we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), "https://google.com"));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
         we.setDescription(event.getUser().getAsMention() + " **joined the Server.**\n:timer: Age of the Account:\n``" + event.getUser().getTimeCreated().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) + "``\n**" + TimeUtil.getFormattedDate(TimeUtil.getDifferenceBetween(event.getUser().getTimeCreated().toLocalDateTime(), LocalDateTime.now())) + "**");
@@ -83,6 +84,7 @@ public class Logging extends ListenerAdapter {
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
+        we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), "https://google.com"));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
 
@@ -149,6 +151,7 @@ public class Logging extends ListenerAdapter {
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
+        we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), "https://google.com"));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
 
@@ -186,6 +189,7 @@ public class Logging extends ListenerAdapter {
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
+        we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), "https://google.com"));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
 
@@ -315,6 +319,7 @@ public class Logging extends ListenerAdapter {
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
+        we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), "https://google.com"));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
         we.setDescription(event.getUser().getAsMention() + " **left the Server.**");
@@ -430,6 +435,7 @@ public class Logging extends ListenerAdapter {
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
+        we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), "https://google.com"));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
         we.setDescription(":airplane_departure: " + event.getUser().getAsMention() + " **banned.**");
@@ -453,6 +459,7 @@ public class Logging extends ListenerAdapter {
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
+        we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), "https://google.com"));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
         we.setDescription(":airplane_arriving: " + event.getUser().getAsMention() + " **unbanned.**");

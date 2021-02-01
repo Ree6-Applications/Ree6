@@ -77,9 +77,9 @@ public class SQLConnector {
 			st = con.prepareStatement(
 					"CREATE TABLE IF NOT EXISTS MuteRoles (GID VARCHAR(40), RID VARCHAR(40))");
 			st.executeUpdate();
-			/*st = con.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS Level (GID VARCHAR(40), UID VARCHAR(40), XP VARCHAR(40))");
-			st.executeUpdate(); */
+			st = con.prepareStatement(
+					"CREATE TABLE IF NOT EXISTS Level (GID VARCHAR(40), UID VARCHAR(40), XP VARCHAR(500))");
+			st.executeUpdate();
 
 			st.close();
 		} catch (SQLException e) {

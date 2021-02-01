@@ -45,6 +45,5 @@ public class Info extends Command {
                 sendMessage("Not enough Arguments!", 5, m);
                 sendMessage("Use ree!info @user", 5, m);
             }
-        messageSelf.delete().queue();
     }
 }

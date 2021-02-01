@@ -13,6 +13,70 @@ import java.util.function.Consumer;
 
 public class SQLWorker {
 
+    //Leveling
+
+    public Integer getXP(String gid, String uid) {
+        String xp = "0";
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
+                rs = st.executeQuery("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            if (rs.next()) {
+                xp = rs.getString("XP");
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return Integer.parseInt(xp);
+    }
+
+    public boolean existsXP(String gid, String uid) {
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
+                rs = st.executeQuery("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            if (rs.next()) {
+                return true;
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public void addXP(String gid, String uid, int addxp) throws SQLException {
+
+        addxp += getXP(gid, uid);
+
+        if(existsXP(gid, uid)) {
+            Main.sqlConnector.query("UPDATE Level SET XP='" + addxp + "' WHERE GID='" + gid + "' AND UID='" + uid + "'");
+        } else {
+            Main.sqlConnector.query("INSERT INTO Level (GID, UID, XP) VALUES ('" + gid + "', '" + uid + "', '" + addxp + "');");
+        }
+    }
+
+    //Logging
+
     public void setLogWebhook(String gid, String cid, String token) throws SQLException {
         if(hasLogSetuped(gid)) {
 
@@ -76,6 +140,9 @@ public class SQLWorker {
         }
         return new String[]{ "Error", "Not setuped!"};
     }
+
+
+    //Welcome
 
     public void setWelcomeWebhook(String gid, String cid, String token) throws SQLException {
         if (hasWeclomeSetuped(gid)) {

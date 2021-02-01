@@ -5,6 +5,7 @@ import de.presti.ree6.commands.impl.info.Help;
 import de.presti.ree6.commands.impl.info.Info;
 import de.presti.ree6.commands.impl.info.Invite;
 import de.presti.ree6.commands.impl.info.Stats;
+import de.presti.ree6.commands.impl.level.Level;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -55,10 +56,13 @@ public class CommandManager {
 
         //Fun
         addCommand(new RandomAnswer());
-        addCommand(new Randomfact());
+        addCommand(new RandomFact());
         addCommand(new CatImage());
         addCommand(new DogImage());
         addCommand(new MemeImage());
+
+        //Level
+        addCommand(new Level());
 
     }
 
@@ -68,10 +72,10 @@ public class CommandManager {
         }
     }
 
-    public void perform(Member sender, String msg, Message messageSelf, TextChannel m) {
+    public boolean perform(Member sender, String msg, Message messageSelf, TextChannel m) {
 
         if (!msg.startsWith(prefix))
-            return;
+            return false;
 
         msg = msg.substring(prefix.length());
 
@@ -81,9 +85,10 @@ public class CommandManager {
             if (cmd.getCmd().equalsIgnoreCase(oldargs[0])) {
                 String[] args = Arrays.copyOfRange(oldargs, 1, oldargs.length);
                 cmd.onPerform(sender, messageSelf, args, m);
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     public void removeCommand(Command c) {

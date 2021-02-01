@@ -9,9 +9,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.json.JSONObject;
 
-public class Randomfact extends Command {
+public class RandomFact extends Command {
 
-    public Randomfact() {
+    public RandomFact() {
         super("randomfact", "Just some random Facts!", Category.FUN);
     }
 
