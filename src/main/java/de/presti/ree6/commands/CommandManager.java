@@ -60,6 +60,8 @@ public class CommandManager {
         addCommand(new CatImage());
         addCommand(new DogImage());
         addCommand(new MemeImage());
+        addCommand(new Ping());
+        //addCommand(new Slap());
 
         //Level
         addCommand(new Level());

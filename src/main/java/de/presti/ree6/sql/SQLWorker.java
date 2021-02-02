@@ -2,14 +2,11 @@ package de.presti.ree6.sql;
 
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.main.Main;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Webhook;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class SQLWorker {
 
