@@ -14,7 +14,9 @@ import net.dv8tion.jda.api.entities.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.time.format.DateTimeFormatter;
+import java.util.Random;
 
 public class Slap extends Command {
 
@@ -29,14 +31,14 @@ public class Slap extends Command {
                 sendMessage("No User mentioned!", 5, m);
                 sendMessage("Use ree!slap @user", 5, m);
             } else {
-                EmbedBuilder em = new EmbedBuilder();
 
                 User target = messageSelf.getMentionedMembers().get(0).getUser();
 
-                JSONObject jso = JSONApi.GetData(Requests.GET, "https://api.giphy.com/v1/gifs/random?api_key=" + Main.config.getConfig().getString("giphy.apitoken") + "&tag=slap");
-
                 sendMessage(sender.getAsMention() + " slapped " + target.getAsMention(), m);
-                sendMessage(jso.getJSONObject("data").getString("embed_url"), m);
+
+                File[] fs = new File("GIFS/SLAP/").listFiles();
+
+                m.sendFile(fs[new Random().nextInt((fs.length - 1))]).queue();
             }
         } else {
             sendMessage("Not enough Arguments!", 5, m);

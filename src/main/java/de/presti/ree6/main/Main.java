@@ -42,7 +42,7 @@ public class Main {
         sqlWorker = new SQLWorker();
 
         try {
-            BotUtil.createBot(BotVersion.DEV);
+            BotUtil.createBot(BotVersion.PUBLIC);
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
@@ -68,39 +68,35 @@ public class Main {
     }
 
     public void createCheckerThread() {
-        checker = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(BotInfo.state != BotState.STOPPED) {
+        checker = new Thread(() -> {
+            while(BotInfo.state != BotState.STOPPED) {
 
+                if(!lastday.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 
-                    if(!lastday.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
+                    ArrayUtil.messageIDwithMessage.clear();
+                    ArrayUtil.messageIDwithUser.clear();
 
-                        ArrayUtil.messageIDwithMessage.clear();
-                        ArrayUtil.messageIDwithUser.clear();
+                    BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Server", Activity.ActivityType.WATCHING);
 
-                        BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Server", Activity.ActivityType.WATCHING);
+                    System.out.println();
+                    System.out.println("Todays Stats:");
+                    System.out.println("Guilds: " + BotInfo.botInstance.getGuilds().size());
 
-                        System.out.println();
-                        System.out.println("Todays Stats:");
-                        System.out.println("Guilds: " + BotInfo.botInstance.getGuilds().size());
+                    int i = 0;
 
-                        int i = 0;
-
-                        for(Guild guild : BotInfo.botInstance.getGuilds()) {
-                            i += guild.getMemberCount();
-                        }
-
-                        System.out.println("Overall Users: " + i);
-
-                        lastday = new SimpleDateFormat("dd").format(new Date());
+                    for(Guild guild : BotInfo.botInstance.getGuilds()) {
+                        i += guild.getMemberCount();
                     }
 
+                    System.out.println("Overall Users: " + i);
 
-                    try {
-                        Thread.sleep( (5 * (60000L)));
-                    } catch (InterruptedException e) {}
+                    lastday = new SimpleDateFormat("dd").format(new Date());
                 }
+
+
+                try {
+                    Thread.sleep( (5 * (60000L)));
+                } catch (InterruptedException e) {}
             }
         });
         checker.start();
