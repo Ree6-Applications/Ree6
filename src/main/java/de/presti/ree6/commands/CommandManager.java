@@ -1,10 +1,7 @@
 package de.presti.ree6.commands;
 
 import de.presti.ree6.commands.impl.fun.*;
-import de.presti.ree6.commands.impl.info.Help;
-import de.presti.ree6.commands.impl.info.Info;
-import de.presti.ree6.commands.impl.info.Invite;
-import de.presti.ree6.commands.impl.info.Stats;
+import de.presti.ree6.commands.impl.info.*;
 import de.presti.ree6.commands.impl.level.Level;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
@@ -32,6 +29,7 @@ public class CommandManager {
         addCommand(new Info());
         addCommand(new Stats());
         addCommand(new Invite());
+        addCommand(new Server());
 
         //Moderate
         addCommand(new Clear());
