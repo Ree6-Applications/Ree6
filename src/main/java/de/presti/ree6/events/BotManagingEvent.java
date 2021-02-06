@@ -7,6 +7,7 @@ import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.bot.Webhook;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
+import de.presti.ree6.utils.AutoRoleHandler;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -33,6 +34,8 @@ public class BotManagingEvent extends ListenerAdapter {
 
     @Override
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
+
+        AutoRoleHandler.handleMemberJoin(event.getGuild(), event.getMember());
 
         if(!Main.sqlWorker.hasWeclomeSetuped(event.getGuild().getId()))
             return;

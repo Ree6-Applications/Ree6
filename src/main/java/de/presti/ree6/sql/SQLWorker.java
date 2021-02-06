@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.Webhook;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class SQLWorker {
 
@@ -23,7 +24,7 @@ public class SQLWorker {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
                 rs = st.executeQuery("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
             } catch (Exception ex) {
-                ex.printStackTrace();
+                //ex.printStackTrace();
             }
 
             if (rs.next()) {
@@ -31,7 +32,7 @@ public class SQLWorker {
             }
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
 
         return Integer.parseInt(xp);
@@ -47,7 +48,7 @@ public class SQLWorker {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
                 rs = st.executeQuery("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
             } catch (Exception ex) {
-                ex.printStackTrace();
+                //ex.printStackTrace();
             }
 
             if (rs.next()) {
@@ -55,7 +56,7 @@ public class SQLWorker {
             }
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
 
         return false;
@@ -65,7 +66,7 @@ public class SQLWorker {
 
         addxp += getXP(gid, uid);
 
-        if(existsXP(gid, uid)) {
+        if (existsXP(gid, uid)) {
             Main.sqlConnector.query("UPDATE Level SET XP='" + addxp + "' WHERE GID='" + gid + "' AND UID='" + uid + "'");
         } else {
             Main.sqlConnector.query("INSERT INTO Level (GID, UID, XP) VALUES ('" + gid + "', '" + uid + "', '" + addxp + "');");
@@ -75,13 +76,13 @@ public class SQLWorker {
     //Logging
 
     public void setLogWebhook(String gid, String cid, String token) throws SQLException {
-        if(hasLogSetuped(gid)) {
+        if (hasLogSetuped(gid)) {
 
             String[] d = getLogwebhook(gid);
 
             BotInfo.botInstance.getGuildById(gid).retrieveWebhooks().queue(webhooks -> {
-                for(Webhook wb : webhooks) {
-                    if(wb.getId().equalsIgnoreCase(d[0]) && wb.getToken().equalsIgnoreCase(d[1])) {
+                for (Webhook wb : webhooks) {
+                    if (wb.getId().equalsIgnoreCase(d[0]) && wb.getToken().equalsIgnoreCase(d[1])) {
                         wb.delete().queue();
                     }
                 }
@@ -115,7 +116,7 @@ public class SQLWorker {
     }
 
     public String[] getLogwebhook(String gid) {
-        if(hasLogSetuped(gid)) {
+        if (hasLogSetuped(gid)) {
             try {
                 PreparedStatement st;
                 ResultSet rs = null;
@@ -135,7 +136,7 @@ public class SQLWorker {
                 ex.printStackTrace();
             }
         }
-        return new String[]{ "Error", "Not setuped!"};
+        return new String[]{"Error", "Not setuped!"};
     }
 
 
@@ -147,8 +148,8 @@ public class SQLWorker {
             String[] d = getWelcomewebhook(gid);
 
             BotInfo.botInstance.getGuildById(gid).retrieveWebhooks().queue(webhooks -> {
-                for(Webhook wb : webhooks) {
-                    if(wb.getId().equalsIgnoreCase(d[0]) && wb.getToken().equalsIgnoreCase(d[1])) {
+                for (Webhook wb : webhooks) {
+                    if (wb.getId().equalsIgnoreCase(d[0]) && wb.getToken().equalsIgnoreCase(d[1])) {
                         wb.delete().queue();
                     }
                 }
@@ -181,7 +182,7 @@ public class SQLWorker {
     }
 
     public String[] getWelcomewebhook(String gid) {
-        if(hasWeclomeSetuped(gid)) {
+        if (hasWeclomeSetuped(gid)) {
             try {
                 PreparedStatement st;
                 ResultSet rs = null;
@@ -201,11 +202,11 @@ public class SQLWorker {
                 ex.printStackTrace();
             }
         }
-        return new String[]{ "Error", "Not setuped!"};
+        return new String[]{"Error", "Not setuped!"};
     }
 
     public void setMuteRole(String gid, String rid) throws SQLException {
-        if(hasMuteSetuped(gid)) {
+        if (hasMuteSetuped(gid)) {
             Main.insance.sqlConnector.query("UPDATE MuteRoles SET RID='" + rid + "' WHERE GID='" + gid + "'");
         } else {
             Main.insance.sqlConnector.query("INSERT INTO MuteRoles (GID, RID) VALUES ('" + gid + "', '" + rid + "');");
@@ -233,7 +234,7 @@ public class SQLWorker {
     }
 
     public String getMuteRoleID(String gid) {
-        if(hasMuteSetuped(gid)) {
+        if (hasMuteSetuped(gid)) {
             try {
                 PreparedStatement st;
                 ResultSet rs = null;
@@ -255,4 +256,60 @@ public class SQLWorker {
         }
         return "Error";
     }
+
+    //Autorole
+
+    public boolean hasAutoRoles(String gid) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM AutoRoles WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM AutoRoles WHERE GID='" + gid + "'");
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+
+            return rs.next();
+
+        } catch (Exception ex) {
+        }
+
+        return false;
+    }
+
+    public ArrayList<String> getAutoRoleIDs(String gid) {
+
+        ArrayList<String> roles = new ArrayList<>();
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM AutoRoles WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM AutoRoles WHERE GID='" + gid + "'");
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+
+            while (rs.next()) {
+                roles.add(rs.getString("RID"));
+            }
+
+        } catch (Exception ex) {
+        }
+
+        return roles;
+    }
+
+    public void addAutoRole(String gid, String rid) {
+        Main.insance.sqlConnector.query("INSERT INTO AutoRoles (GID, RID) VALUES ('" + gid + "', '" + rid + "');");
+    }
+
+    public void removeAutoRole(String gid, String rid) {
+        Main.insance.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "' AND RID='" + rid + "'");
+    }
+
 }

@@ -78,6 +78,9 @@ public class SQLConnector {
 					"CREATE TABLE IF NOT EXISTS MuteRoles (GID VARCHAR(40), RID VARCHAR(40))");
 			st.executeUpdate();
 			st = con.prepareStatement(
+					"CREATE TABLE IF NOT EXISTS AutoRoles (GID VARCHAR(40), RID VARCHAR(40))");
+			st.executeUpdate();
+			st = con.prepareStatement(
 					"CREATE TABLE IF NOT EXISTS Level (GID VARCHAR(40), UID VARCHAR(40), XP VARCHAR(500))");
 			st.executeUpdate();
 
@@ -88,10 +91,12 @@ public class SQLConnector {
 		}
 	}
 
-	public void query(String sql) throws SQLException {
-		if (isConnected()) {
-			con.createStatement().executeUpdate(sql);
-		}
+	public void query(String sql) {
+		try {
+			if (isConnected()) {
+				con.createStatement().executeUpdate(sql);
+			}
+		} catch (Exception ex) {}
 	}
 
 }

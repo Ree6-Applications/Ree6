@@ -29,6 +29,7 @@ public class Config {
             cfg.addDefault("mysql.host", "localhost");
             cfg.addDefault("mysql.port", 3306);
             cfg.addDefault("giphy.apitoken", "yourgiphytokenherepog");
+            cfg.addDefault("dagpi.apitoken", "yourdagpixyztokenhere");
             cfg.addDefault("bot.tokens.rel", "ReleaseTokenhere");
             cfg.addDefault("bot.tokens.dev", "DevTokenhere");
 

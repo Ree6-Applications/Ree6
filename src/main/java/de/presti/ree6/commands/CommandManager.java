@@ -60,6 +60,8 @@ public class CommandManager {
         addCommand(new MemeImage());
         addCommand(new Ping());
         addCommand(new Slap());
+        addCommand(new Twitter());
+        addCommand(new HornyJail());
 
         //Level
         addCommand(new Level());

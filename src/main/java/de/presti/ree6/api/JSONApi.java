@@ -19,15 +19,15 @@ public class JSONApi {
 
 	@SuppressWarnings("unused")
 	public static JSONObject GetData(Requests type, String url) {
-		return GetData(type, url, "");
+		return GetData(type, url, "", "");
 	}
 	@SuppressWarnings("unused")
 	public static JSONArray GetData2(Requests type, String url) {
-		return GetData2(type, url, "");
+		return GetData2(type, url, "", "");
 	}
 
 	@SuppressWarnings("deprecation")
-	public static JSONArray GetData2(Requests type, String url, String post) {
+	public static JSONArray GetData2(Requests type, String url, String post, String authkey) {
 		Date start = new Date();
 		Date preconnect = start;
 		Date postconnect = start;
@@ -55,6 +55,9 @@ public class JSONApi {
 			c.setReadTimeout(5000);
 			c.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 QuorraBot/2015");
+			if(!authkey.isEmpty()) {
+				c.setRequestProperty("Authorization", authkey);
+			}
 			c.setRequestProperty("Content-Type", "application/json-rpc");
 			c.setRequestProperty("Content-length", "0");
 
@@ -134,7 +137,7 @@ public class JSONApi {
 	}
 
 	@SuppressWarnings({ "null", "deprecation" })
-	private static JSONObject GetData(Requests type, String url, String post) {
+	private static JSONObject GetData(Requests type, String url, String post, String authkey) {
 		Date start = new Date();
 		Date preconnect = start;
 		Date postconnect = start;
@@ -162,6 +165,9 @@ public class JSONApi {
 			c.setReadTimeout(5000);
 			c.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 QuorraBot/2015");
+			if(!authkey.isEmpty()) {
+				c.setRequestProperty("Authorization", authkey);
+			}
 			c.setRequestProperty("Content-Type", "application/json-rpc");
 			c.setRequestProperty("Content-length", "0");
 

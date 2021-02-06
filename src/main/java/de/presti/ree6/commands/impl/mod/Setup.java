@@ -59,6 +59,29 @@ public class Setup extends Command {
                         }
                         sendMessage("Mute Role has been set!", 5, m);
                     }
+                } else if (args[0].equalsIgnoreCase("autorole")) {
+                    if(args.length == 3) {
+                        if (messageSelf.getMentionedRoles().isEmpty()) {
+                            sendMessage("No Role mentioned!", 5, m);
+                            sendMessage("Use ree!setup autorole add/remove @role", 5, m);
+                        } else {
+                            if (args[1].equalsIgnoreCase("add")) {
+                                Main.sqlWorker.addAutoRole(m.getGuild().getId(), messageSelf.getMentionedRoles().get(0).getId());
+                                sendMessage("Autorole has been added!", 5, m);
+                            } else if (args[1].equalsIgnoreCase("remove")) {
+                                Main.sqlWorker.removeAutoRole(m.getGuild().getId(), messageSelf.getMentionedRoles().get(0).getId());
+                                sendMessage("Autorole has been removed!", 5, m);
+                            } else {
+                                sendMessage("Use ree!setup autorole add/remove @role", 5, m);
+                            }
+                        }
+                    } else {
+                        sendMessage("Not enough Arguments!", 5, m);
+                        sendMessage("Use ree!setup autorole add/remove @role", 5, m);
+                    }
+                } else {
+                    sendMessage("Couldnt find " + args[0] + "!", 5, m);
+                    sendMessage("Use ree!setup log/weclome/mute/autorole", 5, m);
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m);
