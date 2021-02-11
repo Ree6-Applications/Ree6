@@ -1,13 +1,17 @@
 package de.presti.ree6.sql;
 
 import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.invtielogger.InviteContainer;
+import de.presti.ree6.invtielogger.InviteContainerManager;
 import de.presti.ree6.main.Main;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Webhook;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class SQLWorker {
 
@@ -314,4 +318,88 @@ public class SQLWorker {
         Main.insance.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "' AND RID='" + rid + "'");
     }
 
+    //Invite
+
+    public boolean existsInvite(String gid, String code, String creator) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Invites WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
+                rs = st.executeQuery("SELECT * FROM Invites WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+
+            if(rs.next()) {
+                return true;
+            }
+
+        } catch (Exception ex) {
+        }
+
+        return false;
+    }
+
+    public ArrayList<InviteContainer> getInvites(String gid) {
+
+        ArrayList<InviteContainer> pog = new ArrayList<>();
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Invites WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM Invites WHERE GID='" + gid + "'");
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+
+            while(rs.next()) {
+                pog.add(new InviteContainer(rs.getString("UID"), rs.getString("GID"), rs.getString("CODE"), Integer.parseInt(rs.getString("USES"))));
+            }
+
+        } catch (Exception ex) {
+        }
+
+        return pog;
+    }
+
+    public void setInvite(String gid, String code, String creator, int usage) throws SQLException {
+        if (existsInvite(gid, code, creator)) {
+            Main.insance.sqlConnector.query("UPDATE Invites SET USES='" + usage + "' WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
+        } else {
+            Main.insance.sqlConnector.query("INSERT INTO Invites (GID, UID, USES, CODE) VALUES ('" + gid + "', '" + creator + "', '" + usage + "', '" + code + "');");
+        }
+    }
+
+    public void removeInvite(String gid, String creator, String code) {
+        Main.insance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
+    }
+
+    public void saveAllInvites() throws SQLException {
+        for(Map.Entry<String, ArrayList<InviteContainer>> entry : InviteContainerManager.getInvites().entrySet()) {
+            for(InviteContainer inv : entry.getValue()) {
+                setInvite(entry.getKey(), inv.getCode(), inv.getCreatorid(), inv.getUses());
+            }
+        }
+
+        for(InviteContainer inv : InviteContainerManager.getDeletedInvites()) {
+            removeInvite(inv.getGuildid(), inv.getCreatorid(), inv.getCode());
+        }
+    }
+
+    public void loadAllInvites() {
+        for(Guild g : BotInfo.botInstance.getGuilds()) {
+            ArrayList<InviteContainer> invs = getInvites(g.getId());
+
+            if(InviteContainerManager.getInvites().containsKey(g.getId())) {
+                InviteContainerManager.getInvites().remove(g.getId());
+            }
+
+            InviteContainerManager.getInvites().put(g.getId(), invs);
+        }
+    }
 }

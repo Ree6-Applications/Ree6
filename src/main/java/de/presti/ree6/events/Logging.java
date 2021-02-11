@@ -4,9 +4,12 @@ import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.bot.*;
+import de.presti.ree6.invtielogger.InviteContainer;
+import de.presti.ree6.invtielogger.InviteContainerManager;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.TimeUtil;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
@@ -23,6 +26,8 @@ import net.dv8tion.jda.api.events.channel.voice.update.VoiceChannelUpdateNameEve
 import net.dv8tion.jda.api.events.channel.voice.update.VoiceChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
+import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
+import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
@@ -33,6 +38,9 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
+import net.dv8tion.jda.api.events.role.RoleCreateEvent;
+import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
+import net.dv8tion.jda.api.events.role.update.*;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
@@ -40,6 +48,7 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class Logging extends ListenerAdapter {
@@ -69,6 +78,20 @@ public class Logging extends ListenerAdapter {
 
         String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
         Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+
+        WebhookMessageBuilder wm2 = new WebhookMessageBuilder();
+
+        wm2.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm2.setUsername("Ree6InviteLogs");
+
+        InviteContainer inv = InviteContainerManager.getRightInvite(event.getGuild());
+
+        if(inv != null) {
+            wm2.append(event.getMember().getAsMention() + " **has beend invited by** " + event.getGuild().getMemberById(inv.getCreatorid()) + " (Code: " + inv.getCode() + ", Uses: " + inv.getUses() + ")");
+        } else {
+            wm2.append("Couldnt find out how " + event.getMember().getAsMention() + " joined :C");
+        }
+        Webhook.sendWebhook(wm2.build(), Long.parseLong(infos[0]), infos[1]);
     }
 
     @Override
@@ -369,6 +392,207 @@ public class Logging extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
         we.setDescription(event.getEntity().getUser().getAsMention() + " **joined the Voicechannel** ``" + event.getChannelJoined().getName() + "``");
+
+        wm.addEmbeds(we.build());
+
+        String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
+        Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+    }
+
+    @Override
+    public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {
+        InviteContainer inv = new InviteContainer(event.getInvite().getInviter().getId(), event.getGuild().getId(), event.getInvite().getCode(), event.getInvite().getUses());
+        InviteContainerManager.addInvite(inv, event.getGuild().getId());
+        //Too much Spam
+    }
+
+    @Override
+    public void onGuildInviteDelete(@Nonnull GuildInviteDeleteEvent event) {
+        InviteContainerManager.removeInvite(event.getGuild().getId(), event.getCode());
+    }
+
+    @Override
+    public void onRoleCreate(@Nonnull RoleCreateEvent event) {
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+            return;
+
+        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setUsername("Ree6Logs");
+
+        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+        we.setColor(Color.BLACK.getRGB());
+        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
+        we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been created.**");
+
+        wm.addEmbeds(we.build());
+
+        String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
+        Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+    }
+
+    @Override
+    public void onRoleDelete(@Nonnull RoleDeleteEvent event) {
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+            return;
+
+        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setUsername("Ree6Logs");
+
+        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+        we.setColor(Color.BLACK.getRGB());
+        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
+        we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been deleted.**");
+
+        wm.addEmbeds(we.build());
+
+        String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
+        Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+    }
+
+    @Override
+    public void onRoleUpdateName(@Nonnull RoleUpdateNameEvent event) {
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+            return;
+
+        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setUsername("Ree6Logs");
+
+        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+        we.setColor(Color.BLACK.getRGB());
+        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
+        we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
+        we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", event.getOldName()));
+        we.addField(new WebhookEmbed.EmbedField(true, "**New name**", event.getNewName()));
+
+        wm.addEmbeds(we.build());
+
+        String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
+        Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+    }
+
+    @Override
+    public void onRoleUpdateMentionable(@Nonnull RoleUpdateMentionableEvent event) {
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+            return;
+
+        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setUsername("Ree6Logs");
+
+        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+        we.setColor(Color.BLACK.getRGB());
+        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
+        we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
+        we.addField(new WebhookEmbed.EmbedField(true, "**Old mentionable**", event.getOldValue() + ""));
+        we.addField(new WebhookEmbed.EmbedField(true, "**New mentionable**", event.getNewValue() + ""));
+
+        wm.addEmbeds(we.build());
+
+        String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
+        Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+    }
+
+    @Override
+    public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+            return;
+
+        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setUsername("Ree6Logs");
+
+        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+        we.setColor(Color.BLACK.getRGB());
+        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
+        we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
+        we.addField(new WebhookEmbed.EmbedField(true, "**Old hoist**", event.getOldValue() + ""));
+        we.addField(new WebhookEmbed.EmbedField(true, "**New hoist**", event.getNewValue() + ""));
+
+        wm.addEmbeds(we.build());
+
+        String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
+        Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+    }
+
+    @Override
+    public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+            return;
+
+        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setUsername("Ree6Logs");
+
+        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+        we.setColor(Color.BLACK.getRGB());
+        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
+        we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
+
+        String finalString = "";
+
+        boolean b = false;
+        for (Permission r : event.getNewPermissions()) {
+            if(!event.getOldPermissions().contains(r)) {
+                if(b) {
+                    finalString += "\n:white_check_mark: " + r.getName();
+                } else {
+                    finalString += ":white_check_mark: " + r.getName();
+                    b = true;
+                }
+            }
+        }
+
+        for (Permission r : event.getOldPermissions()) {
+            if(!event.getNewPermissions().contains(r)) {
+                if(b) {
+                    finalString += "\n:no_entry: " + r.getName();
+                } else {
+                    finalString += ":no_entry: " + r.getName();
+                    b = true;
+                }
+            }
+        }
+
+        we.addField(new WebhookEmbed.EmbedField(true, "**New permissions**", finalString));
+
+        wm.addEmbeds(we.build());
+
+        String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
+        Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+    }
+
+    @Override
+    public void onRoleUpdateColor(@Nonnull RoleUpdateColorEvent event) {
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+            return;
+
+        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setUsername("Ree6Logs");
+
+        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+        we.setColor(Color.BLACK.getRGB());
+        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
+        we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
+        we.addField(new WebhookEmbed.EmbedField(true, "**Old color**", Objects.requireNonNull(event.getOldColor()).getRGB() + ""));
+        we.addField(new WebhookEmbed.EmbedField(true, "**New color**", Objects.requireNonNull(event.getNewColor()).getRGB() + ""));
 
         wm.addEmbeds(we.build());
 

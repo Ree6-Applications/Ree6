@@ -15,6 +15,7 @@ import de.presti.ree6.utils.Config;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,9 +38,11 @@ public class Main {
 
         cm = new CommandManager();
 
-        //sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
+        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
 
         sqlWorker = new SQLWorker();
+
+        sqlWorker.loadAllInvites();
 
         try {
             BotUtil.createBot(BotVersion.DEV);
@@ -58,11 +61,18 @@ public class Main {
     }
 
     private void addHooks() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown()));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                shutdown();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }));
     }
 
-    private void shutdown() {
+    private void shutdown() throws SQLException {
         System.out.println("Good Bye!");
+        sqlWorker.saveAllInvites();
         sqlConnector.close();
         BotUtil.shutdown();
     }
