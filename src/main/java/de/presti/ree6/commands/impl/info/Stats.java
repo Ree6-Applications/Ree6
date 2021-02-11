@@ -30,7 +30,6 @@ public class Stats extends Command {
         em.setTitle("Stats!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(BotUtil.randomEmbedColor());
-        em.setDescription("Some Bots stats for you!");
 
         int i = 0;
 
