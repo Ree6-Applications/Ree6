@@ -20,12 +20,12 @@ public class Kick extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
         if (sender.hasPermission(Permission.ADMINISTRATOR)) {
             if (args.length == 1) {
-                if(messageSelf.getMentionedMembers().isEmpty()) {
+                if(messageSelf.getMentionedUsers().isEmpty()) {
                     sendMessage("No User mentioned!", 5, m);
                     sendMessage("Use ree!kick @user", 5, m);
                 } else {
-                    sendMessage("User " + messageSelf.getMentionedMembers().get(0).getNickname() + " has been kicked!", 5, m);
-                    sender.getGuild().kick(messageSelf.getMentionedMembers().get(0)).queue();
+                    sendMessage("User " + messageSelf.getMentionedUsers().get(0).getName() + " has been kicked!", 5, m);
+                    sender.getGuild().kick(m.getGuild().getMember(messageSelf.getMentionedUsers().get(0))).queue();
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m);

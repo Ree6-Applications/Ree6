@@ -81,6 +81,9 @@ public class SQLConnector {
 					"CREATE TABLE IF NOT EXISTS AutoRoles (GID VARCHAR(40), RID VARCHAR(40))");
 			st.executeUpdate();
 			st = con.prepareStatement(
+					"CREATE TABLE IF NOT EXISTS Invites (GID VARCHAR(40), UID VARCHAR(40), USES VARCHAR(40), CODE VARCHAR(40))");
+			st.executeUpdate();
+			st = con.prepareStatement(
 					"CREATE TABLE IF NOT EXISTS Level (GID VARCHAR(40), UID VARCHAR(40), XP VARCHAR(500))");
 			st.executeUpdate();
 

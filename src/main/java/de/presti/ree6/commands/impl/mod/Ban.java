@@ -19,12 +19,12 @@ public class Ban extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
         if (sender.hasPermission(Permission.ADMINISTRATOR)) {
             if (args.length == 1) {
-                if(messageSelf.getMentionedMembers().isEmpty()) {
+                if(messageSelf.getMentionedUsers().isEmpty()) {
                     sendMessage("No User mentioned!", 5, m);
                     sendMessage("Use ree!ban @user", 5, m);
                 } else {
-                    sendMessage("User " + messageSelf.getMentionedMembers().get(0).getNickname() + " has been banned!", 5, m);
-                    m.getGuild().ban(messageSelf.getMentionedMembers().get(0), 12).queue();
+                    sendMessage("User " + messageSelf.getMentionedUsers().get(0).getName() + " has been banned!", 5, m);
+                    m.getGuild().ban(messageSelf.getMentionedMembers().get(0), -1).queue();
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m);

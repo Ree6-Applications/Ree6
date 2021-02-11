@@ -137,7 +137,7 @@ public class JSONApi {
 	}
 
 	@SuppressWarnings({ "null", "deprecation" })
-	private static JSONObject GetData(Requests type, String url, String post, String authkey) {
+    public static JSONObject GetData(Requests type, String url, String post, String authkey) {
 		Date start = new Date();
 		Date preconnect = start;
 		Date postconnect = start;

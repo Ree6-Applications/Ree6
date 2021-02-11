@@ -205,6 +205,8 @@ public class SQLWorker {
         return new String[]{"Error", "Not setuped!"};
     }
 
+    //Mute
+
     public void setMuteRole(String gid, String rid) throws SQLException {
         if (hasMuteSetuped(gid)) {
             Main.insance.sqlConnector.query("UPDATE MuteRoles SET RID='" + rid + "' WHERE GID='" + gid + "'");

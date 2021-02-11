@@ -62,6 +62,7 @@ public class CommandManager {
         addCommand(new Slap());
         addCommand(new Twitter());
         addCommand(new HornyJail());
+        addCommand(new RandomWaifu());
 
         //Level
         addCommand(new Level());
