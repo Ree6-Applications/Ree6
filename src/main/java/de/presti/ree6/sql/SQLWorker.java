@@ -395,11 +395,13 @@ public class SQLWorker {
         for(Guild g : BotInfo.botInstance.getGuilds()) {
             ArrayList<InviteContainer> invs = getInvites(g.getId());
 
-            if(InviteContainerManager.getInvites().containsKey(g.getId())) {
-                InviteContainerManager.getInvites().remove(g.getId());
-            }
+            if(!invs.isEmpty()) {
+                if (InviteContainerManager.getInvites().containsKey(g.getId())) {
+                    InviteContainerManager.getInvites().remove(g.getId());
+                }
 
-            InviteContainerManager.getInvites().put(g.getId(), invs);
+                InviteContainerManager.getInvites().put(g.getId(), invs);
+            }
         }
     }
 }
