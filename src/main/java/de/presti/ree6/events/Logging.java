@@ -88,7 +88,7 @@ public class Logging extends ListenerAdapter {
 
         if(inv != null) {
             inv.setUses(inv.getUses() + 1);
-            wm2.append(event.getMember().getAsMention() + " **has beend invited by** " + event.getGuild().getMemberById(inv.getCreatorid()).getAsMention() + " (Code: " + inv.getCode() + ", Uses: " + inv.getUses() + ")");
+            wm2.append(event.getUser().getAsMention() + " **has beend invited by** " + event.getGuild().getMemberById(inv.getCreatorid()).getAsMention() + " (Code: " + inv.getCode() + ", Uses: " + inv.getUses() + ")");
         } else {
             wm2.append("Couldnt find out how " + event.getMember().getAsMention() + " joined :C");
         }
