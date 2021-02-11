@@ -42,16 +42,17 @@ public class Main {
 
         sqlWorker = new SQLWorker();
 
-        sqlWorker.loadAllInvites();
 
         try {
-            BotUtil.createBot(BotVersion.DEV);
+            BotUtil.createBot(BotVersion.PUBLIC);
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
             System.out.println("Error while init: " + ex.getMessage());
         }
         insance.addHooks();
+
+        sqlWorker.loadAllInvites();
 
     }
 
