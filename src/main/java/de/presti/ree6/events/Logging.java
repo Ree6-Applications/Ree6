@@ -592,8 +592,8 @@ public class Logging extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
-        we.addField(new WebhookEmbed.EmbedField(true, "**Old color**", Objects.requireNonNull(event.getOldColor()).getRGB() + ""));
-        we.addField(new WebhookEmbed.EmbedField(true, "**New color**", Objects.requireNonNull(event.getNewColor()).getRGB() + ""));
+        we.addField(new WebhookEmbed.EmbedField(true, "**Old color**", (event.getOldColor() != null ? event.getOldColor() : Color.gray).getRGB() + ""));
+        we.addField(new WebhookEmbed.EmbedField(true, "**New color**", (event.getNewColor() != null ? event.getNewColor() : Color.gray).getRGB() + ""));
 
         wm.addEmbeds(we.build());
 
