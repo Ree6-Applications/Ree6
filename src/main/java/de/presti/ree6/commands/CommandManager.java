@@ -63,6 +63,7 @@ public class CommandManager {
         addCommand(new Twitter());
         addCommand(new HornyJail());
         addCommand(new RandomWaifu());
+        addCommand(new Kiss());
 
         //Level
         addCommand(new Level());
@@ -77,9 +78,9 @@ public class CommandManager {
 
     public boolean perform(Member sender, String msg, Message messageSelf, TextChannel m) {
 
-        if (!msg.startsWith(prefix))
+        if (!msg.toLowerCase().startsWith(prefix))
             return false;
-
+        
         msg = msg.substring(prefix.length());
 
         String[] oldargs = msg.split(" ");

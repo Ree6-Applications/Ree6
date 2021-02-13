@@ -46,7 +46,7 @@ public class HornyJail extends Command {
 
                     outputStream.close();
 
-                    m.sendMessage(messageSelf.getMentionedMembers().get(0).getUser().getName() + " is now in the Hornyjail!").queue();
+                    m.sendMessage(messageSelf.getMentionedMembers().get(0).getAsMention() + " is now in the Hornyjail!").queue();
                     m.sendFile(new File("imageapi/hornyjail/" + sender.getUser().getId() + ".png")).queue(message -> new File("imageapi/hornyjail/" + sender.getUser().getId() + ".png").delete());
 
                 } catch (Exception ex) {

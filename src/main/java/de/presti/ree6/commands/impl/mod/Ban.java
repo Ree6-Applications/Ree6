@@ -24,7 +24,7 @@ public class Ban extends Command {
                     sendMessage("Use ree!ban @user", 5, m);
                 } else {
                     sendMessage("User " + messageSelf.getMentionedUsers().get(0).getName() + " has been banned!", 5, m);
-                    m.getGuild().ban(messageSelf.getMentionedMembers().get(0), -1).queue();
+                    m.getGuild().ban(messageSelf.getMentionedMembers().get(0), 14).queue();
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m);

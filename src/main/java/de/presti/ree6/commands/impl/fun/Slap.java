@@ -6,6 +6,7 @@ import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.ExternalAPIs;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -13,6 +14,8 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import pw.aru.api.nekos4j.image.Image;
+import pw.aru.api.nekos4j.image.ImageProvider;
 
 import java.io.File;
 import java.time.format.DateTimeFormatter;
@@ -36,13 +39,15 @@ public class Slap extends Command {
 
                 sendMessage(sender.getAsMention() + " slapped " + target.getAsMention(), m);
 
-                File[] fs = new File("GIFS/SLAP/").listFiles();
+                ImageProvider ip = ExternalAPIs.imageAPI.getImageProvider();
 
-                m.sendFile(fs[new Random().nextInt((fs.length - 1))]).queue();
+                Image im = ip.getRandomImage("slap").execute();
+
+                sendMessage(im.getUrl(), m);
             }
         } else {
             sendMessage("Not enough Arguments!", 5, m);
-            sendMessage("Use ree!info @user", 5, m);
+            sendMessage("Use ree!slap @user", 5, m);
         }
     }
 }
