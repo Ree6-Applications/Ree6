@@ -38,13 +38,13 @@ public class Main {
 
         cm = new CommandManager();
 
-        /*sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
+        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
 
-        sqlWorker = new SQLWorker();*/
+        sqlWorker = new SQLWorker();
 
 
         try {
-            BotUtil.createBot(BotVersion.DEV);
+            BotUtil.createBot(BotVersion.PUBLIC);
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
