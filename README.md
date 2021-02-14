@@ -28,3 +28,5 @@ Website: https://ree6.tk
 Used Apis:
 - JDA
 - LavaPlayer
+- Nekos4J (Nekos.life API Wrapper)
+- reliqua (RestAPI Wrapper for Java, used by Nekos4J)
