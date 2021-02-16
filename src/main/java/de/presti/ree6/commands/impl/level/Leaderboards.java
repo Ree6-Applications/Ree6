@@ -39,6 +39,7 @@ public class Leaderboards extends Command {
         }
 
         em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
+        sendMessage(em, m);
     }
 
     public int getLevel(int xp) {
