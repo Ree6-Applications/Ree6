@@ -77,6 +77,28 @@ public class SQLWorker {
         }
     }
 
+    public ArrayList<String> getTop(int amount, String gid) {
+
+        ArrayList<String> ids = new ArrayList<>();
+
+        try {
+
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM `Level` WHERE GID='" + gid + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + amount);
+            } catch (Exception ex) {}
+
+            while (rs.next()) {
+                ids.add(rs.getString("UID"));
+            }
+
+        } catch (Exception ex) {}
+
+        return ids;
+    }
+
     //Logging
 
     public void setLogWebhook(String gid, String cid, String token) throws SQLException {
@@ -403,5 +425,12 @@ public class SQLWorker {
                 InviteContainerManager.getInvites().put(g.getId(), invs);
             }
         }
+    }
+
+    public void deleteAllMyData(String gid) {
+        Main.insance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "'");
+        Main.insance.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "'");
+        Main.insance.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
+        Main.insance.sqlConnector.query("DELETE FROM LogWebhooks WHERE GID='" + gid + "'");
     }
 }

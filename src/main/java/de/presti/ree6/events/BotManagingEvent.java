@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -30,6 +31,11 @@ public class BotManagingEvent extends ListenerAdapter {
         Main.insance.createCheckerThread();
 
         BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Server", Activity.ActivityType.WATCHING);
+    }
+
+    @Override
+    public void onGuildLeave(@Nonnull GuildLeaveEvent event) {
+        Main.sqlWorker.deleteAllMyData(event.getGuild().getId());
     }
 
     @Override
