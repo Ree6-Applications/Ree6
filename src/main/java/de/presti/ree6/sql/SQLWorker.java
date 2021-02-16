@@ -88,6 +88,7 @@ public class SQLWorker {
 
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM `Level` WHERE GID='" + gid + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + amount);
+                rs = st.executeQuery("SELECT * FROM `Level` WHERE GID='" + gid + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + amount);
             } catch (Exception ex) {}
 
             while (rs.next()) {
