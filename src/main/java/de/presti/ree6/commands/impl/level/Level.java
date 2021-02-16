@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 public class Level extends Command {
 
     public Level() {
-        super("level", "Shows the Level of a User!", Category.LEVEL);
+        super("level", "Shows the Level of a User!", Category.LEVEL, new String[] {"lvl", "xp", "rank"});
     }
 
     @Override

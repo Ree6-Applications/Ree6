@@ -2,6 +2,7 @@ package de.presti.ree6.commands;
 
 import de.presti.ree6.commands.impl.fun.*;
 import de.presti.ree6.commands.impl.info.*;
+import de.presti.ree6.commands.impl.level.Leaderboards;
 import de.presti.ree6.commands.impl.level.Level;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
@@ -67,6 +68,7 @@ public class CommandManager {
 
         //Level
         addCommand(new Level());
+        addCommand(new Leaderboards());
 
     }
 
@@ -86,7 +88,7 @@ public class CommandManager {
         String[] oldargs = msg.split(" ");
 
         for (Command cmd : getCommands()) {
-            if (cmd.getCmd().equalsIgnoreCase(oldargs[0])) {
+            if (cmd.getCmd().equalsIgnoreCase(oldargs[0]) || cmd.isAlias(oldargs[0])) {
                 String[] args = Arrays.copyOfRange(oldargs, 1, oldargs.length);
                 cmd.onPerform(sender, messageSelf, args, m);
                 return true;

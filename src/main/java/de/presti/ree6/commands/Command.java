@@ -14,6 +14,7 @@ public abstract class Command {
     String cmd;
     String desc;
     Category cat;
+    String[] alias;
 
     public Command(String command, String description, Category category) {
         cmd = command;
@@ -21,7 +22,18 @@ public abstract class Command {
         cat = category;
     }
 
+    public Command(String command, String description, Category category, String[] alias) {
+        cmd = command;
+        desc = description;
+        cat = category;
+        this.alias = alias;
+    }
+
     public abstract void onPerform(Member sender, Message messageSelf,String[] args, TextChannel m);
+
+    public String[] getAlias() {
+        return alias;
+    }
 
     public String getCmd() {
         return cmd;
@@ -50,4 +62,15 @@ public abstract class Command {
         m.sendMessage(msg.build()).delay(deletesecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
     }
 
+    public boolean isAlias(String arg) {
+        if(getAlias() == null || getAlias().length == 0)
+            return false;
+
+        for(String alias : getAlias()) {
+            if(alias.equalsIgnoreCase(arg)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
