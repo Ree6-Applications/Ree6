@@ -11,6 +11,7 @@ import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.utils.ArrayUtil;
+import de.presti.ree6.utils.LinkConverter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -19,6 +20,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 

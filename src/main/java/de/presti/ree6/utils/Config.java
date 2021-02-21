@@ -30,6 +30,9 @@ public class Config {
             cfg.addDefault("mysql.port", 3306);
             cfg.addDefault("giphy.apitoken", "yourgiphytokenherepog");
             cfg.addDefault("dagpi.apitoken", "yourdagpixyztokenhere");
+            cfg.addDefault("spotify.client.id", "yourspotifyclientid");
+            cfg.addDefault("spotify.client.secret", "yourspotifyclientsecret");
+            cfg.addDefault("youtube.api.key", "youryoutubeapikey");
             cfg.addDefault("bot.tokens.rel", "ReleaseTokenhere");
             cfg.addDefault("bot.tokens.dev", "DevTokenhere");
 

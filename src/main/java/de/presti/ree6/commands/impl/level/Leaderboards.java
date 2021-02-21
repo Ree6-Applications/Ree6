@@ -27,13 +27,17 @@ public class Leaderboards extends Command {
         ArrayList<String> top = Main.sqlWorker.getTop(3, m.getGuild().getId());
 
         if(!top.isEmpty()) {
-            em.addField("2", "**<@" + top.get(1) + ">**\n**Level:**" + getLevel(Main.sqlWorker.getXP(m.getGuild().getId(), top.get(1))) + "\n**XP:** " + Main.sqlWorker.getXP(m.getGuild().getId(), top.get(1)), true);
+            em.addField("1", "**<@" + top.get(0) + ">**\n**Level: **" + getLevel(Main.sqlWorker.getXP(m.getGuild().getId(), top.get(0))) + "\n**XP:** " + Main.sqlWorker.getXP(m.getGuild().getId(), top.get(0)), true);
+            em.addBlankField(true);
+            em.addBlankField(true);
 
+            em.addField("2", "**<@" + top.get(1) + ">**\n**Level: **" + getLevel(Main.sqlWorker.getXP(m.getGuild().getId(), top.get(1))) + "\n**XP:** " + Main.sqlWorker.getXP(m.getGuild().getId(), top.get(1)), true);
+            em.addBlankField(true);
+            em.addBlankField(true);
 
-            em.addField("1", "**<@" + top.get(0) + ">**\n**Level:**" + getLevel(Main.sqlWorker.getXP(m.getGuild().getId(), top.get(0))) + "\n**XP:** " + Main.sqlWorker.getXP(m.getGuild().getId(), top.get(0)), true);
-
-
-            em.addField("3", "**<@" + top.get(2) + ">**\n**Level:**" + getLevel(Main.sqlWorker.getXP(m.getGuild().getId(), top.get(2))) + "\n**XP:** " + Main.sqlWorker.getXP(m.getGuild().getId(), top.get(2)), true);
+            em.addField("3", "**<@" + top.get(2) + ">**\n**Level: **" + getLevel(Main.sqlWorker.getXP(m.getGuild().getId(), top.get(2))) + "\n**XP:** " + Main.sqlWorker.getXP(m.getGuild().getId(), top.get(2)), true);
+            em.addBlankField(true);
+            em.addBlankField(true);
         } else {
             em.addField("Error", "There arent any Top 3s", true);
         }
