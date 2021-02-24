@@ -30,10 +30,8 @@ public class Play extends Command {
 
     public Play() {
         super("play", "Play a song!", Category.MUSIC);
-        YouTube temp = null;
-
         try {
-            temp = new YouTube.Builder(
+            yt = new YouTube.Builder(
                     GoogleNetHttpTransport.newTrustedTransport(),
                     JacksonFactory.getDefaultInstance(),
                     null)
@@ -43,8 +41,6 @@ public class Play extends Command {
         catch (Exception e) {
             e.printStackTrace();
         }
-
-        yt = temp;
     }
 
     @Override
@@ -113,6 +109,9 @@ public class Play extends Command {
     }
 
     private String searchYoutube (String search) {
+        if(yt == null) {
+
+        }
         try {
             List<SearchResult> results = yt.search()
                     .list(Collections.singletonList("id,snippet"))
@@ -136,6 +135,20 @@ public class Play extends Command {
         }
 
         return null;
+    }
+
+    public void createYouTube() {
+        try {
+            yt = new YouTube.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    JacksonFactory.getDefaultInstance(),
+                    null)
+                    .setApplicationName("Ree6")
+                    .build();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean isUrl(String input) {

@@ -434,4 +434,119 @@ public class SQLWorker {
         Main.insance.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
         Main.insance.sqlConnector.query("DELETE FROM LogWebhooks WHERE GID='" + gid + "'");
     }
+
+    //News
+
+    public String[] getNewswebhook(String gid) {
+        if (hasNewsSetuped(gid)) {
+            try {
+                PreparedStatement st;
+                ResultSet rs = null;
+
+                try {
+                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM NewsWebhooks WHERE GID='" + gid + "'");
+                    rs = st.executeQuery("SELECT * FROM NewsWebhooks WHERE GID='" + gid + "'");
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                if (rs.next()) {
+                    return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return new String[]{"Error", "Not setuped!"};
+    }
+
+    public void setNewsWebhook(String gid, String cid, String token) {
+        if (hasNewsSetuped(gid)) {
+            String[] d = getNewswebhook(gid);
+
+            BotInfo.botInstance.getGuildById(gid).retrieveWebhooks().queue(webhooks -> {
+                for (Webhook wb : webhooks) {
+                    if (wb.getId().equalsIgnoreCase(d[0]) && wb.getToken().equalsIgnoreCase(d[1])) {
+                        wb.delete().queue();
+                    }
+                }
+            });
+            Main.insance.sqlConnector.query("DELETE FROM NewsWebhooks WHERE GID='" + gid + "'");
+            Main.insance.sqlConnector.query("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+        } else {
+            Main.insance.sqlConnector.query("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+        }
+    }
+
+    public boolean hasNewsSetuped(String gid) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM NewsWebhooks WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM NewsWebhooks WHERE GID='" + gid + "'");
+            } catch (Exception ex) {
+            }
+
+            if (rs.next()) {
+                return true;
+            }
+
+        } catch (Exception ex) {
+        }
+        return false;
+    }
+
+    //Config
+
+    public void setMessage(String gid, String text) {
+        if (hasMessageSetuped(gid)) {
+            Main.insance.sqlConnector.query("DELETE FROM JoinMessage WHERE GID='" + gid + "'");
+        }
+        Main.insance.sqlConnector.query("INSERT INTO JoinMessage (GID, MSG) VALUES ('" + gid + "', '" + text + "');");
+    }
+
+    public String getMessage(String gid) {
+        if(hasMessageSetuped(gid)) {
+            try {
+                PreparedStatement st;
+                ResultSet rs = null;
+
+                try {
+                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM JoinMessage WHERE GID='" + gid + "'");
+                    rs = st.executeQuery("SELECT * FROM JoinMessage WHERE GID='" + gid + "'");
+                } catch (Exception ex) {
+                }
+
+                if (rs.next()) {
+                    return rs.getString("MSG");
+                }
+
+            } catch (Exception ex) {
+            }
+        }
+        return "Welcome %user_name%!\nWe wish you a great time on %guild_name%";
+    }
+
+    public boolean hasMessageSetuped(String gid) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM JoinMessage WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM JoinMessage WHERE GID='" + gid + "'");
+            } catch (Exception ex) {
+            }
+
+            if (rs.next()) {
+                return true;
+            }
+
+        } catch (Exception ex) {
+        }
+        return false;
+    }
 }

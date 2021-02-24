@@ -30,7 +30,7 @@ public class BotManagingEvent extends ListenerAdapter {
 
         Main.insance.createCheckerThread();
 
-        BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Server", Activity.ActivityType.WATCHING);
+        BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Guilds", Activity.ActivityType.WATCHING);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class BotManagingEvent extends ListenerAdapter {
 
         wmb.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         wmb.setUsername("Welcome!");
-        wmb.setContent("Welcome " + event.getUser().getAsMention() + "!\nWe wish you a great time on " + event.getGuild().getName());
+        wmb.setContent((Main.sqlWorker.getMessage(event.getGuild().getId())).replaceAll("%user_name%", event.getMember().getUser().getName()).replaceAll("%user_mention%", event.getMember().getUser().getAsMention()).replaceAll("%guild_name%", event.getGuild().getName()));
 
         String[] info = Main.sqlWorker.getWelcomewebhook(event.getGuild().getId());
 

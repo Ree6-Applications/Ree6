@@ -18,7 +18,7 @@ public class Setup extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
         if (sender.hasPermission(Permission.ADMINISTRATOR)) {
-            if (args.length > 1) {
+            if (args.length >= 1) {
                 if (args[0].equalsIgnoreCase("log")) {
                     if (messageSelf.getMentionedChannels().isEmpty()) {
                         sendMessage("No Channel mentioned!", 5, m);
@@ -60,7 +60,7 @@ public class Setup extends Command {
                         sendMessage("Mute Role has been set!", 5, m);
                     }
                 } else if (args[0].equalsIgnoreCase("autorole")) {
-                    if(args.length == 3) {
+                    if (args.length == 3) {
                         if (messageSelf.getMentionedRoles().isEmpty()) {
                             sendMessage("No Role mentioned!", 5, m);
                             sendMessage("Use ree!setup autorole add/remove @role", 5, m);
@@ -79,13 +79,45 @@ public class Setup extends Command {
                         sendMessage("Not enough Arguments!", 5, m);
                         sendMessage("Use ree!setup autorole add/remove @role", 5, m);
                     }
+                } else if (args[0].equalsIgnoreCase("news")) {
+                    if (messageSelf.getMentionedChannels().isEmpty()) {
+                        sendMessage("No Channel mentioned!", 5, m);
+                        sendMessage("Use ree!setup news #Ree6-News", 5, m);
+                    } else {
+                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-News").queue(w -> {
+                            Main.sqlWorker.setNewsWebhook(sender.getGuild().getId(), w.getId(), w.getToken());
+                        });
+                        sendMessage("News channel has been set!", 5, m);
+                    }
+                } else if (args[0].equalsIgnoreCase("join")) {
+                    if (args.length == 1) {
+                        sendMessage("No Message given!", 5, m);
+                        sendMessage("Use ree!join Your Join Message", 5, m);
+                        sendMessage("Usable Syntaxes: %user_name%, %guild_name%", 5, m);
+                    } else {
+                        String message = "";
+
+                        for(int i = 1; i < args.length; i++) {
+                            message += args[i];
+                            message += " ";
+                        }
+
+                        if(message.length() >= 250) {
+                            sendMessage("Your Welcome Message cant be longer than 250", 5, m);
+                            return;
+                        }
+
+                        Main.sqlWorker.setMessage(m.getGuild().getId(), message);
+
+                        sendMessage("Join Message has been set!", 5, m);
+                    }
                 } else {
                     sendMessage("Couldnt find " + args[0] + "!", 5, m);
-                    sendMessage("Use ree!setup log/weclome/mute/autorole", 5, m);
+                    sendMessage("Use ree!setup log/welcome/news/mute/autorole", 5, m);
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m);
-                sendMessage("Use ree!setup log/weclome/mute #Log/#Welcome/@Mute", 5, m);
+                sendMessage("Use ree!setup log/welcome/news/mute/autorole #Log/#Welcome/#Ree6-News/@Mute/@Autorole", 5, m);
             }
         } else {
             sendMessage("You dont have the Permission for this Command!", 5, m);

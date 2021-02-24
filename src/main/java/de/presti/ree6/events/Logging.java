@@ -59,9 +59,6 @@ public class Logging extends ListenerAdapter {
         if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
             return;
 
-        //Future InviteLogger
-        //event.getGuild().retrieveInvites().queue(invites -> invites.get(0).getUses());
-
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
@@ -88,7 +85,7 @@ public class Logging extends ListenerAdapter {
 
         if(inv != null) {
             inv.setUses(inv.getUses() + 1);
-            wm2.append(event.getUser().getAsMention() + " **has beend invited by** <@" + inv.getCreatorid() + "> (Code: " + inv.getCode() + ", Uses: " + inv.getUses() + ")");
+            wm2.append(event.getUser().getAsMention() + " **has been invited by** <@" + inv.getCreatorid() + "> (Code: " + inv.getCode() + ", Uses: " + inv.getUses() + ")");
         } else {
             wm2.append("Couldnt find out how " + event.getMember().getAsMention() + " joined :C");
         }
@@ -220,7 +217,7 @@ public class Logging extends ListenerAdapter {
         if (event.getUser().getName().equals(event.getNewNickname())) {
             we.setDescription("The Nickname of " + event.getUser().getAsMention() + " has been reseted.\n**Old Nickname:**\n" + event.getOldNickname());
         } else {
-            we.setDescription("The Nickname of " + event.getUser().getAsMention() + " has been changed.\n**New Nickname:**\n" + event.getNewNickname() + "\n**Old Nickname:**\n" + event.getOldNickname());
+            we.setDescription("The Nickname of " + event.getUser().getAsMention() + " has been changed.\n**New Nickname:**\n" + event.getNewNickname() + "\n**Old Nickname:**\n" + (event.getOldNickname() != null ? event.getOldNickname() : event.getUser().getName()));
         }
 
         wm.addEmbeds(we.build());

@@ -16,7 +16,7 @@ public class BotUtil {
         BotInfo.version = version;
         BotInfo.TOKEN = FileUtil.getToken();
         BotInfo.state = BotState.INIT;
-        BotInfo.botInstance = JDABuilder.createDefault(BotInfo.TOKEN).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).build();
+        BotInfo.botInstance = JDABuilder.createDefault(BotInfo.TOKEN).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).build();
     }
 
     public static void setActivity(String message, Activity.ActivityType at) {

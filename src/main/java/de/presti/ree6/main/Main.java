@@ -37,13 +37,12 @@ public class Main {
 
         config.init();
 
-        new LinkConverter();
-
-        cm = new CommandManager();
-
         sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
 
         sqlWorker = new SQLWorker();
+
+        new LinkConverter();
+        cm = new CommandManager();
 
 
         try {

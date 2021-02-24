@@ -75,6 +75,12 @@ public class SQLConnector {
 					"CREATE TABLE IF NOT EXISTS WelcomeWebhooks (GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
 			st.executeUpdate();
 			st = con.prepareStatement(
+					"CREATE TABLE IF NOT EXISTS NewsWebhooks (GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
+			st.executeUpdate();
+			st = con.prepareStatement(
+					"CREATE TABLE IF NOT EXISTS JoinMessage (GID VARCHAR(40), MSG VARCHAR(250))");
+			st.executeUpdate();
+			st = con.prepareStatement(
 					"CREATE TABLE IF NOT EXISTS MuteRoles (GID VARCHAR(40), RID VARCHAR(40))");
 			st.executeUpdate();
 			st = con.prepareStatement(
