@@ -9,6 +9,7 @@ With Ree6 we want to give you opportunity to use every Feature of Mee6 for free!
 Current Features:
 - Overall Logging (Ban, Kick, Role, Permission and more)
 - Invite Logging
+- Chat Protector (Bad Word Detection, adjustable)
 - Music Player (Spotify, YouTube, Soundcloud, Vimeo and more)
 - Fun Commands (Random Memes, Random Dogs, Ping and more)
 - Leveling System
