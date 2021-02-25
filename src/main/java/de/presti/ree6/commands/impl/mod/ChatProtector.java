@@ -67,7 +67,7 @@ public class ChatProtector extends Command {
                     }
                 }
             } else {
-                sendMessage("Couldnt find " + args[0] + "!", 5, m);
+                sendMessage("Not enough Arguments!", 5, m);
                 sendMessage("Use ree!chatprotector add/remove/list", 5, m);
             }
         } else {

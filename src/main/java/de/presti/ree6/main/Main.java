@@ -46,17 +46,13 @@ public class Main {
 
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC);
+            BotUtil.createBot(BotVersion.DEV);
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
             System.out.println("Error while init: " + ex.getMessage());
         }
         insance.addHooks();
-
-        sqlWorker.loadAllInvites();
-        sqlWorker.loadAllChatProtectors();
-
     }
 
     private void addEvents() {

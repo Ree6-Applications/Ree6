@@ -32,6 +32,9 @@ public class BotManagingEvent extends ListenerAdapter {
         Main.insance.createCheckerThread();
 
         BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Guilds", Activity.ActivityType.WATCHING);
+
+        Main.sqlWorker.loadAllInvites();
+        Main.sqlWorker.loadAllChatProtectors();
     }
 
     @Override
@@ -72,7 +75,7 @@ public class BotManagingEvent extends ListenerAdapter {
         if(event.getAuthor().isBot())
             return;
 
-        if(ChatProtector.hasChatProtector(event.getGuild().getId())) {
+        if(ChatProtector.hasChatProtector2(event.getGuild().getId())) {
             if(ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
                 event.getMessage().delete().queue();
                 event.getChannel().sendMessage("You can't write that!").queue();

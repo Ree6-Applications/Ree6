@@ -78,6 +78,12 @@ public class ChatProtector {
         return Main.sqlWorker.hasChatProtectorSetuped(gid);
     }
 
+    public static void loadChatProtectorFromDB(String gid) {
+        if(!hasChatProtector2(gid) && hasChatProtector(gid)) {
+            chachedchatprotector.put(gid, Main.sqlWorker.getChatProtector(gid));
+        }
+    }
+
     public static ArrayList<String> getChatProtector(String gid) {
         if (chachedchatprotector.containsKey(gid)) {
             return chachedchatprotector.get(gid);

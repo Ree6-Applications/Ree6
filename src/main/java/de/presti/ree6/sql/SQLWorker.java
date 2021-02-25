@@ -654,7 +654,7 @@ public class SQLWorker {
     public void loadAllChatProtectors() {
         for(Guild g : BotInfo.botInstance.getGuilds()) {
             if(ChatProtector.hasChatProtector(g.getId())) {
-                ChatProtector.getChatProtector(g.getId());
+                ChatProtector.loadChatProtectorFromDB(g.getId());
             }
         }
     }
