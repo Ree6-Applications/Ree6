@@ -1,5 +1,6 @@
 package de.presti.ree6.sql;
 
+import de.presti.ree6.addons.ChatProtector;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.invtielogger.InviteContainer;
 import de.presti.ree6.invtielogger.InviteContainerManager;
@@ -433,6 +434,10 @@ public class SQLWorker {
         Main.insance.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "'");
         Main.insance.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
         Main.insance.sqlConnector.query("DELETE FROM LogWebhooks WHERE GID='" + gid + "'");
+        Main.insance.sqlConnector.query("DELETE FROM NewsWebhooks WHERE GID='" + gid + "'");
+        Main.insance.sqlConnector.query("DELETE FROM JoinMessage WHERE GID='" + gid + "'");
+        Main.insance.sqlConnector.query("DELETE FROM MuteRoles WHERE GID='" + gid + "'");
+        Main.insance.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "'");
     }
 
     //News
@@ -527,7 +532,7 @@ public class SQLWorker {
             } catch (Exception ex) {
             }
         }
-        return "Welcome %user_name%!\nWe wish you a great time on %guild_name%";
+        return "Welcome %user_mention%!\nWe wish you a great time on %guild_name%";
     }
 
     public boolean hasMessageSetuped(String gid) {
@@ -548,5 +553,109 @@ public class SQLWorker {
         } catch (Exception ex) {
         }
         return false;
+    }
+
+    //ChatProtector
+
+    public boolean hasChatProtectorSetuped(String gid) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM ChatProtector WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM ChatProtector WHERE GID='" + gid + "'");
+            } catch (Exception ex) {
+            }
+
+            if (rs.next()) {
+                return true;
+            }
+
+        } catch (Exception ex) {
+        }
+        return false;
+    }
+
+    public boolean hasChatProtectorWord(String gid, String word) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM ChatProtector WHERE GID='" + gid + "'AND WORD='" + word + "'");
+                rs = st.executeQuery("SELECT * FROM ChatProtector WHERE GID='" + gid + "' AND WORD='" + word + "'");
+            } catch (Exception ex) {
+            }
+
+            if (rs.next()) {
+                return true;
+            }
+
+        } catch (Exception ex) {
+        }
+        return false;
+    }
+
+
+    public void addChatProtector(String gid, String word) {
+        if (hasChatProtectorSetuped(gid)) {
+            Main.insance.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "' AND WORD='" + word + "'");
+        }
+        Main.insance.sqlConnector.query("INSERT INTO ChatProtector (GID, WORD) VALUES ('" + gid + "', '" + word + "');");
+    }
+
+    public void removeChatProtector(String gid, String word) {
+        if (hasChatProtectorSetuped(gid)) {
+            Main.insance.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "' AND WORD='" + word + "'");
+        }
+    }
+
+    public ArrayList<String> getChatProtector(String gid) {
+        ArrayList<String> chatprot = new ArrayList<>();
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM ChatProtector WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM ChatProtector WHERE GID='" + gid + "'");
+            } catch (Exception ex) {
+            }
+
+            while (rs.next()) {
+                chatprot.add(rs.getString("WORD"));
+            }
+
+        } catch (Exception ex) {
+        }
+
+        return chatprot;
+    }
+
+    public void saveAllChatProtectors() {
+        for(Guild g : BotInfo.botInstance.getGuilds()) {
+            if(ChatProtector.hasChatProtector2(g.getId())) {
+                for (String s : ChatProtector.getChatProtector(g.getId())) {
+                    addChatProtector(g.getId(), s);
+                }
+            }
+
+            if(ChatProtector.hasChatProtector(g.getId()) && ChatProtector.hasChatProtector2(g.getId())) {
+                for(String s : getChatProtector(g.getId())) {
+                    if(!ChatProtector.getChatProtector(g.getId()).contains(s)) {
+                        removeChatProtector(g.getId(), s);
+                    }
+                }
+            }
+        }
+    }
+
+    public void loadAllChatProtectors() {
+        for(Guild g : BotInfo.botInstance.getGuilds()) {
+            if(ChatProtector.hasChatProtector(g.getId())) {
+                ChatProtector.getChatProtector(g.getId());
+            }
+        }
     }
 }

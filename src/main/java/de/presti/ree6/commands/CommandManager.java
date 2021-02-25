@@ -40,6 +40,7 @@ public class CommandManager {
         addCommand(new Kick());
         addCommand(new Ban());
         addCommand(new Unban());
+        addCommand(new ChatProtector());
 
         //Music
         addCommand(new Play());

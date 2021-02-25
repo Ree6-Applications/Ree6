@@ -55,6 +55,7 @@ public class Main {
         insance.addHooks();
 
         sqlWorker.loadAllInvites();
+        sqlWorker.loadAllChatProtectors();
 
     }
 
@@ -76,6 +77,7 @@ public class Main {
     private void shutdown() throws SQLException {
         System.out.println("Good Bye!");
         sqlWorker.saveAllInvites();
+        sqlWorker.saveAllChatProtectors();
         sqlConnector.close();
         BotUtil.shutdown();
     }

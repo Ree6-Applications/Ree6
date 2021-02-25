@@ -84,6 +84,9 @@ public class SQLConnector {
 					"CREATE TABLE IF NOT EXISTS MuteRoles (GID VARCHAR(40), RID VARCHAR(40))");
 			st.executeUpdate();
 			st = con.prepareStatement(
+					"CREATE TABLE IF NOT EXISTS ChatProtector (GID VARCHAR(40), WORD VARCHAR(40))");
+			st.executeUpdate();
+			st = con.prepareStatement(
 					"CREATE TABLE IF NOT EXISTS AutoRoles (GID VARCHAR(40), RID VARCHAR(40))");
 			st.executeUpdate();
 			st = con.prepareStatement(

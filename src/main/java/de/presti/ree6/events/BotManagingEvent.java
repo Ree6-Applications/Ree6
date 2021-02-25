@@ -1,6 +1,7 @@
 package de.presti.ree6.events;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import de.presti.ree6.addons.ChatProtector;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotState;
 import de.presti.ree6.bot.BotUtil;
@@ -70,6 +71,14 @@ public class BotManagingEvent extends ListenerAdapter {
 
         if(event.getAuthor().isBot())
             return;
+
+        if(ChatProtector.hasChatProtector(event.getGuild().getId())) {
+            if(ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
+                event.getMessage().delete().queue();
+                event.getChannel().sendMessage("You can't write that!").queue();
+                return;
+            }
+        }
 
         if(!Main.cm.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel())) {
 
