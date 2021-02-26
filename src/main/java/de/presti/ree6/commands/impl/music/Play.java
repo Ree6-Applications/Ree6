@@ -30,17 +30,7 @@ public class Play extends Command {
 
     public Play() {
         super("play", "Play a song!", Category.MUSIC);
-        try {
-            yt = new YouTube.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    JacksonFactory.getDefaultInstance(),
-                    null)
-                    .setApplicationName("Ree6")
-                    .build();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        createYouTube();
     }
 
     @Override
@@ -110,7 +100,7 @@ public class Play extends Command {
 
     private String searchYoutube (String search) {
         if(yt == null) {
-
+            createYouTube();
         }
         try {
             List<SearchResult> results = yt.search()
@@ -126,7 +116,12 @@ public class Play extends Command {
                 String videoId = results.get(0).getId().getVideoId();
 
 
-                return "https://www.youtube.com/watch?v=" + videoId;
+                if(videoId == null) {
+                    createYouTube();
+                    return searchYoutube(search);
+                } else {
+                    return "https://www.youtube.com/watch?v=" + videoId;
+                }
             }
 
         }

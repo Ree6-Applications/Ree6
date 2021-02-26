@@ -46,7 +46,7 @@ public class Main {
 
 
         try {
-            BotUtil.createBot(BotVersion.DEV);
+            BotUtil.createBot(BotVersion.PUBLIC);
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
@@ -87,7 +87,7 @@ public class Main {
                     ArrayUtil.messageIDwithMessage.clear();
                     ArrayUtil.messageIDwithUser.clear();
 
-                    BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Server", Activity.ActivityType.WATCHING);
+                    BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Guilds", Activity.ActivityType.WATCHING);
 
                     System.out.println();
                     System.out.println("Todays Stats:");
