@@ -12,7 +12,7 @@ import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.SQLWorker;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.Config;
-import de.presti.ree6.utils.LinkConverter;
+import de.presti.ree6.utils.SpotifyAPIHandler;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -41,12 +41,12 @@ public class Main {
 
         sqlWorker = new SQLWorker();
 
-        new LinkConverter();
+        new SpotifyAPIHandler();
         cm = new CommandManager();
 
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC);
+            BotUtil.createBot(BotVersion.DEV);
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {

@@ -17,15 +17,15 @@ import java.util.ArrayList;
 
 //Not by DxsSucuk
 //Created by Kay-Bilger
-public class LinkConverter {
+public class SpotifyAPIHandler {
 
 	
 	private SpotifyApi spotifyApi;
-	private static LinkConverter instance;
+	public static SpotifyAPIHandler instance;
 	private String id;
 	private String type;
 	
-	public LinkConverter() {
+	public SpotifyAPIHandler() {
 		try {
 			initSpotify();
 		} catch (ParseException | SpotifyWebApiException | IOException e) {
@@ -33,8 +33,8 @@ public class LinkConverter {
 		}
 		instance = this;
 	}
-	
-	private void initSpotify() throws ParseException, SpotifyWebApiException, IOException {
+
+	public void initSpotify() throws ParseException, SpotifyWebApiException, IOException {
 		this.spotifyApi = new SpotifyApi.Builder()
 				  .setClientId(Main.config.getConfig().getString("spotify.client.id"))
 				  .setClientSecret(Main.config.getConfig().getString("spotify.client.secret"))
@@ -81,8 +81,8 @@ public class LinkConverter {
 		
 		return null;
 	}
-	
-	private String getArtistAndName(String trackID) throws ParseException, SpotifyWebApiException, IOException {
+
+	public String getArtistAndName(String trackID) throws ParseException, SpotifyWebApiException, IOException {
 		String artistNameAndTrackName = "";
 		GetTrackRequest trackRequest = spotifyApi.getTrack(trackID).build();
 		
@@ -97,7 +97,7 @@ public class LinkConverter {
 		return artistNameAndTrackName;
 	}
 	
-	public static LinkConverter getInstance() {
+	public static SpotifyAPIHandler getInstance() {
 		return instance;
 	}
 }

@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
 import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.main.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -129,7 +130,7 @@ public class TrackScheduler extends AudioEventAdapter {
 			em.setDescription("Next Song!\nSong: " + track.getInfo().title);
 			em.setFooter(channel.getGuild().getName(), channel.getGuild().getIconUrl());
 
-			channel.sendMessage(em.build()).queue();
+			CommandManager.sendMessage(em, 5, channel);
 		}
 
 		player.startTrack(track, false);
@@ -153,7 +154,7 @@ public class TrackScheduler extends AudioEventAdapter {
 			em.setDescription("Next Song!\nSong: " + track.getInfo().title);
 			em.setFooter(channel.getGuild().getName(), channel.getGuild().getIconUrl());
 
-			channel.sendMessage(em.build()).queue();
+			CommandManager.sendMessage(em, 5, channel);
 		}
 
 		player.startTrack(track, false);
@@ -176,7 +177,7 @@ public class TrackScheduler extends AudioEventAdapter {
 						+ endReason.name().toString());
 				em.setFooter(thechannel.getGuild().getName(), thechannel.getGuild().getIconUrl());
 
-				thechannel.sendMessage(em.build()).queue();
+				CommandManager.sendMessage(em, 5, thechannel);
 
 				nextTrack(thechannel);
 
@@ -195,7 +196,7 @@ public class TrackScheduler extends AudioEventAdapter {
 						+ endReason.name().toString());
 				em.setFooter(thechannel.getGuild().getName(), thechannel.getGuild().getIconUrl());
 
-				thechannel.sendMessage(em.build()).queue();
+				CommandManager.sendMessage(em, 5, thechannel);
 			}
 			nextTrack(thechannel);
 		} else {
@@ -213,7 +214,7 @@ public class TrackScheduler extends AudioEventAdapter {
 							+ endReason.name().toString());
 					em.setFooter(thechannel.getGuild().getName(), thechannel.getGuild().getIconUrl());
 
-					thechannel.sendMessage(em.build()).queue();
+					CommandManager.sendMessage(em, 5, thechannel);
 
 				}
 

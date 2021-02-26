@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 import javax.security.auth.login.LoginException;
 import java.awt.*;
@@ -16,7 +17,7 @@ public class BotUtil {
         BotInfo.version = version;
         BotInfo.TOKEN = FileUtil.getToken();
         BotInfo.state = BotState.INIT;
-        BotInfo.botInstance = JDABuilder.createDefault(BotInfo.TOKEN).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).build();
+        BotInfo.botInstance = JDABuilder.createDefault(BotInfo.TOKEN).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).disableIntents(GatewayIntent.DIRECT_MESSAGES).disableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS).disableIntents(GatewayIntent.DIRECT_MESSAGE_TYPING).setMemberCachePolicy(MemberCachePolicy.ALL).build();
     }
 
     public static void setActivity(String message, Activity.ActivityType at) {

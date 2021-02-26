@@ -11,7 +11,8 @@ import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.music.MusikWorker;
 import de.presti.ree6.utils.ArrayUtil;
-import de.presti.ree6.utils.LinkConverter;
+import de.presti.ree6.utils.SpotifyAPIHandler;
+import de.presti.ree6.utils.YouTubeAPIHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -26,11 +27,8 @@ import java.util.List;
 
 public class Play extends Command {
 
-    YouTube yt;
-
     public Play() {
         super("play", "Play a song!", Category.MUSIC);
-        createYouTube();
     }
 
     @Override
@@ -59,7 +57,7 @@ public class Play extends Command {
 
                 if (args[0].contains("spotify")) {
                     try {
-                        spotiftrackinfos = LinkConverter.getInstance().convert(args[0]);
+                        spotiftrackinfos = new SpotifyAPIHandler().instance.convert(args[0]);
                         isspotify = true;
                     } catch (Exception ex) {
 
@@ -70,7 +68,7 @@ public class Play extends Command {
                     MusikWorker.loadAndPlay(m, args[0]);
                 } else {
                     for(String search : spotiftrackinfos) {
-                        String ytresult = searchYoutube(search);
+                        String ytresult = new YouTubeAPIHandler().instance.searchYoutube(search);
 
                         if(ytresult == null) {
                             sendMessage("Coudln't find an results for " + search + "!", 5, m);
@@ -86,7 +84,7 @@ public class Play extends Command {
                     search += i + " ";
                 }
 
-                String ytresult = searchYoutube(search);
+                String ytresult = new YouTubeAPIHandler().instance.searchYoutube(search);
 
                 if(ytresult == null) {
                     sendMessage("Coudln't find an results for " + search + "!", 5, m);
@@ -96,54 +94,6 @@ public class Play extends Command {
             }
         }
         messageSelf.delete().queue();
-    }
-
-    private String searchYoutube (String search) {
-        if(yt == null) {
-            createYouTube();
-        }
-        try {
-            List<SearchResult> results = yt.search()
-                    .list(Collections.singletonList("id,snippet"))
-                    .setQ(search)
-                    .setMaxResults(4L)
-                    .setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)")
-                    .setKey(Main.config.getConfig().getString("youtube.api.key"))
-                    .execute()
-                    .getItems();
-
-            if(!results.isEmpty()) {
-                String videoId = results.get(0).getId().getVideoId();
-
-
-                if(videoId == null) {
-                    createYouTube();
-                    return searchYoutube(search);
-                } else {
-                    return "https://www.youtube.com/watch?v=" + videoId;
-                }
-            }
-
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public void createYouTube() {
-        try {
-            yt = new YouTube.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    JacksonFactory.getDefaultInstance(),
-                    null)
-                    .setApplicationName("Ree6")
-                    .build();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private boolean isUrl(String input) {

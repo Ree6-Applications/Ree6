@@ -1,25 +1,14 @@
 package de.presti.ree6.commands.impl.fun;
 
-import de.presti.ree6.api.JSONApi;
-import de.presti.ree6.api.Requests;
-import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
-import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.ExternalAPIs;
-import net.dv8tion.jda.api.EmbedBuilder;
+import de.presti.ree6.utils.Neko4JsAPI;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
-
-import java.io.File;
-import java.time.format.DateTimeFormatter;
-import java.util.Random;
 
 public class Slap extends Command {
 
@@ -39,7 +28,7 @@ public class Slap extends Command {
 
                 sendMessage(sender.getAsMention() + " slapped " + target.getAsMention(), m);
 
-                ImageProvider ip = ExternalAPIs.imageAPI.getImageProvider();
+                ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
                 Image im = ip.getRandomImage("slap").execute();
 

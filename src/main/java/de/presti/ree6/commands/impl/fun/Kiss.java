@@ -2,7 +2,7 @@ package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
-import de.presti.ree6.utils.ExternalAPIs;
+import de.presti.ree6.utils.Neko4JsAPI;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -28,7 +28,7 @@ public class Kiss extends Command {
 
                 sendMessage(sender.getAsMention() + " kissed " + target.getAsMention(), m);
 
-                ImageProvider ip = ExternalAPIs.imageAPI.getImageProvider();
+                ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
                 Image im = ip.getRandomImage("kiss").execute();
 

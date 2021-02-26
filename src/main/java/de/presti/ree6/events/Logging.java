@@ -83,7 +83,7 @@ public class Logging extends ListenerAdapter {
 
         InviteContainer inv = InviteContainerManager.getRightInvite(event.getGuild());
 
-        if(inv != null) {
+        if (inv != null) {
             inv.setUses(inv.getUses() + 1);
             wm2.append(event.getUser().getAsMention() + " **has been invited by** <@" + inv.getCreatorid() + "> (Code: " + inv.getCode() + ", Uses: " + inv.getUses() + ")");
         } else {
@@ -111,14 +111,8 @@ public class Logging extends ListenerAdapter {
 
         String finalString = "";
 
-        int sex = 0;
         for (Role r : event.getRoles()) {
-            if(event.getRoles().size() - 1 == sex) {
-                finalString += ":white_check_mark: " + r.getName();
-            } else {
-                finalString += ":white_check_mark: " + r.getName() + "\n";
-            }
-            sex++;
+            finalString += ":white_check_mark: " + r.getName() + "\n";
         }
 
         we.setDescription(":writing_hand: " + event.getMember().getUser().getAsMention() + " **has been updated.**");
@@ -128,6 +122,7 @@ public class Logging extends ListenerAdapter {
         String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
         Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
     }
+
 
     @Override
     public void onGuildMessageUpdate(@Nonnull GuildMessageUpdateEvent event) {
@@ -159,6 +154,8 @@ public class Logging extends ListenerAdapter {
 
     }
 
+
+
     @Override
     public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
 
@@ -177,15 +174,8 @@ public class Logging extends ListenerAdapter {
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
 
         String finalString = "";
-
-        int sex = 0;
         for (Role r : event.getRoles()) {
-            if(event.getRoles().size() - 1 == sex) {
-                finalString += ":no_entry: " + r.getName();
-            } else {
-                finalString += ":no_entry: " + r.getName() + "\n";
-            }
-            sex++;
+            finalString += ":no_entry: " + r.getName() + "\n";
         }
 
         we.setDescription(":writing_hand: " + event.getMember().getUser().getAsMention() + " **has been updated.**");
@@ -266,7 +256,7 @@ public class Logging extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        if(gay) {
+        if (gay) {
             String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
             Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
         }
@@ -320,7 +310,7 @@ public class Logging extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        if(gay) {
+        if (gay) {
             String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
             Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
         }
@@ -545,8 +535,8 @@ public class Logging extends ListenerAdapter {
 
         boolean b = false;
         for (Permission r : event.getNewPermissions()) {
-            if(!event.getOldPermissions().contains(r)) {
-                if(b) {
+            if (!event.getOldPermissions().contains(r)) {
+                if (b) {
                     finalString += "\n:white_check_mark: " + r.getName();
                 } else {
                     finalString += ":white_check_mark: " + r.getName();
@@ -556,8 +546,8 @@ public class Logging extends ListenerAdapter {
         }
 
         for (Permission r : event.getOldPermissions()) {
-            if(!event.getNewPermissions().contains(r)) {
-                if(b) {
+            if (!event.getNewPermissions().contains(r)) {
+                if (b) {
                     finalString += "\n:no_entry: " + r.getName();
                 } else {
                     finalString += ":no_entry: " + r.getName();
