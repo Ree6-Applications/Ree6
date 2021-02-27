@@ -57,7 +57,7 @@ public class Play extends Command {
 
                 if (args[0].contains("spotify")) {
                     try {
-                        spotiftrackinfos = new SpotifyAPIHandler().instance.convert(args[0]);
+                        spotiftrackinfos = new SpotifyAPIHandler().convert(args[0]);
                         isspotify = true;
                     } catch (Exception ex) {
 
@@ -67,14 +67,32 @@ public class Play extends Command {
                 if (!isspotify) {
                     MusikWorker.loadAndPlay(m, args[0]);
                 } else {
-                    for(String search : spotiftrackinfos) {
-                        String ytresult = new YouTubeAPIHandler().instance.searchYoutube(search);
+                    ArrayList<String> loadfailed = new ArrayList<>();
+                    boolean b = false;
+                    for (String search : spotiftrackinfos) {
+                        String ytresult = new YouTubeAPIHandler().searchYoutube(search);
 
-                        if(ytresult == null) {
-                            sendMessage("Coudln't find an results for " + search + "!", 5, m);
+                        if (ytresult == null) {
+                            loadfailed.add(search);
                         } else {
-                            MusikWorker.loadAndPlay(m, ytresult);
+                            if (!b) {
+                                MusikWorker.loadAndPlay(m, ytresult);
+                                b = true;
+                            } else {
+                                MusikWorker.loadAndPlaySilence(m, ytresult);
+                            }
                         }
+                    }
+
+                    if (!loadfailed.isEmpty()) {
+                        EmbedBuilder em = new EmbedBuilder();
+                        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                        em.setTitle("Music Player!");
+                        em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                        em.setColor(Color.GREEN);
+                        em.setDescription("We couldnt find " + loadfailed.size() + " Songs!");
+                        em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
+                        sendMessage(em, 5, m);
                     }
                 }
             } else {
@@ -84,10 +102,17 @@ public class Play extends Command {
                     search += i + " ";
                 }
 
-                String ytresult = new YouTubeAPIHandler().instance.searchYoutube(search);
+                String ytresult = new YouTubeAPIHandler().searchYoutube(search);
 
                 if(ytresult == null) {
-                    sendMessage("Coudln't find an results for " + search + "!", 5, m);
+                    EmbedBuilder em = new EmbedBuilder();
+                    em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                    em.setTitle("Music Player!");
+                    em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                    em.setColor(Color.GREEN);
+                    em.setDescription("A Song with the Name " + search + " couldnt be found!");
+                    em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
+                    sendMessage(em, 5, m);
                 } else {
                     MusikWorker.loadAndPlay(m, ytresult);
                 }

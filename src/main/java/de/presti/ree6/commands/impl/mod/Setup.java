@@ -93,7 +93,7 @@ public class Setup extends Command {
                     if (args.length == 1) {
                         sendMessage("No Message given!", 5, m);
                         sendMessage("Use ree!join Your Join Message", 5, m);
-                        sendMessage("Usable Syntaxes: %user_name%, %guild_name%", 5, m);
+                        sendMessage("Usable Syntaxes: %user_name%, %guild_name%, %user_mention%", 5, m);
                     } else {
                         String message = "";
 
@@ -113,11 +113,11 @@ public class Setup extends Command {
                     }
                 } else {
                     sendMessage("Couldnt find " + args[0] + "!", 5, m);
-                    sendMessage("Use ree!setup log/welcome/news/mute/autorole", 5, m);
+                    sendMessage("Use ree!setup log/welcome/news/mute/autorole/join", 5, m);
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m);
-                sendMessage("Use ree!setup log/welcome/news/mute/autorole #Log/#Welcome/#Ree6-News/@Mute/@Autorole", 5, m);
+                sendMessage("Use ree!setup log/welcome/news/mute/autorole/join #Log/#Welcome/#Ree6-News/@Mute/@Autorole/Your Custom Join Message", 5, m);
             }
         } else {
             sendMessage("You dont have the Permission for this Command!", 5, m);

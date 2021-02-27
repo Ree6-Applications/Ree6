@@ -41,12 +41,10 @@ public class Main {
 
         sqlWorker = new SQLWorker();
 
-        new SpotifyAPIHandler();
         cm = new CommandManager();
 
-
         try {
-            BotUtil.createBot(BotVersion.DEV);
+            BotUtil.createBot(BotVersion.PUBLIC);
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {

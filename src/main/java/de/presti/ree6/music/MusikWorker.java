@@ -49,6 +49,71 @@ public class MusikWorker {
         return musicManager;
     }
 
+
+    public static void loadAndPlaySilence(TextChannel channel, String trackUrl) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+
+        musicManager.scheduler.thechannel = channel;
+
+        playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
+            @Override
+            public void trackLoaded(AudioTrack track) {
+                play(channel.getGuild(), musicManager, track);
+            }
+
+            @Override
+            public void playlistLoaded(AudioPlaylist playlist) {
+
+                AudioTrack firstTrack = playlist.getSelectedTrack();
+
+                if (firstTrack == null) {
+                    firstTrack = playlist.getTracks().get(0);
+                }
+
+                play(channel.getGuild(), musicManager, firstTrack);
+
+                if (playlist.getTracks().size() > 1) {
+                    for (AudioTrack tracks : playlist.getTracks()) {
+                        if (tracks != firstTrack) {
+                            musicManager.scheduler.queue(tracks);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void noMatches() {
+
+                EmbedBuilder em = new EmbedBuilder();
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setTitle("Music Player!");
+                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setColor(Color.GREEN);
+                em.setDescription("A Song with the URL " + trackUrl + " couldnt be found!");
+                em.setFooter(channel.getGuild().getName(), channel.getGuild().getIconUrl());
+
+                CommandManager.sendMessage(em, 5, channel);
+
+
+            }
+
+            @Override
+            public void loadFailed(FriendlyException exception) {
+
+                EmbedBuilder em = new EmbedBuilder();
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setTitle("Music Player!");
+                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setColor(Color.GREEN);
+                em.setDescription("Error while playing: " + exception.getMessage());
+                em.setFooter(channel.getGuild().getName(), channel.getGuild().getIconUrl());
+
+                CommandManager.sendMessage(em, 5, channel);
+
+            }
+        });
+    }
+
     public static void loadAndPlay(final TextChannel channel, final String trackUrl) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
@@ -206,5 +271,4 @@ public class MusikWorker {
         }
         return false;
     }
-
 }
