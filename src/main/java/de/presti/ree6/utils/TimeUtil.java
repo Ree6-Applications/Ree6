@@ -52,7 +52,7 @@ public class TimeUtil {
         }
         while (m >= 60) {
             m -= 60;
-            ++s;
+            ++h;
         }
         while (h >= 24) {
             h -= 24;
@@ -70,11 +70,10 @@ public class TimeUtil {
         if(m != 0) {
             end += m + "Minutes" + ((s != 0 ? ", " : ""));
         }
+
         if(s != 0) {
             end += s + "Seconds";
         }
-
-        end = d + "Days, " + h + "Hours, " + m + "Minutes, " + s + "Seconds";
 
         return end;
     }
