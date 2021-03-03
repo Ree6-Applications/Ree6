@@ -6,6 +6,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.music.MusikWorker;
+import de.presti.ree6.utils.TimeUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -37,8 +38,13 @@ public class Stats extends Command {
             i += guild.getMemberCount();
         }
 
+        em.addField("**Server Stats:**", "", true);
         em.addField("**Guilds**", BotInfo.botInstance.getGuilds().size() + "", true);
         em.addField("**Users**", i + "", true);
+
+        em.addField("**Bot Stats:**", "", true);
+        em.addField("**Version**", BotInfo.build + "-" + BotInfo.version.name().toUpperCase(), true);
+        em.addField("**Uptime**", TimeUtil.getTime(BotInfo.starttime), true);
 
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
 

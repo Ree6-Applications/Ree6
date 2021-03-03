@@ -19,7 +19,7 @@ public class Help extends Command {
         EmbedBuilder em = new EmbedBuilder();
 
         em.setColor(BotUtil.randomEmbedColor());
-        em.setTitle("Command Index", BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setTitle("Command Index");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
 
 

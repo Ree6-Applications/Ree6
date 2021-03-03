@@ -10,7 +10,6 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.TimeUtil;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
@@ -47,10 +46,6 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-
 public class Logging extends ListenerAdapter {
 
     @Override
@@ -204,7 +199,7 @@ public class Logging extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
 
-        if (event.getUser().getName().equals(event.getNewNickname())) {
+        if (event.getNewNickname() == null) {
             we.setDescription("The Nickname of " + event.getUser().getAsMention() + " has been reseted.\n**Old Nickname:**\n" + event.getOldNickname());
         } else {
             we.setDescription("The Nickname of " + event.getUser().getAsMention() + " has been changed.\n**New Nickname:**\n" + event.getNewNickname() + "\n**Old Nickname:**\n" + (event.getOldNickname() != null ? event.getOldNickname() : event.getUser().getName()));

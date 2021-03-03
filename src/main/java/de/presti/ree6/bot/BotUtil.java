@@ -13,10 +13,11 @@ import java.util.Random;
 
 public class BotUtil {
 
-    public static void createBot(BotVersion version) throws LoginException {
+    public static void createBot(BotVersion version, String build) throws LoginException {
         BotInfo.version = version;
         BotInfo.TOKEN = FileUtil.getToken();
         BotInfo.state = BotState.INIT;
+        BotInfo.build = build;
         BotInfo.botInstance = JDABuilder.createDefault(BotInfo.TOKEN).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).disableIntents(GatewayIntent.DIRECT_MESSAGES).disableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS).disableIntents(GatewayIntent.DIRECT_MESSAGE_TYPING).setMemberCachePolicy(MemberCachePolicy.ALL).build();
     }
 

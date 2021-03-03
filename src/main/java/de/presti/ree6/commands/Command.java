@@ -29,7 +29,7 @@ public abstract class Command {
         this.alias = alias;
     }
 
-    public abstract void onPerform(Member sender, Message messageSelf,String[] args, TextChannel m);
+    public abstract void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m);
 
     public String[] getAlias() {
         return alias;

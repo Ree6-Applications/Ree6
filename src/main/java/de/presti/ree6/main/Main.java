@@ -44,13 +44,14 @@ public class Main {
         cm = new CommandManager();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC);
+            BotUtil.createBot(BotVersion.PUBLIC, "1.2.4");
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
             System.out.println("Error while init: " + ex.getMessage());
         }
         insance.addHooks();
+        BotInfo.starttime = System.currentTimeMillis();
     }
 
     private void addEvents() {
