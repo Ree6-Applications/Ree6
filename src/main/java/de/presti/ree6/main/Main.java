@@ -44,7 +44,7 @@ public class Main {
         cm = new CommandManager();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.2.4");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.2.5");
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
@@ -77,11 +77,13 @@ public class Main {
         BotUtil.shutdown();
     }
 
+    int randomint = 0;
+
     public void createCheckerThread() {
         checker = new Thread(() -> {
-            while(BotInfo.state != BotState.STOPPED) {
+            while (BotInfo.state != BotState.STOPPED) {
 
-                if(!lastday.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
+                if (!lastday.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 
                     ArrayUtil.messageIDwithMessage.clear();
                     ArrayUtil.messageIDwithUser.clear();
@@ -94,7 +96,7 @@ public class Main {
 
                     int i = 0;
 
-                    for(Guild guild : BotInfo.botInstance.getGuilds()) {
+                    for (Guild guild : BotInfo.botInstance.getGuilds()) {
                         i += guild.getMemberCount();
                     }
 
@@ -104,9 +106,18 @@ public class Main {
                 }
 
 
+                if (randomint >= 6) {
+                    sqlConnector.close();
+                    sqlConnector.connect();
+                    randomint = 0;
+                } else {
+                    randomint++;
+                }
+
                 try {
-                    Thread.sleep( (5 * (60000L)));
-                } catch (InterruptedException e) {}
+                    Thread.sleep((5 * (60000L)));
+                } catch (InterruptedException e) {
+                }
             }
         });
         checker.start();

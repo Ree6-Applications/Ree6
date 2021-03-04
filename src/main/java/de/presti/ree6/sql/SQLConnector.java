@@ -4,6 +4,7 @@ import de.presti.ree6.main.Main;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class SQLConnector {
@@ -66,41 +67,57 @@ public class SQLConnector {
 	}
 
 	public void createTables() {
-		try {
-			java.sql.PreparedStatement st = null;
-			st = con.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS LogWebhooks (GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-			st.executeUpdate();
-			st = con.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS WelcomeWebhooks (GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-			st.executeUpdate();
-			st = con.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS NewsWebhooks (GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-			st.executeUpdate();
-			st = con.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS JoinMessage (GID VARCHAR(40), MSG VARCHAR(250))");
-			st.executeUpdate();
-			st = con.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS MuteRoles (GID VARCHAR(40), RID VARCHAR(40))");
-			st.executeUpdate();
-			st = con.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS ChatProtector (GID VARCHAR(40), WORD VARCHAR(40))");
-			st.executeUpdate();
-			st = con.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS AutoRoles (GID VARCHAR(40), RID VARCHAR(40))");
-			st.executeUpdate();
-			st = con.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS Invites (GID VARCHAR(40), UID VARCHAR(40), USES VARCHAR(40), CODE VARCHAR(40))");
-			st.executeUpdate();
-			st = con.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS Level (GID VARCHAR(40), UID VARCHAR(40), XP VARCHAR(500))");
-			st.executeUpdate();
 
-			st.close();
-		} catch (SQLException e) {
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS LogWebhooks (GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
 
-			e.printStackTrace();
-		}
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS WelcomeWebhooks (GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
+
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS NewsWebhooks (GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
+
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS RainbowWebhooks (GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
+
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS JoinMessage (GID VARCHAR(40), MSG VARCHAR(250))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
+
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS MuteRoles (GID VARCHAR(40), RID VARCHAR(40))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
+
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS ChatProtector (GID VARCHAR(40), WORD VARCHAR(40))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
+
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS AutoRoles (GID VARCHAR(40), RID VARCHAR(40))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
+
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS Invites (GID VARCHAR(40), UID VARCHAR(40), USES VARCHAR(40), CODE VARCHAR(40))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
+
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS Level (GID VARCHAR(40), UID VARCHAR(40), XP VARCHAR(500))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
+
 	}
 
 	public void query(String sql) {

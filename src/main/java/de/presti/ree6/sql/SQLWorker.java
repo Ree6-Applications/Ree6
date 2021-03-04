@@ -658,4 +658,66 @@ public class SQLWorker {
             }
         }
     }
+
+    //Rainbow
+
+    public String[] getRainbowHooks(String gid) {
+        if (hasRainbowSetuped(gid)) {
+            try {
+                PreparedStatement st;
+                ResultSet rs = null;
+
+                try {
+                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
+                    rs = st.executeQuery("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                if (rs.next()) {
+                    return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return new String[]{"Error", "Not setuped!"};
+    }
+
+    public void setRainbowWebhook(String gid, String cid, String token) {
+        if (hasRainbowSetuped(gid)) {
+            String[] d = getNewswebhook(gid);
+
+            BotInfo.botInstance.getGuildById(gid).retrieveWebhooks().queue(webhooks -> {
+                for (Webhook wb : webhooks) {
+                    if (wb.getId().equalsIgnoreCase(d[0]) && wb.getToken().equalsIgnoreCase(d[1])) {
+                        wb.delete().queue();
+                    }
+                }
+            });
+            Main.insance.sqlConnector.query("DELETE FROM RainbowWebhooks WHERE GID='" + gid + "'");
+        }
+        Main.insance.sqlConnector.query("INSERT INTO RainbowWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+    }
+
+    public boolean hasRainbowSetuped(String gid) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
+            } catch (Exception ignored) {
+            }
+
+            if (rs.next()) {
+                return true;
+            }
+
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
 }

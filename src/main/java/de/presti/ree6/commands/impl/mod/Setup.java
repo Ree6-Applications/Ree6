@@ -97,12 +97,12 @@ public class Setup extends Command {
                     } else {
                         String message = "";
 
-                        for(int i = 1; i < args.length; i++) {
+                        for (int i = 1; i < args.length; i++) {
                             message += args[i];
                             message += " ";
                         }
 
-                        if(message.length() >= 250) {
+                        if (message.length() >= 250) {
                             sendMessage("Your Welcome Message cant be longer than 250", 5, m);
                             return;
                         }
@@ -111,13 +111,23 @@ public class Setup extends Command {
 
                         sendMessage("Join Message has been set!", 5, m);
                     }
+                } else if (args[0].equalsIgnoreCase("r6")) {
+                    if (messageSelf.getMentionedChannels().isEmpty()) {
+                        sendMessage("No Channel mentioned!", 5, m);
+                        sendMessage("Use ree!setup r6 #R6-Mate-Search-Channel", 5, m);
+                    } else {
+                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-News").queue(w -> {
+                            Main.sqlWorker.setNewsWebhook(sender.getGuild().getId(), w.getId(), w.getToken());
+                        });
+                        sendMessage("R6 Mate Search channel has been set!", 5, m);
+                    }
                 } else {
                     sendMessage("Couldnt find " + args[0] + "!", 5, m);
-                    sendMessage("Use ree!setup log/welcome/news/mute/autorole/join", 5, m);
+                    sendMessage("Use ree!setup log/welcome/news/r6/mute/autorole/join", 5, m);
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m);
-                sendMessage("Use ree!setup log/welcome/news/mute/autorole/join #Log/#Welcome/#Ree6-News/@Mute/@Autorole/Your Custom Join Message", 5, m);
+                sendMessage("Use ree!setup log/welcome/news/r6/mute/autorole/join #Log/#Welcome/#Ree6-News/#R6-Mate-Search/@Mute/@Autorole/Your Custom Join Message", 5, m);
             }
         } else {
             sendMessage("You dont have the Permission for this Command!", 5, m);

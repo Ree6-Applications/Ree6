@@ -14,6 +14,7 @@ public class ArrayUtil {
     public static HashMap<String, String> messageIDwithMessage = new HashMap<>();
     public static HashMap<String, User> messageIDwithUser = new HashMap<>();
     public static HashMap<Guild, Member> botjoin = new HashMap<>();
+    public static ArrayList<String> commandcooldown = new ArrayList<>();
 
     public static ArrayList<Member> timeout = new ArrayList<>();
 

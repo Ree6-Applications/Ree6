@@ -1,11 +1,13 @@
 package de.presti.ree6.commands;
 
+import de.presti.ree6.commands.impl.community.Rainbow;
 import de.presti.ree6.commands.impl.fun.*;
 import de.presti.ree6.commands.impl.info.*;
 import de.presti.ree6.commands.impl.level.Leaderboards;
 import de.presti.ree6.commands.impl.level.Level;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
+import de.presti.ree6.utils.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -31,6 +33,7 @@ public class CommandManager {
         addCommand(new Stats());
         addCommand(new Invite());
         addCommand(new Server());
+        addCommand(new Credits());
 
         //Moderate
         addCommand(new Clear());
@@ -66,10 +69,14 @@ public class CommandManager {
         addCommand(new HornyJail());
         addCommand(new RandomWaifu());
         addCommand(new Kiss());
+        addCommand(new Cringe());
 
         //Level
         addCommand(new Level());
         addCommand(new Leaderboards());
+
+        //Community
+        addCommand(new Rainbow());
 
     }
 
@@ -83,7 +90,12 @@ public class CommandManager {
 
         if (!msg.toLowerCase().startsWith(prefix))
             return false;
-        
+
+        if(ArrayUtil.commandcooldown.contains(sender.getUser().getId())) {
+            sendMessage("You are on Cooldown!", 5, m);
+            return false;
+        }
+
         msg = msg.substring(prefix.length());
 
         String[] oldargs = msg.split(" ");
@@ -92,9 +104,29 @@ public class CommandManager {
             if (cmd.getCmd().equalsIgnoreCase(oldargs[0]) || cmd.isAlias(oldargs[0])) {
                 String[] args = Arrays.copyOfRange(oldargs, 1, oldargs.length);
                 cmd.onPerform(sender, messageSelf, args, m);
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                    }
+
+                    if (ArrayUtil.commandcooldown.contains(sender.getUser().getId())) {
+                        ArrayUtil.commandcooldown.remove(sender.getUser().getId());
+                    }
+
+                    Thread.currentThread().interrupt();
+
+                }).start();
+
+                if (!ArrayUtil.commandcooldown.contains(sender.getUser().getId())) {
+                    ArrayUtil.commandcooldown.add(sender.getUser().getId());
+                }
                 return true;
             }
         }
+
+        sendMessage("The Command " + oldargs[0] + " couldn't be found!", 5, m);
+
         return false;
     }
 
