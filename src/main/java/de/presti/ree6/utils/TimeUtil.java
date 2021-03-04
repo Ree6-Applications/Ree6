@@ -60,19 +60,19 @@ public class TimeUtil {
         }
 
         if(d != 0) {
-            end += d + "Days" + (((h != 0 || m != 0 || s != 0) ? ", " : ""));
+            end += d + " Days" + (((h != 0 || m != 0 || s != 0) ? ", " : ""));
         }
 
         if(h != 0) {
-            end += h + "Hours" + (((m != 0 || s != 0) ? ", " : ""));
+            end += h + " Hours" + (((m != 0 || s != 0) ? ", " : ""));
         }
 
         if(m != 0) {
-            end += m + "Minutes" + ((s != 0 ? ", " : ""));
+            end += m + " Minutes" + ((s != 0 ? ", " : ""));
         }
 
         if(s != 0) {
-            end += s + "Seconds";
+            end += s + " Seconds";
         }
 
         return end;

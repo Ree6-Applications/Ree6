@@ -117,7 +117,7 @@ public class Setup extends Command {
                         sendMessage("Use ree!setup r6 #R6-Mate-Search-Channel", 5, m);
                     } else {
                         messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-News").queue(w -> {
-                            Main.sqlWorker.setNewsWebhook(sender.getGuild().getId(), w.getId(), w.getToken());
+                            Main.sqlWorker.setRainbowWebhook(sender.getGuild().getId(), w.getId(), w.getToken());
                         });
                         sendMessage("R6 Mate Search channel has been set!", 5, m);
                     }
