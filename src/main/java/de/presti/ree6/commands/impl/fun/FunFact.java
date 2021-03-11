@@ -9,10 +9,10 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.json.JSONObject;
 
-public class RandomFact extends Command {
+public class FunFact extends Command {
 
-    public RandomFact() {
-        super("randomfact", "Just some random Facts!", Category.FUN);
+    public FunFact() {
+        super("funfact", "Just some random Facts!", Category.FUN);
     }
 
     @Override

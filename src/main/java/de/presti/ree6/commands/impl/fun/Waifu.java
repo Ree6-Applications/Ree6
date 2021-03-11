@@ -13,10 +13,10 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class RandomWaifu extends Command {
+public class Waifu extends Command {
 
-    public RandomWaifu() {
-        super("randomwaifu", "Gives you a Random Waifu!", Category.FUN);
+    public Waifu() {
+        super("waifu", "Gives you a Random Waifu!", Category.FUN);
     }
 
     @Override

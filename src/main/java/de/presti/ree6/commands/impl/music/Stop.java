@@ -22,12 +22,15 @@ public class Stop extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
 
         EmbedBuilder em = new EmbedBuilder();
-        
-        MusikWorker.getGuildAudioPlayer(m.getGuild()).player.stopTrack();
+
+        if(MusikWorker.getGuildAudioPlayer(m.getGuild()).player.getPlayingTrack() != null) {
+            MusikWorker.getGuildAudioPlayer(m.getGuild()).player.stopTrack();
+        }
 
         MusikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.clearqueue();
 
         MusikWorker.disconnect(m.getGuild());
+
 
         em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
                 BotInfo.botInstance.getSelfUser().getAvatarUrl());

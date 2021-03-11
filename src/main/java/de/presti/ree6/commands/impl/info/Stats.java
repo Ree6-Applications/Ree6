@@ -14,6 +14,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Stats extends Command {
 
@@ -23,6 +25,10 @@ public class Stats extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+
+        long start = System.currentTimeMillis();
+
+        messageSelf.delete().queue();
 
         EmbedBuilder em = new EmbedBuilder();
 
@@ -45,6 +51,10 @@ public class Stats extends Command {
         em.addField("**Bot Stats:**", "", true);
         em.addField("**Version**", BotInfo.build + "-" + BotInfo.version.name().toUpperCase(), true);
         em.addField("**Uptime**", TimeUtil.getTime(BotInfo.starttime), true);
+
+        em.addField("**Network Stats:**", "", true);
+        em.addField("**Response Time**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);
+        em.addField("**System Date**" , new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
 
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
 

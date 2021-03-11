@@ -7,7 +7,7 @@ import de.presti.ree6.commands.impl.level.Leaderboards;
 import de.presti.ree6.commands.impl.level.Level;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
-import de.presti.ree6.commands.impl.nsfw.NSFWSearch;
+import de.presti.ree6.commands.impl.nsfw.NSFW;
 import de.presti.ree6.utils.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -60,7 +60,7 @@ public class CommandManager {
 
         //Fun
         addCommand(new RandomAnswer());
-        addCommand(new RandomFact());
+        addCommand(new FunFact());
         addCommand(new CatImage());
         addCommand(new DogImage());
         addCommand(new MemeImage());
@@ -68,7 +68,7 @@ public class CommandManager {
         addCommand(new Slap());
         addCommand(new Twitter());
         addCommand(new HornyJail());
-        addCommand(new RandomWaifu());
+        addCommand(new Waifu());
         addCommand(new Kiss());
         addCommand(new Cringe());
 
@@ -80,7 +80,7 @@ public class CommandManager {
         addCommand(new Rainbow());
 
         //NSFW
-        addCommand(new NSFWSearch());
+        addCommand(new NSFW());
 
     }
 

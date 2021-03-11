@@ -9,11 +9,11 @@ import net.dv8tion.jda.api.entities.TextChannel;
 public class Credits extends Command {
 
     public Credits() {
-        super("credits", "Shows some awesome People", Category.INFO);
+        super("credits", "See the Team behind Ree6!", Category.INFO);
     }
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
-        sendMessage("Here are some AWESOME people!\n<https://www.ree6.tk/secret.html>", 5, m);
+        sendMessage("Here are some AWESOME people!\n<https://www.ree6.tk/team.html>", 5, m);
     }
 }

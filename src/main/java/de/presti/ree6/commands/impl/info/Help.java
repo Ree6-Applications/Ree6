@@ -16,28 +16,65 @@ public class Help extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setColor(BotUtil.randomEmbedColor());
-        em.setTitle("Command Index");
-        em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        if(args.length != 1) {
+            em.setColor(BotUtil.randomEmbedColor());
+            em.setTitle("Command Index");
+            em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
 
+            for(Category cat : Category.values()) {
+                em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**", "ree!help " + cat.name().toUpperCase(), true);
+            }
 
-        for (Category cat : Category.values()) {
-            boolean d = false;
-            String end = "";
-            for (Command cmds : Main.cm.getCommands()) {
-                if (cmds.getCategory() == cat) {
-                    end += (d ? "\n" : "") + "ree!" + cmds.getCmd() + " - " + cmds.getDesc();
+            sendMessage(em, m);
+        } else if (args.length == 1) {
+            em.setColor(BotUtil.randomEmbedColor());
+            em.setTitle("Command Index");
+            em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
 
-                    if (!d) {
-                        d = true;
+            if (isValid(args[0])) {
+                
+                String end = "";
+                
+                Category cat = getCategoryFromString(args[0]);
+                for(Command cmd : Main.cm.getCommands()) {
+                    if(cmd.getCategory() == cat) {
+                        end += "``" + cmd.getCmd() + "``\n" + cmd.getDesc() + "\n\n";
                     }
                 }
+
+                em.setDescription(end);
+            } else {
+                for(Category cat : Category.values()) {
+                    em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**", "ree!help " + cat.name().toUpperCase(), true);
+                }
             }
-            em.addField("**" + (cat.name().charAt(0) + cat.name().substring(1).toLowerCase()) + "**", end, true);
+
+            sendMessage(em, m);
+
+        }
+    }
+
+    private boolean isValid(String arg) {
+        for(Category cat : Category.values()) {
+            if(cat.name().toLowerCase().equalsIgnoreCase(arg)) {
+                return true;
+            }
         }
 
-        m.sendMessage(em.build()).queue();
+        return false;
     }
+
+    private Category getCategoryFromString(String arg) {
+        for(Category cat : Category.values()) {
+            if(cat.name().toLowerCase().equalsIgnoreCase(arg)) {
+                return cat;
+            }
+        }
+
+        return null;
+    }
+
 }

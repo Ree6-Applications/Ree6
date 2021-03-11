@@ -23,6 +23,11 @@ public class Disconnect extends Command {
         EmbedBuilder em = new EmbedBuilder();
 
         if (MusikWorker.isConnected(m.getGuild())) {
+
+            MusikWorker.getGuildAudioPlayer(m.getGuild()).player.stopTrack();
+
+            MusikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.clearqueue();
+
             MusikWorker.disconnect(m.getGuild());
             em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
                     BotInfo.botInstance.getSelfUser().getAvatarUrl());

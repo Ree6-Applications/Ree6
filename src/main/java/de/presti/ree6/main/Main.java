@@ -36,14 +36,14 @@ public class Main {
 
         config.init();
 
-        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
+       /* sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
 
-        sqlWorker = new SQLWorker();
+        sqlWorker = new SQLWorker();*/
 
         cm = new CommandManager();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.2.6");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.2.7");
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
@@ -69,11 +69,17 @@ public class Main {
     }
 
     private void shutdown() throws SQLException {
-        System.out.println("Good Bye!");
+        System.out.println("Shutdown init. !");
         sqlWorker.saveAllInvites();
+        System.out.println("Uploaded Invitecache to Database!");
         sqlWorker.saveAllChatProtectors();
+        System.out.println("Uploaded ChatProtector to Database!");
         sqlConnector.close();
+        System.out.println("Closed Database Connection");
         BotUtil.shutdown();
+        System.out.println("JDA Instance has been shutdowned!");
+
+        System.out.println("Good bye!");
     }
 
     int randomint = 0;
