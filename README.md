@@ -21,7 +21,7 @@ Comming Features:
 - Webpanel
 - RestAPI
 
-Please be aware that we are 2 Students working on this Project!
+Please be aware that im a Student and cant work fulltime on the Bot!
 
 Website: https://ree6.tk
 
