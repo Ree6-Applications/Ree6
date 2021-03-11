@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import java.sql.SQLException;
 import java.util.Random;
 
-public class BotManagingEvent extends ListenerAdapter {
+public class OtherEvents extends ListenerAdapter {
 
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
@@ -84,6 +84,10 @@ public class BotManagingEvent extends ListenerAdapter {
         }
 
         if(!Main.cm.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel())) {
+
+            if(!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(BotInfo.botInstance.getSelfUser())) {
+                event.getChannel().sendMessage("Usage ree!help").queue();
+            }
 
             if(!ArrayUtil.timeout.contains(event.getMember())) {
 

@@ -46,7 +46,7 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-public class Logging extends ListenerAdapter {
+public class LoggingEvents extends ListenerAdapter {
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {

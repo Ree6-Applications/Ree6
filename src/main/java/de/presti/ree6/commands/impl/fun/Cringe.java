@@ -18,7 +18,7 @@ public class Cringe extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
         MessageHistory mh = m.getHistoryBefore(messageSelf.getId(), 1).complete();
 
-        sendMessage("```" + mh.getRetrievedHistory().get(0) + "``` damn dude thats **CRINGE**", m);
+        sendMessage("```" + mh.getRetrievedHistory().get(0).getContentRaw() + "``` damn " + mh.getRetrievedHistory().get(0).getAuthor().getAsMention() + " thats **CRINGE**", m);
 
         messageSelf.delete().queue();
     }

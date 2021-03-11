@@ -7,6 +7,7 @@ import de.presti.ree6.commands.impl.level.Leaderboards;
 import de.presti.ree6.commands.impl.level.Level;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
+import de.presti.ree6.commands.impl.nsfw.NSFWSearch;
 import de.presti.ree6.utils.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -77,6 +78,9 @@ public class CommandManager {
 
         //Community
         addCommand(new Rainbow());
+
+        //NSFW
+        addCommand(new NSFWSearch());
 
     }
 

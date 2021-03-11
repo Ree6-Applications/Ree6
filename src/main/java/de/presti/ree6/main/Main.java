@@ -5,14 +5,13 @@ import de.presti.ree6.bot.BotState;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.bot.BotVersion;
 import de.presti.ree6.commands.CommandManager;
-import de.presti.ree6.events.BotManagingEvent;
-import de.presti.ree6.events.Logging;
+import de.presti.ree6.events.OtherEvents;
+import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.music.MusikWorker;
 import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.SQLWorker;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.Config;
-import de.presti.ree6.utils.SpotifyAPIHandler;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -44,7 +43,7 @@ public class Main {
         cm = new CommandManager();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.2.5");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.2.6");
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
@@ -55,8 +54,8 @@ public class Main {
     }
 
     private void addEvents() {
-        BotUtil.addEvent(new BotManagingEvent());
-        BotUtil.addEvent(new Logging());
+        BotUtil.addEvent(new OtherEvents());
+        BotUtil.addEvent(new LoggingEvents());
     }
 
     private void addHooks() {
