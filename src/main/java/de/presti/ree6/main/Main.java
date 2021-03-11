@@ -36,14 +36,14 @@ public class Main {
 
         config.init();
 
-       /* sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
+        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
 
-        sqlWorker = new SQLWorker();*/
+        sqlWorker = new SQLWorker();
 
         cm = new CommandManager();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.2.7");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.3.0");
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {

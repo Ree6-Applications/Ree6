@@ -41,14 +41,14 @@ public class Help extends Command {
                 Category cat = getCategoryFromString(args[0]);
                 for(Command cmd : Main.cm.getCommands()) {
                     if(cmd.getCategory() == cat) {
-                        end += "``" + cmd.getCmd() + "``\n" + cmd.getDesc() + "\n\n";
+                        end += "``ree!" + cmd.getCmd() + "``\n" + cmd.getDesc() + "\n\n";
                     }
                 }
 
                 em.setDescription(end);
             } else {
                 for(Category cat : Category.values()) {
-                    em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**", "ree!help " + cat.name().toUpperCase(), true);
+                    em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**", "ree!help " + cat.name().toLowerCase(), true);
                 }
             }
 
