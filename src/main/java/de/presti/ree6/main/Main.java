@@ -5,8 +5,8 @@ import de.presti.ree6.bot.BotState;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.bot.BotVersion;
 import de.presti.ree6.commands.CommandManager;
-import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.events.LoggingEvents;
+import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.music.MusikWorker;
 import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.SQLWorker;
@@ -43,7 +43,7 @@ public class Main {
         cm = new CommandManager();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.3.0");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.3.1");
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
@@ -70,10 +70,20 @@ public class Main {
 
     private void shutdown() throws SQLException {
         System.out.println("Shutdown init. !");
-        sqlWorker.saveAllInvites();
-        System.out.println("Uploaded Invitecache to Database!");
-        sqlWorker.saveAllChatProtectors();
-        System.out.println("Uploaded ChatProtector to Database!");
+        try {
+            sqlWorker.saveAllInvites();
+            System.out.println("Uploaded Invitecache to Database!");
+        } catch (Exception ex) {
+            System.out.println("Couldnt save Invitecach!\nException: " + ex.getMessage());
+        }
+
+        try {
+            sqlWorker.saveAllChatProtectors();
+            System.out.println("Uploaded ChatProtector to Database!");
+        } catch (Exception ex) {
+            System.out.println("Couldnt save ChatProtector!\nException: " + ex.getMessage());
+        }
+
         sqlConnector.close();
         System.out.println("Closed Database Connection");
         BotUtil.shutdown();

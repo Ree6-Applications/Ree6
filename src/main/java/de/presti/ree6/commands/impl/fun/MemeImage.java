@@ -25,17 +25,23 @@ public class MemeImage extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
         JSONObject js = JSONApi.GetData(Requests.GET, "https://alpha-meme-maker.herokuapp.com/");
 
-        JSONArray jsa = js.getJSONArray("data");
-
-        JSONObject gay = jsa.getJSONObject(new Random().nextInt(jsa.length() - 1));
-
         EmbedBuilder em = new EmbedBuilder();
 
         em.setTitle("Random Meme Image!");
         em.setColor(BotUtil.randomEmbedColor());
-        em.setImage(gay.getString("image"));
-        em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
+        if (js.has("data")) {
+
+            JSONArray jsa = js.getJSONArray("data");
+
+            JSONObject gay = jsa.getJSONObject(new Random().nextInt(jsa.length() - 1));
+
+            em.setImage(gay.getString("image"));
+        } else {
+            em.setDescription("Couldnt get the Image!");
+        }
+
+        em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
         sendMessage(em, m);
 
     }

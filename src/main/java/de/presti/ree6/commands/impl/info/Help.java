@@ -25,7 +25,7 @@ public class Help extends Command {
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
 
             for(Category cat : Category.values()) {
-                em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**", "ree!help " + cat.name().toUpperCase(), true);
+                em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**", "ree!help " + cat.name().toLowerCase(), true);
             }
 
             sendMessage(em, m);
