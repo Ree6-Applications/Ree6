@@ -46,7 +46,7 @@ public class Main {
         cm = new CommandManager();
 
         try {
-            BotUtil.createBot(BotVersion.DEV, "1.3.2");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.3.2");
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {

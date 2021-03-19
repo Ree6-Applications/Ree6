@@ -64,7 +64,7 @@ public class Leaderboards extends Command {
         return level;
     }
 
-    public int getLevelVC(int xp) {
+    public int getLevelVC(long xp) {
         int level = 1;
 
         while (xp > 1000) {
