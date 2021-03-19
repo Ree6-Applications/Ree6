@@ -13,13 +13,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SQLWorker {
 
     //Leveling Chat
 
-    public Integer getXP(String gid, String uid) {
+    public Long getXP(String gid, String uid) {
         String xp = "0";
 
         try {
@@ -41,7 +42,7 @@ public class SQLWorker {
             //ex.printStackTrace();
         }
 
-        return Integer.parseInt(xp);
+        return Long.parseLong(xp);
     }
 
     public boolean existsXP(String gid, String uid) {
@@ -104,7 +105,7 @@ public class SQLWorker {
 
     //Leveling VoiceChannel
 
-    public Integer getXPVC(String gid, String uid) {
+    public Long getXPVC(String gid, String uid) {
         String xp = "0";
 
         try {
@@ -126,7 +127,7 @@ public class SQLWorker {
             //ex.printStackTrace();
         }
 
-        return Integer.parseInt(xp);
+        return Long.parseLong(xp);
     }
 
     public boolean existsXPVC(String gid, String uid) {
@@ -371,6 +372,121 @@ public class SQLWorker {
             }
         }
         return "Error";
+    }
+
+    //ChatLevelReward
+
+    public boolean hasChatLevelReward(String gid) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM ChatLevelAutoRoles WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM ChatLevelAutoRoles WHERE GID='" + gid + "'");
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+
+            return rs.next();
+
+        } catch (Exception ex) {
+        }
+
+        return false;
+    }
+
+    public HashMap<Integer, String> getChatLevelRewards(String gid) {
+
+        HashMap<Integer, String> rewards = new HashMap<>();
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM ChatLevelAutoRoles WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM ChatLevelAutoRoles WHERE GID='" + gid + "'");
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+
+            while (rs.next()) {
+                if(!rewards.containsKey(Integer.valueOf(rs.getString("LVL")))) {
+                    rewards.put(Integer.parseInt(rs.getString("LVL")), rs.getString("RID"));
+                }
+            }
+
+        } catch (Exception ex) {
+        }
+
+        return rewards;
+    }
+
+    public void addChatLevelReward(String gid, int level, String rid) {
+        Main.insance.sqlConnector.query("INSERT INTO ChatLevelAutoRoles (GID, RID, LVL) VALUES ('" + gid + "', '" + rid + "','" + level +"');");
+    }
+
+    public void removeChatLevelReward(String gid, int level) {
+        Main.insance.sqlConnector.query("DELETE FROM ChatLevelAutoRoles WHERE GID='" + gid + "' AND LVL='" + level + "'");
+    }
+
+
+    //VoiceLevelReward
+
+    public boolean hasVoiceLevelReward(String gid) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM VCLevelAutoRoles WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM VCLevelAutoRoles WHERE GID='" + gid + "'");
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+
+            return rs.next();
+
+        } catch (Exception ex) {
+        }
+
+        return false;
+    }
+
+    public HashMap<Integer, String> getVoiceLevelRewards(String gid) {
+
+        HashMap<Integer, String> rewards = new HashMap<>();
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM VCLevelAutoRoles WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM VCLevelAutoRoles WHERE GID='" + gid + "'");
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+
+            while (rs.next()) {
+                if(!rewards.containsKey(Integer.valueOf(rs.getString("LVL")))) {
+                    rewards.put(Integer.parseInt(rs.getString("LVL")), rs.getString("RID"));
+                }
+            }
+
+        } catch (Exception ex) {
+        }
+
+        return rewards;
+    }
+
+    public void addVoiceLevelReward(String gid, int level, String rid) {
+        Main.insance.sqlConnector.query("INSERT INTO VCLevelAutoRoles (GID, RID, LVL) VALUES ('" + gid + "', '" + rid + "','" + level +"');");
+    }
+
+    public void removeVoiceLevelReward(String gid, int level) {
+        Main.insance.sqlConnector.query("DELETE FROM VCLevelAutoRoles WHERE GID='" + gid + "' AND LVL='" + level + "'");
     }
 
     //Autorole

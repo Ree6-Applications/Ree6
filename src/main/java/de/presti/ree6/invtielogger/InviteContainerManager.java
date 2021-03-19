@@ -49,8 +49,6 @@ public class InviteContainerManager {
         if(invites.containsKey(g.getId())) {
             ArrayList<InviteContainer> cachedInvs = getInvites(g.getId());
 
-            InviteContainer result = null;
-
             List<Invite> invs = g.retrieveInvites().complete();
 
             for (Invite inv : invs) {

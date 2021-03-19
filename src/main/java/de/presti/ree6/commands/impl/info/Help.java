@@ -25,6 +25,9 @@ public class Help extends Command {
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
 
             for(Category cat : Category.values()) {
+                if(cat == Category.HIDDEN)
+                    return;
+
                 em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**", "ree!help " + cat.name().toLowerCase(), true);
             }
 
@@ -59,7 +62,7 @@ public class Help extends Command {
 
     private boolean isValid(String arg) {
         for(Category cat : Category.values()) {
-            if(cat.name().toLowerCase().equalsIgnoreCase(arg)) {
+            if(cat.name().toLowerCase().equalsIgnoreCase(arg) && cat != Category.HIDDEN) {
                 return true;
             }
         }

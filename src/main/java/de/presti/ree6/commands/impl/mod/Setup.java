@@ -121,13 +121,47 @@ public class Setup extends Command {
                         });
                         sendMessage("R6 Mate Search channel has been set!", 5, m);
                     }
+                } else if (args[0].equalsIgnoreCase("rewards")) {
+                    if(args.length != 5) {
+                        sendMessage("No Param. error!", 5, m);
+                        sendMessage("Use ree!rewards vc/chat add/remove Level @Role", 5, m);
+                    } else if (args.length == 5) {
+                        if (messageSelf.getMentionedRoles().isEmpty()) {
+                            sendMessage("No Role mentioned!", 5, m);
+                            sendMessage("Use ree!rewards vc/chat add/remove Level @Role", 5, m);
+                        } else {
+                            if (args[2].equalsIgnoreCase("add")) {
+                                if(args[1].equalsIgnoreCase("vc")) {
+                                    Main.sqlWorker.addVoiceLevelReward(m.getGuild().getId(), Integer.parseInt(args[3]), messageSelf.getMentionedRoles().get(0).getId());
+                                    sendMessage("VoiceReward has been added!", 5, m);
+                                } else if (args[1].equalsIgnoreCase("chat")) {
+                                    Main.sqlWorker.addChatLevelReward(m.getGuild().getId(), Integer.parseInt(args[3]), messageSelf.getMentionedRoles().get(0).getId());
+                                    sendMessage("ChatReward has been added!", 5, m);
+                                } else {
+                                    sendMessage("Use ree!rewards vc/chat add/remove Level @Role", 5, m);
+                                }
+                            } else if (args[2].equalsIgnoreCase("remove")) {
+                                if(args[1].equalsIgnoreCase("vc")) {
+                                    Main.sqlWorker.removeVoiceLevelReward(m.getGuild().getId(), Integer.parseInt(args[3]));
+                                    sendMessage("VoiceReward has been removed!", 5, m);
+                                } else if (args[1].equalsIgnoreCase("chat")) {
+                                    Main.sqlWorker.removeChatLevelReward(m.getGuild().getId(), Integer.parseInt(args[3]));
+                                    sendMessage("ChatReward has been removed!", 5, m);
+                                } else {
+                                    sendMessage("Use ree!rewards vc/chat add/remove Level @Role", 5, m);
+                                }
+                            } else {
+                                sendMessage("Use ree!rewards vc/chat add/remove Level @Role", 5, m);
+                            }
+                        }
+                    }
                 } else {
                     sendMessage("Couldnt find " + args[0] + "!", 5, m);
-                    sendMessage("Use ree!setup log/welcome/news/r6/mute/autorole/join", 5, m);
+                    sendMessage("Use ree!setup log/welcome/news/r6/mute/autorole/join/rewards", 5, m);
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m);
-                sendMessage("Use ree!setup log/welcome/news/r6/mute/autorole/join #Log/#Welcome/#Ree6-News/#R6-Mate-Search/@Mute/@Autorole/Your Custom Join Message", 5, m);
+                sendMessage("Use ree!setup log/welcome/news/r6/mute/autorole/rewards/join #Log/#Welcome/#Ree6-News/#R6-Mate-Search/@Mute/@Autorole/vc or chat/Your Custom Join Message", 5, m);
             }
         } else {
             sendMessage("You dont have the Permission for this Command!", 5, m);

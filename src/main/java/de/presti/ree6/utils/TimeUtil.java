@@ -27,6 +27,32 @@ public class TimeUtil {
         return end;
     }
 
+    public static int getTimeinSec(long time) {
+        long current = System.currentTimeMillis();
+        long dif = current - time;
+
+        int s = 0;
+
+        while (dif >= 1000) {
+            dif -= 1000;
+            ++s;
+        }
+         return s;
+    }
+
+    public static int getTimeinMin(int s) {
+
+        int m = 0;
+        
+        while (s >= 60) {
+            s -= 60;
+            ++m;
+        }
+        
+        return m;
+        
+    }
+
     public static String getTime(long t) {
         String end = "";
 
@@ -77,5 +103,4 @@ public class TimeUtil {
 
         return end;
     }
-
 }

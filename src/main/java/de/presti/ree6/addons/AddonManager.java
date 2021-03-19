@@ -13,6 +13,16 @@ public class AddonManager {
     public AddonManager() {
     }
 
+    public void reload() {
+        stopAddons();
+
+        addons.clear();
+
+        AddonLoader.loadAllAddons();
+
+        startAddons();
+    }
+
     public void startAddons() {
         for (Addon addon : addons) {
 

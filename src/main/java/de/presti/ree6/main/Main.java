@@ -39,9 +39,9 @@ public class Main {
 
         config.init();
 
-        /*sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
+        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
 
-        sqlWorker = new SQLWorker();*/
+        sqlWorker = new SQLWorker();
 
         cm = new CommandManager();
 

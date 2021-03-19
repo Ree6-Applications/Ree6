@@ -25,17 +25,32 @@ public class Level extends Command {
                     em.setThumbnail(sender.getUser().getAvatarUrl());
                     em.setTitle("Level");
 
-                    int xp = Main.sqlWorker.getXP(m.getGuild().getId(), sender.getUser().getId());
+                    long chatxp = Main.sqlWorker.getXP(m.getGuild().getId(), sender.getUser().getId());
 
-                    int level = 1;
+                    int chatlevel = 1;
 
-                    while (xp > 1000) {
-                        xp -= 1000;
-                        level++;
+                    while (chatxp > 1000) {
+                        chatxp -= 1000;
+                        chatlevel++;
                     }
 
-                    em.addField("Level", level + "",true);
-                    em.addField("XP", Main.sqlWorker.getXP(m.getGuild().getId(), sender.getUser().getId()) + "", true);
+                    long voicexp = Main.sqlWorker.getXPVC(m.getGuild().getId(), sender.getUser().getId());
+
+                    int vclevel = 1;
+
+                    while (voicexp > 1000) {
+                        voicexp -= 1000;
+                        vclevel++;
+                    }
+
+                    em.addField("Chat Level", chatlevel + "",true);
+                    em.addBlankField(true);
+                    em.addField("Voice Level", vclevel + "",true);
+
+                    em.addField("Chat XP", getFormattedXP(Main.sqlWorker.getXP(m.getGuild().getId(), sender.getUser().getId())) + "", true);
+                    em.addBlankField(true);
+                    em.addField("Voice XP", getFormattedXP(Main.sqlWorker.getXPVC(m.getGuild().getId(), sender.getUser().getId())) + "",true);
+
                     em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
                     sendMessage(em, m);
@@ -46,17 +61,32 @@ public class Level extends Command {
                     em.setThumbnail(messageSelf.getMentionedMembers().get(0).getUser().getAvatarUrl());
                     em.setTitle("Level");
 
-                    int xp = Main.sqlWorker.getXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId());
+                    long chatxp = Main.sqlWorker.getXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId());
 
-                    int level = 1;
+                    int chatlevel = 1;
 
-                    while (xp > 1000) {
-                        xp -= 1000;
-                        level++;
+                    while (chatxp > 1000) {
+                        chatxp -= 1000;
+                        chatlevel++;
                     }
 
-                    em.addField("Level", level + "",true);
-                    em.addField("XP", Main.sqlWorker.getXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId()) + "", true);
+                    long voicexp = Main.sqlWorker.getXPVC(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId());
+
+                    int vclevel = 1;
+
+                    while (voicexp > 1000) {
+                        voicexp -= 1000;
+                        vclevel++;
+                    }
+
+                    em.addField("Chat Level", chatlevel + "",true);
+                    em.addBlankField(true);
+                    em.addField("Voice Level", vclevel + "",true);
+
+                    em.addField("Chat XP", getFormattedXP(Main.sqlWorker.getXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId())) + "", true);
+                    em.addBlankField(true);
+                    em.addField("Voice XP", getFormattedXP(Main.sqlWorker.getXPVC(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId())) + "",true);
+
                     em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
                     sendMessage(em, m);
@@ -65,5 +95,23 @@ public class Level extends Command {
                 sendMessage("Not enough Arguments!", 5, m);
                 sendMessage("Use ree!level or ree!level @user", 5, m);
             }
+    }
+
+    public String getFormattedXP(long xp) {
+        String end = "";
+
+        if(xp >= 1000000000000L) {
+            end = ((xp / 1000000000000L) + "").replaceAll("l", "") + "mil";
+        } else if(xp >= 1000000000) {
+            end = ((xp / 1000000000) + "").replaceAll("l", "") + "mil";
+        } else if(xp >= 1000000) {
+            end = ((xp / 1000000) + "").replaceAll("l", "") + "mio";
+        } else if(xp >= 1000) {
+            end = ((xp / 1000) + "").replaceAll("l", "") + "k";
+        } else {
+            end = "" + xp;
+        }
+
+        return end;
     }
 }
