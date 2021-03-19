@@ -71,6 +71,7 @@ public class CommandManager {
         addCommand(new Waifu());
         addCommand(new Kiss());
         addCommand(new Cringe());
+        addCommand(new DogeCoin());
 
         //Level
         addCommand(new Level());

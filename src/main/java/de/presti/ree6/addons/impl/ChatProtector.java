@@ -1,4 +1,4 @@
-package de.presti.ree6.addons;
+package de.presti.ree6.addons.impl;
 
 import de.presti.ree6.main.Main;
 

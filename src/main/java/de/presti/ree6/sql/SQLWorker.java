@@ -1,11 +1,12 @@
 package de.presti.ree6.sql;
 
-import de.presti.ree6.addons.ChatProtector;
+import de.presti.ree6.addons.impl.ChatProtector;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.invtielogger.InviteContainer;
 import de.presti.ree6.invtielogger.InviteContainerManager;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.Webhook;
 
 import java.sql.PreparedStatement;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 public class SQLWorker {
 
-    //Leveling
+    //Leveling Chat
 
     public Integer getXP(String gid, String uid) {
         String xp = "0";
@@ -90,6 +91,91 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM `Level` WHERE GID='" + gid + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + amount);
                 rs = st.executeQuery("SELECT * FROM `Level` WHERE GID='" + gid + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + amount);
+            } catch (Exception ex) {}
+
+            while (rs.next()) {
+                ids.add(rs.getString("UID"));
+            }
+
+        } catch (Exception ex) {}
+
+        return ids;
+    }
+
+    //Leveling VoiceChannel
+
+    public Integer getXPVC(String gid, String uid) {
+        String xp = "0";
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM VCLevel WHERE GID='" + gid + "' AND UID='" + uid + "'");
+                rs = st.executeQuery("SELECT * FROM VCLevel WHERE GID='" + gid + "' AND UID='" + uid + "'");
+            } catch (Exception ex) {
+                //ex.printStackTrace();
+            }
+
+            if (rs.next()) {
+                xp = rs.getString("XP");
+            }
+
+        } catch (Exception ex) {
+            //ex.printStackTrace();
+        }
+
+        return Integer.parseInt(xp);
+    }
+
+    public boolean existsXPVC(String gid, String uid) {
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM VCLevel WHERE GID='" + gid + "' AND UID='" + uid + "'");
+                rs = st.executeQuery("SELECT * FROM VCLevel WHERE GID='" + gid + "' AND UID='" + uid + "'");
+            } catch (Exception ex) {
+                //ex.printStackTrace();
+            }
+
+            if (rs.next()) {
+                return true;
+            }
+
+        } catch (Exception ex) {
+            //ex.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public void addXPVC(String gid, String uid, int addxp) throws SQLException {
+
+        addxp += getXPVC(gid, uid);
+
+        if (existsXPVC(gid, uid)) {
+            Main.sqlConnector.query("UPDATE VCLevel SET XP='" + addxp + "' WHERE GID='" + gid + "' AND UID='" + uid + "'");
+        } else {
+            Main.sqlConnector.query("INSERT INTO VCLevel (GID, UID, XP) VALUES ('" + gid + "', '" + uid + "', '" + addxp + "');");
+        }
+    }
+
+    public ArrayList<String> getTopVC(int amount, String gid) {
+
+        ArrayList<String> ids = new ArrayList<>();
+
+        try {
+
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM `VCLevel` WHERE GID='" + gid + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + amount);
+                rs = st.executeQuery("SELECT * FROM `VCLevel` WHERE GID='" + gid + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + amount);
             } catch (Exception ex) {}
 
             while (rs.next()) {
@@ -419,13 +505,18 @@ public class SQLWorker {
         for(Guild g : BotInfo.botInstance.getGuilds()) {
             ArrayList<InviteContainer> invs = getInvites(g.getId());
 
-            if(!invs.isEmpty()) {
-                if (InviteContainerManager.getInvites().containsKey(g.getId())) {
-                    InviteContainerManager.getInvites().remove(g.getId());
+            if (invs.isEmpty()) {
+                for (Invite invite : g.retrieveInvites().complete()) {
+                    invs.add(new InviteContainer(invite.getInviter().getId(), g.getId(), invite.getCode(), invite.getUses()));
                 }
 
-                InviteContainerManager.getInvites().put(g.getId(), invs);
             }
+
+            if (InviteContainerManager.getInvites().containsKey(g.getId())) {
+                InviteContainerManager.getInvites().remove(g.getId());
+            }
+
+            InviteContainerManager.getInvites().put(g.getId(), invs);
         }
     }
 

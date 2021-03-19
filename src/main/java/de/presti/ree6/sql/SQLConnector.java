@@ -118,6 +118,21 @@ public class SQLConnector {
 			ps.executeUpdate();
 		} catch (SQLException throwables) {}
 
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS VCLevel (GID VARCHAR(40), UID VARCHAR(40), XP VARCHAR(500))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
+
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS VCLevelAutoRoles (GID VARCHAR(40), RID VARCHAR(40), LVL VARCHAR(500))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
+
+		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS ChatLevelAutoRoles (GID VARCHAR(40), RID VARCHAR(40), LVL VARCHAR(500))")){
+			ps.executeUpdate();
+		} catch (SQLException throwables) {}
+
 	}
 
 	public void query(String sql) {

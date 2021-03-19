@@ -27,10 +27,10 @@ public class ChatProtector extends Command {
                         sendMessage("Not enough Arguments!", 5, m);
                         sendMessage("Use ree!chatprotector remove WORD", 5, m);
                     } else if (args[0].equalsIgnoreCase("list")) {
-                        if(de.presti.ree6.addons.ChatProtector.hasChatProtector2(m.getGuild().getId())) {
+                        if(de.presti.ree6.addons.impl.ChatProtector.hasChatProtector2(m.getGuild().getId())) {
                             String end = "";
 
-                            for (String s : de.presti.ree6.addons.ChatProtector.getChatProtector(m.getGuild().getId())) {
+                            for (String s : de.presti.ree6.addons.impl.ChatProtector.getChatProtector(m.getGuild().getId())) {
                                 end += "\n" + s;
                             }
 
@@ -52,14 +52,14 @@ public class ChatProtector extends Command {
                                 words.add(args[i]);
                                 end += "\n" + args[i];
                             }
-                            de.presti.ree6.addons.ChatProtector.addWordstoProtector(m.getGuild().getId(), words);
+                            de.presti.ree6.addons.impl.ChatProtector.addWordstoProtector(m.getGuild().getId(), words);
                             sendMessage("The Wordlist has been added to your ChatProtector!\nYour Wordlist:\n```" + end + "```", 5, m);
                         } else {
-                            de.presti.ree6.addons.ChatProtector.addWordtoProtector(m.getGuild().getId(), args[1]);
+                            de.presti.ree6.addons.impl.ChatProtector.addWordtoProtector(m.getGuild().getId(), args[1]);
                             sendMessage("The Word " + args[1] + " has been added to your ChatProtector!", 5, m);
                         }
                     } else if(args[0].equalsIgnoreCase("remove")) {
-                        de.presti.ree6.addons.ChatProtector.removeWordfromProtector(m.getGuild().getId(), args[1]);
+                        de.presti.ree6.addons.impl.ChatProtector.removeWordfromProtector(m.getGuild().getId(), args[1]);
                         sendMessage("The Word " + args[1] + " has been removed from your ChatProtector!", 5, m);
                     } else {
                         sendMessage("Couldnt find " + args[0] + "!", 5, m);

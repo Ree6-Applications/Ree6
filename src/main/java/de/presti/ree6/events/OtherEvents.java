@@ -1,7 +1,7 @@
 package de.presti.ree6.events;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
-import de.presti.ree6.addons.ChatProtector;
+import de.presti.ree6.addons.impl.ChatProtector;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotState;
 import de.presti.ree6.bot.BotUtil;
@@ -10,9 +10,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.AutoRoleHandler;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;

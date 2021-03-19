@@ -1,5 +1,7 @@
 package de.presti.ree6.main;
 
+import de.presti.ree6.addons.AddonLoader;
+import de.presti.ree6.addons.AddonManager;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotState;
 import de.presti.ree6.bot.BotUtil;
@@ -23,6 +25,7 @@ public class Main {
 
     public static Main insance;
     public static CommandManager cm;
+    public static AddonManager addonManager;
     public static SQLConnector sqlConnector;
     public static SQLWorker sqlWorker;
     public static Thread checker;
@@ -36,14 +39,14 @@ public class Main {
 
         config.init();
 
-        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
+        /*sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
 
-        sqlWorker = new SQLWorker();
+        sqlWorker = new SQLWorker();*/
 
         cm = new CommandManager();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.3.1");
+            BotUtil.createBot(BotVersion.DEV, "1.3.2");
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
@@ -51,6 +54,10 @@ public class Main {
         }
         insance.addHooks();
         BotInfo.starttime = System.currentTimeMillis();
+
+        addonManager = new AddonManager();
+        AddonLoader.loadAllAddons();
+        addonManager.startAddons();
     }
 
     private void addEvents() {
@@ -69,7 +76,9 @@ public class Main {
     }
 
     private void shutdown() throws SQLException {
+        long start = System.currentTimeMillis();
         System.out.println("Shutdown init. !");
+        System.out.println("Uploading Invitecache to Database!");
         try {
             sqlWorker.saveAllInvites();
             System.out.println("Uploaded Invitecache to Database!");
@@ -77,6 +86,7 @@ public class Main {
             System.out.println("Couldnt save Invitecach!\nException: " + ex.getMessage());
         }
 
+        System.out.println("Uploading ChatProtector to Database!");
         try {
             sqlWorker.saveAllChatProtectors();
             System.out.println("Uploaded ChatProtector to Database!");
@@ -84,11 +94,21 @@ public class Main {
             System.out.println("Couldnt save ChatProtector!\nException: " + ex.getMessage());
         }
 
-        sqlConnector.close();
-        System.out.println("Closed Database Connection");
+        if(sqlConnector != null && (sqlConnector.isConnected() || sqlConnector.isConnected2())) {
+            System.out.println("Closing Database Connection!");
+            sqlConnector.close();
+            System.out.println("Closed Database Connection!");
+        }
+
+        System.out.println("Disabling every Addon!");
+        addonManager.stopAddons();
+        System.out.println("Every Addon has been disabled!");
+
+        System.out.println("JDA Instance shutdown init. !");
         BotUtil.shutdown();
         System.out.println("JDA Instance has been shutdowned!");
 
+        System.out.println("Everything has been shutdowned in " + (System.currentTimeMillis() - start) + "ms!");
         System.out.println("Good bye!");
     }
 

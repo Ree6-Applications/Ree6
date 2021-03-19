@@ -10,6 +10,8 @@ import java.util.Date;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.bot.BotUtil;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,7 +56,7 @@ public class JSONApi {
 			c.setConnectTimeout(5000);
 			c.setReadTimeout(5000);
 			c.setRequestProperty("User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 QuorraBot/2015");
+					"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build);
 			if(!authkey.isEmpty()) {
 				c.setRequestProperty("Authorization", authkey);
 			}
@@ -164,7 +166,7 @@ public class JSONApi {
 			c.setConnectTimeout(5000);
 			c.setReadTimeout(5000);
 			c.setRequestProperty("User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 QuorraBot/2015");
+					"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build);
 			if(!authkey.isEmpty()) {
 				c.setRequestProperty("Authorization", authkey);
 			}
