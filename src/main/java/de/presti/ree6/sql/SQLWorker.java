@@ -5,6 +5,7 @@ import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.invtielogger.InviteContainer;
 import de.presti.ree6.invtielogger.InviteContainerManager;
 import de.presti.ree6.main.Main;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.Webhook;
@@ -622,8 +623,10 @@ public class SQLWorker {
             ArrayList<InviteContainer> invs = getInvites(g.getId());
 
             if (invs.isEmpty()) {
-                for (Invite invite : g.retrieveInvites().complete()) {
-                    invs.add(new InviteContainer(invite.getInviter().getId(), g.getId(), invite.getCode(), invite.getUses()));
+                if(g.getMemberById(BotInfo.botInstance.getSelfUser().getId()).hasPermission(Permission.MANAGE_SERVER)) {
+                    for (Invite invite : g.retrieveInvites().complete()) {
+                        invs.add(new InviteContainer(invite.getInviter().getId(), g.getId(), invite.getCode(), invite.getUses()));
+                    }
                 }
 
             }

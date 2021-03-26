@@ -19,16 +19,15 @@ public class Help extends Command {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        if(args.length != 1) {
+        if (args.length != 1) {
             em.setColor(BotUtil.randomEmbedColor());
             em.setTitle("Command Index");
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
 
-            for(Category cat : Category.values()) {
-                if(cat == Category.HIDDEN)
-                    return;
-
-                em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**", "ree!help " + cat.name().toLowerCase(), true);
+            for (Category cat : Category.values()) {
+                if (cat != Category.HIDDEN) {
+                    em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**", "ree!help " + cat.name().toLowerCase(), true);
+                }
             }
 
             sendMessage(em, m);
@@ -38,20 +37,22 @@ public class Help extends Command {
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
 
             if (isValid(args[0])) {
-                
+
                 String end = "";
-                
+
                 Category cat = getCategoryFromString(args[0]);
-                for(Command cmd : Main.cm.getCommands()) {
-                    if(cmd.getCategory() == cat) {
+                for (Command cmd : Main.cm.getCommands()) {
+                    if (cmd.getCategory() == cat) {
                         end += "``ree!" + cmd.getCmd() + "``\n" + cmd.getDesc() + "\n\n";
                     }
                 }
 
                 em.setDescription(end);
             } else {
-                for(Category cat : Category.values()) {
-                    em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**", "ree!help " + cat.name().toLowerCase(), true);
+                for (Category cat : Category.values()) {
+                    if (cat != Category.HIDDEN) {
+                        em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**", "ree!help " + cat.name().toLowerCase(), true);
+                    }
                 }
             }
 
@@ -61,8 +62,8 @@ public class Help extends Command {
     }
 
     private boolean isValid(String arg) {
-        for(Category cat : Category.values()) {
-            if(cat.name().toLowerCase().equalsIgnoreCase(arg) && cat != Category.HIDDEN) {
+        for (Category cat : Category.values()) {
+            if (cat.name().toLowerCase().equalsIgnoreCase(arg) && cat != Category.HIDDEN) {
                 return true;
             }
         }
@@ -71,8 +72,8 @@ public class Help extends Command {
     }
 
     private Category getCategoryFromString(String arg) {
-        for(Category cat : Category.values()) {
-            if(cat.name().toLowerCase().equalsIgnoreCase(arg)) {
+        for (Category cat : Category.values()) {
+            if (cat.name().toLowerCase().equalsIgnoreCase(arg)) {
                 return cat;
             }
         }

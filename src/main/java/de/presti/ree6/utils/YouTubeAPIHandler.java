@@ -10,6 +10,7 @@ import de.presti.ree6.main.Main;
 import org.apache.hc.core5.http.ParseException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,10 +33,15 @@ public class YouTubeAPIHandler {
             createYouTube();
         }
         try {
+
+            ArrayList<String> list = new ArrayList<>();
+            list.add("id");
+            list.add("snippet");
+
             List<SearchResult> results = yt.search()
-                    .list(Collections.singletonList("id,snippet"))
+                    .list(list)
                     .setQ(search)
-                    .setMaxResults(4L)
+                    .setMaxResults(2L)
                     .setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)")
                     .setKey(Main.config.getConfig().getString("youtube.api.key"))
                     .execute()
