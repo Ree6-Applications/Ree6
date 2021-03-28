@@ -84,6 +84,7 @@ public class LoggingEvents extends ListenerAdapter {
         } else {
             wm2.append("Couldnt find out how " + event.getMember().getAsMention() + " joined :C");
         }
+
         Webhook.sendWebhook(wm2.build(), Long.parseLong(infos[0]), infos[1]);
     }
 
@@ -384,8 +385,10 @@ public class LoggingEvents extends ListenerAdapter {
 
     @Override
     public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {
-        InviteContainer inv = new InviteContainer(event.getInvite().getInviter().getId(), event.getGuild().getId(), event.getInvite().getCode(), event.getInvite().getUses());
-        InviteContainerManager.addInvite(inv, event.getGuild().getId());
+        if(event.getInvite() != null ) {
+            InviteContainer inv = new InviteContainer(event.getInvite().getInviter().getId(), event.getGuild().getId(), event.getInvite().getCode(), event.getInvite().getUses());
+            InviteContainerManager.addInvite(inv, event.getGuild().getId());
+        }
         //Too much Spam
     }
 

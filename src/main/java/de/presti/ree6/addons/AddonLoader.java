@@ -2,7 +2,6 @@ package de.presti.ree6.addons;
 
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
-import org.apache.commons.io.IOUtils;
 import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
@@ -32,9 +31,7 @@ public class AddonLoader {
             if (f.getName().endsWith("jar")) {
                 try {
                     Addon addon = loadAddon(f.getName());
-                    if (addon != null) {
-                        Main.addonManager.loadAddon(addon);
-                    }
+                    Main.addonManager.loadAddon(addon);
                 } catch (Exception ex) {
                     System.out.println("Couldnt load the Addon " + f.getName() + "\nException: " + ex.getCause().getMessage());
                     ex.printStackTrace();
@@ -44,7 +41,7 @@ public class AddonLoader {
 
     }
 
-    private static Addon loadAddon(String fileName) throws IOException {
+    public static Addon loadAddon(String fileName) throws Exception {
 
         String name = null;
         String author = null;
@@ -71,8 +68,6 @@ public class AddonLoader {
 
                         os.close();
 
-                        System.out.println("Created Temp File!");
-
                         FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
                         name = conf.getString("name");
@@ -80,8 +75,6 @@ public class AddonLoader {
                         addonver = conf.getString("version");
                         ree6ver = conf.getString("ree6-version");
                         mainpath = conf.getString("main");
-
-                        System.out.println("Loaded Data!");
 
                     }
                 }
@@ -94,21 +87,13 @@ public class AddonLoader {
         }
         jis.close();
 
-        System.out.println("Deleting Temp File!");
-
         if (f != null) {
             f.delete();
-        } else {
-            System.out.println("No addon.yml (" + fileName + ")");
         }
 
-        System.out.println("Deleted Temp File!");
-
         if (name == null && mainpath == null) {
-            System.out.println("Null");
-            return null;
+            throw new FileNotFoundException("Couldnt find addon.yml");
         } else {
-            System.out.println("Pog");
             return new Addon(name, author, addonver, ree6ver, mainpath, new File("addons/" + fileName));
         }
 

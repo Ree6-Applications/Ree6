@@ -46,13 +46,15 @@ public class Main {
         cm = new CommandManager();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.3.2");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.3.3");
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
             System.out.println("Error while init: " + ex.getMessage());
         }
+
         insance.addHooks();
+
         BotInfo.starttime = System.currentTimeMillis();
 
         addonManager = new AddonManager();
@@ -111,9 +113,6 @@ public class Main {
         System.out.println("Everything has been shutdowned in " + (System.currentTimeMillis() - start) + "ms!");
         System.out.println("Good bye!");
     }
-
-    int randomint = 0;
-
     public void createCheckerThread() {
         checker = new Thread(() -> {
             while (BotInfo.state != BotState.STOPPED) {
@@ -137,16 +136,10 @@ public class Main {
 
                     System.out.println("Overall Users: " + i);
 
-                    lastday = new SimpleDateFormat("dd").format(new Date());
-                }
-
-
-                if (randomint >= 6) {
                     sqlConnector.close();
                     sqlConnector.connect();
-                    randomint = 0;
-                } else {
-                    randomint++;
+
+                    lastday = new SimpleDateFormat("dd").format(new Date());
                 }
 
                 try {

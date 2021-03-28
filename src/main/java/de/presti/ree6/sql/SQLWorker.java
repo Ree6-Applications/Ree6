@@ -259,7 +259,7 @@ public class SQLWorker {
     //Welcome
 
     public void setWelcomeWebhook(String gid, String cid, String token) throws SQLException {
-        if (hasWeclomeSetuped(gid)) {
+        if (hasWelcomeSetuped(gid)) {
 
             String[] d = getWelcomewebhook(gid);
 
@@ -277,7 +277,7 @@ public class SQLWorker {
         }
     }
 
-    public boolean hasWeclomeSetuped(String gid) {
+    public boolean hasWelcomeSetuped(String gid) {
         try {
             PreparedStatement st;
             ResultSet rs = null;
@@ -298,7 +298,7 @@ public class SQLWorker {
     }
 
     public String[] getWelcomewebhook(String gid) {
-        if (hasWeclomeSetuped(gid)) {
+        if (hasWelcomeSetuped(gid)) {
             try {
                 PreparedStatement st;
                 ResultSet rs = null;

@@ -52,6 +52,7 @@ public class Addon {
                 ", addonver='" + getAddonver() + '\'' +
                 ", ree6ver='" + getRee6ver() + '\'' +
                 ", mainpath='" + getMainpath() + '\'' +
+                ", file=" + getFile().getAbsolutePath() +
                 '}';
     }
 }

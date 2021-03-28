@@ -102,6 +102,7 @@ public class CommandManager {
 
         if(ArrayUtil.commandcooldown.contains(sender.getUser().getId())) {
             sendMessage("You are on Cooldown!", 5, m);
+            messageSelf.delete().queue();
             return false;
         }
 
@@ -156,7 +157,6 @@ public class CommandManager {
     public static void sendMessage(String msg, int deletesecond, MessageChannel m) {
         m.sendMessage(msg).delay(deletesecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
     }
-
 
     public static void sendMessage(EmbedBuilder msg, MessageChannel m) {
         m.sendMessage(msg.build()).queue();

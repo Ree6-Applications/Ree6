@@ -4,14 +4,10 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchResult;
-import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import de.presti.ree6.main.Main;
-import org.apache.hc.core5.http.ParseException;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 public class YouTubeAPIHandler {
@@ -34,12 +30,8 @@ public class YouTubeAPIHandler {
         }
         try {
 
-            ArrayList<String> list = new ArrayList<>();
-            list.add("id");
-            list.add("snippet");
-
             List<SearchResult> results = yt.search()
-                    .list(list)
+                    .list(Arrays.asList("id, snippet"))
                     .setQ(search)
                     .setMaxResults(2L)
                     .setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)")

@@ -48,7 +48,7 @@ public class OtherEvents extends ListenerAdapter {
 
         AutoRoleHandler.handleMemberJoin(event.getGuild(), event.getMember());
 
-        if(!Main.sqlWorker.hasWeclomeSetuped(event.getGuild().getId()))
+        if(!Main.sqlWorker.hasWelcomeSetuped(event.getGuild().getId()))
             return;
 
         WebhookMessageBuilder wmb = new WebhookMessageBuilder();
