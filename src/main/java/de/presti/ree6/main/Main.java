@@ -14,6 +14,7 @@ import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.SQLWorker;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.Config;
+import de.presti.ree6.utils.ProxyUtil;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -96,7 +97,7 @@ public class Main {
             System.out.println("Couldnt save ChatProtector!\nException: " + ex.getMessage());
         }
 
-        if(sqlConnector != null && (sqlConnector.isConnected() || sqlConnector.isConnected2())) {
+        if (sqlConnector != null && (sqlConnector.isConnected() || sqlConnector.isConnected2())) {
             System.out.println("Closing Database Connection!");
             sqlConnector.close();
             System.out.println("Closed Database Connection!");
@@ -113,6 +114,7 @@ public class Main {
         System.out.println("Everything has been shutdowned in " + (System.currentTimeMillis() - start) + "ms!");
         System.out.println("Good bye!");
     }
+
     public void createCheckerThread() {
         checker = new Thread(() -> {
             while (BotInfo.state != BotState.STOPPED) {
@@ -141,9 +143,19 @@ public class Main {
 
                     lastday = new SimpleDateFormat("dd").format(new Date());
                 }
+                String proxy = "";
+                try {
+                    proxy = ProxyUtil.getProxies().split("\n")[0];
+                } catch (Exception e) {
+                }
+                if(proxy != null && !proxy.isEmpty()) {
+                    ProxyUtil.setProxy(proxy.split(":")[0], proxy.split(":")[1]);
+                    ProxyUtil.createProxyChannel();
+                }
+
 
                 try {
-                    Thread.sleep((5 * (60000L)));
+                    Thread.sleep((7 * (60000L)));
                 } catch (InterruptedException e) {
                 }
             }
