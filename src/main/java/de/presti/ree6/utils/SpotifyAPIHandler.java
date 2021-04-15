@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 //Not by DxsSucuk
-//Created by Kay-Bilger
+//Credits: Kay-Bilger
 public class SpotifyAPIHandler {
 
 	

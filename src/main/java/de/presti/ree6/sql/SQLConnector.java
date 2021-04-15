@@ -1,6 +1,7 @@
 package de.presti.ree6.sql;
 
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.Logger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,7 +12,6 @@ public class SQLConnector {
 
 	public String username;
 	public String passwort;
-	public String databse;
 	public String host;
 	public String database;
 	public int port = 3306;
@@ -34,7 +34,7 @@ public class SQLConnector {
 				con = DriverManager.getConnection(
 						"jdbc:mysql://" + host + ":" + port + "/" + database + "?autoReconnect=true", username,
 						passwort);
-				System.out.println("Service (MySQL) wurde gestartet. Verbindung erfolgreich hergestellt");
+				Logger.log("MySQL", "Service (MySQL) wurde gestartet. Verbindung erfolgreich hergestellt");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

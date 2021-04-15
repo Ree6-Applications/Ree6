@@ -2,8 +2,8 @@ package de.presti.ree6.sql;
 
 import de.presti.ree6.addons.impl.ChatProtector;
 import de.presti.ree6.bot.BotInfo;
-import de.presti.ree6.invtielogger.InviteContainer;
-import de.presti.ree6.invtielogger.InviteContainerManager;
+import de.presti.ree6.invitelogger.InviteContainer;
+import de.presti.ree6.invitelogger.InviteContainerManager;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -594,7 +594,7 @@ public class SQLWorker {
         return pog;
     }
 
-    public void setInvite(String gid, String code, String creator, int usage) throws SQLException {
+    public void setInvite(String gid, String code, String creator, int usage) {
         if (existsInvite(gid, code, creator)) {
             Main.insance.sqlConnector.query("UPDATE Invites SET USES='" + usage + "' WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
         } else {
@@ -606,37 +606,8 @@ public class SQLWorker {
         Main.insance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
     }
 
-    public void saveAllInvites() throws SQLException {
-        for(Map.Entry<String, ArrayList<InviteContainer>> entry : InviteContainerManager.getInvites().entrySet()) {
-            for(InviteContainer inv : entry.getValue()) {
-                setInvite(entry.getKey(), inv.getCode(), inv.getCreatorid(), inv.getUses());
-            }
-        }
-
-        for(InviteContainer inv : InviteContainerManager.getDeletedInvites()) {
-            removeInvite(inv.getGuildid(), inv.getCreatorid(), inv.getCode());
-        }
-    }
-
-    public void loadAllInvites() {
-        for(Guild g : BotInfo.botInstance.getGuilds()) {
-            ArrayList<InviteContainer> invs = getInvites(g.getId());
-
-            if (invs.isEmpty()) {
-                if(g.getMemberById(BotInfo.botInstance.getSelfUser().getId()).hasPermission(Permission.MANAGE_SERVER)) {
-                    for (Invite invite : g.retrieveInvites().complete()) {
-                        invs.add(new InviteContainer(invite.getInviter().getId(), g.getId(), invite.getCode(), invite.getUses()));
-                    }
-                }
-
-            }
-
-            if (InviteContainerManager.getInvites().containsKey(g.getId())) {
-                InviteContainerManager.getInvites().remove(g.getId());
-            }
-
-            InviteContainerManager.getInvites().put(g.getId(), invs);
-        }
+    public void removeInvite(String gid,String code) {
+        Main.insance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "' AND CODE='" + code + "'");
     }
 
     public void deleteAllMyData(String gid) {
@@ -841,32 +812,6 @@ public class SQLWorker {
         }
 
         return chatprot;
-    }
-
-    public void saveAllChatProtectors() {
-        for(Guild g : BotInfo.botInstance.getGuilds()) {
-            if(ChatProtector.hasChatProtector2(g.getId())) {
-                for (String s : ChatProtector.getChatProtector(g.getId())) {
-                    addChatProtector(g.getId(), s);
-                }
-            }
-
-            if(ChatProtector.hasChatProtector(g.getId()) && ChatProtector.hasChatProtector2(g.getId())) {
-                for(String s : getChatProtector(g.getId())) {
-                    if(!ChatProtector.getChatProtector(g.getId()).contains(s)) {
-                        removeChatProtector(g.getId(), s);
-                    }
-                }
-            }
-        }
-    }
-
-    public void loadAllChatProtectors() {
-        for(Guild g : BotInfo.botInstance.getGuilds()) {
-            if(ChatProtector.hasChatProtector(g.getId())) {
-                ChatProtector.loadChatProtectorFromDB(g.getId());
-            }
-        }
     }
 
     //Rainbow

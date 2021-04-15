@@ -1,4 +1,4 @@
-package de.presti.ree6.invtielogger;
+package de.presti.ree6.invitelogger;
 
 public class InviteContainer {
 

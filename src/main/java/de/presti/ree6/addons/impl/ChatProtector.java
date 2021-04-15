@@ -7,70 +7,59 @@ import java.util.HashMap;
 
 public class ChatProtector {
 
-    public static HashMap<String, ArrayList<String>> chachedchatprotector = new HashMap<>();
 
     public static void addWordtoProtector(String gid, String word) {
 
-        ArrayList<String> words;
-        if (chachedchatprotector.containsKey(gid)) {
-            words = chachedchatprotector.get(gid);
-            words.add(word);
+        ArrayList<String> words = Main.sqlWorker.getChatProtector(gid);
 
-            chachedchatprotector.remove(gid);
-        } else {
-            words = new ArrayList<>();
-            words.add(word);
+        if (!words.isEmpty() && !words.contains(word)) {
+            Main.sqlWorker.addChatProtector(gid, word);
+        } else if (words.isEmpty()) {
+            Main.sqlWorker.addChatProtector(gid, word);
         }
-        chachedchatprotector.put(gid, words);
     }
 
     public static void addWordstoProtector(String gid, ArrayList<String> words2) {
 
-        ArrayList<String> words;
-        if (chachedchatprotector.containsKey(gid)) {
-            words = chachedchatprotector.get(gid);
+        ArrayList<String> words = Main.sqlWorker.getChatProtector(gid);
 
+        if (!words.isEmpty()) {
             for (String s : words2) {
-                words.add(s);
+                if (!words.contains(s)) {
+                    Main.sqlWorker.addChatProtector(gid, s);
+                    words.add(s);
+                }
             }
-
-            chachedchatprotector.remove(gid);
         } else {
-            words = new ArrayList<>();
 
             for (String s : words2) {
-                words.add(s);
+                if (!words.contains(s)) {
+                    Main.sqlWorker.addChatProtector(gid, s);
+                    words.add(s);
+                }
             }
         }
-        chachedchatprotector.put(gid, words);
     }
 
     public static void removeWordsfromProtector(String gid, ArrayList<String> words2) {
-        if (chachedchatprotector.containsKey(gid)) {
-            ArrayList<String> words = chachedchatprotector.get(gid);
+        ArrayList<String> words = Main.sqlWorker.getChatProtector(gid);
 
-
+        if (!words.isEmpty()) {
             for (String s : words2) {
                 if (words.contains(s)) {
+                    Main.sqlWorker.removeChatProtector(gid, s);
                     words.remove(s);
                 }
             }
-
-            chachedchatprotector.remove(gid);
-            chachedchatprotector.put(gid, words);
         }
     }
 
     public static void removeWordfromProtector(String gid, String word) {
-        if (chachedchatprotector.containsKey(gid)) {
-            ArrayList<String> words = chachedchatprotector.get(gid);
-
-            if (words.contains(word)) {
-                words.remove(word);
+        ArrayList<String> words = Main.sqlWorker.getChatProtector(gid);
+        if(!words.isEmpty()) {
+            if(words.contains(word)) {
+                Main.sqlWorker.removeChatProtector(gid, word);
             }
-
-            chachedchatprotector.remove(gid);
-            chachedchatprotector.put(gid, words);
         }
     }
 
@@ -78,20 +67,8 @@ public class ChatProtector {
         return Main.sqlWorker.hasChatProtectorSetuped(gid);
     }
 
-    public static void loadChatProtectorFromDB(String gid) {
-        if(!hasChatProtector2(gid) && hasChatProtector(gid)) {
-            chachedchatprotector.put(gid, Main.sqlWorker.getChatProtector(gid));
-        }
-    }
-
     public static ArrayList<String> getChatProtector(String gid) {
-        if (chachedchatprotector.containsKey(gid)) {
-            return chachedchatprotector.get(gid);
-        } else if (hasChatProtector(gid)) {
-            chachedchatprotector.put(gid, Main.sqlWorker.getChatProtector(gid));
-            return chachedchatprotector.get(gid);
-        }
-        return new ArrayList<>();
+        return Main.sqlWorker.getChatProtector(gid);
     }
 
     public static boolean checkMessage(String gid, String message) {
@@ -105,9 +82,5 @@ public class ChatProtector {
         }
 
         return false;
-    }
-
-    public static boolean hasChatProtector2(String gid) {
-        return chachedchatprotector.containsKey(gid);
     }
 }

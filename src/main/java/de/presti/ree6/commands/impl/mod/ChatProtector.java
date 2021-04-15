@@ -27,7 +27,7 @@ public class ChatProtector extends Command {
                         sendMessage("Not enough Arguments!", 5, m);
                         sendMessage("Use ree!chatprotector remove WORD", 5, m);
                     } else if (args[0].equalsIgnoreCase("list")) {
-                        if(de.presti.ree6.addons.impl.ChatProtector.hasChatProtector2(m.getGuild().getId())) {
+                        if(de.presti.ree6.addons.impl.ChatProtector.hasChatProtector(m.getGuild().getId())) {
                             String end = "";
 
                             for (String s : de.presti.ree6.addons.impl.ChatProtector.getChatProtector(m.getGuild().getId())) {

@@ -14,6 +14,7 @@ import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.SQLWorker;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.Config;
+import de.presti.ree6.utils.Logger;
 import de.presti.ree6.utils.ProxyUtil;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -47,11 +48,11 @@ public class Main {
         cm = new CommandManager();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.3.3");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.3.4");
             new MusikWorker();
             insance.addEvents();
         } catch (Exception ex) {
-            System.out.println("Error while init: " + ex.getMessage());
+            Logger.log("Main", "Error while init: " + ex.getMessage());
         }
 
         insance.addHooks();
@@ -80,39 +81,24 @@ public class Main {
 
     private void shutdown() throws SQLException {
         long start = System.currentTimeMillis();
-        System.out.println("Shutdown init. !");
-        System.out.println("Uploading Invitecache to Database!");
-        try {
-            sqlWorker.saveAllInvites();
-            System.out.println("Uploaded Invitecache to Database!");
-        } catch (Exception ex) {
-            System.out.println("Couldnt save Invitecach!\nException: " + ex.getMessage());
-        }
-
-        System.out.println("Uploading ChatProtector to Database!");
-        try {
-            sqlWorker.saveAllChatProtectors();
-            System.out.println("Uploaded ChatProtector to Database!");
-        } catch (Exception ex) {
-            System.out.println("Couldnt save ChatProtector!\nException: " + ex.getMessage());
-        }
+        Logger.log("Main", "Shutdown init. !");
 
         if (sqlConnector != null && (sqlConnector.isConnected() || sqlConnector.isConnected2())) {
-            System.out.println("Closing Database Connection!");
+            Logger.log("Main", "Closing Database Connection!");
             sqlConnector.close();
-            System.out.println("Closed Database Connection!");
+            Logger.log("Main", "Closed Database Connection!");
         }
 
-        System.out.println("Disabling every Addon!");
+        Logger.log("Main", "Disabling every Addon!");
         addonManager.stopAddons();
-        System.out.println("Every Addon has been disabled!");
+        Logger.log("Main", "Every Addon has been disabled!");
 
-        System.out.println("JDA Instance shutdown init. !");
+        Logger.log("Main", "JDA Instance shutdown init. !");
         BotUtil.shutdown();
-        System.out.println("JDA Instance has been shutdowned!");
+        Logger.log("Main", "JDA Instance has been shutdowned!");
 
-        System.out.println("Everything has been shutdowned in " + (System.currentTimeMillis() - start) + "ms!");
-        System.out.println("Good bye!");
+        Logger.log("Main", "Everything has been shutdowned in " + (System.currentTimeMillis() - start) + "ms!");
+        Logger.log("Main", "Good bye!");
     }
 
     public void createCheckerThread() {
@@ -126,9 +112,9 @@ public class Main {
 
                     BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Guilds", Activity.ActivityType.WATCHING);
 
-                    System.out.println();
-                    System.out.println("Todays Stats:");
-                    System.out.println("Guilds: " + BotInfo.botInstance.getGuilds().size());
+                    Logger.log("Stats", "");
+                    Logger.log("Stats", "Todays Stats:");
+                    Logger.log("Stats", "Guilds: " + BotInfo.botInstance.getGuilds().size());
 
                     int i = 0;
 
@@ -136,22 +122,22 @@ public class Main {
                         i += guild.getMemberCount();
                     }
 
-                    System.out.println("Overall Users: " + i);
-
+                    Logger.log("Stats", "Overall Users: " + i);
+                    Logger.log("Stats", "");
                     sqlConnector.close();
                     sqlConnector.connect();
 
                     lastday = new SimpleDateFormat("dd").format(new Date());
                 }
-                String proxy = "";
+                /*String proxy = "";
                 try {
                     proxy = ProxyUtil.getProxies().split("\n")[0];
                 } catch (Exception e) {
                 }
-                if(proxy != null && !proxy.isEmpty()) {
+                if (proxy != null && !proxy.isEmpty()) {
                     ProxyUtil.setProxy(proxy.split(":")[0], proxy.split(":")[1]);
-                    ProxyUtil.createProxyChannel();
-                }
+                    ProxyUtil.connectToProxy();
+                } */
 
 
                 try {

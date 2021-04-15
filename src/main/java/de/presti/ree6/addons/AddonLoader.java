@@ -2,6 +2,7 @@ package de.presti.ree6.addons;
 
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
+import de.presti.ree6.utils.Logger;
 import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
@@ -12,11 +13,11 @@ import java.util.zip.ZipInputStream;
 public class AddonLoader {
 
     private static void createFolders() {
-        if(!new File("addons/").exists()) {
+        if (!new File("addons/").exists()) {
             new File("addons/").mkdir();
         }
 
-        if(!new File("addons/tmp/").exists()) {
+        if (!new File("addons/tmp/").exists()) {
             new File("addons/tmp/").mkdir();
         }
     }
@@ -33,7 +34,7 @@ public class AddonLoader {
                     Addon addon = loadAddon(f.getName());
                     Main.addonManager.loadAddon(addon);
                 } catch (Exception ex) {
-                    System.out.println("Couldnt load the Addon " + f.getName() + "\nException: " + ex.getCause().getMessage());
+                    Logger.log("AddonManager", "Couldnt load the Addon " + f.getName() + "\nException: " + ex.getCause().getMessage());
                     ex.printStackTrace();
                 }
             }

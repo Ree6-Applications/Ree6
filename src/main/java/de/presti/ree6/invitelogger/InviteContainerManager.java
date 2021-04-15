@@ -1,5 +1,7 @@
-package de.presti.ree6.invtielogger;
+package de.presti.ree6.invitelogger;
 
+import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.Logger;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
 
@@ -9,44 +11,26 @@ import java.util.List;
 
 public class InviteContainerManager {
 
-    private static HashMap<String, ArrayList<InviteContainer>> invites = new HashMap<>();
     private static ArrayList<InviteContainer> deletedInvites = new ArrayList<>();
 
     public static void addInvite(InviteContainer inv, String gid) {
-        ArrayList<InviteContainer> invs = new ArrayList<>();
-        if(invites.containsKey(gid)) {
-            invs = invites.get(gid);
-
-            if (!invs.contains(inv)) {
-                invs.add(inv);
-            }
-            invites.remove(gid);
-        } else {
-            invs.add(inv);
+        try {
+            Main.sqlWorker.setInvite(gid, inv.getCode(), inv.getCreatorid(), inv.getUses());
+        } catch (Exception ex) {
+            Logger.log("InviteManager", "Error while Saving Invites: " + ex.getMessage());
         }
+    }
 
-        invites.put(gid, invs);
+    public static void removeInvite(String gid, String creator, String code) {
+        Main.sqlWorker.removeInvite(gid, creator, code);
     }
 
     public static void removeInvite(String gid, String code) {
-        ArrayList<InviteContainer> invs = new ArrayList<>();
-
-        if(invites.containsKey(gid)) {
-            for(InviteContainer inv : getInvites(gid)) {
-                if(!inv.code.equalsIgnoreCase(code)) {
-                    invs.add(inv);
-                } else {
-                    deletedInvites.add(inv);
-                }
-            }
-            invites.remove(gid);
-        }
-
-        invites.put(gid, invs);
+        Main.sqlWorker.removeInvite(gid, code);
     }
 
     public static InviteContainer getRightInvite(Guild g) {
-        if(invites.containsKey(g.getId())) {
+        if(getInvites(g.getId()) != null) {
             ArrayList<InviteContainer> cachedInvs = getInvites(g.getId());
 
             List<Invite> invs = g.retrieveInvites().complete();
@@ -67,15 +51,11 @@ public class InviteContainerManager {
     }
 
     public static ArrayList<InviteContainer> getInvites(String gid) {
-        return invites.get(gid);
+        return Main.sqlWorker.getInvites(gid);
     }
 
     public static ArrayList<InviteContainer> getDeletedInvites() {
         return deletedInvites;
-    }
-
-    public static HashMap<String, ArrayList<InviteContainer>> getInvites() {
-        return invites;
     }
 
 }

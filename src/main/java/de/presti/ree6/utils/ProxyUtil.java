@@ -1,21 +1,21 @@
 package de.presti.ree6.utils;
 
-import io.netty.bootstrap.ChannelFactory;
 import io.netty.channel.socket.oio.OioSocketChannel;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.net.*;
 
 public class ProxyUtil {
 
     private static Proxy proxy;
-    private static OioSocketChannel socketChannel;
+    private static String ip;
+    private static String port;
+    //private static OioSocketChannel socketChannel;
 
-    public static Proxy getProxy() {
+    /*public static Proxy getProxy() {
         return proxy;
-    }
+    }*/
 
     public static void setProxy(Proxy proxy) {
         ProxyUtil.proxy = proxy;
@@ -23,6 +23,8 @@ public class ProxyUtil {
 
     public static void setProxy(String ip, String port) {
         try {
+            ProxyUtil.ip = ip;
+            ProxyUtil.port = port;
             setProxy(new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(ip, Integer.parseInt(port))));
         } catch (Exception exception) {
             setProxy(null);
@@ -30,7 +32,9 @@ public class ProxyUtil {
         }
     }
 
-    public static ChannelFactory<OioSocketChannel> createProxyChannel() {
+   /* public static ChannelFactory<OioSocketChannel> createProxyChannel() {
+
+        Logger.log("ProxyConnector", "creating ProxyChannel");
 
         if(getProxy() != null && getProxy() != Proxy.NO_PROXY) {
             if(socketChannel != null) {
@@ -50,17 +54,34 @@ public class ProxyUtil {
                 Method m1 = sd.getClass().getDeclaredMethod("setV4");
                 m1.setAccessible(true);
                 m1.invoke(sd);
+                Logger.log("ProxyConnector", "connecting to Proxy");
                 return socketChannel = new OioSocketChannel(sock);
             }
             catch (Exception ex2) {
                 throw new RuntimeException("Failed to create socks 4 proxy!", new Exception());
             }
         };
+    } */
+
+    public static void connectToProxy() {
+        if((ip != null && port != null) && (!ip.isEmpty() && !port.isEmpty())) {
+            disconnectFromProxy();
+            System.setProperty("socksProxyHost", ip);
+            System.setProperty("socksProxyPort", port);
+            Logger.log("ProxyConnector", "Connecting to " + System.getProperty("socksProxyHost") + ":" + System.getProperty("socksProxyPort"));
+        }
     }
 
-    public static void closeCurrentProxy() {
-        socketChannel.close();
+    public static void disconnectFromProxy() {
+        Logger.log("ProxyConnector", "Disconnecting from " + System.getProperty("socksProxyHost") + ":" + System.getProperty("socksProxyPort"));
+        System.clearProperty("socksProxyHost");
+        System.clearProperty("socksProxyPort");
     }
+
+/*    public static void closeCurrentProxy() {
+        Logger.log("ProxyConnector", "closing ProxyChannel");
+        socketChannel.close();
+    } */
 
     public static String getProxies() throws Exception {
         HttpURLConnection conn = (HttpURLConnection)(new URL("https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks4&timeout=150&country=all")).openConnection();
