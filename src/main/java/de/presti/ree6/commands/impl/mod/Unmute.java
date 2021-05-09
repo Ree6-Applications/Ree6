@@ -38,6 +38,6 @@ public class Unmute extends Command {
             sendMessage("You dont have the Permission for this Command!", 5, m);
         }
 
-        messageSelf.delete().queue();
+        deleteMessage(messageSelf);
     }
 }

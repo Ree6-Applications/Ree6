@@ -26,9 +26,12 @@ public class Waifu extends Command {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setImage((js.getBoolean("nsfw") ? "||": "") + js.getString("display_picture") + (js.getBoolean("nsfw") ? "||": ""));
+        em.setImage(js.getString("display_picture"));
         em.addField("**Character**", "``" + js.getString("name") + "``", true);
         em.addField("**From**", "``" + jarray.getString("name") + "``", true);
+        if((js.getBoolean("nsfw"))) {
+            em.addField("**NSFW**", "", true);
+        }
         em.setFooter(sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
         sendMessage(em, m);

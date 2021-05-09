@@ -25,7 +25,7 @@ public class Rainbow extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
-        messageSelf.delete().queue();
+        deleteMessage(messageSelf);
 
         if(!Main.sqlWorker.hasRainbowSetuped(m.getGuild().getId())) {
             sendMessage("Rainbow Mate searcher isnt setuped!\nAsk a Admin to set it up with ree!setup r6", 5, m);

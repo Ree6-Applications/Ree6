@@ -42,7 +42,7 @@ public class Songlist extends Command {
 
         sendMessage(em, 5, m);
 
-        messageSelf.delete().queue();
+        deleteMessage(messageSelf);
 
     }
 }

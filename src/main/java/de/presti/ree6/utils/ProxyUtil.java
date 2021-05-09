@@ -1,6 +1,5 @@
 package de.presti.ree6.utils;
 
-import io.netty.channel.socket.oio.OioSocketChannel;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

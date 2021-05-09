@@ -118,7 +118,7 @@ public class Play extends Command {
                 }
             }
         }
-        messageSelf.delete().queue();
+        deleteMessage(messageSelf);
     }
 
     private boolean isUrl(String input) {

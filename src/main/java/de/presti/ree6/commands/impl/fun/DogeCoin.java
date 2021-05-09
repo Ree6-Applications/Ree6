@@ -22,6 +22,6 @@ public class DogeCoin extends Command {
         JSONObject js = JSONApi.GetData(Requests.GET, "https://data.messari.io/api/v1/assets/doge/metrics");
 
         sendMessage("The Current price of DogeCoins are " + js.getJSONObject("data").getJSONObject("market_data").getFloat("price_usd") + " USD!", m);
-        messageSelf.delete().queue();
+        deleteMessage(messageSelf);
     }
 }

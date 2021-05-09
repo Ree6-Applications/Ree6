@@ -9,6 +9,7 @@ import de.presti.ree6.bot.BotVersion;
 import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.OtherEvents;
+import de.presti.ree6.logger.LoggerQueue;
 import de.presti.ree6.music.MusikWorker;
 import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.SQLWorker;
@@ -25,17 +26,23 @@ import java.util.Date;
 
 public class Main {
 
-    public static Main insance;
+    public static Main instance;
+    
     public static CommandManager cm;
     public static AddonManager addonManager;
     public static SQLConnector sqlConnector;
     public static SQLWorker sqlWorker;
+    public static LoggerQueue loggerQueue;
+    
     public static Thread checker;
     public static Config config;
+    
     public static String lastday = "";
 
     public static void main(String[] args) {
-        insance = new Main();
+        instance = new Main();
+
+        loggerQueue = new LoggerQueue();
 
         config = new Config();
 
@@ -48,14 +55,14 @@ public class Main {
         cm = new CommandManager();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.3.4");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.3.5");
             new MusikWorker();
-            insance.addEvents();
+            instance.addEvents();
         } catch (Exception ex) {
             Logger.log("Main", "Error while init: " + ex.getMessage());
         }
 
-        insance.addHooks();
+        instance.addHooks();
 
         BotInfo.starttime = System.currentTimeMillis();
 

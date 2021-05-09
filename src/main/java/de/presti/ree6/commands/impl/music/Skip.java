@@ -22,6 +22,6 @@ public class Skip extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
         MusikWorker.skipTrack(m);
-        messageSelf.delete().queue();
+        deleteMessage(messageSelf);
     }
 }

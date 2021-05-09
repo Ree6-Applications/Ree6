@@ -204,10 +204,10 @@ public class SQLWorker {
                 }
             });
 
-            Main.insance.sqlConnector.query("DELETE FROM LogWebhooks WHERE GID='" + gid + "'");
-            Main.insance.sqlConnector.query("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+            Main.instance.sqlConnector.query("DELETE FROM LogWebhooks WHERE GID='" + gid + "'");
+            Main.instance.sqlConnector.query("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
         } else {
-            Main.insance.sqlConnector.query("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+            Main.instance.sqlConnector.query("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
         }
     }
 
@@ -270,10 +270,10 @@ public class SQLWorker {
                     }
                 }
             });
-            Main.insance.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
-            Main.insance.sqlConnector.query("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+            Main.instance.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
+            Main.instance.sqlConnector.query("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
         } else {
-            Main.insance.sqlConnector.query("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+            Main.instance.sqlConnector.query("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
         }
     }
 
@@ -325,9 +325,9 @@ public class SQLWorker {
 
     public void setMuteRole(String gid, String rid) throws SQLException {
         if (hasMuteSetuped(gid)) {
-            Main.insance.sqlConnector.query("UPDATE MuteRoles SET RID='" + rid + "' WHERE GID='" + gid + "'");
+            Main.instance.sqlConnector.query("UPDATE MuteRoles SET RID='" + rid + "' WHERE GID='" + gid + "'");
         } else {
-            Main.insance.sqlConnector.query("INSERT INTO MuteRoles (GID, RID) VALUES ('" + gid + "', '" + rid + "');");
+            Main.instance.sqlConnector.query("INSERT INTO MuteRoles (GID, RID) VALUES ('" + gid + "', '" + rid + "');");
         }
     }
 
@@ -425,11 +425,11 @@ public class SQLWorker {
     }
 
     public void addChatLevelReward(String gid, int level, String rid) {
-        Main.insance.sqlConnector.query("INSERT INTO ChatLevelAutoRoles (GID, RID, LVL) VALUES ('" + gid + "', '" + rid + "','" + level +"');");
+        Main.instance.sqlConnector.query("INSERT INTO ChatLevelAutoRoles (GID, RID, LVL) VALUES ('" + gid + "', '" + rid + "','" + level +"');");
     }
 
     public void removeChatLevelReward(String gid, int level) {
-        Main.insance.sqlConnector.query("DELETE FROM ChatLevelAutoRoles WHERE GID='" + gid + "' AND LVL='" + level + "'");
+        Main.instance.sqlConnector.query("DELETE FROM ChatLevelAutoRoles WHERE GID='" + gid + "' AND LVL='" + level + "'");
     }
 
 
@@ -483,11 +483,11 @@ public class SQLWorker {
     }
 
     public void addVoiceLevelReward(String gid, int level, String rid) {
-        Main.insance.sqlConnector.query("INSERT INTO VCLevelAutoRoles (GID, RID, LVL) VALUES ('" + gid + "', '" + rid + "','" + level +"');");
+        Main.instance.sqlConnector.query("INSERT INTO VCLevelAutoRoles (GID, RID, LVL) VALUES ('" + gid + "', '" + rid + "','" + level +"');");
     }
 
     public void removeVoiceLevelReward(String gid, int level) {
-        Main.insance.sqlConnector.query("DELETE FROM VCLevelAutoRoles WHERE GID='" + gid + "' AND LVL='" + level + "'");
+        Main.instance.sqlConnector.query("DELETE FROM VCLevelAutoRoles WHERE GID='" + gid + "' AND LVL='" + level + "'");
     }
 
     //Autorole
@@ -538,11 +538,11 @@ public class SQLWorker {
     }
 
     public void addAutoRole(String gid, String rid) {
-        Main.insance.sqlConnector.query("INSERT INTO AutoRoles (GID, RID) VALUES ('" + gid + "', '" + rid + "');");
+        Main.instance.sqlConnector.query("INSERT INTO AutoRoles (GID, RID) VALUES ('" + gid + "', '" + rid + "');");
     }
 
     public void removeAutoRole(String gid, String rid) {
-        Main.insance.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "' AND RID='" + rid + "'");
+        Main.instance.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "' AND RID='" + rid + "'");
     }
 
     //Invite
@@ -596,29 +596,29 @@ public class SQLWorker {
 
     public void setInvite(String gid, String code, String creator, int usage) {
         if (existsInvite(gid, code, creator)) {
-            Main.insance.sqlConnector.query("UPDATE Invites SET USES='" + usage + "' WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
+            Main.instance.sqlConnector.query("UPDATE Invites SET USES='" + usage + "' WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
         } else {
-            Main.insance.sqlConnector.query("INSERT INTO Invites (GID, UID, USES, CODE) VALUES ('" + gid + "', '" + creator + "', '" + usage + "', '" + code + "');");
+            Main.instance.sqlConnector.query("INSERT INTO Invites (GID, UID, USES, CODE) VALUES ('" + gid + "', '" + creator + "', '" + usage + "', '" + code + "');");
         }
     }
 
     public void removeInvite(String gid, String creator, String code) {
-        Main.insance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
+        Main.instance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
     }
 
     public void removeInvite(String gid,String code) {
-        Main.insance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "' AND CODE='" + code + "'");
+        Main.instance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "' AND CODE='" + code + "'");
     }
 
     public void deleteAllMyData(String gid) {
-        Main.insance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "'");
-        Main.insance.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "'");
-        Main.insance.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
-        Main.insance.sqlConnector.query("DELETE FROM LogWebhooks WHERE GID='" + gid + "'");
-        Main.insance.sqlConnector.query("DELETE FROM NewsWebhooks WHERE GID='" + gid + "'");
-        Main.insance.sqlConnector.query("DELETE FROM JoinMessage WHERE GID='" + gid + "'");
-        Main.insance.sqlConnector.query("DELETE FROM MuteRoles WHERE GID='" + gid + "'");
-        Main.insance.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "'");
+        Main.instance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "'");
+        Main.instance.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "'");
+        Main.instance.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
+        Main.instance.sqlConnector.query("DELETE FROM LogWebhooks WHERE GID='" + gid + "'");
+        Main.instance.sqlConnector.query("DELETE FROM NewsWebhooks WHERE GID='" + gid + "'");
+        Main.instance.sqlConnector.query("DELETE FROM JoinMessage WHERE GID='" + gid + "'");
+        Main.instance.sqlConnector.query("DELETE FROM MuteRoles WHERE GID='" + gid + "'");
+        Main.instance.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "'");
     }
 
     //News
@@ -658,10 +658,10 @@ public class SQLWorker {
                     }
                 }
             });
-            Main.insance.sqlConnector.query("DELETE FROM NewsWebhooks WHERE GID='" + gid + "'");
-            Main.insance.sqlConnector.query("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+            Main.instance.sqlConnector.query("DELETE FROM NewsWebhooks WHERE GID='" + gid + "'");
+            Main.instance.sqlConnector.query("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
         } else {
-            Main.insance.sqlConnector.query("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+            Main.instance.sqlConnector.query("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
         }
     }
 
@@ -689,9 +689,9 @@ public class SQLWorker {
 
     public void setMessage(String gid, String text) {
         if (hasMessageSetuped(gid)) {
-            Main.insance.sqlConnector.query("DELETE FROM JoinMessage WHERE GID='" + gid + "'");
+            Main.instance.sqlConnector.query("DELETE FROM JoinMessage WHERE GID='" + gid + "'");
         }
-        Main.insance.sqlConnector.query("INSERT INTO JoinMessage (GID, MSG) VALUES ('" + gid + "', '" + text + "');");
+        Main.instance.sqlConnector.query("INSERT INTO JoinMessage (GID, MSG) VALUES ('" + gid + "', '" + text + "');");
     }
 
     public String getMessage(String gid) {
@@ -781,14 +781,14 @@ public class SQLWorker {
 
     public void addChatProtector(String gid, String word) {
         if (hasChatProtectorSetuped(gid)) {
-            Main.insance.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "' AND WORD='" + word + "'");
+            Main.instance.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "' AND WORD='" + word + "'");
         }
-        Main.insance.sqlConnector.query("INSERT INTO ChatProtector (GID, WORD) VALUES ('" + gid + "', '" + word + "');");
+        Main.instance.sqlConnector.query("INSERT INTO ChatProtector (GID, WORD) VALUES ('" + gid + "', '" + word + "');");
     }
 
     public void removeChatProtector(String gid, String word) {
         if (hasChatProtectorSetuped(gid)) {
-            Main.insance.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "' AND WORD='" + word + "'");
+            Main.instance.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "' AND WORD='" + word + "'");
         }
     }
 
@@ -851,9 +851,9 @@ public class SQLWorker {
                     }
                 }
             });
-            Main.insance.sqlConnector.query("DELETE FROM RainbowWebhooks WHERE GID='" + gid + "'");
+            Main.instance.sqlConnector.query("DELETE FROM RainbowWebhooks WHERE GID='" + gid + "'");
         }
-        Main.insance.sqlConnector.query("INSERT INTO RainbowWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+        Main.instance.sqlConnector.query("INSERT INTO RainbowWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
     }
 
     public boolean hasRainbowSetuped(String gid) {

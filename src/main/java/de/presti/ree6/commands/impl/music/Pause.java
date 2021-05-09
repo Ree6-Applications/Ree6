@@ -32,6 +32,6 @@ public class Pause extends Command {
         em.setDescription("Song has been paused!");
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
         sendMessage(em, 5, m);
-        messageSelf.delete().queue();
+        deleteMessage(messageSelf);
     }
 }

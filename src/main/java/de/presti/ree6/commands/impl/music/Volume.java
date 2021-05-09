@@ -53,7 +53,7 @@ public class Volume extends Command {
 
         sendMessage(em, 5, m);
 
-        messageSelf.delete().queue();
+        deleteMessage(messageSelf);
 
     }
 }

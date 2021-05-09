@@ -34,6 +34,6 @@ public class Clearqueue extends Command {
 
         MusikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.clearqueue();
 
-        messageSelf.delete().queue();
+        deleteMessage(messageSelf);
     }
 }

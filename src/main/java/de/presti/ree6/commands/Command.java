@@ -1,5 +1,6 @@
 package de.presti.ree6.commands;
 
+import de.presti.ree6.utils.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -60,6 +61,16 @@ public abstract class Command {
 
     public void sendMessage(EmbedBuilder msg, int deletesecond, MessageChannel m) {
         m.sendMessage(msg.build()).delay(deletesecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+    }
+
+    public static void deleteMessage(Message message) {
+        if(message != null && message.getContentRaw() != null && message.getId() != null) {
+            try {
+                message.delete().queue();
+            } catch (Exception ex) {
+                Logger.log("CommandSystem", "Couldnt delete a Message!");
+            }
+        }
     }
 
     public boolean isAlias(String arg) {

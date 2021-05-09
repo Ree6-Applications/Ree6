@@ -73,6 +73,6 @@ public class ChatProtector extends Command {
         } else {
             sendMessage("You dont have the Permission for this Command!", 5, m);
         }
-        messageSelf.delete().queue();
+        deleteMessage(messageSelf);
     }
 }

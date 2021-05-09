@@ -20,6 +20,6 @@ public class Cringe extends Command {
 
         sendMessage("```" + mh.getRetrievedHistory().get(0).getContentRaw() + "``` damn " + mh.getRetrievedHistory().get(0).getAuthor().getAsMention() + " thats **CRINGE**", m);
 
-        messageSelf.delete().queue();
+        deleteMessage(messageSelf);
     }
 }
