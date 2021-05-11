@@ -1,5 +1,7 @@
 # Ree6
 
+To keep this Project alive consider supporting me: https://www.patreon.com/presti (just if you want to support you dont have to)
+
 Ree6 is a Moderation Bot similar to Mee6 but with one major diffrence its free!
 
 Isnt Mee6 free too? - Basically yes but for the most Features you are required to have a Subscription!
