@@ -14,9 +14,10 @@ Current Features:
 - Fun Commands (Random Memes, Random Dogs, Ping and more)
 - Leveling System
 - Moderation Commands(ban, mute, kick and more)
+- Twitch Notification
 
 Comming Features:
-- YouTube/Twitch notification
+- YouTube Notification
 - 100% adjustable messages
 - Webpanel
 - RestAPI
