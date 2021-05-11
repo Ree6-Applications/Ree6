@@ -32,3 +32,4 @@ Used Apis:
 - reliqua (RestAPI Wrapper for Java, used by Nekos4J)
 - spotify-web-api-java (https://github.com/thelinmichael/spotify-web-api-java)
 - Youtube Data API v3 (https://github.com/googleapis/google-api-java-client-services/tree/master/clients/google-api-services-youtube/v3)
+- Twitch4J (Twitch.tv API Wrapper https://github.com/twitch4j/twitch4j)
