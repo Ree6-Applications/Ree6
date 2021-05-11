@@ -22,14 +22,14 @@ public class Waifu extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
         JSONObject js = JSONApi.GetData(Requests.GET, "https://api.dagpi.xyz/data/waifu", "", Main.config.getConfig().getString("dagpi.apitoken"));
-        JSONObject jarray = js.getJSONObject("series");
+        JSONObject array = js.getJSONObject("series");
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setImage(js.getString("display_picture"));
-        em.addField("**Character**", "``" + js.getString("name") + "``", true);
-        em.addField("**From**", "``" + jarray.getString("name") + "``", true);
-        if((js.getBoolean("nsfw"))) {
+        em.setImage((js.has("display_picture") ? js.getString("display_picture") : "https://images.ree6.tk/notfound.png"));
+        em.addField("**Character**", "``" + (js.has("name") ? js.getString("name") : "Invalid Response by API") + "``", true);
+        em.addField("**From**", "``" + (array.has("name") ? array.getString("name") : "Invalid Response by API") + "``", true);
+        if((js.has("nsfw") && js.getBoolean("nsfw"))) {
             em.addField("**NSFW**", "", true);
         }
         em.setFooter(sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());

@@ -13,10 +13,7 @@ import de.presti.ree6.logger.LoggerQueue;
 import de.presti.ree6.music.MusikWorker;
 import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.SQLWorker;
-import de.presti.ree6.utils.ArrayUtil;
-import de.presti.ree6.utils.Config;
-import de.presti.ree6.utils.Logger;
-import de.presti.ree6.utils.ProxyUtil;
+import de.presti.ree6.utils.*;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -27,7 +24,9 @@ import java.util.Date;
 public class Main {
 
     public static Main instance;
-    
+
+    public static TwitchAPIHandler twitchAPIHandler;
+
     public static CommandManager cm;
     public static AddonManager addonManager;
     public static SQLConnector sqlConnector;
@@ -48,14 +47,20 @@ public class Main {
 
         config.init();
 
-        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
-
+        /*sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
+         */
         sqlWorker = new SQLWorker();
 
         cm = new CommandManager();
 
+        twitchAPIHandler = new TwitchAPIHandler();
+
+        for(String name : sqlWorker.getAllTwitchNotifyUsers()) {
+            twitchAPIHandler.registerChannel(name);
+        }
+
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.3.5");
+            BotUtil.createBot(BotVersion.DEV, "1.3.7");
             new MusikWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -80,8 +85,8 @@ public class Main {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 shutdown();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
             }
         }));
     }

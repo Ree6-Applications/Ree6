@@ -1,8 +1,10 @@
 package de.presti.ree6.commands;
 
 import de.presti.ree6.commands.impl.community.Rainbow;
+import de.presti.ree6.commands.impl.community.TwitchNotifier;
 import de.presti.ree6.commands.impl.fun.*;
 import de.presti.ree6.commands.impl.hidden.ReloadAddons;
+import de.presti.ree6.commands.impl.hidden.Test;
 import de.presti.ree6.commands.impl.info.*;
 import de.presti.ree6.commands.impl.level.Leaderboards;
 import de.presti.ree6.commands.impl.level.Level;
@@ -81,12 +83,14 @@ public class CommandManager {
 
         //Community
         addCommand(new Rainbow());
+        addCommand(new TwitchNotifier());
 
         //NSFW
         addCommand(new NSFW());
 
         //Hidden
         addCommand(new ReloadAddons());
+        //addCommand(new Test());
 
     }
 

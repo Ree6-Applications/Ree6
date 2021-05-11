@@ -54,7 +54,7 @@ public class OtherEvents extends ListenerAdapter {
         wmb.setUsername("Welcome!");
         wmb.setContent((Main.sqlWorker.getMessage(event.getGuild().getId())).replaceAll("%user_name%", event.getMember().getUser().getName()).replaceAll("%user_mention%", event.getMember().getUser().getAsMention()).replaceAll("%guild_name%", event.getGuild().getName()));
 
-        String[] info = Main.sqlWorker.getWelcomewebhook(event.getGuild().getId());
+        String[] info = Main.sqlWorker.getWelcomeWebhook(event.getGuild().getId());
 
         Webhook.sendWebhook(wmb.build(), Long.parseLong(info[0]), info[1]);
     }

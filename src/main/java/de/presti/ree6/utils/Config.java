@@ -1,5 +1,6 @@
 package de.presti.ree6.utils;
 
+import de.presti.ree6.main.Main;
 import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
@@ -32,6 +33,8 @@ public class Config {
             cfg.addDefault("dagpi.apitoken", "yourdagpixyztokenhere");
             cfg.addDefault("spotify.client.id", "yourspotifyclientid");
             cfg.addDefault("spotify.client.secret", "yourspotifyclientsecret");
+            cfg.addDefault("twitch.client.id", "yourtwitchclientidhere");
+            cfg.addDefault("twitch.client.secret", "yourtwitchclientsecrethere");
             cfg.addDefault("youtube.api.key", "youryoutubeapikey");
             cfg.addDefault("bot.tokens.rel", "ReleaseTokenhere");
             cfg.addDefault("bot.tokens.dev", "DevTokenhere");

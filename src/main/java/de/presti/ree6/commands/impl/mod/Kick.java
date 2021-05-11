@@ -2,13 +2,10 @@ package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
-import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
-
-import java.sql.SQLException;
 
 public class Kick extends Command {
 
@@ -24,8 +21,12 @@ public class Kick extends Command {
                     sendMessage("No User mentioned!", 5, m);
                     sendMessage("Use ree!kick @user", 5, m);
                 } else {
-                    sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been kicked!", 5, m);
-                    sender.getGuild().kick(messageSelf.getMentionedMembers().get(0)).queue();
+                    try {
+                        sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been kicked!", 5, m);
+                        sender.getGuild().kick(messageSelf.getMentionedMembers().get(0)).queue();
+                    } catch (Exception ex) {
+                        sendMessage("Couldn't kick the User is his Role higher than mine?", 5, m);
+                    }
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m);

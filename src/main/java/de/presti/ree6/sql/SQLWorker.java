@@ -1,13 +1,8 @@
 package de.presti.ree6.sql;
 
-import de.presti.ree6.addons.impl.ChatProtector;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.invitelogger.InviteContainer;
-import de.presti.ree6.invitelogger.InviteContainerManager;
 import de.presti.ree6.main.Main;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.Webhook;
 
 import java.sql.PreparedStatement;
@@ -15,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class SQLWorker {
 
@@ -31,15 +25,15 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
                 rs = st.executeQuery("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
                 //ex.printStackTrace();
             }
 
-            if (rs.next()) {
+            if (rs != null && rs.next()) {
                 xp = rs.getString("XP");
             }
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
             //ex.printStackTrace();
         }
 
@@ -55,15 +49,13 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
                 rs = st.executeQuery("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
                 //ex.printStackTrace();
             }
 
-            if (rs.next()) {
-                return true;
-            }
+            return rs != null && rs.next();
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
             //ex.printStackTrace();
         }
 
@@ -93,13 +85,15 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM `Level` WHERE GID='" + gid + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + amount);
                 rs = st.executeQuery("SELECT * FROM `Level` WHERE GID='" + gid + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + amount);
-            } catch (Exception ex) {}
+            } catch (Exception ignore) {
+            }
 
-            while (rs.next()) {
+            while (rs != null && rs.next()) {
                 ids.add(rs.getString("UID"));
             }
 
-        } catch (Exception ex) {}
+        } catch (Exception ignore) {
+        }
 
         return ids;
     }
@@ -116,15 +110,15 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM VCLevel WHERE GID='" + gid + "' AND UID='" + uid + "'");
                 rs = st.executeQuery("SELECT * FROM VCLevel WHERE GID='" + gid + "' AND UID='" + uid + "'");
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
                 //ex.printStackTrace();
             }
 
-            if (rs.next()) {
+            if (rs != null && rs.next()) {
                 xp = rs.getString("XP");
             }
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
             //ex.printStackTrace();
         }
 
@@ -140,15 +134,13 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM VCLevel WHERE GID='" + gid + "' AND UID='" + uid + "'");
                 rs = st.executeQuery("SELECT * FROM VCLevel WHERE GID='" + gid + "' AND UID='" + uid + "'");
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
                 //ex.printStackTrace();
             }
 
-            if (rs.next()) {
-                return true;
-            }
+            return rs != null && rs.next();
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
             //ex.printStackTrace();
         }
 
@@ -178,13 +170,15 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM `VCLevel` WHERE GID='" + gid + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + amount);
                 rs = st.executeQuery("SELECT * FROM `VCLevel` WHERE GID='" + gid + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + amount);
-            } catch (Exception ex) {}
+            } catch (Exception ignore) {
+            }
 
-            while (rs.next()) {
+            while (rs != null && rs.next()) {
                 ids.add(rs.getString("UID"));
             }
 
-        } catch (Exception ex) {}
+        } catch (Exception ignore) {
+        }
 
         return ids;
     }
@@ -194,7 +188,7 @@ public class SQLWorker {
     public void setLogWebhook(String gid, String cid, String token) throws SQLException {
         if (hasLogSetuped(gid)) {
 
-            String[] d = getLogwebhook(gid);
+            String[] d = getLogWebhook(gid);
 
             BotInfo.botInstance.getGuildById(gid).retrieveWebhooks().queue(webhooks -> {
                 for (Webhook wb : webhooks) {
@@ -204,11 +198,9 @@ public class SQLWorker {
                 }
             });
 
-            Main.instance.sqlConnector.query("DELETE FROM LogWebhooks WHERE GID='" + gid + "'");
-            Main.instance.sqlConnector.query("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
-        } else {
-            Main.instance.sqlConnector.query("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+            Main.sqlConnector.query("DELETE FROM LogWebhooks WHERE GID='" + gid + "'");
         }
+        Main.sqlConnector.query("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
     }
 
     public boolean hasLogSetuped(String gid) {
@@ -219,19 +211,17 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM LogWebhooks WHERE GID='" + gid + "'");
                 rs = st.executeQuery("SELECT * FROM LogWebhooks WHERE GID='" + gid + "'");
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
             }
 
-            if (rs.next()) {
-                return true;
-            }
+            return rs != null && rs.next();
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
         return false;
     }
 
-    public String[] getLogwebhook(String gid) {
+    public String[] getLogWebhook(String gid) {
         if (hasLogSetuped(gid)) {
             try {
                 PreparedStatement st;
@@ -240,16 +230,14 @@ public class SQLWorker {
                 try {
                     st = Main.sqlConnector.con.prepareStatement("SELECT * FROM LogWebhooks WHERE GID='" + gid + "'");
                     rs = st.executeQuery("SELECT * FROM LogWebhooks WHERE GID='" + gid + "'");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } catch (Exception ignore) {
                 }
 
-                if (rs.next()) {
+                if (rs != null && rs.next()) {
                     return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
                 }
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception ignore) {
             }
         }
         return new String[]{"Error", "Not setuped!"};
@@ -261,7 +249,7 @@ public class SQLWorker {
     public void setWelcomeWebhook(String gid, String cid, String token) throws SQLException {
         if (hasWelcomeSetuped(gid)) {
 
-            String[] d = getWelcomewebhook(gid);
+            String[] d = getWelcomeWebhook(gid);
 
             BotInfo.botInstance.getGuildById(gid).retrieveWebhooks().queue(webhooks -> {
                 for (Webhook wb : webhooks) {
@@ -270,11 +258,9 @@ public class SQLWorker {
                     }
                 }
             });
-            Main.instance.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
-            Main.instance.sqlConnector.query("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
-        } else {
-            Main.instance.sqlConnector.query("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+            Main.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
         }
+        Main.sqlConnector.query("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
     }
 
     public boolean hasWelcomeSetuped(String gid) {
@@ -285,19 +271,19 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM WelcomeWebhooks WHERE GID='" + gid + "'");
                 rs = st.executeQuery("SELECT * FROM WelcomeWebhooks WHERE GID='" + gid + "'");
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
             }
 
-            if (rs.next()) {
+            if (rs != null && rs.next()) {
                 return true;
             }
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
         return false;
     }
 
-    public String[] getWelcomewebhook(String gid) {
+    public String[] getWelcomeWebhook(String gid) {
         if (hasWelcomeSetuped(gid)) {
             try {
                 PreparedStatement st;
@@ -306,16 +292,14 @@ public class SQLWorker {
                 try {
                     st = Main.sqlConnector.con.prepareStatement("SELECT * FROM WelcomeWebhooks WHERE GID='" + gid + "'");
                     rs = st.executeQuery("SELECT * FROM WelcomeWebhooks WHERE GID='" + gid + "'");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } catch (Exception ignore) {
                 }
 
-                if (rs.next()) {
+                if (rs != null && rs.next()) {
                     return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
                 }
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception ignore) {
             }
         }
         return new String[]{"Error", "Not setuped!"};
@@ -325,9 +309,9 @@ public class SQLWorker {
 
     public void setMuteRole(String gid, String rid) throws SQLException {
         if (hasMuteSetuped(gid)) {
-            Main.instance.sqlConnector.query("UPDATE MuteRoles SET RID='" + rid + "' WHERE GID='" + gid + "'");
+            Main.sqlConnector.query("UPDATE MuteRoles SET RID='" + rid + "' WHERE GID='" + gid + "'");
         } else {
-            Main.instance.sqlConnector.query("INSERT INTO MuteRoles (GID, RID) VALUES ('" + gid + "', '" + rid + "');");
+            Main.sqlConnector.query("INSERT INTO MuteRoles (GID, RID) VALUES ('" + gid + "', '" + rid + "');");
         }
     }
 
@@ -339,14 +323,14 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM MuteRoles WHERE GID='" + gid + "'");
                 rs = st.executeQuery("SELECT * FROM MuteRoles WHERE GID='" + gid + "'");
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
             }
 
-            if (rs.next()) {
+            if (rs != null && rs.next()) {
                 return true;
             }
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
         return false;
     }
@@ -360,16 +344,14 @@ public class SQLWorker {
                 try {
                     st = Main.sqlConnector.con.prepareStatement("SELECT * FROM MuteRoles WHERE GID='" + gid + "'");
                     rs = st.executeQuery("SELECT * FROM MuteRoles WHERE GID='" + gid + "'");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } catch (Exception ignore) {
                 }
 
-                if (rs.next()) {
+                if (rs != null && rs.next()) {
                     return rs.getString("RID");
                 }
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception ignore) {
             }
         }
         return "Error";
@@ -389,9 +371,9 @@ public class SQLWorker {
                 x.printStackTrace();
             }
 
-            return rs.next();
+            return (rs != null && rs.next());
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
 
         return false;
@@ -412,24 +394,24 @@ public class SQLWorker {
                 x.printStackTrace();
             }
 
-            while (rs.next()) {
-                if(!rewards.containsKey(Integer.valueOf(rs.getString("LVL")))) {
+            while (rs != null && rs.next()) {
+                if (!rewards.containsKey(Integer.valueOf(rs.getString("LVL")))) {
                     rewards.put(Integer.parseInt(rs.getString("LVL")), rs.getString("RID"));
                 }
             }
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
 
         return rewards;
     }
 
     public void addChatLevelReward(String gid, int level, String rid) {
-        Main.instance.sqlConnector.query("INSERT INTO ChatLevelAutoRoles (GID, RID, LVL) VALUES ('" + gid + "', '" + rid + "','" + level +"');");
+        Main.sqlConnector.query("INSERT INTO ChatLevelAutoRoles (GID, RID, LVL) VALUES ('" + gid + "', '" + rid + "','" + level + "');");
     }
 
     public void removeChatLevelReward(String gid, int level) {
-        Main.instance.sqlConnector.query("DELETE FROM ChatLevelAutoRoles WHERE GID='" + gid + "' AND LVL='" + level + "'");
+        Main.sqlConnector.query("DELETE FROM ChatLevelAutoRoles WHERE GID='" + gid + "' AND LVL='" + level + "'");
     }
 
 
@@ -447,9 +429,9 @@ public class SQLWorker {
                 x.printStackTrace();
             }
 
-            return rs.next();
+            return (rs != null && rs.next());
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
 
         return false;
@@ -470,24 +452,24 @@ public class SQLWorker {
                 x.printStackTrace();
             }
 
-            while (rs.next()) {
-                if(!rewards.containsKey(Integer.valueOf(rs.getString("LVL")))) {
+            while (rs != null && rs.next()) {
+                if (!rewards.containsKey(Integer.valueOf(rs.getString("LVL")))) {
                     rewards.put(Integer.parseInt(rs.getString("LVL")), rs.getString("RID"));
                 }
             }
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
 
         return rewards;
     }
 
     public void addVoiceLevelReward(String gid, int level, String rid) {
-        Main.instance.sqlConnector.query("INSERT INTO VCLevelAutoRoles (GID, RID, LVL) VALUES ('" + gid + "', '" + rid + "','" + level +"');");
+        Main.sqlConnector.query("INSERT INTO VCLevelAutoRoles (GID, RID, LVL) VALUES ('" + gid + "', '" + rid + "','" + level + "');");
     }
 
     public void removeVoiceLevelReward(String gid, int level) {
-        Main.instance.sqlConnector.query("DELETE FROM VCLevelAutoRoles WHERE GID='" + gid + "' AND LVL='" + level + "'");
+        Main.sqlConnector.query("DELETE FROM VCLevelAutoRoles WHERE GID='" + gid + "' AND LVL='" + level + "'");
     }
 
     //Autorole
@@ -504,9 +486,9 @@ public class SQLWorker {
                 x.printStackTrace();
             }
 
-            return rs.next();
+            return (rs != null && rs.next());
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
 
         return false;
@@ -527,22 +509,22 @@ public class SQLWorker {
                 x.printStackTrace();
             }
 
-            while (rs.next()) {
+            while (rs != null && rs.next()) {
                 roles.add(rs.getString("RID"));
             }
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
 
         return roles;
     }
 
     public void addAutoRole(String gid, String rid) {
-        Main.instance.sqlConnector.query("INSERT INTO AutoRoles (GID, RID) VALUES ('" + gid + "', '" + rid + "');");
+        Main.sqlConnector.query("INSERT INTO AutoRoles (GID, RID) VALUES ('" + gid + "', '" + rid + "');");
     }
 
     public void removeAutoRole(String gid, String rid) {
-        Main.instance.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "' AND RID='" + rid + "'");
+        Main.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "' AND RID='" + rid + "'");
     }
 
     //Invite
@@ -559,11 +541,9 @@ public class SQLWorker {
                 x.printStackTrace();
             }
 
-            if(rs.next()) {
-                return true;
-            }
+            return rs != null && rs.next();
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
 
         return false;
@@ -584,11 +564,11 @@ public class SQLWorker {
                 x.printStackTrace();
             }
 
-            while(rs.next()) {
+            while (rs != null && rs.next()) {
                 pog.add(new InviteContainer(rs.getString("UID"), rs.getString("GID"), rs.getString("CODE"), Integer.parseInt(rs.getString("USES"))));
             }
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
 
         return pog;
@@ -596,29 +576,29 @@ public class SQLWorker {
 
     public void setInvite(String gid, String code, String creator, int usage) {
         if (existsInvite(gid, code, creator)) {
-            Main.instance.sqlConnector.query("UPDATE Invites SET USES='" + usage + "' WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
+            Main.sqlConnector.query("UPDATE Invites SET USES='" + usage + "' WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
         } else {
-            Main.instance.sqlConnector.query("INSERT INTO Invites (GID, UID, USES, CODE) VALUES ('" + gid + "', '" + creator + "', '" + usage + "', '" + code + "');");
+            Main.sqlConnector.query("INSERT INTO Invites (GID, UID, USES, CODE) VALUES ('" + gid + "', '" + creator + "', '" + usage + "', '" + code + "');");
         }
     }
 
     public void removeInvite(String gid, String creator, String code) {
-        Main.instance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
+        Main.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "' AND UID='" + creator + "' AND CODE='" + code + "'");
     }
 
-    public void removeInvite(String gid,String code) {
-        Main.instance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "' AND CODE='" + code + "'");
+    public void removeInvite(String gid, String code) {
+        Main.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "' AND CODE='" + code + "'");
     }
 
     public void deleteAllMyData(String gid) {
-        Main.instance.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "'");
-        Main.instance.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "'");
-        Main.instance.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
-        Main.instance.sqlConnector.query("DELETE FROM LogWebhooks WHERE GID='" + gid + "'");
-        Main.instance.sqlConnector.query("DELETE FROM NewsWebhooks WHERE GID='" + gid + "'");
-        Main.instance.sqlConnector.query("DELETE FROM JoinMessage WHERE GID='" + gid + "'");
-        Main.instance.sqlConnector.query("DELETE FROM MuteRoles WHERE GID='" + gid + "'");
-        Main.instance.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM LogWebhooks WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM NewsWebhooks WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM JoinMessage WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM MuteRoles WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "'");
     }
 
     //News
@@ -632,16 +612,14 @@ public class SQLWorker {
                 try {
                     st = Main.sqlConnector.con.prepareStatement("SELECT * FROM NewsWebhooks WHERE GID='" + gid + "'");
                     rs = st.executeQuery("SELECT * FROM NewsWebhooks WHERE GID='" + gid + "'");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } catch (Exception ignore) {
                 }
 
-                if (rs.next()) {
+                if (rs != null && rs.next()) {
                     return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
                 }
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception ignore) {
             }
         }
         return new String[]{"Error", "Not setuped!"};
@@ -658,11 +636,9 @@ public class SQLWorker {
                     }
                 }
             });
-            Main.instance.sqlConnector.query("DELETE FROM NewsWebhooks WHERE GID='" + gid + "'");
-            Main.instance.sqlConnector.query("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
-        } else {
-            Main.instance.sqlConnector.query("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+            Main.sqlConnector.query("DELETE FROM NewsWebhooks WHERE GID='" + gid + "'");
         }
+        Main.sqlConnector.query("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
     }
 
     public boolean hasNewsSetuped(String gid) {
@@ -673,14 +649,12 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM NewsWebhooks WHERE GID='" + gid + "'");
                 rs = st.executeQuery("SELECT * FROM NewsWebhooks WHERE GID='" + gid + "'");
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
             }
 
-            if (rs.next()) {
-                return true;
-            }
+            return rs != null && rs.next();
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
         return false;
     }
@@ -689,13 +663,13 @@ public class SQLWorker {
 
     public void setMessage(String gid, String text) {
         if (hasMessageSetuped(gid)) {
-            Main.instance.sqlConnector.query("DELETE FROM JoinMessage WHERE GID='" + gid + "'");
+            Main.sqlConnector.query("DELETE FROM JoinMessage WHERE GID='" + gid + "'");
         }
-        Main.instance.sqlConnector.query("INSERT INTO JoinMessage (GID, MSG) VALUES ('" + gid + "', '" + text + "');");
+        Main.sqlConnector.query("INSERT INTO JoinMessage (GID, MSG) VALUES ('" + gid + "', '" + text + "');");
     }
 
     public String getMessage(String gid) {
-        if(hasMessageSetuped(gid)) {
+        if (hasMessageSetuped(gid)) {
             try {
                 PreparedStatement st;
                 ResultSet rs = null;
@@ -703,14 +677,14 @@ public class SQLWorker {
                 try {
                     st = Main.sqlConnector.con.prepareStatement("SELECT * FROM JoinMessage WHERE GID='" + gid + "'");
                     rs = st.executeQuery("SELECT * FROM JoinMessage WHERE GID='" + gid + "'");
-                } catch (Exception ex) {
+                } catch (Exception ignore) {
                 }
 
-                if (rs.next()) {
+                if (rs != null && rs.next()) {
                     return rs.getString("MSG");
                 }
 
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
             }
         }
         return "Welcome %user_mention%!\nWe wish you a great time on %guild_name%";
@@ -724,14 +698,12 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM JoinMessage WHERE GID='" + gid + "'");
                 rs = st.executeQuery("SELECT * FROM JoinMessage WHERE GID='" + gid + "'");
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
             }
 
-            if (rs.next()) {
-                return true;
-            }
+            return rs != null && rs.next();
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
         return false;
     }
@@ -746,14 +718,12 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM ChatProtector WHERE GID='" + gid + "'");
                 rs = st.executeQuery("SELECT * FROM ChatProtector WHERE GID='" + gid + "'");
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
             }
 
-            if (rs.next()) {
-                return true;
-            }
+            return rs != null && rs.next();
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
         return false;
     }
@@ -766,14 +736,12 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM ChatProtector WHERE GID='" + gid + "'AND WORD='" + word + "'");
                 rs = st.executeQuery("SELECT * FROM ChatProtector WHERE GID='" + gid + "' AND WORD='" + word + "'");
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
             }
 
-            if (rs.next()) {
-                return true;
-            }
+            return rs != null && rs.next();
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
         return false;
     }
@@ -781,14 +749,14 @@ public class SQLWorker {
 
     public void addChatProtector(String gid, String word) {
         if (hasChatProtectorSetuped(gid)) {
-            Main.instance.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "' AND WORD='" + word + "'");
+            Main.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "' AND WORD='" + word + "'");
         }
-        Main.instance.sqlConnector.query("INSERT INTO ChatProtector (GID, WORD) VALUES ('" + gid + "', '" + word + "');");
+        Main.sqlConnector.query("INSERT INTO ChatProtector (GID, WORD) VALUES ('" + gid + "', '" + word + "');");
     }
 
     public void removeChatProtector(String gid, String word) {
         if (hasChatProtectorSetuped(gid)) {
-            Main.instance.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "' AND WORD='" + word + "'");
+            Main.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "' AND WORD='" + word + "'");
         }
     }
 
@@ -801,14 +769,14 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM ChatProtector WHERE GID='" + gid + "'");
                 rs = st.executeQuery("SELECT * FROM ChatProtector WHERE GID='" + gid + "'");
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
             }
 
-            while (rs.next()) {
+            while (rs != null && rs.next()) {
                 chatprot.add(rs.getString("WORD"));
             }
 
-        } catch (Exception ex) {
+        } catch (Exception ignore) {
         }
 
         return chatprot;
@@ -825,16 +793,14 @@ public class SQLWorker {
                 try {
                     st = Main.sqlConnector.con.prepareStatement("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
                     rs = st.executeQuery("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } catch (Exception ignore) {
                 }
 
-                if (rs.next()) {
+                if (rs != null && rs.next()) {
                     return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
                 }
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception ignore) {
             }
         }
         return new String[]{"Error", "Not setuped!"};
@@ -842,7 +808,7 @@ public class SQLWorker {
 
     public void setRainbowWebhook(String gid, String cid, String token) {
         if (hasRainbowSetuped(gid)) {
-            String[] d = getNewswebhook(gid);
+            String[] d = getRainbowHooks(gid);
 
             BotInfo.botInstance.getGuildById(gid).retrieveWebhooks().queue(webhooks -> {
                 for (Webhook wb : webhooks) {
@@ -851,9 +817,9 @@ public class SQLWorker {
                     }
                 }
             });
-            Main.instance.sqlConnector.query("DELETE FROM RainbowWebhooks WHERE GID='" + gid + "'");
+            Main.sqlConnector.query("DELETE FROM RainbowWebhooks WHERE GID='" + gid + "'");
         }
-        Main.instance.sqlConnector.query("INSERT INTO RainbowWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
+        Main.sqlConnector.query("INSERT INTO RainbowWebhooks (GID, CID, TOKEN) VALUES ('" + gid + "', '" + cid + "', '" + token + "');");
     }
 
     public boolean hasRainbowSetuped(String gid) {
@@ -867,9 +833,186 @@ public class SQLWorker {
             } catch (Exception ignored) {
             }
 
-            if (rs.next()) {
-                return true;
+            return rs != null && rs.next();
+
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    //Twitch
+
+    public ArrayList<String[]> getTwitchNotifyWebhooks(String gid) {
+        ArrayList<String[]> webhooks = new ArrayList<>();
+        if (hasTwitchNotifySetuped(gid)) {
+            try {
+                PreparedStatement st;
+                ResultSet rs = null;
+
+                try {
+                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
+                    rs = st.executeQuery("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
+                } catch (Exception ignore) {
+                }
+
+                while (rs != null && rs.next()) {
+                    webhooks.add(new String[]{rs.getString("CID"), rs.getString("TOKEN")});
+                }
+
+            } catch (Exception ignore) {
             }
+        }
+        return webhooks;
+    }
+
+    public ArrayList<String> getTwitchNotifier(String gid) {
+        ArrayList<String> names = new ArrayList<>();
+        if (hasTwitchNotifySetuped(gid)) {
+            try {
+                PreparedStatement st;
+                ResultSet rs = null;
+
+                try {
+                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
+                    rs = st.executeQuery("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
+                } catch (Exception ignore) {
+                }
+
+                while (rs != null && rs.next()) {
+                    names.add(rs.getString("NAME"));
+                }
+
+            } catch (Exception ignore) {
+            }
+        }
+        return names;
+    }
+
+    public ArrayList<String> getAllTwitchNotifyUsers() {
+        ArrayList<String> names = new ArrayList<>();
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM RainbowWebhooks");
+                rs = st.executeQuery("SELECT * FROM RainbowWebhooks");
+            } catch (Exception ignore) {
+            }
+
+            while (rs != null && rs.next()) {
+                names.add(rs.getString("NAME"));
+            }
+
+        } catch (Exception ignore) {
+        }
+        return names;
+    }
+
+    public String[] getTwitchNotifyWebhook(String gid, String name) {
+        if (hasTwitchNotifySetuped(gid)) {
+            try {
+                PreparedStatement st;
+                ResultSet rs = null;
+
+                try {
+                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM TwitchNotify WHERE GID='" + gid + "' AND NAME='" + name + "'");
+                    rs = st.executeQuery("SELECT * FROM TwitchNotify WHERE GID='" + gid + "' AND NAME='" + name + "'");
+                } catch (Exception ignore) {
+                }
+
+                if (rs != null && rs.next()) {
+                    return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
+                }
+
+            } catch (Exception ignore) {
+            }
+        }
+        return new String[]{"Error", "Not setuped!"};
+    }
+
+    public String[] getTwitchNotifyWebhookByName(String name) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM TwitchNotify NAME='" + name + "'");
+                rs = st.executeQuery("SELECT * FROM TwitchNotify NAME='" + name + "'");
+            } catch (Exception ignore) {
+            }
+
+            if (rs != null && rs.next()) {
+                return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
+            }
+
+        } catch (Exception ignore) {
+        }
+        return new String[]{"Error", "Not setuped!"};
+    }
+
+
+    public void addTwitchNotify(String gid, String name, String cid, String token) {
+        if (hasTwitchNotifySetupedForUser(gid, name)) {
+            String[] d = getTwitchNotifyWebhook(gid, name);
+
+            BotInfo.botInstance.getGuildById(gid).retrieveWebhooks().queue(webhooks -> {
+                for (Webhook wb : webhooks) {
+                    if (wb.getId().equalsIgnoreCase(d[0]) && wb.getToken().equalsIgnoreCase(d[1])) {
+                        wb.delete().queue();
+                    }
+                }
+            });
+            Main.sqlConnector.query("DELETE FROM TwitchNotify WHERE GID='" + gid + "' AND NAME='" + name + "'");
+        }
+        Main.sqlConnector.query("INSERT INTO TwitchNotify (GID, NAME, CID, TOKEN) VALUES ('" + gid + "', '" + name + "','" + cid + "', '" + token + "');");
+    }
+
+    public void removeTwitchNotify(String gid, String name) {
+        if (hasTwitchNotifySetupedForUser(gid, name)) {
+            String[] d = getTwitchNotifyWebhook(gid, name);
+
+            BotInfo.botInstance.getGuildById(gid).retrieveWebhooks().queue(webhooks -> {
+                for (Webhook wb : webhooks) {
+                    if (wb.getId().equalsIgnoreCase(d[0]) && wb.getToken().equalsIgnoreCase(d[1])) {
+                        wb.delete().queue();
+                    }
+                }
+            });
+            Main.sqlConnector.query("DELETE FROM TwitchNotify WHERE GID='" + gid + "' AND NAME='" + name + "'");
+        }
+    }
+
+    public boolean hasTwitchNotifySetuped(String gid) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM TwitchNotify WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM TwitchNotify WHERE GID='" + gid + "'");
+            } catch (Exception ignored) {
+            }
+
+            return rs != null && rs.next();
+
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    public boolean hasTwitchNotifySetupedForUser(String gid, String name) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM TwitchNotify WHERE GID='" + gid + "' AND NAME='" + name + "'");
+                rs = st.executeQuery("SELECT * FROM TwitchNotify WHERE GID='" + gid + "' AND NAME='" + name + "'");
+            } catch (Exception ignored) {
+            }
+
+            return rs != null && rs.next();
 
         } catch (Exception ignored) {
         }
