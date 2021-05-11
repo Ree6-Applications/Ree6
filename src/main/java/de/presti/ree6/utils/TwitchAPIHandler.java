@@ -6,12 +6,9 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
-import com.github.twitch4j.helix.domain.StreamList;
-import com.google.common.collect.Lists;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.Webhook;
 import de.presti.ree6.main.Main;
-import rx.Observable;
 
 import java.awt.*;
 import java.time.LocalDateTime;

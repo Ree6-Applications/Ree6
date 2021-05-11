@@ -59,8 +59,10 @@ public class Main {
             twitchAPIHandler.registerChannel(name);
         }
 
+        twitchAPIHandler.registerTwitchLive();
+
         try {
-            BotUtil.createBot(BotVersion.DEV, "1.3.7");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.3.7");
             new MusikWorker();
             instance.addEvents();
         } catch (Exception ex) {
