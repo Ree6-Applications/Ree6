@@ -47,8 +47,8 @@ public class Main {
 
         config.init();
 
-        /*sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
-         */
+        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
+
         sqlWorker = new SQLWorker();
 
         cm = new CommandManager();
@@ -143,20 +143,11 @@ public class Main {
 
                     lastday = new SimpleDateFormat("dd").format(new Date());
                 }
-                /*String proxy = "";
-                try {
-                    proxy = ProxyUtil.getProxies().split("\n")[0];
-                } catch (Exception e) {
-                }
-                if (proxy != null && !proxy.isEmpty()) {
-                    ProxyUtil.setProxy(proxy.split(":")[0], proxy.split(":")[1]);
-                    ProxyUtil.connectToProxy();
-                } */
 
 
                 try {
                     Thread.sleep((7 * (60000L)));
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignore) {
                 }
             }
         });
