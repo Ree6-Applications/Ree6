@@ -850,8 +850,8 @@ public class SQLWorker {
                 ResultSet rs = null;
 
                 try {
-                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
-                    rs = st.executeQuery("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
+                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM TwitchNotify WHERE GID='" + gid + "'");
+                    rs = st.executeQuery("SELECT * FROM TwitchNotify WHERE GID='" + gid + "'");
                 } catch (Exception ignore) {
                 }
 
@@ -873,8 +873,8 @@ public class SQLWorker {
                 ResultSet rs = null;
 
                 try {
-                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
-                    rs = st.executeQuery("SELECT * FROM RainbowWebhooks WHERE GID='" + gid + "'");
+                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM TwitchNotify WHERE GID='" + gid + "'");
+                    rs = st.executeQuery("SELECT * FROM TwitchNotify WHERE GID='" + gid + "'");
                 } catch (Exception ignore) {
                 }
 
@@ -895,8 +895,8 @@ public class SQLWorker {
             ResultSet rs = null;
 
             try {
-                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM RainbowWebhooks");
-                rs = st.executeQuery("SELECT * FROM RainbowWebhooks");
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM TwitchNotify");
+                rs = st.executeQuery("SELECT * FROM TwitchNotify");
             } catch (Exception ignore) {
             }
 
@@ -937,8 +937,8 @@ public class SQLWorker {
             ResultSet rs = null;
 
             try {
-                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM TwitchNotify NAME='" + name + "'");
-                rs = st.executeQuery("SELECT * FROM TwitchNotify NAME='" + name + "'");
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM TwitchNotify WHERE NAME='" + name + "'");
+                rs = st.executeQuery("SELECT * FROM TwitchNotify WHERE NAME='" + name + "'");
             } catch (Exception ignore) {
             }
 
@@ -1009,6 +1009,61 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM TwitchNotify WHERE GID='" + gid + "' AND NAME='" + name + "'");
                 rs = st.executeQuery("SELECT * FROM TwitchNotify WHERE GID='" + gid + "' AND NAME='" + name + "'");
+            } catch (Exception ignored) {
+            }
+
+            return rs != null && rs.next();
+
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    //Webinterface Auth
+
+    public String getAuthToken(String gid) {
+        if (hasAuthToken(gid)) {
+            try {
+                PreparedStatement st;
+                ResultSet rs = null;
+
+                try {
+                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Webinterface WHERE GID='" + gid + "'");
+                    rs = st.executeQuery("SELECT * FROM Webinterface WHERE GID='" + gid + "'");
+                } catch (Exception ignore) {
+                }
+
+                if (rs != null && rs.next()) {
+                    return rs.getString("AUTH");
+                }
+
+            } catch (Exception ignore) {
+            }
+        }
+        return "0";
+    }
+
+    public void setAuthToken(String gid, String auth) {
+        if (hasAuthToken(gid)) {
+            Main.sqlConnector.query("DELETE FROM Webinterface WHERE GID='" + gid + "'");
+        }
+        Main.sqlConnector.query("INSERT INTO Webinterface (GID, AUTH) VALUES ('" + gid + "', '" + auth + "');");
+    }
+
+    public void deleteAuthToken(String gid) {
+        if (hasAuthToken(gid)) {
+            Main.sqlConnector.query("DELETE FROM Webinterface WHERE GID='" + gid + "'");
+        }
+    }
+
+    public boolean hasAuthToken(String gid) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Webinterface WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM Webinterface WHERE GID='" + gid + "'");
             } catch (Exception ignored) {
             }
 

@@ -69,6 +69,12 @@ public class SQLConnector {
 	public void createTables() {
 
 		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS TwitchNotify (GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))")){
+			ps.executeUpdate();
+		} catch (SQLException ignore) {}
+
+
+		try (PreparedStatement ps = con.prepareStatement(
 				"CREATE TABLE IF NOT EXISTS LogWebhooks (GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))")){
 			ps.executeUpdate();
 		} catch (SQLException ignore) {}
@@ -132,12 +138,6 @@ public class SQLConnector {
 				"CREATE TABLE IF NOT EXISTS ChatLevelAutoRoles (GID VARCHAR(40), RID VARCHAR(40), LVL VARCHAR(500))")){
 			ps.executeUpdate();
 		} catch (SQLException ignore) {}
-
-		try (PreparedStatement ps = con.prepareStatement(
-				"CREATE TABLE IF NOT EXISTS TwitchNotify (GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))")){
-			ps.executeUpdate();
-		} catch (SQLException ignore) {}
-
 	}
 
 	public void query(String sql) {

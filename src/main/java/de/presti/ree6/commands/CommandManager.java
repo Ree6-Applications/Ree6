@@ -41,6 +41,7 @@ public class CommandManager {
         addCommand(new Credits());
 
         //Moderate
+        addCommand(new Webinterface());
         addCommand(new Clear());
         addCommand(new Setup());
         addCommand(new Mute());

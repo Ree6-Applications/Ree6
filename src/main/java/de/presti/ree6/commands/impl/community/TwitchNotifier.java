@@ -35,37 +35,41 @@ public class TwitchNotifier extends Command {
             }
         } else if(args.length == 3) {
 
-            if(messageSelf.getMentionedChannels().size() == 0) {
+            if (messageSelf.getMentionedChannels().size() == 0) {
                 sendMessage("Please use ree!twitch add/remove TwitchName #Channel", 5, m);
                 return;
             }
 
             String name = args[1];
-            if(args[0].equalsIgnoreCase("add")) {
+            if (args[0].equalsIgnoreCase("add")) {
                 messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-TwitchNotifier-" + name).queue(w -> {
-                    Main.sqlWorker.addTwitchNotify(sender.getGuild().getId(), name, w.getId(), w.getToken());
+                    Main.sqlWorker.addTwitchNotify(sender.getGuild().getId(), name.toLowerCase(), w.getId(), w.getToken());
                 });
                 sendMessage("A TwitchStream Notifier has been created for the User " + name + "!", 5, m);
 
-                if(!Main.twitchAPIHandler.isRegisterd(name)) {
+                if (!Main.twitchAPIHandler.isRegisterd(name)) {
                     Main.twitchAPIHandler.registerChannel(name);
                 }
-
-            } else if(args[0].equalsIgnoreCase("remove")) {
+            } else {
+                sendMessage("Please use ree!twitch add TwitchName #Channel", 5, m);
+            }
+        } else if(args.length == 2) {
+            String name = args[1];
+            if(args[0].equalsIgnoreCase("remove")) {
                 Main.sqlWorker.removeTwitchNotify(sender.getGuild().getId(), name);
                 sendMessage("A TwitchStream Notifier has been removed from the User " + name + "!", 5, m);
 
                 if(Main.twitchAPIHandler.isRegisterd(name)) {
-                    if(Main.sqlWorker.getTwitchNotifyWebhookByName(name).length == 0) {
+                    if(Main.sqlWorker.getTwitchNotifyWebhookByName(name.toLowerCase()).length == 0) {
                         Main.twitchAPIHandler.unregisterChannel(name);
                     }
                 }
-
             } else {
-                sendMessage("Please use ree!twitch add/remove TwitchName #Channel", 5, m);
+                sendMessage("Please use ree!twitch remove TwitchName", 5, m);
             }
         } else {
             sendMessage("Please use ree!twitch list/add/remove", 5, m);
         }
+        deleteMessage(messageSelf);
     }
 }

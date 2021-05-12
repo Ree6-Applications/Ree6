@@ -62,7 +62,7 @@ public class Main {
         twitchAPIHandler.registerTwitchLive();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.3.7");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.3.8");
             new MusikWorker();
             instance.addEvents();
         } catch (Exception ex) {
