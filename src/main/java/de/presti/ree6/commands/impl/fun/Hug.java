@@ -30,9 +30,13 @@ public class Hug extends Command {
 
                 ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
-                Image im = ip.getRandomImage("hug").execute();
+                Image im = null;
+                try {
+                    im = ip.getRandomImage("hug").execute();
+                } catch (Exception ex) {
+                }
 
-                sendMessage(im.getUrl(), m);
+                sendMessage((im != null ? im.getUrl() : "https://images.ree6.tk/notfound.png"), m);
             }
         } else {
             sendMessage("Not enough Arguments!", 5, m);

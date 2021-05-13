@@ -19,7 +19,7 @@ public class Slap extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
         if (args.length == 1) {
-            if(messageSelf.getMentionedMembers().isEmpty()) {
+            if (messageSelf.getMentionedMembers().isEmpty()) {
                 sendMessage("No User mentioned!", 5, m);
                 sendMessage("Use ree!slap @user", 5, m);
             } else {
@@ -30,9 +30,13 @@ public class Slap extends Command {
 
                 ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
-                Image im = ip.getRandomImage("slap").execute();
+                Image im = null;
+                try {
+                    im = ip.getRandomImage("slap").execute();
+                } catch (Exception ex) {
+                }
 
-                sendMessage(im.getUrl(), m);
+                sendMessage((im != null ? im.getUrl() : "https://images.ree6.tk/notfound.png"), m);
             }
         } else {
             sendMessage("Not enough Arguments!", 5, m);
