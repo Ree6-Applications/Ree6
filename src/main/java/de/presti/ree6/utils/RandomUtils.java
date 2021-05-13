@@ -29,7 +29,7 @@ public final class RandomUtils {
     }
 
     public static String randomString(int length) {
-        return RandomUtils.random(length, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@/+-§!$()=?]}{[");
+        return RandomUtils.random(length, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@/+§!$()=?]}{[");
     }
 
     public static String random(int length, String chars) {

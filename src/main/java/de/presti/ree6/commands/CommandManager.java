@@ -75,6 +75,7 @@ public class CommandManager {
         addCommand(new HornyJail());
         addCommand(new Waifu());
         addCommand(new Kiss());
+        addCommand(new Hug());
         addCommand(new Cringe());
         addCommand(new DogeCoin());
 

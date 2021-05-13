@@ -69,6 +69,11 @@ public class SQLConnector {
 	public void createTables() {
 
 		try (PreparedStatement ps = con.prepareStatement(
+				"CREATE TABLE IF NOT EXISTS Webinterface (GID VARCHAR(40), AUTH VARCHAR(50))")){
+			ps.executeUpdate();
+		} catch (SQLException ignore) {}
+
+		try (PreparedStatement ps = con.prepareStatement(
 				"CREATE TABLE IF NOT EXISTS TwitchNotify (GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))")){
 			ps.executeUpdate();
 		} catch (SQLException ignore) {}
