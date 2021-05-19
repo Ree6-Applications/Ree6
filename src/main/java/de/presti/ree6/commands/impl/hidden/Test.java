@@ -2,7 +2,6 @@ package de.presti.ree6.commands.impl.hidden;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
-import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -15,6 +14,6 @@ public class Test extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
-        //Main.twitchAPIHandler.registerTwitchLive();
+        //m.sendMessage().queue();
     }
 }

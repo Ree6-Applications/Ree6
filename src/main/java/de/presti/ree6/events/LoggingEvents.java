@@ -69,7 +69,12 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
+        Main.loggerQueue.add(new LoggerMessage(Long.parseLong(infos[0]), infos[1], wm.build(), event.getMember(), LoggerMessage.LogTyp.ELSE));
+
+
+        if(!event.getGuild().getMemberById(BotInfo.botInstance.getSelfUser().getId()).hasPermission(Permission.MANAGE_SERVER)) {
+            return;
+        }
 
         WebhookMessageBuilder wm2 = new WebhookMessageBuilder();
 
@@ -82,10 +87,10 @@ public class LoggingEvents extends ListenerAdapter {
             inv.setUses(inv.getUses() + 1);
             wm2.append(event.getUser().getAsMention() + " **has been invited by** <@" + inv.getCreatorid() + "> (Code: " + inv.getCode() + ", Uses: " + inv.getUses() + ")");
         } else {
-            wm2.append("Couldnt find out how " + event.getMember().getAsMention() + " joined :C");
+            wm2.append("Couldn't find out how " + event.getMember().getAsMention() + " joined :C");
         }
 
-        Main.loggerQueue.add(new LoggerMessage(Long.parseLong(infos[0]), infos[1], wm.build(), event.getMember(), LoggerMessage.LogTyp.ELSE));
+        Main.loggerQueue.add(new LoggerMessage(Long.parseLong(infos[0]), infos[1], wm2.build(), event.getMember(), LoggerMessage.LogTyp.ELSE));
     }
 
     @Override

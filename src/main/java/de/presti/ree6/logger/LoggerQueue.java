@@ -43,7 +43,22 @@ public class LoggerQueue {
             } else if(lm.getType() == LoggerMessage.LogTyp.VC_MOVE) {
                 if(lm.getM() != null) {
                     if (getLogsByMember(lm.getM()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_MOVE).count() > 0) {
-                        getLogsByMember(lm.getM()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_MOVE).forEach(loggerMessage -> loggerMessage.setCancel(true));
+                        getLogsByMember(lm.getM()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_MOVE).filter(loggerMessage -> loggerMessage != lm).forEach(loggerMessage -> loggerMessage.setCancel(true));
+
+                        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+                        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                        wm.setUsername("Ree6Logs");
+
+                        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+                        we.setColor(Color.BLACK.getRGB());
+                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
+                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getM().getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), lm.getM().getGuild().getIconUrl()));
+                        we.setDescription(lm.getM().getUser().getAsMention() + " **moved through many Voicechannels and is now in** ``" + lm.getVc().getName() + "``");
+
+                        wm.addEmbeds(we.build());
+
+                        lm.setWem(wm.build());
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.VC_LEAVE) {
@@ -71,7 +86,7 @@ public class LoggerQueue {
 
             new Thread(() ->{
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException e) {}
 
                 if(!lm.isCancel()) {
