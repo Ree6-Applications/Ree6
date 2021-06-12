@@ -39,8 +39,8 @@ public class Hug extends Command {
                 sendMessage((im != null ? im.getUrl() : "https://images.ree6.tk/notfound.png"), m);
             }
         } else {
-            sendMessage("Not enough Arguments!", 5, m);
-            sendMessage("Use ree!hug @user", 5, m);
+            sendMessage("Not enough Arguments!", m);
+            sendMessage("Use ree!hug @user", m);
         }
     }
 

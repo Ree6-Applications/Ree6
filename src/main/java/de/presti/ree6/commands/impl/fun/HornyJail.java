@@ -50,11 +50,11 @@ public class HornyJail extends Command {
                     m.sendFile(new File("imageapi/hornyjail/" + sender.getUser().getId() + ".png")).queue(message -> new File("imageapi/hornyjail/" + sender.getUser().getId() + ".png").delete());
 
                 } catch (Exception ex) {
-                    sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.config.getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), 5, m);
+                    sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.config.getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), m);
                 }
             }
         } else {
-            sendMessage("Use ree!hornyjail @User", 5, m);
+            sendMessage("Use ree!hornyjail @User", m);
         }
     }
 }

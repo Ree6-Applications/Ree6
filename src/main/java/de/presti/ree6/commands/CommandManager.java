@@ -1,27 +1,29 @@
 package de.presti.ree6.commands;
 
+import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.impl.community.Rainbow;
 import de.presti.ree6.commands.impl.community.TwitchNotifier;
 import de.presti.ree6.commands.impl.fun.*;
 import de.presti.ree6.commands.impl.hidden.ReloadAddons;
 import de.presti.ree6.commands.impl.hidden.Test;
 import de.presti.ree6.commands.impl.info.*;
+import de.presti.ree6.commands.impl.info.Invite;
 import de.presti.ree6.commands.impl.level.Leaderboards;
 import de.presti.ree6.commands.impl.level.Level;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
 import de.presti.ree6.commands.impl.nsfw.NSFW;
+import de.presti.ree6.stats.StatsManager;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 
 public class CommandManager {
@@ -109,7 +111,7 @@ public class CommandManager {
 
         if(ArrayUtil.commandcooldown.contains(sender.getUser().getId())) {
             sendMessage("You are on Cooldown!", 5, m);
-            messageSelf.delete().queue();
+            deleteMessage(messageSelf);
             return false;
         }
 
@@ -121,6 +123,7 @@ public class CommandManager {
             if (cmd.getCmd().equalsIgnoreCase(oldargs[0]) || cmd.isAlias(oldargs[0])) {
                 String[] args = Arrays.copyOfRange(oldargs, 1, oldargs.length);
                 cmd.onPerform(sender, messageSelf, args, m);
+                StatsManager.addStatsForCommand(cmd, m.getGuild().getId());
                 new Thread(() -> {
                     try {
                         Thread.sleep(5000);
@@ -175,10 +178,18 @@ public class CommandManager {
 
     public static void deleteMessage(Message message) {
         if(message != null && message.getContentRaw() != null && message.getId() != null) {
+            if(message.getGuild().getMemberById(BotInfo.botInstance.getSelfUser().getId()).hasPermission(Permission.MESSAGE_MANAGE)) {
             try {
                 message.delete().queue();
             } catch (Exception ex) {
-                Logger.log("CommandSystem", "Couldnt delete a Message!");
+                Logger.log("CommandSystem", "Couldn't delete a Message!");
+            }
+            } else {
+                message.getGuild().getOwner().getUser().openPrivateChannel().queue(privateChannel -> {
+                    try {
+                        privateChannel.sendMessage("Hey this is just a Message because Ree6 isn't setuped right! Please check if i have the right Permissions or reinvited me!").queue();
+                    } catch (Exception ex) {}
+                });
             }
         }
     }

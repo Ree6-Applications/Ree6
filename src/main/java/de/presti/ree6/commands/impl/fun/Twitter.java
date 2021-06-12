@@ -27,7 +27,7 @@ public class Twitter extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
         if(args.length >= 2) {
             if(messageSelf.getMentionedMembers().isEmpty()) {
-                sendMessage("No User given!", 5, m);
+                sendMessage("No User given!", m);
             } else {
                 try {
 
@@ -64,11 +64,11 @@ public class Twitter extends Command {
                     m.sendFile(new File("imageapi/twitter/" + sender.getUser().getId() + ".png")).queue(message -> new File("imageapi/twitter/" + sender.getUser().getId() + ".png").delete());
 
                 } catch (Exception ex) {
-                    sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.config.getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), 5, m);
+                    sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.config.getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), m);
                 }
             }
         } else {
-            sendMessage("Use ree!twitter @User Yourtexthere", 5, m);
+            sendMessage("Use ree!twitter @User Yourtexthere", m);
         }
     }
 }

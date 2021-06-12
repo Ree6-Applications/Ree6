@@ -6,6 +6,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.music.MusikWorker;
+import de.presti.ree6.stats.StatsManager;
 import de.presti.ree6.utils.TimeUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -16,6 +17,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 public class Stats extends Command {
 
@@ -56,9 +58,25 @@ public class Stats extends Command {
         em.addField("**Response Time**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);
         em.addField("**System Date**" , new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
 
+        String end = "";
+
+        for(Map.Entry<String, Long> sheesh : StatsManager.getCommandStats(m.getGuild().getId()).entrySet()) {
+            end += sheesh.getKey() + " - " + sheesh.getValue() + "\n";
+        }
+
+        String end2 = "";
+
+        for(Map.Entry<String, Long> sheesh : StatsManager.getCommandStats().entrySet()) {
+            end2 += sheesh.getKey() + " - " + sheesh.getValue() + "\n";
+        }
+
+        em.addField("**Command Stats:**", "", true);
+        em.addField("**Top Commands**", end, true);
+        em.addField("**Overall Top Commands**", end2, true);
+
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
 
-        sendMessage(em, 5, m);
+        sendMessage(em, m);
 
     }
 }

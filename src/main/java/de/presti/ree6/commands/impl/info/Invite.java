@@ -16,6 +16,6 @@ public class Invite extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
-        sendMessage("https://ree6.tk/index.html#invite", 5, m);
+        sendMessage("https://ree6.tk/index.html#invite", m);
     }
 }

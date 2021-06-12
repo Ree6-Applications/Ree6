@@ -395,7 +395,7 @@ public class LoggingEvents extends ListenerAdapter {
             return;
         }
 
-        if(event.getInvite() != null && event.getGuild() != null) {
+        if(event.getInvite() != null && event.getGuild() != null && event.getInvite().getInviter() != null) {
             InviteContainer inv = new InviteContainer(event.getInvite().getInviter().getId(), event.getGuild().getId(), event.getInvite().getCode(), event.getInvite().getUses());
             InviteContainerManager.addInvite(inv, event.getGuild().getId());
         }

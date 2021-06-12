@@ -35,8 +35,8 @@ public class Kiss extends Command {
                 sendMessage(im.getUrl(), m);
             }
         } else {
-            sendMessage("Not enough Arguments!", 5, m);
-            sendMessage("Use ree!kiss @user", 5, m);
+            sendMessage("Not enough Arguments!", m);
+            sendMessage("Use ree!kiss @user", m);
         }
     }
 }

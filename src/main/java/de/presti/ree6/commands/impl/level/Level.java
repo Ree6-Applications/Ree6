@@ -92,8 +92,8 @@ public class Level extends Command {
                     sendMessage(em, m);
                 }
             } else {
-                sendMessage("Not enough Arguments!", 5, m);
-                sendMessage("Use ree!level or ree!level @user", 5, m);
+                sendMessage("Not enough Arguments!", m);
+                sendMessage("Use ree!level or ree!level @user", m);
             }
     }
 

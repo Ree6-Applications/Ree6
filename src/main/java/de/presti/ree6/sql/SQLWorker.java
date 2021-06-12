@@ -1,8 +1,10 @@
 package de.presti.ree6.sql;
 
 import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.commands.Command;
 import de.presti.ree6.invitelogger.InviteContainer;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.ArrayUtil;
 import net.dv8tion.jda.api.entities.Webhook;
 
 import java.sql.PreparedStatement;
@@ -10,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SQLWorker {
 
@@ -599,6 +602,13 @@ public class SQLWorker {
         Main.sqlConnector.query("DELETE FROM JoinMessage WHERE GID='" + gid + "'");
         Main.sqlConnector.query("DELETE FROM MuteRoles WHERE GID='" + gid + "'");
         Main.sqlConnector.query("DELETE FROM ChatProtector WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM TwitchNotify WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM Webinterface WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM RainbowWebhooks WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM Level WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM VCLevel WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM VCLevelAutoRoles WHERE GID='" + gid + "'");
+        Main.sqlConnector.query("DELETE FROM ChatLevelAutoRoles WHERE GID='" + gid + "'");
     }
 
     //News
@@ -1072,5 +1082,148 @@ public class SQLWorker {
         } catch (Exception ignored) {
         }
         return false;
+    }
+
+
+    //Stats
+
+    public boolean hasStatsGuild(String gid, String command) {
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM GuildStats WHERE GID='" + gid + "' AND COMMAND='" + command + "'");
+                rs = st.executeQuery("SELECT * FROM GuildStats WHERE GID='" + gid + "' AND COMMAND='" + command + "'");
+            } catch (Exception ignore) {
+            }
+
+            return rs != null && rs.next();
+
+        } catch (Exception ignore) {
+        }
+        return false;
+    }
+
+    public boolean hasStatsCommand(String command) {
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM CommandStats WHERE COMMAND='" + command + "'");
+                rs = st.executeQuery("SELECT * FROM CommandStats WHERE COMMAND='" + command + "'");
+            } catch (Exception ignore) {
+            }
+
+            return rs != null && rs.next();
+
+        } catch (Exception ignore) {
+        }
+        return false;
+    }
+
+    public HashMap<String, Long> getStatsFromGuild(String gid) {
+
+        HashMap<String, Long> data = new HashMap<>();
+
+            try {
+                PreparedStatement st;
+                ResultSet rs = null;
+
+                try {
+                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM GuildStats WHERE GID='" + gid + "' ORDER BY cast(uses as unsigned) DESC");
+                    rs = st.executeQuery("SELECT * FROM GuildStats WHERE GID='" + gid + "' ORDER BY cast(uses as unsigned) DESC");
+                } catch (Exception ignore) {
+                }
+
+                while (rs != null && rs.next()) {
+                    data.put(rs.getString("COMMAND"), Long.parseLong(rs.getString("USES")));
+                }
+
+            } catch (Exception ignore) {
+            }
+        return data;
+    }
+
+    public Long getStatsFromCommand(String command) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM CommandStats WHERE COMMAND='" + command + "'");
+                rs = st.executeQuery("SELECT * FROM CommandStats WHERE COMMAND='" + command + "'");
+            } catch (Exception ignore) {
+            }
+
+            if (rs != null && rs.next()) {
+                return Long.valueOf(rs.getString("USES"));
+            }
+
+        } catch (Exception ignore) {
+        }
+        return 1L;
+    }
+
+    public long getCommandStatsFromGuild(String gid, String command) {
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM GuildStats WHERE GID='" + gid + "' AND COMMAND='" + command + "'");
+                rs = st.executeQuery("SELECT * FROM GuildStats WHERE GID='" + gid + "' AND COMMAND='" + command + "'");
+            } catch (Exception ignore) {
+            }
+
+            if (rs != null && rs.next()) {
+                return Long.parseLong(rs.getString("USES"));
+            }
+
+        } catch (Exception ignore) {
+        }
+        return 0L;
+    }
+
+    public HashMap<String, Long> getStatsForCommands() {
+
+        HashMap<String, Long> data = new HashMap<>();
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM CommandStats ORDER BY cast(uses as unsigned) DESC");
+                rs = st.executeQuery("SELECT * FROM CommandStats ORDER BY cast(uses as unsigned) DESC");
+            } catch (Exception ignore) {
+            }
+
+            while (rs != null && rs.next()) {
+                data.put(rs.getString("COMMAND"), Long.parseLong(rs.getString("USES")));
+            }
+
+        } catch (Exception ignore) {
+        }
+        return data;
+    }
+
+    public void addStats(Command cmd, String gid) {
+
+        if (hasStatsGuild(gid, cmd.getCmd())) {
+            Main.sqlConnector.query("UPDATE GuildStats SET USES='" + (getCommandStatsFromGuild(gid, cmd.getCmd()) + 1) + "' WHERE GID='" + gid + "' AND COMMAND='" + cmd.getCmd() + "'");
+        } else {
+            Main.sqlConnector.query("INSERT INTO GuildStats (GID, COMMAND, USES) VALUES ('" + gid + "', '" + cmd.getCmd() + "', '" + 1 + "');");
+        }
+
+        if (hasStatsCommand(cmd.getCmd())) {
+            Main.sqlConnector.query("UPDATE CommandStats SET USES='" + (getStatsFromCommand(cmd.getCmd()) + 1) + "' WHERE COMMAND='" + cmd.getCmd() + "'");
+        } else {
+            Main.sqlConnector.query("INSERT INTO CommandStats (COMMAND, USES) VALUES ('" + cmd.getCmd() + "', '1');");
+        }
     }
 }
