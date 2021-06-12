@@ -17,11 +17,11 @@ Current Features:
 - Leveling System
 - Moderation Commands(ban, mute, kick and more)
 - Twitch Notification
+- Webpanel
 
 Comming Features:
 - YouTube Notification
 - 100% adjustable messages
-- Webpanel
 - RestAPI
 
 Please be aware that im a Student and cant work fulltime on the Bot!
