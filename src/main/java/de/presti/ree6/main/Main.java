@@ -139,7 +139,9 @@ public class Main {
                     Logger.log("Stats", "Overall Users: " + i);
                     Logger.log("Stats", "");
                     sqlConnector.close();
-                    sqlConnector.connect();
+
+                    sqlConnector = new SQLConnector();
+                    sqlWorker = new SQLWorker();
 
                     lastday = new SimpleDateFormat("dd").format(new Date());
                 }
