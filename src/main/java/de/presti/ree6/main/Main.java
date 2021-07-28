@@ -140,7 +140,7 @@ public class Main {
                     Logger.log("Stats", "");
                     sqlConnector.close();
 
-                    sqlConnector = new SQLConnector();
+                    sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
                     sqlWorker = new SQLWorker();
 
                     lastday = new SimpleDateFormat("dd").format(new Date());
