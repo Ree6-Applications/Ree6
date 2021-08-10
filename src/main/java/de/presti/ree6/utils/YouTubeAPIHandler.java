@@ -6,8 +6,8 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchResult;
 import de.presti.ree6.main.Main;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class YouTubeAPIHandler {
@@ -31,7 +31,7 @@ public class YouTubeAPIHandler {
         try {
 
             List<SearchResult> results = yt.search()
-                    .list(Arrays.asList("id, snippet"))
+                    .list(Collections.singletonList("id, snippet"))
                     .setQ(search)
                     .setMaxResults(2L)
                     .setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)")

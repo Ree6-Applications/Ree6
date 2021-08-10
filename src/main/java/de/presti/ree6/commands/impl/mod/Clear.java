@@ -2,6 +2,7 @@ package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.utils.Logger;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -22,9 +23,9 @@ public class Clear extends Command {
             if(args.length == 1) {
                 try {
                     if (Integer.parseInt(args[0]) <= 100 && Integer.parseInt(args[0]) >= 2) {
-                        messageSelf.delete().queue();
-                        List<Message> messages = m.getHistory().retrievePast(Integer.parseInt(args[0])).complete();
                         try {
+                            messageSelf.delete().queue();
+                            List<Message> messages = m.getHistory().retrievePast(Integer.parseInt(args[0])).complete();
                             m.deleteMessages(messages).queue();
 
                             sendMessage(messages.size() + " has been deleted!", 5, m);
@@ -44,6 +45,7 @@ public class Clear extends Command {
                 } catch (Exception ex) {
                     sendMessage(args[0] + " isn't a number!", 5, m);
                     sendMessage("Use ree!clear 2-100", 5, m);
+                    Logger.log("Clear", ex.getMessage() + " - " + ex.getStackTrace()[0].toString());
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m);

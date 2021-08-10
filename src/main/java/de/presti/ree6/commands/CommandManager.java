@@ -36,6 +36,7 @@ public class CommandManager {
 
         //Informative
         addCommand(new Help());
+        addCommand(new Support());
         addCommand(new Info());
         addCommand(new Stats());
         addCommand(new Invite());

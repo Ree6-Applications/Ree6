@@ -14,6 +14,6 @@ public class Credits extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
-        sendMessage("Here are some AWESOME people!\n<https://www.ree6.tk/team.html>", m);
+        sendMessage("Here are some AWESOME people!\n<https://www.ree6.de/team.html>", m);
     }
 }

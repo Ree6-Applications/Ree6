@@ -1,14 +1,9 @@
 package de.presti.ree6.commands.impl.music;
 
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.SearchResult;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
-import de.presti.ree6.main.Main;
 import de.presti.ree6.music.MusikWorker;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.SpotifyAPIHandler;
@@ -22,8 +17,6 @@ import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class Play extends Command {
 

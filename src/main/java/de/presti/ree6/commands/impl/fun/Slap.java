@@ -36,7 +36,7 @@ public class Slap extends Command {
                 } catch (Exception ex) {
                 }
 
-                sendMessage((im != null ? im.getUrl() : "https://images.ree6.tk/notfound.png"), m);
+                sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), m);
             }
         } else {
             sendMessage("Not enough Arguments!", m);

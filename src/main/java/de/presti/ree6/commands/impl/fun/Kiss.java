@@ -30,9 +30,13 @@ public class Kiss extends Command {
 
                 ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
-                Image im = ip.getRandomImage("kiss").execute();
+                Image im = null;
+                try {
+                    im = ip.getRandomImage("kiss").execute();
+                } catch (Exception ex) {
+                }
 
-                sendMessage(im.getUrl(), m);
+                sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), m);
             }
         } else {
             sendMessage("Not enough Arguments!", m);
