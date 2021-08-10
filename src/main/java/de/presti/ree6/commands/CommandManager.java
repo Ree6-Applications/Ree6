@@ -19,6 +19,8 @@ import de.presti.ree6.utils.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,6 +99,19 @@ public class CommandManager {
         addCommand(new ReloadAddons());
         //addCommand(new Test());
 
+    }
+
+    public void addSlashCommand() {
+
+        CommandListUpdateAction listUpdateAction = BotInfo.botInstance.updateCommands();
+
+        for (Command command : getCommands()) {
+            if (command.getCategory() == Category.HIDDEN) continue;
+            if (command == null) continue;
+            listUpdateAction.addCommands(command.getCommandData());
+        }
+
+        listUpdateAction.queue();
     }
 
     public void addCommand(Command c) {

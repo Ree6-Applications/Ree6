@@ -12,6 +12,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.awt.Color;
 import java.net.MalformedURLException;
@@ -21,7 +24,7 @@ import java.util.ArrayList;
 public class Play extends Command {
 
     public Play() {
-        super("play", "Play a song!", Category.MUSIC);
+        super("play", "Play a song!", Category.MUSIC, new CommandData("play", "Play a song!").addOptions(new OptionData(OptionType.STRING, "url/name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true)));
     }
 
     @Override

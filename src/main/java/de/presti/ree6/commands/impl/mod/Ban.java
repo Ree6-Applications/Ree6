@@ -6,13 +6,16 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import javax.xml.soap.Text;
 
 public class Ban extends Command {
 
     public Ban() {
-        super("ban", "Ban the User from the Server!", Category.MOD);
+        super("ban", "Ban the User from the Server!", Category.MOD, new CommandData("ban", "Ban the User from the Server!").addOptions(new OptionData(OptionType.USER, "target", "Which User should be banned.").setRequired(true)));
     }
 
     @Override

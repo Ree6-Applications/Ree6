@@ -5,11 +5,14 @@ import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class Mute extends Command {
 
     public Mute() {
-        super("mute", "Mute a User on the Server!", Category.MUSIC);
+        super("mute", "Mute a User on the Server!", Category.MOD, new CommandData("mute", "Mute a User on the Server!").addOptions(new OptionData(OptionType.USER, "target", "Which User should be muted.").setRequired(true)));
     }
 
     @Override

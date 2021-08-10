@@ -7,13 +7,16 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
 
 public class Slap extends Command {
 
     public Slap() {
-        super("slap", "Slap someone in the face!", Category.FUN);
+        super("slap", "Slap someone in the face!", Category.FUN, new CommandData("slap", "Slap someone in the face!").addOptions(new OptionData(OptionType.USER, "target", "The User that should be slapped!").setRequired(true)));
     }
 
     @Override

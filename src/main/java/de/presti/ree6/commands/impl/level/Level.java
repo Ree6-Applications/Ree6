@@ -8,11 +8,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class Level extends Command {
 
     public Level() {
-        super("level", "Shows the Level of a User!", Category.LEVEL, new String[] {"lvl", "xp", "rank"});
+        super("level", "Shows the Level of a User!", Category.LEVEL, new String[] {"lvl", "xp", "rank"}, new CommandData("level", "Shows the Level of a User!").addOptions(new OptionData(OptionType.USER, "target", "Show the Level of the User.")));
     }
 
     @Override

@@ -7,11 +7,14 @@ import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class Help extends Command {
 
     public Help() {
-        super("help", "Shows a list of every Command!", Category.INFO);
+        super("help", "Shows a list of every Command!", Category.INFO, new CommandData("help", "Shows a list of every Command!").addOptions(new OptionData(OptionType.STRING, "target Category", "Show every Command of a Category.")));
     }
 
     @Override

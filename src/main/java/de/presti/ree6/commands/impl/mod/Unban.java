@@ -6,13 +6,16 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.function.Consumer;
 
 public class Unban extends Command {
 
     public Unban() {
-        super("unban", "Unban a User from the Server!", Category.MOD);
+        super("unban", "Unban a User from the Server!", Category.MOD, new CommandData("unban", "Unban a User from the Server!").addOptions(new OptionData(OptionType.STRING, "targetid", "Which User should be unbanned.").setRequired(true)));
     }
 
     @Override

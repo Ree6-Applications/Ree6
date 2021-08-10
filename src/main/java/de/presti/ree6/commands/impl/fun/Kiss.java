@@ -7,13 +7,16 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
 
 public class Kiss extends Command {
 
     public Kiss() {
-        super("kiss", "Kiss someone!", Category.FUN);
+        super("kiss", "Kiss someone!", Category.FUN, new CommandData("kiss", "Kiss someone").addOptions(new OptionData(OptionType.USER, "target", "The User that should be kissed!").setRequired(true)));
     }
 
     @Override

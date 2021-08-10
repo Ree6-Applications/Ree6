@@ -8,6 +8,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 public class Info extends Command {
 
     public Info() {
-        super("info", "Shows you Informations about a User.", Category.INFO);
+        super("info", "Shows you Informations about a User.", Category.INFO, new CommandData("info", "Shows you Informations about a User.").addOptions(new OptionData(OptionType.USER, "target", "Shows you Informations about the User.").setRequired(true)));
     }
 
     @Override

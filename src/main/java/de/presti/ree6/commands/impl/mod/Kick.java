@@ -6,11 +6,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class Kick extends Command {
 
     public Kick() {
-        super("kick", "Kick the User from the Server!", Category.MOD);
+        super("kick", "Kick the User from the Server!", Category.MOD,  new CommandData("kick", "Kick the User from the Server!").addOptions(new OptionData(OptionType.USER, "target", "Which User should be kicked.").setRequired(true)));
     }
 
     @Override

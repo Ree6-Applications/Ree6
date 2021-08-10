@@ -11,7 +11,7 @@ public class Cringe extends Command {
 
 
     public Cringe() {
-        super("cringe", "Tell someone that his Message is CRINGE", Category.LEVEL);
+        super("cringe", "Tell someone that his message is CRINGE", Category.LEVEL);
     }
 
     @Override

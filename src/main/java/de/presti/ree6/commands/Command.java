@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,10 +18,13 @@ public abstract class Command {
     Category cat;
     String[] alias;
 
+    CommandData commandData;
+
     public Command(String command, String description, Category category) {
         cmd = command;
         desc = description;
         cat = category;
+        this.commandData = new CommandData(command, description);
     }
 
     public Command(String command, String description, Category category, String[] alias) {
@@ -28,6 +32,22 @@ public abstract class Command {
         desc = description;
         cat = category;
         this.alias = alias;
+        this.commandData = new CommandData(command, description);
+    }
+
+    public Command(String command, String description, Category category, CommandData commandData) {
+        cmd = command;
+        desc = description;
+        cat = category;
+        this.commandData = commandData;
+    }
+
+    public Command(String command, String description, Category category, String[] alias, CommandData commandData) {
+        cmd = command;
+        desc = description;
+        cat = category;
+        this.alias = alias;
+        this.commandData = commandData;
     }
 
     public abstract void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m);
@@ -83,5 +103,9 @@ public abstract class Command {
             }
         }
         return false;
+    }
+
+    public CommandData getCommandData() {
+        return commandData;
     }
 }
