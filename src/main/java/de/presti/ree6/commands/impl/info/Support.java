@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 public class Support extends Command {
 
     public Support() {
-        super("invite", "Get a Invite Link for Ree6!", Category.INFO);
+        super("support", "Get a Invite Link to the Support Server!", Category.INFO);
     }
 
     @Override
