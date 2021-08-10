@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 public class Help extends Command {
 
     public Help() {
-        super("help", "Shows a list of every Command!", Category.INFO, new CommandData("help", "Shows a list of every Command!").addOptions(new OptionData(OptionType.STRING, "target Category", "Show every Command of a Category.")));
+        super("help", "Shows a list of every Command!", Category.INFO, new CommandData("help", "Shows a list of every Command!").addOptions(new OptionData(OptionType.STRING, "name", "Show every Command of a Category.")));
     }
 
     @Override

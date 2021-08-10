@@ -6,22 +6,36 @@ import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotState;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.bot.Webhook;
+import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.AutoRoleHandler;
 import de.presti.ree6.utils.TimeUtil;
-import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
+import org.apache.commons.collections4.Bag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.sql.SQLException;
-import java.util.Random;
+import java.time.OffsetDateTime;
+import java.util.*;
 
 public class OtherEvents extends ListenerAdapter {
 
@@ -138,5 +152,25 @@ public class OtherEvents extends ListenerAdapter {
 
             }
         }
+    }
+
+    @Override
+    public void onSlashCommand(SlashCommandEvent event)
+    {
+        // Only accept commands from guilds
+        if (event.getGuild() == null)
+            return;
+
+        MessageBuilder messageBuilder = new MessageBuilder();
+
+        if (event.getOption("target").getAsMember() != null) messageBuilder.mentionUsers(event.getOption("user").getAsUser().getId());
+
+        messageBuilder.setContent((event.getOption("target").getAsMember() != null ? event.getOption("user").getAsMember().getAsMention() : event.getOption("name").getAsString() != null ? event.getOption("name").getAsString() : ""));
+
+        Message message = messageBuilder.build();
+
+        Main.cm.perform(event.getMember(), message.getContentRaw(), message, event.getTextChannel());
+
+
     }
 }

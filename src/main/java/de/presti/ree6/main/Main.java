@@ -62,7 +62,7 @@ public class Main {
         twitchAPIHandler.registerTwitchLive();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.4.4");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.4.5");
             new MusikWorker();
             instance.addEvents();
 
@@ -141,6 +141,7 @@ public class Main {
 
                     Logger.log("Stats", "Overall Users: " + i);
                     Logger.log("Stats", "");
+
                     sqlConnector.close();
 
                     sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
