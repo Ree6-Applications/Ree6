@@ -12,28 +12,29 @@ import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.awt.*;
 
-public class Clearqueue extends Command {
+public class Shuffle extends Command {
 
-    public Clearqueue() {
-        super("clearqueue", "Clear every Song in the queue!", Category.MUSIC);
+    public Shuffle() {
+        super("shuffle", "Shuffle your playlist!", Category.MUSIC);
     }
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
         EmbedBuilder em = new EmbedBuilder();
         
+        MusikWorker.getGuildAudioPlayer(
+                m.getGuild()).scheduler.shuffle = !MusikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.shuffle;
+
         em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
                 BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription("The Queue has been cleaned!");
+        em.setDescription(MusikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.shuffle ? "Song Shuffle has been activated!"
+                : "Song Shuffle has been deactivated!");
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
-        
+
         sendMessage(em, 5, m);
-
-        MusikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.clearQueue();
-
         deleteMessage(messageSelf);
     }
 }

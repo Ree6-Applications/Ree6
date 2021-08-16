@@ -136,21 +136,19 @@ public class OtherEvents extends ListenerAdapter {
                     Main.sqlWorker.addXP(event.getGuild().getId(), event.getAuthor().getId(), new Random().nextInt(25) + 1);
                 } catch (SQLException throwables) {}
 
-                ArrayUtil.timeout.add(event.getMember());
+                    ArrayUtil.timeout.add(event.getMember());
 
-                new Thread(() -> {
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(30000);
+                        } catch (InterruptedException e) {}
 
-                    try {
-                        Thread.sleep(30000);
-                    } catch (InterruptedException e) {}
+                        ArrayUtil.timeout.remove(event.getMember());
 
-                    ArrayUtil.timeout.remove(event.getMember());
-
-                }).start();
+                    }).start();
+                }
 
                 AutoRoleHandler.handleChatLevelReward(event.getGuild(), event.getMember());
-
-            }
         }
     }
 

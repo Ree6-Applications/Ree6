@@ -10,6 +10,7 @@ import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.logger.LoggerQueue;
+import de.presti.ree6.music.GuildMusicManager;
 import de.presti.ree6.music.MusikWorker;
 import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.SQLWorker;
@@ -20,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 public class Main {
 
@@ -62,7 +64,7 @@ public class Main {
         twitchAPIHandler.registerTwitchLive();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.4.5");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.4.6");
             new MusikWorker();
             instance.addEvents();
 
@@ -151,8 +153,17 @@ public class Main {
                 }
 
 
+                for (Map.Entry<Long, GuildMusicManager> entry : MusikWorker.musicManagers.entrySet()) {
+
+                    GuildMusicManager gmm = entry.getValue();
+
+                    if (gmm.player.getPlayingTrack() == null || gmm.player.isPaused()) {
+                        gmm.scheduler.stopAll();
+                    }
+                }
+
                 try {
-                    Thread.sleep((7 * (60000L)));
+                    Thread.sleep((10 * (60000L)));
                 } catch (InterruptedException ignore) {
                 }
             }

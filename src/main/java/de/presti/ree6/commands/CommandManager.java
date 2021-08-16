@@ -64,6 +64,7 @@ public class CommandManager {
         addCommand(new Disconnect());
         addCommand(new Skip());
         addCommand(new Loop());
+        addCommand(new Shuffle());
         addCommand(new Volume());
         addCommand(new Clearqueue());
         addCommand(new Songlist());
@@ -140,21 +141,24 @@ public class CommandManager {
                 String[] args = Arrays.copyOfRange(oldargs, 1, oldargs.length);
                 cmd.onPerform(sender, messageSelf, args, m);
                 StatsManager.addStatsForCommand(cmd, m.getGuild().getId());
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                    }
 
-                    if (ArrayUtil.commandcooldown.contains(sender.getUser().getId())) {
-                        ArrayUtil.commandcooldown.remove(sender.getUser().getId());
-                    }
+                if (!sender.getUser().getId().equalsIgnoreCase("321580743488831490")) {
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                        }
 
-                    Thread.currentThread().interrupt();
+                        if (ArrayUtil.commandcooldown.contains(sender.getUser().getId())) {
+                            ArrayUtil.commandcooldown.remove(sender.getUser().getId());
+                        }
 
-                }).start();
+                        Thread.currentThread().interrupt();
 
-                if (!ArrayUtil.commandcooldown.contains(sender.getUser().getId())) {
+                    }).start();
+                }
+
+                if (!ArrayUtil.commandcooldown.contains(sender.getUser().getId()) && !sender.getUser().getId().equalsIgnoreCase("321580743488831490")) {
                     ArrayUtil.commandcooldown.add(sender.getUser().getId());
                 }
                 return true;

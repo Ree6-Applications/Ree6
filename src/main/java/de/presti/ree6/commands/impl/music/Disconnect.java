@@ -15,36 +15,14 @@ import java.awt.*;
 public class Disconnect extends Command {
 
     public Disconnect() {
-        super("dc", "Disconnect the Bot!", Category.MUSIC);
+        super("disconnect", "Disconnect the Bot!", Category.MUSIC, new String[] { "dc", "leave" });
     }
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
-        EmbedBuilder em = new EmbedBuilder();
 
-        if (MusikWorker.isConnected(m.getGuild())) {
+        MusikWorker.musicManagers.get(m.getGuild().getIdLong()).scheduler.stopAll();
 
-            MusikWorker.getGuildAudioPlayer(m.getGuild()).player.stopTrack();
-
-            MusikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.clearqueue();
-
-            MusikWorker.disconnect(m.getGuild());
-            em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
-                    BotInfo.botInstance.getSelfUser().getAvatarUrl());
-            em.setTitle("Music Player!");
-            em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-            em.setColor(Color.GREEN);
-            em.setDescription("Successfully disconnected!");
-        } else {
-            em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
-                    BotInfo.botInstance.getSelfUser().getAvatarUrl());
-            em.setTitle("Music Player!");
-            em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-            em.setColor(Color.RED);
-            em.setDescription("Im not connected to a Voicechannel!");
-        }
-        em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
-        sendMessage(em, 5, m);
         deleteMessage(messageSelf);
     }
 }

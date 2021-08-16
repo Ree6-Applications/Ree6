@@ -21,26 +21,7 @@ public class Stop extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
 
-        EmbedBuilder em = new EmbedBuilder();
-
-        if(MusikWorker.getGuildAudioPlayer(m.getGuild()).player.getPlayingTrack() != null) {
-            MusikWorker.getGuildAudioPlayer(m.getGuild()).player.stopTrack();
-        }
-
-        MusikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.clearqueue();
-
-        MusikWorker.disconnect(m.getGuild());
-
-
-        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
-                BotInfo.botInstance.getSelfUser().getAvatarUrl());
-        em.setTitle("Music Player!");
-        em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-        em.setColor(Color.GREEN);
-        em.setDescription("Music Player has been stopped!");
-        em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
-        
-        sendMessage(em, 5, m);
+        MusikWorker.musicManagers.get(m.getGuild().getIdLong()).scheduler.stopAll();
 
         deleteMessage(messageSelf);
     }

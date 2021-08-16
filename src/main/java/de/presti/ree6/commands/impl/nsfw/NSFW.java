@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class NSFW extends Command {
 
-    private String[] tags = new String[] { "lewd", "anal", "pussy", "boobs", "nsfw_avatar"};
+    private String[] tags = new String[] { "solog", "smallboobs", "lewdkemo", "solo", "cum", "les", "bj", "pwankg", "hololewd", "tits", "nsfw_neko_gif", "cum_jpg", "blowjob", "boobs", "lewd", "pussy_jpg", "anal", "futanari", "lewdk"};
 
     public NSFW() {
         super("nsfw", "Get NSFW Images from neko.life", Category.NSFW, new String[] { "givensfw"});
