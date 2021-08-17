@@ -4,6 +4,7 @@ import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.music.MusikWorker;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -21,7 +22,7 @@ public class Disconnect extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
 
-        MusikWorker.musicManagers.get(m.getGuild().getIdLong()).scheduler.stopAll();
+        Main.musikWorker.musicManagers.get(m.getGuild().getIdLong()).scheduler.stopAll();
 
         deleteMessage(messageSelf);
     }

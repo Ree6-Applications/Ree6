@@ -34,6 +34,7 @@ public class Main {
     public static SQLConnector sqlConnector;
     public static SQLWorker sqlWorker;
     public static LoggerQueue loggerQueue;
+    public static MusikWorker musikWorker;
     
     public static Thread checker;
     public static Config config;
@@ -64,8 +65,8 @@ public class Main {
         twitchAPIHandler.registerTwitchLive();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.4.6");
-            new MusikWorker();
+            BotUtil.createBot(BotVersion.PUBLIC, "1.4.7");
+            musikWorker = new MusikWorker();
             instance.addEvents();
 
             cm.addSlashCommand();
@@ -126,6 +127,12 @@ public class Main {
 
                 if (!lastday.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 
+                    sqlConnector.close();
+
+                    sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
+                    sqlWorker = new SQLWorker();
+
+
                     ArrayUtil.messageIDwithMessage.clear();
                     ArrayUtil.messageIDwithUser.clear();
 
@@ -134,30 +141,17 @@ public class Main {
                     Logger.log("Stats", "");
                     Logger.log("Stats", "Todays Stats:");
                     Logger.log("Stats", "Guilds: " + BotInfo.botInstance.getGuilds().size());
-
-                    int i = 0;
-
-                    for (Guild guild : BotInfo.botInstance.getGuilds()) {
-                        i += guild.getMemberCount();
-                    }
-
-                    Logger.log("Stats", "Overall Users: " + i);
+                    Logger.log("Stats", "Overall Users: " + BotInfo.botInstance.getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
                     Logger.log("Stats", "");
-
-                    sqlConnector.close();
-
-                    sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
-                    sqlWorker = new SQLWorker();
-
                     lastday = new SimpleDateFormat("dd").format(new Date());
                 }
 
 
-                for (Map.Entry<Long, GuildMusicManager> entry : MusikWorker.musicManagers.entrySet()) {
+                for (Map.Entry<Long, GuildMusicManager> entry : musikWorker.musicManagers.entrySet()) {
 
                     GuildMusicManager gmm = entry.getValue();
 
-                    if (gmm.player.getPlayingTrack() == null || gmm.player.isPaused()) {
+                    if (musikWorker.isConnected(gmm.guild) && (gmm.player.getPlayingTrack() == null || gmm.player.isPaused())) {
                         gmm.scheduler.stopAll();
                     }
                 }

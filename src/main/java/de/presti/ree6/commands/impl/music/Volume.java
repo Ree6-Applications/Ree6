@@ -4,6 +4,7 @@ import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.music.MusikWorker;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -35,7 +36,7 @@ public class Volume extends Command {
                 vol = 50;
             }
 
-            MusikWorker.getGuildAudioPlayer(m.getGuild()).player.setVolume(vol);
+            Main.musikWorker.getGuildAudioPlayer(m.getGuild()).player.setVolume(vol);
 
             em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
                     BotInfo.botInstance.getSelfUser().getAvatarUrl());

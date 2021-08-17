@@ -4,6 +4,7 @@ import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.music.MusikWorker;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.SpotifyAPIHandler;
@@ -40,7 +41,7 @@ public class Play extends Command {
             em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
             sendMessage(em, 5, m);
         } else {
-            if (MusikWorker.isConnectedMember(sender, m.getGuild())) {
+            if (Main.musikWorker.isConnectedMember(sender, m.getGuild())) {
                 if (ArrayUtil.botjoin.containsKey(m.getGuild())) {
                     ArrayUtil.botjoin.remove(m.getGuild());
                 }
@@ -61,7 +62,7 @@ public class Play extends Command {
                 }
 
                 if (!isspotify) {
-                    MusikWorker.loadAndPlay(m, args[0]);
+                    Main.musikWorker.loadAndPlay(m, args[0]);
                 } else {
                     ArrayList<String> loadfailed = new ArrayList<>();
                     boolean b = false;
@@ -72,10 +73,10 @@ public class Play extends Command {
                             loadfailed.add(search);
                         } else {
                             if (!b) {
-                                MusikWorker.loadAndPlay(m, ytresult);
+                                Main.musikWorker.loadAndPlay(m, ytresult);
                                 b = true;
                             } else {
-                                MusikWorker.loadAndPlaySilence(m, ytresult);
+                                Main.musikWorker.loadAndPlaySilence(m, ytresult);
                             }
                         }
                     }
@@ -110,7 +111,7 @@ public class Play extends Command {
                     em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
                     sendMessage(em, 5, m);
                 } else {
-                    MusikWorker.loadAndPlay(m, ytresult);
+                    Main.musikWorker.loadAndPlay(m, ytresult);
                 }
             }
         }

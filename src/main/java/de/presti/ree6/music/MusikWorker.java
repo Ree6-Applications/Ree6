@@ -24,8 +24,8 @@ import java.util.Map;
 
 public class MusikWorker {
 
-    public static AudioPlayerManager playerManager;
-    public static Map<Long, GuildMusicManager> musicManagers;
+    public AudioPlayerManager playerManager;
+    public Map<Long, GuildMusicManager> musicManagers;
 
     public MusikWorker() {
         musicManagers = new HashMap<>();
@@ -35,12 +35,12 @@ public class MusikWorker {
         AudioSourceManagers.registerLocalSource(playerManager);
     }
 
-    public static synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
+    public synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
         long guildId = Long.parseLong(guild.getId());
         GuildMusicManager musicManager = musicManagers.get(guildId);
 
         if (musicManager == null) {
-            musicManager = new GuildMusicManager(playerManager);
+            musicManager = new GuildMusicManager(guild, playerManager);
             musicManagers.put(guildId, musicManager);
         }
 
@@ -50,7 +50,7 @@ public class MusikWorker {
     }
 
 
-    public static void loadAndPlaySilence(TextChannel channel, String trackUrl) {
+    public void loadAndPlaySilence(TextChannel channel, String trackUrl) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         musicManager.scheduler.thechannel = channel;
@@ -114,7 +114,7 @@ public class MusikWorker {
         });
     }
 
-    public static void loadAndPlay(final TextChannel channel, final String trackUrl) {
+    public void loadAndPlay(final TextChannel channel, final String trackUrl) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         musicManager.scheduler.thechannel = channel;
@@ -201,7 +201,7 @@ public class MusikWorker {
         });
     }
 
-    public static void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
+    public void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
         if (!ArrayUtil.botjoin.containsKey(guild)) {
             connectToFirstVoiceChannel(guild.getAudioManager());
         } else {
@@ -211,7 +211,7 @@ public class MusikWorker {
         musicManager.scheduler.queue(track);
     }
 
-    public static void skipTrack(TextChannel channel) {
+    public void skipTrack(TextChannel channel) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         EmbedBuilder em = new EmbedBuilder();
@@ -228,7 +228,7 @@ public class MusikWorker {
     }
 
     @SuppressWarnings("deprecation")
-    public static void connectToFirstVoiceChannel(AudioManager audioManager) {
+    public void connectToFirstVoiceChannel(AudioManager audioManager) {
         if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
             for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
                 audioManager.openAudioConnection(voiceChannel);
@@ -238,7 +238,7 @@ public class MusikWorker {
     }
 
     @SuppressWarnings("deprecation")
-    public static void connectToMemberVoiceChannel(AudioManager audioManager, Member m) {
+    public void connectToMemberVoiceChannel(AudioManager audioManager, Member m) {
         if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
             for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
                 if (voiceChannel.getMembers().contains(m)) {
@@ -250,7 +250,7 @@ public class MusikWorker {
         }
     }
 
-    public static boolean isConnected(Guild g) {
+    public boolean isConnected(Guild g) {
         for (VoiceChannel vc : g.getVoiceChannels()) {
             if (vc.getMembers().contains(g.getMemberById(BotInfo.botInstance.getSelfUser().getId()))) {
                 return true;
@@ -259,11 +259,11 @@ public class MusikWorker {
         return false;
     }
 
-    public static void disconnect(Guild g) {
+    public void disconnect(Guild g) {
         g.getAudioManager().closeAudioConnection();
     }
 
-    public static boolean isConnectedMember(Member m, Guild g) {
+    public boolean isConnectedMember(Member m, Guild g) {
         for (VoiceChannel vc : g.getVoiceChannels()) {
             if (vc.getMembers().contains(m)) {
                 return true;

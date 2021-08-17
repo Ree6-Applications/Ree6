@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.main.Data;
+import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -236,13 +237,13 @@ public class TrackScheduler extends AudioEventAdapter {
 
     public void stopAll() {
         EmbedBuilder em = new EmbedBuilder();
-        if (MusikWorker.isConnected(thechannel.getGuild())) {
+        if (Main.musikWorker.isConnected(thechannel.getGuild())) {
 
-            MusikWorker.getGuildAudioPlayer(thechannel.getGuild()).player.stopTrack();
+            Main.musikWorker.getGuildAudioPlayer(thechannel.getGuild()).player.stopTrack();
 
-            MusikWorker.getGuildAudioPlayer(thechannel.getGuild()).scheduler.clearQueue();
+            Main.musikWorker.getGuildAudioPlayer(thechannel.getGuild()).scheduler.clearQueue();
 
-            MusikWorker.disconnect(thechannel.getGuild());
+            Main.musikWorker.disconnect(thechannel.getGuild());
             em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
                     BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setTitle("Music Player!");
