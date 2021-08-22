@@ -98,7 +98,7 @@ public class JSONApi {
 			 * if (i != null) { available = i.available(); } } }
 			 *
 			 * if (available == 0) { content = "{}"; } else { content = IOUtils.toString(i,
-			 * c.getContentEncoding()); }
+			 * c.getContentEncoding()); } bruh
 			 */
 			content = IOUtils.toString(i, c.getContentEncoding());
 			rawcontent = content;
