@@ -17,5 +17,6 @@ public class Credits extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         sendMessage("Here are some AWESOME people!\n<https://www.ree6.de/team.html>", m, hook);
+        sendMessage("Lead Developer : Presti | 平和#0240\nSupport Developer : xazed | xazed#5014\ndavid. | david.#3120", m, hook);
     }
 }
