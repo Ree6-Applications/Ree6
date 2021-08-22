@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -29,7 +30,7 @@ public class Play extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if (args.length < 1) {
             EmbedBuilder em = new EmbedBuilder();
             em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
@@ -39,7 +40,7 @@ public class Play extends Command {
             em.setColor(Color.GREEN);
             em.setDescription("Usage: ree!play (Url)");
             em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
-            sendMessage(em, 5, m);
+            sendMessage(em, 5, m, hook);
         } else {
             if (Main.musikWorker.isConnectedMember(sender, m.getGuild())) {
                 if (ArrayUtil.botJoin.containsKey(m.getGuild())) {
@@ -87,9 +88,9 @@ public class Play extends Command {
                         em.setTitle("Music Player!");
                         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                         em.setColor(Color.GREEN);
-                        em.setDescription("We couldn't find " + loadfailed.size() + " Songs!");
+                        em.setDescription("We couldn't find ``" + loadfailed.size() + "`` Songs!");
                         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
-                        sendMessage(em, 5, m);
+                        sendMessage(em, 5, m, hook);
                     }
                 }
             } else {
@@ -107,9 +108,9 @@ public class Play extends Command {
                     em.setTitle("Music Player!");
                     em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setColor(Color.GREEN);
-                    em.setDescription("A Song with the Name " + search + " couldn't be found!");
+                    em.setDescription("A Song with the Name ``" + search + "`` couldn't be found!");
                     em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
-                    sendMessage(em, 5, m);
+                    sendMessage(em, 5, m, hook);
                 } else {
                     Main.musikWorker.loadAndPlay(m, ytresult);
                 }

@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.json.JSONArray;
 
 public class CatImage extends Command {
@@ -19,7 +20,7 @@ public class CatImage extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         JSONArray js = JSONApi.GetData2(JSONApi.Requests.GET, "https://api.thecatapi.com/v1/images/search");
 
         EmbedBuilder em = new EmbedBuilder();
@@ -29,6 +30,6 @@ public class CatImage extends Command {
         em.setImage(js.getJSONObject(0).getString("url"));
         em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
-        sendMessage(em, m);
+        sendMessage(em, m, hook);
     }
 }

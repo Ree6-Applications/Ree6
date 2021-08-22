@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 
 import javax.annotation.Nonnull;
@@ -112,7 +113,7 @@ public class OtherEvents extends ListenerAdapter {
             }
         }
 
-        if(!Main.commandManager.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel())) {
+        if(!Main.commandManager.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
 
             if(!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(BotInfo.botInstance.getSelfUser())) {
                 event.getChannel().sendMessage("Usage ree!help").queue();
@@ -145,18 +146,16 @@ public class OtherEvents extends ListenerAdapter {
         if (event.getGuild() == null)
             return;
 
-        event.deferReply().queue();
+        event.deferReply(true).queue();
 
         MessageBuilder messageBuilder = new MessageBuilder();
 
-        if (event.getOption("target").getAsMember() != null) messageBuilder.mentionUsers(event.getOption("user").getAsUser().getId());
+        if (event.getOption("target") != null) messageBuilder.mentionUsers(event.getOption("user").getAsUser().getId());
 
-        messageBuilder.setContent((event.getOption("target").getAsMember() != null ? event.getOption("user").getAsMember().getAsMention() : event.getOption("name").getAsString() != null ? event.getOption("name").getAsString() : ""));
+        messageBuilder.setContent("ree!" + event.getName() + " " + (event.getOption("target") != null ? event.getOption("user").getAsMember().getAsMention() : event.getOption("name") != null ? event.getOption("name").getAsString() : ""));
 
         Message message = messageBuilder.build();
 
-        Main.commandManager.perform(event.getMember(), message.getContentRaw(), message, event.getTextChannel());
-
-
+        Main.commandManager.perform(event.getMember(), message.getContentRaw(), message, event.getTextChannel(), event.getHook().setEphemeral(true));
     }
 }

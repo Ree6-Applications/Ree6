@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -23,7 +24,7 @@ public class Volume extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
 
         EmbedBuilder em = new EmbedBuilder();
 
@@ -55,6 +56,6 @@ public class Volume extends Command {
         }
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
 
-        sendMessage(em, 5, m);
+        sendMessage(em, 5, m, hook);
     }
 }

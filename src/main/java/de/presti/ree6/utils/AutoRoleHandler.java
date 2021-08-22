@@ -15,19 +15,24 @@ public class AutoRoleHandler {
             return;
 
         new Thread(() -> {
+
+            if (g.getSelfMember().canInteract(m)) {
+                Logger.log("AutoRole", "Failed to give a Role when someone joined!");
+                Logger.log("AutoRole", "Server: " + g.getName());
+                g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
+                return;
+            }
+
             for (String ids : Main.sqlWorker.getAutoRoleIDs(g.getId())) {
-                try {
-                    if (!m.getRoles().contains(g.getRoleById(ids))) {
+                if (!m.getRoles().contains(g.getRoleById(ids))) {
+                    if (g.getSelfMember().canInteract(g.getRoleById(ids))) {
                         g.addRoleToMember(m, g.getRoleById(ids)).queue();
-                    }
-                } catch (Exception ex) {
-                    try {
+                    } else {
                         Logger.log("AutoRole", "Failed to give a Role!");
                         Logger.log("AutoRole", "Role: " + g.getRoleById(ids).getName());
                         Logger.log("AutoRole", "Server: " + g.getName());
-                        PrivateChannel pc = g.getOwner().getUser().openPrivateChannel().complete();
-                        pc.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when joining is: " + g.getRoleById(ids)).queue();
-                    } catch (Exception ignored) {}
+                        g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when joining is: " + g.getRoleById(ids)).queue();
+                    }
                 }
             }
         }).start();
@@ -49,21 +54,25 @@ public class AutoRoleHandler {
                 level++;
             }
 
+            if (g.getSelfMember().canInteract(m)) {
+                Logger.log("AutoRole", "Failed to give a Role when someone leveled up!");
+                Logger.log("AutoRole", "Server: " + g.getName());
+                g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
+                return;
+            }
+
             for (Map.Entry<Integer, String> entry : Main.sqlWorker.getVoiceLevelRewards(g.getId()).entrySet()) {
 
                 if (entry.getKey() <= level) {
-                    try {
-                        if (!m.getRoles().contains(g.getRoleById(entry.getValue()))) {
+                    if (!m.getRoles().contains(g.getRoleById(entry.getValue()))) {
+                        if (g.getSelfMember().canInteract(g.getRoleById(entry.getValue()))) {
                             g.addRoleToMember(m, g.getRoleById(entry.getValue())).queue();
-                        }
-                    } catch (Exception ex) {
-                        try {
+                        } else {
                             Logger.log("AutoRole", "Failed to give a Role!");
                             Logger.log("AutoRole", "Role: " + g.getRoleById(entry.getValue()).getName());
                             Logger.log("AutoRole", "Server: " + g.getName());
-                            PrivateChannel pc = g.getOwner().getUser().openPrivateChannel().complete();
-                            pc.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue())).queue();
-                        } catch (Exception ignored) {}
+                            g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue())).queue();
+                        }
                     }
                 }
             }
@@ -86,21 +95,25 @@ public class AutoRoleHandler {
                 level++;
             }
 
+            if (g.getSelfMember().canInteract(m)) {
+                Logger.log("AutoRole", "Failed to give a Role when someone leveled up!");
+                Logger.log("AutoRole", "Server: " + g.getName());
+                g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
+                return;
+            }
+
             for (Map.Entry<Integer, String> entry : Main.sqlWorker.getChatLevelRewards(g.getId()).entrySet()) {
 
                 if (entry.getKey() <= level) {
-                    try {
-                        if (!m.getRoles().contains(g.getRoleById(entry.getValue()))) {
+                    if (!m.getRoles().contains(g.getRoleById(entry.getValue()))) {
+                        if (g.getSelfMember().canInteract(g.getRoleById(entry.getValue()))) {
                             g.addRoleToMember(m, g.getRoleById(entry.getValue())).queue();
-                        }
-                    } catch (Exception ex) {
-                        try {
+                        } else {
                             Logger.log("AutoRole", "Failed to give a Role!");
                             Logger.log("AutoRole", "Role: " + g.getRoleById(entry.getValue()).getName());
                             Logger.log("AutoRole", "Server: " + g.getName());
-                            PrivateChannel pc = g.getOwner().getUser().openPrivateChannel().complete();
-                            pc.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue()).getName()).queue();
-                        } catch (Exception ignored) {}
+                            g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue())).queue();
+                        }
                     }
                 }
 

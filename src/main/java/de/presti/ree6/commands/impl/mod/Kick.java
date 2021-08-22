@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -18,26 +19,26 @@ public class Kick extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if (sender.hasPermission(Permission.ADMINISTRATOR)) {
             if (args.length == 1) {
                 if(messageSelf.getMentionedMembers().isEmpty()) {
-                    sendMessage("No User mentioned!", 5, m);
-                    sendMessage("Use ree!kick @user", 5, m);
+                    sendMessage("No User mentioned!", 5, m, hook);
+                    sendMessage("Use ree!kick @user", 5, m, hook);
                 } else {
-                    try {
-                        sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been kicked!", 5, m);
+                    if (m.getGuild().getSelfMember().canInteract(messageSelf.getMentionedMembers().get(0)) && sender.canInteract(messageSelf.getMentionedMembers().get(0))) {
+                        sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been kicked!", 5, m, hook);
                         sender.getGuild().kick(messageSelf.getMentionedMembers().get(0)).queue();
-                    } catch (Exception ex) {
-                        sendMessage("Couldn't kick the User is his Role higher than mine?", 5, m);
+                    } else {
+                        sendMessage("Couldn't kick this User because he has a higher Rank then me!", 5, m, hook);
                     }
                 }
             } else {
-                sendMessage("Not enough Arguments!", 5, m);
-                sendMessage("Use ree!kick @user", 5, m);
+                sendMessage("Not enough Arguments!", 5, m, hook);
+                sendMessage("Use ree!kick @user", 5, m, hook);
             }
         } else {
-            sendMessage("You dont have the Permission for this Command!", 5, m);
+            sendMessage("You dont have the Permission for this Command!", 5, m, hook);
         }
 
         deleteMessage(messageSelf);

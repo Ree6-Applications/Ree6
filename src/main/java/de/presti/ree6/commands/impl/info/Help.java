@@ -8,6 +8,7 @@ import de.presti.ree6.main.Main;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -19,7 +20,7 @@ public class Help extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
 
         EmbedBuilder em = new EmbedBuilder();
 
@@ -34,7 +35,7 @@ public class Help extends Command {
                 }
             }
 
-            sendMessage(em, m);
+            sendMessage(em, m, hook);
         } else if (args.length == 1) {
             em.setColor(BotUtil.randomEmbedColor());
             em.setTitle("Command Index");
@@ -60,7 +61,7 @@ public class Help extends Command {
                 }
             }
 
-            sendMessage(em, m);
+            sendMessage(em, m, hook);
 
         }
     }

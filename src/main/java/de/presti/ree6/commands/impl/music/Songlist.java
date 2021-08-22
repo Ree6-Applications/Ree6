@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.awt.*;
 
@@ -21,7 +22,7 @@ public class Songlist extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
 
         EmbedBuilder em = new EmbedBuilder();
         
@@ -41,6 +42,6 @@ public class Songlist extends Command {
         em.setDescription(Main.musikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.getQueue().size() == 0 ? "No Song in the Queue" :  (end.length() > 4096 ? "Error (M-SL-01)" : "Songs: " + end));
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
 
-        sendMessage(em, 5, m);
+        sendMessage(em, 5, m, hook);
     }
 }

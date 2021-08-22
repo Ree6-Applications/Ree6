@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.awt.*;
 
@@ -20,7 +21,7 @@ public class Clearqueue extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         EmbedBuilder em = new EmbedBuilder();
         
         em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
@@ -31,7 +32,7 @@ public class Clearqueue extends Command {
         em.setDescription("The Queue has been cleaned!");
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
         
-        sendMessage(em, 5, m);
+        sendMessage(em, 5, m, hook);
 
         Main.musikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.clearQueue();
     }

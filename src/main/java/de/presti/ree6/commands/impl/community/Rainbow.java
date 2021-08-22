@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.awt.*;
 
@@ -24,11 +25,11 @@ public class Rainbow extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         deleteMessage(messageSelf);
 
         if(!Main.sqlWorker.hasRainbowSetuped(m.getGuild().getId())) {
-            sendMessage("Rainbow Mate searcher isn't setuped!\nAsk a Admin to set it up with ree!setup r6", 5, m);
+            sendMessage("Rainbow Mate searcher isn't setuped!\nAsk a Admin to set it up with ree!setup r6", 5, m, hook);
             return;
         }
 

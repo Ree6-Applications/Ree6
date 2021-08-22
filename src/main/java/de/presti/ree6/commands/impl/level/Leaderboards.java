@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ public class Leaderboards extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         EmbedBuilder em = new EmbedBuilder();
 
         em.setThumbnail(sender.getUser().getAvatarUrl());
@@ -50,7 +51,7 @@ public class Leaderboards extends Command {
         }
 
         em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
-        sendMessage(em, m);
+        sendMessage(em, m, hook);
     }
 
     public int getLevel(long xp) {

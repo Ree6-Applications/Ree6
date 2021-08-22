@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.util.ArrayList;
 
@@ -17,16 +18,16 @@ public class ChatProtector extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if (sender.hasPermission(Permission.ADMINISTRATOR)) {
             if(args.length >= 1) {
                 if(args.length == 1) {
                     if(args[0].equalsIgnoreCase("add")) {
-                        sendMessage("Not enough Arguments!", 5, m);
-                        sendMessage("Use ree!chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, m);
+                        sendMessage("Not enough Arguments!", 5, m, hook);
+                        sendMessage("Use ree!chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, m, hook);
                     } else if(args[0].equalsIgnoreCase("remove")) {
-                        sendMessage("Not enough Arguments!", 5, m);
-                        sendMessage("Use ree!chatprotector remove WORD", 5, m);
+                        sendMessage("Not enough Arguments!", 5, m, hook);
+                        sendMessage("Use ree!chatprotector remove WORD", 5, m, hook);
                     } else if (args[0].equalsIgnoreCase("list")) {
                         if(de.presti.ree6.addons.impl.ChatProtector.hasChatProtector(m.getGuild().getId())) {
                             StringBuilder end = new StringBuilder();
@@ -35,14 +36,14 @@ public class ChatProtector extends Command {
                                 end.append("\n").append(s);
                             }
 
-                            sendMessage("```" + end + "```", m);
+                            sendMessage("```" + end + "```", m, hook);
                         } else {
-                            sendMessage("Your ChatProtector isn't setuped!", 5, m);
-                            sendMessage("Use ree!chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, m);
+                            sendMessage("Your ChatProtector isn't setuped!", 5, m, hook);
+                            sendMessage("Use ree!chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, m, hook);
                         }
                     } else {
-                        sendMessage("Couldn't find " + args[0] + "!", 5, m);
-                        sendMessage("Use ree!chatprotector add/remove/list", 5, m);
+                        sendMessage("Couldn't find " + args[0] + "!", 5, m, hook);
+                        sendMessage("Use ree!chatprotector add/remove/list", 5, m, hook);
                     }
                 } else {
                     if(args[0].equalsIgnoreCase("add")) {
@@ -54,25 +55,25 @@ public class ChatProtector extends Command {
                                 end.append("\n").append(args[i]);
                             }
                             de.presti.ree6.addons.impl.ChatProtector.addWordstoProtector(m.getGuild().getId(), words);
-                            sendMessage("The Wordlist has been added to your ChatProtector!\nYour Wordlist:\n```" + end + "```", 5, m);
+                            sendMessage("The Wordlist has been added to your ChatProtector!\nYour Wordlist:\n```" + end + "```", 5, m, hook);
                         } else {
                             de.presti.ree6.addons.impl.ChatProtector.addWordtoProtector(m.getGuild().getId(), args[1]);
-                            sendMessage("The Word " + args[1] + " has been added to your ChatProtector!", 5, m);
+                            sendMessage("The Word " + args[1] + " has been added to your ChatProtector!", 5, m, hook);
                         }
                     } else if(args[0].equalsIgnoreCase("remove")) {
                         de.presti.ree6.addons.impl.ChatProtector.removeWordfromProtector(m.getGuild().getId(), args[1]);
-                        sendMessage("The Word " + args[1] + " has been removed from your ChatProtector!", 5, m);
+                        sendMessage("The Word " + args[1] + " has been removed from your ChatProtector!", 5, m, hook);
                     } else {
-                        sendMessage("Couldn't find " + args[0] + "!", 5, m);
-                        sendMessage("Use ree!chatprotector add/remove/list", 5, m);
+                        sendMessage("Couldn't find " + args[0] + "!", 5, m, hook);
+                        sendMessage("Use ree!chatprotector add/remove/list", 5, m, hook);
                     }
                 }
             } else {
-                sendMessage("Not enough Arguments!", 5, m);
-                sendMessage("Use ree!chatprotector add/remove/list", 5, m);
+                sendMessage("Not enough Arguments!", 5, m, hook);
+                sendMessage("Use ree!chatprotector add/remove/list", 5, m, hook);
             }
         } else {
-            sendMessage("You don't have the Permission for this Command!", 5, m);
+            sendMessage("You don't have the Permission for this Command!", 5, m, hook);
         }
         deleteMessage(messageSelf);
     }

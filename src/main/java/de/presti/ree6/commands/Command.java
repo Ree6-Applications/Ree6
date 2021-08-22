@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.concurrent.TimeUnit;
@@ -51,7 +52,7 @@ public abstract class Command {
         this.commandData = commandData;
     }
 
-    public abstract void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m);
+    public abstract void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook interactionHook);
 
     public String[] getAlias() {
         return alias;
@@ -67,21 +68,21 @@ public abstract class Command {
 
     public Category getCategory() { return cat; }
 
-    public void sendMessage(String msg, MessageChannel m) {
-        m.sendMessage(msg).queue();
+    public void sendMessage(String msg, MessageChannel m, InteractionHook hook) {
+        if (hook == null) m.sendMessage(msg).queue(); else hook.sendMessage(msg).queue();
     }
 
-    public void sendMessage(String msg, int deleteSecond, MessageChannel m) {
-        m.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+    public void sendMessage(String msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
+        if (hook == null) m.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue(); else hook.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
     }
 
 
-    public void sendMessage(EmbedBuilder msg, MessageChannel m) {
-        m.sendMessageEmbeds(msg.build()).queue();
+    public void sendMessage(EmbedBuilder msg, MessageChannel m, InteractionHook hook) {
+        if (hook == null) m.sendMessageEmbeds(msg.build()).queue(); else hook.sendMessageEmbeds(msg.build()).queue();
     }
 
-    public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m) {
-        m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+    public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
+        if (hook == null) m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue(); else hook.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
     }
 
     public static void deleteMessage(Message message) {

@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
 
@@ -23,7 +24,7 @@ public class NSFW extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if (m.isNSFW()) {
             ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
@@ -34,9 +35,9 @@ public class NSFW extends Command {
             em.setImage((im.getUrl() != null ? im.getUrl() : "https://images.ree6.de/notfound.png"));
             em.setFooter(sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
-            sendMessage(em, m);
+            sendMessage(em, m, hook);
         } else {
-            sendMessage("Only available in NSFW Channels!", 5, m);
+            sendMessage("Only available in NSFW Channels!", 5, m, hook);
         }
     }
 }

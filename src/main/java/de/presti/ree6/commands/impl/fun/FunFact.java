@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.json.JSONObject;
 
 public class FunFact extends Command {
@@ -17,8 +18,8 @@ public class FunFact extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         JSONObject js = JSONApi.GetData(JSONApi.Requests.GET, "https://useless-facts.sameerkumar.website/api");
-        sendMessage(js.getString("data"), m);
+        sendMessage(js.getString("data"), m, hook);
     }
 }

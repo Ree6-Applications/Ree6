@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class CommandManager {
         addCommand(new ChatProtector());
 
         //Music
+        addCommand(new Songinfo());
         addCommand(new Play());
         addCommand(new Pause());
         addCommand(new Resume());
@@ -119,14 +121,14 @@ public class CommandManager {
         }
     }
 
-    public boolean perform(Member sender, String msg, Message messageSelf, TextChannel m) {
+    public boolean perform(Member sender, String msg, Message messageSelf, TextChannel m, InteractionHook interactionHook) {
 
         if (!msg.toLowerCase().startsWith(prefix))
             return false;
 
         if(ArrayUtil.commandCooldown.contains(sender.getUser().getId())) {
-            sendMessage("You are on cooldown!", 5, m);
-            deleteMessage(messageSelf);
+            sendMessage("You are on cooldown!", 5, m, interactionHook);
+            if (interactionHook == null) deleteMessage(messageSelf);
             return false;
         }
 
@@ -137,7 +139,7 @@ public class CommandManager {
         for (Command cmd : getCommands()) {
             if (cmd.getCmd().equalsIgnoreCase(oldArgs[0]) || cmd.isAlias(oldArgs[0])) {
                 String[] args = Arrays.copyOfRange(oldArgs, 1, oldArgs.length);
-                cmd.onPerform(sender, messageSelf, args, m);
+                cmd.onPerform(sender, messageSelf, args, m, interactionHook);
                 StatsManager.addStatsForCommand(cmd, m.getGuild().getId());
 
                 if (!sender.getUser().getId().equalsIgnoreCase("321580743488831490")) {
@@ -161,7 +163,7 @@ public class CommandManager {
             }
         }
 
-        sendMessage("The Command " + oldArgs[0] + " couldn't be found!", 5, m);
+        sendMessage("The Command " + oldArgs[0] + " couldn't be found!", 5, m, interactionHook);
 
         return false;
     }
@@ -175,20 +177,38 @@ public class CommandManager {
         return commands;
     }
 
-    public static void sendMessage(String msg, MessageChannel m) {
-        m.sendMessage(msg).queue();
+    public void sendMessage(String msg, MessageChannel m) {
+        sendMessage(msg, m, null);
     }
 
-    public static void sendMessage(String msg, int deleteSecond, MessageChannel m) {
-        m.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+    public void sendMessage(String msg, int deleteSecond, MessageChannel m) {
+        sendMessage(msg, deleteSecond, m, null);
     }
 
-    public static void sendMessage(EmbedBuilder msg, MessageChannel m) {
-        m.sendMessageEmbeds(msg.build()).queue();
+
+    public void sendMessage(EmbedBuilder msg, MessageChannel m) {
+        sendMessage(msg, m, null);
     }
 
-    public static void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m) {
-        m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+    public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m) {
+        sendMessage(msg, deleteSecond, m, null);
+    }
+
+    public void sendMessage(String msg, MessageChannel m, InteractionHook hook) {
+        if (hook == null) m.sendMessage(msg).queue(); else hook.sendMessage(msg).queue();
+    }
+
+    public void sendMessage(String msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
+        if (hook == null) m.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue(); else hook.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+    }
+
+
+    public void sendMessage(EmbedBuilder msg, MessageChannel m, InteractionHook hook) {
+        if (hook == null) m.sendMessageEmbeds(msg.build()).queue(); else hook.sendMessageEmbeds(msg.build()).queue();
+    }
+
+    public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
+        if (hook == null) m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue(); else hook.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
     }
 
     public static void deleteMessage(Message message) {

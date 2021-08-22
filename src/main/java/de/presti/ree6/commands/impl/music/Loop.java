@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.awt.*;
 
@@ -20,7 +21,7 @@ public class Loop extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         EmbedBuilder em = new EmbedBuilder();
         
         Main.musikWorker.getGuildAudioPlayer(
@@ -35,6 +36,6 @@ public class Loop extends Command {
                 : "Song Loop has been deactivated!");
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
 
-        sendMessage(em, 5, m);
+        sendMessage(em, 5, m, hook);
     }
 }

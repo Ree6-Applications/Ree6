@@ -7,6 +7,7 @@ import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 public class ReloadAddons extends Command {
 
@@ -15,11 +16,11 @@ public class ReloadAddons extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if(sender.getUser().getId().equalsIgnoreCase("321580743488831490")) {
             Main.addonManager.reload();
         } else {
-            sendMessage("The Command ree!reloadaddons couldn't be found!", 5, m);
+            sendMessage("The Command ree!reloadaddons couldn't be found!", 5, m, hook);
         }
     }
 }

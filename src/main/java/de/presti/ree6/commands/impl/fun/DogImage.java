@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.json.JSONObject;
 
 public class DogImage extends Command {
@@ -19,7 +20,7 @@ public class DogImage extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         JSONObject js = JSONApi.GetData(JSONApi.Requests.GET, "https://dog.ceo/api/breeds/image/random");
 
         EmbedBuilder em = new EmbedBuilder();
@@ -29,6 +30,6 @@ public class DogImage extends Command {
         em.setImage(js.getString("message"));
         em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
-        sendMessage(em, m);
+        sendMessage(em, m, hook);
     }
 }

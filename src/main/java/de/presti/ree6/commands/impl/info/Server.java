@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.time.format.DateTimeFormatter;
 
@@ -20,7 +21,7 @@ public class Server extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if (sender.hasPermission(Permission.ADMINISTRATOR)) {
             EmbedBuilder em = new EmbedBuilder();
 
@@ -34,9 +35,9 @@ public class Server extends Command {
             em.addField(":speech_balloon: **Channels (" + (m.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.TEXT)).count() + m.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.VOICE)).count()) + ")**", "**" + m.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.TEXT)).count() + "** Text | **" + m.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.VOICE)).count() + "** Voicechannel", true);
             em.addField(":earth_africa: **Other**", "**Verificationlevel:** " + m.getGuild().getVerificationLevel().getKey(), true);
 
-            sendMessage(em, m);
+            sendMessage(em, m, hook);
         } else {
-            sendMessage("You dont have ADMINISTRATOR Permissions for this Command!", m);
+            sendMessage("You dont have ADMINISTRATOR Permissions for this Command!", m, hook);
         }
     }
 }

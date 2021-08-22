@@ -7,6 +7,7 @@ import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -27,10 +28,10 @@ public class Twitter extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if(args.length >= 2) {
             if(messageSelf.getMentionedMembers().isEmpty()) {
-                sendMessage("No User given!", m);
+                sendMessage("No User given!", m, hook);
             } else {
                 //noinspection CommentedOutCode
                 try {
@@ -68,11 +69,11 @@ public class Twitter extends Command {
                     m.sendFile(new File("imageapi/twitter/" + sender.getUser().getId() + ".png")).queue(message -> new File("imageapi/twitter/" + sender.getUser().getId() + ".png").delete());
 
                 } catch (Exception ex) {
-                    sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.config.getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), m);
+                    sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.config.getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), m, hook);
                 }
             }
         } else {
-            sendMessage("Use ree!twitter @User Yourtexthere", m);
+            sendMessage("Use ree!twitter @User Yourtexthere", m, hook);
         }
     }
 }

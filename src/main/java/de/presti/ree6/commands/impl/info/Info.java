@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -21,11 +22,11 @@ public class Info extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
             if (args.length == 1) {
                 if(messageSelf.getMentionedMembers().isEmpty()) {
-                    sendMessage("No User mentioned!", 5, m);
-                    sendMessage("Use ree!info @user", 5, m);
+                    sendMessage("No User mentioned!", 5, m, hook);
+                    sendMessage("Use ree!info @user", 5, m, hook);
                 } else {
                     EmbedBuilder em = new EmbedBuilder();
 
@@ -40,11 +41,11 @@ public class Info extends Command {
 
                     em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
-                    sendMessage(em, m);
+                    sendMessage(em, m, hook);
                 }
             } else {
-                sendMessage("Not enough Arguments!", 5, m);
-                sendMessage("Use ree!info @user", 5, m);
+                sendMessage("Not enough Arguments!", 5, m, hook);
+                sendMessage("Use ree!info @user", 5, m, hook);
             }
     }
 }

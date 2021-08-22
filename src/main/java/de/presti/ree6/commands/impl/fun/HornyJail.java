@@ -7,6 +7,7 @@ import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -28,10 +29,10 @@ public class HornyJail extends Command {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if (args.length == 1) {
             if (messageSelf.getMentionedMembers().isEmpty()) {
-                sendMessage("No User given!", 5, m);
+                sendMessage("No User given!", 5, m, hook);
             } else {
                 try {
 
@@ -56,11 +57,11 @@ public class HornyJail extends Command {
                     m.sendFile(new File("imageapi/hornyjail/" + sender.getUser().getId() + ".png")).queue(message -> new File("imageapi/hornyjail/" + sender.getUser().getId() + ".png").delete());
 
                 } catch (Exception ex) {
-                    sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.config.getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), m);
+                    sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.config.getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), m, hook);
                 }
             }
         } else {
-            sendMessage("Use ree!hornyjail @User", m);
+            sendMessage("Use ree!hornyjail @User", m, hook);
         }
     }
 }

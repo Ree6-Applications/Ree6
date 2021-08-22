@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,7 +26,7 @@ public class Stats extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
 
         long start = System.currentTimeMillis();
 
@@ -75,7 +76,7 @@ public class Stats extends Command {
 
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
 
-        sendMessage(em, m);
+        sendMessage(em, m, hook);
 
     }
 }

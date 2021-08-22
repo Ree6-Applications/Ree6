@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.json.JSONObject;
 
 public class Waifu extends Command {
@@ -19,7 +20,7 @@ public class Waifu extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         JSONObject js = JSONApi.GetData(JSONApi.Requests.GET, "https://api.dagpi.xyz/data/waifu", "", Main.config.getConfig().getString("dagpi.apitoken"));
         JSONObject array = js.getJSONObject("series");
 
@@ -33,6 +34,6 @@ public class Waifu extends Command {
         }
         em.setFooter(sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
-        sendMessage(em, m);
+        sendMessage(em, m, hook);
     }
 }

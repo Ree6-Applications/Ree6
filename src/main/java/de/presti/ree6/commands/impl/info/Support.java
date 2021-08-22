@@ -6,6 +6,7 @@ import de.presti.ree6.commands.Command;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 public class Support extends Command {
 
@@ -14,7 +15,7 @@ public class Support extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
-        sendMessage("<https://support.ree6.de/>", m);
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
+        sendMessage("<https://support.ree6.de/>", m, hook);
     }
 }

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -21,7 +22,7 @@ public class Clear extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if(sender.hasPermission(Permission.ADMINISTRATOR)) {
             if(args.length == 1) {
                 try {
@@ -31,31 +32,31 @@ public class Clear extends Command {
                             List<Message> messages = m.getHistory().retrievePast(Integer.parseInt(args[0])).complete();
                             m.deleteMessages(messages).queue();
 
-                            sendMessage(messages.size() + " has been deleted!", 5, m);
+                            sendMessage(messages.size() + " has been deleted!", 5, m, hook);
 
                         } catch (Exception ex) {
                             if(ex instanceof IllegalArgumentException) {
-                                sendMessage("" + (ex.toString().toLowerCase().startsWith("java.lang.illegalargumentexception: must provide at") ? "Given Paramater is below 100 and 2!" : "Error while deleting:" + ex.toString().split(":")[1]), 5, m);
+                                sendMessage("" + (ex.toString().toLowerCase().startsWith("java.lang.illegalargumentexception: must provide at") ? "Given Paramater is below 100 and 2!" : "Error while deleting:" + ex.toString().split(":")[1]), 5, m, hook);
                             } else {
-                                sendMessage("Error while deleting:" + ex.toString().split(":")[1], 5, m);
+                                sendMessage("Error while deleting:" + ex.toString().split(":")[1], 5, m, hook);
                             }
                         }
 
                     } else {
-                        sendMessage(args[0] + " isn't between 2 and 100 !", 5, m);
-                        sendMessage("Use ree!clear 1-100", 5, m);
+                        sendMessage(args[0] + " isn't between 2 and 100 !", 5, m, hook);
+                        sendMessage("Use ree!clear 1-100", 5, m, hook);
                     }
                 } catch (Exception ex) {
-                    sendMessage(args[0] + " isn't a number!", 5, m);
-                    sendMessage("Use ree!clear 2-100", 5, m);
+                    sendMessage(args[0] + " isn't a number!", 5, m, hook);
+                    sendMessage("Use ree!clear 2-100", 5, m, hook);
                     Logger.log("Clear", ex.getMessage() + " - " + ex.getStackTrace()[0].toString());
                 }
             } else {
-                sendMessage("Not enough Arguments!", 5, m);
-                sendMessage("Use ree!clear 2-100", 5, m);
+                sendMessage("Not enough Arguments!", 5, m, hook);
+                sendMessage("Use ree!clear 2-100", 5, m, hook);
             }
         } else {
-            sendMessage("You don't have the Permission for this Command!", 5, m);
+            sendMessage("You don't have the Permission for this Command!", 5, m, hook);
         }
     }
 }

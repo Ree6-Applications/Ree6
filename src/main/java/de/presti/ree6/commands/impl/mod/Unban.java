@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -18,18 +19,18 @@ public class Unban extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if (sender.hasPermission(Permission.ADMINISTRATOR)) {
             if (args.length == 1) {
                 String givenid = args[1];
                 m.getGuild().unban(givenid).queue();
-                sendMessage("User <@" + givenid + "> has been unbanned!", 5, m);
+                sendMessage("User <@" + givenid + "> has been unbanned!", 5, m, hook);
             } else {
-                sendMessage("Not enough Arguments!", 5, m);
-                sendMessage("Use ree!unban @user", 5, m);
+                sendMessage("Not enough Arguments!", 5, m, hook);
+                sendMessage("Use ree!unban @user", 5, m, hook);
             }
         } else {
-            sendMessage("You dont have the Permission for this Command!", 5, m);
+            sendMessage("You dont have the Permission for this Command!", 5, m, hook);
         }
 
         deleteMessage(messageSelf);

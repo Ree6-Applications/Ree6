@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -19,7 +20,7 @@ public class Level extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
+    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
             if (args.length <= 1) {
                 if(messageSelf.getMentionedMembers().isEmpty()) {
 
@@ -56,7 +57,7 @@ public class Level extends Command {
 
                     em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
-                    sendMessage(em, m);
+                    sendMessage(em, m, hook);
 
                 } else {
                     EmbedBuilder em = new EmbedBuilder();
@@ -92,11 +93,11 @@ public class Level extends Command {
 
                     em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
 
-                    sendMessage(em, m);
+                    sendMessage(em, m, hook);
                 }
             } else {
-                sendMessage("Not enough Arguments!", m);
-                sendMessage("Use ree!level or ree!level @user", m);
+                sendMessage("Not enough Arguments!", m, hook);
+                sendMessage("Use ree!level or ree!level @user", m, hook);
             }
     }
 
