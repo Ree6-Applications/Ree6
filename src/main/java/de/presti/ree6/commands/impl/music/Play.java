@@ -5,10 +5,10 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.music.MusikWorker;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.SpotifyAPIHandler;
 import de.presti.ree6.utils.YouTubeAPIHandler;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -42,10 +42,10 @@ public class Play extends Command {
             sendMessage(em, 5, m);
         } else {
             if (Main.musikWorker.isConnectedMember(sender, m.getGuild())) {
-                if (ArrayUtil.botjoin.containsKey(m.getGuild())) {
-                    ArrayUtil.botjoin.remove(m.getGuild());
+                if (ArrayUtil.botJoin.containsKey(m.getGuild())) {
+                    ArrayUtil.botJoin.remove(m.getGuild());
                 }
-                ArrayUtil.botjoin.put(m.getGuild(), sender);
+                ArrayUtil.botJoin.put(m.getGuild(), sender);
             }
 
             if(isUrl(args[0])) {
@@ -56,7 +56,7 @@ public class Play extends Command {
                     try {
                         spotiftrackinfos = new SpotifyAPIHandler().convert(args[0]);
                         isspotify = true;
-                    } catch (Exception ex) {
+                    } catch (Exception ignored) {
 
                     }
                 }
@@ -87,19 +87,19 @@ public class Play extends Command {
                         em.setTitle("Music Player!");
                         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                         em.setColor(Color.GREEN);
-                        em.setDescription("We couldnt find " + loadfailed.size() + " Songs!");
+                        em.setDescription("We couldn't find " + loadfailed.size() + " Songs!");
                         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
                         sendMessage(em, 5, m);
                     }
                 }
             } else {
-                String search = "";
+                StringBuilder search = new StringBuilder();
 
                 for(String i : args) {
-                    search += i + " ";
+                    search.append(i).append(" ");
                 }
 
-                String ytresult = new YouTubeAPIHandler().searchYoutube(search);
+                String ytresult = new YouTubeAPIHandler().searchYoutube(search.toString());
 
                 if(ytresult == null) {
                     EmbedBuilder em = new EmbedBuilder();
@@ -107,7 +107,7 @@ public class Play extends Command {
                     em.setTitle("Music Player!");
                     em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setColor(Color.GREEN);
-                    em.setDescription("A Song with the Name " + search + " couldnt be found!");
+                    em.setDescription("A Song with the Name " + search + " couldn't be found!");
                     em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
                     sendMessage(em, 5, m);
                 } else {
@@ -115,7 +115,6 @@ public class Play extends Command {
                 }
             }
         }
-        deleteMessage(messageSelf);
     }
 
     private boolean isUrl(String input) {

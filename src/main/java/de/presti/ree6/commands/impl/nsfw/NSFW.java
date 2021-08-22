@@ -3,10 +3,12 @@ package de.presti.ree6.commands.impl.nsfw;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.utils.Neko4JsAPI;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
 
@@ -14,7 +16,7 @@ import java.util.Random;
 
 public class NSFW extends Command {
 
-    private String[] tags = new String[] { "solog", "smallboobs", "lewdkemo", "solo", "cum", "les", "bj", "pwankg", "hololewd", "tits", "nsfw_neko_gif", "cum_jpg", "blowjob", "boobs", "lewd", "pussy_jpg", "anal", "futanari", "lewdk"};
+    private final String[] tags = new String[] { "solog", "smallboobs", "solo", "cum", "les", "bj", "pwankg", "tits", "nsfw_neko_gif", "cum_jpg", "blowjob", "boobs", "pussy_jpg", "anal", "futanari"};
 
     public NSFW() {
         super("nsfw", "Get NSFW Images from neko.life", Category.NSFW, new String[] { "givensfw"});

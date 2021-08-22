@@ -42,7 +42,7 @@ public abstract class PendingRequest<T> {
     private final Reliqua api;
     private final Request httpRequest;
     private final StatusCodeValidator statusCodeValidator;
-    private RateLimiter rateLimiter;
+    private final RateLimiter rateLimiter;
 
     public PendingRequest(@Nonnull Reliqua api, @Nullable RateLimiter rateLimiter, @Nonnull Request httpRequest, @Nullable StatusCodeValidator statusCodeValidator) {
         this.api = Objects.requireNonNull(api, "API may not be null");
@@ -264,7 +264,7 @@ public abstract class PendingRequest<T> {
         }
         for(R request : requests) {
             int idx = list.size();
-            //fill list with nulls so we can use List#set(int, Object)
+            //fill list with nulls, so we can use List#set(int, Object)
             list.add(null);
             CompletableFuture<T> f2 = new CompletableFuture<>();
             f2.whenComplete((result,error)->{
@@ -319,9 +319,9 @@ public abstract class PendingRequest<T> {
         }
 
         /**
-         * Returns whether or not the request was successful.
+         * Returns whether the request was successful.
          *
-         * @return Whether or not the request was successful.
+         * @return Whether the request was successful.
          */
         @CheckReturnValue
         public boolean isSuccess() {

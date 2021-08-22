@@ -1,6 +1,7 @@
 package de.presti.ree6.commands;
 
 import de.presti.ree6.utils.Logger;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -13,12 +14,12 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class Command {
 
-    String cmd;
-    String desc;
-    Category cat;
+    final String cmd;
+    final String desc;
+    final Category cat;
     String[] alias;
 
-    CommandData commandData;
+    final CommandData commandData;
 
     public Command(String command, String description, Category category) {
         cmd = command;
@@ -70,25 +71,25 @@ public abstract class Command {
         m.sendMessage(msg).queue();
     }
 
-    public void sendMessage(String msg, int deletesecond, MessageChannel m) {
-        m.sendMessage(msg).delay(deletesecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+    public void sendMessage(String msg, int deleteSecond, MessageChannel m) {
+        m.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
     }
 
 
     public void sendMessage(EmbedBuilder msg, MessageChannel m) {
-        m.sendMessage(msg.build()).queue();
+        m.sendMessageEmbeds(msg.build()).queue();
     }
 
-    public void sendMessage(EmbedBuilder msg, int deletesecond, MessageChannel m) {
-        m.sendMessage(msg.build()).delay(deletesecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+    public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m) {
+        m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
     }
 
     public static void deleteMessage(Message message) {
-        if(message != null && message.getContentRaw() != null && message.getId() != null) {
+        if(message != null) {
             try {
                 message.delete().queue();
             } catch (Exception ex) {
-                Logger.log("CommandSystem", "Couldnt delete a Message!");
+                Logger.log("CommandSystem", "Couldn't delete a Message!");
             }
         }
     }

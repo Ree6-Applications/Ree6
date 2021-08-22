@@ -18,7 +18,6 @@ import de.presti.ree6.utils.*;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class Main {
 
     public static TwitchAPIHandler twitchAPIHandler;
 
-    public static CommandManager cm;
+    public static CommandManager commandManager;
     public static AddonManager addonManager;
     public static SQLConnector sqlConnector;
     public static SQLWorker sqlWorker;
@@ -39,7 +38,7 @@ public class Main {
     public static Thread checker;
     public static Config config;
     
-    public static String lastday = "";
+    public static String lastDay = "";
 
     public static void main(String[] args) {
         instance = new Main();
@@ -54,7 +53,7 @@ public class Main {
 
         sqlWorker = new SQLWorker();
 
-        cm = new CommandManager();
+        commandManager = new CommandManager();
 
         twitchAPIHandler = new TwitchAPIHandler();
 
@@ -69,7 +68,7 @@ public class Main {
             musikWorker = new MusikWorker();
             instance.addEvents();
 
-            cm.addSlashCommand();
+            commandManager.addSlashCommand();
 
         } catch (Exception ex) {
             Logger.log("Main", "Error while init: " + ex.getMessage());
@@ -90,16 +89,10 @@ public class Main {
     }
 
     private void addHooks() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                shutdown();
-            } catch (SQLException throwable) {
-                throwable.printStackTrace();
-            }
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
 
-    private void shutdown() throws SQLException {
+    private void shutdown() {
         long start = System.currentTimeMillis();
         Logger.log("Main", "Shutdown init. !");
 
@@ -125,7 +118,7 @@ public class Main {
         checker = new Thread(() -> {
             while (BotInfo.state != BotState.STOPPED) {
 
-                if (!lastday.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
+                if (!lastDay.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 
                     sqlConnector.close();
 
@@ -139,11 +132,11 @@ public class Main {
                     BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Guilds", Activity.ActivityType.WATCHING);
 
                     Logger.log("Stats", "");
-                    Logger.log("Stats", "Todays Stats:");
+                    Logger.log("Stats", "Today's Stats:");
                     Logger.log("Stats", "Guilds: " + BotInfo.botInstance.getGuilds().size());
                     Logger.log("Stats", "Overall Users: " + BotInfo.botInstance.getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
                     Logger.log("Stats", "");
-                    lastday = new SimpleDateFormat("dd").format(new Date());
+                    lastDay = new SimpleDateFormat("dd").format(new Date());
                 }
 
 

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class AddonManager {
 
-    public ArrayList<Addon> addons = new ArrayList<>();
+    public final ArrayList<Addon> addons = new ArrayList<>();
 
     public AddonManager() {
     }
@@ -25,37 +25,38 @@ public class AddonManager {
     }
 
     public void startAddon(Addon addon) {
-        if (!addon.getRee6ver().equalsIgnoreCase(BotInfo.build)) {
-            Logger.log("AddonManager", "The Addon " + addon.getName() + " by " + addon.getAuthor() + " has been developed for Ree6 b" + addon.getRee6ver() + " but you have a newer Version so becarefull!");
+        if (!addon.getRee6Ver().equalsIgnoreCase(BotInfo.build)) {
+            Logger.log("AddonManager", "The Addon " + addon.getName() + " by " + addon.getAuthor() + " has been developed for Ree6 b" + addon.getRee6Ver() + " but you have a newer Version so be careful!");
         }
 
         try {
 
-            Class urlcl = new URLClassLoader(new URL[]{addon.getFile().toURI().toURL()}).loadClass(addon.getMainpath());
+            Class<?> urlCl = new URLClassLoader(new URL[]{addon.getFile().toURI().toURL()}).loadClass(addon.getMainPath());
 
             boolean valid = false;
 
 
-            Class[] ifs = urlcl.getInterfaces();
+            Class<?>[] ifs = urlCl.getInterfaces();
 
-            for (int i = 0; i < ifs.length && !valid; i++) {
+            for (int i = 0; i < ifs.length; i++) {
                 if (ifs[i].getName().equalsIgnoreCase("de.presti.ree6.addons.AddonInterface")) {
                     valid = true;
+                    break;
                 }
             }
 
             if (valid) {
-                AddonInterface inf = (AddonInterface) urlcl.newInstance();
+                AddonInterface inf = (AddonInterface) urlCl.newInstance();
                 inf.onEnable();
             } else {
-                Logger.log("AddonManager", "Couldnt start the Addon " + addon.getName() + "(" + addon.getAddonver() + ") by " + addon.getAuthor());
-                Logger.log("AddonManager", "It doesnt implement the AddonInterface!");
+                Logger.log("AddonManager", "Couldn't start the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor());
+                Logger.log("AddonManager", "It doesn't implement the AddonInterface!");
             }
 
 
         } catch (Exception ex) {
-            Logger.log("AddonManager", "Couldnt start the Addon " + addon.getName() + "(" + addon.getAddonver() + ") by " + addon.getAuthor());
-            Logger.log("AddonManager", "Infos: " + addon.getMainpath() + ", " + addon.getAddonver() + ", " + addon.getRee6ver());
+            Logger.log("AddonManager", "Couldn't start the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor());
+            Logger.log("AddonManager", "Information: " + addon.getMainPath() + ", " + addon.getAddonVer() + ", " + addon.getRee6Ver());
             Logger.log("AddonManager", "Exception: " + ex.getCause().getMessage());
         }
     }
@@ -68,28 +69,29 @@ public class AddonManager {
 
     public void stopAddon(Addon addon) {
         try {
-            Class urlcl = new URLClassLoader(new URL[]{addon.getFile().toURI().toURL()}).loadClass(addon.getMainpath());
+            Class<?> urlCl = new URLClassLoader(new URL[]{addon.getFile().toURI().toURL()}).loadClass(addon.getMainPath());
 
             boolean valid = false;
 
 
-            Class[] ifs = urlcl.getInterfaces();
+            Class<?>[] ifs = urlCl.getInterfaces();
 
-            for (int i = 0; i < ifs.length && !valid; i++) {
+            for (int i = 0; i < ifs.length; i++) {
                 if (ifs[i].getName().equalsIgnoreCase("de.presti.ree6.addons.AddonInterface")) {
                     valid = true;
+                    break;
                 }
             }
 
             if (valid) {
-                AddonInterface inf = (AddonInterface) urlcl.newInstance();
+                AddonInterface inf = (AddonInterface) urlCl.newInstance();
                 inf.onDisable();
             } else {
-                Logger.log("AddonManager", "Couldnt start the Addon " + addon.getName() + "(" + addon.getAddonver() + ") by " + addon.getAuthor());
-                Logger.log("AddonManager", "It doesnt implement the AddonInterface!");
+                Logger.log("AddonManager", "Couldn't start the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor());
+                Logger.log("AddonManager", "It doesn't implement the AddonInterface!");
             }
         } catch (Exception ex) {
-            Logger.log("AddonManager", "Couldnt stop the Addon " + addon.getName() + "(" + addon.getAddonver() + ") by " + addon.getAuthor() + "\nException: " + ex.getCause().getMessage());
+            Logger.log("AddonManager", "Couldn't stop the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor() + "\nException: " + ex.getCause().getMessage());
         }
     }
 

@@ -3,6 +3,7 @@ package de.presti.ree6.commands.impl.mod;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
+
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -21,7 +22,7 @@ public class Mute extends Command {
             if (args.length == 1) {
 
                 if(!Main.sqlWorker.hasMuteSetuped(m.getGuild().getId())) {
-                    sendMessage("Mute Role hasnt been setuped!\nTo setup it up type ree!setup mute @MuteRole !", 5, m);
+                    sendMessage("Mute Role hasn't been setuped!\nTo setup it up type ree!setup mute @MuteRole !", 5, m);
                     return;
                 }
 
@@ -38,7 +39,7 @@ public class Mute extends Command {
                 sendMessage("Use ree!mute @user", 5, m);
             }
         } else {
-            sendMessage("You dont have the Permission for this Command!", 5, m);
+            sendMessage("You don't have the Permission for this Command!", 5, m);
         }
         deleteMessage(messageSelf);
     }

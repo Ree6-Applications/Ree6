@@ -4,19 +4,19 @@ import java.io.File;
 
 public class Addon {
 
-    String name;
-    String author;
-    String addonver;
-    String ree6ver;
-    String mainpath;
-    File file;
+    final String name;
+    final String author;
+    final String addonVer;
+    final String ree6Ver;
+    final String mainPath;
+    final File file;
 
-    public Addon(String name, String author, String addonver, String ree6ver, String mainpath, File file) {
+    public Addon(String name, String author, String addonVer, String ree6Ver, String mainPath, File file) {
         this.name = name;
         this.author = author;
-        this.addonver = addonver;
-        this.ree6ver = ree6ver;
-        this.mainpath = mainpath;
+        this.addonVer = addonVer;
+        this.ree6Ver = ree6Ver;
+        this.mainPath = mainPath;
         this.file = file;
     }
 
@@ -28,16 +28,16 @@ public class Addon {
         return author;
     }
 
-    public String getAddonver() {
-        return addonver;
+    public String getAddonVer() {
+        return addonVer;
     }
 
-    public String getRee6ver() {
-        return ree6ver;
+    public String getRee6Ver() {
+        return ree6Ver;
     }
 
-    public String getMainpath() {
-        return mainpath;
+    public String getMainPath() {
+        return mainPath;
     }
 
     public File getFile() {
@@ -49,9 +49,9 @@ public class Addon {
         return "Addon{" +
                 "name='" + getName() + '\'' +
                 ", author='" + getAuthor() + '\'' +
-                ", addonver='" + getAddonver() + '\'' +
-                ", ree6ver='" + getRee6ver() + '\'' +
-                ", mainpath='" + getMainpath() + '\'' +
+                ", addonVer='" + getAddonVer() + '\'' +
+                ", ree6Ver='" + getRee6Ver() + '\'' +
+                ", mainPath='" + getMainPath() + '\'' +
                 ", file=" + getFile().getAbsolutePath() +
                 '}';
     }

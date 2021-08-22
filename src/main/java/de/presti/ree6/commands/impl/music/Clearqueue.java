@@ -5,7 +5,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.music.MusikWorker;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -34,7 +34,5 @@ public class Clearqueue extends Command {
         sendMessage(em, 5, m);
 
         Main.musikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.clearQueue();
-
-        deleteMessage(messageSelf);
     }
 }

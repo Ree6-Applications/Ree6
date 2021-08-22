@@ -22,9 +22,7 @@ public class SpotifyAPIHandler {
 	
 	private SpotifyApi spotifyApi;
 	public static SpotifyAPIHandler instance;
-	private String id;
-	private String type;
-	
+
 	public SpotifyAPIHandler() {
 		try {
 			initSpotify();
@@ -48,15 +46,16 @@ public class SpotifyAPIHandler {
 	public ArrayList<String> convert(String link) throws ParseException, SpotifyWebApiException, IOException {
 		String[] firstSplit = link.split("/");
 		String[] secondSplit;
-		
+
+		String type;
 		if(firstSplit.length > 5) {
 			secondSplit = firstSplit[6].split("\\?");
-			this.type = firstSplit[5];
+			type = firstSplit[5];
 		} else {
 			secondSplit = firstSplit[4].split("\\?");
-			this.type = firstSplit[3];
+			type = firstSplit[3];
 		}
-		this.id = secondSplit[0];
+		String id = secondSplit[0];
 		ArrayList<String> listOfTracks = new ArrayList<>();
 		
 		if(type.contentEquals("track")) {
@@ -83,18 +82,18 @@ public class SpotifyAPIHandler {
 	}
 
 	public String getArtistAndName(String trackID) throws ParseException, SpotifyWebApiException, IOException {
-		String artistNameAndTrackName = "";
+		StringBuilder artistNameAndTrackName = new StringBuilder();
 		GetTrackRequest trackRequest = spotifyApi.getTrack(trackID).build();
 		
 		Track track = trackRequest.execute();
-		artistNameAndTrackName = track.getName() + " - ";
+		artistNameAndTrackName = new StringBuilder(track.getName() + " - ");
 		
 		ArtistSimplified[] artists = track.getArtists();
 		for(ArtistSimplified i : artists) {
-			artistNameAndTrackName += i.getName() + " ";
+			artistNameAndTrackName.append(i.getName()).append(" ");
 		}
 	
-		return artistNameAndTrackName;
+		return artistNameAndTrackName.toString();
 	}
 	
 	public static SpotifyAPIHandler getInstance() {

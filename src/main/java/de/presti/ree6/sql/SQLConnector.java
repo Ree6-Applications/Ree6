@@ -10,11 +10,11 @@ import java.sql.SQLException;
 
 public class SQLConnector {
 
-    public String username;
-    public String password;
-    public String host;
-    public String database;
-    public int port;
+    public final String username;
+    public final String password;
+    public final String host;
+    public final String database;
+    public final int port;
     public Connection con;
 
     public SQLConnector(String user, String pw, String host2, String dB, int port3) {

@@ -47,6 +47,7 @@ public interface ImageCache {
      *
      * @return A no op image cache.
      */
+    @SuppressWarnings("SameReturnValue")
     @CheckReturnValue
     @Nonnull
     static ImageCache noop() {

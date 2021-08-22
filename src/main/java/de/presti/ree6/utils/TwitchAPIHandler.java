@@ -17,9 +17,9 @@ import java.util.ArrayList;
 
 public class TwitchAPIHandler {
 
-    ArrayList<String> registerChannels = new ArrayList<>();
+    final ArrayList<String> registerChannels = new ArrayList<>();
 
-    private TwitchClient twitchClient;
+    private final TwitchClient twitchClient;
 
     public TwitchAPIHandler() {
         twitchClient = TwitchClientBuilder.builder().withEnableHelix(true).withClientId(Main.config.cfg.getString("twitch.client.id")).withClientSecret(Main.config.cfg.getString("twitch.client.secret")).build();

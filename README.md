@@ -1,10 +1,10 @@
 # Ree6
 
-To keep this Project alive consider supporting me: https://www.patreon.com/presti (just if you want to support you dont have to)
+To keep this Project alive consider supporting me: https://www.patreon.com/presti (just if you want to support you don't have to)
 
-Ree6 is a Moderation Bot similar to Mee6 but with one major diffrence its free!
+Ree6 is a Moderation Bot similar to Mee6 but with one major difference it is free!
 
-Isnt Mee6 free too? - Basically yes but for the most Features you are required to have a Subscription!
+Isn't Mee6 free too? - Basically yes but for the most Features you are required to have a Subscription!
 
 With Ree6 we want to give you opportunity to use every Feature of Mee6 for free!
 
@@ -17,14 +17,14 @@ Current Features:
 - Leveling System
 - Moderation Commands(ban, mute, kick and more)
 - Twitch Notification
-- Webpanel
+- Web-panel
 
-Comming Features:
+Upcoming Features:
 - YouTube Notification
 - 100% adjustable messages
 - RestAPI
 
-Please be aware that im a Student and cant work fulltime on the Bot!
+Please be aware that im a Student and can't work full-time on the Bot!
 
 Website: https://ree6.tk
 

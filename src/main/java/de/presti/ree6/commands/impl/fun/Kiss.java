@@ -3,6 +3,7 @@ package de.presti.ree6.commands.impl.fun;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.utils.Neko4JsAPI;
+
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -10,6 +11,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
 
@@ -36,7 +38,7 @@ public class Kiss extends Command {
                 Image im = null;
                 try {
                     im = ip.getRandomImage("kiss").execute();
-                } catch (Exception ex) {
+                } catch (Exception ignored) {
                 }
 
                 sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), m);

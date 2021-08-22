@@ -3,11 +3,9 @@ package de.presti.ree6.commands.impl.mod;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
+
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-
-import java.sql.SQLException;
-import java.util.function.Consumer;
 
 public class Setup extends Command {
 
@@ -24,13 +22,7 @@ public class Setup extends Command {
                         sendMessage("No Channel mentioned!", 5, m);
                         sendMessage("Use ree!setup log #Log-Channel", 5, m);
                     } else {
-                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-Log").queue(w -> {
-                            try {
-                                Main.sqlWorker.setLogWebhook(sender.getGuild().getId(), w.getId(), w.getToken());
-                            } catch (SQLException throwables) {
-                                throwables.printStackTrace();
-                            }
-                        });
+                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-Log").queue(w -> Main.sqlWorker.setLogWebhook(sender.getGuild().getId(), w.getId(), w.getToken()));
                         sendMessage("Log channel has been set!", 5, m);
                     }
                 } else if (args[0].equalsIgnoreCase("welcome")) {
@@ -38,13 +30,7 @@ public class Setup extends Command {
                         sendMessage("No Channel mentioned!", 5, m);
                         sendMessage("Use ree!setup welcome #Welcome-Channel", 5, m);
                     } else {
-                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-Welcome").queue(w -> {
-                            try {
-                                Main.sqlWorker.setWelcomeWebhook(sender.getGuild().getId(), w.getId(), w.getToken());
-                            } catch (SQLException throwables) {
-                                throwables.printStackTrace();
-                            }
-                        });
+                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-Welcome").queue(w -> Main.sqlWorker.setWelcomeWebhook(sender.getGuild().getId(), w.getId(), w.getToken()));
                         sendMessage("Welcome channel has been set!", 5, m);
                     }
                 } else if (args[0].equalsIgnoreCase("mute")) {
@@ -52,11 +38,7 @@ public class Setup extends Command {
                         sendMessage("No Role mentioned!", 5, m);
                         sendMessage("Use ree!setup mute @Muterole", 5, m);
                     } else {
-                        try {
-                            Main.sqlWorker.setMuteRole(sender.getGuild().getId(), messageSelf.getMentionedRoles().get(0).getId());
-                        } catch (SQLException throwables) {
-                            throwables.printStackTrace();
-                        }
+                        Main.sqlWorker.setMuteRole(sender.getGuild().getId(), messageSelf.getMentionedRoles().get(0).getId());
                         sendMessage("Mute Role has been set!", 5, m);
                     }
                 } else if (args[0].equalsIgnoreCase("autorole")) {
@@ -84,9 +66,7 @@ public class Setup extends Command {
                         sendMessage("No Channel mentioned!", 5, m);
                         sendMessage("Use ree!setup news #Ree6-News", 5, m);
                     } else {
-                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-News").queue(w -> {
-                            Main.sqlWorker.setNewsWebhook(sender.getGuild().getId(), w.getId(), w.getToken());
-                        });
+                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-News").queue(w -> Main.sqlWorker.setNewsWebhook(sender.getGuild().getId(), w.getId(), w.getToken()));
                         sendMessage("News channel has been set!", 5, m);
                     }
                 } else if (args[0].equalsIgnoreCase("join")) {
@@ -95,11 +75,11 @@ public class Setup extends Command {
                         sendMessage("Use ree!join Your Join Message", 5, m);
                         sendMessage("Usable Syntaxes: %user_name%, %guild_name%, %user_mention%", 5, m);
                     } else {
-                        String message = "";
+                        StringBuilder message = new StringBuilder();
 
                         for (int i = 1; i < args.length; i++) {
-                            message += args[i];
-                            message += " ";
+                            message.append(args[i]);
+                            message.append(" ");
                         }
 
                         if (message.length() >= 250) {
@@ -107,7 +87,7 @@ public class Setup extends Command {
                             return;
                         }
 
-                        Main.sqlWorker.setMessage(m.getGuild().getId(), message);
+                        Main.sqlWorker.setMessage(m.getGuild().getId(), message.toString());
 
                         sendMessage("Join Message has been set!", 5, m);
                     }
@@ -116,9 +96,7 @@ public class Setup extends Command {
                         sendMessage("No Channel mentioned!", 5, m);
                         sendMessage("Use ree!setup r6 #R6-Mate-Search-Channel", 5, m);
                     } else {
-                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-News").queue(w -> {
-                            Main.sqlWorker.setRainbowWebhook(sender.getGuild().getId(), w.getId(), w.getToken());
-                        });
+                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-News").queue(w -> Main.sqlWorker.setRainbowWebhook(sender.getGuild().getId(), w.getId(), w.getToken()));
                         sendMessage("R6 Mate Search channel has been set!", 5, m);
                     }
                 } else if (args[0].equalsIgnoreCase("rewards")) {

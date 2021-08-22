@@ -6,12 +6,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.Date;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import de.presti.ree6.bot.BotInfo;
-import de.presti.ree6.bot.BotUtil;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,17 +28,9 @@ public class JSONApi {
 
 	@SuppressWarnings("deprecation")
 	public static JSONArray GetData2(Requests type, String url, String post, String authkey) {
-		Date start = new Date();
-		Date preconnect = start;
-		Date postconnect = start;
-		Date prejson = start;
-		Date postjson = start;
+
 		JSONArray j = new JSONArray("[]");
 		BufferedInputStream i = null;
-		String rawcontent = "";
-		int available = 0;
-		int responsecode = 0;
-		long cl = 0;
 
 		try {
 
@@ -67,9 +57,7 @@ public class JSONApi {
 				c.setDoOutput(true);
 			}
 
-			preconnect = new Date();
 			c.connect();
-			postconnect = new Date();
 
 			if (!post.isEmpty()) {
 				try (BufferedOutputStream o = new BufferedOutputStream(c.getOutputStream())) {
@@ -78,8 +66,6 @@ public class JSONApi {
 			}
 
 			String content;
-			cl = c.getContentLengthLong();
-			responsecode = c.getResponseCode();
 
 			if (c.getResponseCode() == 200) {
 				i = new BufferedInputStream(c.getInputStream());
@@ -87,42 +73,9 @@ public class JSONApi {
 				i = new BufferedInputStream(c.getErrorStream());
 			}
 
-			/*
-			 * if (i != null) { available = i.available();
-			 *
-			 * while (available == 0 && (new Date().getTime() - postconnect.getTime()) <
-			 * 450) { Thread.sleep(500); available = i.available(); }
-			 *
-			 * if (available == 0) { i = new BufferedInputStream(c.getErrorStream());
-			 *
-			 * if (i != null) { available = i.available(); } } }
-			 *
-			 * if (available == 0) { content = "{}"; } else { content = IOUtils.toString(i,
-			 * c.getContentEncoding()); }
-			 */
 			content = IOUtils.toString(i, c.getContentEncoding());
-			rawcontent = content;
-			prejson = new Date();
 			j = new JSONArray(content);
-			postjson = new Date();
-		} catch (JSONException ex) {
-			ex.printStackTrace();
-		} catch (NullPointerException ex) {
-			ex.printStackTrace();
-		} catch (MalformedURLException ex) {
-
-			ex.printStackTrace();
-
-		} catch (SocketTimeoutException ex) {
-
-			ex.printStackTrace();
-
-		} catch (IOException ex) {
-
-			ex.printStackTrace();
-
 		} catch (Exception ex) {
-
 			ex.printStackTrace();
 		}
 
@@ -140,17 +93,12 @@ public class JSONApi {
 
 	@SuppressWarnings({ "null", "deprecation" })
     public static JSONObject GetData(Requests type, String url, String post, String authkey) {
-		Date start = new Date();
-		Date preconnect = start;
-		Date postconnect = start;
-		Date prejson = start;
-		Date postjson = start;
+
 		JSONObject j = new JSONObject("{}");
 		BufferedInputStream i = null;
 		String rawcontent = "";
 		int available = 0;
 		int responsecode = 0;
-		long cl = 0;
 
 		try {
 
@@ -177,9 +125,7 @@ public class JSONApi {
 				c.setDoOutput(true);
 			}
 
-			preconnect = new Date();
 			c.connect();
-			postconnect = new Date();
 
 			if (!post.isEmpty()) {
 				try (BufferedOutputStream o = new BufferedOutputStream(c.getOutputStream())) {
@@ -188,7 +134,6 @@ public class JSONApi {
 			}
 
 			String content;
-			cl = c.getContentLengthLong();
 			responsecode = c.getResponseCode();
 
 			if (c.getResponseCode() == 200) {
@@ -197,22 +142,8 @@ public class JSONApi {
 				i = new BufferedInputStream(c.getErrorStream());
 			}
 
-			/*
-			 * if (i != null) { available = i.available();
-			 *
-			 * while (available == 0 && (new Date().getTime() - postconnect.getTime()) <
-			 * 450) { Thread.sleep(500); available = i.available(); }
-			 *
-			 * if (available == 0) { i = new BufferedInputStream(c.getErrorStream());
-			 *
-			 * if (i != null) { available = i.available(); } } }
-			 *
-			 * if (available == 0) { content = "{}"; } else { content = IOUtils.toString(i,
-			 * c.getContentEncoding()); }
-			 */
 			content = IOUtils.toString(i, c.getContentEncoding());
 			rawcontent = content;
-			prejson = new Date();
 			j = new JSONObject(content);
 			j.put("_success", true);
 			j.put("_type", type.name());
@@ -223,7 +154,6 @@ public class JSONApi {
 			j.put("_exception", "");
 			j.put("_exceptionMessage", "");
 			j.put("_content", content);
-			postjson = new Date();
 		} catch (JSONException ex) {
 			if (ex.getMessage().contains("A JSONObject text must begin with")) {
 				j = new JSONObject("{}");
@@ -325,17 +255,14 @@ public class JSONApi {
 		return input;
 	}
 
-	public static void openinput() {
-		try {
-			getInput().connect();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	public static void closeInput() {
 		getInput().disconnect();
+	}
+
+	public enum Requests {
+
+		GET, POST, PUT, DELETE
+
 	}
 
 }

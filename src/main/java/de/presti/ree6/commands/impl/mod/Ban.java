@@ -2,6 +2,7 @@ package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -9,8 +10,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-
-import javax.xml.soap.Text;
 
 public class Ban extends Command {
 
@@ -34,7 +33,7 @@ public class Ban extends Command {
                 sendMessage("Use ree!ban @user", 5, m);
             }
         } else {
-            sendMessage("You dont have the Permission for this Command!", 5, m);
+            sendMessage("You don't have the Permission for this Command!", 5, m);
         }
 
         deleteMessage(messageSelf);

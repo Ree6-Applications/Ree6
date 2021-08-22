@@ -5,6 +5,7 @@ import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -41,16 +42,16 @@ public class Help extends Command {
 
             if (isValid(args[0])) {
 
-                String end = "";
+                StringBuilder end = new StringBuilder();
 
                 Category cat = getCategoryFromString(args[0]);
-                for (Command cmd : Main.cm.getCommands()) {
+                for (Command cmd : Main.commandManager.getCommands()) {
                     if (cmd.getCategory() == cat) {
-                        end += "``ree!" + cmd.getCmd() + "``\n" + cmd.getDesc() + "\n\n";
+                        end.append("``ree!").append(cmd.getCmd()).append("``\n").append(cmd.getDesc()).append("\n\n");
                     }
                 }
 
-                em.setDescription(end);
+                em.setDescription(end.toString());
             } else {
                 for (Category cat : Category.values()) {
                     if (cat != Category.HIDDEN) {

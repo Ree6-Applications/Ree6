@@ -2,14 +2,14 @@ package de.presti.ree6.commands.impl.community;
 
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
-import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.Webhook;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
-import net.dv8tion.jda.api.EmbedBuilder;
+
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -28,7 +28,7 @@ public class Rainbow extends Command {
         deleteMessage(messageSelf);
 
         if(!Main.sqlWorker.hasRainbowSetuped(m.getGuild().getId())) {
-            sendMessage("Rainbow Mate searcher isnt setuped!\nAsk a Admin to set it up with ree!setup r6", 5, m);
+            sendMessage("Rainbow Mate searcher isn't setuped!\nAsk a Admin to set it up with ree!setup r6", 5, m);
             return;
         }
 
@@ -49,7 +49,7 @@ public class Rainbow extends Command {
         for(Guild g : BotInfo.botInstance.getGuilds()) {
             if(Main.sqlWorker.hasRainbowSetuped(g.getId())) {
                 String[] info = Main.sqlWorker.getRainbowHooks(g.getId());
-                Webhook.sendWebhook(wm.build(), Long.valueOf(info[0]), info[1]);
+                Webhook.sendWebhook(wm.build(), Long.parseLong(info[0]), info[1]);
             }
         }
 

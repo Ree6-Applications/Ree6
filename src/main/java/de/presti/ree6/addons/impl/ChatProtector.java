@@ -3,7 +3,6 @@ package de.presti.ree6.addons.impl;
 import de.presti.ree6.main.Main;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ChatProtector {
 

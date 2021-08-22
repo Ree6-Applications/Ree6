@@ -3,22 +3,22 @@ package de.presti.ree6.commands.impl.fun;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
+
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.function.Consumer;
 
 public class Twitter extends Command {
 
@@ -32,6 +32,7 @@ public class Twitter extends Command {
             if(messageSelf.getMentionedMembers().isEmpty()) {
                 sendMessage("No User given!", m);
             } else {
+                //noinspection CommentedOutCode
                 try {
 
                     StringBuilder sb = new StringBuilder();

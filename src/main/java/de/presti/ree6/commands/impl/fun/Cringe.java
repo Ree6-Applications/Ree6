@@ -4,7 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 public class Cringe extends Command {
@@ -16,10 +15,7 @@ public class Cringe extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m) {
-        MessageHistory mh = m.getHistoryBefore(messageSelf.getId(), 1).complete();
-
-        sendMessage("```" + mh.getRetrievedHistory().get(0).getContentRaw() + "``` damn " + mh.getRetrievedHistory().get(0).getAuthor().getAsMention() + " thats **CRINGE**", m);
-
+        m.getHistoryBefore(messageSelf.getId(), 1).complete().getRetrievedHistory().get(0).reply("https://images.ree6.de/cringe.gif").queue();
         deleteMessage(messageSelf);
     }
 }

@@ -8,9 +8,7 @@ import okhttp3.Request;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Used to create REST API wrappers, providing a rate limiter and easy way to have both synchronous and asynchronous
@@ -27,7 +25,7 @@ public abstract class Reliqua {
      *
      * @param client The OkHttpClient used to make HTTP requests. May not be null.
      * @param rateLimiterFactory Factory used to create rate limiters. May be null.
-     * @param trackCallSites Whether or not call sites should be tracked for async requests.
+     * @param trackCallSites Whether call sites should be tracked for async requests.
      */
     protected Reliqua(OkHttpClient client, RateLimiterFactory rateLimiterFactory, boolean trackCallSites) {
         if(client == null) {
@@ -78,7 +76,7 @@ public abstract class Reliqua {
     }
 
     /**
-     * Returns whether or not async requests track call site
+     * Returns whether async requests track call site
      *
      * @return true if call site tracking is enabled
      */

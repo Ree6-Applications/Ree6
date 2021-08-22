@@ -6,12 +6,11 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class InviteContainerManager {
 
-    private static ArrayList<InviteContainer> deletedInvites = new ArrayList<>();
+    private static final ArrayList<InviteContainer> deletedInvites = new ArrayList<>();
 
     public static void addInvite(InviteContainer inv, String gid) {
         try {

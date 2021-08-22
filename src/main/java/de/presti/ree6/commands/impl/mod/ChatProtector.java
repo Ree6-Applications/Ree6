@@ -2,6 +2,7 @@ package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -28,29 +29,29 @@ public class ChatProtector extends Command {
                         sendMessage("Use ree!chatprotector remove WORD", 5, m);
                     } else if (args[0].equalsIgnoreCase("list")) {
                         if(de.presti.ree6.addons.impl.ChatProtector.hasChatProtector(m.getGuild().getId())) {
-                            String end = "";
+                            StringBuilder end = new StringBuilder();
 
                             for (String s : de.presti.ree6.addons.impl.ChatProtector.getChatProtector(m.getGuild().getId())) {
-                                end += "\n" + s;
+                                end.append("\n").append(s);
                             }
 
                             sendMessage("```" + end + "```", m);
                         } else {
-                            sendMessage("Your ChatProtector isnt setuped!", 5, m);
+                            sendMessage("Your ChatProtector isn't setuped!", 5, m);
                             sendMessage("Use ree!chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, m);
                         }
                     } else {
-                        sendMessage("Couldnt find " + args[0] + "!", 5, m);
+                        sendMessage("Couldn't find " + args[0] + "!", 5, m);
                         sendMessage("Use ree!chatprotector add/remove/list", 5, m);
                     }
                 } else {
                     if(args[0].equalsIgnoreCase("add")) {
                         if(args.length > 2) {
-                            String end = "";
+                            StringBuilder end = new StringBuilder();
                             ArrayList<String> words = new ArrayList<>();
                             for(int i = 2; i < args.length; i++) {
                                 words.add(args[i]);
-                                end += "\n" + args[i];
+                                end.append("\n").append(args[i]);
                             }
                             de.presti.ree6.addons.impl.ChatProtector.addWordstoProtector(m.getGuild().getId(), words);
                             sendMessage("The Wordlist has been added to your ChatProtector!\nYour Wordlist:\n```" + end + "```", 5, m);
@@ -62,7 +63,7 @@ public class ChatProtector extends Command {
                         de.presti.ree6.addons.impl.ChatProtector.removeWordfromProtector(m.getGuild().getId(), args[1]);
                         sendMessage("The Word " + args[1] + " has been removed from your ChatProtector!", 5, m);
                     } else {
-                        sendMessage("Couldnt find " + args[0] + "!", 5, m);
+                        sendMessage("Couldn't find " + args[0] + "!", 5, m);
                         sendMessage("Use ree!chatprotector add/remove/list", 5, m);
                     }
                 }
@@ -71,7 +72,7 @@ public class ChatProtector extends Command {
                 sendMessage("Use ree!chatprotector add/remove/list", 5, m);
             }
         } else {
-            sendMessage("You dont have the Permission for this Command!", 5, m);
+            sendMessage("You don't have the Permission for this Command!", 5, m);
         }
         deleteMessage(messageSelf);
     }

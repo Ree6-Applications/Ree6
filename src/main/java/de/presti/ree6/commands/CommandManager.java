@@ -1,38 +1,35 @@
 package de.presti.ree6.commands;
 
 import de.presti.ree6.bot.BotInfo;
-import de.presti.ree6.commands.impl.community.Rainbow;
-import de.presti.ree6.commands.impl.community.TwitchNotifier;
+import de.presti.ree6.commands.impl.community.*;
 import de.presti.ree6.commands.impl.fun.*;
-import de.presti.ree6.commands.impl.hidden.ReloadAddons;
-import de.presti.ree6.commands.impl.hidden.Test;
+import de.presti.ree6.commands.impl.hidden.*;
 import de.presti.ree6.commands.impl.info.*;
-import de.presti.ree6.commands.impl.info.Invite;
-import de.presti.ree6.commands.impl.level.Leaderboards;
-import de.presti.ree6.commands.impl.level.Level;
+import de.presti.ree6.commands.impl.level.*;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
-import de.presti.ree6.commands.impl.nsfw.NSFW;
+import de.presti.ree6.commands.impl.nsfw.*;
 import de.presti.ree6.stats.StatsManager;
-import de.presti.ree6.utils.ArrayUtil;
-import de.presti.ree6.utils.Logger;
+import de.presti.ree6.utils.*;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 
 public class CommandManager {
 
-    static String prefix = "ree!";
+    static final String prefix = "ree!";
 
-    static ArrayList<Command> cmds = new ArrayList<>();
+    static final ArrayList<Command> commands = new ArrayList<>();
 
     public CommandManager() {
 
@@ -108,7 +105,8 @@ public class CommandManager {
 
         for (Command command : getCommands()) {
             if (command.getCategory() == Category.HIDDEN) continue;
-            if (command == null) continue;
+            if (command.getCommandData() == null) continue;
+            //noinspection ResultOfMethodCallIgnored
             listUpdateAction.addCommands(command.getCommandData());
         }
 
@@ -116,8 +114,8 @@ public class CommandManager {
     }
 
     public void addCommand(Command c) {
-        if (!cmds.contains(c)) {
-            cmds.add(c);
+        if (!commands.contains(c)) {
+            commands.add(c);
         }
     }
 
@@ -126,19 +124,19 @@ public class CommandManager {
         if (!msg.toLowerCase().startsWith(prefix))
             return false;
 
-        if(ArrayUtil.commandcooldown.contains(sender.getUser().getId())) {
-            sendMessage("You are on Cooldown!", 5, m);
+        if(ArrayUtil.commandCooldown.contains(sender.getUser().getId())) {
+            sendMessage("You are on cooldown!", 5, m);
             deleteMessage(messageSelf);
             return false;
         }
 
         msg = msg.substring(prefix.length());
 
-        String[] oldargs = msg.split(" ");
+        String[] oldArgs = msg.split(" ");
 
         for (Command cmd : getCommands()) {
-            if (cmd.getCmd().equalsIgnoreCase(oldargs[0]) || cmd.isAlias(oldargs[0])) {
-                String[] args = Arrays.copyOfRange(oldargs, 1, oldargs.length);
+            if (cmd.getCmd().equalsIgnoreCase(oldArgs[0]) || cmd.isAlias(oldArgs[0])) {
+                String[] args = Arrays.copyOfRange(oldArgs, 1, oldArgs.length);
                 cmd.onPerform(sender, messageSelf, args, m);
                 StatsManager.addStatsForCommand(cmd, m.getGuild().getId());
 
@@ -146,70 +144,72 @@ public class CommandManager {
                     new Thread(() -> {
                         try {
                             Thread.sleep(5000);
-                        } catch (InterruptedException e) {
+                        } catch (InterruptedException ignore) {
                         }
 
-                        if (ArrayUtil.commandcooldown.contains(sender.getUser().getId())) {
-                            ArrayUtil.commandcooldown.remove(sender.getUser().getId());
-                        }
+                        ArrayUtil.commandCooldown.remove(sender.getUser().getId());
 
                         Thread.currentThread().interrupt();
 
                     }).start();
                 }
 
-                if (!ArrayUtil.commandcooldown.contains(sender.getUser().getId()) && !sender.getUser().getId().equalsIgnoreCase("321580743488831490")) {
-                    ArrayUtil.commandcooldown.add(sender.getUser().getId());
+                if (!ArrayUtil.commandCooldown.contains(sender.getUser().getId()) && !sender.getUser().getId().equalsIgnoreCase("321580743488831490")) {
+                    ArrayUtil.commandCooldown.add(sender.getUser().getId());
                 }
                 return true;
             }
         }
 
-        sendMessage("The Command " + oldargs[0] + " couldn't be found!", 5, m);
+        sendMessage("The Command " + oldArgs[0] + " couldn't be found!", 5, m);
 
         return false;
     }
 
+    @SuppressWarnings("unused")
     public void removeCommand(Command c) {
-        if (cmds.contains(c)) {
-            cmds.remove(c);
-        }
+        commands.remove(c);
     }
 
     public ArrayList<Command> getCommands() {
-        return cmds;
+        return commands;
     }
 
     public static void sendMessage(String msg, MessageChannel m) {
         m.sendMessage(msg).queue();
     }
 
-    public static void sendMessage(String msg, int deletesecond, MessageChannel m) {
-        m.sendMessage(msg).delay(deletesecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+    public static void sendMessage(String msg, int deleteSecond, MessageChannel m) {
+        m.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
     }
 
     public static void sendMessage(EmbedBuilder msg, MessageChannel m) {
-        m.sendMessage(msg.build()).queue();
+        m.sendMessageEmbeds(msg.build()).queue();
     }
 
-    public static void sendMessage(EmbedBuilder msg, int deletesecond, MessageChannel m) {
-        m.sendMessage(msg.build()).delay(deletesecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+    public static void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m) {
+        m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
     }
 
     public static void deleteMessage(Message message) {
-        if(message != null && message.getContentRaw() != null && message.getId() != null) {
+        if(message != null) {
             if(message.getGuild().getMemberById(BotInfo.botInstance.getSelfUser().getId()).hasPermission(Permission.MESSAGE_MANAGE)) {
             try {
                 message.delete().queue();
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
                 Logger.log("CommandSystem", "Couldn't delete a Message!");
             }
             } else {
-                message.getGuild().getOwner().getUser().openPrivateChannel().queue(privateChannel -> {
-                    try {
-                        privateChannel.sendMessage("Hey this is just a Message because Ree6 isn't setuped right! Please check if i have the right Permissions or reinvited me!").queue();
-                    } catch (Exception ex) {}
-                });
+                try {
+                    message.getGuild().getOwner().getUser().openPrivateChannel().queue(privateChannel -> {
+                        try {
+                            privateChannel.sendMessage("Hey this is just a Message because Ree6 isn't setuped right! Please check if i have the right Permissions or kick and invite me again!").queue();
+                        } catch (Exception ignore) {
+                        }
+                    });
+                } catch (Exception ex) {
+                    Logger.log("CommandSystem", "Couldn't send a Message to the Server Owner! (GID: " + message.getGuild().getId() + ", OID: " + message.getGuild().getOwner().getId() + ")");
+                }
             }
         }
     }

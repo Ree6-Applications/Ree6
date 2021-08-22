@@ -24,8 +24,8 @@ import java.util.Map;
 
 public class MusikWorker {
 
-    public AudioPlayerManager playerManager;
-    public Map<Long, GuildMusicManager> musicManagers;
+    public final AudioPlayerManager playerManager;
+    public final Map<Long, GuildMusicManager> musicManagers;
 
     public MusikWorker() {
         musicManagers = new HashMap<>();
@@ -89,7 +89,7 @@ public class MusikWorker {
                 em.setTitle("Music Player!");
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
-                em.setDescription("A Song with the URL " + trackUrl + " couldnt be found!");
+                em.setDescription("A Song with the URL " + trackUrl + " couldn't be found!");
                 em.setFooter(channel.getGuild().getName(), channel.getGuild().getIconUrl());
 
                 CommandManager.sendMessage(em, 5, channel);
@@ -176,7 +176,7 @@ public class MusikWorker {
                 em.setTitle("Music Player!");
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
-                em.setDescription("A Song with the URL " + trackUrl + " couldnt be found!");
+                em.setDescription("A Song with the URL " + trackUrl + " couldn't be found!");
                 em.setFooter(channel.getGuild().getName(), channel.getGuild().getIconUrl());
 
                 CommandManager.sendMessage(em, 5, channel);
@@ -202,10 +202,10 @@ public class MusikWorker {
     }
 
     public void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
-        if (!ArrayUtil.botjoin.containsKey(guild)) {
+        if (!ArrayUtil.botJoin.containsKey(guild)) {
             connectToFirstVoiceChannel(guild.getAudioManager());
         } else {
-            connectToMemberVoiceChannel(guild.getAudioManager(), ArrayUtil.botjoin.get(guild));
+            connectToMemberVoiceChannel(guild.getAudioManager(), ArrayUtil.botJoin.get(guild));
         }
 
         musicManager.scheduler.queue(track);
@@ -243,7 +243,7 @@ public class MusikWorker {
             for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
                 if (voiceChannel.getMembers().contains(m)) {
                     audioManager.openAudioConnection(voiceChannel);
-                    ArrayUtil.botjoin.remove(m.getGuild());
+                    ArrayUtil.botJoin.remove(m.getGuild());
                     break;
                 }
             }

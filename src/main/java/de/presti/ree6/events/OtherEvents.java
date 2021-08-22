@@ -1,17 +1,17 @@
 package de.presti.ree6.events;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+
 import de.presti.ree6.addons.impl.ChatProtector;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotState;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.bot.Webhook;
-import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.AutoRoleHandler;
 import de.presti.ree6.utils.TimeUtil;
-import net.dv8tion.jda.api.JDA;
+
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -22,19 +22,9 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
-import org.apache.commons.collections4.Bag;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
 
 import javax.annotation.Nonnull;
-import java.sql.SQLException;
-import java.time.OffsetDateTime;
 import java.util.*;
 
 public class OtherEvents extends ListenerAdapter {
@@ -92,9 +82,7 @@ public class OtherEvents extends ListenerAdapter {
                 addxp += new Random().nextInt(9) + 1;
             }
 
-            try {
-                Main.sqlWorker.addXPVC(event.getGuild().getId(), event.getMember().getUser().getId(), addxp);
-            } catch (SQLException throwables) {}
+            Main.sqlWorker.addXPVC(event.getGuild().getId(), event.getMember().getUser().getId(), addxp);
 
             AutoRoleHandler.handleVoiceLevelReward(event.getGuild(), event.getMember());
 
@@ -124,7 +112,7 @@ public class OtherEvents extends ListenerAdapter {
             }
         }
 
-        if(!Main.cm.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel())) {
+        if(!Main.commandManager.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel())) {
 
             if(!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(BotInfo.botInstance.getSelfUser())) {
                 event.getChannel().sendMessage("Usage ree!help").queue();
@@ -132,16 +120,14 @@ public class OtherEvents extends ListenerAdapter {
 
             if(!ArrayUtil.timeout.contains(event.getMember())) {
 
-                try {
-                    Main.sqlWorker.addXP(event.getGuild().getId(), event.getAuthor().getId(), new Random().nextInt(25) + 1);
-                } catch (SQLException throwables) {}
+                Main.sqlWorker.addXP(event.getGuild().getId(), event.getAuthor().getId(), new Random().nextInt(25) + 1);
 
-                    ArrayUtil.timeout.add(event.getMember());
+                ArrayUtil.timeout.add(event.getMember());
 
                     new Thread(() -> {
                         try {
                             Thread.sleep(30000);
-                        } catch (InterruptedException e) {}
+                        } catch (InterruptedException ignored) {}
 
                         ArrayUtil.timeout.remove(event.getMember());
 
@@ -159,6 +145,8 @@ public class OtherEvents extends ListenerAdapter {
         if (event.getGuild() == null)
             return;
 
+        event.deferReply().queue();
+
         MessageBuilder messageBuilder = new MessageBuilder();
 
         if (event.getOption("target").getAsMember() != null) messageBuilder.mentionUsers(event.getOption("user").getAsUser().getId());
@@ -167,7 +155,7 @@ public class OtherEvents extends ListenerAdapter {
 
         Message message = messageBuilder.build();
 
-        Main.cm.perform(event.getMember(), message.getContentRaw(), message, event.getTextChannel());
+        Main.commandManager.perform(event.getMember(), message.getContentRaw(), message, event.getTextChannel());
 
 
     }

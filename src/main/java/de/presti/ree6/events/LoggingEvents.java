@@ -3,6 +3,7 @@ package de.presti.ree6.events;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+
 import de.presti.ree6.bot.*;
 import de.presti.ree6.invitelogger.InviteContainer;
 import de.presti.ree6.invitelogger.InviteContainerManager;
@@ -10,6 +11,7 @@ import de.presti.ree6.logger.LoggerMessage;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.TimeUtil;
+
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
@@ -46,6 +48,8 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+@SuppressWarnings("CommentedOutCode")
 public class LoggingEvents extends ListenerAdapter {
 
     @Override
@@ -110,14 +114,14 @@ public class LoggingEvents extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
 
-        String finalString = "";
+        StringBuilder finalString = new StringBuilder();
 
         for (Role r : event.getRoles()) {
-            finalString += ":white_check_mark: " + r.getName() + "\n";
+            finalString.append(":white_check_mark: ").append(r.getName()).append("\n");
         }
 
         we.setDescription(":writing_hand: " + event.getMember().getUser().getAsMention() + " **has been updated.**");
-        we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString));
+        we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString.toString()));
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
@@ -174,13 +178,13 @@ public class LoggingEvents extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
 
-        String finalString = "";
+        StringBuilder finalString = new StringBuilder();
         for (Role r : event.getRoles()) {
-            finalString += ":no_entry: " + r.getName() + "\n";
+            finalString.append(":no_entry: ").append(r.getName()).append("\n");
         }
 
         we.setDescription(":writing_hand: " + event.getMember().getUser().getAsMention() + " **has been updated.**");
-        we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString));
+        we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString.toString()));
 
         wm.addEmbeds(we.build());
 
@@ -217,6 +221,7 @@ public class LoggingEvents extends ListenerAdapter {
         Main.loggerQueue.add(new LoggerMessage(Long.parseLong(infos[0]), infos[1], wm.build(), event.getEntity(), LoggerMessage.LogTyp.ELSE));
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onGenericVoiceChannel(@Nonnull GenericVoiceChannelEvent event) {
 
@@ -243,14 +248,14 @@ public class LoggingEvents extends ListenerAdapter {
             we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", ((VoiceChannelUpdateNameEvent) event).getOldName()));
             we.addField(new WebhookEmbed.EmbedField(true, "**New name**", ((VoiceChannelUpdateNameEvent) event).getNewName()));
         } else if (event instanceof VoiceChannelUpdatePermissionsEvent) {
-            String finalString = "";
+            StringBuilder finalString = new StringBuilder();
 
             for (Role r : ((VoiceChannelUpdatePermissionsEvent) event).getChangedRoles()) {
-                finalString += "\n" + r.getAsMention();
+                finalString.append("\n").append(r.getAsMention());
             }
 
             we.setDescription(":house: **Voicechannel Permissions updated:** ``" + event.getChannel().getName() + "``");
-            we.addField(new WebhookEmbed.EmbedField(true, "**Updated**", finalString));
+            we.addField(new WebhookEmbed.EmbedField(true, "**Updated**", finalString.toString()));
         } else {
             gay = false;
         }
@@ -264,6 +269,7 @@ public class LoggingEvents extends ListenerAdapter {
 
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onGenericTextChannel(@Nonnull GenericTextChannelEvent event) {
 
@@ -297,14 +303,14 @@ public class LoggingEvents extends ListenerAdapter {
             we.setDescription(":house: **TextChannel updated:** ``" + event.getChannel().getName() + "``");
             we.addField(new WebhookEmbed.EmbedField(true, "**NSFW**", ((TextChannelUpdateNSFWEvent) event).getNewValue() + ""));
         } else if (event instanceof TextChannelUpdatePermissionsEvent) {
-            String finalString = "";
+            StringBuilder finalString = new StringBuilder();
 
             for (Role r : ((TextChannelUpdatePermissionsEvent) event).getChangedRoles()) {
-                finalString += "\n" + r.getAsMention();
+                finalString.append("\n").append(r.getAsMention());
             }
 
             we.setDescription(":house: **TextChannel updated:** ``" + event.getChannel().getName() + "``");
-            we.addField(new WebhookEmbed.EmbedField(true, "**Updated**", finalString));
+            we.addField(new WebhookEmbed.EmbedField(true, "**Updated**", finalString.toString()));
         } else {
             gay = false;
         }
@@ -544,15 +550,15 @@ public class LoggingEvents extends ListenerAdapter {
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), event.getGuild().getIconUrl()));
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
 
-        String finalString = "";
+        StringBuilder finalString = new StringBuilder();
 
         boolean b = false;
         for (Permission r : event.getNewPermissions()) {
             if (!event.getOldPermissions().contains(r)) {
                 if (b) {
-                    finalString += "\n:white_check_mark: " + r.getName();
+                    finalString.append("\n:white_check_mark: ").append(r.getName());
                 } else {
-                    finalString += ":white_check_mark: " + r.getName();
+                    finalString.append(":white_check_mark: ").append(r.getName());
                     b = true;
                 }
             }
@@ -561,15 +567,15 @@ public class LoggingEvents extends ListenerAdapter {
         for (Permission r : event.getOldPermissions()) {
             if (!event.getNewPermissions().contains(r)) {
                 if (b) {
-                    finalString += "\n:no_entry: " + r.getName();
+                    finalString.append("\n:no_entry: ").append(r.getName());
                 } else {
-                    finalString += ":no_entry: " + r.getName();
+                    finalString.append(":no_entry: ").append(r.getName());
                     b = true;
                 }
             }
         }
 
-        we.addField(new WebhookEmbed.EmbedField(true, "**New permissions**", finalString));
+        we.addField(new WebhookEmbed.EmbedField(true, "**New permissions**", finalString.toString()));
 
         wm.addEmbeds(we.build());
 

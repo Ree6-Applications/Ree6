@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class AddonLoader {
 
     private static void createFolders() {
@@ -28,13 +29,14 @@ public class AddonLoader {
 
         File[] files = new File("addons/").listFiles();
 
+        assert files != null;
         for (File f : files) {
             if (f.getName().endsWith("jar")) {
                 try {
                     Addon addon = loadAddon(f.getName());
                     Main.addonManager.loadAddon(addon);
                 } catch (Exception ex) {
-                    Logger.log("AddonManager", "Couldnt load the Addon " + f.getName() + "\nException: " + ex.getCause().getMessage());
+                    Logger.log("AddonManager", "Couldn't load the Addon " + f.getName() + "\nException: " + ex.getCause().getMessage());
                     ex.printStackTrace();
                 }
             }
@@ -46,19 +48,19 @@ public class AddonLoader {
 
         String name = null;
         String author = null;
-        String addonver = null;
-        String ree6ver = null;
-        String mainpath = null;
+        String addonVer = null;
+        String ree6Ver = null;
+        String mainPath = null;
 
         File f = null;
 
-        ZipInputStream jis = new ZipInputStream(new FileInputStream(new File("addons/" + fileName)));
+        ZipInputStream jis = new ZipInputStream(new FileInputStream("addons/" + fileName));
         ZipEntry entry;
         while ((entry = jis.getNextEntry()) != null) {
             try {
-                String fname = entry.getName();
+                String fName = entry.getName();
                 if (!entry.isDirectory()) {
-                    if (fname.equalsIgnoreCase("addon.yml")) {
+                    if (fName.equalsIgnoreCase("addon.yml")) {
 
                         f = new File("addons/tmp/temp_" + ArrayUtil.getRandomShit(9) + ".yml");
                         FileOutputStream os = new FileOutputStream(f);
@@ -73,9 +75,9 @@ public class AddonLoader {
 
                         name = conf.getString("name");
                         author = conf.getString("author");
-                        addonver = conf.getString("version");
-                        ree6ver = conf.getString("ree6-version");
-                        mainpath = conf.getString("main");
+                        addonVer = conf.getString("version");
+                        ree6Ver = conf.getString("ree6-version");
+                        mainPath = conf.getString("main");
 
                     }
                 }
@@ -92,10 +94,10 @@ public class AddonLoader {
             f.delete();
         }
 
-        if (name == null && mainpath == null) {
-            throw new FileNotFoundException("Couldnt find addon.yml");
+        if (name == null && mainPath == null) {
+            throw new FileNotFoundException("Couldn't find addon.yml");
         } else {
-            return new Addon(name, author, addonver, ree6ver, mainpath, new File("addons/" + fileName));
+            return new Addon(name, author, addonVer, ree6Ver, mainPath, new File("addons/" + fileName));
         }
 
     }

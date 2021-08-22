@@ -1,11 +1,9 @@
 package de.presti.ree6.utils;
 
-import de.presti.ree6.main.Main;
 import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 
 public class Config {
 
@@ -41,7 +39,7 @@ public class Config {
 
             try {
                 cfg.save(getFile());
-            } catch (Exception ex) {
+            } catch (Exception ignored) {
             }
 
         }

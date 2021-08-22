@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class LoggerQueue {
-    ArrayList<LoggerMessage> logs = new ArrayList<>();
+    final ArrayList<LoggerMessage> logs = new ArrayList<>();
 
     public void add(LoggerMessage lm) {
         if(!logs.contains(lm)) {
@@ -87,7 +87,7 @@ public class LoggerQueue {
             new Thread(() ->{
                 try {
                     Thread.sleep(10000);
-                } catch (InterruptedException e) {}
+                } catch (InterruptedException ignored) {}
 
                 if(!lm.isCancel()) {
                     Webhook.sendWebhook(lm.getWem(), lm.getId(), lm.getAuthcode());

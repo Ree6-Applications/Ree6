@@ -4,15 +4,12 @@ import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.invitelogger.InviteContainer;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.ArrayUtil;
 import net.dv8tion.jda.api.entities.Webhook;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class SQLWorker {
 
@@ -65,7 +62,7 @@ public class SQLWorker {
         return false;
     }
 
-    public void addXP(String gid, String uid, int addxp) throws SQLException {
+    public void addXP(String gid, String uid, int addxp) {
 
         addxp += getXP(gid, uid);
 
@@ -150,7 +147,7 @@ public class SQLWorker {
         return false;
     }
 
-    public void addXPVC(String gid, String uid, int addxp) throws SQLException {
+    public void addXPVC(String gid, String uid, int addxp) {
 
         addxp += getXPVC(gid, uid);
 
@@ -188,7 +185,7 @@ public class SQLWorker {
 
     //Logging
 
-    public void setLogWebhook(String gid, String cid, String token) throws SQLException {
+    public void setLogWebhook(String gid, String cid, String token) {
         if (hasLogSetuped(gid)) {
 
             String[] d = getLogWebhook(gid);
@@ -249,7 +246,7 @@ public class SQLWorker {
 
     //Welcome
 
-    public void setWelcomeWebhook(String gid, String cid, String token) throws SQLException {
+    public void setWelcomeWebhook(String gid, String cid, String token) {
         if (hasWelcomeSetuped(gid)) {
 
             String[] d = getWelcomeWebhook(gid);
@@ -310,7 +307,7 @@ public class SQLWorker {
 
     //Mute
 
-    public void setMuteRole(String gid, String rid) throws SQLException {
+    public void setMuteRole(String gid, String rid) {
         if (hasMuteSetuped(gid)) {
             Main.sqlConnector.query("UPDATE MuteRoles SET RID='" + rid + "' WHERE GID='" + gid + "'");
         } else {

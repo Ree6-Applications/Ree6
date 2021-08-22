@@ -26,8 +26,8 @@ public class AutoRoleHandler {
                         Logger.log("AutoRole", "Role: " + g.getRoleById(ids).getName());
                         Logger.log("AutoRole", "Server: " + g.getName());
                         PrivateChannel pc = g.getOwner().getUser().openPrivateChannel().complete();
-                        pc.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didnt notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when joining is: " + g.getRoleById(ids)).queue();
-                    } catch (Exception ex2) {}
+                        pc.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when joining is: " + g.getRoleById(ids)).queue();
+                    } catch (Exception ignored) {}
                 }
             }
         }).start();
@@ -62,8 +62,8 @@ public class AutoRoleHandler {
                             Logger.log("AutoRole", "Role: " + g.getRoleById(entry.getValue()).getName());
                             Logger.log("AutoRole", "Server: " + g.getName());
                             PrivateChannel pc = g.getOwner().getUser().openPrivateChannel().complete();
-                            pc.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didnt notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue())).queue();
-                        } catch (Exception ex2) {}
+                            pc.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue())).queue();
+                        } catch (Exception ignored) {}
                     }
                 }
             }
@@ -99,8 +99,8 @@ public class AutoRoleHandler {
                             Logger.log("AutoRole", "Role: " + g.getRoleById(entry.getValue()).getName());
                             Logger.log("AutoRole", "Server: " + g.getName());
                             PrivateChannel pc = g.getOwner().getUser().openPrivateChannel().complete();
-                            pc.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didnt notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue()).getName()).queue();
-                        } catch (Exception ex2) {}
+                            pc.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue()).getName()).queue();
+                        } catch (Exception ignored) {}
                     }
                 }
 

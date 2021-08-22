@@ -9,7 +9,6 @@ import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.awt.*;
@@ -22,6 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * This class schedules tracks for the audio player. It contains the queue of
  * tracks.
  */
+@SuppressWarnings("ALL")
 public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
     private final BlockingQueue<AudioTrack> queue;
@@ -96,7 +96,7 @@ public class TrackScheduler extends AudioEventAdapter {
     public AudioTrack randomTrack(BlockingQueue<AudioTrack> list) {
         ArrayList<AudioTrack> tracks = new ArrayList<>();
 
-        list.stream().forEach(audioTrack -> tracks.add(audioTrack));
+        tracks.addAll(list);
 
         AudioTrack track = tracks.get(new Random().nextInt((tracks.size() - 1)));
 
@@ -206,7 +206,7 @@ public class TrackScheduler extends AudioEventAdapter {
                     em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setColor(Color.RED);
                     em.setDescription("Error while playing: " + track.getInfo().title + "\nError: "
-                            + endReason.name().toString());
+                            + endReason.name());
                     em.setFooter(thechannel.getGuild().getName(), thechannel.getGuild().getIconUrl());
 
                     CommandManager.sendMessage(em, 5, thechannel);
@@ -224,7 +224,7 @@ public class TrackScheduler extends AudioEventAdapter {
                     em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setColor(Color.RED);
                     em.setDescription("Error while playing: " + track.getInfo().title + "\nError: "
-                            + endReason.name().toString());
+                            + endReason.name());
                     em.setFooter(thechannel.getGuild().getName(), thechannel.getGuild().getIconUrl());
 
                     CommandManager.sendMessage(em, 5, thechannel);

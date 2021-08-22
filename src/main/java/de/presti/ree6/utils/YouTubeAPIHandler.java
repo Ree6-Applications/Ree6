@@ -6,14 +6,13 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchResult;
 import de.presti.ree6.main.Main;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class YouTubeAPIHandler {
 
     private YouTube yt;
-    public YouTubeAPIHandler instance;
+    public final YouTubeAPIHandler instance;
 
     public YouTubeAPIHandler() {
         try {
