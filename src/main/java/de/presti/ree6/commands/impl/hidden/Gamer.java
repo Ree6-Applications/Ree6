@@ -17,7 +17,7 @@ public class Gamer extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         sendMessage("Hi!",m,hook);
-        m.getHistoryBefore(messageSelf.getId(), 1).complete().getRetrievedHistory().get(0).reply("https://images.ree6.de/xasus.png").queue();
+        m.getHistoryBefore(messageSelf.getId(), 1).complete().getRetrievedHistory().get(0).reply("https://images.ree6.de/xasus").queue();
         deleteMessage(messageSelf);
     }
 }
