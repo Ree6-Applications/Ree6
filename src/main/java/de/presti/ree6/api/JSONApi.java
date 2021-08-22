@@ -18,16 +18,16 @@ import org.json.JSONObject;
 public class JSONApi {
 
 	@SuppressWarnings("unused")
-	public static JSONObject GetData(Requests type, String url) {
-		return GetData(type, url, "", "");
+	public static JSONObject getData(Requests type, String url) {
+		return getData(type, url, "", "");
 	}
 	@SuppressWarnings("unused")
-	public static JSONArray GetData2(Requests type, String url) {
-		return GetData2(type, url, "", "");
+	public static JSONArray getData2(Requests type, String url) {
+		return getData2(type, url, "", "");
 	}
 
 	@SuppressWarnings("deprecation")
-	public static JSONArray GetData2(Requests type, String url, String post, String authkey) {
+	public static JSONArray getData2(Requests type, String url, String post, String authKey) {
 
 		JSONArray j = new JSONArray("[]");
 		BufferedInputStream i = null;
@@ -47,8 +47,8 @@ public class JSONApi {
 			c.setReadTimeout(5000);
 			c.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build);
-			if(!authkey.isEmpty()) {
-				c.setRequestProperty("Authorization", authkey);
+			if(!authKey.isEmpty()) {
+				c.setRequestProperty("Authorization", authKey);
 			}
 			c.setRequestProperty("Content-Type", "application/json-rpc");
 			c.setRequestProperty("Content-length", "0");
@@ -92,13 +92,13 @@ public class JSONApi {
 	}
 
 	@SuppressWarnings({ "null", "deprecation" })
-    public static JSONObject GetData(Requests type, String url, String post, String authkey) {
+    public static JSONObject getData(Requests type, String url, String post, String authKey) {
 
 		JSONObject j = new JSONObject("{}");
 		BufferedInputStream i = null;
-		String rawcontent = "";
+		String rawContent = "";
 		int available = 0;
-		int responsecode = 0;
+		int responseCode = 0;
 
 		try {
 
@@ -115,8 +115,8 @@ public class JSONApi {
 			c.setReadTimeout(5000);
 			c.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build);
-			if(!authkey.isEmpty()) {
-				c.setRequestProperty("Authorization", authkey);
+			if(!authKey.isEmpty()) {
+				c.setRequestProperty("Authorization", authKey);
 			}
 			c.setRequestProperty("Content-Type", "application/json-rpc");
 			c.setRequestProperty("Content-length", "0");
@@ -134,7 +134,7 @@ public class JSONApi {
 			}
 
 			String content;
-			responsecode = c.getResponseCode();
+			responseCode = c.getResponseCode();
 
 			if (c.getResponseCode() == 200) {
 				i = new BufferedInputStream(c.getInputStream());
@@ -143,7 +143,7 @@ public class JSONApi {
 			}
 
 			content = IOUtils.toString(i, c.getContentEncoding());
-			rawcontent = content;
+			rawContent = content;
 			j = new JSONObject(content);
 			j.put("_success", true);
 			j.put("_type", type.name());
@@ -163,9 +163,9 @@ public class JSONApi {
 				j.put("_post", post);
 				j.put("_http", 0);
 				j.put("_available", available);
-				j.put("_exception", "MalformedJSONData (HTTP " + responsecode + ")");
+				j.put("_exception", "MalformedJSONData (HTTP " + responseCode + ")");
 				j.put("_exceptionMessage", ex.getMessage());
-				j.put("_content", rawcontent);
+				j.put("_content", rawContent);
 			} else {
 				ex.printStackTrace();
 			}
@@ -261,7 +261,7 @@ public class JSONApi {
 
 	public enum Requests {
 
-		GET, POST, PUT, DELETE
+		GET
 
 	}
 

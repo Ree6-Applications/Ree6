@@ -24,15 +24,15 @@ public class Loop extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         EmbedBuilder em = new EmbedBuilder();
         
-        Main.musikWorker.getGuildAudioPlayer(
-                m.getGuild()).scheduler.loop = !Main.musikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.loop;
+        Main.musicWorker.getGuildAudioPlayer(
+                m.getGuild()).scheduler.loop = !Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.loop;
 
         em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
                 BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(Main.musikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.loop ? "Song Loop has been activated!"
+        em.setDescription(Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.loop ? "Song Loop has been activated!"
                 : "Song Loop has been deactivated!");
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
 

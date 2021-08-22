@@ -17,6 +17,6 @@ public class Disconnect extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        Main.musikWorker.musicManagers.get(m.getGuild().getIdLong()).scheduler.stopAll();
+        Main.musicWorker.musicManagers.get(m.getGuild().getIdLong()).scheduler.stopAll();
     }
 }

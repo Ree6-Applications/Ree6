@@ -52,7 +52,7 @@ public class Stats extends Command {
 
         em.addField("**Bot Stats:**", "", true);
         em.addField("**Version**", BotInfo.build + "-" + BotInfo.version.name().toUpperCase(), true);
-        em.addField("**Uptime**", TimeUtil.getTime(BotInfo.starttime), true);
+        em.addField("**Uptime**", TimeUtil.getTime(BotInfo.startTime), true);
 
         em.addField("**Network Stats:**", "", true);
         em.addField("**Response Time**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);

@@ -21,7 +21,7 @@ public class Waifu extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        JSONObject js = JSONApi.GetData(JSONApi.Requests.GET, "https://api.dagpi.xyz/data/waifu", "", Main.config.getConfig().getString("dagpi.apitoken"));
+        JSONObject js = JSONApi.getData(JSONApi.Requests.GET, "https://api.dagpi.xyz/data/waifu", "", Main.config.getConfig().getString("dagpi.apitoken"));
         JSONObject array = js.getJSONObject("series");
 
         EmbedBuilder em = new EmbedBuilder();

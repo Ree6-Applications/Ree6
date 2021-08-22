@@ -21,7 +21,7 @@ public class DogImage extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        JSONObject js = JSONApi.GetData(JSONApi.Requests.GET, "https://dog.ceo/api/breeds/image/random");
+        JSONObject js = JSONApi.getData(JSONApi.Requests.GET, "https://dog.ceo/api/breeds/image/random");
 
         EmbedBuilder em = new EmbedBuilder();
 

@@ -54,14 +54,14 @@ public class ChatProtector extends Command {
                                 words.add(args[i]);
                                 end.append("\n").append(args[i]);
                             }
-                            de.presti.ree6.addons.impl.ChatProtector.addWordstoProtector(m.getGuild().getId(), words);
+                            de.presti.ree6.addons.impl.ChatProtector.addWordsToProtector(m.getGuild().getId(), words);
                             sendMessage("The Wordlist has been added to your ChatProtector!\nYour Wordlist:\n```" + end + "```", 5, m, hook);
                         } else {
-                            de.presti.ree6.addons.impl.ChatProtector.addWordtoProtector(m.getGuild().getId(), args[1]);
+                            de.presti.ree6.addons.impl.ChatProtector.addWordToProtector(m.getGuild().getId(), args[1]);
                             sendMessage("The Word " + args[1] + " has been added to your ChatProtector!", 5, m, hook);
                         }
                     } else if(args[0].equalsIgnoreCase("remove")) {
-                        de.presti.ree6.addons.impl.ChatProtector.removeWordfromProtector(m.getGuild().getId(), args[1]);
+                        de.presti.ree6.addons.impl.ChatProtector.removeWordFromProtector(m.getGuild().getId(), args[1]);
                         sendMessage("The Word " + args[1] + " has been removed from your ChatProtector!", 5, m, hook);
                     } else {
                         sendMessage("Couldn't find " + args[0] + "!", 5, m, hook);

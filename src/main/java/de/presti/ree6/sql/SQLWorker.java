@@ -50,13 +50,11 @@ public class SQLWorker {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
                 rs = st.executeQuery("SELECT * FROM Level WHERE GID='" + gid + "' AND UID='" + uid + "'");
             } catch (Exception ignore) {
-                //ex.printStackTrace();
             }
 
             return rs != null && rs.next();
 
         } catch (Exception ignore) {
-            //ex.printStackTrace();
         }
 
         return false;
@@ -147,14 +145,14 @@ public class SQLWorker {
         return false;
     }
 
-    public void addXPVC(String gid, String uid, int addxp) {
+    public void addXPVC(String gid, String uid, int addXP) {
 
-        addxp += getXPVC(gid, uid);
+        addXP += getXPVC(gid, uid);
 
         if (existsXPVC(gid, uid)) {
-            Main.sqlConnector.query("UPDATE VCLevel SET XP='" + addxp + "' WHERE GID='" + gid + "' AND UID='" + uid + "'");
+            Main.sqlConnector.query("UPDATE VCLevel SET XP='" + addXP + "' WHERE GID='" + gid + "' AND UID='" + uid + "'");
         } else {
-            Main.sqlConnector.query("INSERT INTO VCLevel (GID, UID, XP) VALUES ('" + gid + "', '" + uid + "', '" + addxp + "');");
+            Main.sqlConnector.query("INSERT INTO VCLevel (GID, UID, XP) VALUES ('" + gid + "', '" + uid + "', '" + addXP + "');");
         }
     }
 
@@ -551,7 +549,7 @@ public class SQLWorker {
 
     public ArrayList<InviteContainer> getInvites(String gid) {
 
-        ArrayList<InviteContainer> pog = new ArrayList<>();
+        ArrayList<InviteContainer> invites = new ArrayList<>();
 
         try {
             PreparedStatement st;
@@ -565,13 +563,13 @@ public class SQLWorker {
             }
 
             while (rs != null && rs.next()) {
-                pog.add(new InviteContainer(rs.getString("UID"), rs.getString("GID"), rs.getString("CODE"), Integer.parseInt(rs.getString("USES"))));
+                invites.add(new InviteContainer(rs.getString("UID"), rs.getString("GID"), rs.getString("CODE"), Integer.parseInt(rs.getString("USES"))));
             }
 
         } catch (Exception ignore) {
         }
 
-        return pog;
+        return invites;
     }
 
     public void setInvite(String gid, String code, String creator, int usage) {
@@ -610,7 +608,7 @@ public class SQLWorker {
 
     //News
 
-    public String[] getNewswebhook(String gid) {
+    public String[] getNewsWebhook(String gid) {
         if (hasNewsSetuped(gid)) {
             try {
                 PreparedStatement st;
@@ -634,7 +632,7 @@ public class SQLWorker {
 
     public void setNewsWebhook(String gid, String cid, String token) {
         if (hasNewsSetuped(gid)) {
-            String[] d = getNewswebhook(gid);
+            String[] d = getNewsWebhook(gid);
 
             BotInfo.botInstance.getGuildById(gid).retrieveWebhooks().queue(webhooks -> {
                 for (Webhook wb : webhooks) {
@@ -652,7 +650,6 @@ public class SQLWorker {
         try {
             PreparedStatement st;
             ResultSet rs = null;
-
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM NewsWebhooks WHERE GID='" + gid + "'");
                 rs = st.executeQuery("SELECT * FROM NewsWebhooks WHERE GID='" + gid + "'");
@@ -768,7 +765,7 @@ public class SQLWorker {
     }
 
     public ArrayList<String> getChatProtector(String gid) {
-        ArrayList<String> chatprot = new ArrayList<>();
+        ArrayList<String> chatProtection = new ArrayList<>();
         try {
             PreparedStatement st;
             ResultSet rs = null;
@@ -780,13 +777,13 @@ public class SQLWorker {
             }
 
             while (rs != null && rs.next()) {
-                chatprot.add(rs.getString("WORD"));
+                chatProtection.add(rs.getString("WORD"));
             }
 
         } catch (Exception ignore) {
         }
 
-        return chatprot;
+        return chatProtection;
     }
 
     //Rainbow

@@ -9,6 +9,6 @@ public class BotInfo {
     public static JDA botInstance;
     public static String TOKEN;
     public static String build;
-    public static long starttime;
+    public static long startTime;
 
 }

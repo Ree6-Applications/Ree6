@@ -26,7 +26,7 @@ public class Songinfo extends Command {
 
         StringBuilder end = new StringBuilder("```");
 
-        for (AudioTrack track : Main.musikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.getQueue()) {
+        for (AudioTrack track : Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.getQueue()) {
             end.append("\n").append(track.getInfo().title);
         }
 
@@ -37,7 +37,8 @@ public class Songinfo extends Command {
         em.setTitle("Music Player!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(Main.musikWorker.getGuildAudioPlayer(m.getGuild()).player.getPlayingTrack() == null ? "No Song is being played right now!" :  "**Song:** ```" + Main.musikWorker.getGuildAudioPlayer(m.getGuild()).player.getPlayingTrack().getInfo().title + " by " + Main.musikWorker.getGuildAudioPlayer(m.getGuild()).player.getPlayingTrack().getInfo().author + "```");
+        em.setDescription(Main.musicWorker.getGuildAudioPlayer(m.getGuild()).player.getPlayingTrack() == null ? "No Song is being played right now!" : "**Song:** ```"
+                + Main.musicWorker.getGuildAudioPlayer(m.getGuild()).player.getPlayingTrack().getInfo().title + " by " + Main.musicWorker.getGuildAudioPlayer(m.getGuild()).player.getPlayingTrack().getInfo().author + "```");
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
 
         sendMessage(em, 5, m, hook);

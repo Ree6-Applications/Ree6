@@ -21,7 +21,7 @@ public class CatImage extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        JSONArray js = JSONApi.GetData2(JSONApi.Requests.GET, "https://api.thecatapi.com/v1/images/search");
+        JSONArray js = JSONApi.getData2(JSONApi.Requests.GET, "https://api.thecatapi.com/v1/images/search");
 
         EmbedBuilder em = new EmbedBuilder();
 

@@ -5,8 +5,8 @@ import club.minnced.discord.webhook.send.WebhookMessage;
 
 public class Webhook {
 
-    public static void sendWebhook(WebhookMessage message, long channelid, String webhooktoken) {
-        WebhookClient wcl = WebhookClient.withId(channelid, webhooktoken);
+    public static void sendWebhook(WebhookMessage message, long channelId, String webhookToken) {
+        WebhookClient wcl = WebhookClient.withId(channelId, webhookToken);
         wcl.send(message);
         wcl.close();
     }

@@ -236,13 +236,13 @@ public class TrackScheduler extends AudioEventAdapter {
 
     public void stopAll() {
         EmbedBuilder em = new EmbedBuilder();
-        if (Main.musikWorker.isConnected(thechannel.getGuild())) {
+        if (Main.musicWorker.isConnected(thechannel.getGuild())) {
 
-            Main.musikWorker.getGuildAudioPlayer(thechannel.getGuild()).player.stopTrack();
+            Main.musicWorker.getGuildAudioPlayer(thechannel.getGuild()).player.stopTrack();
 
-            Main.musikWorker.getGuildAudioPlayer(thechannel.getGuild()).scheduler.clearQueue();
+            Main.musicWorker.getGuildAudioPlayer(thechannel.getGuild()).scheduler.clearQueue();
 
-            Main.musikWorker.disconnect(thechannel.getGuild());
+            Main.musicWorker.disconnect(thechannel.getGuild());
             em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
                     BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setTitle("Music Player!");

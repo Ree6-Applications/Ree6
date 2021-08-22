@@ -17,6 +17,6 @@ public class Skip extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        Main.musikWorker.skipTrack(m);
+        Main.musicWorker.skipTrack(m);
     }
 }

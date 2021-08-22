@@ -38,8 +38,8 @@ public class AddonManager {
 
             Class<?>[] ifs = urlCl.getInterfaces();
 
-            for (int i = 0; i < ifs.length; i++) {
-                if (ifs[i].getName().equalsIgnoreCase("de.presti.ree6.addons.AddonInterface")) {
+            for (Class<?> anIf : ifs) {
+                if (anIf.getName().equalsIgnoreCase("de.presti.ree6.addons.AddonInterface")) {
                     valid = true;
                     break;
                 }
@@ -76,8 +76,8 @@ public class AddonManager {
 
             Class<?>[] ifs = urlCl.getInterfaces();
 
-            for (int i = 0; i < ifs.length; i++) {
-                if (ifs[i].getName().equalsIgnoreCase("de.presti.ree6.addons.AddonInterface")) {
+            for (Class<?> anIf : ifs) {
+                if (anIf.getName().equalsIgnoreCase("de.presti.ree6.addons.AddonInterface")) {
                     valid = true;
                     break;
                 }

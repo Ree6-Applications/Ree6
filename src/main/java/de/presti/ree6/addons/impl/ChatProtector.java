@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class ChatProtector {
 
 
-    public static void addWordtoProtector(String gid, String word) {
+    public static void addWordToProtector(String gid, String word) {
 
         ArrayList<String> words = Main.sqlWorker.getChatProtector(gid);
 
@@ -18,7 +18,7 @@ public class ChatProtector {
         }
     }
 
-    public static void addWordstoProtector(String gid, ArrayList<String> words2) {
+    public static void addWordsToProtector(String gid, ArrayList<String> words2) {
 
         ArrayList<String> words = Main.sqlWorker.getChatProtector(gid);
 
@@ -40,7 +40,7 @@ public class ChatProtector {
         }
     }
 
-    public static void removeWordsfromProtector(String gid, ArrayList<String> words2) {
+    public static void removeWordsFromProtector(String gid, ArrayList<String> words2) {
         ArrayList<String> words = Main.sqlWorker.getChatProtector(gid);
 
         if (!words.isEmpty()) {
@@ -53,7 +53,7 @@ public class ChatProtector {
         }
     }
 
-    public static void removeWordfromProtector(String gid, String word) {
+    public static void removeWordFromProtector(String gid, String word) {
         ArrayList<String> words = Main.sqlWorker.getChatProtector(gid);
         if(!words.isEmpty()) {
             if(words.contains(word)) {
@@ -79,7 +79,6 @@ public class ChatProtector {
                 return true;
             }
         }
-
         return false;
     }
 }

@@ -24,7 +24,7 @@ public class MemeImage extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        JSONObject js = JSONApi.GetData(JSONApi.Requests.GET, "https://alpha-meme-maker.herokuapp.com/");
+        JSONObject js = JSONApi.getData(JSONApi.Requests.GET, "https://alpha-meme-maker.herokuapp.com/");
 
         EmbedBuilder em = new EmbedBuilder();
 

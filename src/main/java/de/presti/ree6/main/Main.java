@@ -11,7 +11,7 @@ import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.logger.LoggerQueue;
 import de.presti.ree6.music.GuildMusicManager;
-import de.presti.ree6.music.MusikWorker;
+import de.presti.ree6.music.MusicWorker;
 import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.SQLWorker;
 import de.presti.ree6.utils.*;
@@ -33,7 +33,7 @@ public class Main {
     public static SQLConnector sqlConnector;
     public static SQLWorker sqlWorker;
     public static LoggerQueue loggerQueue;
-    public static MusikWorker musikWorker;
+    public static MusicWorker musicWorker;
     
     public static Thread checker;
     public static Config config;
@@ -65,7 +65,7 @@ public class Main {
 
         try {
             BotUtil.createBot(BotVersion.PUBLIC, "1.4.8");
-            musikWorker = new MusikWorker();
+            musicWorker = new MusicWorker();
             instance.addEvents();
 
             commandManager.addSlashCommand();
@@ -76,7 +76,7 @@ public class Main {
 
         instance.addHooks();
 
-        BotInfo.starttime = System.currentTimeMillis();
+        BotInfo.startTime = System.currentTimeMillis();
 
         addonManager = new AddonManager();
         AddonLoader.loadAllAddons();
@@ -139,18 +139,16 @@ public class Main {
                     lastDay = new SimpleDateFormat("dd").format(new Date());
                 }
 
-
-                for (Map.Entry<Long, GuildMusicManager> entry : musikWorker.musicManagers.entrySet()) {
+                for (Map.Entry<Long, GuildMusicManager> entry : musicWorker.musicManagers.entrySet()) {
 
                     GuildMusicManager gmm = entry.getValue();
 
-                    if (musikWorker.isConnected(gmm.guild) && (gmm.player.getPlayingTrack() == null || gmm.player.isPaused())) {
+                    if (musicWorker.isConnected(gmm.guild) && (gmm.player.getPlayingTrack() == null || gmm.player.isPaused())) {
                         gmm.scheduler.stopAll();
                     }
                 }
-
                 try {
-                    Thread.sleep((10 * (60000L)));
+                    wait((10 * (60000L)));
                 } catch (InterruptedException ignore) {
                 }
             }

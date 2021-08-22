@@ -24,7 +24,7 @@ public class Pause extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         EmbedBuilder em = new EmbedBuilder();
 
-        Main.musikWorker.getGuildAudioPlayer(m.getGuild()).player.setPaused(true);
+        Main.musicWorker.getGuildAudioPlayer(m.getGuild()).player.setPaused(true);
 
         em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
                 BotInfo.botInstance.getSelfUser().getAvatarUrl());

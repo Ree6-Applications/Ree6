@@ -36,8 +36,7 @@ public class Volume extends Command {
             } catch (Exception e) {
                 vol = 50;
             }
-
-            Main.musikWorker.getGuildAudioPlayer(m.getGuild()).player.setVolume(vol);
+            Main.musicWorker.getGuildAudioPlayer(m.getGuild()).player.setVolume(vol);
 
             em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
                     BotInfo.botInstance.getSelfUser().getAvatarUrl());

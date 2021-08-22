@@ -23,12 +23,12 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MusikWorker {
+public class MusicWorker {
 
     public final AudioPlayerManager playerManager;
     public final Map<Long, GuildMusicManager> musicManagers;
 
-    public MusikWorker() {
+    public MusicWorker() {
         musicManagers = new HashMap<>();
         playerManager = new DefaultAudioPlayerManager();
 

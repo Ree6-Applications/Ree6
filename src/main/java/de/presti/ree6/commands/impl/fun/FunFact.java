@@ -19,7 +19,7 @@ public class FunFact extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        JSONObject js = JSONApi.GetData(JSONApi.Requests.GET, "https://useless-facts.sameerkumar.website/api");
+        JSONObject js = JSONApi.getData(JSONApi.Requests.GET, "https://useless-facts.sameerkumar.website/api");
         sendMessage(js.getString("data"), m, hook);
     }
 }

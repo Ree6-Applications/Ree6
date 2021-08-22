@@ -42,10 +42,8 @@ public class Play extends Command {
             em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
             sendMessage(em, 5, m, hook);
         } else {
-            if (Main.musikWorker.isConnectedMember(sender, m.getGuild())) {
-                if (ArrayUtil.botJoin.containsKey(m.getGuild())) {
-                    ArrayUtil.botJoin.remove(m.getGuild());
-                }
+            if (Main.musicWorker.isConnectedMember(sender, m.getGuild())) {
+                ArrayUtil.botJoin.remove(m.getGuild());
                 ArrayUtil.botJoin.put(m.getGuild(), sender);
             }
 
@@ -63,7 +61,7 @@ public class Play extends Command {
                 }
 
                 if (!isspotify) {
-                    Main.musikWorker.loadAndPlay(m, args[0]);
+                    Main.musicWorker.loadAndPlay(m, args[0]);
                 } else {
                     ArrayList<String> loadfailed = new ArrayList<>();
                     boolean b = false;
@@ -74,10 +72,10 @@ public class Play extends Command {
                             loadfailed.add(search);
                         } else {
                             if (!b) {
-                                Main.musikWorker.loadAndPlay(m, ytresult);
+                                Main.musicWorker.loadAndPlay(m, ytresult);
                                 b = true;
                             } else {
-                                Main.musikWorker.loadAndPlaySilence(m, ytresult);
+                                Main.musicWorker.loadAndPlaySilence(m, ytresult);
                             }
                         }
                     }
@@ -100,9 +98,9 @@ public class Play extends Command {
                     search.append(i).append(" ");
                 }
 
-                String ytresult = new YouTubeAPIHandler().searchYoutube(search.toString());
+                String ytResult = new YouTubeAPIHandler().searchYoutube(search.toString());
 
-                if(ytresult == null) {
+                if(ytResult == null) {
                     EmbedBuilder em = new EmbedBuilder();
                     em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setTitle("Music Player!");
@@ -112,7 +110,7 @@ public class Play extends Command {
                     em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
                     sendMessage(em, 5, m, hook);
                 } else {
-                    Main.musikWorker.loadAndPlay(m, ytresult);
+                    Main.musicWorker.loadAndPlay(m, ytResult);
                 }
             }
         }

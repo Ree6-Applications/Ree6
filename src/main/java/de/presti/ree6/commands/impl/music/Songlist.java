@@ -28,7 +28,7 @@ public class Songlist extends Command {
         
         StringBuilder end = new StringBuilder("```");
 
-        for (AudioTrack track : Main.musikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.getQueue()) {
+        for (AudioTrack track : Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.getQueue()) {
             end.append("\n").append(track.getInfo().title);
         }
 
@@ -39,7 +39,7 @@ public class Songlist extends Command {
         em.setTitle("Music Player!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(Main.musikWorker.getGuildAudioPlayer(m.getGuild()).scheduler.getQueue().size() == 0 ? "No Song in the Queue" :  (end.length() > 4096 ? "Error (M-SL-01)" : "Songs: " + end));
+        em.setDescription(Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.getQueue().size() == 0 ? "No Song in the Queue" :  (end.length() > 4096 ? "Error (M-SL-01)" : "Songs: " + end));
         em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
 
         sendMessage(em, 5, m, hook);
