@@ -16,7 +16,10 @@ public class Gamer extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        sendMessage(sender.getId().equalsIgnoreCase("465586551955652608") ? "Hello Xasus im really happy to see you here!" : sender.getId().equalsIgnoreCase("321580743488831490") ? "Lovely Presti nice to see you here im really happy that you are here!" : sender.getId().equalsIgnoreCase("397462379992055819") ? "David! You're like family i love!" : "Who tf are you?", m, hook);
+        sendMessage(sender.getId().equalsIgnoreCase("465586551955652608")  ? "Hello Xasus im really happy to see you here!"
+                : sender.getId().equalsIgnoreCase("869760842328080425") ? "OMG GATONOVA?? NO WAY!"
+                : sender.getId().equalsIgnoreCase("321580743488831490") ? "Lovely Presti nice to see you here im really happy that you are here!"
+                : sender.getId().equalsIgnoreCase("397462379992055819") ? "David! You're like family i love!" : "Who tf are you?", m, hook);
         m.getHistoryBefore(messageSelf.getId(), 1).complete().getRetrievedHistory().get(0).reply("https://images.ree6.de/xasus").queue();
         deleteMessage(messageSelf);
     }
