@@ -23,8 +23,8 @@ public class Server extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if (sender.hasPermission(Permission.ADMINISTRATOR)) {
-            EmbedBuilder em = new EmbedBuilder();
 
+            EmbedBuilder em = new EmbedBuilder();
             em.setColor(BotUtil.randomEmbedColor());
 
             em.setAuthor(m.getGuild().getName(), null, m.getGuild().getIconUrl());
@@ -36,8 +36,7 @@ public class Server extends Command {
             em.addField(":earth_africa: **Other**", "**Verificationlevel:** " + m.getGuild().getVerificationLevel().getKey(), true);
 
             sendMessage(em, m, hook);
-        } else {
+        } else
             sendMessage("You dont have ADMINISTRATOR Permissions for this Command!", m, hook);
-        }
     }
 }

@@ -96,8 +96,57 @@ public class SQLWorker {
         return ids;
     }
 
-    //Leveling VoiceChannel
 
+    public boolean hasSetting(String gid, String settingName) {
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+                rs = st.executeQuery("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+            } catch (Exception ignore) {
+            }
+
+            return rs != null && rs.next();
+
+        } catch (Exception ignore) {
+        }
+        return false;
+    }
+
+    public void setSetting(String gid, String settingName, boolean value) {
+
+        if (hasSetting(gid, settingName))
+            Main.sqlConnector.query("UPDATE Settings SET VALUE='" + value + "' WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+         else
+            Main.sqlConnector.query("INSERT INTO Settings (GID, NAME, VALUE) VALUES ('" + gid + "', '" + settingName + "', '" + value + "');");
+    }
+
+    public Boolean getSetting(String gid, String settingName) {
+        boolean value = false;
+
+        if (!hasSetting(gid, settingName)) return false;
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+                rs = st.executeQuery("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+            } catch (Exception ignore) {}
+
+            if (rs != null && rs.next())
+                value = Boolean.parseBoolean(rs.getString("VALUE"));
+
+        } catch (Exception ignore) {}
+
+        return value;
+    }
+
+    //Leveling VoiceChannel
     public Long getXPVC(String gid, String uid) {
         String xp = "0";
 
@@ -1123,22 +1172,22 @@ public class SQLWorker {
 
         HashMap<String, Long> data = new HashMap<>();
 
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
             try {
-                PreparedStatement st;
-                ResultSet rs = null;
-
-                try {
-                    st = Main.sqlConnector.con.prepareStatement("SELECT * FROM GuildStats WHERE GID='" + gid + "' ORDER BY cast(uses as unsigned) DESC LIMIT 99");
-                    rs = st.executeQuery("SELECT * FROM GuildStats WHERE GID='" + gid + "' ORDER BY cast(uses as unsigned) DESC LIMIT 99");
-                } catch (Exception ignore) {
-                }
-
-                while (rs != null && rs.next()) {
-                    data.put(rs.getString("COMMAND"), Long.parseLong(rs.getString("USES")));
-                }
-
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM GuildStats WHERE GID='" + gid + "' ORDER BY cast(uses as unsigned) DESC LIMIT 99");
+                rs = st.executeQuery("SELECT * FROM GuildStats WHERE GID='" + gid + "' ORDER BY cast(uses as unsigned) DESC LIMIT 99");
             } catch (Exception ignore) {
             }
+
+            while (rs != null && rs.next()) {
+                data.put(rs.getString("COMMAND"), Long.parseLong(rs.getString("USES")));
+            }
+
+        } catch (Exception ignore) {
+        }
         return data;
     }
 

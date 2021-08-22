@@ -67,6 +67,12 @@ public class SQLConnector {
     }
 
     public void createTables() {
+        try (PreparedStatement ps = con.prepareStatement(
+                //Settings
+                "CREATE TABLE IF NOT EXISTS Settings (GID VARCHAR(40), NAME VARCHAR(40), VALUE VARCHAR(500))")) {
+            ps.executeUpdate();
+        } catch (SQLException ignore) {
+        }
 
         try (PreparedStatement ps = con.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS CommandStats (COMMAND VARCHAR(40), USES VARCHAR(50))")) {
