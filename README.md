@@ -27,7 +27,7 @@ Upcoming Features:
 
 Please be aware that im a Student and can't work full-time on the Bot!
 
-Website: https://ree6.tk
+Website: https://ree6.de
 
 Used Apis:
 - JDA
