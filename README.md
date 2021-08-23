@@ -23,6 +23,7 @@ Upcoming Features:
 - YouTube Notification
 - 100% adjustable messages
 - RestAPI
+- Settings for logs
 
 Please be aware that im a Student and can't work full-time on the Bot!
 
