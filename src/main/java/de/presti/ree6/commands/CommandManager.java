@@ -9,6 +9,7 @@ import de.presti.ree6.commands.impl.level.*;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
 import de.presti.ree6.commands.impl.nsfw.*;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.stats.StatsManager;
 import de.presti.ree6.utils.*;
 
@@ -137,8 +138,17 @@ public class CommandManager {
 
         String[] oldArgs = msg.split(" ");
 
+        boolean blocked = false;
+
         for (Command cmd : getCommands()) {
             if (cmd.getCmd().equalsIgnoreCase(oldArgs[0]) || cmd.isAlias(oldArgs[0])) {
+
+                if (!Main.sqlWorker.getSetting(m.getGuild().getId(),"command_" + cmd.getCmd().toLowerCase())) {
+                    sendMessage("This Command is blocked!", 5, m, interactionHook);
+                    blocked = true;
+                    break;
+                }
+
                 String[] args = Arrays.copyOfRange(oldArgs, 1, oldArgs.length);
                 cmd.onPerform(sender, messageSelf, args, m, interactionHook);
                 StatsManager.addStatsForCommand(cmd, m.getGuild().getId());
@@ -164,7 +174,7 @@ public class CommandManager {
             }
         }
 
-        sendMessage("The Command " + oldArgs[0] + " couldn't be found!", 5, m, interactionHook);
+        if (!blocked) sendMessage("The Command " + oldArgs[0] + " couldn't be found!", 5, m, interactionHook);
 
         return false;
     }
