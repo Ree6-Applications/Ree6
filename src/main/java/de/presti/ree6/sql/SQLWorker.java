@@ -238,7 +238,7 @@ public class SQLWorker {
             } catch (Exception ignore) {
             }
         }
-        return new String[]{"Error", "Not setuped!"};
+        return new String[]{ "0", "Not setuped!" };
     }
 
 
@@ -300,7 +300,7 @@ public class SQLWorker {
             } catch (Exception ignore) {
             }
         }
-        return new String[]{"Error", "Not setuped!"};
+        return new String[]{ "0", "Not setuped!" };
     }
 
     //Mute
@@ -627,7 +627,7 @@ public class SQLWorker {
             } catch (Exception ignore) {
             }
         }
-        return new String[]{"Error", "Not setuped!"};
+        return new String[]{ "0", "Not setuped!" };
     }
 
     public void setNewsWebhook(String gid, String cid, String token) {
@@ -807,7 +807,7 @@ public class SQLWorker {
             } catch (Exception ignore) {
             }
         }
-        return new String[]{"Error", "Not setuped!"};
+        return new String[]{ "0", "Not setuped!" };
     }
 
     public void setRainbowWebhook(String gid, String cid, String token) {
@@ -932,7 +932,7 @@ public class SQLWorker {
             } catch (Exception ignore) {
             }
         }
-        return new String[]{"Error", "Not setuped!"};
+        return new String[]{ "0", "Not setuped!" };
     }
 
     public String[] getTwitchNotifyWebhookByName(String name) {
@@ -952,7 +952,7 @@ public class SQLWorker {
 
         } catch (Exception ignore) {
         }
-        return new String[]{"Error", "Not setuped!"};
+        return new String[]{ "0", "Not setuped!" };
     }
 
 
