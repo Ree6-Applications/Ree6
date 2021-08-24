@@ -99,7 +99,7 @@ public class CommandManager {
         //Hidden
         addCommand(new ReloadAddons());
         addCommand(new Gamer());
-        addCommand(new Test());
+        //addCommand(new Test());
 
     }
 
