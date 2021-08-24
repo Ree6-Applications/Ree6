@@ -61,7 +61,7 @@ public class HornyJail extends Command {
                 }
             }
         } else {
-            sendMessage("Use ree!hornyjail @User", m, hook);
+            sendMessage("Use ree!hornyjail @User", 5, m, hook);
         }
     }
 }

@@ -32,7 +32,7 @@ public class Clear extends Command {
                             List<Message> messages = m.getHistory().retrievePast(Integer.parseInt(args[0])).complete();
                             m.deleteMessages(messages).queue();
 
-                            sendMessage(messages.size() + " has been deleted!", 5, m, hook);
+                            sendMessage(messages.size() + " Messages have been deleted!", 5, m, hook);
 
                         } catch (Exception ex) {
                             if(ex instanceof IllegalArgumentException) {

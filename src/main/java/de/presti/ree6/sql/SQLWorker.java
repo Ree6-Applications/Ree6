@@ -1,6 +1,7 @@
 package de.presti.ree6.sql;
 
 import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.invitelogger.InviteContainer;
 import de.presti.ree6.main.Main;
@@ -94,56 +95,6 @@ public class SQLWorker {
         }
 
         return ids;
-    }
-
-
-    public boolean hasSetting(String gid, String settingName) {
-
-        try {
-            PreparedStatement st;
-            ResultSet rs = null;
-
-            try {
-                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
-                rs = st.executeQuery("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
-            } catch (Exception ignore) {
-            }
-
-            return rs != null && rs.next();
-
-        } catch (Exception ignore) {
-        }
-        return false;
-    }
-
-    public void setSetting(String gid, String settingName, boolean value) {
-
-        if (hasSetting(gid, settingName))
-            Main.sqlConnector.query("UPDATE Settings SET VALUE='" + value + "' WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
-         else
-            Main.sqlConnector.query("INSERT INTO Settings (GID, NAME, VALUE) VALUES ('" + gid + "', '" + settingName + "', '" + value + "');");
-    }
-
-    public Boolean getSetting(String gid, String settingName) {
-        boolean value = false;
-
-        if (!hasSetting(gid, settingName)) return false;
-
-        try {
-            PreparedStatement st;
-            ResultSet rs = null;
-
-            try {
-                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
-                rs = st.executeQuery("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
-            } catch (Exception ignore) {}
-
-            if (rs != null && rs.next())
-                value = Boolean.parseBoolean(rs.getString("VALUE"));
-
-        } catch (Exception ignore) {}
-
-        return value;
     }
 
     //Leveling VoiceChannel
@@ -1127,7 +1078,6 @@ public class SQLWorker {
         return false;
     }
 
-
     //Stats
 
     public boolean hasStatsGuild(String gid, String command) {
@@ -1268,5 +1218,88 @@ public class SQLWorker {
         } else {
             Main.sqlConnector.query("INSERT INTO CommandStats (COMMAND, USES) VALUES ('" + cmd.getCmd() + "', '1');");
         }
+    }
+
+    //Setting-System
+
+    public boolean hasSetting(String gid, String settingName) {
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+                rs = st.executeQuery("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+            } catch (Exception ignore) {
+            }
+
+            return rs != null && rs.next();
+
+        } catch (Exception ignore) {
+        }
+
+        createSettings(gid);
+
+        return false;
+    }
+
+    public void setSetting(String gid, String settingName, boolean value) {
+
+        if (hasSetting(gid, settingName))
+            Main.sqlConnector.query("UPDATE Settings SET VALUE='" + value + "' WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+        else
+            Main.sqlConnector.query("INSERT INTO Settings (GID, NAME, VALUE) VALUES ('" + gid + "', '" + settingName + "', '" + value + "');");
+    }
+
+    public Boolean getSetting(String gid, String settingName) {
+        boolean value = false;
+
+        if (!hasSetting(gid, settingName)) return true;
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+                rs = st.executeQuery("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+            } catch (Exception ignore) {}
+
+            if (rs != null && rs.next())
+                value = Boolean.parseBoolean(rs.getString("VALUE"));
+
+        } catch (Exception ignore) {}
+
+        return value;
+    }
+
+    public void createSettings(String gid) {
+        for (Command commands : Main.commandManager.getCommands()) {
+            if (commands.getCategory() == Category.HIDDEN) continue;
+            if (!hasSetting(gid, "command_" + commands.getCmd().toLowerCase())) setSetting(gid, "command_" + commands.getCmd().toLowerCase(), true);
+        }
+
+        if (!hasSetting(gid, "logging_invite")) setSetting(gid, "logging_invite", true);
+        if (!hasSetting(gid, "logging_memberjoin")) setSetting(gid, "logging_memberjoin", true);
+        if (!hasSetting(gid, "logging_memberleave")) setSetting(gid, "logging_memberleave", true);
+        if (!hasSetting(gid, "logging_memberban")) setSetting(gid, "logging_memberban", true);
+        if (!hasSetting(gid, "logging_memberunban")) setSetting(gid, "logging_memberunban", true);
+        if (!hasSetting(gid, "logging_nickname")) setSetting(gid, "logging_nickname", true);
+        if (!hasSetting(gid, "logging_voicejoin")) setSetting(gid, "logging_voicejoin", true);
+        if (!hasSetting(gid, "logging_voicemove")) setSetting(gid, "logging_voicemove", true);
+        if (!hasSetting(gid, "logging_voiceleave")) setSetting(gid, "logging_voiceleave", true);
+        if (!hasSetting(gid, "logging_roleadd")) setSetting(gid, "logging_roleadd", true);
+        if (!hasSetting(gid, "logging_roleremove")) setSetting(gid, "logging_roleremove", true);
+        if (!hasSetting(gid, "logging_voicechannel")) setSetting(gid, "logging_voicechannel", true);
+        if (!hasSetting(gid, "logging_textchannel")) setSetting(gid, "logging_textchannel", true);
+        if (!hasSetting(gid, "logging_rolecreate")) setSetting(gid, "logging_rolecreate", true);
+        if (!hasSetting(gid, "logging_roledelete")) setSetting(gid, "logging_roledelete", true);
+        if (!hasSetting(gid, "logging_rolename")) setSetting(gid, "logging_rolename", true);
+        if (!hasSetting(gid, "logging_rolemention")) setSetting(gid, "logging_rolemention", true);
+        if (!hasSetting(gid, "logging_rolehoisted")) setSetting(gid, "logging_rolehoisted", true);
+        if (!hasSetting(gid, "logging_rolepermission")) setSetting(gid, "logging_rolepermission", true);
+        if (!hasSetting(gid, "logging_rolecolor")) setSetting(gid, "logging_rolecolor", true);
+        if (!hasSetting(gid, "logging_messagedelete")) setSetting(gid, "logging_messagedelete", true);
     }
 }

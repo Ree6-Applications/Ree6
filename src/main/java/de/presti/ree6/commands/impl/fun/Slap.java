@@ -45,8 +45,8 @@ public class Slap extends Command {
                 sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), m, hook);
             }
         } else {
-            sendMessage("Not enough Arguments!", m, hook);
-            sendMessage("Use ree!slap @user", m, hook);
+            sendMessage("Not enough Arguments!", 5,m, hook);
+            sendMessage("Use ree!slap @user", 5, m, hook);
         }
     }
 }

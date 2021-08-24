@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 public class LoggerMessage {
 
     private long id = 0L;
-    private String authcode = "";
+    private String authCode = "";
     private boolean cancel = false;
 
     private WebhookMessage wem;
@@ -16,19 +16,32 @@ public class LoggerMessage {
     private VoiceChannel vc;
     private VoiceChannel vc2;
 
+    private String nickname;
+    private String nickname2;
+
     private LogTyp type;
 
     public LoggerMessage(long c, String auth, WebhookMessage wem, Member m, LogTyp type) {
         this.id = c;
-        this.authcode = auth;
+        this.authCode = auth;
         this.wem = wem;
         this.m = m;
         this.type = type;
     }
 
+    public LoggerMessage(long c, String auth, WebhookMessage wem, Member m, String nick, String nick2, LogTyp type) {
+        this.id = c;
+        this.authCode = auth;
+        this.wem = wem;
+        this.m = m;
+        this.nickname = nick;
+        this.nickname2 = nick2;
+        this.type = type;
+    }
+
     public LoggerMessage(long c, String auth, WebhookMessage wem, Member m, LogTyp type, VoiceChannel vc) {
         this.id = c;
-        this.authcode = auth;
+        this.authCode = auth;
         this.wem = wem;
         this.m = m;
         this.type = type;
@@ -37,7 +50,7 @@ public class LoggerMessage {
 
     public LoggerMessage(long c, String auth, WebhookMessage wem, Member m, LogTyp type, VoiceChannel vc, VoiceChannel vc2) {
         this.id = c;
-        this.authcode = auth;
+        this.authCode = auth;
         this.wem = wem;
         this.m = m;
         this.type = type;
@@ -53,12 +66,12 @@ public class LoggerMessage {
         this.id = id;
     }
 
-    public String getAuthcode() {
-        return authcode;
+    public String getAuthCode() {
+        return authCode;
     }
 
-    public void setAuthcode(String authcode) {
-        this.authcode = authcode;
+    public void setAuthCode(String authCode) {
+        this.authCode = authCode;
     }
 
     public WebhookMessage getWem() {
@@ -109,7 +122,23 @@ public class LoggerMessage {
         this.vc2 = vc2;
     }
 
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public String getNickname2() {
+        return nickname2;
+    }
+
+    public void setNickname2(String nickname2) {
+        this.nickname2 = nickname2;
+    }
+
     public enum LogTyp {
-        VC_LEAVE, VC_JOIN, VC_MOVE, ELSE
+        VC_LEAVE, VC_JOIN, VC_MOVE, NICKNAME_CHANGE, ELSE
     }
 }

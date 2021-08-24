@@ -31,7 +31,7 @@ public class Twitter extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if(args.length >= 2) {
             if(messageSelf.getMentionedMembers().isEmpty()) {
-                sendMessage("No User given!", m, hook);
+                sendMessage("No User given!", 5, m, hook);
             } else {
                 //noinspection CommentedOutCode
                 try {
@@ -73,7 +73,7 @@ public class Twitter extends Command {
                 }
             }
         } else {
-            sendMessage("Use ree!twitter @User Yourtexthere", m, hook);
+            sendMessage("Use ree!twitter @User Yourtexthere", 5, m, hook);
         }
     }
 }

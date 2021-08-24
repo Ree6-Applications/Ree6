@@ -97,7 +97,7 @@ public class Setup extends Command {
                         sendMessage("No Channel mentioned!", 5, m, hook);
                         sendMessage("Use ree!setup r6 #R6-Mate-Search-Channel", 5, m, hook);
                     } else {
-                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-News").queue(w -> Main.sqlWorker.setRainbowWebhook(sender.getGuild().getId(), w.getId(), w.getToken()));
+                        messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-MateSearch").queue(w -> Main.sqlWorker.setRainbowWebhook(sender.getGuild().getId(), w.getId(), w.getToken()));
                         sendMessage("R6 Mate Search channel has been set!", 5, m, hook);
                     }
                 } else if (args[0].equalsIgnoreCase("rewards")) {

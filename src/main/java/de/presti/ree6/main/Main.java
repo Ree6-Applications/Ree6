@@ -64,7 +64,7 @@ public class Main {
         twitchAPIHandler.registerTwitchLive();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.4.8");
+            BotUtil.createBot(BotVersion.DEV, "1.4.9");
             musicWorker = new MusicWorker();
             instance.addEvents();
 
@@ -148,7 +148,7 @@ public class Main {
                     }
                 }
                 try {
-                    wait((10 * (60000L)));
+                    Thread.sleep((10 * (60000L)));
                 } catch (InterruptedException ignore) {
                 }
             }

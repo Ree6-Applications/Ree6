@@ -3,6 +3,7 @@ package de.presti.ree6.commands;
 import de.presti.ree6.utils.Logger;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -86,7 +87,7 @@ public abstract class Command {
     }
 
     public static void deleteMessage(Message message) {
-        if(message != null) {
+        if(message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
             try {
                 message.delete().queue();
             } catch (Exception ex) {
