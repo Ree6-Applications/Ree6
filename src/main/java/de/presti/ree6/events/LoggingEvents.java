@@ -599,7 +599,8 @@ public class LoggingEvents extends ListenerAdapter {
 
     @Override
     public void onRoleUpdateColor(@Nonnull RoleUpdateColorEvent event) {
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_rolecolor"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -655,7 +656,7 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onMessageDelete(@Nonnull MessageDeleteEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_messagedelete"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
