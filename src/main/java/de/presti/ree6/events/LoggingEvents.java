@@ -54,7 +54,8 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_memberjoin"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -99,7 +100,7 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildMemberRemove(@Nonnull GuildMemberRemoveEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_memberleave"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -123,7 +124,8 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildBan(@Nonnull GuildBanEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_memberban"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -147,7 +149,7 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildUnban(@Nonnull GuildUnbanEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_memberunban"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -172,8 +174,9 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildMemberUpdateNickname(@Nonnull GuildMemberUpdateNicknameEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_nickname"))
             return;
+
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -201,8 +204,9 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_voicejoin"))
             return;
+
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -224,7 +228,7 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_voicemove"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -247,7 +251,7 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_voiceleave"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -270,7 +274,7 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_roleadd"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -301,7 +305,7 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_roleremove"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -333,7 +337,7 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGenericVoiceChannel(@Nonnull GenericVoiceChannelEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_voicechannel"))
             return;
 
         boolean gay = true;
@@ -381,7 +385,7 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGenericTextChannel(@Nonnull GenericTextChannelEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_textchannel"))
             return;
 
         boolean gay = true;
@@ -434,8 +438,9 @@ public class LoggingEvents extends ListenerAdapter {
 
     @Override
     public void onRoleCreate(@Nonnull RoleCreateEvent event) {
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_rolecreate"))
             return;
+
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -456,7 +461,7 @@ public class LoggingEvents extends ListenerAdapter {
 
     @Override
     public void onRoleDelete(@Nonnull RoleDeleteEvent event) {
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_roledelete"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -478,7 +483,7 @@ public class LoggingEvents extends ListenerAdapter {
 
     @Override
     public void onRoleUpdateName(@Nonnull RoleUpdateNameEvent event) {
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_rolename"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -502,7 +507,7 @@ public class LoggingEvents extends ListenerAdapter {
 
     @Override
     public void onRoleUpdateMentionable(@Nonnull RoleUpdateMentionableEvent event) {
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_rolemention"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -526,7 +531,7 @@ public class LoggingEvents extends ListenerAdapter {
 
     @Override
     public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) && !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_rolehoisted"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -550,7 +555,7 @@ public class LoggingEvents extends ListenerAdapter {
 
     @Override
     public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) && !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_rolepermission"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -599,7 +604,7 @@ public class LoggingEvents extends ListenerAdapter {
 
     @Override
     public void onRoleUpdateColor(@Nonnull RoleUpdateColorEvent event) {
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) && !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_rolecolor"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -655,7 +660,7 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onMessageDelete(@Nonnull MessageDeleteEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) && !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_messagedelete"))
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
