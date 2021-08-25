@@ -1237,16 +1237,35 @@ public class SQLWorker {
             if (rs != null && rs.next()) {
                 return true;
             } else {
-                createSettings(gid);
+                checkSettings(gid);
                 return false;
             }
 
         } catch (Exception ignore) {
         }
 
-        createSettings(gid);
+        checkSettings(gid);
 
         return false;
+    }
+
+    public void checkSettings(String gid) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Settings WHERE GID='" + gid + "'");
+                rs = st.executeQuery("SELECT * FROM Settings WHERE GID='" + gid + "'");
+            } catch (Exception ignore) {
+            }
+
+            if (rs == null && !rs.next()) {
+                createSettings(gid);
+            }
+
+        } catch (Exception ignore) {
+        }
     }
 
     public boolean settingExists(String gid, String settingName) {
