@@ -694,7 +694,7 @@ public class LoggingEvents extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(ArrayUtil.getUserFromMessageList(event.getMessageId()).getAsTag(), ArrayUtil.getUserFromMessageList(event.getMessageId()).getAvatarUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
-        we.setDescription(":wastebasket: **Message of " + ArrayUtil.getUserFromMessageList(event.getMessageId()).getAsMention() + " in " + event.getTextChannel().getAsMention() + " has been deleted.**\n" + ArrayUtil.getMessageFromMessageList(event.getMessageId()));
+        we.setDescription(":wastebasket: **Message of " + ArrayUtil.getUserFromMessageList(event.getMessageId()).getAsMention() + " in " + event.getTextChannel().getAsMention() + " has been deleted.**\n" + ((ArrayUtil.getMessageFromMessageList(event.getMessageId()).length() > 700) ? "Too long to display!" : ArrayUtil.getMessageFromMessageList(event.getMessageId())));
 
         wm.addEmbeds(we.build());
 
