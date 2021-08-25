@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.TimeFormat;
 
 import java.awt.*;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -33,7 +34,8 @@ public class LoggerQueue {
                         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
                         we.setColor(Color.BLACK.getRGB());
                         we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
-                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getM().getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), lm.getM().getGuild().getIconUrl()));
+                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getM().getGuild().getName(), lm.getM().getGuild().getIconUrl()));
+                        we.setTimestamp(Instant.now());
                         we.setDescription(lm.getM().getUser().getAsMention() + " **rejoined the Voicechannel** ``" + lm.getVc().getName() + "``");
 
                         wm.addEmbeds(we.build());
@@ -54,7 +56,8 @@ public class LoggerQueue {
                         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
                         we.setColor(Color.BLACK.getRGB());
                         we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
-                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getM().getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), lm.getM().getGuild().getIconUrl()));
+                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getM().getGuild().getName(), lm.getM().getGuild().getIconUrl()));
+                        we.setTimestamp(Instant.now());
                         we.setDescription(lm.getM().getUser().getAsMention() + " **moved through many Voicechannels and is now in** ``" + lm.getVc().getName() + "``");
 
                         wm.addEmbeds(we.build());
@@ -75,7 +78,8 @@ public class LoggerQueue {
                         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
                         we.setColor(Color.BLACK.getRGB());
                         we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
-                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getM().getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), lm.getM().getGuild().getIconUrl()));
+                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getM().getGuild().getName(), lm.getM().getGuild().getIconUrl()));
+                        we.setTimestamp(Instant.now());
                         we.setDescription(lm.getM().getUser().getAsMention() + " **joined and left the Voicechannel** ``" + lm.getVc().getName() + "``");
 
                         wm.addEmbeds(we.build());
@@ -99,7 +103,8 @@ public class LoggerQueue {
                         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
                         we.setColor(Color.BLACK.getRGB());
                         we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
-                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getM().getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), lm.getM().getGuild().getIconUrl()));
+                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getM().getGuild().getName(), lm.getM().getGuild().getIconUrl()));
+                        we.setTimestamp(Instant.now());
                         we.setDescription("The Nickname of " + lm.getM().getAsMention() + " has been changed.\n**New Nickname:**\n" + lm.getM().getNickname() + "\n**Old Nickname:**\n" + (oldName != null ? oldName : lm.getM().getUser().getName()));
 
                         wm.addEmbeds(we.build());

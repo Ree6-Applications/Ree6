@@ -69,7 +69,7 @@ public class SQLConnector {
     public void createTables() {
         try (PreparedStatement ps = con.prepareStatement(
                 //Settings
-                "CREATE TABLE IF NOT EXISTS Settings (GID VARCHAR(40), NAME VARCHAR(40), VALUE VARCHAR(500))")) {
+                "CREATE TABLE IF NOT EXISTS Settings (GID VARCHAR(40), NAME VARCHAR(40), VALUE VARCHAR(50))")) {
             ps.executeUpdate();
         } catch (SQLException ignore) {
         }

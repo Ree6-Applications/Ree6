@@ -19,6 +19,9 @@ public class Test extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         Main.sqlWorker.createSettings(m.getGuild().getId());
+        for (TimeFormat tm : TimeFormat.values()) {
+            sendMessage(tm.now().toString(), 5, m, hook);
+        }
         deleteMessage(messageSelf);
     }
 }

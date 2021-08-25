@@ -28,7 +28,7 @@ public class Ban extends Command {
                     sendMessage("Use ree!ban @user", 5, m, hook);
                 } else {
                     if (m.getGuild().getSelfMember().canInteract(messageSelf.getMentionedMembers().get(0)) && sender.canInteract(messageSelf.getMentionedMembers().get(0))) {
-                        sendMessage("User " + messageSelf.getMentionedUsers().get(0).getName() + " has been banned!", 5, m, hook);
+                        sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been banned!", 5, m, hook);
                         m.getGuild().ban(messageSelf.getMentionedMembers().get(0), 7).queue();
                     } else {
                         sendMessage("Couldn't ban this User because he has a higher Rank then me!", 5, m, hook);

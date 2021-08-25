@@ -98,7 +98,7 @@ public class CommandManager {
 
         //Hidden
         addCommand(new ReloadAddons());
-        addCommand(new Gamer());
+        //addCommand(new Gamer());
         //addCommand(new Test());
 
     }
@@ -174,7 +174,9 @@ public class CommandManager {
             }
         }
 
-        if (!blocked) sendMessage("The Command " + oldArgs[0] + " couldn't be found!", 5, m, interactionHook);
+        if (!blocked) {
+            sendMessage("That Command couldn't be found", 5, m, interactionHook);
+        }
 
         return false;
     }

@@ -27,12 +27,12 @@ public class Mute extends Command {
                     return;
                 }
 
-                if(messageSelf.getMentionedMembers().isEmpty()) {
+                if(messageSelf.getMentionedUsers().isEmpty()) {
                     sendMessage("No User mentioned!", 5, m, hook);
                     sendMessage("Use ree!mute @user", 5, m, hook);
                 } else {
                     if (m.getGuild().getSelfMember().canInteract(messageSelf.getMentionedMembers().get(0)) && sender.canInteract(messageSelf.getMentionedMembers().get(0))) {
-                        sendMessage("User " + messageSelf.getMentionedMembers().get(0).getNickname() + " has been muted!", 5, m, hook);
+                        sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been muted!", 5, m, hook);
                         Role r = m.getGuild().getRoleById(Main.sqlWorker.getMuteRoleID(sender.getGuild().getId()));
                         m.getGuild().addRoleToMember(messageSelf.getMentionedMembers().get(0), r).queue();
                     } else {

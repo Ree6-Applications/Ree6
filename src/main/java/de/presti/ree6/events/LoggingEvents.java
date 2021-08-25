@@ -45,6 +45,7 @@ import net.dv8tion.jda.api.utils.TimeFormat;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -67,7 +68,8 @@ public class LoggingEvents extends ListenerAdapter {
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(event.getUser().getAsMention() + " **joined the Server.**\n:timer: Age of the Account:\n``" + event.getUser().getTimeCreated().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) + "``\n**" + TimeUtil.getFormattedDate(TimeUtil.getDifferenceBetween(event.getUser().getTimeCreated().toLocalDateTime(), LocalDateTime.now())) + "**");
 
         wm.addEmbeds(we.build());
@@ -76,7 +78,7 @@ public class LoggingEvents extends ListenerAdapter {
         Main.loggerQueue.add(new LoggerMessage(Long.parseLong(infos[0]), infos[1], wm.build(), event.getMember(), LoggerMessage.LogTyp.ELSE));
 
 
-        if (!event.getGuild().getMemberById(BotInfo.botInstance.getSelfUser().getId()).hasPermission(Permission.MANAGE_SERVER)) {
+        if (!event.getGuild().getMemberById(BotInfo.botInstance.getSelfUser().getId()).hasPermission(Permission.MANAGE_SERVER) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_invite")) {
             return;
         }
 
@@ -112,7 +114,8 @@ public class LoggingEvents extends ListenerAdapter {
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(event.getUser().getAsMention() + " **left the Server.**");
 
         wm.addEmbeds(we.build());
@@ -137,7 +140,8 @@ public class LoggingEvents extends ListenerAdapter {
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(":airplane_departure: " + event.getUser().getAsMention() + " **banned.**");
 
         wm.addEmbeds(we.build());
@@ -161,7 +165,8 @@ public class LoggingEvents extends ListenerAdapter {
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(":airplane_arriving: " + event.getUser().getAsMention() + " **unbanned.**");
 
         wm.addEmbeds(we.build());
@@ -187,7 +192,8 @@ public class LoggingEvents extends ListenerAdapter {
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
 
         if (event.getNewNickname() == null) {
             we.setDescription("The Nickname of " + event.getUser().getAsMention() + " has been reseted.\n**Old Nickname:**\n" + event.getOldNickname());
@@ -216,7 +222,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(event.getEntity().getUser().getAsMention() + " **joined the Voicechannel** ``" + event.getChannelJoined().getName() + "``");
 
         wm.addEmbeds(we.build());
@@ -239,7 +246,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(event.getEntity().getUser().getAsMention() + " **switched the Voicechannel from** ``" + event.getChannelLeft().getName() + "`` **to** ``" + event.getChannelJoined().getName() + "``**.**");
 
         wm.addEmbeds(we.build());
@@ -262,7 +270,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(event.getEntity().getUser().getAsMention() + " **left the Voicechannel ** ``" + event.getChannelLeft().getName() + "``");
 
         wm.addEmbeds(we.build());
@@ -286,7 +295,8 @@ public class LoggingEvents extends ListenerAdapter {
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
 
         StringBuilder finalString = new StringBuilder();
 
@@ -317,7 +327,8 @@ public class LoggingEvents extends ListenerAdapter {
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
 
         StringBuilder finalString = new StringBuilder();
         for (Role r : event.getRoles()) {
@@ -349,7 +360,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
 
         if (event instanceof VoiceChannelCreateEvent) {
             we.setDescription(":house: **VoiceChannel created:** ``" + event.getChannel().getName() + "``");
@@ -398,7 +410,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
 
         if (event instanceof TextChannelCreateEvent) {
             we.setDescription(":house: **TextChannel created:** ``" + event.getChannel().getName() + "``");
@@ -450,7 +463,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been created.**");
 
         wm.addEmbeds(we.build());
@@ -472,7 +486,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been deleted.**");
 
         wm.addEmbeds(we.build());
@@ -494,7 +509,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
         we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", event.getOldName()));
         we.addField(new WebhookEmbed.EmbedField(true, "**New name**", event.getNewName()));
@@ -518,7 +534,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
         we.addField(new WebhookEmbed.EmbedField(true, "**Old mentionable**", event.getOldValue() + ""));
         we.addField(new WebhookEmbed.EmbedField(true, "**New mentionable**", event.getNewValue() + ""));
@@ -542,7 +559,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
         we.addField(new WebhookEmbed.EmbedField(true, "**Old hoist**", event.getOldValue() + ""));
         we.addField(new WebhookEmbed.EmbedField(true, "**New hoist**", event.getNewValue() + ""));
@@ -566,7 +584,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
 
         StringBuilder finalString = new StringBuilder();
@@ -616,7 +635,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
         we.addField(new WebhookEmbed.EmbedField(true, "**Old color**", (event.getOldColor() != null ? event.getOldColor() : Color.gray).getRGB() + ""));
         we.addField(new WebhookEmbed.EmbedField(true, "**New color**", (event.getNewColor() != null ? event.getNewColor() : Color.gray).getRGB() + ""));
@@ -645,7 +665,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getAuthor().getAsTag(), event.getAuthor().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
 
         we.setDescription(":pencil2: **Message send by** " + event.getMember().getUser().getAsMention() + " **in** " + event.getChannel().getAsMention() + " **has been edited.**\n**Old**\n```" + ArrayUtil.getMessageFromMessageList(event.getMessageId()) + "```\n**New**\n```" + event.getMessage().getContentRaw() + "```");
 
@@ -672,7 +692,8 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(ArrayUtil.getUserFromMessageList(event.getMessageId()).getAsTag(), ArrayUtil.getUserFromMessageList(event.getMessageId()).getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " • " + TimeFormat.DATE_TIME_SHORT.now(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName(), event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
         we.setDescription(":wastebasket: **Message of " + ArrayUtil.getUserFromMessageList(event.getMessageId()).getAsMention() + " in " + event.getTextChannel().getAsMention() + " has been deleted.**\n" + ArrayUtil.getMessageFromMessageList(event.getMessageId()));
 
         wm.addEmbeds(we.build());

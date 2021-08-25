@@ -1234,13 +1234,37 @@ public class SQLWorker {
             } catch (Exception ignore) {
             }
 
-            return rs != null && rs.next();
+            if (rs != null && rs.next()) {
+                return true;
+            } else {
+                createSettings(gid);
+                return false;
+            }
 
         } catch (Exception ignore) {
         }
 
         createSettings(gid);
 
+        return false;
+    }
+
+    public boolean settingExists(String gid, String settingName) {
+
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+                rs = st.executeQuery("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+            } catch (Exception ignore) {
+            }
+
+            return rs != null && rs.next();
+
+        } catch (Exception ignore) {
+        }
         return false;
     }
 
@@ -1277,29 +1301,29 @@ public class SQLWorker {
     public void createSettings(String gid) {
         for (Command commands : Main.commandManager.getCommands()) {
             if (commands.getCategory() == Category.HIDDEN) continue;
-            if (!hasSetting(gid, "command_" + commands.getCmd().toLowerCase())) setSetting(gid, "command_" + commands.getCmd().toLowerCase(), true);
+            if (!settingExists(gid, "command_" + commands.getCmd().toLowerCase())) setSetting(gid, "command_" + commands.getCmd().toLowerCase(), true);
         }
 
-        if (!hasSetting(gid, "logging_invite")) setSetting(gid, "logging_invite", true);
-        if (!hasSetting(gid, "logging_memberjoin")) setSetting(gid, "logging_memberjoin", true);
-        if (!hasSetting(gid, "logging_memberleave")) setSetting(gid, "logging_memberleave", true);
-        if (!hasSetting(gid, "logging_memberban")) setSetting(gid, "logging_memberban", true);
-        if (!hasSetting(gid, "logging_memberunban")) setSetting(gid, "logging_memberunban", true);
-        if (!hasSetting(gid, "logging_nickname")) setSetting(gid, "logging_nickname", true);
-        if (!hasSetting(gid, "logging_voicejoin")) setSetting(gid, "logging_voicejoin", true);
-        if (!hasSetting(gid, "logging_voicemove")) setSetting(gid, "logging_voicemove", true);
-        if (!hasSetting(gid, "logging_voiceleave")) setSetting(gid, "logging_voiceleave", true);
-        if (!hasSetting(gid, "logging_roleadd")) setSetting(gid, "logging_roleadd", true);
-        if (!hasSetting(gid, "logging_roleremove")) setSetting(gid, "logging_roleremove", true);
-        if (!hasSetting(gid, "logging_voicechannel")) setSetting(gid, "logging_voicechannel", true);
-        if (!hasSetting(gid, "logging_textchannel")) setSetting(gid, "logging_textchannel", true);
-        if (!hasSetting(gid, "logging_rolecreate")) setSetting(gid, "logging_rolecreate", true);
-        if (!hasSetting(gid, "logging_roledelete")) setSetting(gid, "logging_roledelete", true);
-        if (!hasSetting(gid, "logging_rolename")) setSetting(gid, "logging_rolename", true);
-        if (!hasSetting(gid, "logging_rolemention")) setSetting(gid, "logging_rolemention", true);
-        if (!hasSetting(gid, "logging_rolehoisted")) setSetting(gid, "logging_rolehoisted", true);
-        if (!hasSetting(gid, "logging_rolepermission")) setSetting(gid, "logging_rolepermission", true);
-        if (!hasSetting(gid, "logging_rolecolor")) setSetting(gid, "logging_rolecolor", true);
-        if (!hasSetting(gid, "logging_messagedelete")) setSetting(gid, "logging_messagedelete", true);
+        if (!settingExists(gid, "logging_invite")) setSetting(gid, "logging_invite", true);
+        if (!settingExists(gid, "logging_memberjoin")) setSetting(gid, "logging_memberjoin", true);
+        if (!settingExists(gid, "logging_memberleave")) setSetting(gid, "logging_memberleave", true);
+        if (!settingExists(gid, "logging_memberban")) setSetting(gid, "logging_memberban", true);
+        if (!settingExists(gid, "logging_memberunban")) setSetting(gid, "logging_memberunban", true);
+        if (!settingExists(gid, "logging_nickname")) setSetting(gid, "logging_nickname", true);
+        if (!settingExists(gid, "logging_voicejoin")) setSetting(gid, "logging_voicejoin", true);
+        if (!settingExists(gid, "logging_voicemove")) setSetting(gid, "logging_voicemove", true);
+        if (!settingExists(gid, "logging_voiceleave")) setSetting(gid, "logging_voiceleave", true);
+        if (!settingExists(gid, "logging_roleadd")) setSetting(gid, "logging_roleadd", true);
+        if (!settingExists(gid, "logging_roleremove")) setSetting(gid, "logging_roleremove", true);
+        if (!settingExists(gid, "logging_voicechannel")) setSetting(gid, "logging_voicechannel", true);
+        if (!settingExists(gid, "logging_textchannel")) setSetting(gid, "logging_textchannel", true);
+        if (!settingExists(gid, "logging_rolecreate")) setSetting(gid, "logging_rolecreate", true);
+        if (!settingExists(gid, "logging_roledelete")) setSetting(gid, "logging_roledelete", true);
+        if (!settingExists(gid, "logging_rolename")) setSetting(gid, "logging_rolename", true);
+        if (!settingExists(gid, "logging_rolemention")) setSetting(gid, "logging_rolemention", true);
+        if (!settingExists(gid, "logging_rolehoisted")) setSetting(gid, "logging_rolehoisted", true);
+        if (!settingExists(gid, "logging_rolepermission")) setSetting(gid, "logging_rolepermission", true);
+        if (!settingExists(gid, "logging_rolecolor")) setSetting(gid, "logging_rolecolor", true);
+        if (!settingExists(gid, "logging_messagedelete")) setSetting(gid, "logging_messagedelete", true);
     }
 }

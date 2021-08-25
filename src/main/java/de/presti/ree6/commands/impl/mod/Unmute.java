@@ -31,7 +31,7 @@ public class Unmute extends Command {
                     sendMessage("No User mentioned!", 5, m, hook);
                     sendMessage("Use ree!unmute @user", 5, m, hook);
                 } else {
-                    sendMessage("User " + messageSelf.getMentionedMembers().get(0).getNickname() + " has been unmuted!", 5, m, hook);
+                    sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been unmuted!", 5, m, hook);
                     Role r = m.getGuild().getRoleById(Main.sqlWorker.getMuteRoleID(sender.getGuild().getId()));
                     m.getGuild().removeRoleFromMember(messageSelf.getMentionedMembers().get(0), r).queue();
                 }
