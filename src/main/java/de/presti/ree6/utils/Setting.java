@@ -21,7 +21,9 @@ public class Setting {
 
     public String getStringValue() {
         if (value instanceof String) {
-            return (String)value;
+            return (String) value;
+        } else if (value instanceof Boolean) {
+            return (Boolean)value + "";
         } else if (getName().equalsIgnoreCase("chatprefix")) {
             return "ree!";
         }

@@ -1288,12 +1288,16 @@ public class SQLWorker {
         return false;
     }
 
-    public void setSetting(String gid, String settingName, boolean value) {
+    private void setSetting(String gid, String name, Object value) {
+        setSetting(gid, new Setting(name, value));
+    }
 
-        if (hasSetting(gid, settingName))
-            Main.sqlConnector.query("UPDATE Settings SET VALUE='" + value + "' WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
+    public void setSetting(String gid, Setting setting) {
+
+        if (hasSetting(gid, setting.getName()))
+            Main.sqlConnector.query("UPDATE Settings SET VALUE='" + setting.getStringValue() + "' WHERE GID='" + gid + "' AND NAME='" + setting.getName() + "'");
         else
-            Main.sqlConnector.query("INSERT INTO Settings (GID, NAME, VALUE) VALUES ('" + gid + "', '" + settingName + "', '" + value + "');");
+            Main.sqlConnector.query("INSERT INTO Settings (GID, NAME, VALUE) VALUES ('" + gid + "', '" + setting.getName() + "', '" + setting.getStringValue() + "');");
     }
 
     public Setting getSetting(String gid, String settingName) {
@@ -1319,6 +1323,9 @@ public class SQLWorker {
     }
 
     public void createSettings(String gid) {
+
+        if (!settingExists(gid, "chatprefix")) setSetting(gid, new Setting("chatprefix", "ree!"));
+
         for (Command commands : Main.commandManager.getCommands()) {
             if (commands.getCategory() == Category.HIDDEN) continue;
             if (!settingExists(gid, "command_" + commands.getCmd().toLowerCase())) setSetting(gid, "command_" + commands.getCmd().toLowerCase(), true);
