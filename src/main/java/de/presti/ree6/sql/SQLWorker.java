@@ -1260,7 +1260,7 @@ public class SQLWorker {
             } catch (Exception ignore) {
             }
 
-            if (rs == null && !rs.next()) {
+            if (rs == null || !rs.next()) {
                 createSettings(gid);
             }
 

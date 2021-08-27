@@ -19,13 +19,14 @@ public class Webinterface extends Command {
 
 
     public Webinterface() {
-        super("webinterface", "Get your AccesLink to the Webinterface", Category.MOD);
+        super("webinterface", "Get your Access-Link to the Webinterface", Category.MOD);
     }
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if (sender.hasPermission(Permission.ADMINISTRATOR) && sender.hasPermission(Permission.MANAGE_SERVER)) {
             try {
+                Main.sqlWorker.checkSettings(m.getGuild().getId());
                 PrivateChannel pc = sender.getUser().openPrivateChannel().complete();
                 Message message = pc.sendMessage("Here is your Login-URL: ").complete();
                 String authToken = RandomUtils.randomString(25);
