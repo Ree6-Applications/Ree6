@@ -16,7 +16,7 @@ import org.json.JSONObject;
 public class DogImage extends Command {
 
     public DogImage() {
-        super("randomdog", "Shows you a Random Dog Picture!", Category.FUN);
+        super("randomdog", "Shows you a Random Dog Picture!", Category.FUN, new String[] { "dog", "dogimage" });
     }
 
     @Override

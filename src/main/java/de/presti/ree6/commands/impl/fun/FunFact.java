@@ -14,7 +14,7 @@ import org.json.JSONObject;
 public class FunFact extends Command {
 
     public FunFact() {
-        super("funfact", "Just some random Facts!", Category.FUN);
+        super("funfact", "Just some random Facts!", Category.FUN, new String[] { "randomfact", "facts" });
     }
 
     @Override

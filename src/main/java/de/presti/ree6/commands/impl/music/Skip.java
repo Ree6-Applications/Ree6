@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 public class Skip extends Command {
 
     public Skip() {
-        super("skip", "Skip a song!", Category.MUSIC);
+        super("skip", "Skip a song!", Category.MUSIC, new String[] { "sk", "next" });
     }
 
     @Override

@@ -13,11 +13,9 @@ import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.utils.WidgetUtil;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -252,12 +250,7 @@ public class MusicWorker {
     }
 
     public boolean isConnected(Guild g) {
-        for (VoiceChannel vc : g.getVoiceChannels()) {
-            if (vc.getMembers().contains(g.getMemberById(BotInfo.botInstance.getSelfUser().getId()))) {
-                return true;
-            }
-        }
-        return false;
+        return g.getAudioManager().isConnected() || isConnectedMember(g.getSelfMember(), g);
     }
 
     public void disconnect(Guild g) {

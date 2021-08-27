@@ -19,7 +19,7 @@ import pw.aru.api.nekos4j.image.ImageProvider;
 public class Hug extends Command {
 
     public Hug() {
-        super("hug", "Hug someone you like!", Category.FUN, new CommandData("hug", "Slap someone you like!").addOptions(new OptionData(OptionType.USER, "target", "The User that should be hugged!").setRequired(true)));
+        super("hug", "Hug someone you like!", Category.FUN, new CommandData("hug", "Hug someone you like!").addOptions(new OptionData(OptionType.USER, "target", "The User that should be hugged!").setRequired(true)));
     }
 
     @Override

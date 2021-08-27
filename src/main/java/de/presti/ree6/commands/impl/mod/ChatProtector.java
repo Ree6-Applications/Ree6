@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class ChatProtector extends Command {
 
     public ChatProtector() {
-        super("chatprotector", "Manage the Chat Filter!", Category.MOD, new String[]{ "cp" });
+        super("chatprotector", "Manage the Chat Filter!", Category.MOD, new String[]{ "blacklist", "badword" });
     }
 
     @Override

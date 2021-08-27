@@ -5,6 +5,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.invitelogger.InviteContainer;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.Setting;
 import net.dv8tion.jda.api.entities.Webhook;
 
 import java.sql.PreparedStatement;
@@ -1295,10 +1296,10 @@ public class SQLWorker {
             Main.sqlConnector.query("INSERT INTO Settings (GID, NAME, VALUE) VALUES ('" + gid + "', '" + settingName + "', '" + value + "');");
     }
 
-    public Boolean getSetting(String gid, String settingName) {
-        boolean value = false;
+    public Setting getSetting(String gid, String settingName) {
+        Object value = null;
 
-        if (!hasSetting(gid, settingName)) return true;
+        if (!hasSetting(gid, settingName)) new Setting(gid, true);
 
         try {
             PreparedStatement st;
@@ -1310,11 +1311,11 @@ public class SQLWorker {
             } catch (Exception ignore) {}
 
             if (rs != null && rs.next())
-                value = Boolean.parseBoolean(rs.getString("VALUE"));
+                value = rs.getString("VALUE");
 
         } catch (Exception ignore) {}
 
-        return value;
+        return new Setting(settingName, value);
     }
 
     public void createSettings(String gid) {

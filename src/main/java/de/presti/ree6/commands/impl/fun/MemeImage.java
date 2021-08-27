@@ -19,7 +19,7 @@ import java.util.Random;
 public class MemeImage extends Command {
 
     public MemeImage() {
-        super("randommeme", "Shows you a Random Meme Picture!", Category.FUN);
+        super("randommeme", "Shows you a Random Meme Picture!", Category.FUN, new String[] { "meme", "memeimage" });
     }
 
     @Override

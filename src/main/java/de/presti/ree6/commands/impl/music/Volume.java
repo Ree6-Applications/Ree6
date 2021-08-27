@@ -20,7 +20,7 @@ import java.awt.*;
 public class Volume extends Command {
 
     public Volume() {
-        super("volume", "Set the Volume!", Category.MUSIC, new CommandData("volume", "Set the Volume!").addOptions(new OptionData(OptionType.INTEGER, "amount", "The Volume that the Ree6 Music Player should be!").setRequired(true)));
+        super("volume", "Set the Volume!", Category.MUSIC, new String[] { "vol" }, new CommandData("volume", "Set the Volume!").addOptions(new OptionData(OptionType.INTEGER, "amount", "The Volume that the Ree6 Music Player should be!").setRequired(true)));
     }
 
     @Override

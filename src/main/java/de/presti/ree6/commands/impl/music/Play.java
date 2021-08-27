@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class Play extends Command {
 
     public Play() {
-        super("play", "Play a song!", Category.MUSIC, new CommandData("play", "Play a song!").addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true)));
+        super("play", "Play a song!", Category.MUSIC, new String[] { "p", "music" }, new CommandData("play", "Play a song!").addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true)));
     }
 
     @Override

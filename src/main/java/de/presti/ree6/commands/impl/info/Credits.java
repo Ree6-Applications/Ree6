@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 public class Credits extends Command {
 
     public Credits() {
-        super("credits", "See the Team behind Ree6!", Category.INFO);
+        super("credits", "See the Team behind Ree6!", Category.INFO, new String[] { "cred" });
     }
 
     @Override

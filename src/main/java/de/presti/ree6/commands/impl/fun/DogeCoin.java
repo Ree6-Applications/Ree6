@@ -14,7 +14,7 @@ import org.json.JSONObject;
 public class DogeCoin extends Command {
 
     public DogeCoin() {
-        super("dogecoin", "Shows you the pricing of DogeCoins", Category.FUN);
+        super("dogecoin", "Shows you the pricing of DogeCoins", Category.FUN, new String[] { "doge" });
     }
 
     @Override

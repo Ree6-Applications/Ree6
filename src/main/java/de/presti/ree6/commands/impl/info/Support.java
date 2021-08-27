@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 public class Support extends Command {
 
     public Support() {
-        super("support", "Get a Invite Link to the Support Server!", Category.INFO);
+        super("support", "Get a Invite Link to the Support Server!", Category.INFO, new String[] { "sup", "supp" });
     }
 
     @Override

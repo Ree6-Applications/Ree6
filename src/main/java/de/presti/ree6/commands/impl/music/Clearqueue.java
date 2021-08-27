@@ -17,7 +17,7 @@ import java.awt.*;
 public class Clearqueue extends Command {
 
     public Clearqueue() {
-        super("clearqueue", "Clear every Song in the queue!", Category.MUSIC);
+        super("clearqueue", "Clear every Song in the queue!", Category.MUSIC, new String[] { "clearq", "cq" });
     }
 
     @Override

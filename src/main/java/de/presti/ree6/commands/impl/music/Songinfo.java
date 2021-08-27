@@ -17,7 +17,7 @@ import java.awt.*;
 public class Songinfo extends Command {
 
     public Songinfo() {
-        super("songinfo", "Get the currently playing Track!", Category.MUSIC);
+        super("songinfo", "Get the currently playing Track!", Category.MUSIC, new String[] { "trackinfo", "cq" });
     }
 
     @Override

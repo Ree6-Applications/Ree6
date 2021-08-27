@@ -19,7 +19,7 @@ public class Webinterface extends Command {
 
 
     public Webinterface() {
-        super("webinterface", "Get your Access-Link to the Webinterface", Category.MOD);
+        super("webinterface", "Get your Access-Link to the Webinterface", Category.MOD, new String[] { "web", "interface" });
     }
 
     @Override

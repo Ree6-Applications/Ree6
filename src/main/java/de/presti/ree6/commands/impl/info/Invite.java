@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 public class Invite extends Command {
 
     public Invite() {
-        super("invite", "Get a Invite Link for Ree6!", Category.INFO);
+        super("invite", "Get a Invite Link for Ree6!", Category.INFO, new String[] { "inv" });
     }
 
     @Override

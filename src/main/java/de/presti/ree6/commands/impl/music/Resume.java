@@ -17,7 +17,7 @@ import java.awt.*;
 public class Resume extends Command {
     
     public Resume() {
-        super("resume", "Resume a stopped Song!", Category.MUSIC);
+        super("resume", "Resume a stopped Song!", Category.MUSIC, new String[] { "res", "re" });
     }
 
     @Override

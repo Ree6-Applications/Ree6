@@ -16,7 +16,7 @@ import org.json.JSONArray;
 public class CatImage extends Command {
 
     public CatImage() {
-        super("randomcat", "Shows you a Random Cat Picture!", Category.FUN);
+        super("randomcat", "Shows you a Random Cat Picture!", Category.FUN, new String[] { "cat", "catimage" });
     }
 
     @Override

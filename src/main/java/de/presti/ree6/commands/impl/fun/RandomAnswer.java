@@ -14,7 +14,7 @@ import java.util.Random;
 public class RandomAnswer extends Command {
 
     public RandomAnswer() {
-        super("8ball", "Let the Magic 8Ball answer your Question!", Category.FUN);
+        super("8ball", "Let the Magic 8Ball answer your Question!", Category.FUN, new String[] { "answer", "randomanswer" });
     }
 
     @Override
