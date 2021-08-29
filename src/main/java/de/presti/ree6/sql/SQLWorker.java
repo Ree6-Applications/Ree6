@@ -1288,13 +1288,13 @@ public class SQLWorker {
         return false;
     }
 
-    private void setSetting(String gid, String name, Object value) {
+    public void setSetting(String gid, String name, Object value) {
         setSetting(gid, new Setting(name, value));
     }
 
     public void setSetting(String gid, Setting setting) {
 
-        if (hasSetting(gid, setting.getName()))
+        if (settingExists(gid, setting.getName()))
             Main.sqlConnector.query("UPDATE Settings SET VALUE='" + setting.getStringValue() + "' WHERE GID='" + gid + "' AND NAME='" + setting.getName() + "'");
         else
             Main.sqlConnector.query("INSERT INTO Settings (GID, NAME, VALUE) VALUES ('" + gid + "', '" + setting.getName() + "', '" + setting.getStringValue() + "');");

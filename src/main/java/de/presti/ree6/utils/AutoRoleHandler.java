@@ -19,7 +19,7 @@ public class AutoRoleHandler {
             if (g.getSelfMember().canInteract(m)) {
                 Logger.log("AutoRole", "Failed to give a Role when someone joined!");
                 Logger.log("AutoRole", "Server: " + g.getName());
-                g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
+                if (g.getOwner() != null && g.getOwner().getUser() != null) g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
                 return;
             }
 

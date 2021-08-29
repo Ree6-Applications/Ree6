@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 public class Unban extends Command {
 
     public Unban() {
-        super("unban", "Unban a User from the Server!", Category.MOD, new CommandData("unban", "Unban a User from the Server!").addOptions(new OptionData(OptionType.STRING, "targetid", "Which User should be unbanned.").setRequired(true)));
+        super("unban", "Unban a User from the Server!", Category.MOD, new CommandData("unban", "Unban a User from the Server!").addOptions(new OptionData(OptionType.STRING, "name", "Which User should be unbanned.").setRequired(true)));
     }
 
     @Override

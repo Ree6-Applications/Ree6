@@ -43,6 +43,7 @@ public class CommandManager {
         addCommand(new Credits());
 
         //Moderate
+        addCommand(new Prefix());
         addCommand(new Webinterface());
         addCommand(new Clear());
         addCommand(new Setup());
