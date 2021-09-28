@@ -1,5 +1,6 @@
 package de.presti.ree6.main;
 
+import com.mindscapehq.raygun4java.core.RaygunClient;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
 import de.presti.ree6.bot.BotInfo;
@@ -49,6 +50,8 @@ public class Main {
 
         config.init();
 
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> new RaygunClient(config.getConfig().getString("raygun.apitoken")).send(e));
+
         sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
 
         sqlWorker = new SQLWorker();
@@ -64,7 +67,7 @@ public class Main {
         twitchAPIHandler.registerTwitchLive();
 
         try {
-            BotUtil.createBot(BotVersion.DEV, "1.5.0");
+            BotUtil.createBot(BotVersion.PRERELASE, "1.5.0");
             musicWorker = new MusicWorker();
             instance.addEvents();
 

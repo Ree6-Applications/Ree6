@@ -31,7 +31,7 @@ public class Webinterface extends Command {
                 Message message = pc.sendMessage("Here is your Login-URL: ").complete();
                 String authToken = RandomUtils.randomString(25);
                 Main.sqlWorker.setAuthToken(sender.getGuild().getId(), authToken);
-                message.editMessage("Here is your Login-URL: " + (BotInfo.version == BotVersion.PUBLIC ? "https://cp.ree6.de" : "http://localhost:8080") + "/?login=" + Crypter.en(sender.getGuild().getId() + "-" + authToken + ":" + sender.getUser().getId())).queue();
+                message.editMessage("Here is your Login-URL: " + (BotInfo.version == BotVersion.DEV ? "http://localhost:8080" : "https://cp.ree6.de") + "/?login=" + Crypter.en(sender.getGuild().getId() + "-" + authToken + ":" + sender.getUser().getId())).queue();
             } catch (Exception ex) {
                 sendMessage("Hey! I couldn't send you a message please open your DMs for me so i can send you the Login-URL!", 5, m, hook);
                 Main.sqlWorker.deleteAuthToken(sender.getGuild().getId());

@@ -29,6 +29,7 @@ public class Config {
             cfg.addDefault("mysql.port", 3306);
             cfg.addDefault("giphy.apitoken", "yourgiphytokenherepog");
             cfg.addDefault("dagpi.apitoken", "yourdagpixyztokenhere");
+            cfg.addDefault("raygun.apitoken", "yourrayguntokenherepog");
             cfg.addDefault("spotify.client.id", "yourspotifyclientid");
             cfg.addDefault("spotify.client.secret", "yourspotifyclientsecret");
             cfg.addDefault("twitch.client.id", "yourtwitchclientidhere");
