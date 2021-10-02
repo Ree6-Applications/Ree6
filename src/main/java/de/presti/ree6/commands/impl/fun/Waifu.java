@@ -3,6 +3,7 @@ package de.presti.ree6.commands.impl.fun;
 import de.presti.ree6.api.JSONApi;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -32,7 +33,7 @@ public class Waifu extends Command {
         if((js.has("nsfw") && js.getBoolean("nsfw"))) {
             em.addField("**NSFW**", "", true);
         }
-        em.setFooter(sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
+        em.setFooter(sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
 
         sendMessage(em, m, hook);
     }

@@ -74,7 +74,7 @@ public class Stats extends Command {
         em.addField("**Top Commands**", end.toString(), true);
         em.addField("**Overall Top Commands**", end2.toString(), true);
 
-        em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
+        em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
 
         sendMessage(em, m, hook);
 

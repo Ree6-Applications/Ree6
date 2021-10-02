@@ -2,6 +2,7 @@ package de.presti.ree6.commands.impl.level;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -50,7 +51,7 @@ public class Leaderboards extends Command {
             em.addField("Error", "There arent any Top 3s", true);
         }
 
-        em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
+        em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
         sendMessage(em, m, hook);
     }
 

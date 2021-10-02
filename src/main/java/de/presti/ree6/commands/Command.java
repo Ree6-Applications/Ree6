@@ -1,5 +1,6 @@
 package de.presti.ree6.commands;
 
+import de.presti.ree6.main.Data;
 import de.presti.ree6.utils.Logger;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -79,10 +80,12 @@ public abstract class Command {
 
 
     public void sendMessage(EmbedBuilder msg, MessageChannel m, InteractionHook hook) {
+        msg.setFooter(Data.advertisement);
         if (hook == null) m.sendMessageEmbeds(msg.build()).queue(); else hook.sendMessageEmbeds(msg.build()).queue();
     }
 
     public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
+        msg.setFooter(Data.advertisement);
         if (hook == null) m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue(); else hook.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
     }
 

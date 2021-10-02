@@ -121,7 +121,7 @@ public class TrackScheduler extends AudioEventAdapter {
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("Next Song!\nSong: ``" + track.getInfo().title + "``");
-                em.setFooter(channel.getGuild().getName(), channel.getGuild().getIconUrl());
+                em.setFooter(channel.getGuild().getName() + " - " + Data.advertisement, channel.getGuild().getIconUrl());
 
                 Main.commandManager.sendMessage(em, 5, channel);
             }
@@ -146,7 +146,7 @@ public class TrackScheduler extends AudioEventAdapter {
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("Next Song!\nSong: ``" + track.getInfo().title + "``");
-                em.setFooter(channel.getGuild().getName(), channel.getGuild().getIconUrl());
+                em.setFooter(channel.getGuild().getName() + " - " + Data.advertisement, channel.getGuild().getIconUrl());
 
                 Main.commandManager.sendMessage(em, 5, channel);
             }
@@ -169,12 +169,11 @@ public class TrackScheduler extends AudioEventAdapter {
                 em.setColor(Color.RED);
                 em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: "
                         + endReason.name());
-                em.setFooter(thechannel.getGuild().getName(), thechannel.getGuild().getIconUrl());
+                em.setFooter(thechannel.getGuild().getName() + " - " + Data.advertisement, thechannel.getGuild().getIconUrl());
 
                 Main.commandManager.sendMessage(em, 5, thechannel);
 
                 nextTrack(thechannel);
-
             } else {
                 AudioTrack loopTrack = track.makeClone();
 
@@ -188,7 +187,7 @@ public class TrackScheduler extends AudioEventAdapter {
                     em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setColor(Color.RED);
                     em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: Track is not existing!");
-                    em.setFooter(thechannel.getGuild().getName(), thechannel.getGuild().getIconUrl());
+                    em.setFooter(thechannel.getGuild().getName() + " - " + Data.advertisement, thechannel.getGuild().getIconUrl());
 
                     Main.commandManager.sendMessage(em, 5, thechannel);
 
@@ -206,10 +205,9 @@ public class TrackScheduler extends AudioEventAdapter {
                     em.setColor(Color.RED);
                     em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: "
                             + endReason.name());
-                    em.setFooter(thechannel.getGuild().getName(), thechannel.getGuild().getIconUrl());
+                    em.setFooter(thechannel.getGuild().getName() + " - " + Data.advertisement, thechannel.getGuild().getIconUrl());
 
                     Main.commandManager.sendMessage(em, 5, thechannel);
-
                 }
                 nextRandomTrack(thechannel);
             }
@@ -224,10 +222,9 @@ public class TrackScheduler extends AudioEventAdapter {
                     em.setColor(Color.RED);
                     em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: "
                             + endReason.name());
-                    em.setFooter(thechannel.getGuild().getName(), thechannel.getGuild().getIconUrl());
+                    em.setFooter(thechannel.getGuild().getName() + " - " + Data.advertisement, thechannel.getGuild().getIconUrl());
 
                     Main.commandManager.sendMessage(em, 5, thechannel);
-
                 }
                 nextTrack(thechannel);
             }
@@ -257,6 +254,8 @@ public class TrackScheduler extends AudioEventAdapter {
             em.setColor(Color.RED);
             em.setDescription("Im not playing any Music!");
         }
+
+        em.setFooter(Data.advertisement);
         Main.commandManager.sendMessage(em, 5, thechannel);
     }
 }

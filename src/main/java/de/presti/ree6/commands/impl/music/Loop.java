@@ -34,7 +34,7 @@ public class Loop extends Command {
         em.setColor(Color.GREEN);
         em.setDescription(Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.loop ? "Song Loop has been activated!"
                 : "Song Loop has been deactivated!");
-        em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
+        em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
 
         sendMessage(em, 5, m, hook);
     }

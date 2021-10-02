@@ -3,6 +3,7 @@ package de.presti.ree6.commands.impl.info;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 
+import de.presti.ree6.main.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -39,7 +40,7 @@ public class Info extends Command {
                     em.addField("**Created Date**", target.getTimeCreated().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
                     em.addField("**Joined Date**", m.getGuild().getMember(target).getTimeJoined().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
 
-                    em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
+                    em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
 
                     sendMessage(em, m, hook);
                 }

@@ -142,14 +142,14 @@ public class Main {
                     lastDay = new SimpleDateFormat("dd").format(new Date());
                 }
 
-                for (Map.Entry<Long, GuildMusicManager> entry : musicWorker.musicManagers.entrySet()) {
-
-                    GuildMusicManager gmm = entry.getValue();
+                for (Guild g : BotInfo.botInstance.getGuilds()) {
+                    GuildMusicManager gmm = musicWorker.getGuildAudioPlayer(g);
 
                     if (musicWorker.isConnected(gmm.guild) && (gmm.player.getPlayingTrack() == null || gmm.player.isPaused())) {
                         gmm.scheduler.stopAll();
                     }
                 }
+
                 try {
                     Thread.sleep((10 * (60000L)));
                 } catch (InterruptedException ignore) {

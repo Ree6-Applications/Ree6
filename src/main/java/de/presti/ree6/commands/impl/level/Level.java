@@ -2,6 +2,7 @@ package de.presti.ree6.commands.impl.level;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -55,7 +56,7 @@ public class Level extends Command {
                     em.addBlankField(true);
                     em.addField("Voice XP", getFormattedXP(Main.sqlWorker.getXPVC(m.getGuild().getId(), sender.getUser().getId())) + "",true);
 
-                    em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
+                    em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
 
                     sendMessage(em, m, hook);
 
@@ -91,7 +92,7 @@ public class Level extends Command {
                     em.addBlankField(true);
                     em.addField("Voice XP", getFormattedXP(Main.sqlWorker.getXPVC(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId())) + "",true);
 
-                    em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
+                    em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
 
                     sendMessage(em, m, hook);
                 }

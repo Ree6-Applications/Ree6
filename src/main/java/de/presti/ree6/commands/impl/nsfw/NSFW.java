@@ -2,6 +2,7 @@ package de.presti.ree6.commands.impl.nsfw;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.main.Data;
 import de.presti.ree6.utils.Neko4JsAPI;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -17,7 +18,7 @@ import java.util.Random;
 
 public class NSFW extends Command {
 
-    private final String[] tags = new String[] { "solog", "smallboobs", "solo", "cum", "les", "bj", "pwankg", "tits", "nsfw_neko_gif", "cum_jpg", "blowjob", "boobs", "pussy_jpg", "anal", "futanari"};
+    private final String[] tags = new String[] { "solo", "cum", "les", "bj", "tits", "nsfw_neko_gif", "cum_jpg", "blowjob", "boobs", "pussy_jpg", "anal" };
 
     public NSFW() {
         super("nsfw", "Get NSFW Images from neko.life", Category.NSFW, new String[] { "givensfw"});
@@ -33,7 +34,7 @@ public class NSFW extends Command {
             EmbedBuilder em = new EmbedBuilder();
 
             em.setImage((im.getUrl() != null ? im.getUrl() : "https://images.ree6.de/notfound.png"));
-            em.setFooter(sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
+            em.setFooter(sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
 
             sendMessage(em, m, hook);
         } else {

@@ -5,6 +5,7 @@ import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 
+import de.presti.ree6.main.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -42,7 +43,7 @@ public class MemeImage extends Command {
             em.setDescription("Couldn't get the Image!");
         }
 
-        em.setFooter("Requested by " + sender.getUser().getAsTag(), sender.getUser().getAvatarUrl());
+        em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
         sendMessage(em, m, hook);
 
     }

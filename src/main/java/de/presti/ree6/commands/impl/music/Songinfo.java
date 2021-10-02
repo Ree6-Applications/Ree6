@@ -39,7 +39,7 @@ public class Songinfo extends Command {
         em.setColor(Color.GREEN);
         em.setDescription(Main.musicWorker.getGuildAudioPlayer(m.getGuild()).player.getPlayingTrack() == null ? "No Song is being played right now!" : "**Song:** ```"
                 + Main.musicWorker.getGuildAudioPlayer(m.getGuild()).player.getPlayingTrack().getInfo().title + " by " + Main.musicWorker.getGuildAudioPlayer(m.getGuild()).player.getPlayingTrack().getInfo().author + "```");
-        em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
+        em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
 
         sendMessage(em, 5, m, hook);
     }

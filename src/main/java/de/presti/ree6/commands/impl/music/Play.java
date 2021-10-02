@@ -39,7 +39,7 @@ public class Play extends Command {
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setColor(Color.GREEN);
             em.setDescription("Usage: ree!play (Url)");
-            em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
+            em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
             sendMessage(em, 5, m, hook);
         } else {
             if (Main.musicWorker.isConnectedMember(sender, m.getGuild())) {
@@ -87,7 +87,7 @@ public class Play extends Command {
                         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                         em.setColor(Color.GREEN);
                         em.setDescription("We couldn't find ``" + loadfailed.size() + "`` Songs!");
-                        em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
+                        em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
                         sendMessage(em, 5, m, hook);
                     }
                 }
@@ -107,7 +107,7 @@ public class Play extends Command {
                     em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setColor(Color.GREEN);
                     em.setDescription("A Song with the Name ``" + search + "`` couldn't be found!");
-                    em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
+                    em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
                     sendMessage(em, 5, m, hook);
                 } else {
                     Main.musicWorker.loadAndPlay(m, ytResult);

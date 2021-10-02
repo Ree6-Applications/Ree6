@@ -34,7 +34,7 @@ public class Shuffle extends Command {
         em.setColor(Color.GREEN);
         em.setDescription(Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.shuffle ? "Song Shuffle has been activated!"
                 : "Song Shuffle has been deactivated!");
-        em.setFooter(m.getGuild().getName(), m.getGuild().getIconUrl());
+        em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
 
         sendMessage(em, 5, m, hook);
     }
