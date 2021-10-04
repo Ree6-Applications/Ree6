@@ -3,7 +3,10 @@ package de.presti.ree6.music;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
 import java.nio.Buffer;
+
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
+import net.dv8tion.jda.api.entities.Guild;
 
 import java.nio.ByteBuffer;
 
@@ -38,6 +41,10 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
     // flip to make it a read buffer
     ((Buffer) buffer).flip();
     return buffer;
+  }
+  public boolean isMusicPlaying(Guild g)
+  {
+    return g.getSelfMember().getVoiceState().inVoiceChannel() && audioPlayer.getPlayingTrack()!=null;
   }
 
   @Override

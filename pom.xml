@@ -11,9 +11,8 @@
 
     <repositories>
         <repository>
-            <name>jcenter</name>
-            <id>bintray-jcenter</id>
-            <url>https://jcenter.bintray.com</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
         <repository>
             <id>dv8tion</id>
@@ -21,8 +20,9 @@
             <url>https://m2.dv8tion.net/releases</url>
         </repository>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
+            <name>jcenter</name>
+            <id>bintray-jcenter</id>
+            <url>https://jcenter.bintray.com</url>
         </repository>
     </repositories>
 
@@ -67,18 +67,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.11.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sedmelluq</groupId>
-            <artifactId>lava-common</artifactId>
-            <version>1.1.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sedmelluq</groupId>
-            <artifactId>lavaplayer-natives</artifactId>
-            <version>1.2.55</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -145,11 +133,6 @@
             <version>1.7.2</version>
         </dependency>
         <dependency>
-            <groupId>com.sedmelluq</groupId>
-            <artifactId>lavaplayer</artifactId>
-            <version>1.3.78</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.twitch4j</groupId>
             <artifactId>twitch4j</artifactId>
             <version>1.5.0</version>
@@ -158,6 +141,46 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.5</version>
+        </dependency>
+        <!-- using a fork of this to fix some issues faster -->
+        <!-- dependency>
+            <groupId>com.sedmelluq</groupId>
+            <artifactId>lavaplayer</artifactId>
+            <version>1.3.78</version>
+        </dependency -->
+        <dependency>
+            <groupId>com.github.jagrosh</groupId>
+            <artifactId>lavaplayer</artifactId>
+            <version>-SNAPSHOT</version>
+        </dependency>
+        <!-- this is needed, but isn't actually hosted anywhere anymore... uh -->
+        <!--dependency>
+            <groupId>com.sedmelluq</groupId>
+            <artifactId>lavaplayer-natives-extra</artifactId>
+            <version>1.3.13</version>
+        </dependency-->
+        <dependency>
+            <groupId>com.jagrosh</groupId>
+            <artifactId>jda-utilities</artifactId>
+            <version>3.0.5</version>
+            <type>pom</type>
+        </dependency>
+        <!-- jitpack for now, we need to version this correctly later -->
+        <dependency>
+            <groupId>com.github.jagrosh</groupId>
+            <artifactId>JLyrics</artifactId>
+            <version>-SNAPSHOT</version>
+        </dependency>
+        <!--dependency>
+            <groupId>com.jagrosh</groupId>
+            <artifactId>JLyrics</artifactId>
+            <version>0.6</version>
+        </dependency-->
+        <dependency>
+            <groupId>com.sedmelluq</groupId>
+            <artifactId>lava-common</artifactId>
+            <version>1.1.2</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
