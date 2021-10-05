@@ -22,7 +22,7 @@ public class Disconnect extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        if (Main.musicWorker.getGuildAudioPlayer(m.getGuild()) != null) {
+        if (Main.musicWorker.getGuildAudioPlayer(m.getGuild()) != null && Main.musicWorker.getGuildAudioPlayer(m.getGuild()).getSendHandler().isMusicPlaying(m.getGuild())) {
             Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.stopAll();
         } else {
             EmbedBuilder em = new EmbedBuilder();

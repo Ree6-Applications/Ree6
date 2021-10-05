@@ -31,9 +31,9 @@ public class Lyrics extends Command {
 
         if (sendingHandler.isMusicPlaying(m.getGuild())) {
             GuildMusicManager gmm = Main.musicWorker.getGuildAudioPlayer(m.getGuild());
-            String title = gmm.player.getPlayingTrack().getInfo().title.replaceAll("(Offical Music Video)", "").replaceAll("(Offical Video)", "")
-                    .replaceAll("(Music Video)", "").replaceAll("(Offical Music)", "").replaceAll("(Offical Lyrics)", "")
-                    .replaceAll("(Lyrics)", "");
+            String title = gmm.player.getPlayingTrack().getInfo().title.replace("(Official Music Video)", "").replace("(Official Video)", "")
+                    .replace("(Music Video)", "").replace("(Official Music)", "").replace("(Official Lyrics)", "")
+                    .replace("(Lyrics)", "");
 
             client.getLyrics(title).thenAccept(lyrics -> {
 
@@ -41,7 +41,7 @@ public class Lyrics extends Command {
                     m.sendMessageEmbeds(new EmbedBuilder().setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
                                     BotInfo.botInstance.getSelfUser().getAvatarUrl()).setTitle("Music Player!")
                             .setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl()).setColor(Color.RED)
-                            .setDescription("Couldn't find the wanted Lyrics.")
+                            .setDescription("Couldn't find the Lyrics for ``" + title + "``.")
                             .setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl()).build())
                             .delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
                     return;

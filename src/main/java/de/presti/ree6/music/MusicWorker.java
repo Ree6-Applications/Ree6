@@ -242,6 +242,7 @@ public class MusicWorker {
 
     public void disconnect(Guild g) {
         g.getAudioManager().closeAudioConnection();
+
     }
 
     public boolean isConnectedMember(Member m) {

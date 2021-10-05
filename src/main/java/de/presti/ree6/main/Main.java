@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -68,7 +69,7 @@ public class Main {
         twitchAPIHandler.registerTwitchLive();
 
         try {
-            BotUtil.createBot(BotVersion.DEV, "1.5.0");
+            BotUtil.createBot(BotVersion.PRERELASE, "1.5.0");
             musicWorker = new MusicWorker();
             instance.addEvents();
 
@@ -143,22 +144,26 @@ public class Main {
                     lastDay = new SimpleDateFormat("dd").format(new Date());
                 }
 
-                for (Guild g : BotInfo.botInstance.getGuilds()) {
+                for (Guild g : BotInfo.botInstance.getGuilds().stream().filter(guild -> guild.getAudioManager().getSendingHandler() != null
+                        && guild.getSelfMember().getVoiceState() != null &&
+                        guild.getSelfMember().getVoiceState().inVoiceChannel()).collect(Collectors.toList())) {
                     GuildMusicManager gmm = musicWorker.getGuildAudioPlayer(g);
 
                     try {
                         AudioPlayerSendHandler playerSendHandler = (AudioPlayerSendHandler) g.getAudioManager().getSendingHandler();
 
-                        if ((playerSendHandler == null && g.getAudioManager().getSendingHandler() == null) || (playerSendHandler != null && playerSendHandler.isMusicPlaying(g) && (gmm.player.getPlayingTrack() == null || gmm.player.isPaused()))) {
+                        if (g.getSelfMember().getVoiceState() != null && g.getSelfMember().getVoiceState().inVoiceChannel() && !playerSendHandler.isMusicPlaying(g)) {
                             gmm.scheduler.stopAll();
                         }
+
                     } catch (Exception ex) {
                         gmm.scheduler.stopAll();
+                        ex.printStackTrace();
                     }
                 }
 
                 try {
-                    Thread.sleep((10 * (60000L)));
+                    Thread.sleep((1 * (60000L)));
                 } catch (InterruptedException ignore) {
                 }
             }
