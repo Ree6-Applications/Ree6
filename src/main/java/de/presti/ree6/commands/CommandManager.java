@@ -56,6 +56,7 @@ public class CommandManager {
 
         //Music
         addCommand(new Songinfo());
+        addCommand(new Lyrics());
         addCommand(new Play());
         addCommand(new Pause());
         addCommand(new Resume());

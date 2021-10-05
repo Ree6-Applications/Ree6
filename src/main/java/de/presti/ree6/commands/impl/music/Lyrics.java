@@ -1,8 +1,10 @@
 package de.presti.ree6.commands.impl.music;
 
 import com.jagrosh.jlyrics.LyricsClient;
+import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.music.AudioPlayerSendHandler;
 import de.presti.ree6.music.GuildMusicManager;
@@ -11,6 +13,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+
+import java.awt.*;
+import java.util.concurrent.TimeUnit;
 
 public class Lyrics extends Command {
 
@@ -23,12 +28,22 @@ public class Lyrics extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook interactionHook) {
         AudioPlayerSendHandler sendingHandler = (AudioPlayerSendHandler) m.getGuild().getAudioManager().getSendingHandler();
+
         if (sendingHandler.isMusicPlaying(m.getGuild())) {
             GuildMusicManager gmm = Main.musicWorker.getGuildAudioPlayer(m.getGuild());
-            String title = gmm.player.getPlayingTrack().getInfo().title;
+            String title = gmm.player.getPlayingTrack().getInfo().title.replaceAll("(Offical Music Video)", "").replaceAll("(Offical Video)", "")
+                    .replaceAll("(Music Video)", "").replaceAll("(Offical Music)", "").replaceAll("(Offical Lyrics)", "")
+                    .replaceAll("(Lyrics)", "");
 
             client.getLyrics(title).thenAccept(lyrics -> {
+
                 if (lyrics == null) {
+                    m.sendMessageEmbeds(new EmbedBuilder().setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
+                                    BotInfo.botInstance.getSelfUser().getAvatarUrl()).setTitle("Music Player!")
+                            .setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl()).setColor(Color.RED)
+                            .setDescription("Couldn't find the wanted Lyrics.")
+                            .setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl()).build())
+                            .delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
                     return;
                 }
 

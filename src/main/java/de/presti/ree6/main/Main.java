@@ -11,6 +11,7 @@ import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.logger.LoggerQueue;
+import de.presti.ree6.music.AudioPlayerSendHandler;
 import de.presti.ree6.music.GuildMusicManager;
 import de.presti.ree6.music.MusicWorker;
 import de.presti.ree6.sql.SQLConnector;
@@ -67,7 +68,7 @@ public class Main {
         twitchAPIHandler.registerTwitchLive();
 
         try {
-            BotUtil.createBot(BotVersion.PRERELASE, "1.5.0");
+            BotUtil.createBot(BotVersion.DEV, "1.5.0");
             musicWorker = new MusicWorker();
             instance.addEvents();
 
@@ -145,7 +146,13 @@ public class Main {
                 for (Guild g : BotInfo.botInstance.getGuilds()) {
                     GuildMusicManager gmm = musicWorker.getGuildAudioPlayer(g);
 
-                    if (musicWorker.isConnected(gmm.guild) && (gmm.player.getPlayingTrack() == null || gmm.player.isPaused())) {
+                    try {
+                        AudioPlayerSendHandler playerSendHandler = (AudioPlayerSendHandler) g.getAudioManager().getSendingHandler();
+
+                        if ((playerSendHandler == null && g.getAudioManager().getSendingHandler() == null) || (playerSendHandler != null && playerSendHandler.isMusicPlaying(g) && (gmm.player.getPlayingTrack() == null || gmm.player.isPaused()))) {
+                            gmm.scheduler.stopAll();
+                        }
+                    } catch (Exception ex) {
                         gmm.scheduler.stopAll();
                     }
                 }

@@ -42,7 +42,7 @@ public class Play extends Command {
             em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
             sendMessage(em, 5, m, hook);
         } else {
-            if (Main.musicWorker.isConnectedMember(sender, m.getGuild())) {
+            if (Main.musicWorker.isConnectedMember(sender)) {
                 ArrayUtil.botJoin.remove(m.getGuild());
                 ArrayUtil.botJoin.put(m.getGuild(), sender);
             }

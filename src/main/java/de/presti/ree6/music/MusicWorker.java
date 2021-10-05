@@ -237,19 +237,14 @@ public class MusicWorker {
     }
 
     public boolean isConnected(Guild g) {
-        return g.getAudioManager().isConnected() || isConnectedMember(g.getSelfMember(), g);
+        return g != null && g.getAudioManager().isConnected() || isConnectedMember(g.getSelfMember());
     }
 
     public void disconnect(Guild g) {
         g.getAudioManager().closeAudioConnection();
     }
 
-    public boolean isConnectedMember(Member m, Guild g) {
-        for (VoiceChannel vc : g.getVoiceChannels()) {
-            if (vc.getMembers().contains(m)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isConnectedMember(Member m) {
+        return m != null && m.getVoiceState() != null && m.getVoiceState().inVoiceChannel();
     }
 }
