@@ -94,6 +94,8 @@ public class LoggerQueue {
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE) {
+                //TODO rework
+
                 if(lm.getGuild() != null) {
                     if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE).filter(loggerMessage -> loggerMessage != lm).filter(loggerMessage -> !loggerMessage.isCancel()).count() > 0) {
                         String oldName = ((LoggerMessage)(getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE).filter(loggerMessage -> !loggerMessage.isCancel()).toArray()[0])).getNickname2();
@@ -119,6 +121,9 @@ public class LoggerQueue {
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE) {
+
+                //TODO rework.
+
                 if (lm.getGuild() != null) {
                     if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).filter(loggerMessage -> loggerMessage != lm).filter(loggerMessage -> !loggerMessage.isCancel()).count() > 0) {
                         LoggerMessage.RoleData currentRoleData = lm.getRoleData();
