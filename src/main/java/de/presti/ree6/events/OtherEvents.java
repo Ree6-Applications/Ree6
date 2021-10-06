@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -96,6 +97,16 @@ public class OtherEvents extends ListenerAdapter {
 
         }
         super.onGuildVoiceLeave(event);
+    }
+
+    @Override
+    public void onGuildVoiceGuildDeafen(@NotNull GuildVoiceGuildDeafenEvent event) {
+        if (event.getMember() != event.getGuild().getSelfMember())
+            return;
+
+        if (!event.isGuildDeafened()) {
+            event.getMember().deafen(true).queue();
+        }
     }
 
     @Override

@@ -163,7 +163,7 @@ public class Main {
                 }
 
                 try {
-                    Thread.sleep((1 * (60000L)));
+                    Thread.sleep((10 * (60000L)));
                 } catch (InterruptedException ignore) {
                 }
             }

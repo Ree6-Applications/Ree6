@@ -110,6 +110,10 @@ public class MusicWorker {
     public void loadAndPlay(final TextChannel channel, final String trackUrl) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
+        if (channel.getGuild().getSelfMember().getVoiceState() == null || (channel.getGuild().getSelfMember().getVoiceState() != null && !channel.getGuild().getSelfMember().getVoiceState().isGuildDeafened())) {
+            channel.getGuild().getSelfMember().deafen(true).queue();
+        }
+
         musicManager.scheduler.thechannel = channel;
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
