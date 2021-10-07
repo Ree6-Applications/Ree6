@@ -29,7 +29,6 @@ public class LoggerQueue {
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
-            we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(lm.getGuild().getName(), lm.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
@@ -42,6 +41,8 @@ public class LoggerQueue {
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_LEAVE).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
                         temp = true;
+
+                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
                         we.setDescription(lm.getM().getUser().getAsMention() + " **rejoined the Voicechannel** ``" + lm.getVc().getName() + "``");
                     } else {
                         temp = true;
@@ -54,6 +55,8 @@ public class LoggerQueue {
                                 && loggerMessage != lm && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
                         temp = true;
+
+                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
                         we.setDescription(lm.getM().getUser().getAsMention() + " **moved through many Voicechannels and is now in** ``" + lm.getVc().getName() + "``");
                     }
                 }
@@ -64,6 +67,8 @@ public class LoggerQueue {
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_JOIN && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
                         temp = true;
+
+                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
                         we.setDescription(lm.getM().getUser().getAsMention() + " **joined and left the Voicechannel** ``" + lm.getVc().getName() + "``");
                     } else {
                         temp = true;
@@ -79,8 +84,6 @@ public class LoggerQueue {
 
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
                                 && loggerMessage != lm && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
-
-                        // TODO rework this upper part. Update detection part.
 
                         lm.setNickname2(oldName);
 
@@ -98,7 +101,7 @@ public class LoggerQueue {
                         LoggerMessage.RoleData oldRoleData = ((LoggerMessage) (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).filter(loggerMessage -> loggerMessage != lm).filter(loggerMessage -> !loggerMessage.isCancel()).filter(loggerMessage -> loggerMessage.getRoleData().getId().equalsIgnoreCase(currentRoleData.getId())).toArray()[0])).getRoleData();
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).filter(loggerMessage -> loggerMessage != lm).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
-                        //TODO rework this part.
+                        //TODO rework this whole data merge.
 
                         if (oldRoleData != null && oldRoleData.getOldName() != null) {
                             currentRoleData.setOldName(oldRoleData.getOldName());
@@ -131,9 +134,8 @@ public class LoggerQueue {
                             currentRoleData.setMention(oldRoleData.isMention());
                         }
 
-                        //TODO rework this upper part too.
-
                         lm.setRoleData(currentRoleData);
+                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getGuild().getName(), lm.getGuild().getIconUrl(), null));
 
                         if (currentRoleData != null && !currentRoleData.isCreated() && !currentRoleData.isDelete()) {
                             temp = true;

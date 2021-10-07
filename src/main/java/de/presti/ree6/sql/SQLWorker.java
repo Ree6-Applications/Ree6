@@ -230,6 +230,7 @@ public class SQLWorker {
                     st = Main.sqlConnector.con.prepareStatement("SELECT * FROM LogWebhooks WHERE GID='" + gid + "'");
                     rs = st.executeQuery("SELECT * FROM LogWebhooks WHERE GID='" + gid + "'");
                 } catch (Exception ignore) {
+                    return new String[]{ "0", "Not setuped!" };
                 }
 
                 if (rs != null && rs.next()) {
@@ -243,13 +244,35 @@ public class SQLWorker {
                     }
                     return new String[]{ cid, token };
                 }
-
             } catch (Exception ignore) {
+                return new String[]{ "0", "Not setuped!" };
             }
         }
         return new String[]{ "0", "Not setuped!" };
     }
 
+    public void deleteLogWebhook(long cid, String token) {
+        if (isWebhookLogDataInDB(cid, token)) {
+            Main.sqlConnector.query("DELETE FROM LogWebhooks WHERE CID='" + cid + "' AND TOKEN='" + token + "'");
+        }
+    }
+
+    public boolean isWebhookLogDataInDB(long cid, String token) {
+        try {
+            PreparedStatement st;
+            ResultSet rs = null;
+
+            try {
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM LogWebhooks WHERE CID='" + cid + "' AND TOKEN='" + token + "'");
+                rs = st.executeQuery("SELECT * FROM LogWebhooks WHERE CID='" + cid + "' AND TOKEN='" + token + "'");
+            } catch (Exception ignore) {
+            }
+
+            return rs != null && rs.next();
+        } catch (Exception ignore) {
+        }
+        return false;
+    }
 
     //Welcome
 
@@ -598,6 +621,7 @@ public class SQLWorker {
     }
 
     public void deleteAllMyData(String gid) {
+        // TODO add the newer Tables
         Main.sqlConnector.query("DELETE FROM Invites WHERE GID='" + gid + "'");
         Main.sqlConnector.query("DELETE FROM AutoRoles WHERE GID='" + gid + "'");
         Main.sqlConnector.query("DELETE FROM WelcomeWebhooks WHERE GID='" + gid + "'");
