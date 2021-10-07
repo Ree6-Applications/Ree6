@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.entities.Guild;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Main {

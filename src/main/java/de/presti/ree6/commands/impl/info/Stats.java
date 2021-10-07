@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl.info;
 
+import com.sun.management.OperatingSystemMXBean;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
@@ -15,6 +16,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
+import java.lang.management.ManagementFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -57,6 +59,12 @@ public class Stats extends Command {
         em.addField("**Network Stats:**", "", true);
         em.addField("**Response Time**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);
         em.addField("**System Date**" , new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
+
+        if (sender.getId().equalsIgnoreCase("321580743488831490")) {
+            em.addField("**Server Stats:**", "", true);
+            em.addField("**Ram Usage:**", String.format("%.2f GB / %.2f GB", ((Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory()) / 1e+9), (Runtime.getRuntime().maxMemory() / 1e+9)), true);
+            em.addField("**CPU Usage:**", String.format("%.2f", ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getProcessCpuLoad() * 100) + "%", true);
+        }
 
         StringBuilder end = new StringBuilder();
 
