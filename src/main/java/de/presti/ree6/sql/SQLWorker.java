@@ -233,7 +233,15 @@ public class SQLWorker {
                 }
 
                 if (rs != null && rs.next()) {
-                    return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
+                    String cid = rs.getString("CID"), token = rs.getString("TOKEN");
+                    if (cid.isEmpty()) {
+                        cid = "0";
+                    }
+
+                    if (token.isEmpty()) {
+                        token = "Not setuped!";
+                    }
+                    return new String[]{ cid, token };
                 }
 
             } catch (Exception ignore) {
