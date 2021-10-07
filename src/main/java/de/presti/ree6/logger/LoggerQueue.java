@@ -8,17 +8,10 @@ import de.presti.ree6.bot.Webhook;
 import de.presti.ree6.utils.Logger;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.utils.TimeFormat;
 
 import java.awt.Color;
-import java.lang.reflect.Array;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 
 public class LoggerQueue {
     final ArrayList<LoggerMessage> logs = new ArrayList<>();
@@ -50,11 +43,13 @@ public class LoggerQueue {
 
                         temp = true;
                         we.setDescription(lm.getM().getUser().getAsMention() + " **rejoined the Voicechannel** ``" + lm.getVc().getName() + "``");
+                    } else {
+                        temp = true;
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.VC_MOVE) {
                 if(lm.getGuild() != null) {
-                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()).count() > 0) {
+                    if (getLogsByGuild(lm.getGuild()).stream().anyMatch(loggerMessage -> loggerMessage.getType() == lm.getType() && loggerMessage != lm && !loggerMessage.isCancel())) {
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
                                 && loggerMessage != lm && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
@@ -70,6 +65,8 @@ public class LoggerQueue {
 
                         temp = true;
                         we.setDescription(lm.getM().getUser().getAsMention() + " **joined and left the Voicechannel** ``" + lm.getVc().getName() + "``");
+                    } else {
+                        temp = true;
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE) {
@@ -89,6 +86,8 @@ public class LoggerQueue {
 
                         temp = true;
                         we.setDescription("The Nickname of " + lm.getM().getAsMention() + " has been changed.\n**New Nickname:**\n" + lm.getM().getNickname() + "\n**Old Nickname:**\n" + (oldName != null ? oldName : lm.getM().getUser().getName()));
+                    } else {
+                        temp = true;
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE) {
@@ -206,6 +205,8 @@ public class LoggerQueue {
                                 we.setDescription(":family_mmb: ``" + currentRoleData.getOldName() + "`` **has been deleted.**");
                             }
                         }
+                    } else {
+                        temp = true;
                     }
                 }
             }/* else if(lm.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE) {
@@ -284,7 +285,7 @@ public class LoggerQueue {
 
             if (lm.getType() != LoggerMessage.LogTyp.ELSE) lm.setWem(wm.build());
 
-            if (!temp) {
+            if (!temp && lm.getType() != LoggerMessage.LogTyp.ELSE) {
                 Logger.log("LoggerQueue", "Failed to log LogTyp: " + lm.getType().name());
             }
 
