@@ -27,102 +27,74 @@ public class LoggerQueue {
         if(!logs.contains(lm)) {
             logs.add(lm);
 
+            boolean temp = false;
+
+            WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+            wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            wm.setUsername("Ree6Logs");
+
+            WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+            we.setColor(Color.BLACK.getRGB());
+            we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
+            we.setFooter(new WebhookEmbed.EmbedFooter(lm.getGuild().getName(), lm.getGuild().getIconUrl()));
+            we.setTimestamp(Instant.now());
+
+            we.setDescription("This is a invalid Body. BodyTyp: " + lm.getType().name());
+
             if(lm.getType() == LoggerMessage.LogTyp.VC_JOIN) {
                 if(lm.getGuild() != null) {
-                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_LEAVE).count() > 0) {
+                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_LEAVE
+                            && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_LEAVE).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
-                        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-                        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                        wm.setUsername("Ree6Logs");
-
-                        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-                        we.setColor(Color.BLACK.getRGB());
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
-                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getGuild().getName(), lm.getGuild().getIconUrl()));
-                        we.setTimestamp(Instant.now());
+                        temp = true;
                         we.setDescription(lm.getM().getUser().getAsMention() + " **rejoined the Voicechannel** ``" + lm.getVc().getName() + "``");
-
-                        wm.addEmbeds(we.build());
-
-                        lm.setWem(wm.build());
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.VC_MOVE) {
                 if(lm.getGuild() != null) {
-                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_MOVE).count() > 0) {
-                        getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_MOVE).filter(loggerMessage -> loggerMessage != lm).forEach(loggerMessage -> loggerMessage.setCancel(true));
+                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()).count() > 0) {
+                        getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
+                                && loggerMessage != lm && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
-                        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-                        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                        wm.setUsername("Ree6Logs");
-
-                        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-                        we.setColor(Color.BLACK.getRGB());
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
-                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getGuild().getName(), lm.getGuild().getIconUrl()));
-                        we.setTimestamp(Instant.now());
+                        temp = true;
                         we.setDescription(lm.getM().getUser().getAsMention() + " **moved through many Voicechannels and is now in** ``" + lm.getVc().getName() + "``");
-
-                        wm.addEmbeds(we.build());
-
-                        lm.setWem(wm.build());
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.VC_LEAVE) {
                 if(lm.getGuild() != null) {
-                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_JOIN).count() > 0) {
-                        getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_JOIN).forEach(loggerMessage -> loggerMessage.setCancel(true));
+                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_JOIN
+                            && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
+                        getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_JOIN && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
-                        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-                        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                        wm.setUsername("Ree6Logs");
-
-                        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-                        we.setColor(Color.BLACK.getRGB());
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
-                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getGuild().getName(), lm.getGuild().getIconUrl()));
-                        we.setTimestamp(Instant.now());
+                        temp = true;
                         we.setDescription(lm.getM().getUser().getAsMention() + " **joined and left the Voicechannel** ``" + lm.getVc().getName() + "``");
-
-                        wm.addEmbeds(we.build());
-
-                        lm.setWem(wm.build());
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE) {
                 if(lm.getGuild() != null) {
-                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE).filter(loggerMessage -> loggerMessage != lm).filter(loggerMessage -> !loggerMessage.isCancel()).count() > 0) {
-                        String oldName = ((LoggerMessage)(getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE).filter(loggerMessage -> !loggerMessage.isCancel()).toArray()[0])).getNickname2();
-                        getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE).filter(loggerMessage -> loggerMessage != lm).forEach(loggerMessage -> loggerMessage.setCancel(true));
+                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
+                            && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
 
-                        // TODO rework this upper part.
+                        String oldName = getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE
+                                && loggerMessage != lm && !loggerMessage.isCancel()).findFirst().get().getNickname2();
+
+                        getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
+                                && loggerMessage != lm && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
+
+                        // TODO rework this upper part. Update detection part.
 
                         lm.setNickname2(oldName);
 
-                        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-                        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                        wm.setUsername("Ree6Logs");
-
-                        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-                        we.setColor(Color.BLACK.getRGB());
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
-                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getGuild().getName(), lm.getGuild().getIconUrl()));
-                        we.setTimestamp(Instant.now());
+                        temp = true;
                         we.setDescription("The Nickname of " + lm.getM().getAsMention() + " has been changed.\n**New Nickname:**\n" + lm.getM().getNickname() + "\n**Old Nickname:**\n" + (oldName != null ? oldName : lm.getM().getUser().getName()));
-
-                        wm.addEmbeds(we.build());
-
-                        lm.setWem(wm.build());
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE) {
                 if (lm.getGuild() != null) {
-                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).filter(loggerMessage -> loggerMessage != lm).filter(loggerMessage -> !loggerMessage.isCancel()).count() > 0) {
+                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
+                            && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
                         LoggerMessage.RoleData currentRoleData = lm.getRoleData();
                         LoggerMessage.RoleData oldRoleData = ((LoggerMessage) (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).filter(loggerMessage -> loggerMessage != lm).filter(loggerMessage -> !loggerMessage.isCancel()).filter(loggerMessage -> loggerMessage.getRoleData().getId().equalsIgnoreCase(currentRoleData.getId())).toArray()[0])).getRoleData();
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).filter(loggerMessage -> loggerMessage != lm).forEach(loggerMessage -> loggerMessage.setCancel(true));
@@ -164,44 +136,32 @@ public class LoggerQueue {
 
                         lm.setRoleData(currentRoleData);
 
-                        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-                        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                        wm.setUsername("Ree6Logs");
-
-                        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-                        we.setColor(Color.BLACK.getRGB());
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getGuild().getName(), lm.getGuild().getIconUrl(), null));
-                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getGuild().getName(), lm.getGuild().getIconUrl()));
-                        we.setTimestamp(Instant.now());
-
                         if (currentRoleData != null && !currentRoleData.isCreated() && !currentRoleData.isDelete()) {
+                            temp = true;
                             we.setDescription(":family_mmb: ``" + currentRoleData.getOldName() + "`` **has been updated.**");
 
-                            boolean inline = true;
-
                             if (currentRoleData.getOldName() != null && currentRoleData.getNewName() != null) {
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**Old name**", currentRoleData.getOldName()));
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**New name**", currentRoleData.getNewName()));
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**", "**"));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", currentRoleData.getOldName()));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**New name**", currentRoleData.getNewName()));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
                             }
 
                             if (currentRoleData.isMentionChanged()) {
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**Old mentionable**", !currentRoleData.isMention() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**New mentionable**", currentRoleData.isMention() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**", "**"));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**Old mentionable**", !currentRoleData.isMention() + ""));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**New mentionable**", currentRoleData.isMention() + ""));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
                             }
 
                             if (currentRoleData.isHoistedChanged()) {
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**Old hoist**", !currentRoleData.isHoisted() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**New hoist**", currentRoleData.isHoisted() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**", "**"));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**Old hoist**", !currentRoleData.isHoisted() + ""));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**New hoist**", currentRoleData.isHoisted() + ""));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
                             }
 
                             if (currentRoleData.getOldColor() != null) {
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**Old color**", (currentRoleData.getOldColor() != null ? currentRoleData.getOldColor() : Color.gray).getRGB() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**New color**", (currentRoleData.getNewColor() != null ? currentRoleData.getNewColor() : Color.gray).getRGB() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**", "**"));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**Old color**", (currentRoleData.getOldColor() != null ? currentRoleData.getOldColor() : Color.gray).getRGB() + ""));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**New color**", (currentRoleData.getNewColor() != null ? currentRoleData.getNewColor() : Color.gray).getRGB() + ""));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
                             }
 
                             StringBuilder finalString = new StringBuilder();
@@ -234,19 +194,18 @@ public class LoggerQueue {
                                 }
                             }
 
-                            if (!finalString.toString().isEmpty())
-                                we.addField(new WebhookEmbed.EmbedField(inline, "**New permissions**", finalString.toString()));
+                            if (!finalString.toString().isEmpty()) {
+                                temp = true;
+                                we.addField(new WebhookEmbed.EmbedField(true, "**New permissions**", finalString.toString()));
+                            }
                         } else {
+                            temp = true;
                             if (currentRoleData != null && currentRoleData.isCreated()) {
                                 we.setDescription(":family_mmb: ``" + currentRoleData.getOldName() + "`` **has been created.**");
                             } else if (currentRoleData != null){
                                 we.setDescription(":family_mmb: ``" + currentRoleData.getOldName() + "`` **has been deleted.**");
                             }
                         }
-
-                        wm.addEmbeds(we.build());
-
-                        lm.setWem(wm.build());
                     }
                 }
             }/* else if(lm.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE) {
@@ -320,6 +279,14 @@ public class LoggerQueue {
                     }
                 }
             }*/
+
+            wm.addEmbeds(we.build());
+
+            if (lm.getType() != LoggerMessage.LogTyp.ELSE) lm.setWem(wm.build());
+
+            if (!temp) {
+                Logger.log("LoggerQueue", "Failed to log LogTyp: " + lm.getType().name());
+            }
 
             new Thread(() ->{
                 try {
