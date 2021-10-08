@@ -32,8 +32,6 @@ public class LoggerQueue {
             we.setFooter(new WebhookEmbed.EmbedFooter(lm.getGuild().getName(), lm.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
-            we.setDescription("This is a invalid Body. BodyTyp: " + lm.getType().name());
-
             if(lm.getType() == LoggerMessage.LogTyp.VC_JOIN) {
                 if(lm.getGuild() != null) {
                     if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_LEAVE
@@ -287,8 +285,9 @@ public class LoggerQueue {
 
             if (lm.getType() != LoggerMessage.LogTyp.ELSE) lm.setWem(wm.build());
 
-            if (!temp && lm.getType() != LoggerMessage.LogTyp.ELSE) {
+            if (!temp && lm.getType() != LoggerMessage.LogTyp.ELSE && lm.getType() != LoggerMessage.LogTyp.MEMBERROLE_CHANGE) {
                 Logger.log("LoggerQueue", "Failed to log LogTyp: " + lm.getType().name());
+                lm.setCancel(true);
             }
 
             new Thread(() ->{
