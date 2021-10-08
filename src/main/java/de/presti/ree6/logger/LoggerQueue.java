@@ -20,7 +20,7 @@ public class LoggerQueue {
         if(!logs.contains(lm)) {
             logs.add(lm);
 
-            boolean temp = false;
+            boolean changedMessage = false;
 
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -38,12 +38,12 @@ public class LoggerQueue {
                             && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_LEAVE).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
-                        temp = true;
+                        changedMessage = true;
 
                         we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
                         we.setDescription(lm.getM().getUser().getAsMention() + " **rejoined the Voicechannel** ``" + lm.getVc().getName() + "``");
                     } else {
-                        temp = true;
+                        changedMessage = true;
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.VC_MOVE) {
@@ -52,7 +52,7 @@ public class LoggerQueue {
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
                                 && loggerMessage != lm && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
-                        temp = true;
+                        changedMessage = true;
 
                         we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
                         we.setDescription(lm.getM().getUser().getAsMention() + " **moved through many Voicechannels and is now in** ``" + lm.getVc().getName() + "``");
@@ -64,12 +64,12 @@ public class LoggerQueue {
                             && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_JOIN && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
-                        temp = true;
+                        changedMessage = true;
 
                         we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
                         we.setDescription(lm.getM().getUser().getAsMention() + " **joined and left the Voicechannel** ``" + lm.getVc().getName() + "``");
                     } else {
-                        temp = true;
+                        changedMessage = true;
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE) {
@@ -85,10 +85,10 @@ public class LoggerQueue {
 
                         lm.setNickname2(oldName);
 
-                        temp = true;
+                        changedMessage = true;
                         we.setDescription("The Nickname of " + lm.getM().getAsMention() + " has been changed.\n**New Nickname:**\n" + lm.getM().getNickname() + "\n**Old Nickname:**\n" + (oldName != null ? oldName : lm.getM().getUser().getName()));
                     } else {
-                        temp = true;
+                        changedMessage = true;
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE) {
@@ -136,7 +136,7 @@ public class LoggerQueue {
                         we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getGuild().getName(), lm.getGuild().getIconUrl(), null));
 
                         if (currentRoleData != null && !currentRoleData.isCreated() && !currentRoleData.isDelete()) {
-                            temp = true;
+                            changedMessage = true;
                             we.setDescription(":family_mmb: ``" + currentRoleData.getOldName() + "`` **has been updated.**");
 
                             if (currentRoleData.getOldName() != null && currentRoleData.getNewName() != null) {
@@ -194,11 +194,11 @@ public class LoggerQueue {
                             }
 
                             if (!finalString.toString().isEmpty()) {
-                                temp = true;
+                                changedMessage = true;
                                 we.addField(new WebhookEmbed.EmbedField(true, "**New permissions**", finalString.toString()));
                             }
                         } else {
-                            temp = true;
+                            changedMessage = true;
                             if (currentRoleData != null && currentRoleData.isCreated()) {
                                 we.setDescription(":family_mmb: ``" + currentRoleData.getOldName() + "`` **has been created.**");
                             } else if (currentRoleData != null){
@@ -206,7 +206,7 @@ public class LoggerQueue {
                             }
                         }
                     } else {
-                        temp = true;
+                        changedMessage = true;
                     }
                 }
             }/* else if(lm.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE) {
@@ -283,9 +283,9 @@ public class LoggerQueue {
 
             wm.addEmbeds(we.build());
 
-            if (lm.getType() != LoggerMessage.LogTyp.ELSE) lm.setWem(wm.build());
+            if (lm.getType() != LoggerMessage.LogTyp.ELSE && changedMessage) lm.setWem(wm.build());
 
-            if (!temp && lm.getType() != LoggerMessage.LogTyp.ELSE && lm.getType() != LoggerMessage.LogTyp.MEMBERROLE_CHANGE) {
+            if (!changedMessage && lm.getType() != LoggerMessage.LogTyp.ELSE && lm.getType() != LoggerMessage.LogTyp.MEMBERROLE_CHANGE) {
                 Logger.log("LoggerQueue", "Failed to log LogTyp: " + lm.getType().name());
                 lm.setCancel(true);
             }
