@@ -42,8 +42,6 @@ public class LoggerQueue {
 
                         we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
                         we.setDescription(lm.getM().getUser().getAsMention() + " **rejoined the Voicechannel** ``" + lm.getVc().getName() + "``");
-                    } else {
-                        changedMessage = true;
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.VC_MOVE) {
@@ -68,8 +66,6 @@ public class LoggerQueue {
 
                         we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
                         we.setDescription(lm.getM().getUser().getAsMention() + " **joined and left the Voicechannel** ``" + lm.getVc().getName() + "``");
-                    } else {
-                        changedMessage = true;
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE) {
@@ -87,8 +83,6 @@ public class LoggerQueue {
 
                         changedMessage = true;
                         we.setDescription("The Nickname of " + lm.getM().getAsMention() + " has been changed.\n**New Nickname:**\n" + lm.getM().getNickname() + "\n**Old Nickname:**\n" + (oldName != null ? oldName : lm.getM().getUser().getName()));
-                    } else {
-                        changedMessage = true;
                     }
                 }
             } else if(lm.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE) {
@@ -205,8 +199,6 @@ public class LoggerQueue {
                                 we.setDescription(":family_mmb: ``" + currentRoleData.getOldName() + "`` **has been deleted.**");
                             }
                         }
-                    } else {
-                        changedMessage = true;
                     }
                 }
             }/* else if(lm.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE) {
@@ -284,11 +276,6 @@ public class LoggerQueue {
             wm.addEmbeds(we.build());
 
             if (lm.getType() != LoggerMessage.LogTyp.ELSE && changedMessage) lm.setWem(wm.build());
-
-            if (!changedMessage && lm.getType() != LoggerMessage.LogTyp.ELSE && lm.getType() != LoggerMessage.LogTyp.MEMBERROLE_CHANGE) {
-                Logger.log("LoggerQueue", "Failed to log LogTyp: " + lm.getType().name());
-                lm.setCancel(true);
-            }
 
             new Thread(() ->{
                 try {
