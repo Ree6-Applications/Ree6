@@ -21,7 +21,7 @@ public class AddonManager {
     }
 
     /**
-     * Reload the AddonManager by stopping every Addon and readding them.
+     * Reload the AddonManager by stopping every Addon and reading them.
      */
     public void reload() {
         stopAddons();
