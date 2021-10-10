@@ -4,6 +4,10 @@ import de.presti.ree6.main.Main;
 
 import java.util.ArrayList;
 
+/**
+ * Created to work faster with the ChatProtector without calling the SQLWorker everytime.
+ * Needs a revamp.
+ */
 public class ChatProtector {
 
 

@@ -8,18 +8,18 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.presti.ree6.bot.BotInfo;
-import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.utils.WidgetUtil;
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MusicWorker {
 
@@ -109,10 +109,6 @@ public class MusicWorker {
 
     public void loadAndPlay(final TextChannel channel, final String trackUrl) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
-
-        if (channel.getGuild().getSelfMember().getVoiceState() == null || (channel.getGuild().getSelfMember().getVoiceState() != null && !channel.getGuild().getSelfMember().getVoiceState().isGuildDeafened())) {
-            channel.getGuild().getSelfMember().deafen(true).queue();
-        }
 
         musicManager.scheduler.thechannel = channel;
 
@@ -220,28 +216,28 @@ public class MusicWorker {
     @SuppressWarnings("deprecation")
     public void connectToFirstVoiceChannel(AudioManager audioManager) {
         if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
-            for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
-                audioManager.openAudioConnection(voiceChannel);
-                break;
-            }
+            audioManager.openAudioConnection(audioManager.getGuild().getVoiceChannels().get(0));
         }
     }
 
     @SuppressWarnings("deprecation")
     public void connectToMemberVoiceChannel(AudioManager audioManager, Member m) {
         if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
-            for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
-                if (voiceChannel.getMembers().contains(m)) {
-                    audioManager.openAudioConnection(voiceChannel);
-                    ArrayUtil.botJoin.remove(m.getGuild());
-                    break;
+            audioManager.openAudioConnection(Objects.requireNonNull(m.getVoiceState()).getChannel());
+            ArrayUtil.botJoin.remove(m.getGuild());
+
+            if ((audioManager.isConnected() ||(audioManager.getGuild().getSelfMember().getVoiceState() != null &&
+                    audioManager.getGuild().getSelfMember().getVoiceState().inVoiceChannel())) && !audioManager.isSelfDeafened()) {
+
+                if (audioManager.getGuild().getSelfMember().hasPermission(Permission.VOICE_DEAF_OTHERS)) {
+                    audioManager.getGuild().getSelfMember().deafen(true).queue();
                 }
             }
         }
     }
 
     public boolean isConnected(Guild g) {
-        return g != null && g.getAudioManager().isConnected() || isConnectedMember(g.getSelfMember());
+        return g != null && (g.getAudioManager().isConnected() || isConnectedMember(g.getSelfMember()));
     }
 
     public void disconnect(Guild g) {
