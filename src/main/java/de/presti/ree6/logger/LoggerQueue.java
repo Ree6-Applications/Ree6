@@ -8,7 +8,7 @@ import de.presti.ree6.bot.Webhook;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 
-import java.awt.Color;
+import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
 
@@ -16,7 +16,7 @@ public class LoggerQueue {
     final ArrayList<LoggerMessage> logs = new ArrayList<>();
 
     public void add(LoggerMessage lm) {
-        if(!logs.contains(lm)) {
+        if (!logs.contains(lm)) {
             logs.add(lm);
 
             boolean changedMessage = false;
@@ -28,11 +28,11 @@ public class LoggerQueue {
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
-            we.setFooter(new WebhookEmbed.EmbedFooter(lm.getGuild().getName(), lm.getGuild().getIconUrl()));
+            we.setFooter(new WebhookEmbed.EmbedFooter(lm.getGuild().getName(), (lm.getGuild().getIconUrl() != null ? lm.getGuild().getIconUrl() : null)));
             we.setTimestamp(Instant.now());
 
-            if(lm.getType() == LoggerMessage.LogTyp.VC_JOIN) {
-                if(lm.getGuild() != null) {
+            if (lm.getType() == LoggerMessage.LogTyp.VC_JOIN) {
+                if (lm.getGuild() != null) {
                     if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_LEAVE
                             && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_LEAVE).forEach(loggerMessage -> loggerMessage.setCancel(true));
@@ -43,8 +43,8 @@ public class LoggerQueue {
                         we.setDescription(lm.getM().getUser().getAsMention() + " **rejoined the Voicechannel** ``" + lm.getVc().getName() + "``");
                     }
                 }
-            } else if(lm.getType() == LoggerMessage.LogTyp.VC_MOVE) {
-                if(lm.getGuild() != null) {
+            } else if (lm.getType() == LoggerMessage.LogTyp.VC_MOVE) {
+                if (lm.getGuild() != null) {
                     if (getLogsByGuild(lm.getGuild()).stream().anyMatch(loggerMessage -> loggerMessage.getType() == lm.getType() && loggerMessage != lm && !loggerMessage.isCancel())) {
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
                                 && loggerMessage != lm && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
@@ -55,8 +55,8 @@ public class LoggerQueue {
                         we.setDescription(lm.getM().getUser().getAsMention() + " **moved through many Voicechannels and is now in** ``" + lm.getVc().getName() + "``");
                     }
                 }
-            } else if(lm.getType() == LoggerMessage.LogTyp.VC_LEAVE) {
-                if(lm.getGuild() != null) {
+            } else if (lm.getType() == LoggerMessage.LogTyp.VC_LEAVE) {
+                if (lm.getGuild() != null) {
                     if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_JOIN
                             && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_JOIN && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
@@ -67,8 +67,8 @@ public class LoggerQueue {
                         we.setDescription(lm.getM().getUser().getAsMention() + " **joined and left the Voicechannel** ``" + lm.getVc().getName() + "``");
                     }
                 }
-            } else if(lm.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE) {
-                if(lm.getGuild() != null) {
+            } else if (lm.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE) {
+                if (lm.getGuild() != null) {
                     if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
                             && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
 
@@ -84,7 +84,7 @@ public class LoggerQueue {
                         we.setDescription("The Nickname of " + lm.getM().getAsMention() + " has been changed.\n**New Nickname:**\n" + lm.getM().getNickname() + "\n**Old Nickname:**\n" + (oldName != null ? oldName : lm.getM().getUser().getName()));
                     }
                 }
-            } else if(lm.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE) {
+            } else if (lm.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE) {
                 if (lm.getGuild() != null) {
                     if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
                             && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
@@ -277,27 +277,26 @@ public class LoggerQueue {
 
             if (lm.getType() != LoggerMessage.LogTyp.ELSE && changedMessage) lm.setWem(wm.build());
 
-            new Thread(() ->{
+            new Thread(() -> {
                 try {
                     Thread.sleep(10000);
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException ignored) {
+                }
 
-                if(!lm.isCancel()) {
+                if (!lm.isCancel()) {
                     Webhook.sendWebhook(lm.getWem(), lm.getId(), lm.getAuthCode());
                 }
 
                 logs.remove(lm);
-
             }).start();
-
         }
     }
 
     public ArrayList<LoggerMessage> getLogsByGuild(Guild g) {
         ArrayList<LoggerMessage> sheesh = new ArrayList<>();
 
-        for(LoggerMessage lm : logs) {
-            if(lm.getGuild() == g) {
+        for (LoggerMessage lm : logs) {
+            if (lm.getGuild() == g) {
                 sheesh.add(lm);
             }
         }
