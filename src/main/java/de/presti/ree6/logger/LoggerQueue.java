@@ -6,301 +6,390 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.Webhook;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 
 import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
+/**
+ * Internal LoggingQueue, created to merge LoggingMessages to prevent
+ * Rate-Limits by Cloudflare.
+ */
 public class LoggerQueue {
+
+    // A List of every Log-Message.
     final ArrayList<LoggerMessage> logs = new ArrayList<>();
 
-    public void add(LoggerMessage lm) {
-        if (!logs.contains(lm)) {
-            logs.add(lm);
+    /**
+     * Add a Logging Message into the List.
+     * @param loggerMessage the logging message.
+     */
+    public void add(LoggerMessage loggerMessage) {
+        if (!logs.contains(loggerMessage)) {
+            logs.add(loggerMessage);
 
-            boolean changedMessage = false;
+            // Creating a new Webhook Message with an Embed.
+            WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder().setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl()).setUsername("Ree6Logs");
+            WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder().setColor(Color.BLACK.getRGB())
+                    .setFooter(new WebhookEmbed.EmbedFooter(loggerMessage.getGuild().getName(),
+                            (loggerMessage.getGuild().getIconUrl() != null ? loggerMessage.getGuild().getIconUrl() : "https://images.ree6.de/cringe.gif")))
+                    .setTimestamp(Instant.now());
 
-            WebhookMessageBuilder wm = new WebhookMessageBuilder();
+            // For later to check if it has been modified or not.
+            boolean modified = false;
 
-            wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-            wm.setUsername("Ree6Logs");
 
-            WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-            we.setColor(Color.BLACK.getRGB());
-            we.setFooter(new WebhookEmbed.EmbedFooter(lm.getGuild().getName(), (lm.getGuild().getIconUrl() != null ? lm.getGuild().getIconUrl() : null)));
-            we.setTimestamp(Instant.now());
+            // Check if it's just a random Log which shouldn't be checked and merged.
+            if (loggerMessage.getType() != LoggerMessage.LogTyp.ELSE) {
 
-            if (lm.getType() == LoggerMessage.LogTyp.VC_JOIN) {
-                if (lm.getGuild() != null) {
-                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_LEAVE
-                            && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
-                        getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_LEAVE).forEach(loggerMessage -> loggerMessage.setCancel(true));
+                // Stop if the Guild is null.
+                if (loggerMessage.getGuild() == null || loggerMessage.isCanceled()) return;
 
-                        changedMessage = true;
+                // Check if it's a VoiceChannel Join log.
+                if (loggerMessage.getType() == LoggerMessage.LogTyp.VC_JOIN) {
+                    if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                            loggerMessages.getVoiceData().getMember() == loggerMessage.getVoiceData().getMember() &&
+                            !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.VC_LEAVE)) {
 
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getVoiceData().getMember().getUser().getAsTag(), lm.getVoiceData().getMember().getUser().getAvatarUrl(), null));
-                        we.setDescription(lm.getVoiceData().getMember().getAsMention() + " **rejoined the Voicechannel** ``" + lm.getVoiceData().getCurrentVoiceChannel().getName() + "``");
+                        // Cancel every Log-Message which indicates that the person left.
+                        logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                                !loggerMessages.isCanceled()  &&
+                                loggerMessages.getVoiceData().getMember() == loggerMessage.getVoiceData().getMember() &&
+                                loggerMessages.getType() == LoggerMessage.LogTyp.VC_LEAVE).forEach(loggerMessages -> loggerMessage.setCanceled(true));
+
+                        // Set the new Webhook Message.
+                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(loggerMessage.getVoiceData().getMember().getUser().getAsTag(),
+                                loggerMessage.getVoiceData().getMember().getUser().getAvatarUrl(), null));
+                        webhookEmbedBuilder.setDescription(loggerMessage.getVoiceData().getMember().getAsMention() + " **rejoined the Voice-channel** ``" +
+                                loggerMessage.getVoiceData().getCurrentVoiceChannel().getName() + "``");
+
+                        modified = true;
                     }
                 }
-            } else if (lm.getType() == LoggerMessage.LogTyp.VC_MOVE) {
-                if (lm.getGuild() != null) {
-                    if (getLogsByGuild(lm.getGuild()).stream().anyMatch(loggerMessage -> loggerMessage.getType() == lm.getType() && loggerMessage != lm && !loggerMessage.isCancel())) {
-                        getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
-                                && loggerMessage != lm && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
+                // Check if it's a VoiceChannel Move log.
+                else if (loggerMessage.getType() == LoggerMessage.LogTyp.VC_MOVE) {
+                    if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                            loggerMessages.getVoiceData().getMember() == loggerMessage.getVoiceData().getMember() &&
+                            !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.VC_MOVE)) {
 
-                        changedMessage = true;
+                        // Cancel every Log-Message which indicates that the person moved.
+                        logs.stream().filter(loggerMessages -> loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                                loggerMessages != loggerMessage && loggerMessages.getVoiceData().getMember() == loggerMessage.getVoiceData().getMember() && !loggerMessages.isCanceled() &&
+                                loggerMessages.getType() == LoggerMessage.LogTyp.VC_MOVE).forEach(loggerMessages -> loggerMessage.setCanceled(true));
 
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getVoiceData().getMember().getUser().getAsTag(), lm.getVoiceData().getMember().getUser().getAvatarUrl(), null));
-                        we.setDescription(lm.getVoiceData().getMember().getUser().getAsMention() + " **moved through many Voicechannels and is now in** ``" + lm.getVoiceData().getCurrentVoiceChannel().getName() + "``");
+                        // Set the new Webhook Message.
+                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(loggerMessage.getVoiceData().getMember().getUser().getAsTag(),
+                                loggerMessage.getVoiceData().getMember().getUser().getAvatarUrl(), null));
+                        webhookEmbedBuilder.setDescription(loggerMessage.getVoiceData().getMember().getUser().getAsMention() + " **moved through many Voice-channels and is now in** ``"
+                                + loggerMessage.getVoiceData().getCurrentVoiceChannel().getName() + "``");
+
+                        modified = true;
                     }
                 }
-            } else if (lm.getType() == LoggerMessage.LogTyp.VC_LEAVE) {
-                if (lm.getGuild() != null) {
-                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_JOIN
-                            && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
-                        getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.VC_JOIN && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
+                //Check if it's a VoiceChannel Leave log.
+                else if (loggerMessage.getType() == LoggerMessage.LogTyp.VC_LEAVE) {
+                    if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                            loggerMessages.getVoiceData().getMember() == loggerMessage.getVoiceData().getMember() &&
+                            !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.VC_JOIN)) {
 
-                        changedMessage = true;
+                        // Cancel every Log-Message which indicates that the person joined.
+                        logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                                loggerMessages.getVoiceData().getMember() == loggerMessage.getVoiceData().getMember() &&
+                                !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.VC_JOIN).forEach(loggerMessages -> loggerMessage.setCanceled(true));
 
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getVoiceData().getMember().getUser().getAsTag(), lm.getVoiceData().getMember().getUser().getAvatarUrl(), null));
-                        we.setDescription(lm.getVoiceData().getMember().getUser().getAsMention() + " **joined and left the Voicechannel** ``" + lm.getVoiceData().getPreviousVoiceChannel().getName() + "``");
+                        // Set the new Webhook Message.
+                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(loggerMessage.getVoiceData().getMember().getUser().getAsTag(),
+                                loggerMessage.getVoiceData().getMember().getUser().getAvatarUrl(), null));
+                        webhookEmbedBuilder.setDescription(loggerMessage.getVoiceData().getMember().getUser().getAsMention() + " **joined and left the Voice-channel** ``" +
+                                loggerMessage.getVoiceData().getPreviousVoiceChannel().getName() + "``");
+
+                        modified = true;
                     }
                 }
-            } else if (lm.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE) {
-                if (lm.getGuild() != null) {
-                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
-                            && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
+                // Check if it's a Nickname Change Log.
+                else if (loggerMessage.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE) {
+                    if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                            loggerMessages.getMemberData().getMember() == loggerMessage.getMemberData().getMember() &&
+                            !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE)) {
 
-                        String oldName = getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE
-                                && loggerMessage != lm && !loggerMessage.isCancel()).findFirst().get().getMemberData().getPreviousName();
+                        // Get the latest previous UserData.
+                        LoggerMemberData memberData = logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage &&
+                                loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                                loggerMessages.getMemberData().getMember() == loggerMessage.getMemberData().getMember() &&
+                                !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE).findFirst().get().getMemberData();
 
-                        getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
-                                && loggerMessage != lm && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
+                        // Cancel every Log-Message which indicates that the person changed their name.
+                        logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                                loggerMessages.getMemberData().getMember() == loggerMessage.getMemberData().getMember() &&
+                                !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE).forEach(loggerMessages -> loggerMessage.setCanceled(true));
 
-                        lm.getMemberData().setPreviousName(oldName);
+                        // Change the current previous Nickname to the old one.
+                        loggerMessage.getMemberData().setPreviousName(memberData.getPreviousName());
 
-                        changedMessage = true;
-                        we.setDescription("The Nickname of " + lm.getMemberData().getMember().getAsMention() + " has been changed.\n**New Nickname:**\n" + lm.getMemberData().getCurrentName() + "\n**Old Nickname:**\n" + (oldName != null ? oldName : lm.getMemberData().getMember().getUser().getName()));
+                        // Set the new Webhook Message.
+                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(loggerMessage.getVoiceData().getMember().getUser().getAsTag(),
+                                loggerMessage.getVoiceData().getMember().getUser().getAvatarUrl(), null));
+                        webhookEmbedBuilder.setDescription("The Nickname of " + loggerMessage.getMemberData().getMember().getAsMention() + " has been changed.\n**New Nickname:**\n" +
+                                loggerMessage.getMemberData().getCurrentName() + "\n**Old Nickname:**\n" +
+                                (memberData.getPreviousName() != null ? memberData.getPreviousName() : loggerMessage.getMemberData().getMember().getUser().getName()));
+
+                        modified = true;
                     }
                 }
-            } else if (lm.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE) {
-                if (lm.getGuild() != null) {
-                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
-                            && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
-                        LoggerRoleData currentRoleData = lm.getRoleData();
-                        LoggerRoleData oldRoleData = getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).filter(loggerMessage -> loggerMessage != lm)
-                                .filter(loggerMessage -> !loggerMessage.isCancel()).filter(loggerMessage -> loggerMessage.getRoleData().getRoleId() == currentRoleData.getRoleId()).findFirst().get().getRoleData();
+                // Check if it's a Member Role Change log.
+                else if (loggerMessage.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE) {
+                    if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getMemberData().getMember() == loggerMessage.getMemberData().getMember()
+                            && loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                            !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE)) {
 
-                        getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).filter(loggerMessage -> loggerMessage != lm).forEach(loggerMessage -> loggerMessage.setCancel(true));
+                        // Get the latest MemberData.
+                        LoggerMemberData memberData = logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage &&
+                                loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                                loggerMessages.getMemberData().getMember() == loggerMessage.getMemberData().getMember() &&
+                                !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE).findFirst().get().getMemberData();
 
-                        //TODO rework this whole data merge.
+                        // Cancel every other LogEvent of that Typ.
+                        logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                                loggerMessages.getMemberData().getMember() == loggerMessage.getMemberData().getMember() &&
+                                !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
-                        if (oldRoleData != null && oldRoleData.getPreviousName() != null) {
-                            currentRoleData.setPreviousName(oldRoleData.getPreviousName());
+                        // Check if the RemoveRoles is null or empty.
+                        if ((loggerMessage.getMemberData().getRemovedRoles() == null || loggerMessage.getMemberData().getRemovedRoles().isEmpty()) &&
+                                memberData.getRemovedRoles() != null && !memberData.getRemovedRoles().isEmpty()) {
+
+                            // Set the current removed Roles to the one from the latest.
+                            loggerMessage.getMemberData().setRemovedRoles(memberData.getRemovedRoles());
                         }
 
-                        if (oldRoleData != null && currentRoleData.getCurrentColor() == null && oldRoleData.getPreviousName() != null) {
-                            currentRoleData.setCurrentName(oldRoleData.getCurrentName());
+                        // Check if the AddedRoles is null or empty.
+                        if ((loggerMessage.getMemberData().getAddedRoles() == null || loggerMessage.getMemberData().getAddedRoles().isEmpty()) &&
+                                memberData.getAddedRoles() != null && !memberData.getAddedRoles().isEmpty()) {
+
+                            // Set the current added Roles to the one from the latest.
+                            loggerMessage.getMemberData().setAddedRoles(memberData.getAddedRoles());
                         }
 
-                        if (oldRoleData != null && oldRoleData.getPreviousPermission() != null) {
-                            currentRoleData.setPreviousPermission(oldRoleData.getPreviousPermission());
+                        // Check if the addedRoles and removeRoles are null if so create new List.
+                        if (loggerMessage.getMemberData().getAddedRoles() == null) loggerMessage.getMemberData().setAddedRoles(new ArrayList<>());
+                        if (loggerMessage.getMemberData().getRemovedRoles() == null) loggerMessage.getMemberData().setRemovedRoles(new ArrayList<>());
+
+                        // Check if the Lists are Empty if not remove duplicated entries.
+                        if (!loggerMessage.getMemberData().getRemovedRoles().isEmpty() && !loggerMessage.getMemberData().getAddedRoles().isEmpty()) {
+                            loggerMessage.getMemberData().getRemovedRoles().removeIf(role -> role == null || loggerMessage.getMemberData().getAddedRoles().contains(role));
                         }
 
-                        if (oldRoleData != null && (currentRoleData.getCurrentPermission() == null || currentRoleData.getCurrentPermission().isEmpty()) && oldRoleData.getCurrentPermission() != null) {
-                            currentRoleData.setCurrentPermission(oldRoleData.getCurrentPermission());
-                        }
+                        // Merge both lists with the current List.
+                        memberData.getRemovedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
+                                !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
+                        memberData.getAddedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
+                                !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
 
-                        if (oldRoleData != null && oldRoleData.getPreviousColor() != null) {
-                            currentRoleData.setPreviousColor(oldRoleData.getPreviousColor());
-                        }
+                        // StringBuilder to convert the List into a single String.
+                        StringBuilder stringBuilder = new StringBuilder();
 
-                        if (oldRoleData != null && currentRoleData.getCurrentColor() == null && oldRoleData.getCurrentColor() != null) {
-                            currentRoleData.setCurrentColor(oldRoleData.getCurrentColor());
-                        }
+                        // Add the Entries into the String.
+                        loggerMessage.getMemberData().getAddedRoles().forEach(role -> stringBuilder.append(":white_check_mark:").append(" ").append(role.getName()).append("\n"));
+                        loggerMessage.getMemberData().getRemovedRoles().forEach(role -> stringBuilder.append(":no_entry:").append(" ").append(role.getName()).append("\n"));
 
-                        if (oldRoleData != null && !currentRoleData.isChangedHoisted() && oldRoleData.isChangedHoisted()) {
-                            currentRoleData.setHoisted(oldRoleData.isHoisted());
-                        }
-                        if (oldRoleData != null && !currentRoleData.isChangedMentioned() && oldRoleData.isChangedMentioned()) {
-                            currentRoleData.setMentioned(oldRoleData.isMentioned());
-                        }
+                        // Set Embed Elements.
+                        webhookEmbedBuilder.setDescription(":writing_hand: " + loggerMessage.getMemberData().getMember() + " **has been updated.**");
+                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", stringBuilder.toString()));
 
-                        lm.setRoleData(currentRoleData);
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getGuild().getName(), lm.getGuild().getIconUrl(), null));
+                        modified = true;
+                    }
+                }
+                // Check if it's a Role Update log.
+                else if (loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE) {
+                    if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                            !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE)) {
 
-                        if (!currentRoleData.isCreated() && !currentRoleData.isDeleted()) {
-                            changedMessage = true;
-                            we.setDescription(":family_mmb: ``" + currentRoleData.getPreviousName() + "`` **has been updated.**");
+                        // Get the latest RoleData.
+                        LoggerRoleData roleData = logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                                !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).findFirst().get().getRoleData();
 
-                            if (currentRoleData.getPreviousName() != null && currentRoleData.getCurrentName() != null) {
-                                we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", currentRoleData.getPreviousName()));
-                                we.addField(new WebhookEmbed.EmbedField(true, "**New name**", currentRoleData.getCurrentName()));
-                                we.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
+                        // Cancel every Log-Message which indicates that the person changed their name.
+                        logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getGuild().getIdLong() == loggerMessage.getGuild().getIdLong() &&
+                                !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).forEach(loggerMessages -> loggerMessage.setCanceled(true));
+
+                        // Start merging the Role Permissions
+                        if (roleData != null) {
+
+                            // Check if the latest Role Data has a previous Name.
+                            if (roleData.getPreviousName() != null && !roleData.getPreviousName().isEmpty()) {
+
+                                // Set the previous Name of the current Role Data to the latest one.
+                                loggerMessage.getRoleData().setPreviousName(roleData.getPreviousName());
                             }
 
-                            if (currentRoleData.isChangedMentioned()) {
-                                we.addField(new WebhookEmbed.EmbedField(true, "**Old mentionable**", !currentRoleData.isMentioned() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(true, "**New mentionable**", currentRoleData.isMentioned() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
+                            // Check if the latest Role Data has a current Name.
+                            if ((loggerMessage.getRoleData().getCurrentName() == null || loggerMessage.getRoleData().getCurrentName().isEmpty()) &&
+                                    roleData.getCurrentName() != null && !roleData.getCurrentName().isEmpty()) {
+
+                                // Set the current Name of the current Role Data to the latest one.
+                                loggerMessage.getRoleData().setCurrentName(roleData.getCurrentName());
                             }
 
-                            if (currentRoleData.isChangedHoisted()) {
-                                we.addField(new WebhookEmbed.EmbedField(true, "**Old hoist**", !currentRoleData.isHoisted() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(true, "**New hoist**", currentRoleData.isHoisted() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
+                            // Check if the latest Role Data has previous Permissions.
+                            if (roleData.getPreviousPermission() != null && !roleData.getPreviousPermission().isEmpty()) {
+
+                                // Set the previous Permissions.
+                                loggerMessage.getRoleData().setPreviousPermission(roleData.getPreviousPermission());
                             }
 
-                            if (currentRoleData.getPreviousColor() != null) {
-                                we.addField(new WebhookEmbed.EmbedField(true, "**Old color**", (currentRoleData.getPreviousColor() != null ? currentRoleData.getPreviousColor() : Color.gray).getRGB() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(true, "**New color**", (currentRoleData.getCurrentColor() != null ? currentRoleData.getCurrentColor() : Color.gray).getRGB() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
+                            // Check if the latest Role Data has current Permissions.
+                            if ((loggerMessage.getRoleData().getCurrentPermission() == null || loggerMessage.getRoleData().getCurrentPermission().isEmpty())
+                                    && roleData.getCurrentPermission() != null && !roleData.getCurrentPermission().isEmpty()) {
+
+                                // Set the current Permissions.
+                                loggerMessage.getRoleData().setCurrentPermission(roleData.getCurrentPermission());
                             }
 
-                            StringBuilder finalString = new StringBuilder();
+                            // Check if the latest Role Data has a previous Color.
+                            if (roleData.getPreviousColor() != null) {
 
-                            boolean b = false;
+                                // Set the previous Color.
+                                loggerMessage.getRoleData().setPreviousColor(roleData.getPreviousColor());
+                            }
 
-                            if (currentRoleData.getCurrentPermission() != null) {
-                                for (Permission r : currentRoleData.getCurrentPermission()) {
-                                    if (!currentRoleData.getPreviousPermission().contains(r)) {
-                                        if (b) {
-                                            finalString.append("\n:white_check_mark: ").append(r.getName());
-                                        } else {
-                                            finalString.append(":white_check_mark: ").append(r.getName());
-                                            b = true;
-                                        }
-                                    }
+                            // Check if the latest Role Data has a current Color.
+                            if (loggerMessage.getRoleData().getCurrentColor() == null && roleData.getCurrentColor() != null) {
+
+                                // Set the current Color.
+                                loggerMessage.getRoleData().setCurrentColor(roleData.getCurrentColor());
+                            }
+
+                            // Check if the latest has another value for Hoisted and if the current Value is the default Value or not.
+                            if (!loggerMessage.getRoleData().isChangedHoisted() && roleData.isChangedHoisted()) {
+
+                                // Set the current Value to the one from the latest.
+                                loggerMessage.getRoleData().setChangedHoisted(roleData.isChangedHoisted());
+                            }
+
+                            // Check if the latest has another value for Mentioned and if the current Value is the default Value or not.
+                            if (!loggerMessage.getRoleData().isChangedMentioned() && roleData.isChangedMentioned()) {
+
+                                // Set the current Value to the one from the latest.
+                                loggerMessage.getRoleData().setChangedMentioned(roleData.isChangedMentioned());
+                            }
+                        }
+
+                        // Set the author of the WebhookMessage.
+                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(loggerMessage.getGuild().getName(), loggerMessage.getGuild().getIconUrl(), null));
+
+                        // Check if it isn't a new created or deleted Role.
+                        if (!loggerMessage.getRoleData().isCreated() && !loggerMessage.getRoleData().isDeleted()) {
+
+                            // Set update as Description
+                            webhookEmbedBuilder.setDescription(":family_mmb: ``" + loggerMessage.getRoleData().getPreviousName() + "`` **has been updated.**");
+
+                            // Check if there is a previous and current Name.
+                            if (loggerMessage.getRoleData().getPreviousName() != null && loggerMessage.getRoleData().getCurrentName() != null) {
+
+                                // Add new Fields with Information.
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Old name**", loggerMessage.getRoleData().getPreviousName()));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**New name**", loggerMessage.getRoleData().getCurrentName()));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
+                            }
+
+                            // Check if the Mentioned has been changed or not.
+                            if (loggerMessage.getRoleData().isChangedMentioned()) {
+
+                                // Add new Fields with Information.
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Old mentionable**", !loggerMessage.getRoleData().isMentioned() + ""));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**New mentionable**", loggerMessage.getRoleData().isMentioned() + ""));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
+                            }
+
+                            // Check if the Hoisted has been changed or not.
+                            if (loggerMessage.getRoleData().isChangedHoisted()) {
+
+                                // Add new Fields with Information.
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Old hoist**", !loggerMessage.getRoleData().isHoisted() + ""));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**New hoist**", loggerMessage.getRoleData().isHoisted() + ""));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
+                            }
+
+                            // Check if a new Color has been added or changed.
+                            if (loggerMessage.getRoleData().getPreviousColor() != null || loggerMessage.getRoleData().getCurrentColor() != null) {
+
+                                // Add new Fields with Information.
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Old color**", (loggerMessage.getRoleData().getPreviousColor() != null ?
+                                        loggerMessage.getRoleData().getPreviousColor() : Color.gray).getRGB() + ""));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**New color**", (loggerMessage.getRoleData().getCurrentColor() != null ?
+                                        loggerMessage.getRoleData().getCurrentColor() : Color.gray).getRGB() + ""));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
+                            }
+
+                            // Create StringBuilder for Permission diff.
+                            StringBuilder stringBuilder = new StringBuilder(loggerMessage.getRoleData().getCurrentPermission().stream()
+                                    .anyMatch(permission -> !loggerMessage.getRoleData().getPreviousPermission().contains(permission)) ? ":white_check_mark:" : ":no_entry:").append(" ");
+
+                            // Go through every message in currentPermission and add them to the String.
+                            for(Permission permission : loggerMessage.getRoleData().getCurrentPermission().stream()
+                                    .filter(permission -> !loggerMessage.getRoleData().getPreviousPermission().contains(permission)).collect(Collectors.toList())) {
+                                if (stringBuilder.length() >= 22) {
+                                    stringBuilder.append("\n:white_check_mark: ").append(permission.getName());
+                                } else {
+                                    stringBuilder.append(permission.getName());
                                 }
                             }
 
-                            if (currentRoleData.getPreviousPermission() != null) {
-                                for (Permission r : currentRoleData.getPreviousPermission()) {
-                                    if (!currentRoleData.getCurrentPermission().contains(r)) {
-                                        if (b) {
-                                            finalString.append("\n:no_entry: ").append(r.getName());
-                                        } else {
-                                            finalString.append(":no_entry: ").append(r.getName());
-                                            b = true;
-                                        }
-                                    }
+                            // Go through every message in previousPermission and add them to the String.
+                            for(Permission permission : loggerMessage.getRoleData().getPreviousPermission().stream()
+                                    .filter(permission -> !loggerMessage.getRoleData().getCurrentPermission().contains(permission)).collect(Collectors.toList())) {
+                                if (stringBuilder.length() >= 11) {
+                                    stringBuilder.append("\n:no_entry: ").append(permission.getName());
+                                } else {
+                                    stringBuilder.append(permission.getName());
                                 }
                             }
 
-                            if (!finalString.toString().isEmpty()) {
-                                we.addField(new WebhookEmbed.EmbedField(true, "**New permissions**", finalString.toString()));
-                            }
+                            // Add the String from the StringBuilder as Embed to the Message
+                            if (!stringBuilder.toString().isEmpty()) webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**New permissions**", stringBuilder.toString()));
+
                         } else {
-                            changedMessage = true;
-                            if (currentRoleData.isCreated()) {
-                                we.setDescription(":family_mmb: ``" + currentRoleData.getPreviousName() + "`` **has been created.**");
+                            // Check if the Role has been created.
+                            if (loggerMessage.getRoleData().isCreated()) {
+
+                                // Set description to new Role created.
+                                webhookEmbedBuilder.setDescription(":family_mmb: ``" + loggerMessage.getRoleData().getCurrentName() + "`` **has been created.**");
                             } else {
-                                we.setDescription(":family_mmb: ``" + currentRoleData.getPreviousName() + "`` **has been deleted.**");
+
+                                // Set description to Role deleted.
+                                webhookEmbedBuilder.setDescription(":family_mmb: ``" + loggerMessage.getRoleData().getCurrentName() + "`` **has been deleted.**");
                             }
                         }
+
+                        // Set the new Webhook Message.
+                        modified = true;
                     }
                 }
-            }/* else if(lm.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE) {
-                if (lm.getGuild() != null) {
-                    if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE).count() > 1) {
-                        ArrayList<Role> oldAddedRoles = getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE).filter(loggerMessage -> !loggerMessage.isCancel()).filter(loggerMessage -> loggerMessage.getAddedRoles() != null).toArray().length > 0 ? ((LoggerMessage) (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE).filter(loggerMessage -> !loggerMessage.isCancel()).filter(loggerMessage -> loggerMessage.getAddedRoles() != null).toArray()[0])).getAddedRoles() : null;
-                        ArrayList<Role> oldRemoveRoles = getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE).filter(loggerMessage -> !loggerMessage.isCancel()).filter(loggerMessage -> loggerMessage.getRemovedRoles() != null).toArray().length > 0 ? ((LoggerMessage) (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE).filter(loggerMessage -> !loggerMessage.isCancel()).filter(loggerMessage -> loggerMessage.getRemovedRoles() != null).toArray()[0])).getRemovedRoles() : null;
-                        getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE).forEach(loggerMessage -> loggerMessage.setCancel(true));
+            }
 
-                        if (lm.getRemovedRoles() == null && oldRemoveRoles != null) {
-                            lm.setRemovedRoles(oldRemoveRoles);
-                        } else if (oldRemoveRoles == null) {
-                            lm.setRemovedRoles(new ArrayList<Role>());
-                        }
+            // add the created WebhookEmbedBuilder as WebhookEmbed to the WebhookMessage Builder.
+            webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                        if (lm.getAddedRoles() == null && oldAddedRoles != null) {
-                            lm.setAddedRoles(oldAddedRoles);
-                        } else if (oldAddedRoles == null) {
-                            lm.setAddedRoles(new ArrayList<Role>());
-                        }
+            // If it isn't a default logging Message and the message has been modified change the WebhookMessage.
+            if (loggerMessage.getType() != LoggerMessage.LogTyp.ELSE && modified) loggerMessage.setWebhookMessage(webhookMessageBuilder.build());
 
-                        if (lm.getRemovedRoles() != null && lm.getAddedRoles() != null && lm.getRemovedRoles().size() > 0 & lm.getAddedRoles().size() > 0) {
-                            lm.getRemovedRoles().removeIf(r -> r != null && lm.getAddedRoles().contains(r));
-                        }
-
-                        if (lm.getRemovedRoles() != null && lm.getAddedRoles() != null && oldRemoveRoles != null && oldRemoveRoles.size() > 0) {
-                            for (Role r : oldRemoveRoles)
-                                if (r != null && (lm.getAddedRoles().size() == 0 || (lm.getAddedRoles().size() > 0 && !lm.getAddedRoles().contains(r)))) {
-                                    lm.getRemovedRoles().add(r);
-                                }
-                        }
-
-                        if (lm.getRemovedRoles() != null && lm.getAddedRoles() != null && oldAddedRoles != null && oldAddedRoles.size() > 0) {
-                            for (Role r : oldAddedRoles)
-                                if (r != null && (lm.getRemovedRoles().size() == 0 || (lm.getRemovedRoles().size() > 0 && !lm.getRemovedRoles().contains(r)))) {
-                                    lm.getAddedRoles().add(r);
-                                }
-                        }
-
-                        StringBuilder finalString = new StringBuilder();
-
-                        if (lm.getAddedRoles() != null && lm.getAddedRoles().size() > 0) {
-                            for (Role r : lm.getAddedRoles()) {
-                                finalString.append(":white_check_mark: ").append(r.getName()).append("\n");
-                            }
-                        }
-
-                        if (lm.getRemovedRoles() != null && lm.getRemovedRoles().size() > 0) {
-                            for (Role r : lm.getRemovedRoles()) {
-                                finalString.append(":no_entry: ").append(r.getName()).append("\n");
-                            }
-                        }
-
-                        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-                        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                        wm.setUsername("Ree6Logs");
-
-                        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-                        we.setColor(Color.BLACK.getRGB());
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
-                        we.setFooter(new WebhookEmbed.EmbedFooter(lm.getGuild().getName(), lm.getGuild().getIconUrl()));
-                        we.setTimestamp(Instant.now());
-
-                        we.setDescription(":writing_hand: " + lm.getM().getUser().getAsMention() + " **has been updated.**");
-                        we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString.toString()));
-
-                        wm.addEmbeds(we.build());
-
-                        lm.setWem(wm.build());
-                    }
-                }
-            }*/
-
-            wm.addEmbeds(we.build());
-
-            if (lm.getType() != LoggerMessage.LogTyp.ELSE && changedMessage) lm.setWem(wm.build());
-
+            // Create new Thread for Log-Message to send.
             new Thread(() -> {
+
+                // Let it wait for 10 seconds.
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException ignored) {
                 }
 
-                if (!lm.isCancel()) {
-                    Webhook.sendWebhook(lm.getWem(), lm.getId(), lm.getAuthCode());
+                // If not canceled send it.
+                if (!loggerMessage.isCanceled()) {
+                    Webhook.sendWebhook(loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode());
                 }
 
-                logs.remove(lm);
+                // Remove it from the list.
+                logs.remove(loggerMessage);
             }).start();
         }
-    }
-
-    public ArrayList<LoggerMessage> getLogsByGuild(Guild g) {
-        ArrayList<LoggerMessage> sheesh = new ArrayList<>();
-
-        for (LoggerMessage lm : logs) {
-            if (lm.getGuild() == g) {
-                sheesh.add(lm);
-            }
-        }
-
-        return sheesh;
     }
 }

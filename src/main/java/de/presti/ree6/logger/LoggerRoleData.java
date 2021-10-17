@@ -8,13 +8,13 @@ import java.util.EnumSet;
 
 public class LoggerRoleData {
 
-    long roleId;
+    private long roleId;
 
-    String previousName, currentName;
-    Color previousColor, currentColor;
-    EnumSet<Permission> previousPermission, currentPermission;
+    private String previousName, currentName;
+    private Color previousColor, currentColor;
+    private EnumSet<Permission> previousPermission, currentPermission;
 
-    boolean IsCreated, IsDeleted, IsHoisted, IsMentioned, changedMentioned, changedHoisted;
+    private boolean IsCreated, IsDeleted, IsHoisted, IsMentioned, changedMentioned, changedHoisted;
 
     public LoggerRoleData(Role role) {
         this.roleId = role.getIdLong();

@@ -28,19 +28,19 @@ public class LoggerMessage {
     private boolean cancel = false;
 
     // The WebhookMessage.
-    private WebhookMessage wem;
+    private WebhookMessage webhookMessage;
 
     // Webhook Guild, the Guild which fired the Log.
     private Guild guild;
 
     // RoleData from Webhook Logs.
-    LoggerRoleData roleData;
+    private LoggerRoleData roleData;
 
     // VoiceData from Webhook Logs.
-    LoggerVoiceData voiceData;
+    private LoggerVoiceData voiceData;
 
     // MemberData from Webhook Logs.
-    LoggerMemberData memberData;
+    private LoggerMemberData memberData;
 
     // LoggerTyp, to know what kind of Log this Message is.
     private LogTyp type;
@@ -50,14 +50,14 @@ public class LoggerMessage {
      * @param g Guild of the Log-Message.
      * @param c Webhook ID.
      * @param auth Webhook Auth-Code.
-     * @param wem WebhookMessage itself.
+     * @param webhookMessage WebhookMessage itself.
      * @param type LogTyp.
      */
-    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, LogTyp type) {
+    public LoggerMessage(Guild g, long c, String auth, WebhookMessage webhookMessage, LogTyp type) {
         this.guild = g;
         this.id = c;
         this.authCode = auth;
-        this.wem = wem;
+        this.webhookMessage = webhookMessage;
         this.type = type;
     }
     /**
@@ -65,15 +65,15 @@ public class LoggerMessage {
      * @param g Guild of the Log-Message.
      * @param c Webhook ID.
      * @param auth Webhook Auth-Code.
-     * @param wem WebhookMessage itself.
+     * @param webhookMessage WebhookMessage itself.
      * @param memberData Provided UserData used for the Log.
      * @param type LogTyp.
      */
-    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, LoggerMemberData memberData, LogTyp type) {
+    public LoggerMessage(Guild g, long c, String auth, WebhookMessage webhookMessage, LoggerMemberData memberData, LogTyp type) {
         this.guild = g;
         this.id = c;
         this.authCode = auth;
-        this.wem = wem;
+        this.webhookMessage = webhookMessage;
         this.memberData = memberData;
         this.type = type;
     }
@@ -83,15 +83,15 @@ public class LoggerMessage {
      * @param g Guild of the Log-Message.
      * @param c Webhook ID.
      * @param auth Webhook Auth-Code.
-     * @param wem WebhookMessage itself.
+     * @param webhookMessage WebhookMessage itself.
      * @param roleData Provided RoleData used for the Log.
      * @param type LogTyp.
      */
-    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, LoggerRoleData roleData, LogTyp type) {
+    public LoggerMessage(Guild g, long c, String auth, WebhookMessage webhookMessage, LoggerRoleData roleData, LogTyp type) {
         this.guild = g;
         this.id = c;
         this.authCode = auth;
-        this.wem = wem;
+        this.webhookMessage = webhookMessage;
         this.roleData = roleData;
         this.type = type;
     }
@@ -101,15 +101,15 @@ public class LoggerMessage {
      * @param g Guild of the Log-Message.
      * @param c Webhook ID.
      * @param auth Webhook Auth-Code.
-     * @param wem WebhookMessage itself.
+     * @param webhookMessage WebhookMessage itself.
      * @param voiceData Provided VoiceData used for the Log.
      * @param type LogTyp.
      */
-    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, LoggerVoiceData voiceData, LogTyp type) {
+    public LoggerMessage(Guild g, long c, String auth, WebhookMessage webhookMessage, LoggerVoiceData voiceData, LogTyp type) {
         this.guild = g;
         this.id = c;
         this.authCode = auth;
-        this.wem = wem;
+        this.webhookMessage = webhookMessage;
         this.voiceData = voiceData;
         this.type = type;
     }
@@ -169,16 +169,16 @@ public class LoggerMessage {
      * Get the current WebhookMessage.
      * @return WebhookMessage.
      */
-    public WebhookMessage getWem() {
-        return wem;
+    public WebhookMessage getWebhookMessage() {
+        return webhookMessage;
     }
 
     /**
      * Change the current Webhook-Message.
-     * @param wem new Webhook-Message.
+     * @param webhookMessage new Webhook-Message.
      */
-    public void setWem(WebhookMessage wem) {
-        this.wem = wem;
+    public void setWebhookMessage(WebhookMessage webhookMessage) {
+        this.webhookMessage = webhookMessage;
     }
 
     /**
@@ -202,7 +202,7 @@ public class LoggerMessage {
      * Check if the Message is canceled or not.
      * @return is the Message canceled.
      */
-    public boolean isCancel() {
+    public boolean isCanceled() {
         return cancel;
     }
 
@@ -210,7 +210,7 @@ public class LoggerMessage {
      * Cancel the LogMessage or "uncancel" the LogMessage.
      * @param cancel should the Message be canceled.
      */
-    public void setCancel(boolean cancel) {
+    public void setCanceled(boolean cancel) {
         this.cancel = cancel;
     }
 

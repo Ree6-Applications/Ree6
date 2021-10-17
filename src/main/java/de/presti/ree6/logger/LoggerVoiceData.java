@@ -5,10 +5,10 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 
 public class LoggerVoiceData {
 
-    Member member;
-    VoiceChannel previousVoiceChannel, currentVoiceChannel;
+    private Member member;
+    private VoiceChannel previousVoiceChannel, currentVoiceChannel;
 
-    LoggerVoiceTyp loggerVoiceTyp;
+    private LoggerVoiceTyp loggerVoiceTyp;
 
     public LoggerVoiceData(Member member, VoiceChannel voiceChannel, LoggerVoiceTyp loggerVoiceTyp) {
         this.member = member;
