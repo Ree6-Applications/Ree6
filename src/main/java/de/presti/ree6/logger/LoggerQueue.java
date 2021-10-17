@@ -39,8 +39,8 @@ public class LoggerQueue {
 
                         changedMessage = true;
 
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
-                        we.setDescription(lm.getM().getUser().getAsMention() + " **rejoined the Voicechannel** ``" + lm.getVc().getName() + "``");
+                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getVoiceData().getMember().getUser().getAsTag(), lm.getVoiceData().getMember().getUser().getAvatarUrl(), null));
+                        we.setDescription(lm.getVoiceData().getMember().getAsMention() + " **rejoined the Voicechannel** ``" + lm.getVoiceData().getCurrentVoiceChannel().getName() + "``");
                     }
                 }
             } else if (lm.getType() == LoggerMessage.LogTyp.VC_MOVE) {
@@ -51,8 +51,8 @@ public class LoggerQueue {
 
                         changedMessage = true;
 
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
-                        we.setDescription(lm.getM().getUser().getAsMention() + " **moved through many Voicechannels and is now in** ``" + lm.getVc().getName() + "``");
+                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getVoiceData().getMember().getUser().getAsTag(), lm.getVoiceData().getMember().getUser().getAvatarUrl(), null));
+                        we.setDescription(lm.getVoiceData().getMember().getUser().getAsMention() + " **moved through many Voicechannels and is now in** ``" + lm.getVoiceData().getCurrentVoiceChannel().getName() + "``");
                     }
                 }
             } else if (lm.getType() == LoggerMessage.LogTyp.VC_LEAVE) {
@@ -63,8 +63,8 @@ public class LoggerQueue {
 
                         changedMessage = true;
 
-                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getM().getUser().getAsTag(), lm.getM().getUser().getAvatarUrl(), null));
-                        we.setDescription(lm.getM().getUser().getAsMention() + " **joined and left the Voicechannel** ``" + lm.getVc().getName() + "``");
+                        we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getVoiceData().getMember().getUser().getAsTag(), lm.getVoiceData().getMember().getUser().getAvatarUrl(), null));
+                        we.setDescription(lm.getVoiceData().getMember().getUser().getAsMention() + " **joined and left the Voicechannel** ``" + lm.getVoiceData().getPreviousVoiceChannel().getName() + "``");
                     }
                 }
             } else if (lm.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE) {
@@ -73,88 +73,88 @@ public class LoggerQueue {
                             && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
 
                         String oldName = getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE
-                                && loggerMessage != lm && !loggerMessage.isCancel()).findFirst().get().getNickname2();
+                                && loggerMessage != lm && !loggerMessage.isCancel()).findFirst().get().getMemberData().getPreviousName();
 
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
                                 && loggerMessage != lm && !loggerMessage.isCancel()).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
-                        lm.setNickname2(oldName);
+                        lm.getMemberData().setPreviousName(oldName);
 
                         changedMessage = true;
-                        we.setDescription("The Nickname of " + lm.getM().getAsMention() + " has been changed.\n**New Nickname:**\n" + lm.getM().getNickname() + "\n**Old Nickname:**\n" + (oldName != null ? oldName : lm.getM().getUser().getName()));
+                        we.setDescription("The Nickname of " + lm.getMemberData().getMember().getAsMention() + " has been changed.\n**New Nickname:**\n" + lm.getMemberData().getCurrentName() + "\n**Old Nickname:**\n" + (oldName != null ? oldName : lm.getMemberData().getMember().getUser().getName()));
                     }
                 }
             } else if (lm.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE) {
                 if (lm.getGuild() != null) {
                     if (getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == lm.getType()
                             && loggerMessage != lm).anyMatch(loggerMessage -> !loggerMessage.isCancel())) {
-                        LoggerMessage.RoleData currentRoleData = lm.getRoleData();
-                        LoggerMessage.RoleData oldRoleData = getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).filter(loggerMessage -> loggerMessage != lm)
-                                .filter(loggerMessage -> !loggerMessage.isCancel()).filter(loggerMessage -> loggerMessage.getRoleData().getId().equalsIgnoreCase(currentRoleData.getId())).findFirst().get().getRoleData();
+                        LoggerRoleData currentRoleData = lm.getRoleData();
+                        LoggerRoleData oldRoleData = getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).filter(loggerMessage -> loggerMessage != lm)
+                                .filter(loggerMessage -> !loggerMessage.isCancel()).filter(loggerMessage -> loggerMessage.getRoleData().getRoleId() == currentRoleData.getRoleId()).findFirst().get().getRoleData();
 
                         getLogsByGuild(lm.getGuild()).stream().filter(loggerMessage -> loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).filter(loggerMessage -> loggerMessage != lm).forEach(loggerMessage -> loggerMessage.setCancel(true));
 
                         //TODO rework this whole data merge.
 
-                        if (oldRoleData != null && oldRoleData.getOldName() != null) {
-                            currentRoleData.setOldName(oldRoleData.getOldName());
+                        if (oldRoleData != null && oldRoleData.getPreviousName() != null) {
+                            currentRoleData.setPreviousName(oldRoleData.getPreviousName());
                         }
 
-                        if (oldRoleData != null && currentRoleData.getNewName() == null && oldRoleData.getOldName() != null) {
-                            currentRoleData.setNewName(oldRoleData.getNewName());
+                        if (oldRoleData != null && currentRoleData.getCurrentColor() == null && oldRoleData.getPreviousName() != null) {
+                            currentRoleData.setCurrentName(oldRoleData.getCurrentName());
                         }
 
-                        if (oldRoleData != null && oldRoleData.getOldPermissions() != null) {
-                            currentRoleData.setOldPermissions(oldRoleData.getOldPermissions());
+                        if (oldRoleData != null && oldRoleData.getPreviousPermission() != null) {
+                            currentRoleData.setPreviousPermission(oldRoleData.getPreviousPermission());
                         }
 
-                        if (oldRoleData != null && (currentRoleData.getNewPermissions() == null || currentRoleData.getNewPermissions().isEmpty()) && oldRoleData.getNewPermissions() != null) {
-                            currentRoleData.setNewPermissions(oldRoleData.getNewPermissions());
+                        if (oldRoleData != null && (currentRoleData.getCurrentPermission() == null || currentRoleData.getCurrentPermission().isEmpty()) && oldRoleData.getCurrentPermission() != null) {
+                            currentRoleData.setCurrentPermission(oldRoleData.getCurrentPermission());
                         }
 
-                        if (oldRoleData != null && oldRoleData.getOldColor() != null) {
-                            currentRoleData.setOldColor(oldRoleData.getOldColor());
+                        if (oldRoleData != null && oldRoleData.getPreviousColor() != null) {
+                            currentRoleData.setPreviousColor(oldRoleData.getPreviousColor());
                         }
 
-                        if (oldRoleData != null && currentRoleData.getNewColor() == null && oldRoleData.getNewColor() != null) {
-                            currentRoleData.setNewColor(oldRoleData.getNewColor());
+                        if (oldRoleData != null && currentRoleData.getCurrentColor() == null && oldRoleData.getCurrentColor() != null) {
+                            currentRoleData.setCurrentColor(oldRoleData.getCurrentColor());
                         }
 
-                        if (oldRoleData != null && !currentRoleData.isHoistedChanged() && oldRoleData.isHoistedChanged()) {
+                        if (oldRoleData != null && !currentRoleData.isChangedHoisted() && oldRoleData.isChangedHoisted()) {
                             currentRoleData.setHoisted(oldRoleData.isHoisted());
                         }
-                        if (oldRoleData != null && !currentRoleData.isMentionChanged() && oldRoleData.isMentionChanged()) {
-                            currentRoleData.setMention(oldRoleData.isMention());
+                        if (oldRoleData != null && !currentRoleData.isChangedMentioned() && oldRoleData.isChangedMentioned()) {
+                            currentRoleData.setMentioned(oldRoleData.isMentioned());
                         }
 
                         lm.setRoleData(currentRoleData);
                         we.setAuthor(new WebhookEmbed.EmbedAuthor(lm.getGuild().getName(), lm.getGuild().getIconUrl(), null));
 
-                        if (!currentRoleData.isCreated() && !currentRoleData.isDelete()) {
+                        if (!currentRoleData.isCreated() && !currentRoleData.isDeleted()) {
                             changedMessage = true;
-                            we.setDescription(":family_mmb: ``" + currentRoleData.getOldName() + "`` **has been updated.**");
+                            we.setDescription(":family_mmb: ``" + currentRoleData.getPreviousName() + "`` **has been updated.**");
 
-                            if (currentRoleData.getOldName() != null && currentRoleData.getNewName() != null) {
-                                we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", currentRoleData.getOldName()));
-                                we.addField(new WebhookEmbed.EmbedField(true, "**New name**", currentRoleData.getNewName()));
+                            if (currentRoleData.getPreviousName() != null && currentRoleData.getCurrentName() != null) {
+                                we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", currentRoleData.getPreviousName()));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**New name**", currentRoleData.getCurrentName()));
                                 we.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
                             }
 
-                            if (currentRoleData.isMentionChanged()) {
-                                we.addField(new WebhookEmbed.EmbedField(true, "**Old mentionable**", !currentRoleData.isMention() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(true, "**New mentionable**", currentRoleData.isMention() + ""));
+                            if (currentRoleData.isChangedMentioned()) {
+                                we.addField(new WebhookEmbed.EmbedField(true, "**Old mentionable**", !currentRoleData.isMentioned() + ""));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**New mentionable**", currentRoleData.isMentioned() + ""));
                                 we.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
                             }
 
-                            if (currentRoleData.isHoistedChanged()) {
+                            if (currentRoleData.isChangedHoisted()) {
                                 we.addField(new WebhookEmbed.EmbedField(true, "**Old hoist**", !currentRoleData.isHoisted() + ""));
                                 we.addField(new WebhookEmbed.EmbedField(true, "**New hoist**", currentRoleData.isHoisted() + ""));
                                 we.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
                             }
 
-                            if (currentRoleData.getOldColor() != null) {
-                                we.addField(new WebhookEmbed.EmbedField(true, "**Old color**", (currentRoleData.getOldColor() != null ? currentRoleData.getOldColor() : Color.gray).getRGB() + ""));
-                                we.addField(new WebhookEmbed.EmbedField(true, "**New color**", (currentRoleData.getNewColor() != null ? currentRoleData.getNewColor() : Color.gray).getRGB() + ""));
+                            if (currentRoleData.getPreviousColor() != null) {
+                                we.addField(new WebhookEmbed.EmbedField(true, "**Old color**", (currentRoleData.getPreviousColor() != null ? currentRoleData.getPreviousColor() : Color.gray).getRGB() + ""));
+                                we.addField(new WebhookEmbed.EmbedField(true, "**New color**", (currentRoleData.getCurrentColor() != null ? currentRoleData.getCurrentColor() : Color.gray).getRGB() + ""));
                                 we.addField(new WebhookEmbed.EmbedField(true, "**", "**"));
                             }
 
@@ -162,9 +162,9 @@ public class LoggerQueue {
 
                             boolean b = false;
 
-                            if (currentRoleData.getNewPermissions() != null) {
-                                for (Permission r : currentRoleData.getNewPermissions()) {
-                                    if (!currentRoleData.getOldPermissions().contains(r)) {
+                            if (currentRoleData.getCurrentPermission() != null) {
+                                for (Permission r : currentRoleData.getCurrentPermission()) {
+                                    if (!currentRoleData.getPreviousPermission().contains(r)) {
                                         if (b) {
                                             finalString.append("\n:white_check_mark: ").append(r.getName());
                                         } else {
@@ -175,9 +175,9 @@ public class LoggerQueue {
                                 }
                             }
 
-                            if (currentRoleData.getOldPermissions() != null) {
-                                for (Permission r : currentRoleData.getOldPermissions()) {
-                                    if (!currentRoleData.getNewPermissions().contains(r)) {
+                            if (currentRoleData.getPreviousPermission() != null) {
+                                for (Permission r : currentRoleData.getPreviousPermission()) {
+                                    if (!currentRoleData.getCurrentPermission().contains(r)) {
                                         if (b) {
                                             finalString.append("\n:no_entry: ").append(r.getName());
                                         } else {
@@ -194,9 +194,9 @@ public class LoggerQueue {
                         } else {
                             changedMessage = true;
                             if (currentRoleData.isCreated()) {
-                                we.setDescription(":family_mmb: ``" + currentRoleData.getOldName() + "`` **has been created.**");
+                                we.setDescription(":family_mmb: ``" + currentRoleData.getPreviousName() + "`` **has been created.**");
                             } else {
-                                we.setDescription(":family_mmb: ``" + currentRoleData.getOldName() + "`` **has been deleted.**");
+                                we.setDescription(":family_mmb: ``" + currentRoleData.getPreviousName() + "`` **has been deleted.**");
                             }
                         }
                     }

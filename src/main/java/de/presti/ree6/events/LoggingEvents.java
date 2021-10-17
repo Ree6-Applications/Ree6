@@ -6,7 +6,10 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.invitelogger.InviteContainer;
 import de.presti.ree6.invitelogger.InviteContainerManager;
+import de.presti.ree6.logger.LoggerMemberData;
 import de.presti.ree6.logger.LoggerMessage;
+import de.presti.ree6.logger.LoggerRoleData;
+import de.presti.ree6.logger.LoggerVoiceData;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
@@ -77,10 +80,10 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), event.getMember(), LoggerMessage.LogTyp.ELSE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.ELSE));
 
 
-        if (!event.getGuild().getMemberById(BotInfo.botInstance.getSelfUser().getId()).hasPermission(Permission.MANAGE_SERVER) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_invite").getBooleanValue()) {
+        if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_invite").getBooleanValue()) {
             return;
         }
 
@@ -98,7 +101,7 @@ public class LoggingEvents extends ListenerAdapter {
             wm2.append("Couldn't find out how " + event.getMember().getAsMention() + " joined :C");
         }
 
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm2.build(), event.getMember(), LoggerMessage.LogTyp.ELSE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm2.build(), LoggerMessage.LogTyp.ELSE));
     }
 
     @Override
@@ -123,7 +126,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild().getOwner(), LoggerMessage.LogTyp.ELSE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.ELSE));
     }
 
     @Override
@@ -149,7 +152,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild().getOwner(), LoggerMessage.LogTyp.ELSE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.ELSE));
     }
 
     @Override
@@ -174,7 +177,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild().getOwner(), LoggerMessage.LogTyp.ELSE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.ELSE));
     }
 
 
@@ -206,7 +209,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), event.getEntity(), event.getNewNickname(), event.getOldNickname(),LoggerMessage.LogTyp.NICKNAME_CHANGE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMemberData(event.getEntity(), event.getOldNickname(), event.getNewNickname()),LoggerMessage.LogTyp.NICKNAME_CHANGE));
     }
 
     @Override
@@ -231,7 +234,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), event.getEntity(), LoggerMessage.LogTyp.VC_JOIN, event.getChannelJoined()));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerVoiceData(event.getEntity(), event.getChannelJoined(), LoggerVoiceData.LoggerVoiceTyp.JOIN), LoggerMessage.LogTyp.VC_JOIN));
     }
 
     @Override
@@ -255,7 +258,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] info = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(info[0]), info[1], wm.build(), event.getEntity(), LoggerMessage.LogTyp.VC_MOVE, event.getChannelJoined(), event.getChannelLeft()));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(info[0]), info[1], wm.build(), new LoggerVoiceData(event.getEntity(), event.getChannelLeft(), event.getChannelJoined(), LoggerVoiceData.LoggerVoiceTyp.MOVE), LoggerMessage.LogTyp.VC_MOVE));
     }
 
     @Override
@@ -279,7 +282,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), event.getEntity(), LoggerMessage.LogTyp.VC_LEAVE, event.getChannelLeft()));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerVoiceData(event.getEntity(), event.getChannelLeft(), LoggerVoiceData.LoggerVoiceTyp.LEAVE), LoggerMessage.LogTyp.VC_LEAVE));
     }
 
     @Override
@@ -311,7 +314,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new ArrayList<Role>(event.getRoles()), LoggerMessage.LogTyp.MEMBERROLE_CHANGE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMemberData(event.getMember(), null, new ArrayList<Role>(event.getRoles())), LoggerMessage.LogTyp.MEMBERROLE_CHANGE));
     }
 
     @Override
@@ -343,7 +346,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new ArrayList<Role>(event.getRoles()), LoggerMessage.LogTyp.MEMBERROLE_CHANGE, false));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMemberData(event.getMember(), new ArrayList<Role>(event.getRoles()), null), LoggerMessage.LogTyp.MEMBERROLE_CHANGE));
     }
 
     @SuppressWarnings("deprecation")
@@ -390,7 +393,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         if (gay) {
             String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-            Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild().getOwner(), LoggerMessage.LogTyp.ELSE));
+            Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.ELSE));
         }
 
     }
@@ -446,7 +449,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         if (gay) {
             String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-            Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild().getOwner(), LoggerMessage.LogTyp.ELSE));
+            Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.ELSE));
         }
 
     }
@@ -472,7 +475,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMessage.RoleData(event.getRole().getId(), event.getRole().getName(), true, LoggerMessage.RoleData.BooleanValueTyp.CREATE),LoggerMessage.LogTyp.ROLEDATA_CHANGE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerRoleData(event.getRole().getIdLong(), event.getRole().getName(), true, false, false, false),LoggerMessage.LogTyp.ROLEDATA_CHANGE));
     }
 
     @Override
@@ -495,7 +498,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMessage.RoleData(event.getRole().getId(), event.getRole().getName(), true, LoggerMessage.RoleData.BooleanValueTyp.DELETE),LoggerMessage.LogTyp.ROLEDATA_CHANGE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerRoleData(event.getRole().getIdLong(), event.getRole().getName(), false, true, false, false),LoggerMessage.LogTyp.ROLEDATA_CHANGE));
     }
 
     @Override
@@ -520,7 +523,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMessage.RoleData(event.getRole().getId(), event.getOldName(), event.getNewName()),LoggerMessage.LogTyp.ROLEDATA_CHANGE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerRoleData(event.getRole().getIdLong(), event.getOldName(), event.getNewName()),LoggerMessage.LogTyp.ROLEDATA_CHANGE));
     }
 
     @Override
@@ -545,7 +548,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMessage.RoleData(event.getRole().getId(), event.getRole().getName(), true, LoggerMessage.RoleData.BooleanValueTyp.MENTION),LoggerMessage.LogTyp.ROLEDATA_CHANGE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerRoleData(event.getRole().getIdLong(), event.getRole().getName(), false, false, false, true),LoggerMessage.LogTyp.ROLEDATA_CHANGE));
     }
 
     @Override
@@ -570,7 +573,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMessage.RoleData(event.getRole().getId(), event.getRole().getName(), true, LoggerMessage.RoleData.BooleanValueTyp.HOISTED),LoggerMessage.LogTyp.ROLEDATA_CHANGE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerRoleData(event.getRole().getIdLong(), event.getRole().getName(), false, false, true, false),LoggerMessage.LogTyp.ROLEDATA_CHANGE));
     }
 
     @Override
@@ -620,7 +623,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMessage.RoleData(event.getRole().getId(), event.getOldPermissions(), event.getNewPermissions()),LoggerMessage.LogTyp.ROLEDATA_CHANGE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerRoleData(event.getRole().getIdLong(), event.getOldPermissions(), event.getNewPermissions()),LoggerMessage.LogTyp.ROLEDATA_CHANGE));
     }
 
     @Override
@@ -646,7 +649,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMessage.RoleData(event.getRole().getId(), (event.getOldColor() != null ? event.getOldColor() : Color.gray), (event.getNewColor() != null ? event.getNewColor() : Color.gray)), LoggerMessage.LogTyp.ROLEDATA_CHANGE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerRoleData(event.getRole().getIdLong(), (event.getOldColor() != null ? event.getOldColor() : Color.gray), (event.getNewColor() != null ? event.getNewColor() : Color.gray)), LoggerMessage.LogTyp.ROLEDATA_CHANGE));
     }
 
 
@@ -701,13 +704,13 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild().getOwner(), LoggerMessage.LogTyp.ELSE));
+        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.ELSE));
     }
 
     @Override
     public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {
 
-        if (!event.getGuild().getMemberById(BotInfo.botInstance.getSelfUser().getId()).hasPermission(Permission.MANAGE_SERVER)) {
+        if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER)) {
             return;
         }
 
@@ -721,7 +724,7 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildInviteDelete(@Nonnull GuildInviteDeleteEvent event) {
 
-        if (!event.getGuild().getMemberById(BotInfo.botInstance.getSelfUser().getId()).hasPermission(Permission.MANAGE_SERVER)) {
+        if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER)) {
             return;
         }
 

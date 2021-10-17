@@ -22,6 +22,11 @@
       <option name="url" value="https://jitpack.io" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="twitter4j.org" />
+      <option name="name" value="twitter4j.org Repository" />
+      <option name="url" value="https://twitter4j.org/maven2" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="jcenter" />
       <option name="name" value="bintray" />
       <option name="url" value="https://jcenter.bintray.com" />

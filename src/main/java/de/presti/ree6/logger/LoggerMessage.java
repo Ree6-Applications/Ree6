@@ -12,46 +12,82 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+/**
+ * This class is used for merging LoggingMessage to save Webhook Messages
+ * to prevent Rate-Limits.
+ */
 public class LoggerMessage {
 
-    private long id = 0L;
-    private String authCode = "";
+    // Webhook ID, used to tell Discord which Webhook should be used.
+    private long id;
+
+    // Webhook AuthCode, used to authenticate.
+    private String authCode;
+
+    //  Webhook State, this is used to cancel Webhooks that have been merged with others.
     private boolean cancel = false;
 
+    // The WebhookMessage.
     private WebhookMessage wem;
 
-    private RoleData roleData;
+    // Webhook Guild, the Guild which fired the Log.
     private Guild guild;
-    private Member m;
-    private VoiceChannel vc;
-    private VoiceChannel vc2;
-    private ArrayList<Role> addedRoles;
-    private ArrayList<Role> removedRoles;
 
-    private String nickname;
-    private String nickname2;
+    // RoleData from Webhook Logs.
+    LoggerRoleData roleData;
 
+    // VoiceData from Webhook Logs.
+    LoggerVoiceData voiceData;
+
+    // MemberData from Webhook Logs.
+    LoggerMemberData memberData;
+
+    // LoggerTyp, to know what kind of Log this Message is.
     private LogTyp type;
 
-    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, ArrayList<Role> addedRoles, LogTyp type) {
+    /**
+     * Constructor for a Log-Message which shouldn't be handled.
+     * @param g Guild of the Log-Message.
+     * @param c Webhook ID.
+     * @param auth Webhook Auth-Code.
+     * @param wem WebhookMessage itself.
+     * @param type LogTyp.
+     */
+    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, LogTyp type) {
         this.guild = g;
         this.id = c;
         this.authCode = auth;
         this.wem = wem;
-        this.addedRoles = addedRoles;
         this.type = type;
     }
-
-    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, ArrayList<Role> removedRoles, LogTyp type, boolean ignore) {
+    /**
+     * Constructor for a Log-Message which should be used to handle UserData.
+     * @param g Guild of the Log-Message.
+     * @param c Webhook ID.
+     * @param auth Webhook Auth-Code.
+     * @param wem WebhookMessage itself.
+     * @param memberData Provided UserData used for the Log.
+     * @param type LogTyp.
+     */
+    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, LoggerMemberData memberData, LogTyp type) {
         this.guild = g;
         this.id = c;
         this.authCode = auth;
         this.wem = wem;
-        this.removedRoles = removedRoles;
+        this.memberData = memberData;
         this.type = type;
     }
 
-    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, RoleData roleData, LogTyp type) {
+    /**
+     * Constructor for a Log-Message which should be used to handle RoleData.
+     * @param g Guild of the Log-Message.
+     * @param c Webhook ID.
+     * @param auth Webhook Auth-Code.
+     * @param wem WebhookMessage itself.
+     * @param roleData Provided RoleData used for the Log.
+     * @param type LogTyp.
+     */
+    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, LoggerRoleData roleData, LogTyp type) {
         this.guild = g;
         this.id = c;
         this.authCode = auth;
@@ -60,330 +96,174 @@ public class LoggerMessage {
         this.type = type;
     }
 
-    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, Member m, LogTyp type) {
+    /**
+     * Constructor for a Log-Message which should be used to handle RoleData.
+     * @param g Guild of the Log-Message.
+     * @param c Webhook ID.
+     * @param auth Webhook Auth-Code.
+     * @param wem WebhookMessage itself.
+     * @param voiceData Provided VoiceData used for the Log.
+     * @param type LogTyp.
+     */
+    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, LoggerVoiceData voiceData, LogTyp type) {
         this.guild = g;
         this.id = c;
         this.authCode = auth;
         this.wem = wem;
-        this.m = m;
+        this.voiceData = voiceData;
         this.type = type;
     }
 
-    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, Member m, String nick, String nick2, LogTyp type) {
-        this.guild = g;
-        this.id = c;
-        this.authCode = auth;
-        this.wem = wem;
-        this.m = m;
-        this.nickname = nick;
-        this.nickname2 = nick2;
-        this.type = type;
-    }
-
-    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, Member m, LogTyp type, VoiceChannel vc) {
-        this.guild = g;
-        this.id = c;
-        this.authCode = auth;
-        this.wem = wem;
-        this.m = m;
-        this.type = type;
-        this.vc = vc;
-    }
-
-    public LoggerMessage(Guild g, long c, String auth, WebhookMessage wem, Member m, LogTyp type, VoiceChannel vc, VoiceChannel vc2) {
-        this.guild = g;
-        this.id = c;
-        this.authCode = auth;
-        this.wem = wem;
-        this.m = m;
-        this.type = type;
-        this.vc = vc;
-        this.vc2 = vc2;
-    }
-
+    /**
+     * Get the Guild of the Log-Message.
+     * @return the Guild.
+     */
     public Guild getGuild() {
         return guild;
     }
 
+    /**
+     * Set the Guild of the Log-Message.
+     * @param guild the Guild.
+     */
+    @Deprecated
     public void setGuild(Guild guild) {
         this.guild = guild;
     }
 
+    /**
+     * Webhook ID used for Discord to identificate which Webhook is meant.
+     * @return the Webhook ID.
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * Change the Webhook ID.
+     * @param id the Webhook ID.
+     */
+    @Deprecated
     public void setId(long id) {
         this.id = id;
     }
 
+    /**
+     * The Auth-Code used to authenticate the Webhook Packet.
+     * @return the Authentication Code.
+     */
     public String getAuthCode() {
         return authCode;
     }
 
+    /**
+     * Change the Auth-Code of the Webhook Packet.
+     * @param authCode the new Auth-Code.
+     */
+    @Deprecated
     public void setAuthCode(String authCode) {
         this.authCode = authCode;
     }
 
+    /**
+     * Get the current WebhookMessage.
+     * @return WebhookMessage.
+     */
     public WebhookMessage getWem() {
         return wem;
     }
 
+    /**
+     * Change the current Webhook-Message.
+     * @param wem new Webhook-Message.
+     */
     public void setWem(WebhookMessage wem) {
         this.wem = wem;
     }
 
-    public Member getM() {
-        return m;
-    }
-
-    public void setM(Member m) {
-        this.m = m;
-    }
-
+    /**
+     * The current LogTyp.
+     * @return the LogTyp.
+     */
     public LogTyp getType() {
         return type;
     }
 
+    /**
+     * Change the LogTyp of the current Message.
+     * @param type the new LogTyp.
+     */
+    @Deprecated
     public void setType(LogTyp type) {
         this.type = type;
     }
 
+    /**
+     * Check if the Message is canceled or not.
+     * @return is the Message canceled.
+     */
     public boolean isCancel() {
         return cancel;
     }
 
+    /**
+     * Cancel the LogMessage or "uncancel" the LogMessage.
+     * @param cancel should the Message be canceled.
+     */
     public void setCancel(boolean cancel) {
         this.cancel = cancel;
     }
 
-    public VoiceChannel getVc() {
-        return vc;
-    }
-
-    public void setVc(VoiceChannel vc) {
-        this.vc = vc;
-    }
-
-    public VoiceChannel getVc2() {
-        return vc2;
-    }
-
-    public void setVc2(VoiceChannel vc2) {
-        this.vc2 = vc2;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getNickname2() {
-        return nickname2;
-    }
-
-    public void setNickname2(String nickname2) {
-        this.nickname2 = nickname2;
-    }
-
-    public RoleData getRoleData() {
+    /**
+     * The used RoleData.
+     * @return the RoleData.
+     */
+    public LoggerRoleData getRoleData() {
         return roleData;
     }
 
-    public void setRoleData(RoleData roleData) {
+    /**
+     * Change The used RoleData.
+     * @param roleData the new RoleData.
+     */
+    public void setRoleData(LoggerRoleData roleData) {
         this.roleData = roleData;
     }
 
-    public ArrayList<Role> getAddedRoles() {
-        return addedRoles;
+    /**
+     * The used VoiceData.
+     * @return the VoiceData.
+     */
+    public LoggerVoiceData getVoiceData() {
+        return voiceData;
     }
 
-    public void setAddedRoles(ArrayList<Role> addedRoles) {
-        this.addedRoles = addedRoles;
+    /**
+     * Change the used VoiceData.
+     * @param voiceData  the new VoiceData.
+     */
+    public void setVoiceData(LoggerVoiceData voiceData) {
+        this.voiceData = voiceData;
     }
 
-    public ArrayList<Role> getRemovedRoles() {
-        return removedRoles;
+    /**
+     * The used MemberData.
+     * @return the MemberData.
+     */
+    public LoggerMemberData getMemberData() {
+        return memberData;
     }
 
-    public void setRemovedRoles(ArrayList<Role> removedRoles) {
-        this.removedRoles = removedRoles;
+    /**
+     * Change the used MemberData.
+     * @param memberData  the new MemberData.
+     */
+    public void setMemberData(LoggerMemberData memberData) {
+        this.memberData = memberData;
     }
 
+    // The used Log-Types.
     public enum LogTyp {
         VC_LEAVE, VC_JOIN, VC_MOVE, NICKNAME_CHANGE, ROLEDATA_CHANGE, MEMBERROLE_CHANGE, CHANNELDATA_CHANGE, ELSE
     }
-
-    public static class RoleData {
-
-        private String Id;
-        private String newName;
-        private String oldName;
-        private Color newColor;
-        private Color oldColor;
-        private EnumSet<Permission> newPermissions;
-        private EnumSet<Permission> oldPermissions;
-        private boolean created;
-        private boolean delete;
-        private boolean mention;
-        private boolean hoisted;
-
-        private boolean mentionChanged;
-        private boolean hoistedChanged;
-
-        public RoleData(String Id, String oldName, boolean value, BooleanValueTyp typ) {
-            this.Id = Id;
-            this.oldName = oldName;
-            if (typ == BooleanValueTyp.CREATE) this.created = value;
-            if (typ == BooleanValueTyp.DELETE) this.delete = value;
-            if (typ == BooleanValueTyp.MENTION) setMention(value);
-            if (typ == BooleanValueTyp.HOISTED) setHoisted(value);
-        }
-
-        public RoleData(String Id, String oldName, String newName) {
-            this.Id = Id;
-            this.oldName = oldName;
-            this.newName = newName;
-        }
-
-        public RoleData(String Id, Color oldColor, Color newColor) {
-            this.Id = Id;
-            this.oldColor = oldColor;
-            this.newColor = newColor;
-        }
-
-        public RoleData(String Id, EnumSet<Permission> oldPermissions, EnumSet<Permission> newPermissions) {
-            this.Id = Id;
-            this.oldPermissions = oldPermissions;
-            this.newPermissions = newPermissions;
-        }
-
-        public RoleData(String Id, String oldName, String newName, Color oldColor, Color newColor, EnumSet<Permission> oldPermissions, EnumSet<Permission> newPermissions, boolean value, BooleanValueTyp typ) {
-            this.Id = Id;
-            this.oldName = oldName;
-            this.newName = newName;
-            this.oldColor = oldColor;
-            this.newColor = newColor;
-            this.oldPermissions = oldPermissions;
-            this.newPermissions = newPermissions;
-            if (typ == BooleanValueTyp.CREATE) this.created = value;
-            if (typ == BooleanValueTyp.DELETE) this.delete = value;
-            if (typ == BooleanValueTyp.MENTION) setMention(value);
-            if (typ == BooleanValueTyp.HOISTED) setHoisted(value);
-        }
-
-        public String getId() {
-            return Id;
-        }
-
-        public void setId(String Id) {
-            this.Id = Id;
-        }
-
-        public String getNewName() {
-            return newName;
-        }
-
-        public void setNewName(String newName) {
-            this.newName = newName;
-        }
-
-        public String getOldName() {
-            return oldName;
-        }
-
-        public void setOldName(String oldName) {
-            this.oldName = oldName;
-        }
-
-        public EnumSet<Permission> getNewPermissions() {
-            return newPermissions;
-        }
-
-        public void setNewPermissions(EnumSet<Permission> newPermissions) {
-            this.newPermissions = newPermissions;
-        }
-
-        public EnumSet<Permission> getOldPermissions() {
-            return oldPermissions;
-        }
-
-        public void setOldPermissions(EnumSet<Permission> oldPermissions) {
-            this.oldPermissions = oldPermissions;
-        }
-
-        public Color getNewColor() {
-            return newColor;
-        }
-
-        public void setNewColor(Color newColor) {
-            this.newColor = newColor;
-        }
-
-        public Color getOldColor() {
-            return oldColor;
-        }
-
-        public void setOldColor(Color oldColor) {
-            this.oldColor = oldColor;
-        }
-
-        public boolean isCreated() {
-            return created;
-        }
-
-        public void setCreated(boolean created) {
-            this.created = created;
-        }
-
-        public boolean isDelete() {
-            return delete;
-        }
-
-        public void setDelete(boolean delete) {
-            this.delete = delete;
-        }
-
-        public boolean isMention() {
-            return mention;
-        }
-
-        public void setMention(boolean mention) {
-            this.mention = mention;
-            mentionChanged = true;
-        }
-
-        public boolean isHoisted() {
-            return hoisted;
-        }
-
-        public void setHoisted(boolean hoisted) {
-            this.hoisted = hoisted;
-            hoistedChanged = true;
-        }
-
-        public boolean isMentionChanged() {
-            return mentionChanged;
-        }
-
-        public void setMentionChanged(boolean mentionChanged) {
-            this.mentionChanged = mentionChanged;
-        }
-
-        public boolean isHoistedChanged() {
-            return hoistedChanged;
-        }
-
-        public void setHoistedChanged(boolean hoistedChanged) {
-            this.hoistedChanged = hoistedChanged;
-        }
-
-        public enum BooleanValueTyp {
-            HOISTED, DELETE, CREATE, MENTION
-        }
-    }
-
 }
