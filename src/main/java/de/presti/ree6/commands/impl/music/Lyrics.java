@@ -33,7 +33,7 @@ public class Lyrics extends Command {
             GuildMusicManager gmm = Main.musicWorker.getGuildAudioPlayer(m.getGuild());
             String title = gmm.player.getPlayingTrack().getInfo().title.replace("(Official Music Video)", "").replace("(Official Video)", "")
                     .replace("(Music Video)", "").replace("(Official Music)", "").replace("(Official Lyrics)", "")
-                    .replace("(Lyrics)", "");
+                    .replace("(Lyrics)", "").replace("(Audio)", "").replace("(Official Audio)", "");
 
             client.getLyrics(title).thenAccept(lyrics -> {
 
@@ -69,6 +69,7 @@ public class Lyrics extends Command {
                         m.sendMessageEmbeds(eb.setDescription(content.substring(0, index).trim()).build()).queue();
                         content = content.substring(index).trim();
                         eb.setAuthor(null).setTitle(null, null);
+                        eb.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
                     }
 
                     m.sendMessageEmbeds(eb.setDescription(content).build()).queue();
