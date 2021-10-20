@@ -18,12 +18,12 @@ Current Features:
 - Moderation Commands(ban, mute, kick and more)
 - Twitch Notification
 - Web-panel
+- Settings for Logs
 
 Upcoming Features:
 - YouTube Notification
 - 100% adjustable messages
 - RestAPI
-- Settings for logs
 
 Please be aware that im a Student and can't work full-time on the Bot!
 
