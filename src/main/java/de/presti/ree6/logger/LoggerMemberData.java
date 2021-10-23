@@ -10,7 +10,7 @@ public class LoggerMemberData {
     private Member member;
     private String previousName, currentName;
 
-    private ArrayList<Role> removedRoles, addedRoles;
+    private ArrayList<Role> removedRoles = new ArrayList<>(), addedRoles = new ArrayList<>();
 
     public LoggerMemberData(Member member, String previousName, String currentName) {
         this.member = member;

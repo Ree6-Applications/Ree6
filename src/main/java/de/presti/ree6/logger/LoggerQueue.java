@@ -54,6 +54,7 @@ public class LoggerQueue {
                     // Cancel every Log-Message which indicates that the person left.
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
                             !loggerMessages.isCanceled() &&
+                            loggerMessages.getVoiceData() != null &&
                             loggerMessages.getVoiceData().getMember() == loggerMessage.getVoiceData().getMember() &&
                             loggerMessages.getType() == LoggerMessage.LogTyp.VC_LEAVE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
@@ -94,6 +95,7 @@ public class LoggerQueue {
 
                     // Cancel every Log-Message which indicates that the person joined.
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
+                            loggerMessages.getVoiceData() != null &&
                             loggerMessages.getVoiceData().getMember() == loggerMessage.getVoiceData().getMember() &&
                             !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.VC_JOIN).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
@@ -146,11 +148,13 @@ public class LoggerQueue {
                     // Get the latest MemberData.
                     LoggerMemberData memberData = logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage &&
                             loggerMessages.getId() == loggerMessage.getId() &&
+                            loggerMessages.getMemberData() != null &&
                             loggerMessages.getMemberData().getMember() == loggerMessage.getMemberData().getMember() &&
                             !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE).findFirst().get().getMemberData();
 
                     // Cancel every other LogEvent of that Typ.
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
+                            loggerMessages.getMemberData() != null &&
                             loggerMessages.getMemberData().getMember() == loggerMessage.getMemberData().getMember() &&
                             !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
@@ -182,10 +186,17 @@ public class LoggerQueue {
                     }
 
                     // Merge both lists with the current List.
-                    memberData.getRemovedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
-                            !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
-                    memberData.getAddedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
-                            !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
+                    if (memberData != null && memberData.getRemovedRoles() != null && !memberData.getRemovedRoles().isEmpty() && memberData.getRemovedRoles().stream().anyMatch(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
+                            !loggerMessage.getMemberData().getRemovedRoles().contains(role))) {
+                        memberData.getRemovedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
+                                !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
+                    }
+
+                    if (memberData != null && memberData.getAddedRoles() != null && !memberData.getAddedRoles().isEmpty() && memberData.getAddedRoles().stream().anyMatch(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
+                            !loggerMessage.getMemberData().getRemovedRoles().contains(role))) {
+                        memberData.getAddedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
+                                !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
+                    }
 
                     // StringBuilder to convert the List into a single String.
                     StringBuilder stringBuilder = new StringBuilder();
@@ -195,7 +206,10 @@ public class LoggerQueue {
                     loggerMessage.getMemberData().getRemovedRoles().forEach(role -> stringBuilder.append(":no_entry:").append(" ").append(role.getName()).append("\n"));
 
                     // Set Embed Elements.
-                    webhookEmbedBuilder.setDescription(":writing_hand: " + loggerMessage.getMemberData().getMember() + " **has been updated.**");
+                    webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(loggerMessage.getMemberData().getMember().getUser().getAsTag(),
+                            loggerMessage.getMemberData().getMember().getUser().getAvatarUrl(), null));
+                    webhookEmbedBuilder.setThumbnailUrl(loggerMessage.getMemberData().getMember().getUser().getAvatarUrl());
+                    webhookEmbedBuilder.setDescription(":writing_hand: " + loggerMessage.getMemberData().getMember().getAsMention() + " **has been updated.**");
                     webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", stringBuilder.toString()));
 
                     modified = true;
@@ -204,10 +218,12 @@ public class LoggerQueue {
             // Check if it's a Role Update log.
             else if (loggerMessage.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE) {
                 if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
+                        loggerMessages.getRoleData() != null &&
                         !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE)) {
 
                     // Get the latest RoleData.
                     LoggerRoleData roleData = logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
+                            loggerMessages.getRoleData() != null &&
                             !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).findFirst().get().getRoleData();
 
                     // Cancel every Log-Message which indicates that the person changed their name.

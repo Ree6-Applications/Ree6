@@ -1,3 +1,9 @@
 # Project exclude paths
 /out/
 /target/
+*.mf
+*jar.xml
+*.yaml
+*.yml
+/src/main/resources/META-INF/
+/.idea/

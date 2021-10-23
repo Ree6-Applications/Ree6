@@ -19,6 +19,7 @@ import de.presti.ree6.sql.SQLWorker;
 import de.presti.ree6.utils.*;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
