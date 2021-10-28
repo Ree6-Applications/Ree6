@@ -14,17 +14,16 @@ public class Webhook {
 
     public static void sendWebhook(WebhookMessage message, long channelId, String webhookToken) {
         if (webhookToken.contains("Not setuped") || channelId == 0) return;
+
+        if (!Main.sqlWorker.isWebhookLogDataInDB(channelId, webhookToken)) return;
+
         try(WebhookClient wcl = WebhookClient.withId(channelId, webhookToken)) {
-            wcl.send(message).exceptionally(new Function<Throwable, ReadonlyMessage>() {
-                @Override
-                public ReadonlyMessage apply(Throwable throwable) {
-                    if (throwable.getCause() instanceof HttpException) {
-                        if (throwable.getMessage().contains("failure 404")) {
-                            Main.sqlWorker.deleteLogWebhook(channelId, webhookToken);
-                        }
-                    }
-                    return null;
+            wcl.send(message).exceptionally(throwable -> {
+                if (throwable.getMessage().contains("failure 404")) {
+                    Main.sqlWorker.deleteLogWebhook(channelId, webhookToken);
                 }
+                Logger.log("Webhook", "Deleted invalid Webhook: " + channelId + " - " + webhookToken);
+                return null;
             });
         } catch (Exception ex) {
             // Main.sqlWorker.deleteLogWebhook(channelId, webhookToken);
