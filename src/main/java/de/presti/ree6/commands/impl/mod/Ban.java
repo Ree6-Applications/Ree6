@@ -1,9 +1,9 @@
 package de.presti.ree6.commands.impl.mod;
 
-import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 
+import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -25,7 +25,7 @@ public class Ban extends Command {
             if (args.length == 1) {
                 if(messageSelf.getMentionedMembers().isEmpty()) {
                     sendMessage("No User mentioned!", 5, m, hook);
-                    sendMessage("Use ree!ban @user", 5, m, hook);
+                    sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "ban @user", 5, m, hook);
                 } else {
                     if (m.getGuild().getSelfMember().canInteract(messageSelf.getMentionedMembers().get(0)) && sender.canInteract(messageSelf.getMentionedMembers().get(0))) {
                         sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been banned!", 5, m, hook);
@@ -36,7 +36,7 @@ public class Ban extends Command {
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use ree!ban @user", 5, m, hook);
+                sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "ban @user", 5, m, hook);
             }
         } else {
             sendMessage("You don't have the Permission for this Command!", 5, m, hook);

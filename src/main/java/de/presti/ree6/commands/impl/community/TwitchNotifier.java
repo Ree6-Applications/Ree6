@@ -31,12 +31,12 @@ public class TwitchNotifier extends Command {
                 sendMessage(end.toString(), 10, m, hook);
 
             } else {
-                sendMessage("Please use ree!twitch list/add/remove", 5, m, hook);
+                sendMessage("Please use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch list/add/remove", 5, m, hook);
             }
         } else if(args.length == 3) {
 
             if (messageSelf.getMentionedChannels().size() == 0) {
-                sendMessage("Please use ree!twitch add/remove TwitchName #Channel", 5, m, hook);
+                sendMessage("Please use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch add/remove TwitchName #Channel", 5, m, hook);
                 return;
             }
 
@@ -49,7 +49,7 @@ public class TwitchNotifier extends Command {
                     Main.twitchAPIHandler.registerChannel(name);
                 }
             } else {
-                sendMessage("Please use ree!twitch add TwitchName #Channel", 5, m, hook);
+                sendMessage("Please use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch add TwitchName #Channel", 5, m, hook);
             }
         } else if(args.length == 2) {
             String name = args[1];
@@ -63,10 +63,10 @@ public class TwitchNotifier extends Command {
                     }
                 }
             } else {
-                sendMessage("Please use ree!twitch remove TwitchName", 5, m, hook);
+                sendMessage("Please use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch remove TwitchName", 5, m, hook);
             }
         } else {
-            sendMessage("Please use ree!twitch list/add/remove", 5, m, hook);
+            sendMessage("Please use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch list/add/remove", 5, m, hook);
         }
         deleteMessage(messageSelf);
     }

@@ -27,7 +27,7 @@ public class Info extends Command {
             if (args.length == 1) {
                 if(messageSelf.getMentionedMembers().isEmpty()) {
                     sendMessage("No User mentioned!", 5, m, hook);
-                    sendMessage("Use ree!info @user", 5, m, hook);
+                    sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, m, hook);
                 } else {
                     EmbedBuilder em = new EmbedBuilder();
 
@@ -46,7 +46,7 @@ public class Info extends Command {
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use ree!info @user", 5, m, hook);
+                sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, m, hook);
             }
     }
 }

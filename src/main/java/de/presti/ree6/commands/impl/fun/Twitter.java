@@ -73,7 +73,7 @@ public class Twitter extends Command {
                 }
             }
         } else {
-            sendMessage("Use ree!twitter @User Yourtexthere", 5, m, hook);
+            sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitter @User Yourtexthere", 5, m, hook);
         }
     }
 }

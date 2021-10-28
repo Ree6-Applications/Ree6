@@ -29,7 +29,7 @@ public class Unmute extends Command {
 
                 if(messageSelf.getMentionedMembers().isEmpty()) {
                     sendMessage("No User mentioned!", 5, m, hook);
-                    sendMessage("Use ree!unmute @user", 5, m, hook);
+                    sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "unmute @user", 5, m, hook);
                 } else {
                     sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been unmuted!", 5, m, hook);
                     Role r = m.getGuild().getRoleById(Main.sqlWorker.getMuteRoleID(sender.getGuild().getId()));
@@ -37,7 +37,7 @@ public class Unmute extends Command {
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use ree!unmute @user", 5, m, hook);
+                sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "unmute @user", 5, m, hook);
             }
         } else {
             sendMessage("You dont have the Permission for this Command!", 5, m, hook);

@@ -27,7 +27,7 @@ public class Hug extends Command {
         if (args.length == 1) {
             if(messageSelf.getMentionedMembers().isEmpty()) {
                 sendMessage("No User mentioned!", 5, m, hook);
-                sendMessage("Use ree!hug @user", 5, m, hook);
+                sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "hug @user", 5, m, hook);
             } else {
 
                 User target = messageSelf.getMentionedMembers().get(0).getUser();
@@ -46,7 +46,7 @@ public class Hug extends Command {
             }
         } else {
             sendMessage("Not enough Arguments!", 5, m, hook);
-            sendMessage("Use ree!hug @user", 5, m, hook);
+            sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "hug @user", 5, m, hook);
         }
     }
 

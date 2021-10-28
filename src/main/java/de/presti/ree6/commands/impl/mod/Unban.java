@@ -27,7 +27,7 @@ public class Unban extends Command {
                 sendMessage("User <@" + givenid + "> has been unbanned!", 5, m, hook);
             } else {
                 sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use ree!unban @user", 5, m, hook);
+                sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "unban @user", 5, m, hook);
             }
         } else {
             sendMessage("You dont have the Permission for this Command!", 5, m, hook);

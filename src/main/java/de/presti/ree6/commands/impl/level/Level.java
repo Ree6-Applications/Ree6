@@ -98,7 +98,7 @@ public class Level extends Command {
                 }
             } else {
                 sendMessage("Not enough Arguments!", m, hook);
-                sendMessage("Use ree!level or ree!level @user", m, hook);
+                sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "level or ree!level @user", m, hook);
             }
     }
 

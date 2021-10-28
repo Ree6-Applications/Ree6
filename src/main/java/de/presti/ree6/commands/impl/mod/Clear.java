@@ -44,16 +44,16 @@ public class Clear extends Command {
 
                     } else {
                         sendMessage(args[0] + " isn't between 2 and 100 !", 5, m, hook);
-                        sendMessage("Use ree!clear 1-100", 5, m, hook);
+                        sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "clear 1-100", 5, m, hook);
                     }
                 } catch (Exception ex) {
                     sendMessage(args[0] + " isn't a number!", 5, m, hook);
-                    sendMessage("Use ree!clear 2-100", 5, m, hook);
+                    sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, m, hook);
                     Logger.log("Clear", ex.getMessage() + " - " + ex.getStackTrace()[0].toString());
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use ree!clear 2-100", 5, m, hook);
+                sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, m, hook);
             }
         } else {
             sendMessage("You don't have the Permission for this Command!", 5, m, hook);
