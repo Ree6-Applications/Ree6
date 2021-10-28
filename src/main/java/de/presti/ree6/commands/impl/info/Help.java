@@ -4,6 +4,7 @@ import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -28,6 +29,7 @@ public class Help extends Command {
             em.setColor(BotUtil.randomEmbedColor());
             em.setTitle("Command Index");
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
 
             for (Category cat : Category.values()) {
                 if (cat != Category.HIDDEN) {
@@ -40,6 +42,7 @@ public class Help extends Command {
             em.setColor(BotUtil.randomEmbedColor());
             em.setTitle("Command Index");
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
 
             if (isValid(args[0])) {
 

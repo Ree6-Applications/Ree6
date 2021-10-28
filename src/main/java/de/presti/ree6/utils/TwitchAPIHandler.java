@@ -8,6 +8,7 @@ import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.Webhook;
+import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 
 import java.awt.*;
@@ -61,7 +62,7 @@ public class TwitchAPIHandler {
             webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitch Notifier", null, null));
             webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrl());
             webhookEmbedBuilder.setDescription("Hey the User " + channelGoLiveEvent.getStream().getUserName() + " is now LIVE!\n\nhttps://twitch.tv/" + channelGoLiveEvent.getStream().getUserName() + "\n\nTitle: " + channelGoLiveEvent.getStream().getTitle() +"\nViewercount: " + channelGoLiveEvent.getStream().getViewerCount() + "\nGame: " + channelGoLiveEvent.getStream().getGameName());
-            webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter("• today at " + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()), null));
+            webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.advertisement, null));
             webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
 
             wmb.addEmbeds(webhookEmbedBuilder.build());

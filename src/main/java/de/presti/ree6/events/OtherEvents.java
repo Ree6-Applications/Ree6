@@ -134,7 +134,7 @@ public class OtherEvents extends ListenerAdapter {
         if(!Main.commandManager.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
 
             if(!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(BotInfo.botInstance.getSelfUser())) {
-                event.getChannel().sendMessage("Usage ree!help").queue();
+                event.getChannel().sendMessage("Usage " + Main.sqlWorker.getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "help").queue();
             }
 
             if(!ArrayUtil.timeout.contains(event.getMember())) {
