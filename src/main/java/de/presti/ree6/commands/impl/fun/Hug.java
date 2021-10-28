@@ -2,6 +2,7 @@ package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.Neko4JsAPI;
 
 import net.dv8tion.jda.api.entities.Member;
