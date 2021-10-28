@@ -170,7 +170,7 @@ public class OtherEvents extends ListenerAdapter {
 
         if (event.getOption("target") != null) messageBuilder.mentionUsers(event.getOption("target").getAsUser().getId());
 
-        messageBuilder.setContent("ree!" + event.getName() + " " + (event.getOption("target") != null ? event.getOption("target").getAsMember().getAsMention() : event.getOption("name") != null ? event.getOption("name").getAsString() : ""));
+        messageBuilder.setContent(Main.sqlWorker.getSetting(event.getGuild().getId(), "chatprefix").getStringValue() +  event.getName() + " " + (event.getOption("target") != null ? event.getOption("target").getAsMember().getAsMention() : event.getOption("name") != null ? event.getOption("name").getAsString() : ""));
 
         Message message = messageBuilder.build();
 

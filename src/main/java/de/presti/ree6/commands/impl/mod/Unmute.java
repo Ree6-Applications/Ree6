@@ -23,7 +23,7 @@ public class Unmute extends Command {
             if (args.length == 1) {
 
                 if(!Main.sqlWorker.hasMuteSetuped(m.getGuild().getId())) {
-                    sendMessage("Mute Role hasnt been setuped!\nTo setup it up type ree!setup mute @MuteRole !", 5, m, hook);
+                    sendMessage("Mute Role hasnt been setuped!\nTo setup it up type " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "setup mute @MuteRole !", 5, m, hook);
                     return;
                 }
 

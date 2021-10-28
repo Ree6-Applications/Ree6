@@ -38,7 +38,7 @@ public class Play extends Command {
             em.setTitle("Music Player!");
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setColor(Color.GREEN);
-            em.setDescription("Usage: ree!play (Url)");
+            em.setDescription("Usage: " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
             em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
             sendMessage(em, 5, m, hook);
         } else {

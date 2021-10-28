@@ -51,7 +51,7 @@ public class Volume extends Command {
             em.setTitle("Music Player!");
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setColor(Color.GREEN);
-            em.setDescription("Type ree!volume [voulume]");
+            em.setDescription("Type " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "volume [voulume]");
         }
         em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
 

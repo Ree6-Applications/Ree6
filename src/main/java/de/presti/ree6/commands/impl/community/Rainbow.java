@@ -29,7 +29,7 @@ public class Rainbow extends Command {
         deleteMessage(messageSelf);
 
         if(!Main.sqlWorker.hasRainbowSetuped(m.getGuild().getId())) {
-            sendMessage("Rainbow Mate searcher isn't setuped!\nAsk a Admin to set it up with ree!setup r6", 5, m, hook);
+            sendMessage("Rainbow Mate searcher isn't setuped!\nAsk a Admin to set it up with "+ Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "setup r6", 5, m, hook);
             return;
         }
 

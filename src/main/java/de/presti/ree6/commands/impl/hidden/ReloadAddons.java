@@ -20,7 +20,7 @@ public class ReloadAddons extends Command {
         if(sender.getUser().getId().equalsIgnoreCase("321580743488831490")) {
             Main.addonManager.reload();
         } else {
-            sendMessage("The Command ree!reloadaddons couldn't be found!", 5, m, hook);
+            sendMessage("The Command " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "reloadaddons couldn't be found!", 5, m, hook);
         }
     }
 }
