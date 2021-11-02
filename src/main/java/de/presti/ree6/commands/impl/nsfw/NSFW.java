@@ -18,10 +18,10 @@ import java.util.Random;
 
 public class NSFW extends Command {
 
-    private final String[] tags = new String[] { "solo", "cum", "les", "bj", "tits", "nsfw_neko_gif", "cum_jpg", "blowjob", "boobs", "pussy_jpg", "anal" };
+    private final String[] tags = new String[]{"cum", "tits", "nsfw_neko_gif", "blowjob", "boobs", "anal"};
 
     public NSFW() {
-        super("nsfw", "Get NSFW Images from neko.life", Category.NSFW, new String[] { "givensfw"});
+        super("nsfw", "Get NSFW Images from neko.life", Category.NSFW, new String[]{"givensfw", "hentai"});
     }
 
     @Override
@@ -29,12 +29,14 @@ public class NSFW extends Command {
         if (m.isNSFW()) {
             ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
-            Image im = ip.getRandomImage(tags[new Random().nextInt(tags.length - 1)]).execute();
+            String usedTag = tags[new Random().nextInt(tags.length - 1)];
+
+            Image im = ip.getRandomImage(usedTag).execute();
 
             EmbedBuilder em = new EmbedBuilder();
 
             em.setImage((im.getUrl() != null ? im.getUrl() : "https://images.ree6.de/notfound.png"));
-            em.setFooter(sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
+            em.setFooter(sender.getUser().getAsTag() + " Tag: " + usedTag + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
 
             sendMessage(em, m, hook);
         } else {

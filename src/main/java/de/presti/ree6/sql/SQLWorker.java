@@ -1160,8 +1160,8 @@ public class SQLWorker {
             ResultSet rs = null;
 
             try {
-                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM GuildStats WHERE GID='" + gid + "' ORDER BY cast(uses as unsigned) DESC LIMIT 99");
-                rs = st.executeQuery("SELECT * FROM GuildStats WHERE GID='" + gid + "' ORDER BY cast(uses as unsigned) DESC LIMIT 99");
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM GuildStats WHERE GID='" + gid + "' ORDER BY cast(uses as integer) DESC LIMIT 50");
+                rs = st.executeQuery("SELECT * FROM GuildStats WHERE GID='" + gid + "' ORDER BY cast(uses as integer) DESC LIMIT 50");
             } catch (Exception ignore) {
             }
 
@@ -1224,8 +1224,8 @@ public class SQLWorker {
             ResultSet rs = null;
 
             try {
-                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM CommandStats ORDER BY cast(uses as unsigned) DESC LIMIT 99");
-                rs = st.executeQuery("SELECT * FROM CommandStats ORDER BY cast(uses as unsigned) DESC LIMIT 99");
+                st = Main.sqlConnector.con.prepareStatement("SELECT * FROM CommandStats ORDER BY cast(uses as integer) DESC LIMIT 50");
+                rs = st.executeQuery("SELECT * FROM CommandStats ORDER BY cast(uses as integer) DESC LIMIT 50");
             } catch (Exception ignore) {
             }
 

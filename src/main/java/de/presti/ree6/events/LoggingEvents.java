@@ -61,47 +61,48 @@ public class LoggingEvents extends ListenerAdapter {
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
 
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_memberjoin").getBooleanValue())
+        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
             return;
-
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
-
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setThumbnailUrl(event.getUser().getAvatarUrl());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.advertisement, event.getGuild().getIconUrl()));
-        we.setTimestamp(Instant.now());
-        we.setDescription(event.getUser().getAsMention() + " **joined the Server.**\n:timer: Age of the Account:\n``" + event.getUser().getTimeCreated().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) + "``\n**" + TimeUtil.getFormattedDate(TimeUtil.getDifferenceBetween(event.getUser().getTimeCreated().toLocalDateTime(), LocalDateTime.now())) + "**");
-
-        wm.addEmbeds(we.build());
 
         String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.ELSE));
 
+        if (Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_memberjoin").getBooleanValue()) {
+            WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_invite").getBooleanValue()) {
-            return;
+            wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            wm.setUsername("Ree6Logs");
+
+            WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+            we.setColor(Color.BLACK.getRGB());
+            we.setThumbnailUrl(event.getUser().getAvatarUrl());
+            we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.advertisement, event.getGuild().getIconUrl()));
+            we.setTimestamp(Instant.now());
+            we.setDescription(event.getUser().getAsMention() + " **joined the Server.**\n:timer: Age of the Account:\n``" + event.getUser().getTimeCreated().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) + "``\n**" + TimeUtil.getFormattedDate(TimeUtil.getDifferenceBetween(event.getUser().getTimeCreated().toLocalDateTime(), LocalDateTime.now())) + "**");
+
+            wm.addEmbeds(we.build());
+            Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.ELSE));
         }
 
-        WebhookMessageBuilder wm2 = new WebhookMessageBuilder();
+        if (event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER) && Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_invite").getBooleanValue()) {
 
-        wm2.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-        wm2.setUsername("Ree6InviteLogs");
+            WebhookMessageBuilder wm2 = new WebhookMessageBuilder();
 
-        InviteContainer inviteContainer = InviteContainerManager.getRightInvite(event.getGuild());
+            wm2.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            wm2.setUsername("Ree6InviteLogs");
 
-        if (inviteContainer != null) {
-            inviteContainer.setUses(inviteContainer.getUses() + 1);
-            wm2.append(event.getUser().getAsMention() + " **has been invited by** <@" + inviteContainer.getCreatorid() + "> (Code: " + inviteContainer.getCode() + ", Uses: " + inviteContainer.getUses() + ")");
-        } else {
-            wm2.append("Couldn't find out how " + event.getMember().getAsMention() + " joined :C");
+            InviteContainer inviteContainer = InviteContainerManager.getRightInvite(event.getGuild());
+
+            if (inviteContainer != null) {
+                inviteContainer.setUses(inviteContainer.getUses() + 1);
+                wm2.append(event.getUser().getAsMention() + " **has been invited by** <@" + inviteContainer.getCreatorid() + "> (Code: " + inviteContainer.getCode() + ", Uses: " + inviteContainer.getUses() + ")");
+                InviteContainerManager.addInvite(inviteContainer, event.getGuild().getId());
+            } else {
+                wm2.append("Couldn't find out how " + event.getMember().getAsMention() + " joined :C");
+            }
+
+            Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm2.build(), LoggerMessage.LogTyp.ELSE));
         }
-
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm2.build(), LoggerMessage.LogTyp.ELSE));
     }
 
     @Override
