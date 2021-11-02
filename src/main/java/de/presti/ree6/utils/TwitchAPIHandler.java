@@ -67,7 +67,7 @@ public class TwitchAPIHandler {
 
             wmb.addEmbeds(webhookEmbedBuilder.build());
 
-            Webhook.sendWebhook(wmb.build(), Long.parseLong(credits[0]), credits[1]);
+            Webhook.sendWebhook(null, wmb.build(), Long.parseLong(credits[0]), credits[1]);
         });
     }
 

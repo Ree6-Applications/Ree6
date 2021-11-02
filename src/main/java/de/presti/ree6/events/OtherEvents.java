@@ -69,7 +69,7 @@ public class OtherEvents extends ListenerAdapter {
 
         String[] info = Main.sqlWorker.getWelcomeWebhook(event.getGuild().getId());
 
-        Webhook.sendWebhook(wmb.build(), Long.parseLong(info[0]), info[1]);
+        Webhook.sendWebhook(null, wmb.build(), Long.parseLong(info[0]), info[1]);
     }
 
     @Override

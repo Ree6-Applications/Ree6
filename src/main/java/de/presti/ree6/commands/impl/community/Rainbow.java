@@ -50,7 +50,7 @@ public class Rainbow extends Command {
         for(Guild g : BotInfo.botInstance.getGuilds()) {
             if(Main.sqlWorker.hasRainbowSetuped(g.getId())) {
                 String[] info = Main.sqlWorker.getRainbowHooks(g.getId());
-                Webhook.sendWebhook(wm.build(), Long.parseLong(info[0]), info[1]);
+                Webhook.sendWebhook(null, wm.build(), Long.parseLong(info[0]), info[1]);
             }
         }
 

@@ -408,7 +408,7 @@ public class LoggerQueue {
 
                 // If not canceled send it.
                 if (!loggerMessage.isCanceled()) {
-                    Webhook.sendWebhook(loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode());
+                    Webhook.sendWebhook(loggerMessage, loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode());
                 }
 
                 // Remove it from the list.
