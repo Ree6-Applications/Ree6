@@ -80,12 +80,10 @@ public abstract class Command {
 
 
     public void sendMessage(EmbedBuilder msg, MessageChannel m, InteractionHook hook) {
-        msg.setFooter(Data.advertisement);
         if (hook == null) m.sendMessageEmbeds(msg.build()).queue(); else hook.sendMessageEmbeds(msg.build()).queue();
     }
 
     public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
-        msg.setFooter(Data.advertisement);
         if (hook == null) m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue(); else hook.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
     }
 
