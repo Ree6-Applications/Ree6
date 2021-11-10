@@ -177,6 +177,7 @@ public class LoggerQueue {
                     // Check if the addedRoles and removeRoles are null if so create new List.
                     if (loggerMessage.getMemberData().getAddedRoles() == null)
                         loggerMessage.getMemberData().setAddedRoles(new ArrayList<>());
+
                     if (loggerMessage.getMemberData().getRemovedRoles() == null)
                         loggerMessage.getMemberData().setRemovedRoles(new ArrayList<>());
 
@@ -188,14 +189,21 @@ public class LoggerQueue {
                     // Merge both lists with the current List.
                     if (memberData != null && memberData.getRemovedRoles() != null && !memberData.getRemovedRoles().isEmpty() && memberData.getRemovedRoles().stream().anyMatch(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
                             !loggerMessage.getMemberData().getRemovedRoles().contains(role))) {
-                        memberData.getRemovedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
-                                !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
+
+                        // TODO actually handle these two.
+
+                        try {
+                            memberData.getRemovedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
+                                    !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
+                        } catch (Exception ignore) {}
                     }
 
                     if (memberData != null && memberData.getAddedRoles() != null && !memberData.getAddedRoles().isEmpty() && memberData.getAddedRoles().stream().anyMatch(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
                             !loggerMessage.getMemberData().getRemovedRoles().contains(role))) {
-                        memberData.getAddedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
-                                !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
+                        try {
+                            memberData.getAddedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
+                                    !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
+                        } catch (Exception ignore) {}
                     }
 
                     // StringBuilder to convert the List into a single String.
