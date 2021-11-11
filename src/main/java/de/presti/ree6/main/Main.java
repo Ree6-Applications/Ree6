@@ -72,9 +72,6 @@ public class Main {
             BotUtil.createBot(BotVersion.PUBLIC, "1.5.0");
             musicWorker = new MusicWorker();
             instance.addEvents();
-
-            commandManager.addSlashCommand();
-
         } catch (Exception ex) {
             Logger.log("Main", "Error while init: " + ex.getMessage());
         }

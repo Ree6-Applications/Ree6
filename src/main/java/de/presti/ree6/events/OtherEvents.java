@@ -38,6 +38,8 @@ public class OtherEvents extends ListenerAdapter {
         BotInfo.state = BotState.STARTED;
         System.out.println("Boot up finished!");
 
+        Main.commandManager.addSlashCommand();
+
         Main.instance.createCheckerThread();
 
         BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Guilds", Activity.ActivityType.WATCHING);
