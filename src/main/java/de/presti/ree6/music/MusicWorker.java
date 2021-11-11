@@ -188,9 +188,7 @@ public class MusicWorker {
     }
 
     public void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
-        if (!ArrayUtil.botJoin.containsKey(guild)) {
-            connectToFirstVoiceChannel(guild.getAudioManager());
-        } else {
+        if (ArrayUtil.botJoin.containsKey(guild)) {
             connectToMemberVoiceChannel(guild.getAudioManager(), ArrayUtil.botJoin.get(guild));
         }
 

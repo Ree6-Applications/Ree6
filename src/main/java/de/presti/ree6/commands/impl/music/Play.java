@@ -31,6 +31,12 @@ public class Play extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
+
+        if (sender.getVoiceState() == null || !sender.getVoiceState().inVoiceChannel()) {
+            sendMessage("Please join a Channel!", m, hook);
+            return;
+        }
+
         if (args.length < 1) {
             EmbedBuilder em = new EmbedBuilder();
             em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,

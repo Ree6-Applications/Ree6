@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -72,11 +74,10 @@ public class YouTubeAPIHandler {
     public void createYouTube() {
         try {
             final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-            Credential credential = authorize(httpTransport);
             youTube = new YouTube.Builder(
                     GoogleNetHttpTransport.newTrustedTransport(),
                     JSON_FACTORY,
-                    credential)
+                    null)
                     .setApplicationName("Ree6")
                     .build();
         }
@@ -84,22 +85,4 @@ public class YouTubeAPIHandler {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Create an authorized Credential object.
-     *
-     * @return an authorized Credential object.
-     * @throws IOException If there is an error while creating a Auth-Session.
-     */
-    public static Credential authorize(final NetHttpTransport httpTransport) throws IOException {
-        // Load client secrets.
-        GoogleClientSecrets clientSecrets =
-                GoogleClientSecrets.load(JSON_FACTORY, new StringReader(Main.config.getConfig().getString("youtube.api.key")));
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow =
-                new GoogleAuthorizationCodeFlow.Builder(httpTransport, JSON_FACTORY, clientSecrets, Collections.singletonList("snippet"))
-                        .build();
-        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-    }
-
 }
