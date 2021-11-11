@@ -18,16 +18,18 @@ public class Webhook {
 
         if (!Main.sqlWorker.isWebhookLogDataInDB(channelId, webhookToken)) return;
 
-        try(WebhookClient wcl = WebhookClient.withId(channelId, webhookToken)) {
+        if (loggerMessage == null || loggerMessage.isCanceled()) {
+            Logger.log("Webhook", "Got a Invalid or Canceled LoggerMessage!");
+            return;
+        }
+
+        try (WebhookClient wcl = WebhookClient.withId(channelId, webhookToken)) {
             wcl.send(message).exceptionally(throwable -> {
                 if (throwable.getMessage().contains("failure 404")) {
                     Main.sqlWorker.deleteLogWebhook(channelId, webhookToken);
                     Logger.log("Webhook", "Deleted invalid Webhook: " + channelId + " - " + webhookToken);
                 } else if (throwable.getMessage().contains("failure 400")) {
-                    if (loggerMessage != null)
-                        Logger.log("Webhook", "Invalid Body with LogTyp: " + loggerMessage.getType().name());
-                    else
-                        Logger.log("Webhook", "Invalid Body with a none Log Message!");
+                    Logger.log("Webhook", "Invalid Body with LogTyp: " + loggerMessage.getType().name());
                 }
                 return null;
             });

@@ -22,7 +22,7 @@ import java.util.List;
 
 public class YouTubeAPIHandler {
 
-    private YouTube yt;
+    private YouTube youTube;
     public final YouTubeAPIHandler instance;
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
@@ -36,15 +36,16 @@ public class YouTubeAPIHandler {
     }
 
     public String searchYoutube(String search) {
-        if(yt == null) {
+        if(youTube == null) {
             createYouTube();
         }
         try {
 
-            List<SearchResult> results = yt.search()
+            List<SearchResult> results = youTube.search()
                     .list(Collections.singletonList("snippet"))
                     .setQ(search)
                     .setMaxResults(2L)
+                    .setKey(Main.config.getConfig().getString("youtube.api.key"))
                     .execute()
                     .getItems();
 
@@ -72,7 +73,7 @@ public class YouTubeAPIHandler {
         try {
             final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             Credential credential = authorize(httpTransport);
-            yt = new YouTube.Builder(
+            youTube = new YouTube.Builder(
                     GoogleNetHttpTransport.newTrustedTransport(),
                     JSON_FACTORY,
                     credential)
@@ -88,7 +89,7 @@ public class YouTubeAPIHandler {
      * Create an authorized Credential object.
      *
      * @return an authorized Credential object.
-     * @throws IOException
+     * @throws IOException If there is an error while creating a Auth-Session.
      */
     public static Credential authorize(final NetHttpTransport httpTransport) throws IOException {
         // Load client secrets.
@@ -98,9 +99,7 @@ public class YouTubeAPIHandler {
         GoogleAuthorizationCodeFlow flow =
                 new GoogleAuthorizationCodeFlow.Builder(httpTransport, JSON_FACTORY, clientSecrets, Collections.singletonList("snippet"))
                         .build();
-        Credential credential =
-                new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-        return credential;
+        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
 
 }
