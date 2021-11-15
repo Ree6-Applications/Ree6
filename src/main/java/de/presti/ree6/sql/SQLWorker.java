@@ -62,7 +62,7 @@ public class SQLWorker {
         return false;
     }
 
-    public void addXP(String gid, String uid, int addxp) {
+    public void addXP(String gid, String uid, long addxp) {
 
         addxp += getXP(gid, uid);
 
@@ -146,7 +146,7 @@ public class SQLWorker {
         return false;
     }
 
-    public void addXPVC(String gid, String uid, int addXP) {
+    public void addXPVC(String gid, String uid, long addXP) {
 
         addXP += getXPVC(gid, uid);
 
