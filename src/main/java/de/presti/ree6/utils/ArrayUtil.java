@@ -5,7 +5,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 @SuppressWarnings("Java8MapApi")
 public class ArrayUtil {
@@ -47,9 +49,7 @@ public class ArrayUtil {
     }
 
     public static void updateMessage(String messageId, String contentRaw) {
-        if (messageIDwithMessage.containsKey(messageId)) {
-            messageIDwithMessage.remove(messageId);
-        }
+        messageIDwithMessage.remove(messageId);
         messageIDwithMessage.put(messageId, contentRaw);
     }
 }

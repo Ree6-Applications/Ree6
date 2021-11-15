@@ -3,7 +3,6 @@ package de.presti.ree6.addons;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.utils.Logger;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;

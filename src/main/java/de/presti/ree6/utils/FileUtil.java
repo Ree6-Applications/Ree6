@@ -1,6 +1,7 @@
 package de.presti.ree6.utils;
 
-import de.presti.ree6.bot.*;
+import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.bot.BotVersion;
 import de.presti.ree6.main.Main;
 
 public class FileUtil {

@@ -230,7 +230,7 @@ public class SQLWorker {
                     st = Main.sqlConnector.con.prepareStatement("SELECT * FROM LogWebhooks WHERE GID='" + gid + "'");
                     rs = st.executeQuery("SELECT * FROM LogWebhooks WHERE GID='" + gid + "'");
                 } catch (Exception ignore) {
-                    return new String[]{ "0", "Not setuped!" };
+                    return new String[]{"0", "Not setuped!"};
                 }
 
                 if (rs != null && rs.next()) {
@@ -242,13 +242,13 @@ public class SQLWorker {
                     if (token.isEmpty()) {
                         token = "Not setuped!";
                     }
-                    return new String[]{ cid, token };
+                    return new String[]{cid, token};
                 }
             } catch (Exception ignore) {
-                return new String[]{ "0", "Not setuped!" };
+                return new String[]{"0", "Not setuped!"};
             }
         }
-        return new String[]{ "0", "Not setuped!" };
+        return new String[]{"0", "Not setuped!"};
     }
 
     public void deleteLogWebhook(long cid, String token) {
@@ -332,7 +332,7 @@ public class SQLWorker {
             } catch (Exception ignore) {
             }
         }
-        return new String[]{ "0", "Not setuped!" };
+        return new String[]{"0", "Not setuped!"};
     }
 
     //Mute
@@ -660,7 +660,7 @@ public class SQLWorker {
             } catch (Exception ignore) {
             }
         }
-        return new String[]{ "0", "Not setuped!" };
+        return new String[]{"0", "Not setuped!"};
     }
 
     public void setNewsWebhook(String gid, String cid, String token) {
@@ -840,7 +840,7 @@ public class SQLWorker {
             } catch (Exception ignore) {
             }
         }
-        return new String[]{ "0", "Not setuped!" };
+        return new String[]{"0", "Not setuped!"};
     }
 
     public void setRainbowWebhook(String gid, String cid, String token) {
@@ -965,7 +965,7 @@ public class SQLWorker {
             } catch (Exception ignore) {
             }
         }
-        return new String[]{ "0", "Not setuped!" };
+        return new String[]{"0", "Not setuped!"};
     }
 
     public String[] getTwitchNotifyWebhookByName(String name) {
@@ -985,7 +985,7 @@ public class SQLWorker {
 
         } catch (Exception ignore) {
         }
-        return new String[]{ "0", "Not setuped!" };
+        return new String[]{"0", "Not setuped!"};
     }
 
 
@@ -1344,12 +1344,14 @@ public class SQLWorker {
             try {
                 st = Main.sqlConnector.con.prepareStatement("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
                 rs = st.executeQuery("SELECT * FROM Settings WHERE GID='" + gid + "' AND NAME='" + settingName + "'");
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+            }
 
             if (rs != null && rs.next())
                 value = rs.getString("VALUE");
 
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
 
         return new Setting(settingName, value);
     }
@@ -1360,7 +1362,8 @@ public class SQLWorker {
 
         for (Command commands : Main.commandManager.getCommands()) {
             if (commands.getCategory() == Category.HIDDEN) continue;
-            if (!settingExists(gid, "command_" + commands.getCmd().toLowerCase())) setSetting(gid, "command_" + commands.getCmd().toLowerCase(), true);
+            if (!settingExists(gid, "command_" + commands.getCmd().toLowerCase()))
+                setSetting(gid, "command_" + commands.getCmd().toLowerCase(), true);
         }
 
         if (!settingExists(gid, "logging_invite")) setSetting(gid, "logging_invite", true);

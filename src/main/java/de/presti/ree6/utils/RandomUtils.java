@@ -3,6 +3,7 @@ package de.presti.ree6.utils;
 import java.util.Random;
 
 public final class RandomUtils {
+
     public static int nextInt(int startInclusive, int endExclusive) {
         if (endExclusive - startInclusive <= 0) {
             return startInclusive;
@@ -21,7 +22,7 @@ public final class RandomUtils {
         if (startInclusive == endInclusive || endInclusive - startInclusive <= 0.0f) {
             return startInclusive;
         }
-        return (float)((double)startInclusive + (double)(endInclusive - startInclusive) * Math.random());
+        return (float) ((double) startInclusive + (double) (endInclusive - startInclusive) * Math.random());
     }
 
     public static String randomNumber(int length) {

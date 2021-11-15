@@ -233,7 +233,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
     public void stopAll() {
         EmbedBuilder em = new EmbedBuilder();
-        if (Main.musicWorker.isConnected(thechannel.getGuild()) || getPlayer().getPlayingTrack() != null ) {
+        if (Main.musicWorker.isConnected(thechannel.getGuild()) || getPlayer().getPlayingTrack() != null) {
 
             GuildMusicManager gmm = Main.musicWorker.getGuildAudioPlayer(thechannel.getGuild());
 

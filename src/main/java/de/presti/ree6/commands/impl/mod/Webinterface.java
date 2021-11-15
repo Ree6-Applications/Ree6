@@ -7,7 +7,6 @@ import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.Crypter;
 import de.presti.ree6.utils.RandomUtils;
-
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;

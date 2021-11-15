@@ -8,7 +8,6 @@ import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.stats.StatsManager;
 import de.presti.ree6.utils.TimeUtil;
-
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;

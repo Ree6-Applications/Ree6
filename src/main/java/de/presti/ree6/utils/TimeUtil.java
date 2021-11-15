@@ -12,16 +12,16 @@ public class TimeUtil {
     public static String getFormattedDate(Period period) {
         String end = "";
 
-        if(period.getYears() != 0) {
-            end+= period.getYears() + " years ago";
+        if (period.getYears() != 0) {
+            end += period.getYears() + " years ago";
         }
 
-        if(period.getMonths() != 0 && period.getYears() == 0) {
-            end+= period.getMonths() + " months ago";
+        if (period.getMonths() != 0 && period.getYears() == 0) {
+            end += period.getMonths() + " months ago";
         }
 
-        if(period.getDays() != 0 && period.getMonths() == 0 && period.getYears() == 0) {
-            end+= period.getDays() + " days ago";
+        if (period.getDays() != 0 && period.getMonths() == 0 && period.getYears() == 0) {
+            end += period.getDays() + " days ago";
         }
 
         return end;
@@ -37,20 +37,20 @@ public class TimeUtil {
             dif -= 1000;
             ++s;
         }
-         return s;
+        return s;
     }
 
     public static int getTimeinMin(int s) {
 
         int m = 0;
-        
+
         while (s >= 60) {
             s -= 60;
             ++m;
         }
-        
+
         return m;
-        
+
     }
 
     public static String getTime(long t) {
@@ -59,7 +59,7 @@ public class TimeUtil {
         long current = System.currentTimeMillis();
         long dif = current - t;
 
-        if(dif == 0) {
+        if (dif == 0) {
             return "0 Seconds";
         }
 
@@ -85,19 +85,19 @@ public class TimeUtil {
             ++d;
         }
 
-        if(d != 0) {
+        if (d != 0) {
             end += d + " Days" + (((h != 0 || m != 0 || s != 0) ? ", " : ""));
         }
 
-        if(h != 0) {
+        if (h != 0) {
             end += h + " Hours" + (((m != 0 || s != 0) ? ", " : ""));
         }
 
-        if(m != 0) {
+        if (m != 0) {
             end += m + " Minutes" + ((s != 0 ? ", " : ""));
         }
 
-        if(s != 0) {
+        if (s != 0) {
             end += s + " Seconds";
         }
 

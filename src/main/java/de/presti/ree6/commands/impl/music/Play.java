@@ -8,7 +8,6 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.SpotifyAPIHandler;
 import de.presti.ree6.utils.YouTubeAPIHandler;
-
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -18,7 +17,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.awt.Color;
+import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;

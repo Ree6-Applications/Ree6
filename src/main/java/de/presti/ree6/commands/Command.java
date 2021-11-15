@@ -1,6 +1,5 @@
 package de.presti.ree6.commands;
 
-import de.presti.ree6.main.Data;
 import de.presti.ree6.utils.Logger;
 
 import net.dv8tion.jda.api.EmbedBuilder;

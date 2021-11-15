@@ -1,7 +1,6 @@
 package de.presti.ree6.events;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
-
 import de.presti.ree6.addons.impl.ChatProtector;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotState;
@@ -11,9 +10,9 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.AutoRoleHandler;
 import de.presti.ree6.utils.TimeUtil;
-
 import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
@@ -24,12 +23,10 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.jetbrains.annotations.NotNull;
 
-
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Random;
 
 public class OtherEvents extends ListenerAdapter {
 
@@ -60,7 +57,7 @@ public class OtherEvents extends ListenerAdapter {
 
         AutoRoleHandler.handleMemberJoin(event.getGuild(), event.getMember());
 
-        if(!Main.sqlWorker.hasWelcomeSetuped(event.getGuild().getId()))
+        if (!Main.sqlWorker.hasWelcomeSetuped(event.getGuild().getId()))
             return;
 
         WebhookMessageBuilder wmb = new WebhookMessageBuilder();
@@ -76,7 +73,7 @@ public class OtherEvents extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
-        if(!ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
+        if (!ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
             ArrayUtil.voiceJoined.put(event.getMember().getUser(), System.currentTimeMillis());
         }
         super.onGuildVoiceJoin(event);
@@ -84,12 +81,12 @@ public class OtherEvents extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
-        if(ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
+        if (ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
             int min = TimeUtil.getTimeinMin(TimeUtil.getTimeinSec(ArrayUtil.voiceJoined.get(event.getMember().getUser())));
 
             int addxp = 0;
 
-            for(int i = 1; i <= min; i++) {
+            for (int i = 1; i <= min; i++) {
                 addxp += new Random().nextInt(9) + 1;
             }
 
@@ -114,54 +111,54 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
 
-        if(!ArrayUtil.messageIDwithMessage.containsKey(event.getMessageId())) {
+        if (!ArrayUtil.messageIDwithMessage.containsKey(event.getMessageId())) {
             ArrayUtil.messageIDwithMessage.put(event.getMessageId(), event.getMessage().getContentRaw());
         }
 
-        if(!ArrayUtil.messageIDwithUser.containsKey(event.getMessageId())) {
+        if (!ArrayUtil.messageIDwithUser.containsKey(event.getMessageId())) {
             ArrayUtil.messageIDwithUser.put(event.getMessageId(), event.getAuthor());
         }
 
-        if(event.getAuthor().isBot())
+        if (event.getAuthor().isBot())
             return;
 
-        if(ChatProtector.hasChatProtector(event.getGuild().getId())) {
-            if(ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
+        if (ChatProtector.hasChatProtector(event.getGuild().getId())) {
+            if (ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
                 event.getMessage().delete().queue();
                 event.getChannel().sendMessage("You can't write that!").queue();
                 return;
             }
         }
 
-        if(!Main.commandManager.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
+        if (!Main.commandManager.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
 
-            if(!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(BotInfo.botInstance.getSelfUser())) {
+            if (!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(BotInfo.botInstance.getSelfUser())) {
                 event.getChannel().sendMessage("Usage " + Main.sqlWorker.getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "help").queue();
             }
 
-            if(!ArrayUtil.timeout.contains(event.getMember())) {
+            if (!ArrayUtil.timeout.contains(event.getMember())) {
 
                 Main.sqlWorker.addXP(event.getGuild().getId(), event.getAuthor().getId(), new Random().nextInt(25) + 1);
 
                 ArrayUtil.timeout.add(event.getMember());
 
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(30000);
-                        } catch (InterruptedException ignored) {}
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(30000);
+                    } catch (InterruptedException ignored) {
+                    }
 
-                        ArrayUtil.timeout.remove(event.getMember());
+                    ArrayUtil.timeout.remove(event.getMember());
 
-                    }).start();
-                }
+                }).start();
+            }
 
-                AutoRoleHandler.handleChatLevelReward(event.getGuild(), event.getMember());
+            AutoRoleHandler.handleChatLevelReward(event.getGuild(), event.getMember());
         }
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
-    {
+    public void onSlashCommand(SlashCommandEvent event) {
         // Only accept commands from guilds
         if (event.getGuild() == null)
             return;
@@ -170,9 +167,10 @@ public class OtherEvents extends ListenerAdapter {
 
         MessageBuilder messageBuilder = new MessageBuilder();
 
-        if (event.getOption("target") != null) messageBuilder.mentionUsers(event.getOption("target").getAsUser().getId());
+        if (event.getOption("target") != null)
+            messageBuilder.mentionUsers(event.getOption("target").getAsUser().getId());
 
-        messageBuilder.setContent(Main.sqlWorker.getSetting(event.getGuild().getId(), "chatprefix").getStringValue() +  event.getName() + " " + (event.getOption("target") != null ? event.getOption("target").getAsMember().getAsMention() : event.getOption("name") != null ? event.getOption("name").getAsString() : ""));
+        messageBuilder.setContent(Main.sqlWorker.getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + event.getName() + " " + (event.getOption("target") != null ? event.getOption("target").getAsMember().getAsMention() : event.getOption("name") != null ? event.getOption("name").getAsString() : ""));
 
         Message message = messageBuilder.build();
 

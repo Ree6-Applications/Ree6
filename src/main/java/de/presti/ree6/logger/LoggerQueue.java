@@ -195,7 +195,8 @@ public class LoggerQueue {
                         try {
                             memberData.getRemovedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
                                     !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
-                        } catch (Exception ignore) {}
+                        } catch (Exception ignore) {
+                        }
                     }
 
                     if (memberData != null && memberData.getAddedRoles() != null && !memberData.getAddedRoles().isEmpty() && memberData.getAddedRoles().stream().anyMatch(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
@@ -203,7 +204,8 @@ public class LoggerQueue {
                         try {
                             memberData.getAddedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
                                     !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
-                        } catch (Exception ignore) {}
+                        } catch (Exception ignore) {
+                        }
                     }
 
                     // StringBuilder to convert the List into a single String.
@@ -348,8 +350,10 @@ public class LoggerQueue {
                         }
 
                         // Create empty lists in case of them being null
-                        if (loggerMessage.getRoleData().getPreviousPermission() == null) loggerMessage.getRoleData().setPreviousPermission(EnumSet.noneOf(Permission.class));
-                        if (loggerMessage.getRoleData().getCurrentPermission() == null) loggerMessage.getRoleData().setCurrentPermission(EnumSet.noneOf(Permission.class));
+                        if (loggerMessage.getRoleData().getPreviousPermission() == null)
+                            loggerMessage.getRoleData().setPreviousPermission(EnumSet.noneOf(Permission.class));
+                        if (loggerMessage.getRoleData().getCurrentPermission() == null)
+                            loggerMessage.getRoleData().setCurrentPermission(EnumSet.noneOf(Permission.class));
 
                         // Create StringBuilder for Permission diff.
                         StringBuilder stringBuilder = new StringBuilder(loggerMessage.getRoleData().getCurrentPermission().stream()

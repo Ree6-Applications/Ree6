@@ -1,16 +1,7 @@
 package de.presti.ree6.logger;
 
 import club.minnced.discord.webhook.send.WebhookMessage;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
 
 /**
  * This class is used for merging LoggingMessage to save Webhook Messages
@@ -47,11 +38,12 @@ public class LoggerMessage {
 
     /**
      * Constructor for a Log-Message which shouldn't be handled.
-     * @param g Guild of the Log-Message.
-     * @param c Webhook ID.
-     * @param auth Webhook Auth-Code.
+     *
+     * @param g              Guild of the Log-Message.
+     * @param c              Webhook ID.
+     * @param auth           Webhook Auth-Code.
      * @param webhookMessage WebhookMessage itself.
-     * @param type LogTyp.
+     * @param type           LogTyp.
      */
     public LoggerMessage(Guild g, long c, String auth, WebhookMessage webhookMessage, LogTyp type) {
         this.guild = g;
@@ -60,14 +52,16 @@ public class LoggerMessage {
         this.webhookMessage = webhookMessage;
         this.type = type;
     }
+
     /**
      * Constructor for a Log-Message which should be used to handle UserData.
-     * @param g Guild of the Log-Message.
-     * @param c Webhook ID.
-     * @param auth Webhook Auth-Code.
+     *
+     * @param g              Guild of the Log-Message.
+     * @param c              Webhook ID.
+     * @param auth           Webhook Auth-Code.
      * @param webhookMessage WebhookMessage itself.
-     * @param memberData Provided UserData used for the Log.
-     * @param type LogTyp.
+     * @param memberData     Provided UserData used for the Log.
+     * @param type           LogTyp.
      */
     public LoggerMessage(Guild g, long c, String auth, WebhookMessage webhookMessage, LoggerMemberData memberData, LogTyp type) {
         this.guild = g;
@@ -80,12 +74,13 @@ public class LoggerMessage {
 
     /**
      * Constructor for a Log-Message which should be used to handle RoleData.
-     * @param g Guild of the Log-Message.
-     * @param c Webhook ID.
-     * @param auth Webhook Auth-Code.
+     *
+     * @param g              Guild of the Log-Message.
+     * @param c              Webhook ID.
+     * @param auth           Webhook Auth-Code.
      * @param webhookMessage WebhookMessage itself.
-     * @param roleData Provided RoleData used for the Log.
-     * @param type LogTyp.
+     * @param roleData       Provided RoleData used for the Log.
+     * @param type           LogTyp.
      */
     public LoggerMessage(Guild g, long c, String auth, WebhookMessage webhookMessage, LoggerRoleData roleData, LogTyp type) {
         this.guild = g;
@@ -98,12 +93,13 @@ public class LoggerMessage {
 
     /**
      * Constructor for a Log-Message which should be used to handle RoleData.
-     * @param g Guild of the Log-Message.
-     * @param c Webhook ID.
-     * @param auth Webhook Auth-Code.
+     *
+     * @param g              Guild of the Log-Message.
+     * @param c              Webhook ID.
+     * @param auth           Webhook Auth-Code.
      * @param webhookMessage WebhookMessage itself.
-     * @param voiceData Provided VoiceData used for the Log.
-     * @param type LogTyp.
+     * @param voiceData      Provided VoiceData used for the Log.
+     * @param type           LogTyp.
      */
     public LoggerMessage(Guild g, long c, String auth, WebhookMessage webhookMessage, LoggerVoiceData voiceData, LogTyp type) {
         this.guild = g;
@@ -116,6 +112,7 @@ public class LoggerMessage {
 
     /**
      * Get the Guild of the Log-Message.
+     *
      * @return the Guild.
      */
     public Guild getGuild() {
@@ -124,6 +121,7 @@ public class LoggerMessage {
 
     /**
      * Set the Guild of the Log-Message.
+     *
      * @param guild the Guild.
      */
     @Deprecated
@@ -133,6 +131,7 @@ public class LoggerMessage {
 
     /**
      * Webhook ID used for Discord to identificate which Webhook is meant.
+     *
      * @return the Webhook ID.
      */
     public long getId() {
@@ -141,6 +140,7 @@ public class LoggerMessage {
 
     /**
      * Change the Webhook ID.
+     *
      * @param id the Webhook ID.
      */
     @Deprecated
@@ -150,6 +150,7 @@ public class LoggerMessage {
 
     /**
      * The Auth-Code used to authenticate the Webhook Packet.
+     *
      * @return the Authentication Code.
      */
     public String getAuthCode() {
@@ -158,6 +159,7 @@ public class LoggerMessage {
 
     /**
      * Change the Auth-Code of the Webhook Packet.
+     *
      * @param authCode the new Auth-Code.
      */
     @Deprecated
@@ -167,6 +169,7 @@ public class LoggerMessage {
 
     /**
      * Get the current WebhookMessage.
+     *
      * @return WebhookMessage.
      */
     public WebhookMessage getWebhookMessage() {
@@ -175,6 +178,7 @@ public class LoggerMessage {
 
     /**
      * Change the current Webhook-Message.
+     *
      * @param webhookMessage new Webhook-Message.
      */
     public void setWebhookMessage(WebhookMessage webhookMessage) {
@@ -183,6 +187,7 @@ public class LoggerMessage {
 
     /**
      * The current LogTyp.
+     *
      * @return the LogTyp.
      */
     public LogTyp getType() {
@@ -191,6 +196,7 @@ public class LoggerMessage {
 
     /**
      * Change the LogTyp of the current Message.
+     *
      * @param type the new LogTyp.
      */
     @Deprecated
@@ -200,6 +206,7 @@ public class LoggerMessage {
 
     /**
      * Check if the Message is canceled or not.
+     *
      * @return is the Message canceled.
      */
     public boolean isCanceled() {
@@ -208,6 +215,7 @@ public class LoggerMessage {
 
     /**
      * Cancel the LogMessage or "uncancel" the LogMessage.
+     *
      * @param cancel should the Message be canceled.
      */
     public void setCanceled(boolean cancel) {
@@ -216,6 +224,7 @@ public class LoggerMessage {
 
     /**
      * The used RoleData.
+     *
      * @return the RoleData.
      */
     public LoggerRoleData getRoleData() {
@@ -224,6 +233,7 @@ public class LoggerMessage {
 
     /**
      * Change The used RoleData.
+     *
      * @param roleData the new RoleData.
      */
     public void setRoleData(LoggerRoleData roleData) {
@@ -232,6 +242,7 @@ public class LoggerMessage {
 
     /**
      * The used VoiceData.
+     *
      * @return the VoiceData.
      */
     public LoggerVoiceData getVoiceData() {
@@ -240,7 +251,8 @@ public class LoggerMessage {
 
     /**
      * Change the used VoiceData.
-     * @param voiceData  the new VoiceData.
+     *
+     * @param voiceData the new VoiceData.
      */
     public void setVoiceData(LoggerVoiceData voiceData) {
         this.voiceData = voiceData;
@@ -248,6 +260,7 @@ public class LoggerMessage {
 
     /**
      * The used MemberData.
+     *
      * @return the MemberData.
      */
     public LoggerMemberData getMemberData() {
@@ -256,7 +269,8 @@ public class LoggerMessage {
 
     /**
      * Change the used MemberData.
-     * @param memberData  the new MemberData.
+     *
+     * @param memberData the new MemberData.
      */
     public void setMemberData(LoggerMemberData memberData) {
         this.memberData = memberData;

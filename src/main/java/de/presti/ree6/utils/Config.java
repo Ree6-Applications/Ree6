@@ -11,7 +11,7 @@ public class Config {
 
     public void init() {
 
-            cfg = getConfig();
+        cfg = getConfig();
 
         if (!getFile().exists()) {
             cfg.options().copyDefaults(true);
@@ -47,7 +47,7 @@ public class Config {
     }
 
     public FileConfiguration getConfig() {
-       return YamlConfiguration.loadConfiguration(getFile());
+        return YamlConfiguration.loadConfiguration(getFile());
     }
 
     public File getFile() {

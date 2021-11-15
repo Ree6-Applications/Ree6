@@ -13,7 +13,9 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.awt.*;
@@ -224,7 +226,7 @@ public class MusicWorker {
             audioManager.openAudioConnection(Objects.requireNonNull(m.getVoiceState()).getChannel());
             ArrayUtil.botJoin.remove(m.getGuild());
 
-            if ((audioManager.isConnected() ||(audioManager.getGuild().getSelfMember().getVoiceState() != null &&
+            if ((audioManager.isConnected() || (audioManager.getGuild().getSelfMember().getVoiceState() != null &&
                     audioManager.getGuild().getSelfMember().getVoiceState().inVoiceChannel())) && !audioManager.isSelfDeafened()) {
 
                 if (audioManager.getGuild().getSelfMember().hasPermission(Permission.VOICE_DEAF_OTHERS)) {

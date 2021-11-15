@@ -2,7 +2,6 @@ package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
-
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;

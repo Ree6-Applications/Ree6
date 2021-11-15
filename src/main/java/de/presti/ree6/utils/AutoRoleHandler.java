@@ -3,7 +3,6 @@ package de.presti.ree6.utils;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PrivateChannel;
 
 import java.util.Map;
 
@@ -19,7 +18,8 @@ public class AutoRoleHandler {
             if (!g.getSelfMember().canInteract(m)) {
                 Logger.log("AutoRole", "Failed to give a Role when someone joined!");
                 Logger.log("AutoRole", "Server: " + g.getName());
-                if (g.getOwner() != null) g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
+                if (g.getOwner() != null)
+                    g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
                 return;
             }
 
@@ -31,7 +31,8 @@ public class AutoRoleHandler {
                         Logger.log("AutoRole", "Failed to give a Role!");
                         Logger.log("AutoRole", "Role: " + g.getRoleById(ids).getName());
                         Logger.log("AutoRole", "Server: " + g.getName());
-                        if (g.getOwner() != null) g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when joining is: " + g.getRoleById(ids)).queue();
+                        if (g.getOwner() != null)
+                            g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when joining is: " + g.getRoleById(ids)).queue();
                     }
                 }
             }
@@ -57,7 +58,8 @@ public class AutoRoleHandler {
             if (!g.getSelfMember().canInteract(m)) {
                 Logger.log("AutoRole", "Failed to give a Role when someone leveled up!");
                 Logger.log("AutoRole", "Server: " + g.getName());
-                if (g.getOwner() != null) g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
+                if (g.getOwner() != null)
+                    g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
                 return;
             }
 
@@ -71,7 +73,8 @@ public class AutoRoleHandler {
                             Logger.log("AutoRole", "Failed to give a Role!");
                             Logger.log("AutoRole", "Role: " + g.getRoleById(entry.getValue()).getName());
                             Logger.log("AutoRole", "Server: " + g.getName());
-                            if (g.getOwner() != null) g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue())).queue();
+                            if (g.getOwner() != null)
+                                g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue())).queue();
                         }
                     }
                 }
@@ -98,7 +101,8 @@ public class AutoRoleHandler {
             if (!g.getSelfMember().canInteract(m)) {
                 Logger.log("AutoRole", "Failed to give a Role when someone leveled up!");
                 Logger.log("AutoRole", "Server: " + g.getName());
-                if (g.getOwner() != null) g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
+                if (g.getOwner() != null)
+                    g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
                 return;
             }
 
@@ -112,7 +116,8 @@ public class AutoRoleHandler {
                             Logger.log("AutoRole", "Failed to give a Role!");
                             Logger.log("AutoRole", "Role: " + g.getRoleById(entry.getValue()).getName());
                             Logger.log("AutoRole", "Server: " + g.getName());
-                            if (g.getOwner() != null) g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue())).queue();
+                            if (g.getOwner() != null)
+                                g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue())).queue();
                         }
                     }
                 }

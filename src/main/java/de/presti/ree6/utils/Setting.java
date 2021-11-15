@@ -12,9 +12,9 @@ public class Setting {
 
     public boolean getBooleanValue() {
         if (value instanceof Boolean) {
-            return (Boolean)value;
+            return (Boolean) value;
         } else if (value instanceof String) {
-            return Boolean.parseBoolean((String)value);
+            return Boolean.parseBoolean((String) value);
         }
         return true;
     }
@@ -23,7 +23,7 @@ public class Setting {
         if (value instanceof String) {
             return (String) value;
         } else if (value instanceof Boolean) {
-            return (Boolean)value + "";
+            return (Boolean) value + "";
         } else if (getName().equalsIgnoreCase("chatprefix")) {
             return "ree!";
         }

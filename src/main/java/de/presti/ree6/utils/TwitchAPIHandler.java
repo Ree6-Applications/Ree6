@@ -12,8 +12,6 @@ import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 
 import java.awt.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class TwitchAPIHandler {
@@ -37,7 +35,7 @@ public class TwitchAPIHandler {
 
     public void unregisterChannel(String name) {
         twitchClient.getClientHelper().disableStreamEventListener(name.toLowerCase());
-        if(isRegisterd(name.toLowerCase())) {
+        if (isRegisterd(name.toLowerCase())) {
             registerChannels.remove(name.toLowerCase());
         }
     }
@@ -46,7 +44,7 @@ public class TwitchAPIHandler {
         twitchClient.getEventManager().onEvent(ChannelGoLiveEvent.class, channelGoLiveEvent -> {
             String[] credits = Main.sqlWorker.getTwitchNotifyWebhookByName(channelGoLiveEvent.getStream().getUserName().toLowerCase());
 
-            if(credits[0].equalsIgnoreCase("error")) {
+            if (credits[0].equalsIgnoreCase("error")) {
                 Logger.log("TwitchNotifier", "Error while getting Infos (" + channelGoLiveEvent.getStream().getUserName() + ")");
                 return;
             }
@@ -61,7 +59,7 @@ public class TwitchAPIHandler {
             webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(channelGoLiveEvent.getStream().getUserName(), null));
             webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitch Notifier", null, null));
             webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrl());
-            webhookEmbedBuilder.setDescription("Hey the User " + channelGoLiveEvent.getStream().getUserName() + " is now LIVE!\n\nhttps://twitch.tv/" + channelGoLiveEvent.getStream().getUserName() + "\n\nTitle: " + channelGoLiveEvent.getStream().getTitle() +"\nViewercount: " + channelGoLiveEvent.getStream().getViewerCount() + "\nGame: " + channelGoLiveEvent.getStream().getGameName());
+            webhookEmbedBuilder.setDescription("Hey the User " + channelGoLiveEvent.getStream().getUserName() + " is now LIVE!\n\nhttps://twitch.tv/" + channelGoLiveEvent.getStream().getUserName() + "\n\nTitle: " + channelGoLiveEvent.getStream().getTitle() + "\nViewercount: " + channelGoLiveEvent.getStream().getViewerCount() + "\nGame: " + channelGoLiveEvent.getStream().getGameName());
             webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.advertisement, null));
             webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
 

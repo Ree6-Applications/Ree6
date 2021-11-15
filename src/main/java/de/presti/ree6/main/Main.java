@@ -16,10 +16,12 @@ import de.presti.ree6.music.GuildMusicManager;
 import de.presti.ree6.music.MusicWorker;
 import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.SQLWorker;
-import de.presti.ree6.utils.*;
+import de.presti.ree6.utils.ArrayUtil;
+import de.presti.ree6.utils.Config;
+import de.presti.ree6.utils.Logger;
+import de.presti.ree6.utils.TwitchAPIHandler;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,10 +39,10 @@ public class Main {
     public static SQLWorker sqlWorker;
     public static LoggerQueue loggerQueue;
     public static MusicWorker musicWorker;
-    
+
     public static Thread checker;
     public static Config config;
-    
+
     public static String lastDay = "";
 
     public static void main(String[] args) {
@@ -62,7 +64,7 @@ public class Main {
 
         twitchAPIHandler = new TwitchAPIHandler();
 
-        for(String name : sqlWorker.getAllTwitchNotifyUsers()) {
+        for (String name : sqlWorker.getAllTwitchNotifyUsers()) {
             twitchAPIHandler.registerChannel(name);
         }
 

@@ -3,7 +3,6 @@ package de.presti.ree6.commands.impl.fun;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Main;
-
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -11,7 +10,6 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -24,7 +22,7 @@ import java.io.OutputStream;
 public class HornyJail extends Command {
 
     public HornyJail() {
-        super("hornyjail", "Put someone in the Hornyjail!", Category.FUN, new String[] { "horny", "jail" }, new CommandData("hornyjail", "Put someone in the Hornyjail!").addOptions(new OptionData(OptionType.USER, "target", "The User that should be put into the Hornyjail!").setRequired(true)));
+        super("hornyjail", "Put someone in the Hornyjail!", Category.FUN, new String[]{"horny", "jail"}, new CommandData("hornyjail", "Put someone in the Hornyjail!").addOptions(new OptionData(OptionType.USER, "target", "The User that should be put into the Hornyjail!").setRequired(true)));
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

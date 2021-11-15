@@ -3,11 +3,9 @@ package de.presti.ree6.commands.impl.fun;
 import de.presti.ree6.api.JSONApi;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
-
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
-
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.json.JSONObject;
 

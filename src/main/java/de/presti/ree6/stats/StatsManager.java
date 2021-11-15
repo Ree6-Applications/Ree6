@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class StatsManager {
 
     public static void addStatsForCommand(Command cmd, String gid) {
-        if(cmd != null) {
+        if (cmd != null) {
             Main.sqlWorker.addStats(cmd, gid);
         }
     }
