@@ -1,48 +1,92 @@
 package de.presti.ree6.invitelogger;
 
+/**
+ * Classed used to save Data of Invites from the Database.
+ */
 public class InviteContainer {
 
-    String creatorid;
-    String guildid;
-    String code;
+    // information about the Invite.
+    String creatorId, guildId, code;
+
+    // The use count from our Database.
     int uses;
 
-    public InviteContainer(String creatorid, String guildid, String code, int uses) {
-        this.creatorid = creatorid;
-        this.guildid = guildid;
+    /**
+     * Constructor for the InviteContainer which saved the Data.
+     * @param creatorId the ID of the Creator.
+     * @param guildId the ID of the Guild.
+     * @param code the Code of the Invite.
+     * @param uses the Usage Count of the Invite.
+     */
+    public InviteContainer(String creatorId, String guildId, String code, int uses) {
+        this.creatorId = creatorId;
+        this.guildId = guildId;
         this.code = code;
         this.uses = uses;
     }
 
-    public String getCreatorid() {
-        return creatorid;
+    /**
+     * Get the UserID of the Invite Creator.
+     * @return {@link String} as User ID.
+     */
+    public String getCreatorId() {
+        return creatorId;
     }
 
-    public void setCreatorid(String creatorid) {
-        this.creatorid = creatorid;
+    /**
+     * Set the ID of the Creator.
+     * @param creatorId the ID of the Creator.
+     */
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
     }
 
-    public String getGuildid() {
-        return guildid;
+    /**
+     * Get the GuildID of the Guild.
+     * @return {@link String} as Guild ID.
+     */
+    public String getGuildId() {
+        return guildId;
     }
 
-    public void setGuildid(String guildid) {
-        this.guildid = guildid;
+    /**
+     * Set the ID of the Guild.
+     * @param guildId the ID of the Guild.
+     */
+    public void setGuildId(String guildId) {
+        this.guildId = guildId;
     }
 
+    /**
+     * Get the Invite Code.
+     * @return {@link String} as Invite code.
+     */
     public String getCode() {
         return code;
     }
 
+    /**
+     * Set the Code of the Invite.
+     * @param code the Code of the Invite.
+     */
     public void setCode(String code) {
         this.code = code;
     }
 
+    /**
+     * Get the Usage Count of the Invite.
+     * @return {@link Integer} as Usage Count.
+     */
     public int getUses() {
         return uses;
     }
 
+    /**
+     * Set the Usage Count of the Invite.
+     * @param uses the Usage Count of the Invite.
+     */
     public void setUses(int uses) {
         this.uses = uses;
     }
 }
+

@@ -14,7 +14,7 @@ public class InviteContainerManager {
 
     public static void addInvite(InviteContainer inv, String gid) {
         try {
-            Main.sqlWorker.setInvite(gid, inv.getCode(), inv.getCreatorid(), inv.getUses());
+            Main.sqlWorker.setInvite(gid, inv.getCode(), inv.getCreatorId(), inv.getUses());
         } catch (Exception ex) {
             Logger.log("InviteManager", "Error while Saving Invites: " + ex.getMessage());
         }
@@ -36,7 +36,7 @@ public class InviteContainerManager {
 
             for (Invite inv : invs) {
                 for (InviteContainer inv2 : cachedInvs) {
-                    if (inv.getInviter().getId().equalsIgnoreCase(inv2.getCreatorid()) && inv.getCode().equalsIgnoreCase(inv2.getCode())) {
+                    if (inv.getInviter().getId().equalsIgnoreCase(inv2.getCreatorId()) && inv.getCode().equalsIgnoreCase(inv2.getCode())) {
                         if (inv.getUses() != inv2.getUses()) {
                             return inv2;
                         }

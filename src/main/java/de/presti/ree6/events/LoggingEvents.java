@@ -95,7 +95,7 @@ public class LoggingEvents extends ListenerAdapter {
 
             if (inviteContainer != null) {
                 inviteContainer.setUses(inviteContainer.getUses() + 1);
-                wm2.append(event.getUser().getAsMention() + " **has been invited by** <@" + inviteContainer.getCreatorid() + "> (Code: " + inviteContainer.getCode() + ", Uses: " + inviteContainer.getUses() + ")");
+                wm2.append(event.getUser().getAsMention() + " **has been invited by** <@" + inviteContainer.getCreatorId() + "> (Code: " + inviteContainer.getCode() + ", Uses: " + inviteContainer.getUses() + ")");
                 InviteContainerManager.addInvite(inviteContainer, event.getGuild().getId());
             } else {
                 wm2.append("Couldn't find out how " + event.getMember().getAsMention() + " joined :C");
