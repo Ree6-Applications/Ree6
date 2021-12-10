@@ -13,6 +13,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -213,21 +214,28 @@ public class MusicWorker {
         musicManager.scheduler.nextTrack(channel);
     }
 
+    public boolean isAttemptingToConnect(ConnectionStatus connectionStatus) {
+        return connectionStatus == ConnectionStatus.CONNECTING_ATTEMPTING_UDP_DISCOVERY ||
+                connectionStatus == ConnectionStatus.CONNECTING_AWAITING_AUTHENTICATION ||
+                connectionStatus == ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT ||
+                connectionStatus == ConnectionStatus.CONNECTING_AWAITING_READY ||
+                connectionStatus == ConnectionStatus.CONNECTING_AWAITING_ENDPOINT;
+    }
+
     @SuppressWarnings("deprecation")
     public void connectToFirstVoiceChannel(AudioManager audioManager) {
-        if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
+        if (!audioManager.isConnected() && !isAttemptingToConnect(audioManager.getConnectionStatus())) {
             audioManager.openAudioConnection(audioManager.getGuild().getVoiceChannels().get(0));
         }
     }
 
-    @SuppressWarnings("deprecation")
     public void connectToMemberVoiceChannel(AudioManager audioManager, Member m) {
-        if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
+        if (!audioManager.isConnected() && !isAttemptingToConnect(audioManager.getConnectionStatus())) {
             audioManager.openAudioConnection(Objects.requireNonNull(m.getVoiceState()).getChannel());
             ArrayUtil.botJoin.remove(m.getGuild());
 
             if ((audioManager.isConnected() || (audioManager.getGuild().getSelfMember().getVoiceState() != null &&
-                    audioManager.getGuild().getSelfMember().getVoiceState().inVoiceChannel())) && !audioManager.isSelfDeafened()) {
+                    audioManager.getGuild().getSelfMember().getVoiceState().inAudioChannel())) && !audioManager.isSelfDeafened()) {
 
                 if (audioManager.getGuild().getSelfMember().hasPermission(Permission.VOICE_DEAF_OTHERS)) {
                     audioManager.getGuild().getSelfMember().deafen(true).queue();
@@ -246,6 +254,6 @@ public class MusicWorker {
     }
 
     public boolean isConnectedMember(Member m) {
-        return m != null && m.getVoiceState() != null && m.getVoiceState().inVoiceChannel();
+        return m != null && m.getVoiceState() != null && m.getVoiceState().inAudioChannel();
     }
 }

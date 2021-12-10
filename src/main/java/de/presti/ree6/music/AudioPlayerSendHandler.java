@@ -41,7 +41,7 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
     }
 
     public boolean isMusicPlaying(Guild g) {
-        return g.getSelfMember().getVoiceState() != null && g.getSelfMember().getVoiceState().inVoiceChannel() && audioPlayer.getPlayingTrack() != null && !audioPlayer.isPaused();
+        return g.getSelfMember().getVoiceState() != null && g.getSelfMember().getVoiceState().inAudioChannel() && audioPlayer.getPlayingTrack() != null && !audioPlayer.isPaused();
     }
 
     @Override

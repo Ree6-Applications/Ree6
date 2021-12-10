@@ -31,7 +31,7 @@ public class Play extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
 
-        if (sender.getVoiceState() == null || !sender.getVoiceState().inVoiceChannel()) {
+        if (sender.getVoiceState() == null || !sender.getVoiceState().inAudioChannel()) {
             sendMessage("Please join a Channel!", m, hook);
             return;
         }

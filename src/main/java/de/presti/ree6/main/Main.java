@@ -145,13 +145,13 @@ public class Main {
 
                 for (Guild g : BotInfo.botInstance.getGuilds().stream().filter(guild -> guild.getAudioManager().getSendingHandler() != null
                         && guild.getSelfMember().getVoiceState() != null &&
-                        guild.getSelfMember().getVoiceState().inVoiceChannel()).collect(Collectors.toList())) {
+                        guild.getSelfMember().getVoiceState().inAudioChannel()).collect(Collectors.toList())) {
                     GuildMusicManager gmm = musicWorker.getGuildAudioPlayer(g);
 
                     try {
                         AudioPlayerSendHandler playerSendHandler = (AudioPlayerSendHandler) g.getAudioManager().getSendingHandler();
 
-                        if (g.getSelfMember().getVoiceState() != null && g.getSelfMember().getVoiceState().inVoiceChannel() && !playerSendHandler.isMusicPlaying(g)) {
+                        if (g.getSelfMember().getVoiceState() != null && g.getSelfMember().getVoiceState().inAudioChannel() && !playerSendHandler.isMusicPlaying(g)) {
                             gmm.scheduler.stopAll();
                         }
 

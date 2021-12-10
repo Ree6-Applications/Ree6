@@ -17,18 +17,11 @@ import de.presti.ree6.utils.TimeUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
-import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
-import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdateNSFWEvent;
-import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdateNewsEvent;
-import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdatePermissionsEvent;
-import net.dv8tion.jda.api.events.channel.voice.GenericVoiceChannelEvent;
-import net.dv8tion.jda.api.events.channel.voice.VoiceChannelCreateEvent;
-import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.voice.update.VoiceChannelUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.voice.update.VoiceChannelUpdatePermissionsEvent;
+import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
+import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
+import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
+import net.dv8tion.jda.api.events.channel.update.ChannelUpdateNSFWEvent;
+import net.dv8tion.jda.api.events.channel.update.ChannelUpdateNameEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
@@ -46,6 +39,7 @@ import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.role.update.*;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -350,108 +344,110 @@ public class LoggingEvents extends ListenerAdapter {
         Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMemberData(event.getMember(), new ArrayList<Role>(event.getRoles()), null), LoggerMessage.LogTyp.MEMBERROLE_CHANGE));
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public void onGenericVoiceChannel(@Nonnull GenericVoiceChannelEvent event) {
+    public void onGenericChannel(@Nonnull GenericChannelEvent event) {
 
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_voicechannel").getBooleanValue())
-            return;
+        // TODO rework this whole Methode.
 
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        if (event.getChannelType().isAudio()) {
+            if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_voicechannel").getBooleanValue())
+                return;
 
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.advertisement, event.getGuild().getIconUrl()));
-        we.setTimestamp(Instant.now());
+            WebhookMessageBuilder wm = new WebhookMessageBuilder();
+            wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            wm.setUsername("Ree6Logs");
 
-        we.setDescription(":house: **VoiceChannel updated:** ``" + event.getChannel().getAsMention() + "``");
+            WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+            we.setColor(Color.BLACK.getRGB());
+            we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.advertisement, event.getGuild().getIconUrl()));
+            we.setTimestamp(Instant.now());
 
-        if (event instanceof VoiceChannelCreateEvent) {
-            we.setDescription(":house: **VoiceChannel created:** ``" + event.getChannel().getAsMention() + "``");
-        } else if (event instanceof VoiceChannelDeleteEvent) {
-            we.setDescription(":house: **VoiceChannel deleted:** ``" + event.getChannel().getName() + "``");
-        } else if (event instanceof VoiceChannelUpdateNameEvent) {
-            we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", ((VoiceChannelUpdateNameEvent) event).getOldName()));
-            we.addField(new WebhookEmbed.EmbedField(true, "**New name**", ((VoiceChannelUpdateNameEvent) event).getNewName()));
-        } else if (event instanceof VoiceChannelUpdatePermissionsEvent) {
-            StringBuilder finalString = new StringBuilder("Roles: ");
+            we.setDescription(":house: **VoiceChannel updated:** ``" + event.getChannel().getAsMention() + "``");
 
-            for (Role r : ((VoiceChannelUpdatePermissionsEvent) event).getChangedRoles()) {
-                finalString.append("\n").append(r.getAsMention());
-            }
+            if (event instanceof ChannelCreateEvent) {
+                we.setDescription(":house: **VoiceChannel created:** ``" + event.getChannel().getAsMention() + "``");
+            } else if (event instanceof ChannelDeleteEvent) {
+                we.setDescription(":house: **VoiceChannel deleted:** ``" + event.getChannel().getName() + "``");
+            } else if (event instanceof ChannelUpdateNameEvent) {
+                we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", ((ChannelUpdateNameEvent) event).getOldValue() != null
+                        ? ((ChannelUpdateNameEvent) event).getOldValue() : event.getChannel().getName()));
+                we.addField(new WebhookEmbed.EmbedField(true, "**New name**", ((ChannelUpdateNameEvent) event).getNewValue() != null
+                        ? ((ChannelUpdateNameEvent) event).getNewValue() : event.getChannel().getName()));
+            }/* else if (event instanceof ChannelUpdate) {
+                StringBuilder finalString = new StringBuilder("Roles: ");
 
-            finalString.append("\n").append("Member: ");
+                for (Role r : ((VoiceChannelUpdatePermissionsEvent) event).getChangedRoles()) {
+                    finalString.append("\n").append(r.getAsMention());
+                }
 
-            for (Member member : ((VoiceChannelUpdatePermissionsEvent) event).getChangedMembers()) {
-                finalString.append("\n").append(member.getAsMention());
-            }
+                finalString.append("\n").append("Member: ");
 
-            we.setDescription(":house: **VoiceChannel Permissions updated:** ``" + event.getChannel().getAsMention() + "``");
-            we.addField(new WebhookEmbed.EmbedField(true, "**Updated**", finalString.toString().isEmpty() ? "" : finalString.toString()));
+                for (Member member : ((VoiceChannelUpdatePermissionsEvent) event).getChangedMembers()) {
+                    finalString.append("\n").append(member.getAsMention());
+                }
+
+                we.setDescription(":house: **VoiceChannel Permissions updated:** ``" + event.getChannel().getAsMention() + "``");
+                we.addField(new WebhookEmbed.EmbedField(true, "**Updated**", finalString.toString().isEmpty() ? "" : finalString.toString()));
+            }*/
+            // TODO This code above has to be completely reworked.
+
+            wm.addEmbeds(we.build());
+
+            String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
+            Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.CHANNELDATA_CHANGE));
+        } else if(event.getChannelType().isMessage()) {
+            if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_textchannel").getBooleanValue())
+                return;
+
+            WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+            wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            wm.setUsername("Ree6Logs");
+
+            WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+            we.setColor(Color.BLACK.getRGB());
+            we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.advertisement, event.getGuild().getIconUrl()));
+            we.setTimestamp(Instant.now());
+
+            we.setDescription(":house: **TextChannel updated:** ``" + event.getChannel().getAsMention() + "``");
+
+            if (event instanceof ChannelCreateEvent) {
+                we.setDescription(":house: **TextChannel created:** ``" + event.getChannel().getAsMention() + "``");
+            } else if (event instanceof ChannelDeleteEvent) {
+                we.setDescription(":house: **TextChannel deleted:** ``" + event.getChannel().getName() + "``");
+            } else if (event instanceof ChannelUpdateNameEvent) {
+                we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", ((ChannelUpdateNameEvent) event).getOldValue() != null
+                        ? ((ChannelUpdateNameEvent) event).getOldValue() : event.getChannel().getName()));
+                we.addField(new WebhookEmbed.EmbedField(true, "**New name**", ((ChannelUpdateNameEvent) event).getNewValue() != null
+                        ? ((ChannelUpdateNameEvent) event).getNewValue() : event.getChannel().getName()));
+            } else if (event instanceof ChannelUpdateNSFWEvent) {
+                we.addField(new WebhookEmbed.EmbedField(true, "**NSFW**", ((ChannelUpdateNSFWEvent) event).getNewValue() + ""));
+            }/* else if (event instanceof TextChannelUpdatePermissionsEvent) {
+                StringBuilder finalString = new StringBuilder("Roles: ");
+
+                for (Role r : ((TextChannelUpdatePermissionsEvent) event).getChangedRoles()) {
+                    finalString.append("\n").append(r.getAsMention());
+                }
+
+                finalString.append("\n").append("Member: ");
+
+                for (Member member : ((TextChannelUpdatePermissionsEvent) event).getChangedMembers()) {
+                    finalString.append("\n").append(member.getAsMention());
+                }
+
+                we.setDescription(":house: **TextChannel Permissions updated:** ``" + event.getChannel().getAsMention() + "``");
+                we.addField(new WebhookEmbed.EmbedField(true, "**Updated**", finalString.toString()));
+            }*/
+    // TODO This code above has to be completely reworked.
+
+            wm.addEmbeds(we.build());
+
+            String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
+            Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.CHANNELDATA_CHANGE));
+
         }
-
-        wm.addEmbeds(we.build());
-
-        String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.CHANNELDATA_CHANGE));
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void onGenericTextChannel(@Nonnull GenericTextChannelEvent event) {
-
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()) || !Main.sqlWorker.getSetting(event.getGuild().getId(), "logging_textchannel").getBooleanValue())
-            return;
-
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
-
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.advertisement, event.getGuild().getIconUrl()));
-        we.setTimestamp(Instant.now());
-
-        we.setDescription(":house: **TextChannel updated:** ``" + event.getChannel().getAsMention() + "``");
-
-        if (event instanceof TextChannelCreateEvent) {
-            we.setDescription(":house: **TextChannel created:** ``" + event.getChannel().getAsMention() + "``");
-        } else if (event instanceof TextChannelDeleteEvent) {
-            we.setDescription(":house: **TextChannel deleted:** ``" + event.getChannel().getName() + "``");
-        } else if (event instanceof TextChannelUpdateNameEvent) {
-            we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", ((TextChannelUpdateNameEvent) event).getOldName()));
-            we.addField(new WebhookEmbed.EmbedField(true, "**New name**", ((TextChannelUpdateNameEvent) event).getNewName()));
-        } else if (event instanceof TextChannelUpdateNewsEvent) {
-            we.addField(new WebhookEmbed.EmbedField(true, "**News**", ((TextChannelUpdateNewsEvent) event).getNewValue() + ""));
-        } else if (event instanceof TextChannelUpdateNSFWEvent) {
-            we.addField(new WebhookEmbed.EmbedField(true, "**NSFW**", ((TextChannelUpdateNSFWEvent) event).getNewValue() + ""));
-        } else if (event instanceof TextChannelUpdatePermissionsEvent) {
-            StringBuilder finalString = new StringBuilder("Roles: ");
-
-            for (Role r : ((TextChannelUpdatePermissionsEvent) event).getChangedRoles()) {
-                finalString.append("\n").append(r.getAsMention());
-            }
-
-            finalString.append("\n").append("Member: ");
-
-            for (Member member : ((TextChannelUpdatePermissionsEvent) event).getChangedMembers()) {
-                finalString.append("\n").append(member.getAsMention());
-            }
-
-            we.setDescription(":house: **TextChannel Permissions updated:** ``" + event.getChannel().getAsMention() + "``");
-            we.addField(new WebhookEmbed.EmbedField(true, "**Updated**", finalString.toString()));
-        }
-
-        wm.addEmbeds(we.build());
-
-        String[] infos = Main.sqlWorker.getLogWebhook(event.getGuild().getId());
-        Main.loggerQueue.add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.CHANNELDATA_CHANGE));
-
     }
 
     @Override

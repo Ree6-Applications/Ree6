@@ -1,16 +1,16 @@
 package de.presti.ree6.logger;
 
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 
 public class LoggerVoiceData {
 
     private Member member;
-    private VoiceChannel previousVoiceChannel, currentVoiceChannel;
+    private AudioChannel previousVoiceChannel, currentVoiceChannel;
 
     private LoggerVoiceTyp loggerVoiceTyp;
 
-    public LoggerVoiceData(Member member, VoiceChannel voiceChannel, LoggerVoiceTyp loggerVoiceTyp) {
+    public LoggerVoiceData(Member member, AudioChannel voiceChannel, LoggerVoiceTyp loggerVoiceTyp) {
         this.member = member;
         if (loggerVoiceTyp == LoggerVoiceTyp.JOIN) {
             this.currentVoiceChannel = voiceChannel;
@@ -20,7 +20,7 @@ public class LoggerVoiceData {
         this.loggerVoiceTyp = loggerVoiceTyp;
     }
 
-    public LoggerVoiceData(Member member, VoiceChannel previousVoiceChannel, VoiceChannel currentVoiceChannel, LoggerVoiceTyp loggerVoiceTyp) {
+    public LoggerVoiceData(Member member, AudioChannel previousVoiceChannel, AudioChannel currentVoiceChannel, LoggerVoiceTyp loggerVoiceTyp) {
         this.member = member;
         this.previousVoiceChannel = previousVoiceChannel;
         this.currentVoiceChannel = currentVoiceChannel;
@@ -35,19 +35,19 @@ public class LoggerVoiceData {
         this.member = member;
     }
 
-    public VoiceChannel getPreviousVoiceChannel() {
+    public AudioChannel getPreviousVoiceChannel() {
         return previousVoiceChannel;
     }
 
-    public void setPreviousVoiceChannel(VoiceChannel previousVoiceChannel) {
+    public void setPreviousVoiceChannel(AudioChannel previousVoiceChannel) {
         this.previousVoiceChannel = previousVoiceChannel;
     }
 
-    public VoiceChannel getCurrentVoiceChannel() {
+    public AudioChannel getCurrentVoiceChannel() {
         return currentVoiceChannel;
     }
 
-    public void setCurrentVoiceChannel(VoiceChannel currentVoiceChannel) {
+    public void setCurrentVoiceChannel(AudioChannel currentVoiceChannel) {
         this.currentVoiceChannel = currentVoiceChannel;
     }
 

@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -109,51 +109,54 @@ public class OtherEvents extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+        super.onMessageReceived(event);
 
-        if (!ArrayUtil.messageIDwithMessage.containsKey(event.getMessageId())) {
-            ArrayUtil.messageIDwithMessage.put(event.getMessageId(), event.getMessage().getContentRaw());
-        }
+        if (event.isFromGuild()) {
+            if (!ArrayUtil.messageIDwithMessage.containsKey(event.getMessageId())) {
+                ArrayUtil.messageIDwithMessage.put(event.getMessageId(), event.getMessage().getContentRaw());
+            }
 
-        if (!ArrayUtil.messageIDwithUser.containsKey(event.getMessageId())) {
-            ArrayUtil.messageIDwithUser.put(event.getMessageId(), event.getAuthor());
-        }
+            if (!ArrayUtil.messageIDwithUser.containsKey(event.getMessageId())) {
+                ArrayUtil.messageIDwithUser.put(event.getMessageId(), event.getAuthor());
+            }
 
-        if (event.getAuthor().isBot())
-            return;
-
-        if (ChatProtector.hasChatProtector(event.getGuild().getId())) {
-            if (ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
-                event.getMessage().delete().queue();
-                event.getChannel().sendMessage("You can't write that!").queue();
+            if (event.getAuthor().isBot())
                 return;
-            }
-        }
 
-        if (!Main.commandManager.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
-
-            if (!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(BotInfo.botInstance.getSelfUser())) {
-                event.getChannel().sendMessage("Usage " + Main.sqlWorker.getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "help").queue();
-            }
-
-            if (!ArrayUtil.timeout.contains(event.getMember())) {
-
-                Main.sqlWorker.addXP(event.getGuild().getId(), event.getAuthor().getId(), new Random().nextInt(25) + 1);
-
-                ArrayUtil.timeout.add(event.getMember());
-
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(30000);
-                    } catch (InterruptedException ignored) {
-                    }
-
-                    ArrayUtil.timeout.remove(event.getMember());
-
-                }).start();
+            if (ChatProtector.hasChatProtector(event.getGuild().getId())) {
+                if (ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
+                    event.getMessage().delete().queue();
+                    event.getChannel().sendMessage("You can't write that!").queue();
+                    return;
+                }
             }
 
-            AutoRoleHandler.handleChatLevelReward(event.getGuild(), event.getMember());
+            if (!Main.commandManager.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getTextChannel(), null)) {
+
+                if (!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(BotInfo.botInstance.getSelfUser())) {
+                    event.getChannel().sendMessage("Usage " + Main.sqlWorker.getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "help").queue();
+                }
+
+                if (!ArrayUtil.timeout.contains(event.getMember())) {
+
+                    Main.sqlWorker.addXP(event.getGuild().getId(), event.getAuthor().getId(), new Random().nextInt(25) + 1);
+
+                    ArrayUtil.timeout.add(event.getMember());
+
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(30000);
+                        } catch (InterruptedException ignored) {
+                        }
+
+                        ArrayUtil.timeout.remove(event.getMember());
+
+                    }).start();
+                }
+
+                AutoRoleHandler.handleChatLevelReward(event.getGuild(), event.getMember());
+            }
         }
     }
 
