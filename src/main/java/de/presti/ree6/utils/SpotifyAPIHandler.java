@@ -1,15 +1,14 @@
 package de.presti.ree6.utils;
 
-
-import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
-import com.wrapper.spotify.model_objects.specification.*;
-import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
-import com.wrapper.spotify.requests.data.playlists.GetPlaylistRequest;
-import com.wrapper.spotify.requests.data.tracks.GetTrackRequest;
 import de.presti.ree6.main.Main;
 import org.apache.hc.core5.http.ParseException;
+import se.michaelthelin.spotify.*;
+import se.michaelthelin.spotify.exceptions.*;
+import se.michaelthelin.spotify.model_objects.credentials.*;
+import se.michaelthelin.spotify.model_objects.specification.*;
+import se.michaelthelin.spotify.requests.authorization.client_credentials.*;
+import se.michaelthelin.spotify.requests.data.playlists.*;
+import se.michaelthelin.spotify.requests.data.tracks.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
