@@ -10,27 +10,27 @@ public class AutoRoleHandler {
 
     public static void handleMemberJoin(Guild g, Member m) {
 
-        if (!Main.sqlWorker.hasAutoRoles(g.getId()))
+        if (!Main.sqlConnector.getSqlWorker().isAutoRoleSetup(g.getId()))
             return;
 
         new Thread(() -> {
 
             if (!g.getSelfMember().canInteract(m)) {
-                Logger.log("AutoRole", "Failed to give a Role when someone joined!");
-                Logger.log("AutoRole", "Server: " + g.getName());
+                LoggerImpl.log("AutoRole", "Failed to give a Role when someone joined!");
+                LoggerImpl.log("AutoRole", "Server: " + g.getName());
                 if (g.getOwner() != null)
                     g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
                 return;
             }
 
-            for (String ids : Main.sqlWorker.getAutoRoleIDs(g.getId())) {
+            for (String ids : Main.sqlConnector.getSqlWorker().getAutoRoles(g.getId())) {
                 if (!m.getRoles().contains(g.getRoleById(ids))) {
                     if (g.getSelfMember().canInteract(g.getRoleById(ids))) {
                         g.addRoleToMember(m, g.getRoleById(ids)).queue();
                     } else {
-                        Logger.log("AutoRole", "Failed to give a Role!");
-                        Logger.log("AutoRole", "Role: " + g.getRoleById(ids).getName());
-                        Logger.log("AutoRole", "Server: " + g.getName());
+                        LoggerImpl.log("AutoRole", "Failed to give a Role!");
+                        LoggerImpl.log("AutoRole", "Role: " + g.getRoleById(ids).getName());
+                        LoggerImpl.log("AutoRole", "Server: " + g.getName());
                         if (g.getOwner() != null)
                             g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when joining is: " + g.getRoleById(ids)).queue();
                     }
@@ -41,12 +41,12 @@ public class AutoRoleHandler {
 
     public static void handleVoiceLevelReward(Guild g, Member m) {
 
-        if (!Main.sqlWorker.hasVoiceLevelReward(g.getId()))
+        if (!Main.sqlConnector.getSqlWorker().isVoiceLevelRewardSetup(g.getId()))
             return;
 
         new Thread(() -> {
 
-            long currentxp = Main.sqlWorker.getXPVC(g.getId(), m.getUser().getId());
+            long currentxp = Main.sqlConnector.getSqlWorker().getVoiceXP(g.getId(), m.getUser().getId());
 
             int level = 1;
 
@@ -56,23 +56,23 @@ public class AutoRoleHandler {
             }
 
             if (!g.getSelfMember().canInteract(m)) {
-                Logger.log("AutoRole", "Failed to give a Role when someone leveled up!");
-                Logger.log("AutoRole", "Server: " + g.getName());
+                LoggerImpl.log("AutoRole", "Failed to give a Role when someone leveled up!");
+                LoggerImpl.log("AutoRole", "Server: " + g.getName());
                 if (g.getOwner() != null)
                     g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
                 return;
             }
 
-            for (Map.Entry<Integer, String> entry : Main.sqlWorker.getVoiceLevelRewards(g.getId()).entrySet()) {
+            for (Map.Entry<Integer, String> entry : Main.sqlConnector.getSqlWorker().getVoiceLevelRewards(g.getId()).entrySet()) {
 
                 if (entry.getKey() <= level) {
                     if (!m.getRoles().contains(g.getRoleById(entry.getValue()))) {
                         if (g.getSelfMember().canInteract(g.getRoleById(entry.getValue()))) {
                             g.addRoleToMember(m, g.getRoleById(entry.getValue())).queue();
                         } else {
-                            Logger.log("AutoRole", "Failed to give a Role!");
-                            Logger.log("AutoRole", "Role: " + g.getRoleById(entry.getValue()).getName());
-                            Logger.log("AutoRole", "Server: " + g.getName());
+                            LoggerImpl.log("AutoRole", "Failed to give a Role!");
+                            LoggerImpl.log("AutoRole", "Role: " + g.getRoleById(entry.getValue()).getName());
+                            LoggerImpl.log("AutoRole", "Server: " + g.getName());
                             if (g.getOwner() != null)
                                 g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue())).queue();
                         }
@@ -84,12 +84,12 @@ public class AutoRoleHandler {
 
     public static void handleChatLevelReward(Guild g, Member m) {
 
-        if (!Main.sqlWorker.hasChatLevelReward(g.getId()))
+        if (!Main.sqlConnector.getSqlWorker().isChatLevelRewardSetup(g.getId()))
             return;
 
         new Thread(() -> {
 
-            long currentxp = Main.sqlWorker.getXP(g.getId(), m.getUser().getId());
+            long currentxp = Main.sqlConnector.getSqlWorker().getChatXP(g.getId(), m.getUser().getId());
 
             int level = 1;
 
@@ -99,23 +99,23 @@ public class AutoRoleHandler {
             }
 
             if (!g.getSelfMember().canInteract(m)) {
-                Logger.log("AutoRole", "Failed to give a Role when someone leveled up!");
-                Logger.log("AutoRole", "Server: " + g.getName());
+                LoggerImpl.log("AutoRole", "Failed to give a Role when someone leveled up!");
+                LoggerImpl.log("AutoRole", "Server: " + g.getName());
                 if (g.getOwner() != null)
                     g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue();
                 return;
             }
 
-            for (Map.Entry<Integer, String> entry : Main.sqlWorker.getChatLevelRewards(g.getId()).entrySet()) {
+            for (Map.Entry<Integer, String> entry : Main.sqlConnector.getSqlWorker().getChatLevelRewards(g.getId()).entrySet()) {
 
                 if (entry.getKey() <= level) {
                     if (!m.getRoles().contains(g.getRoleById(entry.getValue()))) {
                         if (g.getSelfMember().canInteract(g.getRoleById(entry.getValue()))) {
                             g.addRoleToMember(m, g.getRoleById(entry.getValue())).queue();
                         } else {
-                            Logger.log("AutoRole", "Failed to give a Role!");
-                            Logger.log("AutoRole", "Role: " + g.getRoleById(entry.getValue()).getName());
-                            Logger.log("AutoRole", "Server: " + g.getName());
+                            LoggerImpl.log("AutoRole", "Failed to give a Role!");
+                            LoggerImpl.log("AutoRole", "Role: " + g.getRoleById(entry.getValue()).getName());
+                            LoggerImpl.log("AutoRole", "Server: " + g.getName());
                             if (g.getOwner() != null)
                                 g.getOwner().getUser().openPrivateChannel().complete().sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\nIf you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\nThe Role that i cant give people when leveling up: " + g.getRoleById(entry.getValue())).queue();
                         }

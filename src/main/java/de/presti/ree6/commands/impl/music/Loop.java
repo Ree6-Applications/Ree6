@@ -26,14 +26,14 @@ public class Loop extends Command {
         Main.musicWorker.getGuildAudioPlayer(
                 m.getGuild()).scheduler.loop = !Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.loop;
 
-        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
+        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                 BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
         em.setDescription(Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.loop ? "Song Loop has been activated!"
                 : "Song Loop has been deactivated!");
-        em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
+        em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
 
         sendMessage(em, 5, m, hook);
     }

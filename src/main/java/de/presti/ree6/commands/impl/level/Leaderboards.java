@@ -22,11 +22,13 @@ public class Leaderboards extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         EmbedBuilder em = new EmbedBuilder();
 
+        // TODO remember to change this because of the new Webinterface
+
         em.setThumbnail(sender.getUser().getAvatarUrl());
         em.setTitle("Leaderboard");
 
-        ArrayList<String> top = Main.sqlWorker.getTop(3, m.getGuild().getId());
-        ArrayList<String> topvc = Main.sqlWorker.getTopVC(3, m.getGuild().getId());
+        ArrayList<String> top = Main.sqlConnector.getSqlWorker().getTopChat( m.getGuild().getId(), 3);
+        ArrayList<String> topvc = Main.sqlConnector.getSqlWorker().getTopVoice(m.getGuild().getId(), 3);
 
         if(!top.isEmpty() && !topvc.isEmpty()) {
 
@@ -34,23 +36,23 @@ public class Leaderboards extends Command {
             em.addBlankField(true);
             em.addField("**Voice Leaderboard**", "", true);
 
-            em.addField("1", "**<@" + top.get(0) + ">**\n**ChatLevel: **" + getLevel(Main.sqlWorker.getXP(m.getGuild().getId(), top.get(0))) + "\n**ChatXP:** " + getFormattedXP(Main.sqlWorker.getXP(m.getGuild().getId(), top.get(0))), true);
+            em.addField("1", "**<@" + top.get(0) + ">**\n**ChatLevel: **" + getLevel(Main.sqlConnector.getSqlWorker().getChatXP(m.getGuild().getId(), top.get(0))) + "\n**ChatXP:** " + getFormattedXP(Main.sqlConnector.getSqlWorker().getChatXP(m.getGuild().getId(), top.get(0))), true);
             em.addBlankField(true);
-            em.addField("1", "**<@" + topvc.get(0) + ">**\n**VoiceLevel: **" + getLevelVC(Main.sqlWorker.getXPVC(m.getGuild().getId(), top.get(0))) + "\n**VoiceXP:** " + getFormattedXP(Main.sqlWorker.getXPVC(m.getGuild().getId(), top.get(0))), true);
+            em.addField("1", "**<@" + topvc.get(0) + ">**\n**VoiceLevel: **" + getLevelVC(Main.sqlConnector.getSqlWorker().getVoiceXP(m.getGuild().getId(), top.get(0))) + "\n**VoiceXP:** " + getFormattedXP(Main.sqlConnector.getSqlWorker().getVoiceXP(m.getGuild().getId(), top.get(0))), true);
 
-            em.addField("2", "**<@" + top.get(1) + ">**\n**Level: **" + getLevel(Main.sqlWorker.getXP(m.getGuild().getId(), top.get(1))) + "\n**XP:** " + getFormattedXP(Main.sqlWorker.getXP(m.getGuild().getId(), top.get(1))), true);
+            em.addField("2", "**<@" + top.get(1) + ">**\n**Level: **" + getLevel(Main.sqlConnector.getSqlWorker().getChatXP(m.getGuild().getId(), top.get(1))) + "\n**XP:** " + getFormattedXP(Main.sqlConnector.getSqlWorker().getChatXP(m.getGuild().getId(), top.get(1))), true);
             em.addBlankField(true);
-            em.addField("2", "**<@" + topvc.get(1) + ">**\n**VoiceLevel: **" + getLevelVC(Main.sqlWorker.getXPVC(m.getGuild().getId(), top.get(1))) + "\n**VoiceXP:** " + getFormattedXP(Main.sqlWorker.getXPVC(m.getGuild().getId(), top.get(1))), true);
+            em.addField("2", "**<@" + topvc.get(1) + ">**\n**VoiceLevel: **" + getLevelVC(Main.sqlConnector.getSqlWorker().getVoiceXP(m.getGuild().getId(), top.get(1))) + "\n**VoiceXP:** " + getFormattedXP(Main.sqlConnector.getSqlWorker().getVoiceXP(m.getGuild().getId(), top.get(1))), true);
 
-            em.addField("3", "**<@" + top.get(2) + ">**\n**Level: **" + getLevel(Main.sqlWorker.getXP(m.getGuild().getId(), top.get(2))) + "\n**XP:** " + getFormattedXP(Main.sqlWorker.getXP(m.getGuild().getId(), top.get(2))), true);
+            em.addField("3", "**<@" + top.get(2) + ">**\n**Level: **" + getLevel(Main.sqlConnector.getSqlWorker().getChatXP(m.getGuild().getId(), top.get(2))) + "\n**XP:** " + getFormattedXP(Main.sqlConnector.getSqlWorker().getChatXP(m.getGuild().getId(), top.get(2))), true);
             em.addBlankField(true);
-            em.addField("3", "**<@" + topvc.get(2) + ">**\n**VoiceLevel: **" + getLevelVC(Main.sqlWorker.getXPVC(m.getGuild().getId(), top.get(2))) + "\n**VoiceXP:** " + getFormattedXP(Main.sqlWorker.getXPVC(m.getGuild().getId(), top.get(2))), true);
+            em.addField("3", "**<@" + topvc.get(2) + ">**\n**VoiceLevel: **" + getLevelVC(Main.sqlConnector.getSqlWorker().getVoiceXP(m.getGuild().getId(), top.get(2))) + "\n**VoiceXP:** " + getFormattedXP(Main.sqlConnector.getSqlWorker().getVoiceXP(m.getGuild().getId(), top.get(2))), true);
 
         } else {
             em.addField("Error", "There arent any Top 3s", true);
         }
 
-        em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
+        em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
         sendMessage(em, m, hook);
     }
 

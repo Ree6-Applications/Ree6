@@ -26,8 +26,8 @@ public class Rainbow extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         deleteMessage(messageSelf);
 
-        if(!Main.sqlWorker.hasRainbowSetuped(m.getGuild().getId())) {
-            sendMessage("Rainbow Mate searcher isn't setuped!\nAsk a Admin to set it up with "+ Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "setup r6", 5, m, hook);
+        if(!Main.sqlConnector.getSqlWorker().isRainbowSetup(m.getGuild().getId())) {
+            sendMessage("Rainbow Mate searcher isn't setuped!\nAsk a Admin to set it up with "+ Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "setup r6", 5, m, hook);
             return;
         }
 
@@ -46,8 +46,8 @@ public class Rainbow extends Command {
         wm.addEmbeds(em.build());
 
         for(Guild g : BotInfo.botInstance.getGuilds()) {
-            if(Main.sqlWorker.hasRainbowSetuped(g.getId())) {
-                String[] info = Main.sqlWorker.getRainbowHooks(g.getId());
+            if(Main.sqlConnector.getSqlWorker().isRainbowSetup(g.getId())) {
+                String[] info = Main.sqlConnector.getSqlWorker().getRainbowWebhook(g.getId());
                 Webhook.sendWebhook(null, wm.build(), Long.parseLong(info[0]), info[1]);
             }
         }

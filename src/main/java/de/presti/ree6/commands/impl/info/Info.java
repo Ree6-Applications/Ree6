@@ -27,7 +27,7 @@ public class Info extends Command {
             if (args.length == 1) {
                 if(messageSelf.getMentionedMembers().isEmpty()) {
                     sendMessage("No User mentioned!", 5, m, hook);
-                    sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, m, hook);
+                    sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, m, hook);
                 } else {
                     EmbedBuilder em = new EmbedBuilder();
 
@@ -40,13 +40,13 @@ public class Info extends Command {
                     em.addField("**Created Date**", target.getTimeCreated().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
                     em.addField("**Joined Date**", m.getGuild().getMember(target).getTimeJoined().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
 
-                    em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
+                    em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
 
                     sendMessage(em, m, hook);
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, m, hook);
+                sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, m, hook);
             }
     }
 }

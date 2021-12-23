@@ -24,18 +24,18 @@ public class Mute extends Command {
         if (sender.hasPermission(Permission.ADMINISTRATOR)) {
             if (args.length == 1) {
 
-                if(!Main.sqlWorker.hasMuteSetuped(m.getGuild().getId())) {
-                    sendMessage("Mute Role hasn't been setuped!\nTo setup it up type " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "setup mute @MuteRole !", 5, m, hook);
+                if(!Main.sqlConnector.getSqlWorker().isMuteSetup(m.getGuild().getId())) {
+                    sendMessage("Mute Role hasn't been setuped!\nTo setup it up type " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "setup mute @MuteRole !", 5, m, hook);
                     return;
                 }
 
                 if(messageSelf.getMentionedUsers().isEmpty()) {
                     sendMessage("No User mentioned!", 5, m, hook);
-                    sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "mute @user", 5, m, hook);
+                    sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "mute @user", 5, m, hook);
                 } else {
                     if (m.getGuild().getSelfMember().canInteract(messageSelf.getMentionedMembers().get(0)) && sender.canInteract(messageSelf.getMentionedMembers().get(0))) {
                         sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been muted!", 5, m, hook);
-                        Role r = m.getGuild().getRoleById(Main.sqlWorker.getMuteRoleID(sender.getGuild().getId()));
+                        Role r = m.getGuild().getRoleById(Main.sqlConnector.getSqlWorker().getMuteRole(sender.getGuild().getId()));
                         m.getGuild().addRoleToMember(messageSelf.getMentionedMembers().get(0), r).queue();
                     } else {
                         sendMessage("Couldn't mute this User because he has a higher Rank then me!", 5, m, hook);
@@ -43,7 +43,7 @@ public class Mute extends Command {
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "mute @user", 5, m, hook);
+                sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "mute @user", 5, m, hook);
             }
         } else {
             sendMessage("You don't have the Permission for this Command!", 5, m, hook);

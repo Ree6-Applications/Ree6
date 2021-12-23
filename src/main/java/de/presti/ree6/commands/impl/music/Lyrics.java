@@ -38,11 +38,11 @@ public class Lyrics extends Command {
             client.getLyrics(title).thenAccept(lyrics -> {
 
                 if (lyrics == null) {
-                    m.sendMessageEmbeds(new EmbedBuilder().setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
+                    m.sendMessageEmbeds(new EmbedBuilder().setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                                     BotInfo.botInstance.getSelfUser().getAvatarUrl()).setTitle("Music Player!")
                             .setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl()).setColor(Color.RED)
                             .setDescription("Couldn't find the Lyrics for ``" + title + "``.")
-                            .setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl()).build())
+                            .setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl()).build())
                             .delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
                     return;
                 }
@@ -69,7 +69,7 @@ public class Lyrics extends Command {
                         m.sendMessageEmbeds(eb.setDescription(content.substring(0, index).trim()).build()).queue();
                         content = content.substring(index).trim();
                         eb.setAuthor(null).setTitle(null, null);
-                        eb.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
+                        eb.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
                     }
 
                     m.sendMessageEmbeds(eb.setDescription(content).build()).queue();

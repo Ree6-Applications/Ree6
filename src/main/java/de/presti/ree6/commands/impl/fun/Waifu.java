@@ -31,7 +31,7 @@ public class Waifu extends Command {
         if((js.has("nsfw") && js.getBoolean("nsfw"))) {
             em.addField("**NSFW**", "", true);
         }
-        em.setFooter(sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
+        em.setFooter(sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
 
         sendMessage(em, m, hook);
     }

@@ -34,7 +34,7 @@ public class Server extends Command {
             em.addField(":busts_in_silhouette: **Members (" + m.getGuild().getMemberCount() + ")**", "**" + (m.getGuild().getMemberCount() - (m.getGuild().getMembers().stream().filter(member -> !member.getUser().isBot())).count()) + "** User\n**" + m.getGuild().getBoostCount() + "** Boosts :sparkles:", true);
             em.addField(":speech_balloon: **Channels (" + (m.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.TEXT)).count() + m.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.VOICE)).count()) + ")**", "**" + m.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.TEXT)).count() + "** Text | **" + m.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.VOICE)).count() + "** Voicechannel", true);
             em.addField(":earth_africa: **Other**", "**Verificationlevel:** " + m.getGuild().getVerificationLevel().getKey(), true);
-            em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
+            em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
 
             sendMessage(em, m, hook);
         } else

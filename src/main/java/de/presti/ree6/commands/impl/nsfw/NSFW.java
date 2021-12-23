@@ -34,7 +34,7 @@ public class NSFW extends Command {
             EmbedBuilder em = new EmbedBuilder();
 
             em.setImage(im != null && !im.getUrl().isEmpty() ? im.getUrl() : "https://images.ree6.de/notfound.png");
-            em.setFooter(sender.getUser().getAsTag() + " Tag: " + usedTag + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
+            em.setFooter(sender.getUser().getAsTag() + " Tag: " + usedTag + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
 
             sendMessage(em, m, hook);
         } else {

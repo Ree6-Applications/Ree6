@@ -41,7 +41,7 @@ public class MemeImage extends Command {
             em.setDescription("Couldn't get the Image!");
         }
 
-        em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
+        em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
         sendMessage(em, m, hook);
 
     }

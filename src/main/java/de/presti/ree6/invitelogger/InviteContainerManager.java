@@ -1,7 +1,7 @@
 package de.presti.ree6.invitelogger;
 
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.Logger;
+import de.presti.ree6.utils.LoggerImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
 
@@ -14,18 +14,18 @@ public class InviteContainerManager {
 
     public static void addInvite(InviteContainer inv, String gid) {
         try {
-            Main.sqlWorker.setInvite(gid, inv.getCode(), inv.getCreatorId(), inv.getUses());
+            Main.sqlConnector.getSqlWorker().setInvite(gid, inv.getCode(), inv.getCreatorId(), inv.getUses());
         } catch (Exception ex) {
-            Logger.log("InviteManager", "Error while Saving Invites: " + ex.getMessage());
+            LoggerImpl.log("InviteManager", "Error while Saving Invites: " + ex.getMessage());
         }
     }
 
     public static void removeInvite(String gid, String creator, String code) {
-        Main.sqlWorker.removeInvite(gid, creator, code);
+        Main.sqlConnector.getSqlWorker().removeInvite(gid, creator, code);
     }
 
     public static void removeInvite(String gid, String code) {
-        Main.sqlWorker.removeInvite(gid, code);
+        Main.sqlConnector.getSqlWorker().removeInvite(gid, code);
     }
 
     public static InviteContainer getRightInvite(Guild g) {
@@ -50,7 +50,7 @@ public class InviteContainerManager {
     }
 
     public static ArrayList<InviteContainer> getInvites(String gid) {
-        return Main.sqlWorker.getInvites(gid);
+        return Main.sqlConnector.getSqlWorker().getInvites(gid);
     }
 
     public static ArrayList<InviteContainer> getDeletedInvites() {

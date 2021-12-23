@@ -1,7 +1,7 @@
 package de.presti.ree6.addons;
 
 import de.presti.ree6.bot.BotInfo;
-import de.presti.ree6.utils.Logger;
+import de.presti.ree6.utils.LoggerImpl;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -40,7 +40,7 @@ public class AddonManager {
 
         // Check if it's made for the newest Ree6 Version if not inform.
         if (!addon.getRee6Ver().equalsIgnoreCase(BotInfo.build)) {
-            Logger.log("AddonManager", "The Addon " + addon.getName() + " by " + addon.getAuthor() + " has been developed for Ree6 b" + addon.getRee6Ver() + " but you have a newer Version so be careful!");
+            LoggerImpl.log("AddonManager", "The Addon " + addon.getName() + " by " + addon.getAuthor() + " has been developed for Ree6 b" + addon.getRee6Ver() + " but you have a newer Version so be careful!");
         }
 
         try {
@@ -69,16 +69,16 @@ public class AddonManager {
                 inf.onEnable();
             } else {
                 // If not inform about an invalid Addon.
-                Logger.log("AddonManager", "Couldn't start the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor());
-                Logger.log("AddonManager", "It doesn't implement the AddonInterface!");
+                LoggerImpl.log("AddonManager", "Couldn't start the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor());
+                LoggerImpl.log("AddonManager", "It doesn't implement the AddonInterface!");
             }
 
 
         } catch (Exception ex) {
             // Throw an error if the Addon is invalid or corrupted.
-            Logger.log("AddonManager", "Couldn't start the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor());
-            Logger.log("AddonManager", "Information: " + addon.getMainPath() + ", " + addon.getAddonVer() + ", " + addon.getRee6Ver());
-            Logger.log("AddonManager", "Exception: " + ex.getCause().getMessage());
+            LoggerImpl.log("AddonManager", "Couldn't start the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor());
+            LoggerImpl.log("AddonManager", "Information: " + addon.getMainPath() + ", " + addon.getAddonVer() + ", " + addon.getRee6Ver());
+            LoggerImpl.log("AddonManager", "Exception: " + ex.getCause().getMessage());
         }
     }
 
@@ -121,12 +121,12 @@ public class AddonManager {
                 inf.onDisable();
             } else {
                 // If not inform about an invalid Addon.
-                Logger.log("AddonManager", "Couldn't start the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor());
-                Logger.log("AddonManager", "It doesn't implement the AddonInterface!");
+                LoggerImpl.log("AddonManager", "Couldn't start the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor());
+                LoggerImpl.log("AddonManager", "It doesn't implement the AddonInterface!");
             }
         } catch (Exception ex) {
             // Throw an error if the Addon is invalid or corrupted.
-            Logger.log("AddonManager", "Couldn't stop the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor() + "\nException: " + ex.getCause().getMessage());
+            LoggerImpl.log("AddonManager", "Couldn't stop the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor() + "\nException: " + ex.getCause().getMessage());
         }
     }
 

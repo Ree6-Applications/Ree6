@@ -42,30 +42,32 @@ public class TwitchAPIHandler {
 
     public void registerTwitchLive() {
         twitchClient.getEventManager().onEvent(ChannelGoLiveEvent.class, channelGoLiveEvent -> {
-            String[] credits = Main.sqlWorker.getTwitchNotifyWebhookByName(channelGoLiveEvent.getStream().getUserName().toLowerCase());
+            ArrayList<String[]> twitchWebhooks = Main.sqlConnector.getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getStream().getUserName().toLowerCase());
 
-            if (credits[0].equalsIgnoreCase("error")) {
-                Logger.log("TwitchNotifier", "Error while getting Infos (" + channelGoLiveEvent.getStream().getUserName() + ")");
-                return;
+            for (String[] credits : twitchWebhooks) {
+                if (credits[0].equalsIgnoreCase("No setup!")) {
+                    LoggerImpl.log("TwitchNotifier", "Error while getting Infos (" + channelGoLiveEvent.getStream().getUserName() + ")");
+                    return;
+                }
+
+                WebhookMessageBuilder wmb = new WebhookMessageBuilder();
+
+                wmb.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                wmb.setUsername("Ree6");
+
+                WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(channelGoLiveEvent.getStream().getUserName(), null));
+                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitch Notifier", null, null));
+                webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrl());
+                webhookEmbedBuilder.setDescription("Hey the User " + channelGoLiveEvent.getStream().getUserName() + " is now LIVE!\n\nhttps://twitch.tv/" + channelGoLiveEvent.getStream().getUserName() + "\n\nTitle: " + channelGoLiveEvent.getStream().getTitle() + "\nViewercount: " + channelGoLiveEvent.getStream().getViewerCount() + "\nGame: " + channelGoLiveEvent.getStream().getGameName());
+                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, null));
+                webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
+
+                wmb.addEmbeds(webhookEmbedBuilder.build());
+
+                Webhook.sendWebhook(null, wmb.build(), Long.parseLong(credits[0]), credits[1]);
             }
-
-            WebhookMessageBuilder wmb = new WebhookMessageBuilder();
-
-            wmb.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-            wmb.setUsername("Ree6");
-
-            WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
-
-            webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(channelGoLiveEvent.getStream().getUserName(), null));
-            webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitch Notifier", null, null));
-            webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrl());
-            webhookEmbedBuilder.setDescription("Hey the User " + channelGoLiveEvent.getStream().getUserName() + " is now LIVE!\n\nhttps://twitch.tv/" + channelGoLiveEvent.getStream().getUserName() + "\n\nTitle: " + channelGoLiveEvent.getStream().getTitle() + "\nViewercount: " + channelGoLiveEvent.getStream().getViewerCount() + "\nGame: " + channelGoLiveEvent.getStream().getGameName());
-            webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.advertisement, null));
-            webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
-
-            wmb.addEmbeds(webhookEmbedBuilder.build());
-
-            Webhook.sendWebhook(null, wmb.build(), Long.parseLong(credits[0]), credits[1]);
         });
     }
 

@@ -85,12 +85,12 @@ public class MusicWorker {
             @Override
             public void noMatches() {
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("A Song with the URL ``" + trackUrl + "`` couldn't be found!");
-                em.setFooter(channel.getGuild().getName() + " - " + Data.advertisement, channel.getGuild().getIconUrl());
+                em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
                 Main.commandManager.sendMessage(em, 5, channel, null);
             }
@@ -98,12 +98,12 @@ public class MusicWorker {
             @Override
             public void loadFailed(FriendlyException exception) {
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("Error while playing: " + exception.getMessage());
-                em.setFooter(channel.getGuild().getName() + " - " + Data.advertisement, channel.getGuild().getIconUrl());
+                em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
                 Main.commandManager.sendMessage(em, 5, channel);
             }
@@ -120,12 +120,12 @@ public class MusicWorker {
             public void trackLoaded(AudioTrack track) {
 
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("The Song ``" + track.getInfo().title + "`` has been added to the Queue!");
-                em.setFooter(channel.getGuild().getName() + " - " + Data.advertisement, channel.getGuild().getIconUrl());
+                em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
                 Main.commandManager.sendMessage(em, 5, channel);
 
@@ -141,13 +141,13 @@ public class MusicWorker {
                 }
 
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("The Song ``" + firstTrack.getInfo().title
                         + "`` has been added to the Queue! (The first Song of the Playlist: " + playlist.getName() + ")");
-                em.setFooter(channel.getGuild().getName() + " - " + Data.advertisement, channel.getGuild().getIconUrl());
+                em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
                 Main.commandManager.sendMessage(em, 5, channel);
 
@@ -165,12 +165,12 @@ public class MusicWorker {
             @Override
             public void noMatches() {
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("A Song with the URL ``" + trackUrl + "`` couldn't be found!");
-                em.setFooter(channel.getGuild().getName() + " - " + Data.advertisement, channel.getGuild().getIconUrl());
+                em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
                 Main.commandManager.sendMessage(em, 5, channel);
             }
@@ -178,12 +178,12 @@ public class MusicWorker {
             @Override
             public void loadFailed(FriendlyException exception) {
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("Error while playing: " + exception.getMessage());
-                em.setFooter(channel.getGuild().getName() + " - " + Data.advertisement, channel.getGuild().getIconUrl());
+                em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
                 Main.commandManager.sendMessage(em, 5, channel);
             }
@@ -202,12 +202,12 @@ public class MusicWorker {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         EmbedBuilder em = new EmbedBuilder();
-        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
         em.setDescription("Skipping to the next Song!");
-        em.setFooter(channel.getGuild().getName() + " - " + Data.advertisement, channel.getGuild().getIconUrl());
+        em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
         Main.commandManager.sendMessage(em, 5, channel);
 

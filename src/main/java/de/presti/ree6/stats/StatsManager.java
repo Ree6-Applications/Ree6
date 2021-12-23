@@ -9,24 +9,24 @@ public class StatsManager {
 
     public static void addStatsForCommand(Command cmd, String gid) {
         if (cmd != null) {
-            Main.sqlWorker.addStats(cmd, gid);
+            Main.sqlConnector.getSqlWorker().addStats(gid, cmd.getCmd());
         }
     }
 
     public static HashMap<String, Long> getCommandStats(String gid) {
-        return Main.sqlWorker.getStatsFromGuild(gid);
+        return Main.sqlConnector.getSqlWorker().getStats(gid);
     }
 
     public static long getUsageForCommand(Command command) {
-        return Main.sqlWorker.getStatsFromCommand(command.getCmd());
+        return Main.sqlConnector.getSqlWorker().getStatsCommandGlobal(command.getCmd());
     }
 
     public static long getUsageForCommand(String command) {
-        return Main.sqlWorker.getStatsFromCommand(command);
+        return Main.sqlConnector.getSqlWorker().getStatsCommandGlobal(command);
     }
 
     public static HashMap<String, Long> getCommandStats() {
-        return Main.sqlWorker.getStatsForCommands();
+        return Main.sqlConnector.getSqlWorker().getStatsGlobal();
     }
 
 }

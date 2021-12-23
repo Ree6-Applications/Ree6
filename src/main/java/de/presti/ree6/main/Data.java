@@ -1,7 +1,21 @@
 package de.presti.ree6.main;
 
+/**
+ * Utility class to save long term used Data.
+ */
 public class Data {
 
-    public static final String website = "https://ree6.de";
-    public static final String advertisement = "powered by Tube-Hosting";
+    /**
+     * Constructor for the Data Utility class.
+     */
+    private Data() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    // Current Domain of the Website.
+    public static final String WEBSITE = "https://ree6.de";
+
+    // Advertisement, because of Sponsors.
+    public static final String ADVERTISEMENT = "powered by Tube-Hosting";
 }
+

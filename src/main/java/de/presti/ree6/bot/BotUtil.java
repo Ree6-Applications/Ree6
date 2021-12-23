@@ -63,7 +63,7 @@ public class BotUtil {
             em.setDescription(description);
 
         if (!footer.isEmpty())
-            em.setFooter(footer + " - " + Data.advertisement);
+            em.setFooter(footer + " - " + Data.ADVERTISEMENT);
 
         if (!title.isEmpty())
             em.setTitle(title);

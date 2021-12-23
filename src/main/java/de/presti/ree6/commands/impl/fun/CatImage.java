@@ -27,7 +27,7 @@ public class CatImage extends Command {
         em.setTitle("Random Cat Image!");
         em.setColor(BotUtil.randomEmbedColor());
         em.setImage(js.getJSONObject(0).getString("url"));
-        em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
+        em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
 
         sendMessage(em, m, hook);
     }

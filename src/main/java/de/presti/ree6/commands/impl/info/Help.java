@@ -30,11 +30,11 @@ public class Help extends Command {
             em.setColor(BotUtil.randomEmbedColor());
             em.setTitle("Command Index");
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-            em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
+            em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
 
             for (Category cat : Category.values()) {
                 if (cat != Category.HIDDEN) {
-                    em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**",  Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "help " + cat.name().toLowerCase(), true);
+                    em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**",  Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "help " + cat.name().toLowerCase(), true);
                 }
             }
 
@@ -43,7 +43,7 @@ public class Help extends Command {
             em.setColor(BotUtil.randomEmbedColor());
             em.setTitle("Command Index");
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-            em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
+            em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
 
             if (isValid(args[0])) {
 
@@ -52,7 +52,7 @@ public class Help extends Command {
                 Category cat = getCategoryFromString(args[0]);
                 for (Command cmd : Main.commandManager.getCommands()) {
                     if (cmd.getCategory() == cat) {
-                        end.append("``"  + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue()).append(cmd.getCmd()).append("``\n").append(cmd.getDesc()).append("\n\n");
+                        end.append("``"  + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue()).append(cmd.getCmd()).append("``\n").append(cmd.getDesc()).append("\n\n");
                     }
                 }
 
@@ -60,7 +60,7 @@ public class Help extends Command {
             } else {
                 for (Category cat : Category.values()) {
                     if (cat != Category.HIDDEN) {
-                        em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**",  Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "help " + cat.name().toLowerCase(), true);
+                        em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**",  Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "help " + cat.name().toLowerCase(), true);
                     }
                 }
             }

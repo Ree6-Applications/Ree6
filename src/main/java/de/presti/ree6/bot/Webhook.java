@@ -4,7 +4,7 @@ import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import de.presti.ree6.logger.LoggerMessage;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.Logger;
+import de.presti.ree6.utils.LoggerImpl;
 
 /**
  * Class to handle Webhook sends.
@@ -21,15 +21,15 @@ public class Webhook {
     public static void sendWebhook(LoggerMessage loggerMessage, WebhookMessage message, long webhookId, String webhookToken) {
 
         // Check if the given data is valid.
-        if (webhookToken.contains("Not setuped") || webhookId == 0) return;
+        if (webhookToken.contains("Not setup!") || webhookId == 0) return;
 
         // Check if the given data is in the Database.
-        if (!Main.sqlWorker.isWebhookLogDataInDB(webhookId, webhookToken)) return;
+        if (!Main.sqlConnector.getSqlWorker().existsLogData(webhookId, webhookToken)) return;
 
         // Check if the LoggerMessage is null or canceled.
         if (loggerMessage == null || loggerMessage.isCanceled()) {
             // If so, inform about invalid send.
-            Logger.log("Webhook", "Got a Invalid or Canceled LoggerMessage!");
+            LoggerImpl.log("Webhook", "Got a Invalid or Canceled LoggerMessage!");
             return;
         }
 
@@ -40,18 +40,18 @@ public class Webhook {
                 // If the error 404 comes that means that the webhook is invalid.
                 if (throwable.getMessage().contains("failure 404")) {
                     // Inform and delete invalid webhook.
-                    Main.sqlWorker.deleteLogWebhook(webhookId, webhookToken);
-                    Logger.log("Webhook", "Deleted invalid Webhook: " + webhookId + " - " + webhookToken);
+                    Main.sqlConnector.getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
+                    LoggerImpl.log("Webhook", "Deleted invalid Webhook: " + webhookId + " - " + webhookToken);
                 } else if (throwable.getMessage().contains("failure 400")) {
                     // If 404 inform that the Message had an invalid Body.
-                    Logger.log("Webhook", "Invalid Body with LogTyp: " + loggerMessage.getType().name());
+                    LoggerImpl.log("Webhook", "Invalid Body with LogTyp: " + loggerMessage.getType().name());
                 }
                 return null;
             });
         } catch (Exception ex) {
             // Inform that this is an Invalid Webhook.
-            Logger.log("Webhook", "Invalid Webhook: " + webhookId + " - " + webhookToken);
-            Logger.log("Webhook", ex.getMessage());
+            LoggerImpl.log("Webhook", "Invalid Webhook: " + webhookId + " - " + webhookToken);
+            LoggerImpl.log("Webhook", ex.getMessage());
         }
     }
 }

@@ -27,7 +27,7 @@ public class DogImage extends Command {
         em.setTitle("Random Dog Image!");
         em.setColor(BotUtil.randomEmbedColor());
         em.setImage(js.getString("message"));
-        em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
+        em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
 
         sendMessage(em, m, hook);
     }

@@ -24,22 +24,22 @@ public class Unmute extends Command {
         if (sender.hasPermission(Permission.ADMINISTRATOR)) {
             if (args.length == 1) {
 
-                if(!Main.sqlWorker.hasMuteSetuped(m.getGuild().getId())) {
-                    sendMessage("Mute Role hasnt been setuped!\nTo setup it up type " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "setup mute @MuteRole !", 5, m, hook);
+                if(!Main.sqlConnector.getSqlWorker().isMuteSetup(m.getGuild().getId())) {
+                    sendMessage("Mute Role hasnt been setuped!\nTo setup it up type " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "setup mute @MuteRole !", 5, m, hook);
                     return;
                 }
 
                 if(messageSelf.getMentionedMembers().isEmpty()) {
                     sendMessage("No User mentioned!", 5, m, hook);
-                    sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "unmute @user", 5, m, hook);
+                    sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "unmute @user", 5, m, hook);
                 } else {
                     sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been unmuted!", 5, m, hook);
-                    Role r = m.getGuild().getRoleById(Main.sqlWorker.getMuteRoleID(sender.getGuild().getId()));
+                    Role r = m.getGuild().getRoleById(Main.sqlConnector.getSqlWorker().getMuteRole(sender.getGuild().getId()));
                     m.getGuild().removeRoleFromMember(messageSelf.getMentionedMembers().get(0), r).queue();
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "unmute @user", 5, m, hook);
+                sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "unmute @user", 5, m, hook);
             }
         } else {
             sendMessage("You dont have the Permission for this Command!", 5, m, hook);

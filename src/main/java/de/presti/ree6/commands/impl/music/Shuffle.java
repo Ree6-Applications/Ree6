@@ -26,14 +26,14 @@ public class Shuffle extends Command {
         Main.musicWorker.getGuildAudioPlayer(
                 m.getGuild()).scheduler.shuffle = !Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.shuffle;
 
-        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
+        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                 BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
         em.setDescription(Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.shuffle ? "Song Shuffle has been activated!"
                 : "Song Shuffle has been deactivated!");
-        em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
+        em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
 
         sendMessage(em, 5, m, hook);
     }

@@ -24,9 +24,9 @@ public class Prefix extends Command {
         if (sender.hasPermission(Permission.ADMINISTRATOR) && sender.hasPermission(Permission.MANAGE_SERVER)) {
             if (args.length != 1) {
                 sendMessage((args.length < 1 ? "Not enough" : "Too many") + " Arguments!", 5, m, hook);
-                sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "prefix PREFIX", 5, m, hook);
+                sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "prefix PREFIX", 5, m, hook);
             } else {
-                Main.sqlWorker.setSetting(m.getGuild().getId(), "chatprefix", args[0]);
+                Main.sqlConnector.getSqlWorker().setSetting(m.getGuild().getId(), "chatprefix", args[0]);
                 sendMessage("Your new Prefix has been set to: " + args[0], 5, m, hook);
             }
         } else {

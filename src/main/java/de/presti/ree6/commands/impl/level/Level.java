@@ -29,7 +29,7 @@ public class Level extends Command {
                     em.setThumbnail(sender.getUser().getAvatarUrl());
                     em.setTitle("Level");
 
-                    long chatxp = Main.sqlWorker.getXP(m.getGuild().getId(), sender.getUser().getId());
+                    long chatxp = Main.sqlConnector.getSqlWorker().getChatXP(m.getGuild().getId(), sender.getUser().getId());
 
                     int chatlevel = 1;
 
@@ -38,7 +38,7 @@ public class Level extends Command {
                         chatlevel++;
                     }
 
-                    long voicexp = Main.sqlWorker.getXPVC(m.getGuild().getId(), sender.getUser().getId());
+                    long voicexp = Main.sqlConnector.getSqlWorker().getVoiceXP(m.getGuild().getId(), sender.getUser().getId());
 
                     int vclevel = 1;
 
@@ -51,11 +51,11 @@ public class Level extends Command {
                     em.addBlankField(true);
                     em.addField("Voice Level", vclevel + "",true);
 
-                    em.addField("Chat XP", getFormattedXP(Main.sqlWorker.getXP(m.getGuild().getId(), sender.getUser().getId())) + "", true);
+                    em.addField("Chat XP", getFormattedXP(Main.sqlConnector.getSqlWorker().getChatXP(m.getGuild().getId(), sender.getUser().getId())) + "", true);
                     em.addBlankField(true);
-                    em.addField("Voice XP", getFormattedXP(Main.sqlWorker.getXPVC(m.getGuild().getId(), sender.getUser().getId())) + "",true);
+                    em.addField("Voice XP", getFormattedXP(Main.sqlConnector.getSqlWorker().getVoiceXP(m.getGuild().getId(), sender.getUser().getId())) + "",true);
 
-                    em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
+                    em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
 
                     sendMessage(em, m, hook);
 
@@ -65,7 +65,7 @@ public class Level extends Command {
                     em.setThumbnail(messageSelf.getMentionedMembers().get(0).getUser().getAvatarUrl());
                     em.setTitle("Level");
 
-                    long chatxp = Main.sqlWorker.getXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId());
+                    long chatxp = Main.sqlConnector.getSqlWorker().getChatXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId());
 
                     int chatlevel = 1;
 
@@ -74,7 +74,7 @@ public class Level extends Command {
                         chatlevel++;
                     }
 
-                    long voicexp = Main.sqlWorker.getXPVC(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId());
+                    long voicexp = Main.sqlConnector.getSqlWorker().getVoiceXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId());
 
                     int vclevel = 1;
 
@@ -87,17 +87,17 @@ public class Level extends Command {
                     em.addBlankField(true);
                     em.addField("Voice Level", vclevel + "",true);
 
-                    em.addField("Chat XP", getFormattedXP(Main.sqlWorker.getXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId())) + "", true);
+                    em.addField("Chat XP", getFormattedXP(Main.sqlConnector.getSqlWorker().getChatXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId())) + "", true);
                     em.addBlankField(true);
-                    em.addField("Voice XP", getFormattedXP(Main.sqlWorker.getXPVC(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId())) + "",true);
+                    em.addField("Voice XP", getFormattedXP(Main.sqlConnector.getSqlWorker().getVoiceXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId())) + "",true);
 
-                    em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.advertisement, sender.getUser().getAvatarUrl());
+                    em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
 
                     sendMessage(em, m, hook);
                 }
             } else {
                 sendMessage("Not enough Arguments!", m, hook);
-                sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "level or " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "level @user", m, hook);
+                sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "level or " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "level @user", m, hook);
             }
     }
 

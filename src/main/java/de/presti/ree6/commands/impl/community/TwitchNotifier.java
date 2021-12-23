@@ -21,7 +21,7 @@ public class TwitchNotifier extends Command {
             if(args[0].equalsIgnoreCase("list")) {
                 StringBuilder end = new StringBuilder("```\n");
 
-                for(String users : Main.sqlWorker.getTwitchNotifier(m.getGuild().getId())) {
+                for(String users : Main.sqlConnector.getSqlWorker().getAllTwitchNames(m.getGuild().getId())) {
                     end.append(users).append("\n");
                 }
 
@@ -30,42 +30,42 @@ public class TwitchNotifier extends Command {
                 sendMessage(end.toString(), 10, m, hook);
 
             } else {
-                sendMessage("Please use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch list/add/remove", 5, m, hook);
+                sendMessage("Please use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch list/add/remove", 5, m, hook);
             }
         } else if(args.length == 3) {
 
             if (messageSelf.getMentionedChannels().size() == 0) {
-                sendMessage("Please use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch add/remove TwitchName #Channel", 5, m, hook);
+                sendMessage("Please use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch add/remove TwitchName #Channel", 5, m, hook);
                 return;
             }
 
             String name = args[1];
             if (args[0].equalsIgnoreCase("add")) {
-                messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-TwitchNotifier-" + name).queue(w -> Main.sqlWorker.addTwitchNotify(sender.getGuild().getId(), name.toLowerCase(), w.getId(), w.getToken()));
+                messageSelf.getMentionedChannels().get(0).createWebhook("Ree6-TwitchNotifier-" + name).queue(w -> Main.sqlConnector.getSqlWorker().addTwitchWebhook(sender.getGuild().getId(), name.toLowerCase(), w.getId(), w.getToken()));
                 sendMessage("A TwitchStream Notifier has been created for the User " + name + "!", 5, m, hook);
 
                 if (!Main.twitchAPIHandler.isRegisterd(name)) {
                     Main.twitchAPIHandler.registerChannel(name);
                 }
             } else {
-                sendMessage("Please use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch add TwitchName #Channel", 5, m, hook);
+                sendMessage("Please use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch add TwitchName #Channel", 5, m, hook);
             }
         } else if(args.length == 2) {
             String name = args[1];
             if(args[0].equalsIgnoreCase("remove")) {
-                Main.sqlWorker.removeTwitchNotify(sender.getGuild().getId(), name);
+                Main.sqlConnector.getSqlWorker().removeTwitchWebhook(sender.getGuild().getId(), name);
                 sendMessage("A TwitchStream Notifier has been removed from the User " + name + "!", 5, m, hook);
 
                 if(Main.twitchAPIHandler.isRegisterd(name)) {
-                    if(Main.sqlWorker.getTwitchNotifyWebhookByName(name.toLowerCase()).length == 0) {
+                    if(Main.sqlConnector.getSqlWorker().getTwitchWebhooksByName(name.toLowerCase()).isEmpty()) {
                         Main.twitchAPIHandler.unregisterChannel(name);
                     }
                 }
             } else {
-                sendMessage("Please use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch remove TwitchName", 5, m, hook);
+                sendMessage("Please use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch remove TwitchName", 5, m, hook);
             }
         } else {
-            sendMessage("Please use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch list/add/remove", 5, m, hook);
+            sendMessage("Please use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch list/add/remove", 5, m, hook);
         }
         deleteMessage(messageSelf);
     }

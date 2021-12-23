@@ -18,10 +18,12 @@ import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.SQLWorker;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.Config;
-import de.presti.ree6.utils.Logger;
+import de.presti.ree6.utils.LoggerImpl;
 import de.presti.ree6.utils.TwitchAPIHandler;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,9 +38,10 @@ public class Main {
     public static CommandManager commandManager;
     public static AddonManager addonManager;
     public static SQLConnector sqlConnector;
-    public static SQLWorker sqlWorker;
     public static LoggerQueue loggerQueue;
     public static MusicWorker musicWorker;
+
+    static Logger logger;
 
     public static Thread checker;
     public static Config config;
@@ -47,6 +50,8 @@ public class Main {
 
     public static void main(String[] args) {
         instance = new Main();
+
+        logger = LoggerFactory.getLogger(Main.class);
 
         loggerQueue = new LoggerQueue();
 
@@ -58,13 +63,11 @@ public class Main {
 
         sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
 
-        sqlWorker = new SQLWorker();
-
         commandManager = new CommandManager();
 
         twitchAPIHandler = new TwitchAPIHandler();
 
-        for (String name : sqlWorker.getAllTwitchNotifyUsers()) {
+        for (String name : sqlConnector.getSqlWorker().getAllTwitchNames()) {
             twitchAPIHandler.registerChannel(name);
         }
 
@@ -75,7 +78,7 @@ public class Main {
             musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
-            Logger.log("Main", "Error while init: " + ex.getMessage());
+            LoggerImpl.log("Main", "Error while init: " + ex.getMessage());
         }
 
         instance.addHooks();
@@ -98,24 +101,24 @@ public class Main {
 
     private void shutdown() {
         long start = System.currentTimeMillis();
-        Logger.log("Main", "Shutdown init. !");
+        LoggerImpl.log("Main", "Shutdown init. !");
 
-        if (sqlConnector != null && (sqlConnector.isConnected() || sqlConnector.isConnected2())) {
-            Logger.log("Main", "Closing Database Connection!");
+        if (sqlConnector != null && (sqlConnector.IsConnected())) {
+            LoggerImpl.log("Main", "Closing Database Connection!");
             sqlConnector.close();
-            Logger.log("Main", "Closed Database Connection!");
+            LoggerImpl.log("Main", "Closed Database Connection!");
         }
 
-        Logger.log("Main", "Disabling every Addon!");
+        LoggerImpl.log("Main", "Disabling every Addon!");
         addonManager.stopAddons();
-        Logger.log("Main", "Every Addon has been disabled!");
+        LoggerImpl.log("Main", "Every Addon has been disabled!");
 
-        Logger.log("Main", "JDA Instance shutdown init. !");
+        LoggerImpl.log("Main", "JDA Instance shutdown init. !");
         BotUtil.shutdown();
-        Logger.log("Main", "JDA Instance has been shutdowned!");
+        LoggerImpl.log("Main", "JDA Instance has been shutdowned!");
 
-        Logger.log("Main", "Everything has been shutdowned in " + (System.currentTimeMillis() - start) + "ms!");
-        Logger.log("Main", "Good bye!");
+        LoggerImpl.log("Main", "Everything has been shutdowned in " + (System.currentTimeMillis() - start) + "ms!");
+        LoggerImpl.log("Main", "Good bye!");
     }
 
     public void createCheckerThread() {
@@ -127,7 +130,6 @@ public class Main {
                     sqlConnector.close();
 
                     sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
-                    sqlWorker = new SQLWorker();
 
 
                     ArrayUtil.messageIDwithMessage.clear();
@@ -135,11 +137,11 @@ public class Main {
 
                     BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Guilds", Activity.ActivityType.WATCHING);
 
-                    Logger.log("Stats", "");
-                    Logger.log("Stats", "Today's Stats:");
-                    Logger.log("Stats", "Guilds: " + BotInfo.botInstance.getGuilds().size());
-                    Logger.log("Stats", "Overall Users: " + BotInfo.botInstance.getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
-                    Logger.log("Stats", "");
+                    LoggerImpl.log("Stats", "");
+                    LoggerImpl.log("Stats", "Today's Stats:");
+                    LoggerImpl.log("Stats", "Guilds: " + BotInfo.botInstance.getGuilds().size());
+                    LoggerImpl.log("Stats", "Overall Users: " + BotInfo.botInstance.getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
+                    LoggerImpl.log("Stats", "");
                     lastDay = new SimpleDateFormat("dd").format(new Date());
                 }
 
@@ -169,4 +171,10 @@ public class Main {
         });
         checker.start();
     }
+
+    /**
+     * Retrieve the Instance of the Logger.
+     * @return {@link Logger} Instance of the Logger.
+     */
+    public Logger getLogger() { return logger; }
 }

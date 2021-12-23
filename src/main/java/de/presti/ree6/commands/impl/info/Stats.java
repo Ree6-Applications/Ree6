@@ -35,7 +35,7 @@ public class Stats extends Command {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
+        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                 BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setTitle("Stats!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
@@ -81,7 +81,7 @@ public class Stats extends Command {
         em.addField("**Top Commands**", end.toString(), true);
         em.addField("**Overall Top Commands**", end2.toString(), true);
 
-        em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
+        em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
 
         sendMessage(em, m, hook);
 

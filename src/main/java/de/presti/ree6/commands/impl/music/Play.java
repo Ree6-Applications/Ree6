@@ -38,13 +38,13 @@ public class Play extends Command {
 
         if (args.length < 1) {
             EmbedBuilder em = new EmbedBuilder();
-            em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website,
+            em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                     BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setTitle("Music Player!");
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setColor(Color.GREEN);
-            em.setDescription("Usage: " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
-            em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
+            em.setDescription("Usage: " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
+            em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
             sendMessage(em, 5, m, hook);
         } else {
             if (Main.musicWorker.isConnectedMember(sender)) {
@@ -87,12 +87,12 @@ public class Play extends Command {
 
                     if (!loadfailed.isEmpty()) {
                         EmbedBuilder em = new EmbedBuilder();
-                        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                         em.setTitle("Music Player!");
                         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                         em.setColor(Color.GREEN);
                         em.setDescription("We couldn't find ``" + loadfailed.size() + "`` Songs!");
-                        em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
+                        em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
                         sendMessage(em, 5, m, hook);
                     }
                 }
@@ -107,12 +107,12 @@ public class Play extends Command {
 
                 if(ytResult == null) {
                     EmbedBuilder em = new EmbedBuilder();
-                    em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.website, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                    em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setTitle("Music Player!");
                     em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setColor(Color.GREEN);
                     em.setDescription("A Song with the Name ``" + search + "`` couldn't be found!");
-                    em.setFooter(m.getGuild().getName() + " - " + Data.advertisement, m.getGuild().getIconUrl());
+                    em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
                     sendMessage(em, 5, m, hook);
                 } else {
                     Main.musicWorker.loadAndPlay(m, ytResult);

@@ -2,7 +2,7 @@ package de.presti.ree6.addons;
 
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
-import de.presti.ree6.utils.Logger;
+import de.presti.ree6.utils.LoggerImpl;
 import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
@@ -51,7 +51,7 @@ public class AddonLoader {
                     Main.addonManager.loadAddon(loadAddon(f.getName()));
                 } catch (Exception ex) {
                     // If the Methode loadAddon fails notify.
-                    Logger.log("AddonManager", "Couldn't load the Addon " + f.getName() + "\nException: " + ex.getCause().getMessage());
+                    LoggerImpl.log("AddonManager", "Couldn't load the Addon " + f.getName() + "\nException: " + ex.getCause().getMessage());
                     ex.printStackTrace();
                 }
             }

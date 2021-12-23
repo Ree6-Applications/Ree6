@@ -1,6 +1,6 @@
 package de.presti.ree6.commands;
 
-import de.presti.ree6.utils.Logger;
+import de.presti.ree6.utils.LoggerImpl;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -91,7 +91,7 @@ public abstract class Command {
             try {
                 message.delete().queue();
             } catch (Exception ex) {
-                Logger.log("CommandSystem", "Couldn't delete a Message!");
+                LoggerImpl.log("CommandSystem", "Couldn't delete a Message!");
             }
         }
     }

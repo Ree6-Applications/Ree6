@@ -59,7 +59,7 @@ public class HornyJail extends Command {
                 }
             }
         } else {
-            sendMessage("Use " + Main.sqlWorker.getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "hornyjail @User", 5, m, hook);
+            sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "hornyjail @User", 5, m, hook);
         }
     }
 }
