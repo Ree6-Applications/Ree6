@@ -97,7 +97,7 @@ public class AddonLoader {
                                     os.write(c);
                                 }
 
-                                os.close();
+                            }
 
                                 // Load it as a YAML-Config and fill the Variables.
                                 FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
@@ -107,7 +107,6 @@ public class AddonLoader {
                                 addonVer = conf.getString("version");
                                 ree6Ver = conf.getString("ree6-version");
                                 mainPath = conf.getString("main");
-                            }
                         }
                     }
                 } catch (Exception e) {
