@@ -159,6 +159,7 @@ public class CommandManager {
                             Thread.sleep(5000);
                         } catch (InterruptedException ignore) {
                             LoggerImpl.log("CommandManager", "Command cool-down Thread interrupted!");
+                            Thread.currentThread().interrupt();
                         }
 
                         ArrayUtil.commandCooldown.remove(sender.getUser().getId());

@@ -101,31 +101,35 @@ public class AddonManager {
     public void stopAddon(Addon addon) {
         try {
             // Try loading the Class with a URL Class Loader.
-            Class<?> urlCl = new URLClassLoader(new URL[]{addon.getFile().toURI().toURL()}).loadClass(addon.getMainPath());
+            try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{addon.getFile().toURI().toURL()})) {
 
-            boolean valid = false;
+                // Class from the loader.
+                Class<?> urlCl = urlClassLoader.loadClass(addon.getMainPath());
 
-            // Get the Interfaces.
-            Class<?>[] ifs = urlCl.getInterfaces();
+                boolean valid = false;
 
-            // Check if any of the Interfaces is the AddonInterface.
-            for (Class<?> anIf : ifs) {
+                // Get the Interfaces.
+                Class<?>[] ifs = urlCl.getInterfaces();
 
-                // If it has the AddonInterface mark it as valid.
-                if (anIf.getName().equalsIgnoreCase("de.presti.ree6.addons.AddonInterface")) {
-                    valid = true;
-                    break;
+                // Check if any of the Interfaces is the AddonInterface.
+                for (Class<?> anIf : ifs) {
+
+                    // If it has the AddonInterface mark it as valid.
+                    if (anIf.getName().equalsIgnoreCase("de.presti.ree6.addons.AddonInterface")) {
+                        valid = true;
+                        break;
+                    }
                 }
-            }
 
-            // If valid call the onDisable methode.
-            if (valid) {
-                AddonInterface inf = (AddonInterface) urlCl.getDeclaredConstructor().newInstance();
-                inf.onDisable();
-            } else {
-                // If not inform about an invalid Addon.
-                LoggerImpl.log("AddonManager", "Couldn't start the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor());
-                LoggerImpl.log("AddonManager", "It doesn't implement the AddonInterface!");
+                // If valid call the onDisable methode.
+                if (valid) {
+                    AddonInterface inf = (AddonInterface) urlCl.getDeclaredConstructor().newInstance();
+                    inf.onDisable();
+                } else {
+                    // If not inform about an invalid Addon.
+                    LoggerImpl.log("AddonManager", "Couldn't start the Addon " + addon.getName() + "(" + addon.getAddonVer() + ") by " + addon.getAuthor());
+                    LoggerImpl.log("AddonManager", "It doesn't implement the AddonInterface!");
+                }
             }
         } catch (Exception ex) {
             // Throw an error if the Addon is invalid or corrupted.

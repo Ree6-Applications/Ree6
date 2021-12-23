@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.LoggerImpl;
 import de.presti.ree6.utils.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -49,7 +50,9 @@ public class TrackScheduler extends AudioEventAdapter {
         // player was already playing so this
         // track goes to the queue instead.
         if (!player.startTrack(track, true)) {
-            queue.offer(track);
+            if (!queue.offer(track)) {
+                LoggerImpl.log("TrackScheduler", "Couldn't offer a new Track!");
+            }
         }
     }
 
@@ -100,7 +103,10 @@ public class TrackScheduler extends AudioEventAdapter {
 
         AudioTrack track = tracks.get(RandomUtils.random.nextInt((tracks.size() - 1)));
 
-        list.remove(track);
+
+        if (!list.remove(track)) {
+            LoggerImpl.log("TrackScheduler", "Couldn't remove a Track!");
+        }
         return track;
     }
 

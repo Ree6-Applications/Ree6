@@ -7,10 +7,7 @@ import de.presti.ree6.bot.BotState;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.bot.Webhook;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.ArrayUtil;
-import de.presti.ree6.utils.AutoRoleHandler;
-import de.presti.ree6.utils.RandomUtils;
-import de.presti.ree6.utils.TimeUtil;
+import de.presti.ree6.utils.*;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
@@ -141,7 +138,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 if (!ArrayUtil.timeout.contains(event.getMember())) {
 
-                    Main.sqlConnector.getSqlWorker().addChatXP(event.getGuild().getId(), event.getAuthor().getId(), RandomUtils.random.nextInt(25) + 1);
+                    Main.sqlConnector.getSqlWorker().addChatXP(event.getGuild().getId(), event.getAuthor().getId(), (long)RandomUtils.random.nextInt(25) + 1);
 
                     ArrayUtil.timeout.add(event.getMember());
 
@@ -149,6 +146,8 @@ public class OtherEvents extends ListenerAdapter {
                         try {
                             Thread.sleep(30000);
                         } catch (InterruptedException ignored) {
+                            LoggerImpl.log("OtherEvents", "User cool-down Thread interrupted!");
+                            Thread.currentThread().interrupt();
                         }
 
                         ArrayUtil.timeout.remove(event.getMember());
