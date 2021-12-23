@@ -14,8 +14,6 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Random;
-
 public class MemeImage extends Command {
 
     public MemeImage() {

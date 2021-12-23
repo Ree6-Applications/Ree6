@@ -15,7 +15,6 @@ import de.presti.ree6.music.AudioPlayerSendHandler;
 import de.presti.ree6.music.GuildMusicManager;
 import de.presti.ree6.music.MusicWorker;
 import de.presti.ree6.sql.SQLConnector;
-import de.presti.ree6.sql.SQLWorker;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.Config;
 import de.presti.ree6.utils.LoggerImpl;

@@ -9,8 +9,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
-import java.util.Random;
-
 public class RandomAnswer extends Command {
 
     public RandomAnswer() {

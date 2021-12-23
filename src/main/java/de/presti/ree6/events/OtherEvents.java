@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import java.util.Random;
 
 public class OtherEvents extends ListenerAdapter {
 

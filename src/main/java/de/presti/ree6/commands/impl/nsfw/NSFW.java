@@ -13,8 +13,6 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
 
-import java.util.Random;
-
 public class NSFW extends Command {
 
     private final String[] tags = new String[]{"cum", "tits", "nsfw_neko_gif", "blowjob", "boobs", "anal"};

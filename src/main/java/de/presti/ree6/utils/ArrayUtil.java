@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.entities.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 @SuppressWarnings("Java8MapApi")
 public class ArrayUtil {

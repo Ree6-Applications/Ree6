@@ -4,7 +4,7 @@ import java.util.Random;
 
 public final class RandomUtils {
 
-    public static Random random = new Random();
+    public static final Random random = new Random();
 
     public static int nextInt(int startInclusive, int endExclusive) {
         if (endExclusive - startInclusive <= 0) {

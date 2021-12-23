@@ -115,7 +115,6 @@ public class AddonLoader {
                     jis.closeEntry();
                 }
             }
-            jis.close();
 
             // Check if the File isn't null and exists if so delete.
             if (f != null && f.exists()) {
