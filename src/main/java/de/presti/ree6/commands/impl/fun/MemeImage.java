@@ -5,6 +5,7 @@ import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
+import de.presti.ree6.utils.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -34,7 +35,7 @@ public class MemeImage extends Command {
 
             JSONArray jsa = js.getJSONArray("data");
 
-            JSONObject gay = jsa.getJSONObject(new Random().nextInt(jsa.length() - 1));
+            JSONObject gay = jsa.getJSONObject(RandomUtils.random.nextInt(jsa.length() - 1));
 
             em.setImage(gay.getString("image"));
         } else {

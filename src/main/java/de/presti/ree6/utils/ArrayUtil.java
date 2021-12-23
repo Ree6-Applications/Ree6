@@ -26,7 +26,7 @@ public class ArrayUtil {
         StringBuilder end = new StringBuilder();
 
         for (int i = 0; i < length; i++) {
-            end.append(new Random().nextInt(9));
+            end.append(RandomUtils.random.nextInt(9));
         }
 
         return end.toString();

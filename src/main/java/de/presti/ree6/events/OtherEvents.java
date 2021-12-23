@@ -9,6 +9,7 @@ import de.presti.ree6.bot.Webhook;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.AutoRoleHandler;
+import de.presti.ree6.utils.RandomUtils;
 import de.presti.ree6.utils.TimeUtil;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -87,7 +88,7 @@ public class OtherEvents extends ListenerAdapter {
             int addxp = 0;
 
             for (int i = 1; i <= min; i++) {
-                addxp += new Random().nextInt(9) + 1;
+                addxp += RandomUtils.random.nextInt(9) + 1;
             }
 
             Main.sqlConnector.getSqlWorker().addVoiceXP(event.getGuild().getId(), event.getMember().getUser().getId(), addxp);
@@ -140,7 +141,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 if (!ArrayUtil.timeout.contains(event.getMember())) {
 
-                    Main.sqlConnector.getSqlWorker().addChatXP(event.getGuild().getId(), event.getAuthor().getId(), new Random().nextInt(25) + 1);
+                    Main.sqlConnector.getSqlWorker().addChatXP(event.getGuild().getId(), event.getAuthor().getId(), RandomUtils.random.nextInt(25) + 1);
 
                     ArrayUtil.timeout.add(event.getMember());
 

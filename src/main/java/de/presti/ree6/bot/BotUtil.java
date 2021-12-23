@@ -1,9 +1,11 @@
 package de.presti.ree6.bot;
 
 import de.presti.ree6.main.Data;
-import de.presti.ree6.utils.*;
-import net.dv8tion.jda.api.*;
-import net.dv8tion.jda.api.entities.*;
+import de.presti.ree6.utils.FileUtil;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -11,12 +13,19 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.security.auth.login.LoginException;
 import java.awt.*;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Class used to cover small utilities for the Bot.
  */
 public class BotUtil {
+
+    /**
+     * Constructor for the Bot Utility class.
+     */
+    private BotUtil() {
+        throw new IllegalStateException("Utility class");
+    }
 
     /**
      * Create a new {@link net.dv8tion.jda.api.JDA} instance and set the rest information for later use.
@@ -29,7 +38,8 @@ public class BotUtil {
         BotInfo.TOKEN = FileUtil.getToken();
         BotInfo.state = BotState.INIT;
         BotInfo.build = build;
-        BotInfo.botInstance = JDABuilder.createDefault(BotInfo.TOKEN).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).disableIntents(GatewayIntent.DIRECT_MESSAGES).disableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS).disableIntents(GatewayIntent.DIRECT_MESSAGE_TYPING).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY).enableCache(CacheFlag.VOICE_STATE).build();
+        BotInfo.botInstance = JDABuilder.createDefault(BotInfo.TOKEN).enableIntents(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_BANS, GatewayIntent.GUILD_MEMBERS,
+                GatewayIntent.GUILD_INVITES, GatewayIntent.GUILD_WEBHOOKS).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY).build();
     }
 
     /**
@@ -86,10 +96,8 @@ public class BotUtil {
 
     public static Color randomEmbedColor() {
         String zeros = "000000";
-        Random rnd = new Random();
-        String s = Integer.toString(rnd.nextInt(0X1000000), 16);
+        String s = Integer.toString(ThreadLocalRandom.current().nextInt(0X1000000), 16);
         s = zeros.substring(s.length()) + s;
         return Color.decode("#" + s);
     }
-
 }

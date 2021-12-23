@@ -52,17 +52,17 @@ public class Twitter extends Command {
                     request.setHeader("Authorization", Main.config.getConfig().getString("dagpi.apitoken"));
                     HttpResponse response = httpClient.execute(request);
 
-                    OutputStream outputStream =
-                            new FileOutputStream(new File("imageapi/twitter/" + sender.getUser().getId() + ".png"));
+                    try(OutputStream outputStream =
+                            new FileOutputStream("imageapi/twitter/" + sender.getUser().getId() + ".png")) {
 
-                    int read = 0;
-                    byte[] bytes = new byte[1024];
+                        int read = 0;
+                        byte[] bytes = new byte[1024];
 
-                    while ((read = response.getEntity().getContent().read(bytes)) != -1) {
-                        outputStream.write(bytes, 0, read);
+                        while ((read = response.getEntity().getContent().read(bytes)) != -1) {
+                            outputStream.write(bytes, 0, read);
+                        }
+
                     }
-
-                    outputStream.close();
 
                     m.sendFile(new File("imageapi/twitter/" + sender.getUser().getId() + ".png")).queue(message -> new File("imageapi/twitter/" + sender.getUser().getId() + ".png").delete());
 

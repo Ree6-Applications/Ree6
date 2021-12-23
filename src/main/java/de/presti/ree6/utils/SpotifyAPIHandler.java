@@ -25,7 +25,7 @@ public class SpotifyAPIHandler {
         try {
             initSpotify();
         } catch (ParseException | SpotifyWebApiException | IOException e) {
-            e.printStackTrace();
+            Main.instance.getLogger().error("Couldn't create a Spotify Instance", e);
         }
         instance = this;
     }

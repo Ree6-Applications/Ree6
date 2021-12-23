@@ -52,7 +52,6 @@ public class AddonLoader {
                 } catch (Exception ex) {
                     // If the Methode loadAddon fails notify.
                     LoggerImpl.log("AddonManager", "Couldn't load the Addon " + f.getName() + "\nException: " + ex.getCause().getMessage());
-                    ex.printStackTrace();
                 }
             }
         }
@@ -73,65 +72,66 @@ public class AddonLoader {
         File f = null;
 
         // Create a ZipInputStream to get every single class inside the JAR. I'm pretty sure there is a faster and more efficient way, but I didn't have the time to find it.
-        ZipInputStream jis = new ZipInputStream(new FileInputStream("addons/" + fileName));
-        ZipEntry entry;
+        try (ZipInputStream jis = new ZipInputStream(new FileInputStream("addons/" + fileName))) {
+            ZipEntry entry;
 
-        // While there a still Classes inside the JAR it should check them.
-        while ((entry = jis.getNextEntry()) != null) {
-            try {
-                // Get the current name of the class.
-                String fName = entry.getName();
+            // While there a still Classes inside the JAR it should check them.
+            while ((entry = jis.getNextEntry()) != null) {
+                try {
+                    // Get the current name of the class.
+                    String fName = entry.getName();
 
-                // Check if it is a Directory if so don't do anything and skip.
-                if (!entry.isDirectory()) {
+                    // Check if it is a Directory if so don't do anything and skip.
+                    if (!entry.isDirectory()) {
 
-                    // If it is the addon.yml then get the Data from it.
-                    if (fName.equalsIgnoreCase("addon.yml")) {
+                        // If it is the addon.yml then get the Data from it.
+                        if (fName.equalsIgnoreCase("addon.yml")) {
 
-                        // Create a temporal File to extract the Data from. I'm pretty sure there is a better way but as I said earlier didn't have the time for it.
-                        f = new File("addons/tmp/temp_" + ArrayUtil.getRandomShit(9) + ".yml");
+                            // Create a temporal File to extract the Data from. I'm pretty sure there is a better way but as I said earlier didn't have the time for it.
+                            f = new File("addons/tmp/temp_" + ArrayUtil.getRandomShit(9) + ".yml");
 
-                        // Create a FileOutputStream of the temporal File and write every bite from the File inside the JAR.
-                        FileOutputStream os = new FileOutputStream(f);
+                            // Create a FileOutputStream of the temporal File and write every bite from the File inside the JAR.
+                            try (FileOutputStream os = new FileOutputStream(f)) {
 
-                        for (int c = jis.read(); c != -1; c = jis.read()) {
-                            os.write(c);
+                                for (int c = jis.read(); c != -1; c = jis.read()) {
+                                    os.write(c);
+                                }
+
+                                os.close();
+
+                                // Load it as a YAML-Config and fill the Variables.
+                                FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
+
+                                name = conf.getString("name");
+                                author = conf.getString("author");
+                                addonVer = conf.getString("version");
+                                ree6Ver = conf.getString("ree6-version");
+                                mainPath = conf.getString("main");
+                            }
                         }
-
-                        os.close();
-
-                        // Load it as a YAML-Config and fill the Variables.
-                        FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
-
-                        name = conf.getString("name");
-                        author = conf.getString("author");
-                        addonVer = conf.getString("version");
-                        ree6Ver = conf.getString("ree6-version");
-                        mainPath = conf.getString("main");
-
                     }
+                } catch (Exception e) {
+                    jis.closeEntry();
+                } finally {
+                    jis.closeEntry();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                jis.closeEntry();
-            } finally {
-                jis.closeEntry();
+            }
+            jis.close();
+
+            // Check if the File isn't null and exists if so delete.
+            if (f != null && f.exists()) {
+                if (f.delete()) {
+                    throw new FileNotFoundException("Couldn't delete the File");
+                }
+            }
+
+            // Check if there is any data core data if not throw this error.
+            if (name == null && mainPath == null) {
+                throw new FileNotFoundException("Couldn't find addon.yml");
+            } else {
+                return new Addon(name, author, addonVer, ree6Ver, mainPath, new File("addons/" + fileName));
             }
         }
-        jis.close();
-
-        // Check if the File isn't null and exists if so delete.
-        if (f != null && f.exists()) {
-            f.delete();
-        }
-
-        // Check if there is any data core data if not throw this error.
-        if (name == null && mainPath == null) {
-            throw new FileNotFoundException("Couldn't find addon.yml");
-        } else {
-            return new Addon(name, author, addonVer, ree6Ver, mainPath, new File("addons/" + fileName));
-        }
-
     }
 
 }

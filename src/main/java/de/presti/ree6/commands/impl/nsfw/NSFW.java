@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.utils.Neko4JsAPI;
+import de.presti.ree6.utils.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -27,7 +28,7 @@ public class NSFW extends Command {
         if (m.isNSFW()) {
             ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
-            String usedTag = tags[new Random().nextInt(tags.length - 1)];
+            String usedTag = tags[RandomUtils.random.nextInt(tags.length - 1)];
 
             Image im = ip.getRandomImage(usedTag).execute();
 

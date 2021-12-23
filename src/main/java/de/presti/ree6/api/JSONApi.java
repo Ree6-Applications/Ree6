@@ -10,6 +10,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.main.Main;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,16 +76,13 @@ public class JSONApi {
 
 			content = IOUtils.toString(i, c.getContentEncoding());
 			j = new JSONArray(content);
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} catch (Exception ignore) {
 		}
 
 		if (i != null) {
 			try {
 				i.close();
-			} catch (IOException ex) {
-
-				ex.printStackTrace();
+			} catch (IOException ignore) {
 			}
 		}
 		closeInput();
@@ -166,11 +164,9 @@ public class JSONApi {
 				j.put("_exception", "MalformedJSONData (HTTP " + responseCode + ")");
 				j.put("_exceptionMessage", ex.getMessage());
 				j.put("_content", rawContent);
-			} else {
-				ex.printStackTrace();
 			}
 		} catch (NullPointerException ex) {
-			ex.printStackTrace();
+			Main.instance.getLogger().error("Error", ex.getCause());
 		} catch (MalformedURLException ex) {
 			j.put("_success", false);
 			j.put("_type", type.name());
@@ -181,9 +177,6 @@ public class JSONApi {
 			j.put("_exception", "MalformedURLException");
 			j.put("_exceptionMessage", ex.getMessage());
 			j.put("_content", "");
-
-			ex.printStackTrace();
-
 		} catch (SocketTimeoutException ex) {
 			j.put("_success", false);
 			j.put("_type", type.name());
@@ -194,9 +187,6 @@ public class JSONApi {
 			j.put("_exception", "SocketTimeoutException");
 			j.put("_exceptionMessage", ex.getMessage());
 			j.put("_content", "");
-
-			ex.printStackTrace();
-
 		} catch (IOException ex) {
 			j.put("_success", false);
 			j.put("_type", type.name());
@@ -207,9 +197,6 @@ public class JSONApi {
 			j.put("_exception", "IOException");
 			j.put("_exceptionMessage", ex.getMessage());
 			j.put("_content", "");
-
-			ex.printStackTrace();
-
 		} catch (Exception ex) {
 			j.put("_success", false);
 			j.put("_type", type.name());
@@ -220,8 +207,6 @@ public class JSONApi {
 			j.put("_exception", "Exception [" + ex.getClass().getName() + "]");
 			j.put("_exceptionMessage", ex.getMessage());
 			j.put("_content", "");
-
-			ex.printStackTrace();
 		}
 
 		if (i != null) {
@@ -237,8 +222,6 @@ public class JSONApi {
 				j.put("_exception", "IOException");
 				j.put("_exceptionMessage", ex.getMessage());
 				j.put("_content", "");
-
-				ex.printStackTrace();
 			}
 		}
 		closeInput();

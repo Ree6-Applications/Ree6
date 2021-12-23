@@ -159,7 +159,7 @@ public class Main {
 
                     } catch (Exception ex) {
                         gmm.scheduler.stopAll();
-                        ex.printStackTrace();
+                        getLogger().error("Error", ex);
                     }
                 }
 

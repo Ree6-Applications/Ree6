@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 
@@ -97,7 +98,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
         tracks.addAll(list);
 
-        AudioTrack track = tracks.get(new Random().nextInt((tracks.size() - 1)));
+        AudioTrack track = tracks.get(RandomUtils.random.nextInt((tracks.size() - 1)));
 
         list.remove(track);
         return track;

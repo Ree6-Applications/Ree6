@@ -4,11 +4,13 @@ import java.util.Random;
 
 public final class RandomUtils {
 
+    public static Random random = new Random();
+
     public static int nextInt(int startInclusive, int endExclusive) {
         if (endExclusive - startInclusive <= 0) {
             return startInclusive;
         }
-        return startInclusive + new Random().nextInt(endExclusive - startInclusive);
+        return startInclusive + RandomUtils.random.nextInt(endExclusive - startInclusive);
     }
 
     public static double nextDouble(double startInclusive, double endInclusive) {
@@ -40,7 +42,7 @@ public final class RandomUtils {
     public static String random(int length, char[] chars) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < length; ++i) {
-            stringBuilder.append(chars[new Random().nextInt(chars.length)]);
+            stringBuilder.append(chars[RandomUtils.random.nextInt(chars.length)]);
         }
         return stringBuilder.toString();
     }

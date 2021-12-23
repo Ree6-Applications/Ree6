@@ -39,17 +39,16 @@ public class HornyJail extends Command {
                     request.setHeader("Authorization", Main.config.getConfig().getString("dagpi.apitoken"));
                     HttpResponse response = httpClient.execute(request);
 
-                    OutputStream outputStream =
-                            new FileOutputStream(new File("imageapi/hornyjail/" + sender.getUser().getId() + ".png"));
+                    try (OutputStream outputStream =
+                            new FileOutputStream("imageapi/hornyjail/" + sender.getUser().getId() + ".png")) {
 
-                    int read = 0;
-                    byte[] bytes = new byte[1024];
+                        int read = 0;
+                        byte[] bytes = new byte[1024];
 
-                    while ((read = response.getEntity().getContent().read(bytes)) != -1) {
-                        outputStream.write(bytes, 0, read);
+                        while ((read = response.getEntity().getContent().read(bytes)) != -1) {
+                            outputStream.write(bytes, 0, read);
+                        }
                     }
-
-                    outputStream.close();
 
                     m.sendMessage(messageSelf.getMentionedMembers().get(0).getAsMention() + " is now in the Hornyjail!").queue();
                     m.sendFile(new File("imageapi/hornyjail/" + sender.getUser().getId() + ".png")).queue(message -> new File("imageapi/hornyjail/" + sender.getUser().getId() + ".png").delete());

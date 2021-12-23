@@ -21,7 +21,7 @@ public class YouTubeAPIHandler {
         try {
             createYouTube();
         } catch (Exception e) {
-            e.printStackTrace();
+            Main.instance.getLogger().error("Couldn't create a YouTube Instance", e);
         }
         instance = this;
     }
@@ -54,7 +54,7 @@ public class YouTubeAPIHandler {
 
         }
         catch (Exception e) {
-            e.printStackTrace();
+            Main.instance.getLogger().error("Couldn't search on YouTube", e);
         }
 
         return null;
@@ -71,7 +71,7 @@ public class YouTubeAPIHandler {
                     .build();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            Main.instance.getLogger().error("Couldn't create a YouTube Instance", e);
         }
     }
 }

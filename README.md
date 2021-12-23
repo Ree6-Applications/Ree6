@@ -1,5 +1,7 @@
 # Ree6
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) 
+
 To keep this Project alive consider supporting me: https://www.patreon.com/presti (just if you want to support you don't have to)
 
 Ree6 is a Moderation Bot similar to Mee6 but with one major difference it is free!
