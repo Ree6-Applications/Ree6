@@ -73,7 +73,7 @@ public class Main {
         twitchAPIHandler.registerTwitchLive();
 
         try {
-            BotUtil.createBot(BotVersion.PRERELASE, "1.5.0");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.5.0");
             musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -114,9 +114,9 @@ public class Main {
 
         LoggerImpl.log("Main", "JDA Instance shutdown init. !");
         BotUtil.shutdown();
-        LoggerImpl.log("Main", "JDA Instance has been shutdowned!");
+        LoggerImpl.log("Main", "JDA Instance has been shut down!");
 
-        LoggerImpl.log("Main", "Everything has been shutdowned in " + (System.currentTimeMillis() - start) + "ms!");
+        LoggerImpl.log("Main", "Everything has been shut down in " + (System.currentTimeMillis() - start) + "ms!");
         LoggerImpl.log("Main", "Good bye!");
     }
 
@@ -152,7 +152,7 @@ public class Main {
                     try {
                         AudioPlayerSendHandler playerSendHandler = (AudioPlayerSendHandler) g.getAudioManager().getSendingHandler();
 
-                        if (g.getSelfMember().getVoiceState() != null && g.getSelfMember().getVoiceState().inAudioChannel() && !playerSendHandler.isMusicPlaying(g)) {
+                        if (g.getSelfMember().getVoiceState() != null && g.getSelfMember().getVoiceState().inAudioChannel() && (playerSendHandler == null || !playerSendHandler.isMusicPlaying(g))) {
                             gmm.scheduler.stopAll();
                         }
 

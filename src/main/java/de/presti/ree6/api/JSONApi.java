@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@Deprecated(forRemoval = true, since = "1.5.0")
 public class JSONApi {
 
 	@SuppressWarnings("unused")
@@ -27,7 +28,6 @@ public class JSONApi {
 		return getData2(type, url, "", "");
 	}
 
-	@SuppressWarnings("deprecation")
 	public static JSONArray getData2(Requests type, String url, String post, String authKey) {
 
 		JSONArray j = new JSONArray("[]");

@@ -4,6 +4,14 @@
     <!-- Configure Twitch4J logger level -->
     <logger name="com.github.twitch4j" level="INFO"/>
 
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logfile.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+        </encoder>
+    </appender>
+
     <!-- Appender Configuration [Console] -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -14,5 +22,8 @@
     <!-- Appender Output Configuration -->
     <root level="info">
         <appender-ref ref="CONSOLE"/>
+    </root>
+    <root>
+        <appender-ref ref="FILE"/>
     </root>
 </configuration>

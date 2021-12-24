@@ -74,7 +74,23 @@ public abstract class Command {
     }
 
     public void sendMessage(String msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
-        if (hook == null) m.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue(); else hook.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+        if (hook == null) {
+            m.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                    return message.delete();
+                }
+
+                return null;
+            }).queue();
+        } else {
+            hook.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                    return message.delete();
+                }
+
+                return null;
+            }).queue();
+        }
     }
 
 
@@ -83,11 +99,28 @@ public abstract class Command {
     }
 
     public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
-        if (hook == null) m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue(); else hook.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+        if (hook == null) {
+            m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                    return message.delete();
+                }
+
+                return null;
+            }).queue();
+        } else {
+            hook.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                    return message.delete();
+                }
+
+                return null;
+            }).queue();
+        }
     }
 
     public static void deleteMessage(Message message) {
-        if(message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+        if(message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
+                message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null) {
             try {
                 message.delete().queue();
             } catch (Exception ex) {

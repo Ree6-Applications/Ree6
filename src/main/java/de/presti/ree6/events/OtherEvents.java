@@ -30,7 +30,7 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         BotInfo.state = BotState.STARTED;
-        System.out.println("Boot up finished!");
+        Main.instance.getLogger().info("Boot up finished!");
 
         Main.commandManager.addSlashCommand();
 
