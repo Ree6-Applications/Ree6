@@ -38,8 +38,7 @@ public class BotUtil {
         BotInfo.TOKEN = FileUtil.getToken();
         BotInfo.state = BotState.INIT;
         BotInfo.build = build;
-        BotInfo.botInstance = JDABuilder.createDefault(BotInfo.TOKEN).enableIntents(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_BANS, GatewayIntent.GUILD_MEMBERS,
-                GatewayIntent.GUILD_INVITES, GatewayIntent.GUILD_WEBHOOKS).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY).build();
+        BotInfo.botInstance = JDABuilder.createDefault(BotInfo.TOKEN).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY).build();
     }
 
     /**
