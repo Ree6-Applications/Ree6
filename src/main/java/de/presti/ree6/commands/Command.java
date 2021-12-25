@@ -1,5 +1,6 @@
 package de.presti.ree6.commands;
 
+import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.LoggerImpl;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -74,23 +75,7 @@ public abstract class Command {
     }
 
     public void sendMessage(String msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
-        if (hook == null) {
-            m.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
-                    return message.delete();
-                }
-
-                return null;
-            }).queue();
-        } else {
-            hook.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
-                    return message.delete();
-                }
-
-                return null;
-            }).queue();
-        }
+        Main.commandManager.sendMessage(msg, deleteSecond, m, hook);
     }
 
 
@@ -99,34 +84,11 @@ public abstract class Command {
     }
 
     public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
-        if (hook == null) {
-            m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
-                    return message.delete();
-                }
-
-                return null;
-            }).queue();
-        } else {
-            hook.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
-                    return message.delete();
-                }
-
-                return null;
-            }).queue();
-        }
+        Main.commandManager.sendMessage(msg, deleteSecond, m, hook);
     }
 
     public static void deleteMessage(Message message, InteractionHook hook) {
-        if(message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
-                message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null && !message.isEphemeral() && hook == null) {
-            try {
-                message.delete().queue();
-            } catch (Exception ex) {
-                LoggerImpl.log("CommandSystem", "Couldn't delete a Message!");
-            }
-        }
+        Main.commandManager.deleteMessage(message, hook);
     }
 
     public boolean isAlias(String arg) {

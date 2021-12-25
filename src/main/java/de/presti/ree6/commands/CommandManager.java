@@ -127,9 +127,10 @@ public class CommandManager {
         if (!msg.toLowerCase().startsWith(Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue()))
             return false;
 
-        if(ArrayUtil.commandCooldown.contains(sender.getUser().getId())) {
+        if (ArrayUtil.commandCooldown.contains(sender.getUser().getId())) {
             sendMessage("You are on cooldown!", 5, m, interactionHook);
-            if (interactionHook == null) deleteMessage(messageSelf);
+            if (interactionHook == null) deleteMessage(messageSelf, null);
+
             return false;
         }
 
@@ -142,8 +143,8 @@ public class CommandManager {
         for (Command cmd : getCommands()) {
             if (cmd.getCmd().equalsIgnoreCase(oldArgs[0]) || cmd.isAlias(oldArgs[0])) {
 
-                if (!Main.sqlConnector.getSqlWorker().getSetting(m.getGuild().getId(),"command_" + cmd.getCmd().toLowerCase()).getBooleanValue() &&
-                cmd.getCategory() != Category.HIDDEN) {
+                if (!Main.sqlConnector.getSqlWorker().getSetting(m.getGuild().getId(), "command_" + cmd.getCmd().toLowerCase()).getBooleanValue() &&
+                        cmd.getCategory() != Category.HIDDEN) {
                     sendMessage("This Command is blocked!", 5, m, interactionHook);
                     blocked = true;
                     break;
@@ -210,41 +211,63 @@ public class CommandManager {
     }
 
     public void sendMessage(String msg, MessageChannel m, InteractionHook hook) {
-        if (hook == null) m.sendMessage(msg).queue(); else hook.sendMessage(msg).queue();
+        if (hook == null) m.sendMessage(msg).queue();
+        else hook.sendMessage(msg).queue();
     }
 
     public void sendMessage(String msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
-        if (hook == null) m.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue(); else hook.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+        if (hook == null) {
+            m.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                    return message.delete();
+                }
+
+                return null;
+            }).queue();
+        } else {
+            hook.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                    return message.delete();
+                }
+
+                return null;
+            }).queue();
+        }
     }
 
 
     public void sendMessage(EmbedBuilder msg, MessageChannel m, InteractionHook hook) {
-        if (hook == null) m.sendMessageEmbeds(msg.build()).queue(); else hook.sendMessageEmbeds(msg.build()).queue();
+        if (hook == null) m.sendMessageEmbeds(msg.build()).queue();
+        else hook.sendMessageEmbeds(msg.build()).queue();
     }
 
     public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
-        if (hook == null) m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue(); else hook.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+        if (hook == null) {
+            m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                    return message.delete();
+                }
+
+                return null;
+            }).queue();
+        } else {
+            hook.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                    return message.delete();
+                }
+
+                return null;
+            }).queue();
+        }
     }
 
-    public static void deleteMessage(Message message) {
-        if(message != null) {
-            if(message.getGuild().getMemberById(BotInfo.botInstance.getSelfUser().getId()).hasPermission(Permission.MESSAGE_MANAGE)) {
+    public void deleteMessage(Message message, InteractionHook hook) {
+        if(message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
+                message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null && !message.isEphemeral() && hook == null) {
             try {
                 message.delete().queue();
-            } catch (Exception ignore) {
+            } catch (Exception ex) {
                 LoggerImpl.log("CommandSystem", "Couldn't delete a Message!");
-            }
-            } else {
-                try {
-                    message.getGuild().getOwner().getUser().openPrivateChannel().queue(privateChannel -> {
-                        try {
-                            privateChannel.sendMessage("Hey this is just a Message because Ree6 isn't setuped right! Please check if i have the right Permissions or kick and invite me again!").queue();
-                        } catch (Exception ignore) {
-                        }
-                    });
-                } catch (Exception ex) {
-                    LoggerImpl.log("CommandSystem", "Couldn't send a Message to the Server Owner! (GID: " + message.getGuild().getId() + ", OID: " + message.getGuild().getOwner().getId() + ")");
-                }
             }
         }
     }
