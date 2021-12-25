@@ -6,6 +6,7 @@ import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotState;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.bot.Webhook;
+import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.*;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -124,7 +125,7 @@ public class OtherEvents extends ListenerAdapter {
 
             if (ChatProtector.hasChatProtector(event.getGuild().getId())) {
                 if (ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
-                    event.getMessage().delete().queue();
+                    CommandManager.deleteMessage(event.getMessage());
                     event.getChannel().sendMessage("You can't write that!").queue();
                     return;
                 }

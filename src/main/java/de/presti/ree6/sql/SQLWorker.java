@@ -1773,7 +1773,7 @@ public class SQLWorker {
             try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Settings WHERE GID='" + guildId + "' AND NAME='" + settingName + "'").executeQuery()) {
 
                 // Return if found.
-                if (rs != null && rs.next()) return new Setting(settingName, rs.getObject("VALUE"));
+                if (rs != null && rs.next()) return new Setting(settingName, rs.getString("VALUE"));
             } catch (Exception ignore) {
             }
         } else {
@@ -1781,7 +1781,7 @@ public class SQLWorker {
             checkSetting(guildId, settingName);
         }
 
-        return new Setting(settingName, true);
+        return getSetting(guildId, settingName);
     }
 
     /**
