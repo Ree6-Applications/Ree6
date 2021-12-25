@@ -22,6 +22,6 @@ public class Webinterface extends Command {
         } else {
             sendMessage("You can't use this Command you need the following Permissions: Administrator and Manage Server", 5, m, hook);
         }
-        deleteMessage(messageSelf);
+        deleteMessage(messageSelf, hook);
     }
 }

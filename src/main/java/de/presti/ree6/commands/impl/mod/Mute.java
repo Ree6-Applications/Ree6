@@ -48,6 +48,6 @@ public class Mute extends Command {
         } else {
             sendMessage("You don't have the Permission for this Command!", 5, m, hook);
         }
-        deleteMessage(messageSelf);
+        deleteMessage(messageSelf, hook);
     }
 }

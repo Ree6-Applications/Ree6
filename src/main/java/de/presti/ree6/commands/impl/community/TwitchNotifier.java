@@ -67,6 +67,6 @@ public class TwitchNotifier extends Command {
         } else {
             sendMessage("Please use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitch list/add/remove", 5, m, hook);
         }
-        deleteMessage(messageSelf);
+        deleteMessage(messageSelf, hook);
     }
 }

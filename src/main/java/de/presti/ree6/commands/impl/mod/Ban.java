@@ -41,6 +41,6 @@ public class Ban extends Command {
             sendMessage("You don't have the Permission for this Command!", 5, m, hook);
         }
 
-        deleteMessage(messageSelf);
+        deleteMessage(messageSelf, hook);
     }
 }

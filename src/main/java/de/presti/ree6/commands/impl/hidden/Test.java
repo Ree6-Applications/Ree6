@@ -21,6 +21,6 @@ public class Test extends Command {
         for (TimeFormat tm : TimeFormat.values()) {
             sendMessage(tm.now().toString(), 5, m, hook);
         }
-        deleteMessage(messageSelf);
+        deleteMessage(messageSelf, hook);
     }
 }

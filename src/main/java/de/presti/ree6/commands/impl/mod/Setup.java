@@ -146,6 +146,6 @@ public class Setup extends Command {
         } else {
             sendMessage("You dont have the Permission for this Command!", 5, m, hook);
         }
-        deleteMessage(messageSelf);
+        deleteMessage(messageSelf, hook);
     }
 }

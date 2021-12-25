@@ -118,9 +118,9 @@ public abstract class Command {
         }
     }
 
-    public static void deleteMessage(Message message) {
+    public static void deleteMessage(Message message, InteractionHook hook) {
         if(message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
-                message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null) {
+                message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null && !message.isEphemeral() && hook == null) {
             try {
                 message.delete().queue();
             } catch (Exception ex) {

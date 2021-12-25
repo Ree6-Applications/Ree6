@@ -31,7 +31,7 @@ public class Stats extends Command {
 
         long start = System.currentTimeMillis();
 
-        deleteMessage(messageSelf);
+        deleteMessage(messageSelf, hook);
 
         EmbedBuilder em = new EmbedBuilder();
 

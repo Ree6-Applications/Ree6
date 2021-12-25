@@ -22,7 +22,7 @@ public class Unban extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if (sender.hasPermission(Permission.ADMINISTRATOR)) {
             if (args.length == 1) {
-                String givenid = args[1];
+                String givenid = args[0];
                 m.getGuild().unban(givenid).queue();
                 sendMessage("User <@" + givenid + "> has been unbanned!", 5, m, hook);
             } else {
@@ -33,6 +33,6 @@ public class Unban extends Command {
             sendMessage("You dont have the Permission for this Command!", 5, m, hook);
         }
 
-        deleteMessage(messageSelf);
+        deleteMessage(messageSelf, hook);
     }
 }

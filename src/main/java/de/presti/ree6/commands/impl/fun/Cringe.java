@@ -17,6 +17,6 @@ public class Cringe extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         m.getHistoryBefore(messageSelf.getId(), 1).complete().getRetrievedHistory().get(0).reply("https://images.ree6.de/cringe.gif").queue();
-        deleteMessage(messageSelf);
+        deleteMessage(messageSelf, hook);
     }
 }

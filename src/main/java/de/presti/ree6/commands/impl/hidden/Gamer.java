@@ -21,6 +21,6 @@ public class Gamer extends Command {
                 : sender.getId().equalsIgnoreCase("321580743488831490") ? "Lovely Presti nice to see you here im really happy that you are here!"
                 : sender.getId().equalsIgnoreCase("397462379992055819") ? "David! You're like family i love!" : "Who tf are you?", m, hook);
         m.getHistoryBefore(messageSelf.getId(), 1).complete().getRetrievedHistory().get(0).reply("https://images.ree6.de/xasus.png").queue();
-        deleteMessage(messageSelf);
+        deleteMessage(messageSelf, hook);
     }
 }
