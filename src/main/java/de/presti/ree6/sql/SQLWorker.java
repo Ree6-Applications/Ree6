@@ -10,8 +10,10 @@ import de.presti.ree6.utils.Setting;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Map.Entry.comparingByValue;
 
 /**
  * A Class to actually handle the SQL data.
@@ -2032,8 +2034,15 @@ public class SQLWorker {
         } catch (Exception ignore) {
         }
 
+        HashMap<String, Long> sortedStatsMap = new HashMap<>();
+
+        statsMap.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .forEachOrdered(x -> sortedStatsMap.put(x.getKey(), x.getValue()));
+
         // Return the HashMap.
-        return statsMap;
+        return sortedStatsMap;
     }
 
     public HashMap<String, Long> getStatsGlobal() {
@@ -2049,8 +2058,15 @@ public class SQLWorker {
         } catch (Exception ignore) {
         }
 
+        HashMap<String, Long> sortedStatsMap = new HashMap<>();
+
+        statsMap.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .forEachOrdered(x -> sortedStatsMap.put(x.getKey(), x.getValue()));
+
         // Return the HashMap.
-        return statsMap;
+        return sortedStatsMap;
     }
 
     /**
