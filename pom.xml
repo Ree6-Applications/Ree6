@@ -253,6 +253,11 @@
             <version>1.1.2</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.0.2-rc</version>
+        </dependency>
     </dependencies>
 
     <properties>

@@ -1781,7 +1781,7 @@ public class SQLWorker {
             checkSetting(guildId, settingName);
         }
 
-        return getSetting(guildId, settingName);
+        return new Setting(settingName, true);
     }
 
     /**
@@ -1942,7 +1942,7 @@ public class SQLWorker {
         for (Command command : Main.commandManager.getCommands()) {
 
             // Skip the hidden Commands.
-            if (command.getCategory() == Category.HIDDEN) return;
+            if (command.getCategory() == Category.HIDDEN) continue;
 
             if (!hasSetting(guildId, "command_" + command.getCmd().toLowerCase()))
                 setSetting(guildId, "command_" + command.getCmd().toLowerCase(),true);
@@ -2005,7 +2005,7 @@ public class SQLWorker {
         }
 
         // Creating a SQL Statement to get an entry in the CommandStats Table by Guild and Command name.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM CommandStats WHERE GID='" + guildId + "' AND COMMAND='" + command + "'").executeQuery()) {
+        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM GuildStats WHERE GID='" + guildId + "' AND COMMAND='" + command + "'").executeQuery()) {
 
             // Return if found.
             if (rs != null && rs.next()) return Long.parseLong(rs.getString("USES"));
@@ -2025,7 +2025,7 @@ public class SQLWorker {
         }
 
         // Creating a SQL Statement to get every entry in the CommandStats Table by the Guild.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM CommandStats WHERE GID='" + guildId + "' ORDER BY cast(USES as unsigned) DESC LIMIT 5;").executeQuery()) {
+        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM GuildStats WHERE GID='" + guildId + "' ORDER BY cast(USES as unsigned) DESC LIMIT 5;").executeQuery()) {
 
             // Return if found.
             while (rs != null && rs.next()) statsMap.put(rs.getString("COMMAND"), Long.parseLong(rs.getString("USES")));

@@ -41,10 +41,10 @@ public class Setting {
     public String getStringValue() {
         if (value instanceof String) {
             return (String) value;
-        } else if (value instanceof Boolean) {
-            return value + "";
         } else if (getName().equalsIgnoreCase("chatprefix")) {
             return "ree!";
+        } else if (value instanceof Boolean) {
+            return value + "";
         }
         return "";
     }

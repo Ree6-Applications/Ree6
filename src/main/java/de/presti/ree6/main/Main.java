@@ -60,7 +60,7 @@ public class Main {
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> new RaygunClient(config.getConfig().getString("raygun.apitoken")).send(e));
 
-        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
+        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.db"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getInt("mysql.port"));
 
         commandManager = new CommandManager();
 
@@ -128,7 +128,7 @@ public class Main {
 
                     sqlConnector.close();
 
-                    sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getString("mysql.db"), config.getConfig().getInt("mysql.port"));
+                    sqlConnector =new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.db"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getInt("mysql.port"));
 
 
                     ArrayUtil.messageIDwithMessage.clear();
