@@ -20,6 +20,6 @@ public class Leaderboards extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        sendMessage("For the Voice Leaderboard: <https://cp.ree6.de/leaderboard/voice>\nAnd for the Chat Leaderboard: <https://cp.ree6.de/leaderboard/chat>", m, hook);
+        sendMessage("For the Voice Leaderboard: <https://cp.ree6.de/leaderboard/voice?guildId=" + m.getGuild().getId() + ">\nAnd for the Chat Leaderboard: <https://cp.ree6.de/leaderboard/chat?guildId=" + m.getGuild().getId() + ">", m, hook);
     }
 }
