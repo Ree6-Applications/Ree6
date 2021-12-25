@@ -10,6 +10,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.*;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -109,7 +110,7 @@ public class OtherEvents extends ListenerAdapter {
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         super.onMessageReceived(event);
 
-        if (event.isFromGuild()) {
+        if (event.isFromGuild() && event.isFromType(ChannelType.TEXT)) {
             if (!ArrayUtil.messageIDwithMessage.containsKey(event.getMessageId())) {
                 ArrayUtil.messageIDwithMessage.put(event.getMessageId(), event.getMessage().getContentRaw());
             }
