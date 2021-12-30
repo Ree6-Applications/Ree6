@@ -62,7 +62,7 @@ public class Stats extends Command {
         if (sender.getId().equalsIgnoreCase("321580743488831490")) {
             em.addField("**Server Stats:**", "", true);
             em.addField("**Ram Usage:**", String.format("%.2f GB / %.2f GB", ((Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory()) / 1e+9), (Runtime.getRuntime().maxMemory() / 1e+9)), true);
-            em.addField("**CPU Usage:**", String.format("%.2f", ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getProcessCpuLoad() * 100) + "%", true);
+            em.addField("**CPU Usage:**", String.format("%.2f", ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getProcessCpuLoad() * 1000) + "%", true);
         }
 
         StringBuilder end = new StringBuilder();

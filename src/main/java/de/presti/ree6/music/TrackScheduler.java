@@ -166,25 +166,11 @@ public class TrackScheduler extends AudioEventAdapter {
         // LOAD_FAILED)
 
         if (loop) {
-            if (endReason == AudioTrackEndReason.LOAD_FAILED) {
-                EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                        BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setColor(Color.RED);
-                em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: "
-                        + endReason.name());
-                em.setFooter(thechannel.getGuild().getName() + " - " + Data.ADVERTISEMENT, thechannel.getGuild().getIconUrl());
-
-                Main.commandManager.sendMessage(em, 5, thechannel);
-
-                nextTrack(thechannel);
-            } else {
+            if (endReason == AudioTrackEndReason.FINISHED) {
                 AudioTrack loopTrack = track.makeClone();
 
                 if (loopTrack != null && player != null) {
-                    player.startTrack((loopTrack), false);
+                    player.startTrack(loopTrack, false);
                 } else {
                     EmbedBuilder em = new EmbedBuilder();
                     em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
@@ -199,6 +185,20 @@ public class TrackScheduler extends AudioEventAdapter {
 
                     nextTrack(thechannel);
                 }
+            } else if (endReason == AudioTrackEndReason.LOAD_FAILED) {
+                EmbedBuilder em = new EmbedBuilder();
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
+                        BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setTitle("Music Player!");
+                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setColor(Color.RED);
+                em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: "
+                        + endReason.name());
+                em.setFooter(thechannel.getGuild().getName() + " - " + Data.ADVERTISEMENT, thechannel.getGuild().getIconUrl());
+
+                Main.commandManager.sendMessage(em, 5, thechannel);
+
+                nextTrack(thechannel);
             }
         } else if (shuffle) {
             if (endReason.mayStartNext) {
