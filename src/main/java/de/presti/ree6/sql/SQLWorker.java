@@ -1941,7 +1941,7 @@ public class SQLWorker {
         if (!hasSetting(guildId, "chatprefix")) setSetting(guildId, new Setting("chatprefix", "ree!"));
 
         // Create Command Settings.
-        for (Command command : Main.commandManager.getCommands()) {
+        for (Command command : Main.getInstance().getCommandManager().getCommands()) {
 
             // Skip the hidden Commands.
             if (command.getCategory() == Category.HIDDEN) continue;
@@ -2202,7 +2202,7 @@ public class SQLWorker {
         try (Statement statement = sqlConnector.getConnection().createStatement()) {
             statement.executeUpdate(sqlQuery);
         } catch (Exception ignore) {
-            Main.instance.getLogger().error("Couldn't send Query to SQL-Server");
+            Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server");
         }
     }
 

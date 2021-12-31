@@ -8,9 +8,9 @@ public class FileUtil {
 
     public static String getToken() {
         if (BotInfo.version == BotVersion.DEV) {
-            return Main.config.getConfig().getString("bot.tokens.dev");
+            return Main.getInstance().getConfig().getConfig().getString("bot.tokens.dev");
         } else if (BotInfo.version == BotVersion.PUBLIC || BotInfo.version == BotVersion.PRERELASE) {
-            return Main.config.getConfig().getString("bot.tokens.rel");
+            return Main.getInstance().getConfig().getConfig().getString("bot.tokens.rel");
         } else {
             return "error";
         }

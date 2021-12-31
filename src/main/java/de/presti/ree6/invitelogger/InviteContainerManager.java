@@ -24,7 +24,7 @@ public class InviteContainerManager {
      */
     public static void addInvite(InviteContainer inviteContainer, String guildID) {
         try {
-            Main.sqlConnector.getSqlWorker().setInvite(guildID, inviteContainer.getCode(), inviteContainer.getCreatorId(), inviteContainer.getUses());
+            Main.getInstance().getSqlConnector().getSqlWorker().setInvite(guildID, inviteContainer.getCode(), inviteContainer.getCreatorId(), inviteContainer.getUses());
         } catch (Exception ex) {
             LoggerImpl.log("InviteManager", "Error while Saving Invites: " + ex.getMessage());
         }
@@ -38,7 +38,7 @@ public class InviteContainerManager {
      * @param code    the Code of the Invite.
      */
     public static void removeInvite(String guildID, String creator, String code) {
-        Main.sqlConnector.getSqlWorker().removeInvite(guildID, creator, code);
+        Main.getInstance().getSqlConnector().getSqlWorker().removeInvite(guildID, creator, code);
     }
 
     /**
@@ -48,7 +48,7 @@ public class InviteContainerManager {
      * @param code    the Code of the Invite.
      */
     public static void removeInvite(String guildID, String code) {
-        Main.sqlConnector.getSqlWorker().removeInvite(guildID, code);
+        Main.getInstance().getSqlConnector().getSqlWorker().removeInvite(guildID, code);
     }
 
     /**
@@ -92,7 +92,7 @@ public class InviteContainerManager {
      * @return {@link ArrayList<InviteContainer>} with every Invite saved in our Database.
      */
     public static ArrayList<InviteContainer> getInvites(String guildId) {
-        return Main.sqlConnector.getSqlWorker().getInvites(guildId);
+        return Main.getInstance().getSqlConnector().getSqlWorker().getInvites(guildId);
     }
 
     /**

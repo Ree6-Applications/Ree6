@@ -48,7 +48,7 @@ public class AddonLoader {
             if (f.getName().endsWith("jar")) {
                 try {
                     // Try creating a Local-Addon and adding it into the loaded Addon List.
-                    Main.addonManager.loadAddon(loadAddon(f.getName()));
+                    Main.getInstance().getAddonManager().loadAddon(loadAddon(f.getName()));
                 } catch (Exception ex) {
                     // If the Methode loadAddon fails notify.
                     LoggerImpl.log("AddonManager", "Couldn't load the Addon " + f.getName() + "\nException: " + ex.getCause().getMessage());

@@ -21,8 +21,8 @@ public class Stop extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        if (Main.musicWorker.getGuildAudioPlayer(m.getGuild()) != null) {
-            Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.stopAll();
+        if (Main.getInstance().getMusicWorker().getGuildAudioPlayer(m.getGuild()) != null) {
+            Main.getInstance().getMusicWorker().getGuildAudioPlayer(m.getGuild()).scheduler.stopAll();
         } else {
             EmbedBuilder em = new EmbedBuilder();
 

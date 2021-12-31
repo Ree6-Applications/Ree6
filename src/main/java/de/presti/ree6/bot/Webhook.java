@@ -24,7 +24,7 @@ public class Webhook {
         if (webhookToken.contains("Not setup!") || webhookId == 0) return;
 
         // Check if the given data is in the Database.
-        if (!Main.sqlConnector.getSqlWorker().existsLogData(webhookId, webhookToken)) return;
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().existsLogData(webhookId, webhookToken)) return;
 
         // Check if the LoggerMessage is null or canceled.
         if (loggerMessage == null || loggerMessage.isCanceled()) {
@@ -40,7 +40,7 @@ public class Webhook {
                 // If the error 404 comes that means that the webhook is invalid.
                 if (throwable.getMessage().contains("failure 404")) {
                     // Inform and delete invalid webhook.
-                    Main.sqlConnector.getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
+                    Main.getInstance().getSqlConnector().getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
                     LoggerImpl.log("Webhook", "Deleted invalid Webhook: " + webhookId + " - " + webhookToken);
                 } else if (throwable.getMessage().contains("failure 400")) {
                     // If 404 inform that the Message had an invalid Body.

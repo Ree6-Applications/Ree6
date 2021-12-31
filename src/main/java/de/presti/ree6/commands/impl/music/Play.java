@@ -43,11 +43,11 @@ public class Play extends Command {
             em.setTitle("Music Player!");
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setColor(Color.GREEN);
-            em.setDescription("Usage: " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
+            em.setDescription("Usage: " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
             em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
             sendMessage(em, 5, m, hook);
         } else {
-            if (Main.musicWorker.isConnectedMember(sender)) {
+            if (Main.getInstance().getMusicWorker().isConnectedMember(sender)) {
                 ArrayUtil.botJoin.remove(m.getGuild());
                 ArrayUtil.botJoin.put(m.getGuild(), sender);
             }
@@ -66,7 +66,7 @@ public class Play extends Command {
                 }
 
                 if (!isspotify) {
-                    Main.musicWorker.loadAndPlay(m, args[0]);
+                    Main.getInstance().getMusicWorker().loadAndPlay(m, args[0]);
                 } else {
                     ArrayList<String> loadfailed = new ArrayList<>();
                     boolean b = false;
@@ -77,10 +77,10 @@ public class Play extends Command {
                             loadfailed.add(search);
                         } else {
                             if (!b) {
-                                Main.musicWorker.loadAndPlay(m, ytresult);
+                                Main.getInstance().getMusicWorker().loadAndPlay(m, ytresult);
                                 b = true;
                             } else {
-                                Main.musicWorker.loadAndPlaySilence(m, ytresult);
+                                Main.getInstance().getMusicWorker().loadAndPlaySilence(m, ytresult);
                             }
                         }
                     }
@@ -115,7 +115,7 @@ public class Play extends Command {
                     em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
                     sendMessage(em, 5, m, hook);
                 } else {
-                    Main.musicWorker.loadAndPlay(m, ytResult);
+                    Main.getInstance().getMusicWorker().loadAndPlay(m, ytResult);
                 }
             }
         }

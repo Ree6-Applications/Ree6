@@ -18,7 +18,7 @@ import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.Config;
 import de.presti.ree6.utils.LoggerImpl;
-import de.presti.ree6.utils.TwitchAPIHandler;
+import de.presti.ree6.utils.Notifier;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;
@@ -30,51 +30,51 @@ import java.util.stream.Collectors;
 
 public class Main {
 
-    public static Main instance;
+    static Main instance;
 
-    public static TwitchAPIHandler twitchAPIHandler;
+    Notifier notifier;
 
-    public static CommandManager commandManager;
-    public static AddonManager addonManager;
-    public static SQLConnector sqlConnector;
-    public static LoggerQueue loggerQueue;
-    public static MusicWorker musicWorker;
+    CommandManager commandManager;
+    AddonManager addonManager;
+    SQLConnector sqlConnector;
+    LoggerQueue loggerQueue;
+    MusicWorker musicWorker;
 
-    static Logger logger;
+    Logger logger;
 
-    public static Thread checker;
-    public static Config config;
+    Thread checker;
+    Config config;
 
-    public static String lastDay = "";
+    String lastDay = "";
 
     public static void main(String[] args) {
         instance = new Main();
 
-        logger = LoggerFactory.getLogger(Main.class);
+        instance.logger = LoggerFactory.getLogger(Main.class);
 
-        loggerQueue = new LoggerQueue();
+        instance.loggerQueue = new LoggerQueue();
 
-        config = new Config();
+        instance.config = new Config();
 
-        config.init();
+        instance.config.init();
 
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> new RaygunClient(config.getConfig().getString("raygun.apitoken")).send(e));
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> new RaygunClient(instance.config.getConfig().getString("raygun.apitoken")).send(e));
 
-        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.db"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getInt("mysql.port"));
+        instance.sqlConnector = new SQLConnector(instance.config.getConfig().getString("mysql.user"),
+                instance.config.getConfig().getString("mysql.db"), instance.config.getConfig().getString("mysql.pw"),
+                instance.config.getConfig().getString("mysql.host"), instance.config.getConfig().getInt("mysql.port"));
 
-        commandManager = new CommandManager();
+        instance.commandManager = new CommandManager();
 
-        twitchAPIHandler = new TwitchAPIHandler();
+        instance.notifier = new Notifier();
 
-        for (String name : sqlConnector.getSqlWorker().getAllTwitchNames()) {
-            twitchAPIHandler.registerChannel(name);
-        }
+        instance.notifier.registerTwitchChannel(instance.sqlConnector.getSqlWorker().getAllTwitchNames());
 
-        twitchAPIHandler.registerTwitchLive();
+        instance.notifier.registerTwitchEventHandler();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.5.1");
-            musicWorker = new MusicWorker();
+            BotUtil.createBot(BotVersion.DEV, "1.5.2");
+            instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
             LoggerImpl.log("Main", "Error while init: " + ex.getMessage());
@@ -84,9 +84,9 @@ public class Main {
 
         BotInfo.startTime = System.currentTimeMillis();
 
-        addonManager = new AddonManager();
+        instance.addonManager = new AddonManager();
         AddonLoader.loadAllAddons();
-        addonManager.startAddons();
+        instance.addonManager.startAddons();
     }
 
     private void addEvents() {
@@ -104,13 +104,17 @@ public class Main {
 
         if (sqlConnector != null && (sqlConnector.IsConnected())) {
             LoggerImpl.log("Main", "Closing Database Connection!");
-            sqlConnector.close();
+            getSqlConnector().close();
             LoggerImpl.log("Main", "Closed Database Connection!");
         }
 
         LoggerImpl.log("Main", "Disabling every Addon!");
-        addonManager.stopAddons();
+        getAddonManager().stopAddons();
         LoggerImpl.log("Main", "Every Addon has been disabled!");
+
+        LoggerImpl.log("Main", "Closing Twitch API Instance!");
+        getNotifier().getTwitchClient().close();
+        LoggerImpl.log("Main", "Twitch API Instance closed!");
 
         LoggerImpl.log("Main", "JDA Instance shutdown init. !");
         BotUtil.shutdown();
@@ -126,10 +130,9 @@ public class Main {
 
                 if (!lastDay.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 
-                    sqlConnector.close();
+                    getSqlConnector().close();
 
                     sqlConnector =new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.db"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getInt("mysql.port"));
-
 
                     ArrayUtil.messageIDwithMessage.clear();
                     ArrayUtil.messageIDwithUser.clear();
@@ -172,8 +175,80 @@ public class Main {
     }
 
     /**
+     * Retrieve the Instance of the Main class.
+     * @return {@link Main} Instance of the Main class.
+     */
+    public static Main getInstance() {
+        return instance;
+    }
+
+    /**
+     * Retrieve the Instance of the Notifier.
+     * @return {@link Notifier} Instance of the Notifier.
+     */
+    public Notifier getNotifier() {
+        return notifier;
+    }
+
+    /**
+     * Retrieve the Instance of the CommandManager.
+     * @return {@link CommandManager} Instance of the CommandManager.
+     */
+    public CommandManager getCommandManager() {
+        return commandManager;
+    }
+
+    /**
+     * Retrieve the Instance of the AddonManager.
+     * @return {@link AddonManager} Instance of the AddonManager.
+     */
+    public AddonManager getAddonManager() {
+        return addonManager;
+    }
+
+    /**
+     * Retrieve the Instance of the SQL-Connector.
+     * @return {@link SQLConnector} Instance of the SQL-Connector.
+     */
+    public SQLConnector getSqlConnector() {
+        return sqlConnector;
+    }
+
+    /**
+     * Retrieve the Instance of the LoggerQueue.
+     * @return {@link LoggerQueue} Instance of the LoggerQueue.
+     */
+    public LoggerQueue getLoggerQueue() {
+        return loggerQueue;
+    }
+
+    /**
+     * Retrieve the Instance of the Music-Worker.
+     * @return {@link MusicWorker} Instance of the Music-Worker.
+     */
+    public MusicWorker getMusicWorker() {
+        return musicWorker;
+    }
+
+    /**
      * Retrieve the Instance of the Logger.
      * @return {@link Logger} Instance of the Logger.
      */
     public Logger getLogger() { return logger; }
+
+    /**
+     * Retrieve the Instance of the Checker-Thread.
+     * @return {@link Thread} Instance of the Checker-Thread.
+     */
+    public Thread getChecker() {
+        return checker;
+    }
+
+    /**
+     * Retrieve the Instance of the Config.
+     * @return {@link Config} Instance of the Config.
+     */
+    public Config getConfig() {
+        return config;
+    }
 }

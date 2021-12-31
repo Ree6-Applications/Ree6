@@ -75,7 +75,9 @@ public class LoggerQueue {
 
                     // Cancel every Log-Message which indicates that the person moved.
                     logs.stream().filter(loggerMessages -> loggerMessages.getId() == loggerMessage.getId() &&
-                            loggerMessages != loggerMessage && loggerMessages.getVoiceData().getMember() == loggerMessage.getVoiceData().getMember() && !loggerMessages.isCanceled() &&
+                            loggerMessages != loggerMessage &&
+                            loggerMessages.getVoiceData() != null &&
+                            loggerMessages.getVoiceData().getMember() == loggerMessage.getVoiceData().getMember() && !loggerMessages.isCanceled() &&
                             loggerMessages.getType() == LoggerMessage.LogTyp.VC_MOVE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
                     // Set the new Webhook Message.

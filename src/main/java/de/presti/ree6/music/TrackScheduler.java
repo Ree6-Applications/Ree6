@@ -129,7 +129,7 @@ public class TrackScheduler extends AudioEventAdapter {
                 em.setDescription("Next Song!\nSong: ``" + track.getInfo().title + "``");
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.commandManager.sendMessage(em, 5, channel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
             }
             player.startTrack(track, false);
         }
@@ -154,7 +154,7 @@ public class TrackScheduler extends AudioEventAdapter {
                 em.setDescription("Next Song!\nSong: ``" + track.getInfo().title + "``");
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.commandManager.sendMessage(em, 5, channel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
             }
             player.startTrack(track, false);
         }
@@ -181,7 +181,7 @@ public class TrackScheduler extends AudioEventAdapter {
                     em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: Track is not existing!");
                     em.setFooter(thechannel.getGuild().getName() + " - " + Data.ADVERTISEMENT, thechannel.getGuild().getIconUrl());
 
-                    Main.commandManager.sendMessage(em, 5, thechannel);
+                    Main.getInstance().getCommandManager().sendMessage(em, 5, thechannel);
 
                     nextTrack(thechannel);
                 }
@@ -196,7 +196,7 @@ public class TrackScheduler extends AudioEventAdapter {
                         + endReason.name());
                 em.setFooter(thechannel.getGuild().getName() + " - " + Data.ADVERTISEMENT, thechannel.getGuild().getIconUrl());
 
-                Main.commandManager.sendMessage(em, 5, thechannel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, thechannel);
 
                 nextTrack(thechannel);
             }
@@ -213,7 +213,7 @@ public class TrackScheduler extends AudioEventAdapter {
                             + endReason.name());
                     em.setFooter(thechannel.getGuild().getName() + " - " + Data.ADVERTISEMENT, thechannel.getGuild().getIconUrl());
 
-                    Main.commandManager.sendMessage(em, 5, thechannel);
+                    Main.getInstance().getCommandManager().sendMessage(em, 5, thechannel);
                 }
                 nextRandomTrack(thechannel);
             }
@@ -230,7 +230,7 @@ public class TrackScheduler extends AudioEventAdapter {
                             + endReason.name());
                     em.setFooter(thechannel.getGuild().getName() + " - " + Data.ADVERTISEMENT, thechannel.getGuild().getIconUrl());
 
-                    Main.commandManager.sendMessage(em, 5, thechannel);
+                    Main.getInstance().getCommandManager().sendMessage(em, 5, thechannel);
                 }
                 nextTrack(thechannel);
             }
@@ -239,15 +239,15 @@ public class TrackScheduler extends AudioEventAdapter {
 
     public void stopAll() {
         EmbedBuilder em = new EmbedBuilder();
-        if (Main.musicWorker.isConnected(thechannel.getGuild()) || getPlayer().getPlayingTrack() != null) {
+        if (Main.getInstance().getMusicWorker().isConnected(thechannel.getGuild()) || getPlayer().getPlayingTrack() != null) {
 
-            GuildMusicManager gmm = Main.musicWorker.getGuildAudioPlayer(thechannel.getGuild());
+            GuildMusicManager gmm = Main.getInstance().getMusicWorker().getGuildAudioPlayer(thechannel.getGuild());
 
             gmm.player.stopTrack();
 
             gmm.scheduler.clearQueue();
 
-            Main.musicWorker.disconnect(thechannel.getGuild());
+            Main.getInstance().getMusicWorker().disconnect(thechannel.getGuild());
             em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                     BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setTitle("Music Player!");
@@ -264,6 +264,6 @@ public class TrackScheduler extends AudioEventAdapter {
         }
 
         em.setFooter(Data.ADVERTISEMENT);
-        Main.commandManager.sendMessage(em, 5, thechannel);
+        Main.getInstance().getCommandManager().sendMessage(em, 5, thechannel);
     }
 }

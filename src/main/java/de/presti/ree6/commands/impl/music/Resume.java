@@ -23,7 +23,7 @@ public class Resume extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         EmbedBuilder em = new EmbedBuilder();
 
-        Main.musicWorker.getGuildAudioPlayer(m.getGuild()).player.setPaused(false);
+        Main.getInstance().getMusicWorker().getGuildAudioPlayer(m.getGuild()).player.setPaused(false);
 
         em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                 BotInfo.botInstance.getSelfUser().getAvatarUrl());

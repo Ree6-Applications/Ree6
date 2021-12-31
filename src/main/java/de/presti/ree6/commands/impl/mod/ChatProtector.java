@@ -24,10 +24,10 @@ public class ChatProtector extends Command {
                 if(args.length == 1) {
                     if(args[0].equalsIgnoreCase("add")) {
                         sendMessage("Not enough Arguments!", 5, m, hook);
-                        sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, m, hook);
+                        sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, m, hook);
                     } else if(args[0].equalsIgnoreCase("remove")) {
                         sendMessage("Not enough Arguments!", 5, m, hook);
-                        sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector remove WORD", 5, m, hook);
+                        sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector remove WORD", 5, m, hook);
                     } else if (args[0].equalsIgnoreCase("list")) {
                         if(de.presti.ree6.addons.impl.ChatProtector.hasChatProtector(m.getGuild().getId())) {
                             StringBuilder end = new StringBuilder();
@@ -39,11 +39,11 @@ public class ChatProtector extends Command {
                             sendMessage("```" + end + "```", m, hook);
                         } else {
                             sendMessage("Your ChatProtector isn't setuped!", 5, m, hook);
-                            sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, m, hook);
+                            sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, m, hook);
                         }
                     } else {
                         sendMessage("Couldn't find " + args[0] + "!", 5, m, hook);
-                        sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add/remove/list", 5, m, hook);
+                        sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add/remove/list", 5, m, hook);
                     }
                 } else {
                     if(args[0].equalsIgnoreCase("add")) {
@@ -65,12 +65,12 @@ public class ChatProtector extends Command {
                         sendMessage("The Word " + args[1] + " has been removed from your ChatProtector!", 5, m, hook);
                     } else {
                         sendMessage("Couldn't find " + args[0] + "!", 5, m, hook);
-                        sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add/remove/list", 5, m, hook);
+                        sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add/remove/list", 5, m, hook);
                     }
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add/remove/list", 5, m, hook);
+                sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add/remove/list", 5, m, hook);
             }
         } else {
             sendMessage("You don't have the Permission for this Command!", 5, m, hook);

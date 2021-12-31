@@ -64,21 +64,21 @@ public class SQLConnector {
             try {
                 // Close if there is and notify.
                 connection.close();
-                Main.instance.getLogger().info("Service (MariaDB) has been stopped.");
+                Main.getInstance().getLogger().info("Service (MariaDB) has been stopped.");
             } catch (Exception ignore) {
                 // Notify if there was an error.
-                Main.instance.getLogger().error("Service (MariaDB) couldn't be stopped.");
+                Main.getInstance().getLogger().error("Service (MariaDB) couldn't be stopped.");
             }
         }
 
         try {
             // Create a new Connection by using the SQL DriverManager and the MariaDB Java Driver and notify if successful.
             connection = DriverManager.getConnection("jdbc:mysql://" + databaseServerIP + ":" + databaseServerPort + "/" + databaseName + "?autoReconnect=true", databaseUser, databasePassword);
-            Main.instance.getLogger().info("Service (MariaDB) has been started. Connection was successful.");
+            Main.getInstance().getLogger().info("Service (MariaDB) has been started. Connection was successful.");
         } catch (Exception ignore) {
             ignore.printStackTrace();
             // Notify if there was an error.
-            Main.instance.getLogger().error("Service (MariaDB) couldn't be started. Connection was unsuccessful.");
+            Main.getInstance().getLogger().error("Service (MariaDB) couldn't be started. Connection was unsuccessful.");
         }
     }
 
@@ -118,7 +118,7 @@ public class SQLConnector {
             } catch (SQLException ignore) {
 
                 // Notify if there was an error.
-                Main.instance.getLogger().error("Couldn't create {0} Table.", entry.getKey());
+                Main.getInstance().getLogger().error("Couldn't create {0} Table.", entry.getKey());
             }
         }
 
@@ -146,10 +146,10 @@ public class SQLConnector {
             try {
                 // Close if there is and notify.
                 connection.close();
-                Main.instance.getLogger().info("Service (MariaDB) has been stopped.");
+                Main.getInstance().getLogger().info("Service (MariaDB) has been stopped.");
             } catch (Exception ignore) {
                 // Notify if there was an error.
-                Main.instance.getLogger().error("Service (MariaDB) couldn't be stopped.");
+                Main.getInstance().getLogger().error("Service (MariaDB) couldn't be stopped.");
             }
         }
     }

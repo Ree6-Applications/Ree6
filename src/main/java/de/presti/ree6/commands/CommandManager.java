@@ -124,7 +124,7 @@ public class CommandManager {
 
     public boolean perform(Member sender, String msg, Message messageSelf, TextChannel m, InteractionHook interactionHook) {
 
-        if (!msg.toLowerCase().startsWith(Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue()))
+        if (!msg.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue()))
             return false;
 
         if (ArrayUtil.commandCooldown.contains(sender.getUser().getId())) {
@@ -134,7 +134,7 @@ public class CommandManager {
             return false;
         }
 
-        msg = msg.substring(Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue().length());
+        msg = msg.substring(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue().length());
 
         String[] oldArgs = msg.split(" ");
 
@@ -143,7 +143,7 @@ public class CommandManager {
         for (Command cmd : getCommands()) {
             if (cmd.getCmd().equalsIgnoreCase(oldArgs[0]) || cmd.isAlias(oldArgs[0])) {
 
-                if (!Main.sqlConnector.getSqlWorker().getSetting(m.getGuild().getId(), "command_" + cmd.getCmd().toLowerCase()).getBooleanValue() &&
+                if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(m.getGuild().getId(), "command_" + cmd.getCmd().toLowerCase()).getBooleanValue() &&
                         cmd.getCategory() != Category.HIDDEN) {
                     sendMessage("This Command is blocked!", 5, m, interactionHook);
                     blocked = true;

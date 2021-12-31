@@ -24,7 +24,7 @@ public class Ban extends Command {
             if (args.length == 1) {
                 if(messageSelf.getMentionedMembers().isEmpty()) {
                     sendMessage("No User mentioned!", 5, m, hook);
-                    sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "ban @user", 5, m, hook);
+                    sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "ban @user", 5, m, hook);
                 } else {
                     if (m.getGuild().getSelfMember().canInteract(messageSelf.getMentionedMembers().get(0)) && sender.canInteract(messageSelf.getMentionedMembers().get(0))) {
                         sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been banned!", 5, m, hook);
@@ -35,7 +35,7 @@ public class Ban extends Command {
                 }
             } else {
                 sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "ban @user", 5, m, hook);
+                sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "ban @user", 5, m, hook);
             }
         } else {
             sendMessage("You don't have the Permission for this Command!", 5, m, hook);

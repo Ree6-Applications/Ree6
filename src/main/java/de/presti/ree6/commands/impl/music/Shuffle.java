@@ -23,15 +23,15 @@ public class Shuffle extends Command {
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         EmbedBuilder em = new EmbedBuilder();
 
-        Main.musicWorker.getGuildAudioPlayer(
-                m.getGuild()).scheduler.shuffle = !Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.shuffle;
+        Main.getInstance().getMusicWorker().getGuildAudioPlayer(
+                m.getGuild()).scheduler.shuffle = !Main.getInstance().getMusicWorker().getGuildAudioPlayer(m.getGuild()).scheduler.shuffle;
 
         em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                 BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.shuffle ? "Song Shuffle has been activated!"
+        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(m.getGuild()).scheduler.shuffle ? "Song Shuffle has been activated!"
                 : "Song Shuffle has been deactivated!");
         em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
 

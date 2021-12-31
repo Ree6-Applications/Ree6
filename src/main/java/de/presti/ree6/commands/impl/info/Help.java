@@ -34,7 +34,7 @@ public class Help extends Command {
 
             for (Category cat : Category.values()) {
                 if (cat != Category.HIDDEN) {
-                    em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**",  Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "help " + cat.name().toLowerCase(), true);
+                    em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**",  Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "help " + cat.name().toLowerCase(), true);
                 }
             }
 
@@ -50,9 +50,9 @@ public class Help extends Command {
                 StringBuilder end = new StringBuilder();
 
                 Category cat = getCategoryFromString(args[0]);
-                for (Command cmd : Main.commandManager.getCommands()) {
+                for (Command cmd : Main.getInstance().getCommandManager().getCommands()) {
                     if (cmd.getCategory() == cat) {
-                        end.append("``"  + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue()).append(cmd.getCmd()).append("``\n").append(cmd.getDesc()).append("\n\n");
+                        end.append("``"  + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue()).append(cmd.getCmd()).append("``\n").append(cmd.getDesc()).append("\n\n");
                     }
                 }
 
@@ -60,7 +60,7 @@ public class Help extends Command {
             } else {
                 for (Category cat : Category.values()) {
                     if (cat != Category.HIDDEN) {
-                        em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**",  Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "help " + cat.name().toLowerCase(), true);
+                        em.addField("**" + cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase() + "**",  Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "help " + cat.name().toLowerCase(), true);
                     }
                 }
             }

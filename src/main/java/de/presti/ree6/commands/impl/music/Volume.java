@@ -35,7 +35,7 @@ public class Volume extends Command {
             } catch (Exception e) {
                 vol = 50;
             }
-            Main.musicWorker.getGuildAudioPlayer(m.getGuild()).player.setVolume(vol);
+            Main.getInstance().getMusicWorker().getGuildAudioPlayer(m.getGuild()).player.setVolume(vol);
 
             em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                     BotInfo.botInstance.getSelfUser().getAvatarUrl());
@@ -51,7 +51,7 @@ public class Volume extends Command {
             em.setTitle("Music Player!");
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setColor(Color.GREEN);
-            em.setDescription("Type " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "volume [voulume]");
+            em.setDescription("Type " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "volume [voulume]");
         }
         em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
 

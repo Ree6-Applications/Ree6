@@ -166,7 +166,7 @@ public class JSONApi {
 				j.put("_content", rawContent);
 			}
 		} catch (NullPointerException ex) {
-			Main.instance.getLogger().error("Error", ex.getCause());
+			Main.getInstance().getLogger().error("Error", ex.getCause());
 		} catch (MalformedURLException ex) {
 			j.put("_success", false);
 			j.put("_type", type.name());

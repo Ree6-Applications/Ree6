@@ -18,7 +18,7 @@ public class StatsManager {
      */
     public static void addStatsForCommand(Command command, String guildId) {
         if (command != null) {
-            Main.sqlConnector.getSqlWorker().addStats(guildId, command.getCmd());
+            Main.getInstance().getSqlConnector().getSqlWorker().addStats(guildId, command.getCmd());
         }
     }
 
@@ -29,7 +29,7 @@ public class StatsManager {
      * @return {@link HashMap<String, Long>} with the Stats of the Guild.
      */
     public static HashMap<String, Long> getCommandStats(String guildId) {
-        return Main.sqlConnector.getSqlWorker().getStats(guildId);
+        return Main.getInstance().getSqlConnector().getSqlWorker().getStats(guildId);
     }
 
     /**
@@ -38,7 +38,7 @@ public class StatsManager {
      * @return {@link Long} as Usage.
      */
     public static long getUsageForCommand(Command command) {
-        return Main.sqlConnector.getSqlWorker().getStatsCommandGlobal(command.getCmd());
+        return Main.getInstance().getSqlConnector().getSqlWorker().getStatsCommandGlobal(command.getCmd());
     }
 
     /**
@@ -47,7 +47,7 @@ public class StatsManager {
      * @return {@link Long} as Usage.
      */
     public static long getUsageForCommand(String command) {
-        return Main.sqlConnector.getSqlWorker().getStatsCommandGlobal(command);
+        return Main.getInstance().getSqlConnector().getSqlWorker().getStatsCommandGlobal(command);
     }
 
     /**
@@ -56,7 +56,7 @@ public class StatsManager {
      * @return {@link HashMap<String, Long>} with every Stat.
      */
     public static HashMap<String, Long> getCommandStats() {
-        return Main.sqlConnector.getSqlWorker().getStatsGlobal();
+        return Main.getInstance().getSqlConnector().getSqlWorker().getStatsGlobal();
     }
 
 }

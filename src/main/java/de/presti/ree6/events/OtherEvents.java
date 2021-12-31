@@ -32,23 +32,23 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         BotInfo.state = BotState.STARTED;
-        Main.instance.getLogger().info("Boot up finished!");
+        Main.getInstance().getLogger().info("Boot up finished!");
 
-        Main.commandManager.addSlashCommand();
+        Main.getInstance().getCommandManager().addSlashCommand();
 
-        Main.instance.createCheckerThread();
+        Main.getInstance().createCheckerThread();
 
         BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Guilds", Activity.ActivityType.WATCHING);
     }
 
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
-        Main.sqlConnector.getSqlWorker().createSettings(event.getGuild().getId());
+        Main.getInstance().getSqlConnector().getSqlWorker().createSettings(event.getGuild().getId());
     }
 
     @Override
     public void onGuildLeave(@Nonnull GuildLeaveEvent event) {
-        Main.sqlConnector.getSqlWorker().deleteAllData(event.getGuild().getId());
+        Main.getInstance().getSqlConnector().getSqlWorker().deleteAllData(event.getGuild().getId());
     }
 
     @Override
@@ -56,16 +56,16 @@ public class OtherEvents extends ListenerAdapter {
 
         AutoRoleHandler.handleMemberJoin(event.getGuild(), event.getMember());
 
-        if (!Main.sqlConnector.getSqlWorker().isWelcomeSetup(event.getGuild().getId()))
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId()))
             return;
 
         WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
         wmb.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         wmb.setUsername("Welcome!");
-        wmb.setContent((Main.sqlConnector.getSqlWorker().getMessage(event.getGuild().getId())).replaceAll("%user_name%", event.getMember().getUser().getName()).replaceAll("%user_mention%", event.getMember().getUser().getAsMention()).replaceAll("%guild_name%", event.getGuild().getName()));
+        wmb.setContent((Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())).replaceAll("%user_name%", event.getMember().getUser().getName()).replaceAll("%user_mention%", event.getMember().getUser().getAsMention()).replaceAll("%guild_name%", event.getGuild().getName()));
 
-        String[] info = Main.sqlConnector.getSqlWorker().getWelcomeWebhook(event.getGuild().getId());
+        String[] info = Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId());
 
         Webhook.sendWebhook(null, wmb.build(), Long.parseLong(info[0]), info[1]);
     }
@@ -89,7 +89,7 @@ public class OtherEvents extends ListenerAdapter {
                 addxp += RandomUtils.random.nextInt(9) + 1;
             }
 
-            Main.sqlConnector.getSqlWorker().addVoiceXP(event.getGuild().getId(), event.getMember().getUser().getId(), addxp);
+            Main.getInstance().getSqlConnector().getSqlWorker().addVoiceXP(event.getGuild().getId(), event.getMember().getUser().getId(), addxp);
 
             AutoRoleHandler.handleVoiceLevelReward(event.getGuild(), event.getMember());
 
@@ -125,21 +125,21 @@ public class OtherEvents extends ListenerAdapter {
 
             if (ChatProtector.hasChatProtector(event.getGuild().getId())) {
                 if (ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
-                    Main.commandManager.deleteMessage(event.getMessage(), null);
+                    Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
                     event.getChannel().sendMessage("You can't write that!").queue();
                     return;
                 }
             }
 
-            if (!Main.commandManager.perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getTextChannel(), null)) {
+            if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getTextChannel(), null)) {
 
                 if (!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(BotInfo.botInstance.getSelfUser())) {
-                    event.getChannel().sendMessage("Usage " + Main.sqlConnector.getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "help").queue();
+                    event.getChannel().sendMessage("Usage " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "help").queue();
                 }
 
                 if (!ArrayUtil.timeout.contains(event.getMember())) {
 
-                    Main.sqlConnector.getSqlWorker().addChatXP(event.getGuild().getId(), event.getAuthor().getId(), (long)RandomUtils.random.nextInt(25) + 1);
+                    Main.getInstance().getSqlConnector().getSqlWorker().addChatXP(event.getGuild().getId(), event.getAuthor().getId(), (long)RandomUtils.random.nextInt(25) + 1);
 
                     ArrayUtil.timeout.add(event.getMember());
 
@@ -174,10 +174,10 @@ public class OtherEvents extends ListenerAdapter {
         if (event.getOption("target") != null)
             messageBuilder.mentionUsers(event.getOption("target").getAsUser().getId());
 
-        messageBuilder.setContent(Main.sqlConnector.getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + event.getName() + " " + (event.getOption("target") != null ? event.getOption("target").getAsMember().getAsMention() : event.getOption("name") != null ? event.getOption("name").getAsString() : ""));
+        messageBuilder.setContent(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + event.getName() + " " + (event.getOption("target") != null ? event.getOption("target").getAsMember().getAsMention() : event.getOption("name") != null ? event.getOption("name").getAsString() : ""));
 
         Message message = messageBuilder.build();
 
-        Main.commandManager.perform(event.getMember(), message.getContentRaw(), message, event.getTextChannel(), event.getHook().setEphemeral(true));
+        Main.getInstance().getCommandManager().perform(event.getMember(), message.getContentRaw(), message, event.getTextChannel(), event.getHook().setEphemeral(true));
     }
 }

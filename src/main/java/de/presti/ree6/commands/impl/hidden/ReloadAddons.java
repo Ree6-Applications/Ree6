@@ -17,9 +17,9 @@ public class ReloadAddons extends Command {
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
         if(sender.getUser().getId().equalsIgnoreCase("321580743488831490")) {
-            Main.addonManager.reload();
+            Main.getInstance().getAddonManager().reload();
         } else {
-            sendMessage("The Command " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "reloadaddons couldn't be found!", 5, m, hook);
+            sendMessage("The Command " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "reloadaddons couldn't be found!", 5, m, hook);
         }
     }
 }

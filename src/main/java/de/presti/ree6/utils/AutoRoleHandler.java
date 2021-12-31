@@ -10,7 +10,7 @@ public class AutoRoleHandler {
 
     public static void handleMemberJoin(Guild g, Member m) {
 
-        if (!Main.sqlConnector.getSqlWorker().isAutoRoleSetup(g.getId()))
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isAutoRoleSetup(g.getId()))
             return;
 
         new Thread(() -> {
@@ -23,7 +23,7 @@ public class AutoRoleHandler {
                 return;
             }
 
-            for (String ids : Main.sqlConnector.getSqlWorker().getAutoRoles(g.getId())) {
+            for (String ids : Main.getInstance().getSqlConnector().getSqlWorker().getAutoRoles(g.getId())) {
                 if (!m.getRoles().contains(g.getRoleById(ids))) {
                     if (g.getSelfMember().canInteract(g.getRoleById(ids))) {
                         g.addRoleToMember(m, g.getRoleById(ids)).queue();
@@ -41,12 +41,12 @@ public class AutoRoleHandler {
 
     public static void handleVoiceLevelReward(Guild g, Member m) {
 
-        if (!Main.sqlConnector.getSqlWorker().isVoiceLevelRewardSetup(g.getId()))
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isVoiceLevelRewardSetup(g.getId()))
             return;
 
         new Thread(() -> {
 
-            long currentxp = Main.sqlConnector.getSqlWorker().getVoiceXP(g.getId(), m.getUser().getId());
+            long currentxp = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceXP(g.getId(), m.getUser().getId());
 
             int level = 1;
 
@@ -63,7 +63,7 @@ public class AutoRoleHandler {
                 return;
             }
 
-            for (Map.Entry<Integer, String> entry : Main.sqlConnector.getSqlWorker().getVoiceLevelRewards(g.getId()).entrySet()) {
+            for (Map.Entry<Integer, String> entry : Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelRewards(g.getId()).entrySet()) {
 
                 if (entry.getKey() <= level) {
                     if (!m.getRoles().contains(g.getRoleById(entry.getValue()))) {
@@ -84,12 +84,12 @@ public class AutoRoleHandler {
 
     public static void handleChatLevelReward(Guild g, Member m) {
 
-        if (!Main.sqlConnector.getSqlWorker().isChatLevelRewardSetup(g.getId()))
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isChatLevelRewardSetup(g.getId()))
             return;
 
         new Thread(() -> {
 
-            long currentxp = Main.sqlConnector.getSqlWorker().getChatXP(g.getId(), m.getUser().getId());
+            long currentxp = Main.getInstance().getSqlConnector().getSqlWorker().getChatXP(g.getId(), m.getUser().getId());
 
             int level = 1;
 
@@ -106,7 +106,7 @@ public class AutoRoleHandler {
                 return;
             }
 
-            for (Map.Entry<Integer, String> entry : Main.sqlConnector.getSqlWorker().getChatLevelRewards(g.getId()).entrySet()) {
+            for (Map.Entry<Integer, String> entry : Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelRewards(g.getId()).entrySet()) {
 
                 if (entry.getKey() <= level) {
                     if (!m.getRoles().contains(g.getRoleById(entry.getValue()))) {

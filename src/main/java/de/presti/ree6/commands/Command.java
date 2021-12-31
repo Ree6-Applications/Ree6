@@ -75,7 +75,7 @@ public abstract class Command {
     }
 
     public void sendMessage(String msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
-        Main.commandManager.sendMessage(msg, deleteSecond, m, hook);
+        Main.getInstance().getCommandManager().sendMessage(msg, deleteSecond, m, hook);
     }
 
 
@@ -84,11 +84,11 @@ public abstract class Command {
     }
 
     public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
-        Main.commandManager.sendMessage(msg, deleteSecond, m, hook);
+        Main.getInstance().getCommandManager().sendMessage(msg, deleteSecond, m, hook);
     }
 
     public static void deleteMessage(Message message, InteractionHook hook) {
-        Main.commandManager.deleteMessage(message, hook);
+        Main.getInstance().getCommandManager().deleteMessage(message, hook);
     }
 
     public boolean isAlias(String arg) {

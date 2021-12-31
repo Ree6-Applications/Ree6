@@ -21,7 +21,7 @@ public class YouTubeAPIHandler {
         try {
             createYouTube();
         } catch (Exception e) {
-            Main.instance.getLogger().error("Couldn't create a YouTube Instance", e);
+            Main.getInstance().getLogger().error("Couldn't create a YouTube Instance", e);
         }
         instance = this;
     }
@@ -36,7 +36,7 @@ public class YouTubeAPIHandler {
                     .list(Collections.singletonList("snippet"))
                     .setQ(search)
                     .setMaxResults(2L)
-                    .setKey(Main.config.getConfig().getString("youtube.api.key"))
+                    .setKey(Main.getInstance().getConfig().getConfig().getString("youtube.api.key"))
                     .execute()
                     .getItems();
 
@@ -54,7 +54,7 @@ public class YouTubeAPIHandler {
 
         }
         catch (Exception e) {
-            Main.instance.getLogger().error("Couldn't search on YouTube", e);
+            Main.getInstance().getLogger().error("Couldn't search on YouTube", e);
         }
 
         return null;
@@ -71,7 +71,7 @@ public class YouTubeAPIHandler {
                     .build();
         }
         catch (Exception e) {
-            Main.instance.getLogger().error("Couldn't create a YouTube Instance", e);
+            Main.getInstance().getLogger().error("Couldn't create a YouTube Instance", e);
         }
     }
 }

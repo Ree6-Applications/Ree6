@@ -49,7 +49,7 @@ public class Twitter extends Command {
 
                     HttpClient httpClient = HttpClientBuilder.create().build();
                     HttpGet request = new HttpGet("https://api.dagpi.xyz/image/tweet/?url=" + messageSelf.getMentionedMembers().get(0).getUser().getAvatarUrl() + "&username=" + name + "&text=" + text);
-                    request.setHeader("Authorization", Main.config.getConfig().getString("dagpi.apitoken"));
+                    request.setHeader("Authorization", Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"));
                     HttpResponse response = httpClient.execute(request);
 
                     try(OutputStream outputStream =
@@ -67,11 +67,11 @@ public class Twitter extends Command {
                     m.sendFile(new File("imageapi/twitter/" + sender.getUser().getId() + ".png")).queue(message -> new File("imageapi/twitter/" + sender.getUser().getId() + ".png").delete());
 
                 } catch (Exception ex) {
-                    sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.config.getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), m, hook);
+                    sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), m, hook);
                 }
             }
         } else {
-            sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitter @User Yourtexthere", 5, m, hook);
+            sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitter @User Yourtexthere", 5, m, hook);
         }
     }
 }

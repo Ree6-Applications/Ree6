@@ -92,7 +92,7 @@ public class MusicWorker {
                 em.setDescription("A Song with the URL ``" + trackUrl + "`` couldn't be found!");
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.commandManager.sendMessage(em, 5, channel, null);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, null);
             }
 
             @Override
@@ -105,7 +105,7 @@ public class MusicWorker {
                 em.setDescription("Error while playing: " + exception.getMessage());
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.commandManager.sendMessage(em, 5, channel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
             }
         });
     }
@@ -127,7 +127,7 @@ public class MusicWorker {
                 em.setDescription("The Song ``" + track.getInfo().title + "`` has been added to the Queue!");
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.commandManager.sendMessage(em, 5, channel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
 
                 play(channel.getGuild(), musicManager, track);
             }
@@ -149,7 +149,7 @@ public class MusicWorker {
                         + "`` has been added to the Queue! (The first Song of the Playlist: " + playlist.getName() + ")");
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.commandManager.sendMessage(em, 5, channel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
 
                 play(channel.getGuild(), musicManager, firstTrack);
 
@@ -172,7 +172,7 @@ public class MusicWorker {
                 em.setDescription("A Song with the URL ``" + trackUrl + "`` couldn't be found!");
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.commandManager.sendMessage(em, 5, channel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
             }
 
             @Override
@@ -185,7 +185,7 @@ public class MusicWorker {
                 em.setDescription("Error while playing: " + exception.getMessage());
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.commandManager.sendMessage(em, 5, channel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
             }
         });
     }
@@ -209,7 +209,7 @@ public class MusicWorker {
         em.setDescription("Skipping to the next Song!");
         em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-        Main.commandManager.sendMessage(em, 5, channel);
+        Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
 
         musicManager.scheduler.nextTrack(channel);
     }

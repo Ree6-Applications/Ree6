@@ -36,7 +36,7 @@ public class HornyJail extends Command {
 
                     HttpClient httpClient = HttpClientBuilder.create().build();
                     HttpGet request = new HttpGet("https://api.dagpi.xyz/image/jail/?url=" + messageSelf.getMentionedMembers().get(0).getUser().getAvatarUrl());
-                    request.setHeader("Authorization", Main.config.getConfig().getString("dagpi.apitoken"));
+                    request.setHeader("Authorization", Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"));
                     HttpResponse response = httpClient.execute(request);
 
                     try (OutputStream outputStream =
@@ -54,11 +54,11 @@ public class HornyJail extends Command {
                     m.sendFile(new File("imageapi/hornyjail/" + sender.getUser().getId() + ".png")).queue(message -> new File("imageapi/hornyjail/" + sender.getUser().getId() + ".png").delete());
 
                 } catch (Exception ex) {
-                    sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.config.getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), m, hook);
+                    sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), m, hook);
                 }
             }
         } else {
-            sendMessage("Use " + Main.sqlConnector.getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "hornyjail @User", 5, m, hook);
+            sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "hornyjail @User", 5, m, hook);
         }
     }
 }

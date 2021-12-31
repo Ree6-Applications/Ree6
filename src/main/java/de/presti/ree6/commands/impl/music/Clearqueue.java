@@ -33,6 +33,6 @@ public class Clearqueue extends Command {
         
         sendMessage(em, 5, m, hook);
 
-        Main.musicWorker.getGuildAudioPlayer(m.getGuild()).scheduler.clearQueue();
+        Main.getInstance().getMusicWorker().getGuildAudioPlayer(m.getGuild()).scheduler.clearQueue();
     }
 }

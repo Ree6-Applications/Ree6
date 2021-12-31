@@ -30,7 +30,7 @@ public class Lyrics extends Command {
         AudioPlayerSendHandler sendingHandler = (AudioPlayerSendHandler) m.getGuild().getAudioManager().getSendingHandler();
 
         if (sendingHandler.isMusicPlaying(m.getGuild())) {
-            GuildMusicManager gmm = Main.musicWorker.getGuildAudioPlayer(m.getGuild());
+            GuildMusicManager gmm = Main.getInstance().getMusicWorker().getGuildAudioPlayer(m.getGuild());
             String title = gmm.player.getPlayingTrack().getInfo().title.replace("(Official Music Video)", "").replace("(Official Video)", "")
                     .replace("(Music Video)", "").replace("(Official Music)", "").replace("(Official Lyrics)", "")
                     .replace("(Lyrics)", "").replace("(Audio)", "").replace("(Official Audio)", "");
