@@ -73,7 +73,7 @@ public class Main {
         instance.notifier.registerTwitchEventHandler();
 
         try {
-            BotUtil.createBot(BotVersion.DEV, "1.5.2");
+            BotUtil.createBot(BotVersion.DEV, "1.5.3");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {

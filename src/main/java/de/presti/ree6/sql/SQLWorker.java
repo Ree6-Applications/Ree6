@@ -2202,7 +2202,7 @@ public class SQLWorker {
         try (Statement statement = sqlConnector.getConnection().createStatement()) {
             statement.executeUpdate(sqlQuery);
         } catch (Exception ignore) {
-            Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server");
+            Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery +" )");
         }
     }
 

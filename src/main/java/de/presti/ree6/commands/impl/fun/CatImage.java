@@ -1,16 +1,16 @@
 package de.presti.ree6.commands.impl.fun;
 
-import de.presti.ree6.api.JSONApi;
+import com.google.gson.JsonArray;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
+import de.presti.ree6.utils.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import org.json.JSONArray;
 
 public class CatImage extends Command {
 
@@ -20,13 +20,13 @@ public class CatImage extends Command {
 
     @Override
     public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        JSONArray js = JSONApi.getData2(JSONApi.Requests.GET, "https://api.thecatapi.com/v1/images/search");
+        JsonArray js = RequestUtility.request(new RequestUtility.Request("https://api.thecatapi.com/v1/images/search")).getAsJsonArray();
 
         EmbedBuilder em = new EmbedBuilder();
 
         em.setTitle("Random Cat Image!");
         em.setColor(BotUtil.randomEmbedColor());
-        em.setImage(js.getJSONObject(0).getString("url"));
+        em.setImage(js.get(0).getAsJsonObject().get("url").getAsString());
         em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
 
         sendMessage(em, m, hook);
