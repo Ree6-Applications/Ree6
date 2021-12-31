@@ -1,12 +1,10 @@
 package de.presti.ree6.commands.impl.fun;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.main.Data;
-import de.presti.ree6.utils.RandomUtils;
 import de.presti.ree6.utils.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;

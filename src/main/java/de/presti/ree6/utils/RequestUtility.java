@@ -1,10 +1,10 @@
 package de.presti.ree6.utils;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.main.Main;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -75,7 +75,8 @@ public class RequestUtility {
                 jsonObject = new GsonBuilder().create().fromJson(httpResponse.body(), JsonElement.class);
             }
 
-        } catch (Exception ignore) {
+        } catch (Exception ex) {
+            Main.getInstance().getLogger().error("Couldn't send a Request!", ex);
         }
 
         return jsonObject;
