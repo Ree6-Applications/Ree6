@@ -6,7 +6,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>1.5.4</version>
+    <version>1.5.5</version>
     <build>
         <plugins>
             <plugin>

@@ -5,7 +5,7 @@
     <logger name="com.github.twitch4j" level="INFO"/>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs\latest.log</file>
+        <file>logs\\latest.log</file>
         <append>true</append>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
