@@ -113,7 +113,7 @@ public class OtherEvents extends ListenerAdapter {
 
         if (event.isFromGuild() && event.isFromType(ChannelType.TEXT)) {
             if (!ArrayUtil.messageIDwithMessage.containsKey(event.getMessageId())) {
-                ArrayUtil.messageIDwithMessage.put(event.getMessageId(), event.getMessage().getContentRaw());
+                ArrayUtil.messageIDwithMessage.put(event.getMessageId(), event.getMessage());
             }
 
             if (!ArrayUtil.messageIDwithUser.containsKey(event.getMessageId())) {

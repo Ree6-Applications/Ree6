@@ -3,6 +3,7 @@ package de.presti.ree6.utils;
 import de.presti.ree6.bot.BotInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class ArrayUtil {
     //TODO rework. Such as removing the botJoin HashMap.
 
     // HashMap used to store message contents and their IDs, to show the content when the message gets deleted.
-    public static final HashMap<String, String> messageIDwithMessage = new HashMap<>();
+    public static final HashMap<String, Message> messageIDwithMessage = new HashMap<>();
 
     // HashMap used to store user Ids that are associated with a message, to show the content when the message gets deleted.
     public static final HashMap<String, User> messageIDwithUser = new HashMap<>();
@@ -68,24 +69,13 @@ public class ArrayUtil {
     /**
      * Get the Message content, of a deleted Message, by the ID.
      * @param id the ID of the Message.
-     * @return the Content of the deleted Message.
+     * @return the {@link Message} Entity of the deleted Message.
      */
-    public static String getMessageFromMessageList(String id) {
+    public static Message getMessageFromMessageList(String id) {
         if (!messageIDwithMessage.containsKey(id)) {
-            return "Couldn't be found!";
+            return null;
         } else {
             return messageIDwithMessage.get(id);
         }
-    }
-
-    /**
-     * Methode used to update Messages in the HashMap.
-     * @param messageId the ID of the Message.
-     * @param contentRaw the current Content of the Message.
-     */
-    @Deprecated(since = "1.4.5", forRemoval = true)
-    public static void updateMessage(String messageId, String contentRaw) {
-        messageIDwithMessage.remove(messageId);
-        messageIDwithMessage.put(messageId, contentRaw);
     }
 }
