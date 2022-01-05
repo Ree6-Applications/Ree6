@@ -115,10 +115,10 @@ public class SQLConnector {
             // Create a Table based on the key.
             try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + entry.getKey() + " " + entry.getValue())) {
                 ps.executeUpdate();
-            } catch (SQLException ignore) {
+            } catch (SQLException exception) {
 
                 // Notify if there was an error.
-                Main.getInstance().getLogger().error("Couldn't create {0} Table.", entry.getKey());
+                Main.getInstance().getLogger().error("Couldn't create " + entry.getKey() +" Table.", exception);
             }
         }
 
