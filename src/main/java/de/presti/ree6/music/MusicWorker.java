@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.awt.*;
@@ -25,6 +26,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class MusicWorker {
+
+    // TODO rework.
 
     public final AudioPlayerManager playerManager;
     public final Map<Long, GuildMusicManager> musicManagers;
@@ -52,7 +55,7 @@ public class MusicWorker {
     }
 
 
-    public void loadAndPlaySilence(TextChannel channel, String trackUrl) {
+    public void loadAndPlaySilence(TextChannel channel, String trackUrl, InteractionHook interactionHook) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         musicManager.scheduler.thechannel = channel;
@@ -92,7 +95,7 @@ public class MusicWorker {
                 em.setDescription("A Song with the URL ``" + trackUrl + "`` couldn't be found!");
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, null);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
             }
 
             @Override
@@ -105,12 +108,12 @@ public class MusicWorker {
                 em.setDescription("Error while playing: " + exception.getMessage());
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
             }
         });
     }
 
-    public void loadAndPlay(final TextChannel channel, final String trackUrl) {
+    public void loadAndPlay(final TextChannel channel, final String trackUrl, InteractionHook interactionHook) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         musicManager.scheduler.thechannel = channel;
@@ -127,7 +130,7 @@ public class MusicWorker {
                 em.setDescription("The Song ``" + track.getInfo().title + "`` has been added to the Queue!");
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
 
                 play(channel.getGuild(), musicManager, track);
             }
@@ -149,7 +152,7 @@ public class MusicWorker {
                         + "`` has been added to the Queue! (The first Song of the Playlist: " + playlist.getName() + ")");
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
 
                 play(channel.getGuild(), musicManager, firstTrack);
 
@@ -172,7 +175,7 @@ public class MusicWorker {
                 em.setDescription("A Song with the URL ``" + trackUrl + "`` couldn't be found!");
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
             }
 
             @Override
@@ -185,7 +188,7 @@ public class MusicWorker {
                 em.setDescription("Error while playing: " + exception.getMessage());
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
             }
         });
     }
@@ -198,7 +201,7 @@ public class MusicWorker {
         musicManager.scheduler.queue(track);
     }
 
-    public void skipTrack(TextChannel channel) {
+    public void skipTrack(TextChannel channel, InteractionHook interactionHook) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         EmbedBuilder em = new EmbedBuilder();
@@ -209,7 +212,7 @@ public class MusicWorker {
         em.setDescription("Skipping to the next Song!");
         em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-        Main.getInstance().getCommandManager().sendMessage(em, 5, channel);
+        Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
 
         musicManager.scheduler.nextTrack(channel);
     }
@@ -220,13 +223,6 @@ public class MusicWorker {
                 connectionStatus == ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT ||
                 connectionStatus == ConnectionStatus.CONNECTING_AWAITING_READY ||
                 connectionStatus == ConnectionStatus.CONNECTING_AWAITING_ENDPOINT;
-    }
-
-    @SuppressWarnings("deprecation")
-    public void connectToFirstVoiceChannel(AudioManager audioManager) {
-        if (!audioManager.isConnected() && !isAttemptingToConnect(audioManager.getConnectionStatus())) {
-            audioManager.openAudioConnection(audioManager.getGuild().getVoiceChannels().get(0));
-        }
     }
 
     public void connectToMemberVoiceChannel(AudioManager audioManager, Member m) {

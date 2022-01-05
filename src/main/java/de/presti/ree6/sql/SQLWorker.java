@@ -11,15 +11,12 @@ import de.presti.ree6.utils.Setting;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.Map.Entry.comparingByValue;
 
 /**
  * A Class to actually handle the SQL data.
  * Used to provide Data from the Database and to save Data into the Database.
  */
-@SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve", "unused", "DuplicatedCode", "SingleStatementInBlock"})
+@SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve", "unused", "SingleStatementInBlock"})
 public class SQLWorker {
 
     // Instance of the SQL Connector to actually access the SQL Database.
@@ -2156,7 +2153,7 @@ public class SQLWorker {
 
         // Check if there is an entry.
         if (isStatsSaved(guildId, command)) {
-            querySQL("UPDATE GuildStats SET USES='" + (getStatsCommandGlobal(command) + 1) + "' GID='" + guildId + "' AND WHERE COMMAND='" + command + "'");
+            querySQL("UPDATE GuildStats SET USES='" + (getStatsCommand(guildId, command) + 1) + "' WHERE GID='" + guildId + "' AND COMMAND='" + command + "'");
         } else {
             querySQL("INSERT INTO GuildStats (GID, COMMAND, USES) VALUES ('" + guildId + "', '" + command + "', '1')");
         }

@@ -1,18 +1,12 @@
 package de.presti.ree6.commands;
 
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.LoggerImpl;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-
-import java.util.concurrent.TimeUnit;
 
 
 public abstract class Command {
@@ -29,6 +23,7 @@ public abstract class Command {
         desc = description;
         cat = category;
         this.commandData = new CommandData(command, description);
+        alias = new String[0];
     }
 
     public Command(String command, String description, Category category, String[] alias) {
@@ -44,6 +39,7 @@ public abstract class Command {
         desc = description;
         cat = category;
         this.commandData = commandData;
+        alias = new String[0];
     }
 
     public Command(String command, String description, Category category, String[] alias, CommandData commandData) {
@@ -54,7 +50,7 @@ public abstract class Command {
         this.commandData = commandData;
     }
 
-    public abstract void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook interactionHook);
+    public abstract void onPerform(CommandEvent event);
 
     public String[] getAlias() {
         return alias;

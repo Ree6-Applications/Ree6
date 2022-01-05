@@ -3,16 +3,14 @@ package de.presti.ree6.commands.impl.music;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.SpotifyAPIHandler;
 import de.presti.ree6.utils.YouTubeAPIHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -25,98 +23,139 @@ import java.util.ArrayList;
 public class Play extends Command {
 
     public Play() {
-        super("play", "Play a song!", Category.MUSIC, new String[] { "p", "music" }, new CommandData("play", "Play a song!").addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true)));
+        super("play", "Play a song!", Category.MUSIC, new String[]{"p", "music"}, new CommandData("play", "Play a song!").addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true)));
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
+    public void onPerform(CommandEvent commandEvent) {
 
-        if (sender.getVoiceState() == null || !sender.getVoiceState().inAudioChannel()) {
-            sendMessage("Please join a Channel!", m, hook);
+        if (commandEvent.getMember().getVoiceState() == null || !commandEvent.getMember().getVoiceState().inAudioChannel()) {
+            sendMessage("Please join a Channel!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             return;
         }
 
-        if (args.length < 1) {
-            EmbedBuilder em = new EmbedBuilder();
-            em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                    BotInfo.botInstance.getSelfUser().getAvatarUrl());
-            em.setTitle("Music Player!");
-            em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-            em.setColor(Color.GREEN);
-            em.setDescription("Usage: " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
-            em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
-            sendMessage(em, 5, m, hook);
-        } else {
-            if (Main.getInstance().getMusicWorker().isConnectedMember(sender)) {
-                ArrayUtil.botJoin.remove(m.getGuild());
-                ArrayUtil.botJoin.put(m.getGuild(), sender);
+        //TODO rework the join mechanic.
+
+        if (commandEvent.isSlashCommand()) {
+
+            OptionMapping valueOption = commandEvent.getSlashCommandEvent().getOption("name");
+
+            if (valueOption != null) {
+                if (Main.getInstance().getMusicWorker().isConnectedMember(commandEvent.getMember())) {
+                    ArrayUtil.botJoin.remove(commandEvent.getGuild());
+                    ArrayUtil.botJoin.put(commandEvent.getGuild(), commandEvent.getMember());
+                }
+
+                playSong(valueOption.getAsString(), commandEvent);
+            } else {
+                EmbedBuilder em = new EmbedBuilder();
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
+                        BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setTitle("Music Player!");
+                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setColor(Color.GREEN);
+                em.setDescription("Usage: " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
+                em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+                sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
 
-            if(isUrl(args[0])) {
-                boolean isspotify = false;
-                ArrayList<String> spotiftrackinfos = null;
+        } else {
 
-                if (args[0].contains("spotify")) {
-                    try {
-                        spotiftrackinfos = new SpotifyAPIHandler().convert(args[0]);
-                        isspotify = true;
-                    } catch (Exception ignored) {
-
-                    }
+            if (commandEvent.getArguments().length < 1) {
+                EmbedBuilder em = new EmbedBuilder();
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
+                        BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setTitle("Music Player!");
+                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setColor(Color.GREEN);
+                em.setDescription("Usage: " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
+                em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+                sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            } else {
+                if (Main.getInstance().getMusicWorker().isConnectedMember(commandEvent.getMember())) {
+                    ArrayUtil.botJoin.remove(commandEvent.getGuild());
+                    ArrayUtil.botJoin.put(commandEvent.getGuild(), commandEvent.getMember());
                 }
 
-                if (!isspotify) {
-                    Main.getInstance().getMusicWorker().loadAndPlay(m, args[0]);
-                } else {
-                    ArrayList<String> loadfailed = new ArrayList<>();
-                    boolean b = false;
-                    for (String search : spotiftrackinfos) {
-                        String ytresult = new YouTubeAPIHandler().searchYoutube(search);
+                // TODO recode.
+                playSong(commandEvent.getArguments()[0], commandEvent);
 
-                        if (ytresult == null) {
-                            loadfailed.add(search);
+            }
+        }
+
+    }
+
+    public void playSong(String value, CommandEvent commandEvent) {
+        if (isUrl(value)) {
+            boolean isspotify = false;
+            ArrayList<String> spotiftrackinfos = null;
+
+            if (value.contains("spotify")) {
+                try {
+                    spotiftrackinfos = new SpotifyAPIHandler().convert(value);
+                    isspotify = true;
+                } catch (Exception ignored) {
+
+                }
+            }
+
+            if (!isspotify) {
+                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), value, commandEvent.getInteractionHook());
+            } else {
+                ArrayList<String> loadFailed = new ArrayList<>();
+
+                boolean tempBoolean = false;
+
+                for (String search : spotiftrackinfos) {
+                    String result = new YouTubeAPIHandler().searchYoutube(search);
+
+                    if (result == null) {
+                        loadFailed.add(search);
+                    } else {
+                        if (!tempBoolean) {
+                            Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), result, commandEvent.getInteractionHook());
+                            tempBoolean = true;
                         } else {
-                            if (!b) {
-                                Main.getInstance().getMusicWorker().loadAndPlay(m, ytresult);
-                                b = true;
-                            } else {
-                                Main.getInstance().getMusicWorker().loadAndPlaySilence(m, ytresult);
-                            }
+                            Main.getInstance().getMusicWorker().loadAndPlaySilence(commandEvent.getTextChannel(), result, commandEvent.getInteractionHook());
                         }
                     }
-
-                    if (!loadfailed.isEmpty()) {
-                        EmbedBuilder em = new EmbedBuilder();
-                        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                        em.setTitle("Music Player!");
-                        em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                        em.setColor(Color.GREEN);
-                        em.setDescription("We couldn't find ``" + loadfailed.size() + "`` Songs!");
-                        em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
-                        sendMessage(em, 5, m, hook);
-                    }
-                }
-            } else {
-                StringBuilder search = new StringBuilder();
-
-                for(String i : args) {
-                    search.append(i).append(" ");
                 }
 
-                String ytResult = new YouTubeAPIHandler().searchYoutube(search.toString());
-
-                if(ytResult == null) {
+                if (!loadFailed.isEmpty()) {
                     EmbedBuilder em = new EmbedBuilder();
                     em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setTitle("Music Player!");
                     em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setColor(Color.GREEN);
-                    em.setDescription("A Song with the Name ``" + search + "`` couldn't be found!");
-                    em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
-                    sendMessage(em, 5, m, hook);
-                } else {
-                    Main.getInstance().getMusicWorker().loadAndPlay(m, ytResult);
+                    em.setDescription("We couldn't find ``" + loadFailed.size() + "`` Songs!");
+                    em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+                    sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 }
+            }
+        } else {
+            StringBuilder search = new StringBuilder();
+
+            if (commandEvent.isSlashCommand()) {
+                search.append(value);
+            } else {
+                for (String i : commandEvent.getArguments()) {
+                    search.append(i).append(" ");
+                }
+            }
+
+            String ytResult = new YouTubeAPIHandler().searchYoutube(search.toString());
+
+            if (ytResult == null) {
+                EmbedBuilder em = new EmbedBuilder();
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setTitle("Music Player!");
+                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setColor(Color.GREEN);
+                em.setDescription("A Song with the Name ``" + search + "`` couldn't be found!");
+                em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+                sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            } else {
+                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), ytResult, commandEvent.getInteractionHook());
             }
         }
     }
@@ -125,8 +164,7 @@ public class Play extends Command {
         try {
             new URL(input);
             return true;
-        }
-        catch (MalformedURLException e){
+        } catch (MalformedURLException e) {
             return false;
         }
     }

@@ -2,11 +2,8 @@ package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 
 public class Webinterface extends Command {
 
@@ -16,12 +13,13 @@ public class Webinterface extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        if (sender.hasPermission(Permission.ADMINISTRATOR) && sender.hasPermission(Permission.MANAGE_SERVER)) {
-            sendMessage("Please visit <https://cp.ree6.de>", 5, m, hook);
+    public void onPerform(CommandEvent commandEvent) {
+
+        if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR) && commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+            sendMessage("Please visit <https://cp.ree6.de>", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         } else {
-            sendMessage("You can't use this Command you need the following Permissions: Administrator and Manage Server", 5, m, hook);
+            sendMessage("You can't use this Command you need the following Permissions: Administrator and Manage Server", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
-        deleteMessage(messageSelf, hook);
+        deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 }

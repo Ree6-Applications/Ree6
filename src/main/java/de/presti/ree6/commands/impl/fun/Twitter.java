@@ -2,11 +2,10 @@ package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -18,60 +17,80 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class Twitter extends Command {
 
     public Twitter() {
-        super("twitter", "Let the Mentioned User Tweet something!", Category.FUN, new CommandData("twitter", "Let the Mentioned User Tweet something!").addOptions(new OptionData(OptionType.USER, "target", "The User that should tweet something!").setRequired(true)));
+        super("twitter", "Let the mentioned User Tweet something!", Category.FUN, new CommandData("twitter", "Let the mentioned User Tweet something!")
+                .addOptions(new OptionData(OptionType.USER, "target", "The User that should tweet something!").setRequired(true))
+                .addOptions(new OptionData(OptionType.STRING, "content", "The Tweet Content!").setRequired(true)));
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        if(args.length >= 2) {
-            if(messageSelf.getMentionedMembers().isEmpty()) {
-                sendMessage("No User given!", 5, m, hook);
+    public void onPerform(CommandEvent commandEvent) {
+
+        if (commandEvent.isSlashCommand()) {
+            OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
+            OptionMapping contentOption = commandEvent.getSlashCommandEvent().getOption("content");
+
+            if (targetOption != null && contentOption != null) {
+                sendTwitterTweet(targetOption.getAsMember(), contentOption.getAsString(), commandEvent);
             } else {
-                //noinspection CommentedOutCode
-                try {
-
-                    StringBuilder sb = new StringBuilder();
-
-                    for(int i = 1; i < args.length; i++) {
-                        sb.append(args[i]).append(" ");
-                    }
-
-                    String name = messageSelf.getMentionedMembers().get(0).getUser().getName().replaceAll("&", "%26").replaceAll(" ", "%20");
-                    String text = sb.toString().replaceAll("&","%26").replaceAll(" ", "%20");
-
-                    /*if(name.getBytes("UTF-8") != null) {
-                        name = "Little%20PogChamp";
-                    }*/
-
-                    HttpClient httpClient = HttpClientBuilder.create().build();
-                    HttpGet request = new HttpGet("https://api.dagpi.xyz/image/tweet/?url=" + messageSelf.getMentionedMembers().get(0).getUser().getAvatarUrl() + "&username=" + name + "&text=" + text);
-                    request.setHeader("Authorization", Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"));
-                    HttpResponse response = httpClient.execute(request);
-
-                    try(OutputStream outputStream =
-                            new FileOutputStream("imageapi/twitter/" + sender.getUser().getId() + ".png")) {
-
-                        int read = 0;
-                        byte[] bytes = new byte[1024];
-
-                        while ((read = response.getEntity().getContent().read(bytes)) != -1) {
-                            outputStream.write(bytes, 0, read);
-                        }
-
-                    }
-
-                    m.sendFile(new File("imageapi/twitter/" + sender.getUser().getId() + ".png")).queue(message -> new File("imageapi/twitter/" + sender.getUser().getId() + ".png").delete());
-
-                } catch (Exception ex) {
-                    sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), m, hook);
-                }
+                if (targetOption == null) sendMessage("No User was given to use for the Tweet!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                if (contentOption == null) sendMessage("No Tweet Content was given!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
+
         } else {
-            sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "twitter @User Yourtexthere", 5, m, hook);
+            if (commandEvent.getArguments().length >= 2) {
+                if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
+                    sendMessage("No User given!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                } else {
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    for (int i = 1; i < commandEvent.getArguments().length; i++) {
+                        stringBuilder.append(commandEvent.getArguments()[i]).append(" ");
+                    }
+
+                    sendTwitterTweet(commandEvent.getMessage().getMentionedMembers().get(0), stringBuilder.toString(), commandEvent);
+                }
+            } else {
+                sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitter @User Yourtexthere", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            }
         }
     }
+
+    public void sendTwitterTweet(Member member, String content, CommandEvent commandEvent) {
+        try {
+
+
+            String name = URLEncoder.encode(member.getUser().getName(), StandardCharsets.UTF_8);
+            String text = URLEncoder.encode(content, StandardCharsets.UTF_8);
+
+            HttpClient httpClient = HttpClientBuilder.create().build();
+            HttpGet request = new HttpGet("https://api.dagpi.xyz/image/tweet/?url=" + member.getUser().getAvatarUrl() + "&username=" + name + "&text=" + text);
+            request.setHeader("Authorization", Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"));
+            HttpResponse response = httpClient.execute(request);
+
+            try (OutputStream outputStream =
+                         new FileOutputStream("imageapi/twitter/" + commandEvent.getMember().getUser().getId() + ".png")) {
+
+                int read = 0;
+                byte[] bytes = new byte[1024];
+
+                while ((read = response.getEntity().getContent().read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, read);
+                }
+
+            }
+
+            commandEvent.getTextChannel().sendFile(new File("imageapi/twitter/" + commandEvent.getMember().getId() + ".png")).queue(message -> new File("imageapi/twitter/" + commandEvent.getMember().getId() + ".png").delete());
+
+            if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
+        } catch (Exception ex) {
+            sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        }
+    }
+
 }

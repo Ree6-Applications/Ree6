@@ -2,10 +2,7 @@ package de.presti.ree6.commands.impl.community;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import de.presti.ree6.commands.CommandEvent;
 
 public class TwitterNotifier extends Command {
 
@@ -14,6 +11,10 @@ public class TwitterNotifier extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook interactionHook) {
+    public void onPerform(CommandEvent commandEvent) {
+        if (commandEvent.isSlashCommand()) {
+            sendMessage("This Command doesn't support slash commands yet.", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            //TODO add return when finished adding the Twitter API.
+        }
     }
 }

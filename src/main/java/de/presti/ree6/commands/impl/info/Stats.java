@@ -5,15 +5,12 @@ import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.stats.StatsManager;
 import de.presti.ree6.utils.TimeUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.lang.management.ManagementFactory;
 import java.text.SimpleDateFormat;
@@ -27,11 +24,11 @@ public class Stats extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
+    public void onPerform(CommandEvent commandEvent) {
 
         long start = System.currentTimeMillis();
 
-        deleteMessage(messageSelf, hook);
+        deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
 
         EmbedBuilder em = new EmbedBuilder();
 
@@ -59,7 +56,7 @@ public class Stats extends Command {
         em.addField("**Response Time**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);
         em.addField("**System Date**" , new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
 
-        if (sender.getId().equalsIgnoreCase("321580743488831490")) {
+        if (commandEvent.getMember().getId().equalsIgnoreCase("321580743488831490")) {
             em.addField("**Server Stats:**", "", true);
             em.addField("**Ram Usage:**", String.format("%.2f GB / %.2f GB", ((Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory()) / 1e+9), (Runtime.getRuntime().maxMemory() / 1e+9)), true);
             em.addField("**CPU Usage:**", String.format("%.2f", ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getProcessCpuLoad() * 1000) + "%", true);
@@ -67,7 +64,7 @@ public class Stats extends Command {
 
         StringBuilder end = new StringBuilder();
 
-        for(Map.Entry<String, Long> sheesh : StatsManager.getCommandStats(m.getGuild().getId()).entrySet()) {
+        for(Map.Entry<String, Long> sheesh : StatsManager.getCommandStats(commandEvent.getGuild().getId()).entrySet()) {
             end.append(sheesh.getKey()).append(" - ").append(sheesh.getValue()).append("\n");
         }
 
@@ -81,9 +78,9 @@ public class Stats extends Command {
         em.addField("**Top Commands**", end.toString(), true);
         em.addField("**Overall Top Commands**", end2.toString(), true);
 
-        em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
+        em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-        sendMessage(em, m, hook);
+        sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
 
     }
 }

@@ -2,11 +2,7 @@ package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-
+import de.presti.ree6.commands.CommandEvent;
 public class Ping extends Command {
 
     public Ping() {
@@ -14,7 +10,7 @@ public class Ping extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        sendMessage("Pong", m, hook);
+    public void onPerform(CommandEvent commandEvent) {
+        sendMessage("Pong", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
     }
 }

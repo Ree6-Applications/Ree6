@@ -2,13 +2,12 @@ package de.presti.ree6.commands.impl.level;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -16,89 +15,63 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 public class Level extends Command {
 
     public Level() {
-        super("level", "Shows the Level of a User!", Category.LEVEL, new String[] {"lvl", "xp", "rank"}, new CommandData("level", "Shows the Level of a User!").addOptions(new OptionData(OptionType.USER, "target", "Show the Level of the User.")));
+        super("level", "Shows the Level of a User!", Category.LEVEL, new String[] {"lvl", "xp", "rank"}, new CommandData("level", "Shows the Level of a User!")
+                .addOptions(new OptionData(OptionType.USER, "target", "Show the Level of the User.")));
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-            if (args.length <= 1) {
-                if(messageSelf.getMentionedMembers().isEmpty()) {
+    public void onPerform(CommandEvent commandEvent) {
 
-                    EmbedBuilder em = new EmbedBuilder();
+        if (commandEvent.isSlashCommand()) {
+            OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
 
-                    em.setThumbnail(sender.getUser().getAvatarUrl());
-                    em.setTitle("Level");
-
-                    long chatxp = Main.getInstance().getSqlConnector().getSqlWorker().getChatXP(m.getGuild().getId(), sender.getUser().getId());
-
-                    int chatlevel = 1;
-
-                    while (chatxp > 1000) {
-                        chatxp -= 1000;
-                        chatlevel++;
-                    }
-
-                    long voicexp = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceXP(m.getGuild().getId(), sender.getUser().getId());
-
-                    int vclevel = 1;
-
-                    while (voicexp > 1000) {
-                        voicexp -= 1000;
-                        vclevel++;
-                    }
-
-                    em.addField("Chat Level", chatlevel + "",true);
-                    em.addBlankField(true);
-                    em.addField("Voice Level", vclevel + "",true);
-
-                    em.addField("Chat XP", getFormattedXP(Main.getInstance().getSqlConnector().getSqlWorker().getChatXP(m.getGuild().getId(), sender.getUser().getId())) + "", true);
-                    em.addBlankField(true);
-                    em.addField("Voice XP", getFormattedXP(Main.getInstance().getSqlConnector().getSqlWorker().getVoiceXP(m.getGuild().getId(), sender.getUser().getId())) + "",true);
-
-                    em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
-
-                    sendMessage(em, m, hook);
-
+            if (targetOption != null) {
+                sendLevel(targetOption.getAsMember(), commandEvent);
+            } else {
+                sendLevel(commandEvent.getMember(), commandEvent);
+            }
+        } else {
+            if (commandEvent.getArguments().length <= 1) {
+                if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
+                    sendLevel(commandEvent.getMember(), commandEvent);
                 } else {
-                    EmbedBuilder em = new EmbedBuilder();
-
-                    em.setThumbnail(messageSelf.getMentionedMembers().get(0).getUser().getAvatarUrl());
-                    em.setTitle("Level");
-
-                    long chatxp = Main.getInstance().getSqlConnector().getSqlWorker().getChatXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId());
-
-                    int chatlevel = 1;
-
-                    while (chatxp > 1000) {
-                        chatxp -= 1000;
-                        chatlevel++;
-                    }
-
-                    long voicexp = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId());
-
-                    int vclevel = 1;
-
-                    while (voicexp > 1000) {
-                        voicexp -= 1000;
-                        vclevel++;
-                    }
-
-                    em.addField("Chat Level", chatlevel + "",true);
-                    em.addBlankField(true);
-                    em.addField("Voice Level", vclevel + "",true);
-
-                    em.addField("Chat XP", getFormattedXP(Main.getInstance().getSqlConnector().getSqlWorker().getChatXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId())) + "", true);
-                    em.addBlankField(true);
-                    em.addField("Voice XP", getFormattedXP(Main.getInstance().getSqlConnector().getSqlWorker().getVoiceXP(m.getGuild().getId(), messageSelf.getMentionedMembers().get(0).getUser().getId())) + "",true);
-
-                    em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
-
-                    sendMessage(em, m, hook);
+                    sendLevel(commandEvent.getMessage().getMentionedMembers().get(0), commandEvent);
                 }
             } else {
-                sendMessage("Not enough Arguments!", m, hook);
-                sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "level or " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "level @user", m, hook);
+                sendMessage("Not enough Arguments!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "level or " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "level @user", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
+        }
+    }
+
+    public void sendLevel(Member member, CommandEvent commandEvent) {
+        EmbedBuilder em = new EmbedBuilder();
+
+        em.setThumbnail(member.getUser().getAvatarUrl());
+        em.setTitle("Level");
+
+        em.addField("Chat Level", getLevel(Main.getInstance().getSqlConnector().getSqlWorker().getChatXP(commandEvent.getGuild().getId(), member.getUser().getId())) + "", true);
+        em.addBlankField(true);
+        em.addField("Voice Level", getLevel(Main.getInstance().getSqlConnector().getSqlWorker().getVoiceXP(commandEvent.getGuild().getId(), member.getUser().getId())) + "", true);
+
+        em.addField("Chat XP", getFormattedXP(Main.getInstance().getSqlConnector().getSqlWorker().getChatXP(commandEvent.getGuild().getId(), member.getUser().getId())) + "", true);
+        em.addBlankField(true);
+        em.addField("Voice XP", getFormattedXP(Main.getInstance().getSqlConnector().getSqlWorker().getVoiceXP(commandEvent.getGuild().getId(), member.getUser().getId())) + "", true);
+
+        em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
+
+        sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+    }
+
+    public int getLevel(long xp) {
+        int level = 0;
+
+        while (xp >= 1000) {
+            xp -= 1000;
+            level++;
+        }
+
+        return level;
     }
 
     public String getFormattedXP(long xp) {

@@ -73,7 +73,7 @@ public class Main {
         instance.notifier.registerTwitchEventHandler();
 
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.5.5");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.5.6");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -156,11 +156,11 @@ public class Main {
                         AudioPlayerSendHandler playerSendHandler = (AudioPlayerSendHandler) g.getAudioManager().getSendingHandler();
 
                         if (g.getSelfMember().getVoiceState() != null && g.getSelfMember().getVoiceState().inAudioChannel() && (playerSendHandler == null || !playerSendHandler.isMusicPlaying(g))) {
-                            gmm.scheduler.stopAll();
+                            gmm.scheduler.stopAll(null);
                         }
 
                     } catch (Exception ex) {
-                        gmm.scheduler.stopAll();
+                        gmm.scheduler.stopAll(null);
                         getLogger().error("Error", ex);
                     }
                 }

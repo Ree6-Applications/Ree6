@@ -6,13 +6,10 @@ import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotState;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.bot.Webhook;
-import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.*;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
@@ -131,7 +128,7 @@ public class OtherEvents extends ListenerAdapter {
                 }
             }
 
-            if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getMessage().getContentRaw(), event.getMessage(), event.getTextChannel(), null)) {
+            if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getTextChannel(), null)) {
 
                 if (!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(BotInfo.botInstance.getSelfUser())) {
                     event.getChannel().sendMessage("Usage " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "help").queue();
@@ -167,17 +164,8 @@ public class OtherEvents extends ListenerAdapter {
         if (event.getGuild() == null)
             return;
 
-        event.deferReply(true).queue();
+        event.deferReply(true).complete();
 
-        MessageBuilder messageBuilder = new MessageBuilder();
-
-        if (event.getOption("target") != null)
-            messageBuilder.mentionUsers(event.getOption("target").getAsUser().getId());
-
-        messageBuilder.setContent(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + event.getName() + " " + (event.getOption("target") != null ? event.getOption("target").getAsMember().getAsMention() : event.getOption("name") != null ? event.getOption("name").getAsString() : ""));
-
-        Message message = messageBuilder.build();
-
-        Main.getInstance().getCommandManager().perform(event.getMember(), message.getContentRaw(), message, event.getTextChannel(), event.getHook().setEphemeral(true));
+        Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), null, null, event.getTextChannel(), event);
     }
 }

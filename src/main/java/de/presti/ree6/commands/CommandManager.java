@@ -5,6 +5,7 @@ import de.presti.ree6.commands.impl.community.*;
 import de.presti.ree6.commands.impl.fun.*;
 import de.presti.ree6.commands.impl.hidden.*;
 import de.presti.ree6.commands.impl.info.*;
+import de.presti.ree6.commands.impl.info.Invite;
 import de.presti.ree6.commands.impl.level.*;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
@@ -15,10 +16,8 @@ import de.presti.ree6.utils.*;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
@@ -122,66 +121,124 @@ public class CommandManager {
         }
     }
 
-    public boolean perform(Member sender, String msg, Message messageSelf, TextChannel m, InteractionHook interactionHook) {
+    public Command getCommandByName(String name) {
+        return getCommands().stream().filter(command -> command.getCmd().equalsIgnoreCase(name) ||
+                Arrays.stream(command.getAlias()).anyMatch(s -> s.equalsIgnoreCase(name))).findFirst().orElse(null);
 
-        if (!msg.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue()))
-            return false;
+    }
 
-        if (ArrayUtil.commandCooldown.contains(sender.getUser().getId())) {
-            sendMessage("You are on cooldown!", 5, m, interactionHook);
-            if (interactionHook == null) deleteMessage(messageSelf, null);
+    public boolean perform(Member member, Guild guild, String messageContent, Message message, TextChannel textChannel, SlashCommandEvent slashCommandEvent) {
 
-            return false;
-        }
 
-        msg = msg.substring(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue().length());
+        if (ArrayUtil.commandCooldown.contains(member.getUser().getId())) {
 
-        String[] oldArgs = msg.split(" ");
-
-        boolean blocked = false;
-
-        for (Command cmd : getCommands()) {
-            if (cmd.getCmd().equalsIgnoreCase(oldArgs[0]) || cmd.isAlias(oldArgs[0])) {
-
-                if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(m.getGuild().getId(), "command_" + cmd.getCmd().toLowerCase()).getBooleanValue() &&
-                        cmd.getCategory() != Category.HIDDEN) {
-                    sendMessage("This Command is blocked!", 5, m, interactionHook);
-                    blocked = true;
-                    break;
-                }
-
-                String[] args = Arrays.copyOfRange(oldArgs, 1, oldArgs.length);
-                cmd.onPerform(sender, messageSelf, args, m, interactionHook);
-                StatsManager.addStatsForCommand(cmd, m.getGuild().getId());
-
-                if (!sender.getUser().getId().equalsIgnoreCase("321580743488831490")) {
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(5000);
-                        } catch (InterruptedException ignore) {
-                            LoggerImpl.log("CommandManager", "Command cool-down Thread interrupted!");
-                            Thread.currentThread().interrupt();
-                        }
-
-                        ArrayUtil.commandCooldown.remove(sender.getUser().getId());
-
-                        Thread.currentThread().interrupt();
-
-                    }).start();
-                }
-
-                if (!ArrayUtil.commandCooldown.contains(sender.getUser().getId()) && !sender.getUser().getId().equalsIgnoreCase("321580743488831490")) {
-                    ArrayUtil.commandCooldown.add(sender.getUser().getId());
-                }
-                return true;
+            if (slashCommandEvent != null) {
+                sendMessage("You are on cooldown!", 5, textChannel, slashCommandEvent.getHook().setEphemeral(true));
+                deleteMessage(message, slashCommandEvent.getHook().setEphemeral(true));
+            } else {
+                sendMessage("You are on cooldown!", 5, textChannel, null);
+                deleteMessage(message, null);
             }
+
+            return false;
         }
 
-        if (!blocked) {
-            sendMessage("That Command couldn't be found", 5, m, interactionHook);
-        }
+        if (slashCommandEvent != null) {
 
-        return false;
+            Command command = getCommandByName(slashCommandEvent.getName());
+
+
+            if (command == null) {
+                sendMessage("That Command couldn't be found", 5, textChannel, slashCommandEvent.getHook().setEphemeral(true));
+                return false;
+            }
+
+            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getCmd().toLowerCase()).getBooleanValue() &&
+                    command.getCategory() != Category.HIDDEN) {
+                sendMessage("This Command is blocked!", 5, textChannel, slashCommandEvent.getHook().setEphemeral(true));
+                return false;
+            }
+
+            command.onPerform(new CommandEvent(member, guild, null, textChannel, null, slashCommandEvent));
+
+            StatsManager.addStatsForCommand(command, guild.getId());
+
+            if (!member.getUser().getId().equalsIgnoreCase("321580743488831490")) {
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ignore) {
+                        LoggerImpl.log("CommandManager", "Command cool-down Thread interrupted!");
+                        Thread.currentThread().interrupt();
+                    }
+
+                    ArrayUtil.commandCooldown.remove(member.getUser().getId());
+
+                    Thread.currentThread().interrupt();
+
+                }).start();
+            }
+
+            if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && !member.getUser().getId().equalsIgnoreCase("321580743488831490")) {
+                ArrayUtil.commandCooldown.add(member.getUser().getId());
+            }
+
+            return true;
+
+        } else {
+
+            if (message == null) {
+                sendMessage("There was an Error while executing the Command!", 5, textChannel, null);
+                return false;
+            }
+
+            if (!messageContent.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue()))
+                return false;
+
+            messageContent = messageContent.substring(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().length());
+
+            String[] arguments = messageContent.split(" ");
+
+            Command command = getCommandByName(arguments[0]);
+
+            if (command == null) {
+                sendMessage("That Command couldn't be found", 5, textChannel, null);
+                return false;
+            }
+
+            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getCmd().toLowerCase()).getBooleanValue() &&
+                    command.getCategory() != Category.HIDDEN) {
+                sendMessage("This Command is blocked!", 5, textChannel, null);
+                return false;
+            }
+
+            String[] argumentsParsed = Arrays.copyOfRange(arguments, 1, arguments.length);
+
+            command.onPerform(new CommandEvent(member, guild, message, textChannel, argumentsParsed, null));
+
+            StatsManager.addStatsForCommand(command, guild.getId());
+
+            if (!member.getUser().getId().equalsIgnoreCase("321580743488831490")) {
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ignore) {
+                        LoggerImpl.log("CommandManager", "Command cool-down Thread interrupted!");
+                        Thread.currentThread().interrupt();
+                    }
+
+                    ArrayUtil.commandCooldown.remove(member.getUser().getId());
+
+                    Thread.currentThread().interrupt();
+
+                }).start();
+            }
+
+            if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && !member.getUser().getId().equalsIgnoreCase("321580743488831490")) {
+                ArrayUtil.commandCooldown.add(member.getUser().getId());
+            }
+            return true;
+        }
     }
 
     @SuppressWarnings("unused")
@@ -262,7 +319,7 @@ public class CommandManager {
     }
 
     public void deleteMessage(Message message, InteractionHook hook) {
-        if(message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
+        if (message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
                 message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null && !message.isEphemeral() && hook == null) {
             try {
                 message.delete().queue();

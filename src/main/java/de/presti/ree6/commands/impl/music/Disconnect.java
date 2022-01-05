@@ -3,13 +3,10 @@ package de.presti.ree6.commands.impl.music;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.awt.*;
 
@@ -20,9 +17,10 @@ public class Disconnect extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        if (Main.getInstance().getMusicWorker().getGuildAudioPlayer(m.getGuild()) != null && Main.getInstance().getMusicWorker().getGuildAudioPlayer(m.getGuild()).getSendHandler().isMusicPlaying(m.getGuild())) {
-            Main.getInstance().getMusicWorker().getGuildAudioPlayer(m.getGuild()).scheduler.stopAll();
+    public void onPerform(CommandEvent commandEvent) {
+
+        if (Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()) != null && Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getSendHandler().isMusicPlaying(commandEvent.getGuild())) {
+            Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.stopAll(commandEvent.getInteractionHook());
         } else {
             EmbedBuilder em = new EmbedBuilder();
 
@@ -32,9 +30,9 @@ public class Disconnect extends Command {
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setColor(Color.RED);
             em.setDescription("Im not playing any Music!");
-            em.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
+            em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-            sendMessage(em, 5, m, hook);
+            sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
     }
 }

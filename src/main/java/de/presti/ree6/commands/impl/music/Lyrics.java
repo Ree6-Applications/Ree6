@@ -4,18 +4,13 @@ import com.jagrosh.jlyrics.LyricsClient;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.music.AudioPlayerSendHandler;
 import de.presti.ree6.music.GuildMusicManager;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-
 import java.awt.*;
-import java.util.concurrent.TimeUnit;
 
 public class Lyrics extends Command {
 
@@ -26,24 +21,25 @@ public class Lyrics extends Command {
     private final LyricsClient client = new LyricsClient();
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook interactionHook) {
-        AudioPlayerSendHandler sendingHandler = (AudioPlayerSendHandler) m.getGuild().getAudioManager().getSendingHandler();
+    public void onPerform(CommandEvent commandEvent) {
+        AudioPlayerSendHandler sendingHandler = (AudioPlayerSendHandler) commandEvent.getGuild().getAudioManager().getSendingHandler();
 
-        if (sendingHandler.isMusicPlaying(m.getGuild())) {
-            GuildMusicManager gmm = Main.getInstance().getMusicWorker().getGuildAudioPlayer(m.getGuild());
+        if (sendingHandler != null && sendingHandler.isMusicPlaying(commandEvent.getGuild())) {
+            GuildMusicManager gmm = Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild());
             String title = gmm.player.getPlayingTrack().getInfo().title.replace("(Official Music Video)", "").replace("(Official Video)", "")
                     .replace("(Music Video)", "").replace("(Official Music)", "").replace("(Official Lyrics)", "")
                     .replace("(Lyrics)", "").replace("(Audio)", "").replace("(Official Audio)", "");
 
+            // TODO recode.
+
             client.getLyrics(title).thenAccept(lyrics -> {
 
                 if (lyrics == null) {
-                    m.sendMessageEmbeds(new EmbedBuilder().setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
+                    sendMessage(new EmbedBuilder().setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                                     BotInfo.botInstance.getSelfUser().getAvatarUrl()).setTitle("Music Player!")
                             .setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl()).setColor(Color.RED)
                             .setDescription("Couldn't find the Lyrics for ``" + title + "``.")
-                            .setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl()).build())
-                            .delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+                            .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl()), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                     return;
                 }
 
@@ -52,7 +48,7 @@ public class Lyrics extends Command {
                         .setTitle(lyrics.getTitle(), lyrics.getURL());
                 if(lyrics.getContent().length()>15000)
                 {
-                    sendMessage("Lyrics for `" + title + "` found but likely not correct: " + lyrics.getURL(), m, null);
+                    sendMessage("Lyrics for `" + title + "` found but likely not correct: " + lyrics.getURL(), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 }
                 else if(lyrics.getContent().length()>2000)
                 {
@@ -66,15 +62,15 @@ public class Lyrics extends Command {
                             index = content.lastIndexOf(" ", 2000);
                         if(index == -1)
                             index = 2000;
-                        m.sendMessageEmbeds(eb.setDescription(content.substring(0, index).trim()).build()).queue();
+                        sendMessage(eb.setDescription(content.substring(0, index).trim()), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                         content = content.substring(index).trim();
                         eb.setAuthor(null).setTitle(null, null);
-                        eb.setFooter(m.getGuild().getName() + " - " + Data.ADVERTISEMENT, m.getGuild().getIconUrl());
+                        eb.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                     }
 
-                    m.sendMessageEmbeds(eb.setDescription(content).build()).queue();
+                    sendMessage(eb.setDescription(content), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 } else {
-                    m.sendMessageEmbeds(eb.setDescription(lyrics.getContent()).build()).queue();
+                    sendMessage(eb.setDescription(lyrics.getContent()), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 }
             });
         }

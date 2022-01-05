@@ -2,10 +2,7 @@ package de.presti.ree6.commands.impl.info;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import de.presti.ree6.commands.CommandEvent;
 
 public class Invite extends Command {
 
@@ -14,7 +11,7 @@ public class Invite extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        sendMessage("https://ree6.de/index.html#invite", m, hook);
+    public void onPerform(CommandEvent commandEvent) {
+        sendMessage("https://ree6.de/index.html#invite", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
     }
 }

@@ -11,6 +11,7 @@ import de.presti.ree6.utils.LoggerImpl;
 import de.presti.ree6.utils.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -237,7 +238,7 @@ public class TrackScheduler extends AudioEventAdapter {
         }
     }
 
-    public void stopAll() {
+    public void stopAll(InteractionHook interactionHook) {
         EmbedBuilder em = new EmbedBuilder();
         if (Main.getInstance().getMusicWorker().isConnected(thechannel.getGuild()) || getPlayer().getPlayingTrack() != null) {
 
@@ -264,6 +265,6 @@ public class TrackScheduler extends AudioEventAdapter {
         }
 
         em.setFooter(Data.ADVERTISEMENT);
-        Main.getInstance().getCommandManager().sendMessage(em, 5, thechannel);
+        Main.getInstance().getCommandManager().sendMessage(em, 5, thechannel, interactionHook);
     }
 }

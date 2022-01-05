@@ -2,13 +2,11 @@ package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.LoggerImpl;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -22,41 +20,66 @@ public class Clear extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        if(sender.hasPermission(Permission.ADMINISTRATOR)) {
-            if(args.length == 1) {
-                try {
-                    if (Integer.parseInt(args[0]) <= 100 && Integer.parseInt(args[0]) >= 2) {
-                        try {
-                            messageSelf.delete().queue();
-                            List<Message> messages = m.getHistory().retrievePast(Integer.parseInt(args[0])).complete();
-                            m.deleteMessages(messages).queue();
+    public void onPerform(CommandEvent commandEvent) {
 
-                            sendMessage(messages.size() + " Messages have been deleted!", 5, m, hook);
+        if(commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 
-                        } catch (Exception ex) {
-                            if(ex instanceof IllegalArgumentException) {
-                                sendMessage("" + (ex.toString().toLowerCase().startsWith("java.lang.illegalargumentexception: must provide at") ? "Given Paramater is below 100 and 2!" : "Error while deleting:" + ex.toString().split(":")[1]), 5, m, hook);
-                            } else {
-                                sendMessage("Error while deleting:" + ex.toString().split(":")[1], 5, m, hook);
-                            }
-                        }
+            if (commandEvent.isSlashCommand()) {
 
-                    } else {
-                        sendMessage(args[0] + " isn't between 2 and 100 !", 5, m, hook);
-                        sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "clear 1-100", 5, m, hook);
-                    }
-                } catch (Exception ex) {
-                    sendMessage(args[0] + " isn't a number!", 5, m, hook);
-                    sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, m, hook);
-                    LoggerImpl.log("Clear", ex.getMessage() + " - " + ex.getStackTrace()[0].toString());
+                OptionMapping amountOption = commandEvent.getSlashCommandEvent().getOption("amount");
+
+                if (amountOption != null) {
+                    deleteMessages(commandEvent, (int) amountOption.getAsDouble());
                 }
+
             } else {
-                sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, m, hook);
+                if (commandEvent.getArguments().length == 1) {
+                    try {
+                        int amount = Integer.parseInt(commandEvent.getArguments()[0]);
+                        if (amount <= 100 && amount>= 2) {
+
+                            deleteMessages(commandEvent, amount);
+
+                        } else {
+                            sendMessage(commandEvent.getArguments()[0] + " isn't between 2 and 100 !", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                            sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        }
+                    } catch (Exception ex) {
+                        sendMessage(commandEvent.getArguments()[0] + " isn't a number!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    }
+                } else {
+                    sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                }
             }
         } else {
-            sendMessage("You don't have the Permission for this Command!", 5, m, hook);
+            sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        }
+    }
+
+    public void deleteMessages(CommandEvent commandEvent, int amount) {
+
+        if (amount <= 100 && amount>= 2) {
+
+            try {
+                deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+                List<Message> messages = commandEvent.getTextChannel().getHistory().retrievePast(amount).complete();
+                commandEvent.getTextChannel().deleteMessages(messages).queue();
+
+                sendMessage(messages.size() + " Messages have been deleted!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+
+            } catch (Exception ex) {
+                if (ex instanceof IllegalArgumentException) {
+                    sendMessage("" + (ex.toString().toLowerCase().startsWith("java.lang.illegalargumentexception: must provide at") ? "Given Parameter is either above 100 or below 2!" : "Error while deleting:" + ex.toString().split(":")[1]), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                } else {
+                    sendMessage("Error while deleting:" + ex.toString().split(":")[1], 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                }
+            }
+
+        } else {
+            sendMessage(amount + " isn't between 2 and 100 !", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
     }
 }

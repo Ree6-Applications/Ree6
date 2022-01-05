@@ -7,13 +7,9 @@ import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.Webhook;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-
 import java.awt.*;
 
 public class Rainbow extends Command {
@@ -23,11 +19,16 @@ public class Rainbow extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        deleteMessage(messageSelf, hook);
+    public void onPerform(CommandEvent commandEvent) {
+        deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
 
-        if(!Main.getInstance().getSqlConnector().getSqlWorker().isRainbowSetup(m.getGuild().getId())) {
-            sendMessage("Rainbow Mate searcher isn't setuped!\nAsk a Admin to set it up with "+ Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "setup r6", 5, m, hook);
+        if (commandEvent.isSlashCommand()) {
+            sendMessage("This Command doesn't support slash commands yet.", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            return;
+        }
+
+        if(!Main.getInstance().getSqlConnector().getSqlWorker().isRainbowSetup(commandEvent.getGuild().getId())) {
+            sendMessage("Rainbow Mate searcher isn't setuped!\nAsk a Admin to set it up with "+ Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "setup r6", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             return;
         }
 
@@ -39,9 +40,9 @@ public class Rainbow extends Command {
         WebhookEmbedBuilder em = new WebhookEmbedBuilder();
 
         em.setColor(Color.GREEN.getRGB());
-        em.setThumbnailUrl(sender.getUser().getAvatarUrl());
-        em.setDescription(sender.getUser().getName() + " is searching for Rainbow Mates!");
-        em.addField(new WebhookEmbed.EmbedField(true, "**Discord Tag**", sender.getUser().getAsTag()));
+        em.setThumbnailUrl(commandEvent.getMember().getUser().getAvatarUrl());
+        em.setDescription(commandEvent.getMember().getUser().getName() + " is searching for Rainbow Mates!");
+        em.addField(new WebhookEmbed.EmbedField(true, "**Discord Tag**", commandEvent.getMember().getUser().getAsTag()));
 
         wm.addEmbeds(em.build());
 

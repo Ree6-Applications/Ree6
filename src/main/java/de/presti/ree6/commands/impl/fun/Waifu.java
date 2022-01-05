@@ -3,14 +3,11 @@ package de.presti.ree6.commands.impl.fun;
 import com.google.gson.JsonObject;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 
 public class Waifu extends Command {
 
@@ -19,7 +16,7 @@ public class Waifu extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
+    public void onPerform(CommandEvent commandEvent) {
         JsonObject jsonObject = RequestUtility.request(new RequestUtility.Request("https://api.dagpi.xyz/data/waifu", Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"))).getAsJsonObject();
 
         JsonObject jsonObject1 = jsonObject.get("series").getAsJsonObject();
@@ -32,8 +29,8 @@ public class Waifu extends Command {
         if((jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean())) {
             em.addField("**NSFW**", "", true);
         }
-        em.setFooter(sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
+        em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
-        sendMessage(em, m, hook);
+        sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
     }
 }

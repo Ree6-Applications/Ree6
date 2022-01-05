@@ -2,13 +2,11 @@ package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.Neko4JsAPI;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -22,31 +20,43 @@ public class Hug extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        if (args.length == 1) {
-            if(messageSelf.getMentionedMembers().isEmpty()) {
-                sendMessage("No User mentioned!", 5, m, hook);
-                sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "hug @user", 5, m, hook);
+    public void onPerform(CommandEvent commandEvent) {
+        if (commandEvent.isSlashCommand()) {
+            OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
+
+            if (targetOption != null) {
+                sendHug(targetOption.getAsMember(), commandEvent);
             } else {
-
-                User target = messageSelf.getMentionedMembers().get(0).getUser();
-
-                sendMessage(sender.getAsMention() + " hugged " + target.getAsMention(), m, hook);
-
-                ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
-
-                Image im = null;
-                try {
-                    im = ip.getRandomImage("hug").execute();
-                } catch (Exception ignored) {
-                }
-
-                sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), m, hook);
+                sendMessage("No User was given to Hug!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
         } else {
-            sendMessage("Not enough Arguments!", 5, m, hook);
-            sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "hug @user", 5, m, hook);
+            if (commandEvent.getArguments().length == 1) {
+                if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
+                    sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "hug @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                } else {
+                    sendHug(commandEvent.getMessage().getMentionedMembers().get(0), commandEvent);
+                }
+            } else {
+                sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "hug @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            }
         }
+    }
+
+    public void sendHug(Member member, CommandEvent commandEvent) {
+        sendMessage(commandEvent.getMember().getAsMention() + " hugged " + member.getAsMention(), commandEvent.getTextChannel(), null);
+
+        ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
+
+        Image im = null;
+        try {
+            im = ip.getRandomImage("hug").execute();
+        } catch (Exception ignored) {
+        }
+
+        sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), commandEvent.getTextChannel(), null);
+        if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
     }
 
 }

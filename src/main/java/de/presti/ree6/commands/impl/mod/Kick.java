@@ -2,12 +2,11 @@ package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -19,28 +18,50 @@ public class Kick extends Command {
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-        if (sender.hasPermission(Permission.ADMINISTRATOR)) {
-            if (args.length == 1) {
-                if(messageSelf.getMentionedMembers().isEmpty()) {
-                    sendMessage("No User mentioned!", 5, m, hook);
-                    sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "kick @user", 5, m, hook);
+    public void onPerform(CommandEvent commandEvent) {
+
+        if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+
+            if (commandEvent.isSlashCommand()) {
+
+                OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
+
+                if (targetOption != null) {
+                    kickMember(targetOption.getAsMember(), commandEvent);
                 } else {
-                    if (m.getGuild().getSelfMember().canInteract(messageSelf.getMentionedMembers().get(0)) && sender.canInteract(messageSelf.getMentionedMembers().get(0))) {
-                        sendMessage("User " + messageSelf.getMentionedMembers().get(0).getAsMention() + " has been kicked!", 5, m, hook);
-                        sender.getGuild().kick(messageSelf.getMentionedMembers().get(0)).queue();
-                    } else {
-                        sendMessage("Couldn't kick this User because he has a higher Rank then me!", 5, m, hook);
-                    }
+                    sendMessage("No User was given to Kick!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 }
+
             } else {
-                sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "kick @user", 5, m, hook);
+                if (commandEvent.getArguments().length == 1) {
+                    if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
+                        sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "kick @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    } else {
+                        kickMember(commandEvent.getMessage().getMentionedMembers().get(0), commandEvent);
+                    }
+                } else {
+                    sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "kick @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                }
             }
         } else {
-            sendMessage("You dont have the Permission for this Command!", 5, m, hook);
+            sendMessage("You dont have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
 
-        deleteMessage(messageSelf, hook);
+        deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+    }
+
+    public void kickMember(Member member, CommandEvent commandEvent) {
+        if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member) ) {
+            sendMessage("User " + member.getAsMention() + " has been kicked!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            commandEvent.getGuild().kick(member).queue();
+        } else {
+            if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
+                sendMessage("Couldn't kick this User because he has the same or a higher Rank then you!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            } else {
+                sendMessage("Couldn't kick this User because he has a higher Rank then me!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            }
+        }
     }
 }

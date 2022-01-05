@@ -2,14 +2,12 @@ package de.presti.ree6.commands.impl.info;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -19,34 +17,49 @@ import java.time.format.DateTimeFormatter;
 public class Info extends Command {
 
     public Info() {
-        super("info", "Shows you Informations about a User.", Category.INFO, new CommandData("info", "Shows you Informations about a User.").addOptions(new OptionData(OptionType.USER, "target", "Shows you Informations about the User.").setRequired(true)));
+        super("info", "Shows you Information about a User.", Category.INFO, new CommandData("info", "Shows you Information about a User.")
+                .addOptions(new OptionData(OptionType.USER, "target", "The User whose profile Information you want.").setRequired(true)));
     }
 
     @Override
-    public void onPerform(Member sender, Message messageSelf, String[] args, TextChannel m, InteractionHook hook) {
-            if (args.length == 1) {
-                if(messageSelf.getMentionedMembers().isEmpty()) {
-                    sendMessage("No User mentioned!", 5, m, hook);
-                    sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, m, hook);
+    public void onPerform(CommandEvent commandEvent) {
+
+        if (commandEvent.isSlashCommand()) {
+            OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
+
+            if (targetOption != null) {
+                sendInfo(targetOption.getAsMember(), commandEvent);
+            } else {
+                sendMessage("No User was given to get the Data from!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            }
+
+        } else {
+            if (commandEvent.getArguments().length == 1) {
+                if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
+                    sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 } else {
-                    EmbedBuilder em = new EmbedBuilder();
-
-                    User target = messageSelf.getMentionedMembers().get(0).getUser();
-
-                    em.setTitle(target.getAsTag(), target.getAvatarUrl());
-                    em.setThumbnail(target.getAvatarUrl());
-
-                    em.addField("**UserTag**", target.getAsTag(), true);
-                    em.addField("**Created Date**", target.getTimeCreated().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
-                    em.addField("**Joined Date**", m.getGuild().getMember(target).getTimeJoined().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
-
-                    em.setFooter("Requested by " + sender.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, sender.getUser().getAvatarUrl());
-
-                    sendMessage(em, m, hook);
+                    sendInfo(commandEvent.getMessage().getMentionedMembers().get(0), commandEvent);
                 }
             } else {
-                sendMessage("Not enough Arguments!", 5, m, hook);
-                sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(sender.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, m, hook);
+                sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
+        }
+    }
+
+    public void sendInfo(Member member, CommandEvent commandEvent) {
+        EmbedBuilder em = new EmbedBuilder();
+
+        em.setTitle(member.getUser().getAsTag(), member.getUser().getAvatarUrl());
+        em.setThumbnail(member.getUser().getAvatarUrl());
+
+        em.addField("**UserTag**", member.getUser().getAsTag(), true);
+        em.addField("**Created Date**", member.getTimeCreated().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
+        em.addField("**Joined Date**", member.getTimeJoined().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
+
+        em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
+
+        sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
     }
 }
