@@ -62,7 +62,7 @@ public class LoggerQueue {
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(loggerMessage.getVoiceData().getMember().getUser().getAsTag(),
                             loggerMessage.getVoiceData().getMember().getUser().getAvatarUrl(), null));
                     webhookEmbedBuilder.setDescription(loggerMessage.getVoiceData().getMember().getAsMention() + " **rejoined the Voice-channel** ``" +
-                            loggerMessage.getVoiceData().getCurrentVoiceChannel().getName() + "``");
+                            loggerMessage.getVoiceData().getCurrentVoiceChannel().getAsMention() + "``");
 
                     modified = true;
                 }
@@ -84,7 +84,7 @@ public class LoggerQueue {
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(loggerMessage.getVoiceData().getMember().getUser().getAsTag(),
                             loggerMessage.getVoiceData().getMember().getUser().getAvatarUrl(), null));
                     webhookEmbedBuilder.setDescription(loggerMessage.getVoiceData().getMember().getUser().getAsMention() + " **moved through many Voice-channels and is now in** ``"
-                            + loggerMessage.getVoiceData().getCurrentVoiceChannel().getName() + "``");
+                            + loggerMessage.getVoiceData().getCurrentVoiceChannel().getAsMention() + "``");
 
                     modified = true;
                 }
@@ -105,7 +105,7 @@ public class LoggerQueue {
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(loggerMessage.getVoiceData().getMember().getUser().getAsTag(),
                             loggerMessage.getVoiceData().getMember().getUser().getAvatarUrl(), null));
                     webhookEmbedBuilder.setDescription(loggerMessage.getVoiceData().getMember().getUser().getAsMention() + " **joined and left the Voice-channel** ``" +
-                            loggerMessage.getVoiceData().getPreviousVoiceChannel().getName() + "``");
+                            loggerMessage.getVoiceData().getPreviousVoiceChannel().getAsMention() + "``");
 
                     modified = true;
                 }

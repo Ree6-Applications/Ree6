@@ -8,17 +8,16 @@ import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.helix.domain.User;
 import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.bot.BotVersion;
 import de.presti.ree6.bot.Webhook;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
-import twitter4j.Twitter;
-import twitter4j.TwitterFactory;
+import twitter4j.*;
+import twitter4j.conf.ConfigurationBuilder;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Utility class used for Event Notifiers. Such as Twitch Livestream, YouTube Upload or Twitter Tweet.
@@ -31,7 +30,11 @@ public class Notifier {
     // Instance of the Twitter API Client.
     private final Twitter twitterClient;
 
+    // Local list of registered Twitch Channels.
     private final ArrayList<String> registeredTwitchChannels = new ArrayList<>();
+
+    // Local list of registered Twitter Users.
+    private final Map<String, TwitterStream> registeredTwitterUsers = new HashMap<>();
 
     /**
      * Constructor used to created instance of the API Clients.
@@ -40,7 +43,16 @@ public class Notifier {
         twitchClient = TwitchClientBuilder.builder().withEnableHelix(true).withClientId(Main.getInstance().getConfig().cfg.getString("twitch.client.id"))
                 .withClientSecret(Main.getInstance().getConfig().cfg.getString("twitch.client.secret")).build();
 
-        twitterClient = TwitterFactory.getSingleton();
+        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+
+        if (BotInfo.version == BotVersion.DEV) configurationBuilder.setDebugEnabled(true);
+
+        configurationBuilder.setOAuthConsumerKey("QWQGGGN7ZLnSuKWQ4rnE7hoct");
+        configurationBuilder.setOAuthConsumerSecret("iLiqAjoEUFBVMzgweM2Nxzb28iBUykaDKPJlwl1ge6m4nfm818");
+        configurationBuilder.setOAuthAccessToken("1058695568896282624-7PtwoaxikthfHGxgJsj8glqvXEqvh7");
+        configurationBuilder.setOAuthAccessTokenSecret("RYrvv1u9fGybki2kpDaIHIZoLRIylqTWA0KdCo7NiARR6");
+
+        twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
     }
 
     //region Twitch
@@ -74,10 +86,10 @@ public class Notifier {
                 }
 
                 // Set rest of the Information.
-                webhookEmbedBuilder.setDescription(channelGoLiveEvent.getStream().getUserName() +" is now Live on Twitch! Come and join the Stream <https://twitch.tv/" + channelGoLiveEvent.getChannel().getName() + "> !");
-                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true,"**Title**", channelGoLiveEvent.getStream().getTitle()));
-                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true,"**Game**", channelGoLiveEvent.getStream().getGameName()));
-                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true,"**Viewer**", "" + channelGoLiveEvent.getStream().getViewerCount()));
+                webhookEmbedBuilder.setDescription(channelGoLiveEvent.getStream().getUserName() + " is now Live on Twitch! Come and join the Stream <https://twitch.tv/" + channelGoLiveEvent.getChannel().getName() + "> !");
+                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", channelGoLiveEvent.getStream().getTitle()));
+                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Game**", channelGoLiveEvent.getStream().getGameName()));
+                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Viewer**", "" + channelGoLiveEvent.getStream().getViewerCount()));
                 webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotInfo.botInstance.getSelfUser().getAvatarUrl()));
                 webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
 
@@ -136,11 +148,122 @@ public class Notifier {
 
     /**
      * Check if a Twitch Channel is already being checked.
+     *
      * @param twitchChannel the Name of the Twitch Channel.
-     * @return true, if there is an Event for the Channel | false, if there isn't a Event for the Channel.
+     * @return true, if there is an Event for the Channel | false, if there isn't an Event for the Channel.
      */
     public boolean isTwitchRegistered(String twitchChannel) {
         return registeredTwitchChannels.contains(twitchChannel.toLowerCase());
+    }
+
+    //endregion
+
+    //region Twitter
+
+    /**
+     * Used to Register a Tweet Event for the given Twitter User
+     *
+     * @param twitterUser the Name of the Twitter User.
+     */
+    public void registerTwitterChannel(String twitterUser) {
+        if (getTwitterClient() == null) return;
+
+        twitterUser = twitterUser.toLowerCase();
+
+        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+
+        if (BotInfo.version == BotVersion.DEV) configurationBuilder.setDebugEnabled(true);
+
+        configurationBuilder.setOAuthConsumerKey("QWQGGGN7ZLnSuKWQ4rnE7hoct");
+        configurationBuilder.setOAuthConsumerSecret("iLiqAjoEUFBVMzgweM2Nxzb28iBUykaDKPJlwl1ge6m4nfm818");
+        configurationBuilder.setOAuthAccessToken("1058695568896282624-7PtwoaxikthfHGxgJsj8glqvXEqvh7");
+        configurationBuilder.setOAuthAccessTokenSecret("RYrvv1u9fGybki2kpDaIHIZoLRIylqTWA0KdCo7NiARR6");
+
+        TwitterStream twitterStream = new TwitterStreamFactory(configurationBuilder.build()).getInstance().user(twitterUser).addListener(new StatusListener() {
+            @Override
+            public void onStatus(Status status) {
+                if (!status.getUser().isProtected()) {
+
+                    WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+
+                    webhookMessageBuilder.setUsername("Ree6");
+                    webhookMessageBuilder.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+
+                    WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                    webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(status.getUser().getName(), null));
+                    webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitter Notifier", BotInfo.botInstance.getSelfUser().getAvatarUrl(), null));
+
+                    webhookEmbedBuilder.setDescription(status.getText());
+                    webhookEmbedBuilder.setThumbnailUrl(status.getUser().getProfileImageURL());
+
+                    webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotInfo.botInstance.getSelfUser().getAvatarUrl()));
+                    webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
+
+                    webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+                    Webhook.sendWebhook(null, webhookMessageBuilder.build(), 929416074712219648L, "WeNrLzLD0Oh6ptLNDBRiWt-WP3aU3EC_5_LL7jrKCD0etyHDu4zP48xtLUwOg0FUjuI0");
+
+                } else {
+
+                }
+            }
+
+            @Override
+            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+
+            }
+
+            @Override
+            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+
+            }
+
+            @Override
+            public void onScrubGeo(long userId, long upToStatusId) {
+
+            }
+
+            @Override
+            public void onStallWarning(StallWarning warning) {
+
+            }
+
+            @Override
+            public void onException(Exception ex) {
+
+            }
+        });
+
+        if (!isTwitterRegistered(twitterUser)) registeredTwitterUsers.put(twitterUser, twitterStream);
+    }
+
+    /**
+     * Used to Unregister a Tweet Event for the given Twitter User
+     *
+     * @param twitterUser the Name of the Twitter User.
+     */
+    public void unregisterTwitterUser(String twitterUser) {
+        if (getTwitterClient() == null) return;
+
+        twitterUser = twitterUser.toLowerCase();
+
+        if (isTwitterRegistered(twitterUser)) {
+
+            registeredTwitterUsers.get(twitterUser).cleanUp();
+
+            registeredTwitterUsers.remove(twitterUser);
+        }
+    }
+
+    /**
+     * Check if a Twitter User is already being checked.
+     *
+     * @param twitterUser the Name of the Twitter User.
+     * @return true, if there is an Event for the User | false, if there isn't an Event for the User.
+     */
+    public boolean isTwitterRegistered(String twitterUser) {
+        return registeredTwitterUsers.containsKey(twitterUser.toLowerCase());
     }
 
     //endregion

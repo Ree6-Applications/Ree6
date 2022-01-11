@@ -91,6 +91,7 @@ public class CommandManager {
         //Community
         addCommand(new Rainbow());
         addCommand(new TwitchNotifier());
+        addCommand(new TwitterNotifier());
 
         //NSFW
         addCommand(new NSFW());
