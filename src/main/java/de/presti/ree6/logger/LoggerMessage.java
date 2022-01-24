@@ -33,6 +33,9 @@ public class LoggerMessage {
     // MemberData from Webhook Logs.
     private LoggerMemberData memberData;
 
+    // UserData from Webhook Logs.
+    private LoggerUserData userData;
+
     // LoggerTyp, to know what kind of Log this Message is.
     private LogTyp type;
 
@@ -69,6 +72,25 @@ public class LoggerMessage {
         this.authCode = auth;
         this.webhookMessage = webhookMessage;
         this.memberData = memberData;
+        this.type = type;
+    }
+
+    /**
+     * Constructor for a Log-Message which should be used to handle UserData.
+     *
+     * @param g              Guild of the Log-Message.
+     * @param c              Webhook ID.
+     * @param auth           Webhook Auth-Code.
+     * @param webhookMessage WebhookMessage itself.
+     * @param userData     Provided UserData used for the Log.
+     * @param type           LogTyp.
+     */
+    public LoggerMessage(Guild g, long c, String auth, WebhookMessage webhookMessage, LoggerUserData userData, LogTyp type) {
+        this.guild = g;
+        this.id = c;
+        this.authCode = auth;
+        this.webhookMessage = webhookMessage;
+        this.userData = userData;
         this.type = type;
     }
 
@@ -274,6 +296,24 @@ public class LoggerMessage {
      */
     public void setMemberData(LoggerMemberData memberData) {
         this.memberData = memberData;
+    }
+
+    /**
+     * The used UserData.
+     *
+     * @return the UserData.
+     */
+    public LoggerUserData getUserData() {
+        return userData;
+    }
+
+    /**
+     * Change the used UserData.
+     *
+     * @param userData the new UserData.
+     */
+    public void setUserData(LoggerUserData userData) {
+        this.userData = userData;
     }
 
     // The used Log-Types.

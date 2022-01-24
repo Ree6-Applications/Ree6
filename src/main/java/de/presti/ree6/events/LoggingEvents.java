@@ -6,10 +6,7 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.invitelogger.InviteContainer;
 import de.presti.ree6.invitelogger.InviteContainerManager;
-import de.presti.ree6.logger.LoggerMemberData;
-import de.presti.ree6.logger.LoggerMessage;
-import de.presti.ree6.logger.LoggerRoleData;
-import de.presti.ree6.logger.LoggerVoiceData;
+import de.presti.ree6.logger.*;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
@@ -74,7 +71,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setDescription(event.getUser().getAsMention() + " **joined the Server.**\n:timer: Age of the Account:\n``" + event.getUser().getTimeCreated().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) + "``\n**" + TimeUtil.getFormattedDate(TimeUtil.getDifferenceBetween(event.getUser().getTimeCreated().toLocalDateTime(), LocalDateTime.now())) + "**");
 
             wm.addEmbeds(we.build());
-            Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.SERVER_JOIN));
+            Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerUserData(event.getUser()), LoggerMessage.LogTyp.SERVER_JOIN));
         }
 
         if (event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER) && Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_invite").getBooleanValue()) {
@@ -121,7 +118,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.SERVER_LEAVE));
+        Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerUserData(event.getUser()), LoggerMessage.LogTyp.SERVER_LEAVE));
     }
 
     @Override
@@ -148,7 +145,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.USER_BAN));
+        Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerUserData(event.getUser()), LoggerMessage.LogTyp.USER_BAN));
     }
 
     @Override
@@ -228,7 +225,7 @@ public class LoggingEvents extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
-        we.setDescription(event.getEntity().getUser().getAsMention() + " **joined the Voicechannel** ``" + event.getChannelJoined().getAsMention() + "``");
+        we.setDescription(event.getEntity().getUser().getAsMention() + " **joined the Voicechannel** " + event.getChannelJoined().getAsMention());
 
         wm.addEmbeds(we.build());
 
@@ -253,7 +250,7 @@ public class LoggingEvents extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
-        we.setDescription(event.getEntity().getUser().getAsMention() + " **switched the Voicechannel from** ``" + event.getChannelLeft().getAsMention() + "`` **to** ``" + event.getChannelJoined().getAsMention() + "``**.**");
+        we.setDescription(event.getEntity().getUser().getAsMention() + " **switched the Voicechannel from** " + event.getChannelLeft().getAsMention() + " **to** " + event.getChannelJoined().getAsMention() + "**.**");
 
         wm.addEmbeds(we.build());
 
@@ -278,7 +275,7 @@ public class LoggingEvents extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
-        we.setDescription(event.getEntity().getUser().getAsMention() + " **left the Voicechannel ** ``" + event.getChannelLeft().getAsMention() + "``");
+        we.setDescription(event.getEntity().getUser().getAsMention() + " **left the Voicechannel ** " + event.getChannelLeft().getAsMention());
 
         wm.addEmbeds(we.build());
 
@@ -371,10 +368,10 @@ public class LoggingEvents extends ListenerAdapter {
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
-            we.setDescription(":house: **VoiceChannel updated:** ``" + event.getChannel().getAsMention() + "``");
+            we.setDescription(":house: **VoiceChannel updated:** " + event.getChannel().getAsMention());
 
             if (event instanceof ChannelCreateEvent) {
-                we.setDescription(":house: **VoiceChannel created:** ``" + event.getChannel().getAsMention() + "``");
+                we.setDescription(":house: **VoiceChannel created:** " + event.getChannel().getAsMention());
             } else if (event instanceof ChannelDeleteEvent) {
                 we.setDescription(":house: **VoiceChannel deleted:** ``" + event.getChannel().getName() + "``");
             } else if (event instanceof ChannelUpdateNameEvent) {
@@ -420,10 +417,10 @@ public class LoggingEvents extends ListenerAdapter {
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
-            we.setDescription(":house: **TextChannel updated:** ``" + event.getChannel().getAsMention() + "``");
+            we.setDescription(":house: **TextChannel updated:** " + event.getChannel().getAsMention());
 
             if (event instanceof ChannelCreateEvent) {
-                we.setDescription(":house: **TextChannel created:** ``" + event.getChannel().getAsMention() + "``");
+                we.setDescription(":house: **TextChannel created:** " + event.getChannel().getAsMention());
             } else if (event instanceof ChannelDeleteEvent) {
                 we.setDescription(":house: **TextChannel deleted:** ``" + event.getChannel().getName() + "``");
             } else if (event instanceof ChannelUpdateNameEvent) {

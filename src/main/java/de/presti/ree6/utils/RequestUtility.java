@@ -27,46 +27,47 @@ public class RequestUtility {
      */
     public static JsonElement request(Request request) {
 
-        HttpRequest httpRequest = null;
+        HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri())
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build)
+                .header("Content-Type", "application/json-rpc");
 
         if (request.getMethode() == Methode.GET) {
             if (request.bearerAuth != null) {
-                httpRequest = HttpRequest.newBuilder().uri(request.getUri()).GET()
-                        .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build)
-                        .header("Content-Type", "application/json-rpc")
-                        .header("Authorization", request.getBearerAuth()).build();
+                httpRequestBuilder = httpRequestBuilder.header("Authorization", request.getBearerAuth()).GET();
             } else {
-                httpRequest = HttpRequest.newBuilder().uri(request.getUri()).GET()
-                        .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build)
-                        .header("Content-Type", "application/json-rpc").build();
+                httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri()).GET();
             }
         } else if (request.getMethode() == Methode.POST) {
             if (request.bearerAuth != null) {
-                httpRequest = HttpRequest.newBuilder().uri(request.getUri()).POST(request.bodyPublisher)
-                        .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build)
-                        .header("Content-Type", "application/json-rpc")
-                        .header("Authorization", request.getBearerAuth()).build();
+                httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri())
+                        .header("Authorization", request.getBearerAuth()).POST(request.bodyPublisher);
             } else {
-                httpRequest = HttpRequest.newBuilder().uri(request.getUri()).POST(request.bodyPublisher)
-                        .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build)
-                        .header("Content-Type", "application/json-rpc").build();
+                httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri()).POST(request.bodyPublisher);
             }
         } else if (request.getMethode() == Methode.PUT) {
             if (request.bearerAuth != null) {
-                httpRequest = HttpRequest.newBuilder().uri(request.getUri()).PUT(request.bodyPublisher)
-                        .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build)
-                        .header("Content-Type", "application/json-rpc")
-                        .header("Authorization", request.getBearerAuth()).build();
+                httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri())
+                        .header("Authorization", request.getBearerAuth()).PUT(request.bodyPublisher);
             } else {
-                httpRequest = HttpRequest.newBuilder().uri(request.getUri()).PUT(request.bodyPublisher)
-                        .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build)
-                        .header("Content-Type", "application/json-rpc").build();
+                httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri()).PUT(request.bodyPublisher);
             }
         }
 
+        HttpRequest httpRequest = null;
+
         JsonElement jsonObject = new JsonObject();
 
-        if (httpRequest == null) return jsonObject;
+        if (httpRequestBuilder == null) {
+            jsonObject.getAsJsonObject().addProperty("success", false);
+            return jsonObject;
+        }
+
+        httpRequest = httpRequestBuilder.build();
+
+        if (httpRequest == null) {
+            jsonObject.getAsJsonObject().addProperty("success", false);
+            return jsonObject;
+        }
 
         try {
             HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());

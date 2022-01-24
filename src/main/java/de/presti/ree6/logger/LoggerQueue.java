@@ -402,6 +402,45 @@ public class LoggerQueue {
                     modified = true;
                 }
             }
+            // Check if it's a User join log.
+            else if (loggerMessage.getType() == LoggerMessage.LogTyp.SERVER_JOIN) {
+                if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
+                        loggerMessages.getUserData() != null &&
+                        loggerMessages.getUserData().getUser().getIdLong() == loggerMessage.getUserData().getUser().getIdLong() &&
+                        !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.SERVER_LEAVE)) {
+
+                    // Cancel every Log-Message which indicates that the person left the Server.
+                    logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
+                            loggerMessages.getUserData() != null &&
+                            loggerMessages.getUserData().getUser().getIdLong() == loggerMessage.getUserData().getUser().getIdLong() &&
+                            !loggerMessages.isCanceled() && (loggerMessages.getType() == LoggerMessage.LogTyp.SERVER_LEAVE ||
+                            loggerMessages.getType() == LoggerMessage.LogTyp.USER_BAN)).forEach(loggerMessages -> loggerMessages.setCanceled(true));
+
+                    // Set the new Webhook Message.
+                    webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(loggerMessage.getUserData().getUser().getAsTag(),
+                            loggerMessage.getUserData().getUser().getAvatarUrl(), null));
+
+                    if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
+                            loggerMessages.getUserData() != null &&
+                            loggerMessages.getUserData().getUser().getIdLong() == loggerMessage.getUserData().getUser().getIdLong())
+                            .anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.USER_BAN)) {
+                        webhookEmbedBuilder.setDescription(loggerMessage.getUserData().getUser().getAsMention() + " **joined and has been banned instantly from this Server.** ");
+                    } else{
+                        webhookEmbedBuilder.setDescription(loggerMessage.getUserData().getUser().getAsMention() + " **joined and left this Server.** ");
+                    }
+
+                    modified = true;
+                }
+            }
+            // Check if it's a User leave log.
+            else if (loggerMessage.getType() == LoggerMessage.LogTyp.SERVER_LEAVE) {
+                if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
+                        loggerMessages.getUserData() != null &&
+                        loggerMessages.getUserData().getUser().getIdLong() == loggerMessage.getUserData().getUser().getIdLong() &&
+                        !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.USER_BAN)) {
+                    loggerMessage.setCanceled(true);
+                }
+            }
 
             // add the created WebhookEmbedBuilder as WebhookEmbed to the WebhookMessage Builder.
             webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
