@@ -1,7 +1,6 @@
 package de.presti.ree6.invitelogger;
 
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.LoggerImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
 
@@ -26,7 +25,7 @@ public class InviteContainerManager {
         try {
             Main.getInstance().getSqlConnector().getSqlWorker().setInvite(guildID, inviteContainer.getCode(), inviteContainer.getCreatorId(), inviteContainer.getUses());
         } catch (Exception ex) {
-            LoggerImpl.log("InviteManager", "Error while Saving Invites: " + ex.getMessage());
+            Main.getInstance().getLogger().error("[InviteManager] Error while Saving Invites: " + ex.getMessage());
         }
     }
 

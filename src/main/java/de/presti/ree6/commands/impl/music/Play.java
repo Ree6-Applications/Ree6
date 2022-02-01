@@ -12,40 +12,33 @@ import de.presti.ree6.utils.YouTubeAPIHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Play extends Command {
 
     public Play() {
-        super("play", "Play a song!", Category.MUSIC, new String[]{"p", "music"}, new CommandData("play", "Play a song!").addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true)));
+        super("play", "Play a song!", Category.MUSIC, new String[]{"p", "music"}, new CommandDataImpl("play", "Play a song!").addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true)));
     }
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
-        if (commandEvent.getMember().getVoiceState() == null || !commandEvent.getMember().getVoiceState().inAudioChannel()) {
-            sendMessage("Please join a Channel!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
             return;
         }
 
-        //TODO rework the join mechanic.
-
         if (commandEvent.isSlashCommand()) {
 
-            OptionMapping valueOption = commandEvent.getSlashCommandEvent().getOption("name");
+            OptionMapping valueOption = commandEvent.getSlashCommandInteractionEvent().getOption("name");
 
             if (valueOption != null) {
-                if (Main.getInstance().getMusicWorker().isConnectedMember(commandEvent.getMember())) {
-                    ArrayUtil.botJoin.remove(commandEvent.getGuild());
-                    ArrayUtil.botJoin.put(commandEvent.getGuild(), commandEvent.getMember());
-                }
-
                 playSong(valueOption.getAsString(), commandEvent);
             } else {
                 EmbedBuilder em = new EmbedBuilder();
@@ -72,14 +65,7 @@ public class Play extends Command {
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                 sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             } else {
-                if (Main.getInstance().getMusicWorker().isConnectedMember(commandEvent.getMember())) {
-                    ArrayUtil.botJoin.remove(commandEvent.getGuild());
-                    ArrayUtil.botJoin.put(commandEvent.getGuild(), commandEvent.getMember());
-                }
-
-                // TODO recode.
                 playSong(commandEvent.getArguments()[0], commandEvent);
-
             }
         }
 
@@ -100,7 +86,7 @@ public class Play extends Command {
             }
 
             if (!isspotify) {
-                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), value, commandEvent.getInteractionHook());
+                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), value, commandEvent.getInteractionHook());
             } else {
                 ArrayList<String> loadFailed = new ArrayList<>();
 
@@ -113,10 +99,10 @@ public class Play extends Command {
                         loadFailed.add(search);
                     } else {
                         if (!tempBoolean) {
-                            Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), result, commandEvent.getInteractionHook());
+                            Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), result, commandEvent.getInteractionHook());
                             tempBoolean = true;
                         } else {
-                            Main.getInstance().getMusicWorker().loadAndPlaySilence(commandEvent.getTextChannel(), result, commandEvent.getInteractionHook());
+                            Main.getInstance().getMusicWorker().loadAndPlaySilence(commandEvent.getTextChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), result, commandEvent.getInteractionHook());
                         }
                     }
                 }
@@ -155,7 +141,7 @@ public class Play extends Command {
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                 sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             } else {
-                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), ytResult, commandEvent.getInteractionHook());
+                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), ytResult, commandEvent.getInteractionHook());
             }
         }
     }

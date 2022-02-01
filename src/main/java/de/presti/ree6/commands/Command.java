@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 public abstract class Command {
 
@@ -22,7 +22,8 @@ public abstract class Command {
         cmd = command;
         desc = description;
         cat = category;
-        this.commandData = new CommandData(command, description);
+        this.commandData = new CommandDataImpl(command, description) {
+        };
         alias = new String[0];
     }
 
@@ -31,7 +32,7 @@ public abstract class Command {
         desc = description;
         cat = category;
         this.alias = alias;
-        this.commandData = new CommandData(command, description);
+        this.commandData = new CommandDataImpl(command, description);
     }
 
     public Command(String command, String description, Category category, CommandData commandData) {

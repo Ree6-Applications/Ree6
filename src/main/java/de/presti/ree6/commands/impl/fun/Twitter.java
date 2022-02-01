@@ -7,7 +7,7 @@ import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 public class Twitter extends Command {
 
     public Twitter() {
-        super("twitter", "Let the mentioned User Tweet something!", Category.FUN, new CommandData("twitter", "Let the mentioned User Tweet something!")
+        super("twitter", "Let the mentioned User Tweet something!", Category.FUN, new CommandDataImpl("twitter", "Let the mentioned User Tweet something!")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should tweet something!").setRequired(true))
                 .addOptions(new OptionData(OptionType.STRING, "content", "The Tweet Content!").setRequired(true)));
     }
@@ -32,8 +32,8 @@ public class Twitter extends Command {
     public void onPerform(CommandEvent commandEvent) {
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
-            OptionMapping contentOption = commandEvent.getSlashCommandEvent().getOption("content");
+            OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
+            OptionMapping contentOption = commandEvent.getSlashCommandInteractionEvent().getOption("content");
 
             if (targetOption != null && contentOption != null) {
                 sendTwitterTweet(targetOption.getAsMember(), contentOption.getAsString(), commandEvent);
@@ -76,7 +76,7 @@ public class Twitter extends Command {
             try (OutputStream outputStream =
                          new FileOutputStream("imageapi/twitter/" + commandEvent.getMember().getUser().getId() + ".png")) {
 
-                int read = 0;
+                int read;
                 byte[] bytes = new byte[1024];
 
                 while ((read = response.getEntity().getContent().read(bytes)) != -1) {

@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
 /**
@@ -28,7 +28,7 @@ public class CommandEvent {
     String[] arguments;
 
     // The Slash Command Event that is associated with the Command execution.
-    SlashCommandEvent slashCommandEvent;
+    SlashCommandInteractionEvent SlashCommandInteractionEvent;
 
     /**
      * Constructor used to save the Data.
@@ -37,15 +37,15 @@ public class CommandEvent {
      * @param message the {@link Message} Entity.
      * @param textChannel the {@link TextChannel} Entity.
      * @param arguments the given Arguments.
-     * @param slashCommandEvent the {@link SlashCommandEvent} Entity.
+     * @param SlashCommandInteractionEvent the {@link SlashCommandInteractionEvent} Entity.
      */
-    public CommandEvent(Member member, Guild guild, Message message, TextChannel textChannel, String[] arguments, SlashCommandEvent slashCommandEvent) {
+    public CommandEvent(Member member, Guild guild, Message message, TextChannel textChannel, String[] arguments, SlashCommandInteractionEvent SlashCommandInteractionEvent) {
         this.member = member;
         this.guild = guild;
         this.message = message;
         this.textChannel = textChannel;
         this.arguments = arguments;
-        this.slashCommandEvent = slashCommandEvent;
+        this.SlashCommandInteractionEvent = SlashCommandInteractionEvent;
     }
 
     /**
@@ -89,11 +89,11 @@ public class CommandEvent {
     }
 
     /**
-     * Get the {@link SlashCommandEvent} Entity associated with the Event.
-     * @return the {@link SlashCommandEvent} Entity.
+     * Get the {@link SlashCommandInteractionEvent} Entity associated with the Event.
+     * @return the {@link SlashCommandInteractionEvent} Entity.
      */
-    public SlashCommandEvent getSlashCommandEvent() {
-        return slashCommandEvent;
+    public SlashCommandInteractionEvent getSlashCommandInteractionEvent() {
+        return SlashCommandInteractionEvent;
     }
 
     /**
@@ -101,15 +101,15 @@ public class CommandEvent {
      * @return true, if it is a Slash Command Execution. | false, if not.
      */
     public boolean isSlashCommand() {
-        return getSlashCommandEvent() != null;
+        return getSlashCommandInteractionEvent() != null;
     }
 
     /**
-     * Get the {@link InteractionHook} from the {@link SlashCommandEvent}.
+     * Get the {@link InteractionHook} from the {@link SlashCommandInteractionEvent}.
      * @return the {@link InteractionHook} Entity.
      */
     public InteractionHook getInteractionHook() {
-        if (isSlashCommand()) return getSlashCommandEvent().getHook().setEphemeral(true);
+        if (isSlashCommand()) return getSlashCommandInteractionEvent().getHook().setEphemeral(true);
 
         return null;
     }

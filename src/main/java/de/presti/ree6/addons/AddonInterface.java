@@ -10,5 +10,4 @@ public interface AddonInterface {
 
     // Called methode when the Addon get stopped.
     void onDisable();
-
 }

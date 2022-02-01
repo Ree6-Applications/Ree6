@@ -19,6 +19,10 @@ public class Clearqueue extends Command {
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
+        if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
+            return;
+        }
+
         EmbedBuilder em = new EmbedBuilder();
         
         em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,

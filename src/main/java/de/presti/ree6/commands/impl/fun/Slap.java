@@ -8,7 +8,7 @@ import de.presti.ree6.utils.Neko4JsAPI;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
@@ -16,16 +16,16 @@ import pw.aru.api.nekos4j.image.ImageProvider;
 public class Slap extends Command {
 
     public Slap() {
-        super("slap", "Slap someone in the face!", Category.FUN, new CommandData("slap", "Slap someone in the face!")
+        super("slap", "Slap someone in the face!", Category.FUN, new CommandDataImpl("slap", "Slap someone in the face!")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should be slapped!").setRequired(true)));
     }
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
-            OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
+            OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
 
-            if (targetOption != null) {
+            if (targetOption != null && targetOption.getAsMember() != null) {
                 sendSlap(targetOption.getAsMember(), commandEvent);
             } else {
                 sendMessage("No User was given to Slap!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

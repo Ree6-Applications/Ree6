@@ -19,7 +19,11 @@ public class Disconnect extends Command {
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
-        if (Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()) != null && Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getSendHandler().isMusicPlaying(commandEvent.getGuild())) {
+        if (Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()) != null &&
+                Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getSendHandler().isMusicPlaying(commandEvent.getGuild())) {
+            if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent) && Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
+                return;
+            }
             Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.stopAll(commandEvent.getInteractionHook());
         } else {
             EmbedBuilder em = new EmbedBuilder();

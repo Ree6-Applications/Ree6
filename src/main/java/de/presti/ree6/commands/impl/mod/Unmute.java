@@ -9,13 +9,13 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class Unmute extends Command {
 
     public Unmute() {
-        super("unmute", "Unmute a User on the Server!", Category.MOD, new CommandData("unmute", "Unmute a User on the Server!").addOptions(new OptionData(OptionType.USER, "target", "Which User should be unmuted.").setRequired(true)));
+        super("unmute", "Unmute a User on the Server!", Category.MOD, new CommandDataImpl("unmute", "Unmute a User on the Server!").addOptions(new OptionData(OptionType.USER, "target", "Which User should be unmuted.").setRequired(true)));
     }
 
     @Override
@@ -32,7 +32,7 @@ public class Unmute extends Command {
 
             if (commandEvent.isSlashCommand()) {
 
-                OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
+                OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
 
                 if (targetOption != null) {
                     unmuteMember(targetOption.getAsMember(), commandEvent);

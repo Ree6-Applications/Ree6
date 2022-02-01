@@ -1,9 +1,8 @@
 package de.presti.ree6.utils;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchResult;
 import de.presti.ree6.main.Main;
@@ -15,7 +14,7 @@ public class YouTubeAPIHandler {
 
     private YouTube youTube;
     public final YouTubeAPIHandler instance;
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
     public YouTubeAPIHandler() {
         try {
@@ -62,7 +61,6 @@ public class YouTubeAPIHandler {
 
     public void createYouTube() {
         try {
-            final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             youTube = new YouTube.Builder(
                     GoogleNetHttpTransport.newTrustedTransport(),
                     JSON_FACTORY,

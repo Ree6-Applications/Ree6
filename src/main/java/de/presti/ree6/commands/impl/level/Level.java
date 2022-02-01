@@ -9,13 +9,13 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class Level extends Command {
 
     public Level() {
-        super("level", "Shows the Level of a User!", Category.LEVEL, new String[] {"lvl", "xp", "rank"}, new CommandData("level", "Shows the Level of a User!")
+        super("level", "Shows the Level of a User!", Category.LEVEL, new String[] {"lvl", "xp", "rank"}, new CommandDataImpl("level", "Shows the Level of a User!")
                 .addOptions(new OptionData(OptionType.USER, "target", "Show the Level of the User.")));
     }
 
@@ -23,9 +23,9 @@ public class Level extends Command {
     public void onPerform(CommandEvent commandEvent) {
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
+            OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
 
-            if (targetOption != null) {
+            if (targetOption != null && targetOption.getAsMember() != null) {
                 sendLevel(targetOption.getAsMember(), commandEvent);
             } else {
                 sendLevel(commandEvent.getMember(), commandEvent);
@@ -75,7 +75,7 @@ public class Level extends Command {
     }
 
     public String getFormattedXP(long xp) {
-        String end = "";
+        String end;
 
         if(xp >= 1000000000000L) {
             end = ((xp / 1000000000000L) + "").replaceAll("l", "") + "mil";

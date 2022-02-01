@@ -2,7 +2,6 @@ package de.presti.ree6.addons;
 
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
-import de.presti.ree6.utils.LoggerImpl;
 import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
@@ -42,16 +41,22 @@ public class AddonLoader {
 
         // Check if there are any Files.
         assert files != null;
-        for (File f : files) {
+        for (File file : files) {
 
             // Check if it's a jar File.
-            if (f.getName().endsWith("jar")) {
+            if (file.getName().endsWith("jar")) {
                 try {
                     // Try creating a Local-Addon and adding it into the loaded Addon List.
-                    Main.getInstance().getAddonManager().loadAddon(loadAddon(f.getName()));
+                    Addon addon = loadAddon(file.getName());
+
+                    if (addon == null) {
+                        Main.getInstance().getLogger().error("Couldn't pre-load the addon " + file.getName());
+                    }
+
+                    Main.getInstance().getAddonManager().loadAddon(addon);
                 } catch (Exception ex) {
                     // If the Methode loadAddon fails notify.
-                    LoggerImpl.log("AddonManager", "Couldn't load the Addon " + f.getName() + "\nException: " + ex.getCause().getMessage());
+                    Main.getInstance().getLogger().error("[AddonManager] Couldn't load the Addon " + file.getName() + "\nException: " + ex.getCause().getMessage());
                 }
             }
         }
@@ -60,6 +65,7 @@ public class AddonLoader {
 
     /**
      * Actually load a Addon.
+     *
      * @param fileName Name of the File.
      * @return a Local-Addon.
      * @throws Exception If it is an invalid Addon.
@@ -67,69 +73,71 @@ public class AddonLoader {
     public static Addon loadAddon(String fileName) throws Exception {
 
         // Initialize local Variables to save Information about the Addon.
-        String name = null, author = null, addonVer = null, ree6Ver = null, mainPath = null;
+        String name = null, author = null, version = null, apiVersion = null, classPath = null;
 
-        File f = null;
+        // Temporal File for information.
+        File file = null;
 
         // Create a ZipInputStream to get every single class inside the JAR. I'm pretty sure there is a faster and more efficient way, but I didn't have the time to find it.
-        try (ZipInputStream jis = new ZipInputStream(new FileInputStream("addons/" + fileName))) {
+        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream("addons/" + fileName))) {
             ZipEntry entry;
 
             // While there a still Classes inside the JAR it should check them.
-            while ((entry = jis.getNextEntry()) != null) {
+            while ((entry = zipInputStream.getNextEntry()) != null) {
                 try {
                     // Get the current name of the class.
-                    String fName = entry.getName();
+                    String entryName = entry.getName();
 
                     // Check if it is a Directory if so don't do anything and skip.
                     if (!entry.isDirectory()) {
 
                         // If it is the addon.yml then get the Data from it.
-                        if (fName.equalsIgnoreCase("addon.yml")) {
+                        if (entryName.equalsIgnoreCase("addon.yml")) {
 
                             // Create a temporal File to extract the Data from. I'm pretty sure there is a better way but as I said earlier didn't have the time for it.
-                            f = new File("addons/tmp/temp_" + ArrayUtil.getRandomShit(9) + ".yml");
+                            file = new File("addons/tmp/temp_" + ArrayUtil.getRandomString(9) + ".yml");
 
                             // Create a FileOutputStream of the temporal File and write every bite from the File inside the JAR.
-                            try (FileOutputStream os = new FileOutputStream(f)) {
+                            try (FileOutputStream os = new FileOutputStream(file)) {
 
-                                for (int c = jis.read(); c != -1; c = jis.read()) {
+                                for (int c = zipInputStream.read(); c != -1; c = zipInputStream.read()) {
                                     os.write(c);
                                 }
-
                             }
 
-                                // Load it as a YAML-Config and fill the Variables.
-                                FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
+                            // Load it as a YAML-Config and fill the Variables.
+                            FileConfiguration conf = YamlConfiguration.loadConfiguration(file);
 
-                                name = conf.getString("name");
-                                author = conf.getString("author");
-                                addonVer = conf.getString("version");
-                                ree6Ver = conf.getString("ree6-version");
-                                mainPath = conf.getString("main");
+                            name = conf.getString("name");
+                            author = conf.getString("author");
+                            version = conf.getString("version");
+                            apiVersion = conf.getString("api-version");
+                            classPath = conf.getString("main");
                         }
                     }
                 } catch (Exception e) {
-                    jis.closeEntry();
+                    Main.getInstance().getLogger().error("Error while trying to pre-load the Addon " + fileName, e);
+                    zipInputStream.closeEntry();
                 } finally {
-                    jis.closeEntry();
+                    zipInputStream.closeEntry();
                 }
-            }
-
-            // Check if the File isn't null and exists if so delete.
-            if (f != null && f.exists()) {
-                if (f.delete()) {
-                    throw new FileNotFoundException("Couldn't delete the File");
-                }
-            }
-
-            // Check if there is any data core data if not throw this error.
-            if (name == null && mainPath == null) {
-                throw new FileNotFoundException("Couldn't find addon.yml");
-            } else {
-                return new Addon(name, author, addonVer, ree6Ver, mainPath, new File("addons/" + fileName));
             }
         }
-    }
 
+        // Check if the File isn't null and exists if so delete.
+        if (file != null && file.exists()) {
+            if (file.delete()) {
+                Main.getInstance().getLogger().error("Error while trying to delete the temporal Addon files!");
+            }
+        }
+
+        // Check if there is any data core data if not throw this error.
+        if (name == null && classPath == null) {
+            Main.getInstance().getLogger().error("Error while trying to pre-load the Addon " + fileName + ", no addon.yml given.");
+        } else {
+            return new Addon(name, author, version, apiVersion, classPath, new File("addons/" + fileName));
+        }
+
+        return null;
+    }
 }

@@ -18,17 +18,25 @@ public class Shuffle extends Command {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
+        if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
+            sendMessage("Im not connected to any Channel, so there is nothing to shuffle!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        }
+
+        if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
+            return;
+        }
+
         EmbedBuilder em = new EmbedBuilder();
 
         Main.getInstance().getMusicWorker().getGuildAudioPlayer(
-                commandEvent.getGuild()).scheduler.shuffle = !Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.shuffle;
+                commandEvent.getGuild()).scheduler.setShuffle(!Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.isShuffle());
 
         em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                 BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.shuffle ? "Song Shuffle has been activated!"
+        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.isShuffle() ? "Song Shuffle has been activated!"
                 : "Song Shuffle has been deactivated!");
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 

@@ -59,9 +59,7 @@ public class TwitchNotifier extends Command {
                 sendMessage("A TwitchStream Notifier has been removed from the User " + name + "!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
 
                 if(Main.getInstance().getNotifier().isTwitchRegistered(name)) {
-                    if(Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(name.toLowerCase()).isEmpty()) {
-                        Main.getInstance().getNotifier().unregisterTwitchChannel(name);
-                    }
+                    Main.getInstance().getNotifier().unregisterTwitchChannel(name);
                 }
             } else {
                 sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch remove TwitchName", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

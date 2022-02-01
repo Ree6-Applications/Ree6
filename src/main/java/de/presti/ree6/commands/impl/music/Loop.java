@@ -17,18 +17,25 @@ public class Loop extends Command {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
+        if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
+            sendMessage("Im not connected to any Channel, so there is nothing to loop!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        }
+
+        if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
+            return;
+        }
 
         EmbedBuilder em = new EmbedBuilder();
         
         Main.getInstance().getMusicWorker().getGuildAudioPlayer(
-                commandEvent.getGuild()).scheduler.loop = !Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.loop;
+                commandEvent.getGuild()).scheduler.setLoop(!Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.isLoop());
 
         em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                 BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.loop ? "Song Loop has been activated!"
+        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.isLoop() ? "Song Loop has been activated!"
                 : "Song Loop has been deactivated!");
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 

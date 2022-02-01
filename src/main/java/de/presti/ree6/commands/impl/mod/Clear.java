@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class Clear extends Command {
 
     public Clear() {
-        super("clear", "Clear the Chat!", Category.MOD, new CommandData("clear", "Clear the Chat!").addOptions(new OptionData(OptionType.INTEGER, "amount", "How many messages should be removed.").setRequired(true)));
+        super("clear", "Clear the Chat!", Category.MOD, new CommandDataImpl("clear", "Clear the Chat!").addOptions(new OptionData(OptionType.INTEGER, "amount", "How many messages should be removed.").setRequired(true)));
     }
 
     @Override
@@ -26,7 +26,7 @@ public class Clear extends Command {
 
             if (commandEvent.isSlashCommand()) {
 
-                OptionMapping amountOption = commandEvent.getSlashCommandEvent().getOption("amount");
+                OptionMapping amountOption = commandEvent.getSlashCommandInteractionEvent().getOption("amount");
 
                 if (amountOption != null) {
                     deleteMessages(commandEvent, (int) amountOption.getAsDouble());

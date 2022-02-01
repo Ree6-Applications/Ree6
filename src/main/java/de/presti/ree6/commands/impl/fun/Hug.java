@@ -8,23 +8,23 @@ import de.presti.ree6.utils.Neko4JsAPI;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
 
 public class Hug extends Command {
 
     public Hug() {
-        super("hug", "Hug someone you like!", Category.FUN, new CommandData("hug", "Hug someone you like!").addOptions(new OptionData(OptionType.USER, "target", "The User that should be hugged!").setRequired(true)));
+        super("hug", "Hug someone you like!", Category.FUN, new CommandDataImpl("hug", "Hug someone you like!").addOptions(new OptionData(OptionType.USER, "target", "The User that should be hugged!").setRequired(true)));
     }
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
-            OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
+            OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
 
-            if (targetOption != null) {
+            if (targetOption != null && targetOption.getAsMember() != null) {
                 sendHug(targetOption.getAsMember(), commandEvent);
             } else {
                 sendMessage("No User was given to Hug!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

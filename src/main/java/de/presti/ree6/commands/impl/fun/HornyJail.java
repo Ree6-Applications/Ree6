@@ -7,8 +7,8 @@ import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -21,14 +21,14 @@ import java.io.OutputStream;
 public class HornyJail extends Command {
 
     public HornyJail() {
-        super("hornyjail", "Put someone in the Hornyjail!", Category.FUN, new String[]{"horny", "jail"}, new CommandData("hornyjail", "Put someone in the Hornyjail!")
+        super("hornyjail", "Put someone in the Hornyjail!", Category.FUN, new String[]{"horny", "jail"}, new CommandDataImpl("hornyjail", "Put someone in the Hornyjail!")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should be put into the Hornyjail!").setRequired(true)));
     }
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
-            OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
+            OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
 
             if (targetOption != null) {
                 sendHornyJail(targetOption.getAsMember(), commandEvent);
@@ -59,7 +59,7 @@ public class HornyJail extends Command {
             try (OutputStream outputStream =
                          new FileOutputStream("imageapi/hornyjail/" + commandEvent.getMember().getId() + ".png")) {
 
-                int read = 0;
+                int read;
                 byte[] bytes = new byte[1024];
 
                 while ((read = response.getEntity().getContent().read(bytes)) != -1) {

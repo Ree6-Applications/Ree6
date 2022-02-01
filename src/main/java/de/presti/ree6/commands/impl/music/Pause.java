@@ -18,6 +18,15 @@ public class Pause extends Command {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
+
+        if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
+            sendMessage("Im not connected to any Channel, so there is nothing to pause!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        }
+
+        if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
+            return;
+        }
+
         EmbedBuilder em = new EmbedBuilder();
 
         Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).player.setPaused(true);

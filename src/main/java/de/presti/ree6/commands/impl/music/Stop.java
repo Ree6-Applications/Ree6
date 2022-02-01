@@ -19,6 +19,9 @@ public class Stop extends Command {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()) != null) {
+            if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent) && Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
+                return;
+            }
             Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.stopAll(commandEvent.getInteractionHook());
         } else {
             EmbedBuilder em = new EmbedBuilder();

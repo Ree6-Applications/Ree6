@@ -7,14 +7,14 @@ import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class Prefix extends Command {
 
 
     public Prefix() {
-        super("prefix", "Change Ree6's Bot-Prefix!", Category.MOD, new String[]{"setprefix", "changeprefix"}, new CommandData("prefix", "Change Ree6's Bot-Prefix!").addOptions(new OptionData(OptionType.STRING, "new-prefix", "What should the new Prefix be?").setRequired(true)));
+        super("prefix", "Change Ree6's Bot-Prefix!", Category.MOD, new String[]{"setprefix", "changeprefix"}, new CommandDataImpl("prefix", "Change Ree6's Bot-Prefix!").addOptions(new OptionData(OptionType.STRING, "new-prefix", "What should the new Prefix be?").setRequired(true)));
     }
 
     @Override
@@ -23,7 +23,7 @@ public class Prefix extends Command {
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR) && commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
 
             if (commandEvent.isSlashCommand()) {
-                OptionMapping prefixOption = commandEvent.getSlashCommandEvent().getOption("new-prefix");
+                OptionMapping prefixOption = commandEvent.getSlashCommandInteractionEvent().getOption("new-prefix");
 
                 if (prefixOption != null) {
                     Main.getInstance().getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", prefixOption.getAsString());

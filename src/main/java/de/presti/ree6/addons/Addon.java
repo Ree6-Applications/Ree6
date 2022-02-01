@@ -4,26 +4,12 @@ import java.io.File;
 
 /**
  * Local Class to identify and cache Addons.
- * This needs a revamp too.
  */
 
-// TODO update
 public class Addon {
 
-    // Name of the Addon.
-    final String name;
-
-    // Author of the Addon.
-    final String author;
-
-    // Version of the Addon.
-    final String addonVer;
-
-    // Version of the Ree6 used for this Addon.
-    final String ree6Ver;
-
-    // JavaPath to the Addon-Main class.
-    final String mainPath;
+    // Name of the Addon, Author of the Addon, Version of the Addon, used API-Version and path to the Main class.
+    final String name, author, version, apiVersion, path;
 
     // The actual Addon Jar File.
     final File file;
@@ -32,17 +18,17 @@ public class Addon {
      * Created a new Local-Addon
      * @param name Addon Name.
      * @param author Addon Author.
-     * @param addonVer Addon Version.
-     * @param ree6Ver Ree6 Version used for the Addon.
-     * @param mainPath Path to the Main-Class in the JAR.
+     * @param version Addon Version.
+     * @param apiVersion Ree6 Version used for the Addon.
+     * @param path Path to the Main-Class in the JAR.
      * @param file The actual JAR as File.
      */
-    public Addon(String name, String author, String addonVer, String ree6Ver, String mainPath, File file) {
+    public Addon(String name, String author, String version, String apiVersion, String path, File file) {
         this.name = name;
         this.author = author;
-        this.addonVer = addonVer;
-        this.ree6Ver = ree6Ver;
-        this.mainPath = mainPath;
+        this.version = version;
+        this.apiVersion = apiVersion;
+        this.path = path;
         this.file = file;
     }
 
@@ -66,24 +52,24 @@ public class Addon {
      * Get the Addon Version.
      * @return Addon Version.
      */
-    public String getAddonVer() {
-        return addonVer;
+    public String getVersion() {
+        return version;
     }
 
     /**
      * Get the Ree6 Version used for the Addon.
      * @return used Ree6 Version.
      */
-    public String getRee6Ver() {
-        return ree6Ver;
+    public String getApiVersion() {
+        return apiVersion;
     }
 
     /**
      * Get the Path to the Main class.
      * @return Main class Path.
      */
-    public String getMainPath() {
-        return mainPath;
+    public String getClassPath() {
+        return path;
     }
 
     /**
@@ -103,9 +89,9 @@ public class Addon {
         return "Addon{" +
                 "name='" + getName() + '\'' +
                 ", author='" + getAuthor() + '\'' +
-                ", addonVer='" + getAddonVer() + '\'' +
-                ", ree6Ver='" + getRee6Ver() + '\'' +
-                ", mainPath='" + getMainPath() + '\'' +
+                ", version='" + getVersion() + '\'' +
+                ", api='" + getApiVersion() + '\'' +
+                ", path='" + getClassPath() + '\'' +
                 ", file=" + getFile().getAbsolutePath() +
                 '}';
     }

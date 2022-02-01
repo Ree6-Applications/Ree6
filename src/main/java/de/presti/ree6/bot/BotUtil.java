@@ -1,11 +1,8 @@
 package de.presti.ree6.bot;
 
-import de.presti.ree6.main.Data;
-import de.presti.ree6.utils.FileUtil;
-import net.dv8tion.jda.api.EmbedBuilder;
+import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -29,13 +26,15 @@ public class BotUtil {
 
     /**
      * Create a new {@link net.dv8tion.jda.api.JDA} instance and set the rest information for later use.
+     *
      * @param version the current Bot Version "typ".
-     * @param build the current Bot Version.
+     * @param build   the current Bot Version.
      * @throws LoginException when there is a problem with creating the Session.
      */
     public static void createBot(BotVersion version, String build) throws LoginException {
         BotInfo.version = version;
-        BotInfo.TOKEN = FileUtil.getToken();
+        BotInfo.TOKEN = BotInfo.version == BotVersion.DEV ? Main.getInstance().getConfig().getConfig().getString("bot.tokens.dev") :
+                Main.getInstance().getConfig().getConfig().getString("bot.tokens.rel");
         BotInfo.state = BotState.INIT;
         BotInfo.build = build;
         BotInfo.botInstance = JDABuilder.createDefault(BotInfo.TOKEN).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY).build();
@@ -43,8 +42,9 @@ public class BotUtil {
 
     /**
      * Change the current Activity of the Bot.
+     *
      * @param message the Message of the Activity.
-     * @param at the Activity type.
+     * @param at      the Activity type.
      */
     public static void setActivity(String message, Activity.ActivityType at) {
         // If the Bot Instance is null, if not set.
@@ -61,38 +61,20 @@ public class BotUtil {
         }
     }
 
-    public static MessageEmbed createEmbed(String author, String description, String footer, String title, String thumb, String image, Color color) {
-
-        EmbedBuilder em = new EmbedBuilder();
-
-        if (!author.isEmpty())
-            em.setAuthor(author);
-
-        if (!description.isEmpty())
-            em.setDescription(description);
-
-        if (!footer.isEmpty())
-            em.setFooter(footer + " - " + Data.ADVERTISEMENT);
-
-        if (!title.isEmpty())
-            em.setTitle(title);
-
-        if (!thumb.isEmpty())
-            em.setThumbnail(thumb);
-
-        if (color != null)
-            em.setColor(color);
-
-        if (!image.isEmpty())
-            em.setImage(image);
-
-        return em.build();
+    /**
+     * Called to add a ListenerAdapter to the EventListener.
+     *
+     * @param listenerAdapter the Listener Adapter that should be added.
+     */
+    public static void addEvent(ListenerAdapter listenerAdapter) {
+        BotInfo.botInstance.addEventListener(listenerAdapter);
     }
 
-    public static void addEvent(ListenerAdapter la) {
-        BotInfo.botInstance.addEventListener(la);
-    }
-
+    /**
+     * Called to get a random Embed supported Color.
+     *
+     * @return a {@link Color}.
+     */
     public static Color randomEmbedColor() {
         String zeros = "000000";
         String s = Integer.toString(ThreadLocalRandom.current().nextInt(0X1000000), 16);

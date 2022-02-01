@@ -27,12 +27,20 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
         this.frame.setBuffer(buffer);
     }
 
+    /**
+     * Check if the AudioPlayer can provide Audio.
+     * @return true if audio was provided.
+     */
     @Override
     public boolean canProvide() {
         // returns true if audio was provided
         return audioPlayer.provide(frame);
     }
 
+    /**
+     * Let the AudioPlayer provide a ByteBuffer of the Audio.
+     * @return the ByteBuffer.
+     */
     @Override
     public ByteBuffer provide20MsAudio() {
         // flip to make it a read buffer
@@ -40,10 +48,19 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
         return buffer;
     }
 
-    public boolean isMusicPlaying(Guild g) {
-        return g.getSelfMember().getVoiceState() != null && g.getSelfMember().getVoiceState().inAudioChannel() && audioPlayer.getPlayingTrack() != null && !audioPlayer.isPaused();
+    /**
+     * Check if the Audio-Player is playing any Music!
+     * @param guild the Guild.
+     * @return true, if yes.
+     */
+    public boolean isMusicPlaying(Guild guild) {
+        return guild.getSelfMember().getVoiceState() != null && guild.getSelfMember().getVoiceState().inAudioChannel() && audioPlayer.getPlayingTrack() != null && !audioPlayer.isPaused();
     }
 
+    /**
+     * Check if it is using the Opus Audio Library.
+     * @return true, if yes.
+     */
     @Override
     public boolean isOpus() {
         return true;

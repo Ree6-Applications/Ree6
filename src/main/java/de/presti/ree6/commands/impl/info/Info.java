@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.time.format.DateTimeFormatter;
@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 public class Info extends Command {
 
     public Info() {
-        super("info", "Shows you Information about a User.", Category.INFO, new CommandData("info", "Shows you Information about a User.")
+        super("info", "Shows you Information about a User.", Category.INFO, new CommandDataImpl("info", "Shows you Information about a User.")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User whose profile Information you want.").setRequired(true)));
     }
 
@@ -25,9 +25,9 @@ public class Info extends Command {
     public void onPerform(CommandEvent commandEvent) {
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
+            OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
 
-            if (targetOption != null) {
+            if (targetOption != null && targetOption.getAsMember() != null) {
                 sendInfo(targetOption.getAsMember(), commandEvent);
             } else {
                 sendMessage("No User was given to get the Data from!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

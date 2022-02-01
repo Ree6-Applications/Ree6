@@ -17,12 +17,13 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 public class OtherEvents extends ListenerAdapter {
 
@@ -108,7 +109,7 @@ public class OtherEvents extends ListenerAdapter {
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         super.onMessageReceived(event);
 
-        if (event.isFromGuild() && event.isFromType(ChannelType.TEXT)) {
+        if (event.isFromGuild() && event.isFromType(ChannelType.TEXT) && event.getMember() != null) {
             if (!ArrayUtil.messageIDwithMessage.containsKey(event.getMessageId())) {
                 ArrayUtil.messageIDwithMessage.put(event.getMessageId(), event.getMessage());
             }
@@ -142,9 +143,9 @@ public class OtherEvents extends ListenerAdapter {
 
                     new Thread(() -> {
                         try {
-                            Thread.sleep(30000);
+                            wait(30000);
                         } catch (InterruptedException ignored) {
-                            LoggerImpl.log("OtherEvents", "User cool-down Thread interrupted!");
+                            Main.getInstance().getLogger().error("[OtherEvents] User cool-down Thread interrupted!");
                             Thread.currentThread().interrupt();
                         }
 
@@ -159,13 +160,12 @@ public class OtherEvents extends ListenerAdapter {
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event) {
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         // Only accept commands from guilds
-        if (event.getGuild() == null)
-            return;
+        if (!event.isFromGuild() && event.getMember() != null) return;
 
         event.deferReply(true).complete();
 
-        Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), null, null, event.getTextChannel(), event);
+        Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getTextChannel(), event);
     }
 }

@@ -8,13 +8,13 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class Kick extends Command {
 
     public Kick() {
-        super("kick", "Kick the User from the Server!", Category.MOD,  new CommandData("kick", "Kick the User from the Server!").addOptions(new OptionData(OptionType.USER, "target", "Which User should be kicked.").setRequired(true)));
+        super("kick", "Kick the User from the Server!", Category.MOD,  new CommandDataImpl("kick", "Kick the User from the Server!").addOptions(new OptionData(OptionType.USER, "target", "Which User should be kicked.").setRequired(true)));
     }
 
     @Override
@@ -24,7 +24,7 @@ public class Kick extends Command {
 
             if (commandEvent.isSlashCommand()) {
 
-                OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
+                OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
 
                 if (targetOption != null) {
                     kickMember(targetOption.getAsMember(), commandEvent);

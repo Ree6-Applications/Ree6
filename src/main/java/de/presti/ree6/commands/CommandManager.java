@@ -17,7 +17,7 @@ import de.presti.ree6.utils.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
@@ -128,14 +128,14 @@ public class CommandManager {
 
     }
 
-    public boolean perform(Member member, Guild guild, String messageContent, Message message, TextChannel textChannel, SlashCommandEvent slashCommandEvent) {
+    public boolean perform(Member member, Guild guild, String messageContent, Message message, TextChannel textChannel, SlashCommandInteractionEvent SlashCommandInteractionEvent) {
 
 
         if (ArrayUtil.commandCooldown.contains(member.getUser().getId())) {
 
-            if (slashCommandEvent != null) {
-                sendMessage("You are on cooldown!", 5, textChannel, slashCommandEvent.getHook().setEphemeral(true));
-                deleteMessage(message, slashCommandEvent.getHook().setEphemeral(true));
+            if (SlashCommandInteractionEvent != null) {
+                sendMessage("You are on cooldown!", 5, textChannel, SlashCommandInteractionEvent.getHook().setEphemeral(true));
+                deleteMessage(message, SlashCommandInteractionEvent.getHook().setEphemeral(true));
             } else {
                 sendMessage("You are on cooldown!", 5, textChannel, null);
                 deleteMessage(message, null);
@@ -144,23 +144,23 @@ public class CommandManager {
             return false;
         }
 
-        if (slashCommandEvent != null) {
+        if (SlashCommandInteractionEvent != null) {
 
-            Command command = getCommandByName(slashCommandEvent.getName());
+            Command command = getCommandByName(SlashCommandInteractionEvent.getName());
 
 
             if (command == null) {
-                sendMessage("That Command couldn't be found", 5, textChannel, slashCommandEvent.getHook().setEphemeral(true));
+                sendMessage("That Command couldn't be found", 5, textChannel, SlashCommandInteractionEvent.getHook().setEphemeral(true));
                 return false;
             }
 
             if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getCmd().toLowerCase()).getBooleanValue() &&
                     command.getCategory() != Category.HIDDEN) {
-                sendMessage("This Command is blocked!", 5, textChannel, slashCommandEvent.getHook().setEphemeral(true));
+                sendMessage("This Command is blocked!", 5, textChannel, SlashCommandInteractionEvent.getHook().setEphemeral(true));
                 return false;
             }
 
-            command.onPerform(new CommandEvent(member, guild, null, textChannel, null, slashCommandEvent));
+            command.onPerform(new CommandEvent(member, guild, null, textChannel, null, SlashCommandInteractionEvent));
 
             StatsManager.addStatsForCommand(command, guild.getId());
 
@@ -169,7 +169,7 @@ public class CommandManager {
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException ignore) {
-                        LoggerImpl.log("CommandManager", "Command cool-down Thread interrupted!");
+                        Main.getInstance().getLogger().error("[CommandManager] Command cool-down Thread interrupted!");
                         Thread.currentThread().interrupt();
                     }
 
@@ -224,7 +224,7 @@ public class CommandManager {
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException ignore) {
-                        LoggerImpl.log("CommandManager", "Command cool-down Thread interrupted!");
+                        Main.getInstance().getLogger().error("[CommandManager] Command cool-down Thread interrupted!");
                         Thread.currentThread().interrupt();
                     }
 
@@ -325,7 +325,7 @@ public class CommandManager {
             try {
                 message.delete().queue();
             } catch (Exception ex) {
-                LoggerImpl.log("CommandSystem", "Couldn't delete a Message!");
+                Main.getInstance().getLogger().error("[CommandManager] Couldn't delete a Message!");
             }
         }
     }

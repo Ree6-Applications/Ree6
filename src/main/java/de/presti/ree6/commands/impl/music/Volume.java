@@ -9,7 +9,7 @@ import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.awt.*;
@@ -17,16 +17,24 @@ import java.awt.*;
 public class Volume extends Command {
 
     public Volume() {
-        super("volume", "Set the Volume!", Category.MUSIC, new String[] { "vol" }, new CommandData("volume", "Set the Volume!").addOptions(new OptionData(OptionType.INTEGER, "amount", "The Volume that the Ree6 Music Player should be!").setRequired(true)));
+        super("volume", "Set the Volume!", Category.MUSIC, new String[] { "vol" }, new CommandDataImpl("volume", "Set the Volume!").addOptions(new OptionData(OptionType.INTEGER, "amount", "The Volume that the Ree6 Music Player should be!").setRequired(true)));
     }
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
+        if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
+            sendMessage("Im not connected to any Channel, so there is nothing to set the volume for!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        }
+
+        if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
+            return;
+        }
+
         EmbedBuilder em = new EmbedBuilder();
 
         if (commandEvent.isSlashCommand()) {
 
-            OptionMapping volumeOption = commandEvent.getSlashCommandEvent().getOption("amount");
+            OptionMapping volumeOption = commandEvent.getSlashCommandInteractionEvent().getOption("amount");
 
             if (volumeOption != null) {
                 int volume = (int)volumeOption.getAsDouble();

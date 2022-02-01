@@ -22,6 +22,11 @@ public class Lyrics extends Command {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
+
+        if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
+            sendMessage("Im not connected to any Channel, so there is nothing to see the lyrics of!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        }
+
         AudioPlayerSendHandler sendingHandler = (AudioPlayerSendHandler) commandEvent.getGuild().getAudioManager().getSendingHandler();
 
         if (sendingHandler != null && sendingHandler.isMusicPlaying(commandEvent.getGuild())) {

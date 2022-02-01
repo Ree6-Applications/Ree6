@@ -4,7 +4,6 @@ import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import de.presti.ree6.logger.LoggerMessage;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.LoggerImpl;
 
 /**
  * Class to handle Webhook sends.
@@ -29,7 +28,7 @@ public class Webhook {
         // Check if the LoggerMessage is null or canceled.
         if (loggerMessage == null || loggerMessage.isCanceled()) {
             // If so, inform about invalid send.
-            LoggerImpl.log("Webhook", "Got a Invalid or Canceled LoggerMessage!");
+            Main.getInstance().getLogger().error("[Webhook] Got a Invalid or Canceled LoggerMessage!");
             return;
         }
 
@@ -41,17 +40,17 @@ public class Webhook {
                 if (throwable.getMessage().contains("failure 404")) {
                     // Inform and delete invalid webhook.
                     Main.getInstance().getSqlConnector().getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
-                    LoggerImpl.log("Webhook", "Deleted invalid Webhook: " + webhookId + " - " + webhookToken);
+                    Main.getInstance().getLogger().error("[Webhook] Deleted invalid Webhook: " + webhookId + " - " + webhookToken);
                 } else if (throwable.getMessage().contains("failure 400")) {
                     // If 404 inform that the Message had an invalid Body.
-                    LoggerImpl.log("Webhook", "Invalid Body with LogTyp: " + loggerMessage.getType().name());
+                    Main.getInstance().getLogger().error("[Webhook] Invalid Body with LogTyp: " + loggerMessage.getType().name());
                 }
                 return null;
             });
         } catch (Exception ex) {
             // Inform that this is an Invalid Webhook.
-            LoggerImpl.log("Webhook", "Invalid Webhook: " + webhookId + " - " + webhookToken);
-            LoggerImpl.log("Webhook", ex.getMessage());
+            Main.getInstance().getLogger().error("[Webhook] Invalid Webhook: " + webhookId + " - " + webhookToken);
+            Main.getInstance().getLogger().error("[Webhook] " +ex.getMessage());
         }
     }
 }

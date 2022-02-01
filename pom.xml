@@ -104,27 +104,27 @@
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client</artifactId>
-            <version>1.33.0</version>
+            <version>1.33.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
-            <version>1.41.0</version>
+            <version>1.41.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client-jackson2</artifactId>
-            <version>1.33.0</version>
+            <version>1.33.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client-java6</artifactId>
-            <version>1.33.0</version>
+            <version>1.33.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.oauth-client</groupId>
             <artifactId>google-oauth-client-jetty</artifactId>
-            <version>1.32.1</version>
+            <version>1.33.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.apis</groupId>
@@ -187,12 +187,12 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.27</version>
+            <version>8.0.28</version>
         </dependency>
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.4</version>
+            <version>5.0.0-alpha.5</version>
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
@@ -202,7 +202,7 @@
         <dependency>
             <groupId>com.github.twitch4j</groupId>
             <artifactId>twitch4j</artifactId>
-            <version>1.7.0</version>
+            <version>1.8.0</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

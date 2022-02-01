@@ -47,10 +47,10 @@ public class Notifier {
 
         if (BotInfo.version == BotVersion.DEV) configurationBuilder.setDebugEnabled(true);
 
-        configurationBuilder.setOAuthConsumerKey("QWQGGGN7ZLnSuKWQ4rnE7hoct");
-        configurationBuilder.setOAuthConsumerSecret("iLiqAjoEUFBVMzgweM2Nxzb28iBUykaDKPJlwl1ge6m4nfm818");
-        configurationBuilder.setOAuthAccessToken("1058695568896282624-7PtwoaxikthfHGxgJsj8glqvXEqvh7");
-        configurationBuilder.setOAuthAccessTokenSecret("RYrvv1u9fGybki2kpDaIHIZoLRIylqTWA0KdCo7NiARR6");
+        configurationBuilder.setOAuthConsumerKey(Main.getInstance().getConfig().getConfig().getString("twitter.consumer.key"));
+        configurationBuilder.setOAuthConsumerSecret(Main.getInstance().getConfig().getConfig().getString("twitter.consumer.secret"));
+        configurationBuilder.setOAuthAccessToken(Main.getInstance().getConfig().getConfig().getString("twitter.access.key"));
+        configurationBuilder.setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfig().getString("twitter.access.secret"));
 
         twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
     }
@@ -80,7 +80,7 @@ public class Notifier {
                 // Try getting the User.
                 Optional<User> twitchUserRequest = getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(channelGoLiveEvent.getStream().getUserName())).execute().getUsers().stream().findFirst();
                 if (getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(channelGoLiveEvent.getStream().getUserName())).execute().getUsers().stream().findFirst().isPresent()) {
-                    webhookEmbedBuilder.setImageUrl(twitchUserRequest.get().getProfileImageUrl());
+                    webhookEmbedBuilder.setImageUrl(twitchUserRequest.orElseThrow().getProfileImageUrl());
                 } else {
                     webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrl());
                 }
@@ -141,6 +141,8 @@ public class Notifier {
 
         twitchChannel = twitchChannel.toLowerCase();
 
+        if(!Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(twitchChannel).isEmpty()) return;
+
         if (isTwitchRegistered(twitchChannel)) registeredTwitchChannels.remove(twitchChannel);
 
         getTwitchClient().getClientHelper().disableStreamEventListener(twitchChannel);
@@ -170,16 +172,7 @@ public class Notifier {
 
         twitterUser = twitterUser.toLowerCase();
 
-        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-
-        if (BotInfo.version == BotVersion.DEV) configurationBuilder.setDebugEnabled(true);
-
-        configurationBuilder.setOAuthConsumerKey("QWQGGGN7ZLnSuKWQ4rnE7hoct");
-        configurationBuilder.setOAuthConsumerSecret("iLiqAjoEUFBVMzgweM2Nxzb28iBUykaDKPJlwl1ge6m4nfm818");
-        configurationBuilder.setOAuthAccessToken("1058695568896282624-7PtwoaxikthfHGxgJsj8glqvXEqvh7");
-        configurationBuilder.setOAuthAccessTokenSecret("RYrvv1u9fGybki2kpDaIHIZoLRIylqTWA0KdCo7NiARR6");
-
-        TwitterStream twitterStream = new TwitterStreamFactory(configurationBuilder.build()).getInstance().user(twitterUser).addListener(new StatusListener() {
+        TwitterStream twitterStream = new TwitterStreamFactory(getTwitterClient().getConfiguration()).getInstance().user(twitterUser).addListener(new StatusListener() {
             @Override
             public void onStatus(Status status) {
                 if (!status.getUser().isProtected()) {
@@ -203,9 +196,6 @@ public class Notifier {
                     webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
                     Webhook.sendWebhook(null, webhookMessageBuilder.build(), 929416074712219648L, "WeNrLzLD0Oh6ptLNDBRiWt-WP3aU3EC_5_LL7jrKCD0etyHDu4zP48xtLUwOg0FUjuI0");
-
-                } else {
-
                 }
             }
 

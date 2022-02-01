@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.LoggerImpl;
 import de.presti.ree6.utils.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -18,6 +17,8 @@ import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+// TODO documentation
+
 /**
  * This class schedules tracks for the audio player. It contains the queue of
  * tracks.
@@ -26,9 +27,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
     private final BlockingQueue<AudioTrack> queue;
-    public TextChannel thechannel;
-    public boolean loop = false;
-    public boolean shuffle = false;
+    TextChannel textChannel;
+    boolean loop = false;
+    boolean shuffle = false;
 
     /**
      * @param player The audio player this scheduler uses
@@ -51,7 +52,7 @@ public class TrackScheduler extends AudioEventAdapter {
         // track goes to the queue instead.
         if (!player.startTrack(track, true)) {
             if (!queue.offer(track)) {
-                LoggerImpl.log("TrackScheduler", "Couldn't offer a new Track!");
+                Main.getInstance().getLogger().error("[TrackScheduler] Couldn't offer a new Track!");
             }
         }
     }
@@ -60,12 +61,12 @@ public class TrackScheduler extends AudioEventAdapter {
         return loop;
     }
 
-    public TextChannel getThechannel() {
-        return thechannel;
+    public TextChannel getTextChannel() {
+        return textChannel;
     }
 
-    public void setThechannel(TextChannel thechannel) {
-        this.thechannel = thechannel;
+    public void setTextChannel(TextChannel textChannel) {
+        this.textChannel = textChannel;
     }
 
     public boolean isLoop() {
@@ -105,7 +106,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
 
         if (!list.remove(track)) {
-            LoggerImpl.log("TrackScheduler", "Couldn't remove a Track!");
+            Main.getInstance().getLogger().error("[TrackScheduler] Couldn't remove a Track!");
         }
         return track;
     }
@@ -180,11 +181,11 @@ public class TrackScheduler extends AudioEventAdapter {
                     em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setColor(Color.RED);
                     em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: Track is not existing!");
-                    em.setFooter(thechannel.getGuild().getName() + " - " + Data.ADVERTISEMENT, thechannel.getGuild().getIconUrl());
+                    em.setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl());
 
-                    Main.getInstance().getCommandManager().sendMessage(em, 5, thechannel);
+                    Main.getInstance().getCommandManager().sendMessage(em, 5, getTextChannel());
 
-                    nextTrack(thechannel);
+                    nextTrack(getTextChannel());
                 }
             } else if (endReason == AudioTrackEndReason.LOAD_FAILED) {
                 EmbedBuilder em = new EmbedBuilder();
@@ -195,11 +196,11 @@ public class TrackScheduler extends AudioEventAdapter {
                 em.setColor(Color.RED);
                 em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: "
                         + endReason.name());
-                em.setFooter(thechannel.getGuild().getName() + " - " + Data.ADVERTISEMENT, thechannel.getGuild().getIconUrl());
+                em.setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl());
 
-                Main.getInstance().getCommandManager().sendMessage(em, 5, thechannel);
+                Main.getInstance().getCommandManager().sendMessage(em, 5, getTextChannel());
 
-                nextTrack(thechannel);
+                nextTrack(getTextChannel());
             }
         } else if (shuffle) {
             if (endReason.mayStartNext) {
@@ -212,11 +213,11 @@ public class TrackScheduler extends AudioEventAdapter {
                     em.setColor(Color.RED);
                     em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: "
                             + endReason.name());
-                    em.setFooter(thechannel.getGuild().getName() + " - " + Data.ADVERTISEMENT, thechannel.getGuild().getIconUrl());
+                    em.setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl());
 
-                    Main.getInstance().getCommandManager().sendMessage(em, 5, thechannel);
+                    Main.getInstance().getCommandManager().sendMessage(em, 5, getTextChannel());
                 }
-                nextRandomTrack(thechannel);
+                nextRandomTrack(getTextChannel());
             }
         } else {
             if (endReason.mayStartNext) {
@@ -229,26 +230,26 @@ public class TrackScheduler extends AudioEventAdapter {
                     em.setColor(Color.RED);
                     em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: "
                             + endReason.name());
-                    em.setFooter(thechannel.getGuild().getName() + " - " + Data.ADVERTISEMENT, thechannel.getGuild().getIconUrl());
+                    em.setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl());
 
-                    Main.getInstance().getCommandManager().sendMessage(em, 5, thechannel);
+                    Main.getInstance().getCommandManager().sendMessage(em, 5, getTextChannel());
                 }
-                nextTrack(thechannel);
+                nextTrack(getTextChannel());
             }
         }
     }
 
     public void stopAll(InteractionHook interactionHook) {
         EmbedBuilder em = new EmbedBuilder();
-        if (Main.getInstance().getMusicWorker().isConnected(thechannel.getGuild()) || getPlayer().getPlayingTrack() != null) {
+        if (Main.getInstance().getMusicWorker().isConnected(getTextChannel().getGuild()) || getPlayer().getPlayingTrack() != null) {
 
-            GuildMusicManager gmm = Main.getInstance().getMusicWorker().getGuildAudioPlayer(thechannel.getGuild());
+            GuildMusicManager gmm = Main.getInstance().getMusicWorker().getGuildAudioPlayer(getTextChannel().getGuild());
 
             gmm.player.stopTrack();
 
             gmm.scheduler.clearQueue();
 
-            Main.getInstance().getMusicWorker().disconnect(thechannel.getGuild());
+            Main.getInstance().getMusicWorker().disconnect(getTextChannel().getGuild());
             em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
                     BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setTitle("Music Player!");
@@ -265,6 +266,6 @@ public class TrackScheduler extends AudioEventAdapter {
         }
 
         em.setFooter(Data.ADVERTISEMENT);
-        Main.getInstance().getCommandManager().sendMessage(em, 5, thechannel, interactionHook);
+        Main.getInstance().getCommandManager().sendMessage(em, 5, getTextChannel(), interactionHook);
     }
 }

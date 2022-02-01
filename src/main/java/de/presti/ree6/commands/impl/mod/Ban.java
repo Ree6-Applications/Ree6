@@ -8,13 +8,13 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class Ban extends Command {
 
     public Ban() {
-        super("ban", "Ban the User from the Server!", Category.MOD, new CommandData("ban", "Ban the User from the Server!")
+        super("ban", "Ban the User from the Server!", Category.MOD, new CommandDataImpl("ban", "Ban the User from the Server!")
                 .addOptions(new OptionData(OptionType.USER, "target", "Which User should be banned.").setRequired(true))
                 .addOptions(new OptionData(OptionType.STRING, "reason", "Why do you want to ban this User?").setRequired(false)));
     }
@@ -24,8 +24,8 @@ public class Ban extends Command {
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 
             if (commandEvent.isSlashCommand()) {
-                OptionMapping targetOption = commandEvent.getSlashCommandEvent().getOption("target");
-                OptionMapping reasonOption = commandEvent.getSlashCommandEvent().getOption("reason");
+                OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
+                OptionMapping reasonOption = commandEvent.getSlashCommandInteractionEvent().getOption("reason");
 
                 if (targetOption != null) {
                     if (reasonOption != null) {

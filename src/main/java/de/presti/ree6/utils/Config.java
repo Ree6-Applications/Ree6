@@ -16,12 +16,14 @@ public class Config {
         if (!getFile().exists()) {
             cfg.options().copyDefaults(true);
             cfg.options().copyHeader(true);
-            cfg.options().header("################################\n" +
-                    "#                              #\n" +
-                    "# Ree6 Config File             #\n" +
-                    "# by Presti                    #\n" +
-                    "#                              #\n" +
-                    "################################\n");
+            cfg.options().header("""
+                    ################################
+                    #                              #
+                    # Ree6 Config File             #
+                    # by Presti                    #
+                    #                              #
+                    ################################
+                    """);
             cfg.addDefault("mysql.user", "root");
             cfg.addDefault("mysql.db", "root");
             cfg.addDefault("mysql.pw", "yourpw");
@@ -34,6 +36,10 @@ public class Config {
             cfg.addDefault("spotify.client.secret", "yourspotifyclientsecret");
             cfg.addDefault("twitch.client.id", "yourtwitchclientidhere");
             cfg.addDefault("twitch.client.secret", "yourtwitchclientsecrethere");
+            cfg.addDefault("twitter.consumer.key", "yourTwitterConsumerKey");
+            cfg.addDefault("twitter.consumer.secret", "yourTwitterConsumerSecret");
+            cfg.addDefault("twitter.access.key", "yourTwitterAccessKey");
+            cfg.addDefault("twitter.access.secret", "yourTwitterAccessSecret");
             cfg.addDefault("youtube.api.key", "youryoutubeapikey");
             cfg.addDefault("bot.tokens.rel", "ReleaseTokenhere");
             cfg.addDefault("bot.tokens.dev", "DevTokenhere");
@@ -42,7 +48,6 @@ public class Config {
                 cfg.save(getFile());
             } catch (Exception ignored) {
             }
-
         }
     }
 
