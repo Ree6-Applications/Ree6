@@ -1,4 +1,4 @@
-package de.presti.ree6.logger;
+package de.presti.ree6.logger.events;
 
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;

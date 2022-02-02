@@ -3,9 +3,8 @@ package de.presti.ree6.sql;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
-import de.presti.ree6.invitelogger.InviteContainer;
+import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.utils.Setting;
 
 import java.sql.ResultSet;
@@ -1943,8 +1942,8 @@ public class SQLWorker {
             // Skip the hidden Commands.
             if (command.getCategory() == Category.HIDDEN) continue;
 
-            if (!hasSetting(guildId, "command_" + command.getCmd().toLowerCase()))
-                setSetting(guildId, "command_" + command.getCmd().toLowerCase(),true);
+            if (!hasSetting(guildId, "command_" + command.getName().toLowerCase()))
+                setSetting(guildId, "command_" + command.getName().toLowerCase(),true);
         }
 
         // Create Log Settings.

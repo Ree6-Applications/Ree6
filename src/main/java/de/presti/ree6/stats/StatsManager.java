@@ -18,7 +18,7 @@ public class StatsManager {
      */
     public static void addStatsForCommand(Command command, String guildId) {
         if (command != null) {
-            Main.getInstance().getSqlConnector().getSqlWorker().addStats(guildId, command.getCmd());
+            Main.getInstance().getSqlConnector().getSqlWorker().addStats(guildId, command.getName());
         }
     }
 
@@ -38,7 +38,7 @@ public class StatsManager {
      * @return {@link Long} as Usage.
      */
     public static long getUsageForCommand(Command command) {
-        return Main.getInstance().getSqlConnector().getSqlWorker().getStatsCommandGlobal(command.getCmd());
+        return Main.getInstance().getSqlConnector().getSqlWorker().getStatsCommandGlobal(command.getName());
     }
 
     /**

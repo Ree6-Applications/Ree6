@@ -1,4 +1,4 @@
-package de.presti.ree6.logger;
+package de.presti.ree6.logger.events;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;

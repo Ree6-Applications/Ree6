@@ -2,7 +2,7 @@ package de.presti.ree6.bot;
 
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;
-import de.presti.ree6.logger.LoggerMessage;
+import de.presti.ree6.logger.events.LoggerMessage;
 import de.presti.ree6.main.Main;
 
 /**

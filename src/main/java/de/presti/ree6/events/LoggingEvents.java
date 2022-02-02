@@ -4,9 +4,9 @@ import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.bot.BotInfo;
-import de.presti.ree6.invitelogger.InviteContainer;
-import de.presti.ree6.invitelogger.InviteContainerManager;
-import de.presti.ree6.logger.*;
+import de.presti.ree6.logger.events.*;
+import de.presti.ree6.logger.invite.InviteContainer;
+import de.presti.ree6.logger.invite.InviteContainerManager;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.ArrayUtil;
@@ -313,7 +313,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMemberData(event.getMember(), null, new ArrayList<Role>(event.getRoles())), LoggerMessage.LogTyp.MEMBERROLE_CHANGE));
+        Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMemberData(event.getMember(), null, new ArrayList<>(event.getRoles())), LoggerMessage.LogTyp.MEMBERROLE_CHANGE));
     }
 
     @Override
@@ -345,7 +345,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMemberData(event.getMember(), new ArrayList<Role>(event.getRoles()), null), LoggerMessage.LogTyp.MEMBERROLE_CHANGE));
+        Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerMemberData(event.getMember(), new ArrayList<>(event.getRoles()), null), LoggerMessage.LogTyp.MEMBERROLE_CHANGE));
     }
 
     @Override

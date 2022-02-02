@@ -143,7 +143,7 @@ public class OtherEvents extends ListenerAdapter {
 
                     new Thread(() -> {
                         try {
-                            wait(30000);
+                            Thread.sleep(30000);
                         } catch (InterruptedException ignored) {
                             Main.getInstance().getLogger().error("[OtherEvents] User cool-down Thread interrupted!");
                             Thread.currentThread().interrupt();

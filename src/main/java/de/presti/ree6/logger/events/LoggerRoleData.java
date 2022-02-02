@@ -1,4 +1,4 @@
-package de.presti.ree6.logger;
+package de.presti.ree6.logger.events;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
@@ -6,6 +6,10 @@ import net.dv8tion.jda.api.entities.Role;
 import java.awt.*;
 import java.util.EnumSet;
 
+/**
+ * This class is used for merging Role Activity Logs to save Webhook Messages
+ * to prevent Rate-Limits.
+ */
 public class LoggerRoleData {
 
     // The ID of the Role.

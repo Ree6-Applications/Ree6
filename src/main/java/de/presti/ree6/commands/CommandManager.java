@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-
+// TODO document.
 public class CommandManager {
 
     static final ArrayList<Command> commands = new ArrayList<>();
@@ -123,7 +123,7 @@ public class CommandManager {
     }
 
     public Command getCommandByName(String name) {
-        return getCommands().stream().filter(command -> command.getCmd().equalsIgnoreCase(name) ||
+        return getCommands().stream().filter(command -> command.getName().equalsIgnoreCase(name) ||
                 Arrays.stream(command.getAlias()).anyMatch(s -> s.equalsIgnoreCase(name))).findFirst().orElse(null);
 
     }
@@ -154,7 +154,7 @@ public class CommandManager {
                 return false;
             }
 
-            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getCmd().toLowerCase()).getBooleanValue() &&
+            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getName().toLowerCase()).getBooleanValue() &&
                     command.getCategory() != Category.HIDDEN) {
                 sendMessage("This Command is blocked!", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 return false;
@@ -207,7 +207,7 @@ public class CommandManager {
                 return false;
             }
 
-            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getCmd().toLowerCase()).getBooleanValue() &&
+            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getName().toLowerCase()).getBooleanValue() &&
                     command.getCategory() != Category.HIDDEN) {
                 sendMessage("This Command is blocked!", 5, textChannel, null);
                 return false;

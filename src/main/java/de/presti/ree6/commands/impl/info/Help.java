@@ -13,8 +13,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.util.stream.Collectors;
-
 public class Help extends Command {
 
     public Help() {
@@ -65,9 +63,9 @@ public class Help extends Command {
                 for (Command cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getCategory() == category).toList()) {
                         end.append("``")
                                 .append(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue())
-                                .append(cmd.getCmd())
+                                .append(cmd.getName())
                                 .append("``\n")
-                                .append(cmd.getDesc())
+                                .append(cmd.getDescription())
                                 .append("\n\n");
                 }
 

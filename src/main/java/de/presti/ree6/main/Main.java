@@ -10,7 +10,7 @@ import de.presti.ree6.bot.BotVersion;
 import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.OtherEvents;
-import de.presti.ree6.logger.LoggerQueue;
+import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.music.AudioPlayerSendHandler;
 import de.presti.ree6.music.GuildMusicManager;
 import de.presti.ree6.music.MusicWorker;
@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 /**
  * Main Application class, used to store Instances of System Relevant classes.
@@ -110,6 +109,7 @@ public class Main {
         // Register the Event-handler.
         instance.notifier.registerTwitchEventHandler();
 
+        // Create a new Instance of the Bot, as well as add the Events.
         try {
             BotUtil.createBot(BotVersion.DEV, "1.6.0");
             instance.musicWorker = new MusicWorker();
@@ -118,50 +118,81 @@ public class Main {
             instance.logger.error("[Main] Error while init: " + ex.getMessage());
         }
 
+        // Add the Runtime-hooks.
         instance.addHooks();
 
+        // Set the start Time for stats.
         BotInfo.startTime = System.currentTimeMillis();
 
+        // Initialize the Addon-Manager.
         instance.addonManager = new AddonManager();
+
+        // Initialize the Addon-Loader.
         AddonLoader.loadAllAddons();
+
+        // Start all Addons.
         instance.addonManager.startAddons();
     }
 
+    /**
+     * Called to add all Events.
+     */
     private void addEvents() {
         BotUtil.addEvent(new OtherEvents());
         BotUtil.addEvent(new LoggingEvents());
     }
 
+    /**
+     * Called to add all Runtime-hooks.
+     */
     private void addHooks() {
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
 
+    /**
+     * Called when the application shutdowns.
+     */
     private void shutdown() {
+        // Current time for later stats.
         long start = System.currentTimeMillis();
         instance.logger.info("[Main] Shutdown init. !");
+        BotInfo.state = BotState.STOPPED;
 
+        // Check if there is an SQL-connection if so, shutdown.
         if (sqlConnector != null && (sqlConnector.IsConnected())) {
             instance.logger.info("[Main] Closing Database Connection!");
             getSqlConnector().close();
             instance.logger.info("[Main] Closed Database Connection!");
         }
 
+        // Shutdown every Addon.
         instance.logger.info("[Main] Disabling every Addon!");
         getAddonManager().stopAddons();
         instance.logger.info("[Main] Every Addon has been disabled!");
 
+        // Close the Twitch-Client
         instance.logger.info("[Main] Closing Twitch API Instance!");
         getNotifier().getTwitchClient().close();
         instance.logger.info("[Main] Twitch API Instance closed!");
 
+        // Shutdown Checker Thread.
+        instance.logger.info("[Main] Interrupting the Checker thread!");
+        checker.interrupt();
+        instance.logger.info("[Main] Interrupted the Checker thread!");
+
+        // Shutdown the Bot instance.
         instance.logger.info("[Main] JDA Instance shutdown init. !");
         BotUtil.shutdown();
         instance.logger.info("[Main] JDA Instance has been shut down!");
 
+        // Inform of how long it took.
         instance.logger.info("[Main] Everything has been shut down in " + (System.currentTimeMillis() - start) + "ms!");
         instance.logger.info("[Main] Good bye!");
     }
 
+    /**
+     * Method creates a Thread used to create a Checker Thread.
+     */
     public void createCheckerThread() {
         checker = new Thread(() -> {
             while (BotInfo.state != BotState.STOPPED) {
@@ -185,20 +216,21 @@ public class Main {
                     lastDay = new SimpleDateFormat("dd").format(new Date());
                 }
 
-                for (Guild g : BotInfo.botInstance.getGuilds().stream().filter(guild -> guild.getAudioManager().getSendingHandler() != null
+                for (Guild guild : BotInfo.botInstance.getGuilds().stream().filter(guild -> guild.getAudioManager().getSendingHandler() != null
                         && guild.getSelfMember().getVoiceState() != null &&
                         guild.getSelfMember().getVoiceState().inAudioChannel()).toList()) {
-                    GuildMusicManager gmm = musicWorker.getGuildAudioPlayer(g);
+                    GuildMusicManager guildMusicManager = musicWorker.getGuildAudioPlayer(guild);
 
                     try {
-                        AudioPlayerSendHandler playerSendHandler = (AudioPlayerSendHandler) g.getAudioManager().getSendingHandler();
+                        AudioPlayerSendHandler playerSendHandler = (AudioPlayerSendHandler) guild.getAudioManager().getSendingHandler();
 
-                        if (g.getSelfMember().getVoiceState() != null && g.getSelfMember().getVoiceState().inAudioChannel() && (playerSendHandler == null || !playerSendHandler.isMusicPlaying(g))) {
-                            gmm.scheduler.stopAll(null);
+                        if (guild.getSelfMember().getVoiceState() != null && guild.getSelfMember().getVoiceState().inAudioChannel() && (playerSendHandler == null ||
+                                !playerSendHandler.isMusicPlaying(guild))) {
+                            guildMusicManager.scheduler.stopAll(null);
                         }
 
                     } catch (Exception ex) {
-                        gmm.scheduler.stopAll(null);
+                        guildMusicManager.scheduler.stopAll(null);
                         getLogger().error("Error", ex);
                     }
                 }

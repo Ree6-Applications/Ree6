@@ -1,4 +1,4 @@
-package de.presti.ree6.invitelogger;
+package de.presti.ree6.logger.invite;
 
 /**
  * Classed used to save Data of Invites from the Database.

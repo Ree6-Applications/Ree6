@@ -1,4 +1,4 @@
-package de.presti.ree6.invitelogger;
+package de.presti.ree6.logger.invite;
 
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Guild;

@@ -4,6 +4,8 @@ import de.presti.ree6.main.Main;
 
 import java.util.ArrayList;
 
+// TODO recode.
+
 /**
  * Created to work faster with the ChatProtector without calling the SQLWorker everytime.
  * Needs a revamp.

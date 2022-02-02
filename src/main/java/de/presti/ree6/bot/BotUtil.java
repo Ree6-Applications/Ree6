@@ -43,12 +43,13 @@ public class BotUtil {
     /**
      * Change the current Activity of the Bot.
      *
-     * @param message the Message of the Activity.
-     * @param at      the Activity type.
+     * @param message      the Message of the Activity.
+     * @param activityType the Activity type.
      */
-    public static void setActivity(String message, Activity.ActivityType at) {
+    public static void setActivity(String message, Activity.ActivityType activityType) {
         // If the Bot Instance is null, if not set.
-        if (BotInfo.botInstance != null) BotInfo.botInstance.getPresence().setActivity(Activity.of(at, message));
+        if (BotInfo.botInstance != null)
+            BotInfo.botInstance.getPresence().setActivity(Activity.of(activityType, message));
     }
 
     /**

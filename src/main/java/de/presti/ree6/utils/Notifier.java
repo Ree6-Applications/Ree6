@@ -293,6 +293,10 @@ public class Notifier {
 
         twitterUser = twitterUser.toLowerCase();
 
+        // TODO create SQL for Twitter Notifier.
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(twitterUser).isEmpty())
+            return;
+
         if (isTwitterRegistered(twitterUser)) {
 
             registeredTwitterUsers.get(twitterUser).cleanUp();

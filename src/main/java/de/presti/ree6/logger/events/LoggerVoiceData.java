@@ -1,8 +1,12 @@
-package de.presti.ree6.logger;
+package de.presti.ree6.logger.events;
 
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
 
+/**
+ * This class is used for merging Voice Activity Logs to save Webhook Messages
+ * to prevent Rate-Limits.
+ */
 public class LoggerVoiceData {
 
     // An instance of the Member Entity.
