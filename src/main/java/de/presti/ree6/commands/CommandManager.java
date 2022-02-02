@@ -128,14 +128,14 @@ public class CommandManager {
 
     }
 
-    public boolean perform(Member member, Guild guild, String messageContent, Message message, TextChannel textChannel, SlashCommandInteractionEvent SlashCommandInteractionEvent) {
+    public boolean perform(Member member, Guild guild, String messageContent, Message message, TextChannel textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
 
 
         if (ArrayUtil.commandCooldown.contains(member.getUser().getId())) {
 
-            if (SlashCommandInteractionEvent != null) {
-                sendMessage("You are on cooldown!", 5, textChannel, SlashCommandInteractionEvent.getHook().setEphemeral(true));
-                deleteMessage(message, SlashCommandInteractionEvent.getHook().setEphemeral(true));
+            if (slashCommandInteractionEvent != null) {
+                sendMessage("You are on cooldown!", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                deleteMessage(message, slashCommandInteractionEvent.getHook().setEphemeral(true));
             } else {
                 sendMessage("You are on cooldown!", 5, textChannel, null);
                 deleteMessage(message, null);
@@ -144,23 +144,23 @@ public class CommandManager {
             return false;
         }
 
-        if (SlashCommandInteractionEvent != null) {
+        if (slashCommandInteractionEvent != null) {
 
-            Command command = getCommandByName(SlashCommandInteractionEvent.getName());
+            Command command = getCommandByName(slashCommandInteractionEvent.getName());
 
 
             if (command == null) {
-                sendMessage("That Command couldn't be found", 5, textChannel, SlashCommandInteractionEvent.getHook().setEphemeral(true));
+                sendMessage("That Command couldn't be found", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 return false;
             }
 
             if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getCmd().toLowerCase()).getBooleanValue() &&
                     command.getCategory() != Category.HIDDEN) {
-                sendMessage("This Command is blocked!", 5, textChannel, SlashCommandInteractionEvent.getHook().setEphemeral(true));
+                sendMessage("This Command is blocked!", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 return false;
             }
 
-            command.onPerform(new CommandEvent(member, guild, null, textChannel, null, SlashCommandInteractionEvent));
+            command.onPerform(new CommandEvent(member, guild, null, textChannel, null, slashCommandInteractionEvent));
 
             StatsManager.addStatsForCommand(command, guild.getId());
 

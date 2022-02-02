@@ -28,7 +28,7 @@ public class CommandEvent {
     String[] arguments;
 
     // The Slash Command Event that is associated with the Command execution.
-    SlashCommandInteractionEvent SlashCommandInteractionEvent;
+    SlashCommandInteractionEvent slashCommandInteractionEvent;
 
     /**
      * Constructor used to save the Data.
@@ -37,15 +37,15 @@ public class CommandEvent {
      * @param message the {@link Message} Entity.
      * @param textChannel the {@link TextChannel} Entity.
      * @param arguments the given Arguments.
-     * @param SlashCommandInteractionEvent the {@link SlashCommandInteractionEvent} Entity.
+     * @param slashCommandInteractionEvent the {@link SlashCommandInteractionEvent} Entity.
      */
-    public CommandEvent(Member member, Guild guild, Message message, TextChannel textChannel, String[] arguments, SlashCommandInteractionEvent SlashCommandInteractionEvent) {
+    public CommandEvent(Member member, Guild guild, Message message, TextChannel textChannel, String[] arguments, SlashCommandInteractionEvent slashCommandInteractionEvent) {
         this.member = member;
         this.guild = guild;
         this.message = message;
         this.textChannel = textChannel;
         this.arguments = arguments;
-        this.SlashCommandInteractionEvent = SlashCommandInteractionEvent;
+        this.slashCommandInteractionEvent = slashCommandInteractionEvent;
     }
 
     /**
@@ -93,7 +93,7 @@ public class CommandEvent {
      * @return the {@link SlashCommandInteractionEvent} Entity.
      */
     public SlashCommandInteractionEvent getSlashCommandInteractionEvent() {
-        return SlashCommandInteractionEvent;
+        return slashCommandInteractionEvent;
     }
 
     /**

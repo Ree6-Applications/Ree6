@@ -6,6 +6,7 @@ import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -89,31 +90,27 @@ public class AddonLoader {
                     String entryName = entry.getName();
 
                     // Check if it is a Directory if so don't do anything and skip.
-                    if (!entry.isDirectory()) {
+                    // If it is the addon.yml then get the Data from it.
+                    if (!entry.isDirectory() && entryName.equalsIgnoreCase("addon.yml")) {
+                        // Create a temporal File to extract the Data from. I'm pretty sure there is a better way but as I said earlier didn't have the time for it.
+                        file = new File("addons/tmp/temp_" + ArrayUtil.getRandomString(9) + ".yml");
 
-                        // If it is the addon.yml then get the Data from it.
-                        if (entryName.equalsIgnoreCase("addon.yml")) {
+                        // Create a FileOutputStream of the temporal File and write every bite from the File inside the JAR.
+                        try (FileOutputStream os = new FileOutputStream(file)) {
 
-                            // Create a temporal File to extract the Data from. I'm pretty sure there is a better way but as I said earlier didn't have the time for it.
-                            file = new File("addons/tmp/temp_" + ArrayUtil.getRandomString(9) + ".yml");
-
-                            // Create a FileOutputStream of the temporal File and write every bite from the File inside the JAR.
-                            try (FileOutputStream os = new FileOutputStream(file)) {
-
-                                for (int c = zipInputStream.read(); c != -1; c = zipInputStream.read()) {
-                                    os.write(c);
-                                }
+                            for (int c = zipInputStream.read(); c != -1; c = zipInputStream.read()) {
+                                os.write(c);
                             }
-
-                            // Load it as a YAML-Config and fill the Variables.
-                            FileConfiguration conf = YamlConfiguration.loadConfiguration(file);
-
-                            name = conf.getString("name");
-                            author = conf.getString("author");
-                            version = conf.getString("version");
-                            apiVersion = conf.getString("api-version");
-                            classPath = conf.getString("main");
                         }
+
+                        // Load it as a YAML-Config and fill the Variables.
+                        FileConfiguration conf = YamlConfiguration.loadConfiguration(file);
+
+                        name = conf.getString("name");
+                        author = conf.getString("author");
+                        version = conf.getString("version");
+                        apiVersion = conf.getString("api-version");
+                        classPath = conf.getString("main");
                     }
                 } catch (Exception e) {
                     Main.getInstance().getLogger().error("Error while trying to pre-load the Addon " + fileName, e);
@@ -126,9 +123,7 @@ public class AddonLoader {
 
         // Check if the File isn't null and exists if so delete.
         if (file != null && file.exists()) {
-            if (file.delete()) {
-                Main.getInstance().getLogger().error("Error while trying to delete the temporal Addon files!");
-            }
+            Files.delete(file.toPath());
         }
 
         // Check if there is any data core data if not throw this error.

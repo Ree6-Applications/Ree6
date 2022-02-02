@@ -218,8 +218,8 @@ public class Notifier {
                         webhookEmbedBuilder.setDescription("**" + status.getText() + "**\n");
                     }
 
-                    if (status.getMediaEntities().length > 0) {
-                        if (status.getMediaEntities()[0].getType().equalsIgnoreCase("photo")) webhookEmbedBuilder.setImageUrl(status.getMediaEntities()[0].getMediaURLHttps());
+                    if (status.getMediaEntities().length > 0 && status.getMediaEntities()[0].getType().equalsIgnoreCase("photo")) {
+                        webhookEmbedBuilder.setImageUrl(status.getMediaEntities()[0].getMediaURLHttps());
                     }
 
                     webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotInfo.botInstance.getSelfUser().getAvatarUrl()));
@@ -239,6 +239,7 @@ public class Notifier {
              */
             @Override
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+                // Unused
             }
 
             /**
@@ -247,6 +248,7 @@ public class Notifier {
              */
             @Override
             public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+                // Unused
             }
 
             /**
@@ -256,6 +258,7 @@ public class Notifier {
              */
             @Override
             public void onScrubGeo(long userId, long upToStatusId) {
+                // Unused
             }
 
             /**
@@ -264,6 +267,7 @@ public class Notifier {
              */
             @Override
             public void onStallWarning(StallWarning warning) {
+                // Unused
             }
 
             /**

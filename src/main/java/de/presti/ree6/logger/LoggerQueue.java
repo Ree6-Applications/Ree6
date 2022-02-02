@@ -12,7 +12,6 @@ import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.stream.Collectors;
 
 /**
  * Internal LoggingQueue, created to merge LoggingMessages to prevent

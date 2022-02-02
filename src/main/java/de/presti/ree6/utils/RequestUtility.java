@@ -31,29 +31,19 @@ public class RequestUtility {
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build)
                 .header("Content-Type", "application/json-rpc");
 
-        if (request.getMethode() == Methode.GET) {
-            if (request.bearerAuth != null) {
-                httpRequestBuilder = httpRequestBuilder.header("Authorization", request.getBearerAuth()).GET();
-            } else {
-                httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri()).GET();
-            }
-        } else if (request.getMethode() == Methode.POST) {
-            if (request.bearerAuth != null) {
-                httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri())
-                        .header("Authorization", request.getBearerAuth()).POST(request.bodyPublisher);
-            } else {
-                httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri()).POST(request.bodyPublisher);
-            }
-        } else if (request.getMethode() == Methode.PUT) {
-            if (request.bearerAuth != null) {
-                httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri())
-                        .header("Authorization", request.getBearerAuth()).PUT(request.bodyPublisher);
-            } else {
-                httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri()).PUT(request.bodyPublisher);
-            }
+        if (request.bearerAuth != null) {
+            httpRequestBuilder = httpRequestBuilder.header("Authorization", request.getBearerAuth());
         }
 
-        HttpRequest httpRequest = null;
+        if (request.getMethode() == Methode.GET) {
+            httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri()).GET();
+        } else if (request.getMethode() == Methode.POST) {
+            httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri()).POST(request.bodyPublisher);
+        } else if (request.getMethode() == Methode.PUT) {
+            httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri()).PUT(request.bodyPublisher);
+        }
+
+        HttpRequest httpRequest;
 
         JsonElement jsonObject = new JsonObject();
 
