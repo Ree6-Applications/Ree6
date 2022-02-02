@@ -16,6 +16,7 @@ import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.awt.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.List;
 
@@ -95,7 +96,7 @@ public class Notifier {
 
                 wmb.addEmbeds(webhookEmbedBuilder.build());
 
-                Webhook.sendWebhook(null, wmb.build(), Long.parseLong(credits[0]), credits[1]);
+                Webhook.sendWebhook(null, wmb.build(), Long.parseLong(credits[0]), credits[1], false);
             }
         });
     }
@@ -141,7 +142,8 @@ public class Notifier {
 
         twitchChannel = twitchChannel.toLowerCase();
 
-        if(!Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(twitchChannel).isEmpty()) return;
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(twitchChannel).isEmpty())
+            return;
 
         if (isTwitchRegistered(twitchChannel)) registeredTwitchChannels.remove(twitchChannel);
 
@@ -172,7 +174,24 @@ public class Notifier {
 
         twitterUser = twitterUser.toLowerCase();
 
-        TwitterStream twitterStream = new TwitterStreamFactory(getTwitterClient().getConfiguration()).getInstance().user(twitterUser).addListener(new StatusListener() {
+        twitter4j.User user = null;
+
+        try {
+            user = getTwitterClient().showUser(twitterUser);
+        } catch (Exception ignore) {
+        }
+
+        if (user == null) return;
+
+        FilterQuery filterQuery = new FilterQuery();
+        filterQuery.follow(user.getId());
+
+        TwitterStream twitterStream = new TwitterStreamFactory(getTwitterClient().getConfiguration()).getInstance().addListener(new StatusListener() {
+
+            /**
+             * Override the onStatus method to inform about a new status.
+             * @param status the new Status.
+             */
             @Override
             public void onStatus(Status status) {
                 if (!status.getUser().isProtected()) {
@@ -184,46 +203,78 @@ public class Notifier {
 
                     WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
-                    webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(status.getUser().getName(), null));
+                    webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(status.getUser().getName() + " (@" + status.getUser().getScreenName() + ")", null));
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitter Notifier", BotInfo.botInstance.getSelfUser().getAvatarUrl(), null));
 
-                    webhookEmbedBuilder.setDescription(status.getText());
-                    webhookEmbedBuilder.setThumbnailUrl(status.getUser().getProfileImageURL());
+                    webhookEmbedBuilder.setThumbnailUrl(status.getUser().getBiggerProfileImageURLHttps());
+
+                    if (status.getQuotedStatus() != null && !status.isRetweet()) {
+                        webhookEmbedBuilder.setDescription("**Quoted  " + status.getQuotedStatus().getUser().getScreenName() + "**: " + status.getText() + "\n");
+                    } else if (status.getInReplyToScreenName() != null) {
+                        webhookEmbedBuilder.setDescription("**Reply to " + status.getInReplyToScreenName() + "**: " + status.getText() + "\n");
+                    } else if (status.isRetweet()) {
+                        webhookEmbedBuilder.setDescription("**Retweeted from " + status.getRetweetedStatus().getUser().getScreenName() + "**: " + status.getText().split(": ")[1] + "\n");
+                    } else {
+                        webhookEmbedBuilder.setDescription("**" + status.getText() + "**\n");
+                    }
+
+                    if (status.getMediaEntities().length > 0) {
+                        if (status.getMediaEntities()[0].getType().equalsIgnoreCase("photo")) webhookEmbedBuilder.setImageUrl(status.getMediaEntities()[0].getMediaURLHttps());
+                    }
 
                     webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotInfo.botInstance.getSelfUser().getAvatarUrl()));
+                    webhookEmbedBuilder.setTimestamp(Instant.now());
                     webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
 
                     webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                    Webhook.sendWebhook(null, webhookMessageBuilder.build(), 929416074712219648L, "WeNrLzLD0Oh6ptLNDBRiWt-WP3aU3EC_5_LL7jrKCD0etyHDu4zP48xtLUwOg0FUjuI0");
+                    Webhook.sendWebhook(null, webhookMessageBuilder.build(), 938352009768222751L,
+                            "ObXUIoiuIZVwjQIfbk_unc2FQJYINfHU3lIBAJoh6Dj7XxbtJ_vgSZ8uujHMznppQeEH", false);
                 }
             }
 
+            /**
+             * No need for this, so just ignore it.
+             * @param statusDeletionNotice Data Object.
+             */
             @Override
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-
             }
 
+            /**
+             * No need for this, so just ignore it.
+             * @param numberOfLimitedStatuses Data Object.
+             */
             @Override
             public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-
             }
 
+            /**
+             * No need for this, so just ignore it.
+             * @param userId Data Object.
+             * @param upToStatusId Data Object.
+             */
             @Override
             public void onScrubGeo(long userId, long upToStatusId) {
-
             }
 
+            /**
+             * No need for this, so just ignore it.
+             * @param warning Data Object.
+             */
             @Override
             public void onStallWarning(StallWarning warning) {
-
             }
 
+            /**
+             * Inform about an exception.
+             * @param ex the Exception
+             */
             @Override
             public void onException(Exception ex) {
-
+                Main.getInstance().getLogger().error("[Notifier] Encountered an error, while trying to get the Status update!", ex);
             }
-        });
+        }).filter(filterQuery);
 
         if (!isTwitterRegistered(twitterUser)) registeredTwitterUsers.put(twitterUser, twitterStream);
     }

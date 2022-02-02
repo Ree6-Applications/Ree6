@@ -16,17 +16,18 @@ public class Webhook {
      * @param message the MessageContent.
      * @param webhookId the ID of the Webhook.
      * @param webhookToken the Auth-Token of the Webhook.
+     * @param isLog is the Webhook Message a Log-Message?
      */
-    public static void sendWebhook(LoggerMessage loggerMessage, WebhookMessage message, long webhookId, String webhookToken) {
+    public static void sendWebhook(LoggerMessage loggerMessage, WebhookMessage message, long webhookId, String webhookToken, boolean isLog) {
 
         // Check if the given data is valid.
         if (webhookToken.contains("Not setup!") || webhookId == 0) return;
 
         // Check if the given data is in the Database.
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().existsLogData(webhookId, webhookToken)) return;
+        if (isLog && !Main.getInstance().getSqlConnector().getSqlWorker().existsLogData(webhookId, webhookToken)) return;
 
-        // Check if the LoggerMessage is null or canceled.
-        if (loggerMessage == null || loggerMessage.isCanceled()) {
+        // Check if the LoggerMessage is canceled.
+        if (isLog && (loggerMessage == null || loggerMessage.isCanceled())) {
             // If so, inform about invalid send.
             Main.getInstance().getLogger().error("[Webhook] Got a Invalid or Canceled LoggerMessage!");
             return;
@@ -39,7 +40,7 @@ public class Webhook {
                 // If the error 404 comes that means that the webhook is invalid.
                 if (throwable.getMessage().contains("failure 404")) {
                     // Inform and delete invalid webhook.
-                    Main.getInstance().getSqlConnector().getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
+                    if (isLog) Main.getInstance().getSqlConnector().getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
                     Main.getInstance().getLogger().error("[Webhook] Deleted invalid Webhook: " + webhookId + " - " + webhookToken);
                 } else if (throwable.getMessage().contains("failure 400")) {
                     // If 404 inform that the Message had an invalid Body.

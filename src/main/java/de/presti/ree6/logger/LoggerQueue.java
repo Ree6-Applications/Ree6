@@ -120,7 +120,7 @@ public class LoggerQueue {
                     LoggerMemberData memberData = logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage &&
                             loggerMessages.getId() == loggerMessage.getId() &&
                             loggerMessages.getMemberData().getMember() == loggerMessage.getMemberData().getMember() &&
-                            !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE).findFirst().get().getMemberData();
+                            !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.NICKNAME_CHANGE).findFirst().orElseThrow().getMemberData();
 
                     // Cancel every Log-Message which indicates that the person changed their name.
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
@@ -152,7 +152,7 @@ public class LoggerQueue {
                             loggerMessages.getId() == loggerMessage.getId() &&
                             loggerMessages.getMemberData() != null &&
                             loggerMessages.getMemberData().getMember() == loggerMessage.getMemberData().getMember() &&
-                            !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE).findFirst().get().getMemberData();
+                            !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.MEMBERROLE_CHANGE).findFirst().orElseThrow().getMemberData();
 
                     // Cancel every other LogEvent of that Typ.
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
@@ -236,7 +236,7 @@ public class LoggerQueue {
                     // Get the latest RoleData.
                     LoggerRoleData roleData = logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
                             loggerMessages.getRoleData() != null &&
-                            !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).findFirst().get().getRoleData();
+                            !loggerMessages.isCanceled() && loggerMessages.getType() == LoggerMessage.LogTyp.ROLEDATA_CHANGE).findFirst().orElseThrow().getRoleData();
 
                     // Cancel every Log-Message which indicates that the person changed their name.
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
@@ -363,7 +363,7 @@ public class LoggerQueue {
 
                         // Go through every message in currentPermission and add them to the String.
                         for (Permission permission : loggerMessage.getRoleData().getCurrentPermission().stream()
-                                .filter(permission -> !loggerMessage.getRoleData().getPreviousPermission().contains(permission)).collect(Collectors.toList())) {
+                                .filter(permission -> !loggerMessage.getRoleData().getPreviousPermission().contains(permission)).toList()) {
                             if (stringBuilder.length() >= 22) {
                                 stringBuilder.append("\n:white_check_mark: ").append(permission.getName());
                             } else {
@@ -373,7 +373,7 @@ public class LoggerQueue {
 
                         // Go through every message in previousPermission and add them to the String.
                         for (Permission permission : loggerMessage.getRoleData().getPreviousPermission().stream()
-                                .filter(permission -> !loggerMessage.getRoleData().getCurrentPermission().contains(permission)).collect(Collectors.toList())) {
+                                .filter(permission -> !loggerMessage.getRoleData().getCurrentPermission().contains(permission)).toList()) {
                             if (stringBuilder.length() >= 11) {
                                 stringBuilder.append("\n:no_entry: ").append(permission.getName());
                             } else {
@@ -461,7 +461,7 @@ public class LoggerQueue {
 
                 // If not canceled send it.
                 if (!loggerMessage.isCanceled()) {
-                    Webhook.sendWebhook(loggerMessage, loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode());
+                    Webhook.sendWebhook(loggerMessage, loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode(), true);
                 }
 
                 // Remove it from the list.
