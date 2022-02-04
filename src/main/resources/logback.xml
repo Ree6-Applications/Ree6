@@ -4,22 +4,9 @@
     <!-- Configure Twitch4J logger level -->
     <logger name="com.github.twitch4j" level="INFO"/>
 
-    <property name="LOG_ROOT" value="/home/Ree6/logs" />
-
-    <!-- <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>logs/latest.log</file>
         <append>true</append>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
-        </encoder>
-    </appender> -->
-
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <append>true</append>
-        <file>${LOG_ROOT}/latest.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_ROOT}/log_%d{yyyy-MM-dd}.log</fileNamePattern>
-        </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
         </encoder>

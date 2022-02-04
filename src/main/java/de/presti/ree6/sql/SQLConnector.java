@@ -73,7 +73,7 @@ public class SQLConnector {
 
         try {
             // Create a new Connection by using the SQL DriverManager and the MariaDB Java Driver and notify if successful.
-            connection = DriverManager.getConnection("jdbc:mysql://" + databaseServerIP + ":" + databaseServerPort + "/" + databaseName + "?autoReconnect=true", databaseUser, databasePassword);
+            connection = DriverManager.getConnection("jdbc:mariadb://" + databaseServerIP + ":" + databaseServerPort + "/" + databaseName + "?autoReconnect=true", databaseUser, databasePassword);
             Main.getInstance().getLogger().info("Service (MariaDB) has been started. Connection was successful.");
         } catch (Exception exception) {
             // Notify if there was an error.
