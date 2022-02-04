@@ -109,9 +109,12 @@ public class Main {
         // Register the Event-handler.
         instance.notifier.registerTwitchEventHandler();
 
+        // Register all Twitter Users.
+        instance.notifier.registerTwitterUser(instance.sqlConnector.getSqlWorker().getAllTwitterNames());
+
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotUtil.createBot(BotVersion.DEV, "1.6.0");
+            BotUtil.createBot(BotVersion.PUBLIC, "1.6.0");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -199,9 +202,10 @@ public class Main {
 
                 if (!lastDay.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 
-                    getSqlConnector().close();
-
-                    sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.db"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getInt("mysql.port"));
+                    if (BotInfo.startTime > System.currentTimeMillis() + 10000) {
+                        getSqlConnector().close();
+                        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.db"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getInt("mysql.port"));
+                    }
 
                     ArrayUtil.messageIDwithMessage.clear();
                     ArrayUtil.messageIDwithUser.clear();

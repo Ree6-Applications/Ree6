@@ -16,9 +16,6 @@ public class AddonManager {
     // The actual List with the Addons.
     public final ArrayList<Addon> addons = new ArrayList<>();
 
-    public AddonManager() {
-    }
-
     /**
      * Reload the AddonManager by stopping every Addon and reading them.
      */

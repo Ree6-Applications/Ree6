@@ -75,10 +75,9 @@ public class SQLConnector {
             // Create a new Connection by using the SQL DriverManager and the MariaDB Java Driver and notify if successful.
             connection = DriverManager.getConnection("jdbc:mysql://" + databaseServerIP + ":" + databaseServerPort + "/" + databaseName + "?autoReconnect=true", databaseUser, databasePassword);
             Main.getInstance().getLogger().info("Service (MariaDB) has been started. Connection was successful.");
-        } catch (Exception ignore) {
-            ignore.printStackTrace();
+        } catch (Exception exception) {
             // Notify if there was an error.
-            Main.getInstance().getLogger().error("Service (MariaDB) couldn't be started. Connection was unsuccessful.");
+            Main.getInstance().getLogger().error("Service (MariaDB) couldn't be started. Connection was unsuccessful.", exception);
         }
     }
 
@@ -95,6 +94,7 @@ public class SQLConnector {
         tables.put("CommandStats", "(COMMAND VARCHAR(40), USES VARCHAR(50))");
         tables.put("GuildStats", "(GID VARCHAR(40), COMMAND VARCHAR(40), USES VARCHAR(50))");
         tables.put("TwitchNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
+        tables.put("TwitterNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("LogWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("WelcomeWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("NewsWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");

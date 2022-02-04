@@ -16,7 +16,7 @@ public class InviteContainerManager {
     private static final ArrayList<InviteContainer> deletedInvites = new ArrayList<>();
 
     /**
-     * Methode to add a new Invite to the Database.
+     * Methode to add or update an Invitation on the Database.
      *
      * @param inviteContainer the {@link InviteContainer} with the data of the Invite.
      * @param guildID         the ID of the Guild.

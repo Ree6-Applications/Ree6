@@ -1,5 +1,6 @@
 HELP.md
 target/
+logs/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -36,4 +37,5 @@ build/
 .vscode/
 
 ### Config file ###
-config.yml
+*.yml
+*.log

@@ -31,10 +31,10 @@ public class ChatProtector extends Command {
                         sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                         sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector remove WORD", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                     } else if (commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
-                        if(de.presti.ree6.addons.impl.ChatProtector.hasChatProtector(commandEvent.getGuild().getId())) {
+                        if(de.presti.ree6.addons.impl.ChatProtector.isChatProtectorSetup(commandEvent.getGuild().getId())) {
                             StringBuilder end = new StringBuilder();
 
-                            for (String s : de.presti.ree6.addons.impl.ChatProtector.getChatProtector(commandEvent.getGuild().getId())) {
+                            for (String s : de.presti.ree6.addons.impl.ChatProtector.getBlacklist(commandEvent.getGuild().getId())) {
                                 end.append("\n").append(s);
                             }
 
@@ -56,14 +56,14 @@ public class ChatProtector extends Command {
                                 words.add(commandEvent.getArguments()[i]);
                                 end.append("\n").append(commandEvent.getArguments()[i]);
                             }
-                            de.presti.ree6.addons.impl.ChatProtector.addWordsToProtector(commandEvent.getGuild().getId(), words);
+                            de.presti.ree6.addons.impl.ChatProtector.blacklist(commandEvent.getGuild().getId(), words);
                             sendMessage("The Wordlist has been added to your ChatProtector!\nYour Wordlist:\n```" + end + "```", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                         } else {
-                            de.presti.ree6.addons.impl.ChatProtector.addWordToProtector(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
+                            de.presti.ree6.addons.impl.ChatProtector.blacklist(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
                             sendMessage("The Word " + commandEvent.getArguments()[1] + " has been added to your ChatProtector!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                         }
                     } else if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                        de.presti.ree6.addons.impl.ChatProtector.removeWordFromProtector(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
+                        de.presti.ree6.addons.impl.ChatProtector.removeFromBlacklist(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
                         sendMessage("The Word " + commandEvent.getArguments()[1] + " has been removed from your ChatProtector!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                     } else {
                         sendMessage("Couldn't find " + commandEvent.getArguments()[0] + "!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

@@ -17,6 +17,14 @@ import java.util.zip.ZipInputStream;
 public class AddonLoader {
 
     /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     * @throws IllegalStateException it is a utility class.
+     */
+    public AddonLoader() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
      * Create the Folder if not existing.
      */
     private static void createFolders() {
@@ -69,9 +77,9 @@ public class AddonLoader {
      *
      * @param fileName Name of the File.
      * @return a Local-Addon.
-     * @throws Exception If it is an invalid Addon.
+     * @throws IOException If it is an invalid Addon.
      */
-    public static Addon loadAddon(String fileName) throws Exception {
+    public static Addon loadAddon(String fileName) throws IOException {
 
         // Initialize local Variables to save Information about the Addon.
         String name = null, author = null, version = null, apiVersion = null, classPath = null;

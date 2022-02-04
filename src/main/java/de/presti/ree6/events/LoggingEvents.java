@@ -50,7 +50,6 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
 
-
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()))
             return;
 
@@ -351,8 +350,6 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGenericChannel(@Nonnull GenericChannelEvent event) {
 
-        // TODO rework this whole Methode.
-
         if (event.getChannelType().isAudio()) {
             if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
                     !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_voicechannel").getBooleanValue())
@@ -379,23 +376,7 @@ public class LoggingEvents extends ListenerAdapter {
                         ? ((ChannelUpdateNameEvent) event).getOldValue() : event.getChannel().getName()));
                 we.addField(new WebhookEmbed.EmbedField(true, "**New name**", ((ChannelUpdateNameEvent) event).getNewValue() != null
                         ? ((ChannelUpdateNameEvent) event).getNewValue() : event.getChannel().getName()));
-            }/* else if (event instanceof ChannelUpdate) {
-                StringBuilder finalString = new StringBuilder("Roles: ");
-
-                for (Role r : ((VoiceChannelUpdatePermissionsEvent) event).getChangedRoles()) {
-                    finalString.append("\n").append(r.getAsMention());
-                }
-
-                finalString.append("\n").append("Member: ");
-
-                for (Member member : ((VoiceChannelUpdatePermissionsEvent) event).getChangedMembers()) {
-                    finalString.append("\n").append(member.getAsMention());
-                }
-
-                we.setDescription(":house: **VoiceChannel Permissions updated:** ``" + event.getChannel().getAsMention() + "``");
-                we.addField(new WebhookEmbed.EmbedField(true, "**Updated**", finalString.toString().isEmpty() ? "" : finalString.toString()));
-            }*/
-            // TODO This code above has to be completely reworked.
+            }
 
             wm.addEmbeds(we.build());
 
@@ -430,23 +411,7 @@ public class LoggingEvents extends ListenerAdapter {
                         ? ((ChannelUpdateNameEvent) event).getNewValue() : event.getChannel().getName()));
             } else if (event instanceof ChannelUpdateNSFWEvent) {
                 we.addField(new WebhookEmbed.EmbedField(true, "**NSFW**", ((ChannelUpdateNSFWEvent) event).getNewValue() + ""));
-            }/* else if (event instanceof TextChannelUpdatePermissionsEvent) {
-                StringBuilder finalString = new StringBuilder("Roles: ");
-
-                for (Role r : ((TextChannelUpdatePermissionsEvent) event).getChangedRoles()) {
-                    finalString.append("\n").append(r.getAsMention());
-                }
-
-                finalString.append("\n").append("Member: ");
-
-                for (Member member : ((TextChannelUpdatePermissionsEvent) event).getChangedMembers()) {
-                    finalString.append("\n").append(member.getAsMention());
-                }
-
-                we.setDescription(":house: **TextChannel Permissions updated:** ``" + event.getChannel().getAsMention() + "``");
-                we.addField(new WebhookEmbed.EmbedField(true, "**Updated**", finalString.toString()));
-            }*/
-    // TODO This code above has to be completely reworked.
+            }
 
             wm.addEmbeds(we.build());
 

@@ -7,6 +7,14 @@ import net.dv8tion.jda.api.JDA;
  */
 public class BotInfo {
 
+    /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     * @throws IllegalStateException it is a utility class.
+     */
+    public BotInfo() {
+        throw new IllegalStateException("Utility class");
+    }
+
     // Current state of the Bot.
     public static BotState state;
 
@@ -17,7 +25,7 @@ public class BotInfo {
     public static JDA botInstance;
 
     // The used Bot-Token.
-    public static String TOKEN;
+    public static String token;
 
     // The current build / version.
     public static String build;

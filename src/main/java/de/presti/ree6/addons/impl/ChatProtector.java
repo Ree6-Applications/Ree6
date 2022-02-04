@@ -3,88 +3,98 @@ package de.presti.ree6.addons.impl;
 import de.presti.ree6.main.Main;
 
 import java.util.ArrayList;
-
-// TODO recode.
+import java.util.Arrays;
 
 /**
  * Created to work faster with the ChatProtector without calling the SQLWorker everytime.
- * Needs a revamp.
  */
 public class ChatProtector {
 
-
-    public static void addWordToProtector(String gid, String word) {
-
-        ArrayList<String> words = Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(gid);
-
-        if (!words.isEmpty() && !words.contains(word)) {
-            Main.getInstance().getSqlConnector().getSqlWorker().addChatProtectorWord(gid, word);
-        } else if (words.isEmpty()) {
-            Main.getInstance().getSqlConnector().getSqlWorker().addChatProtectorWord(gid, word);
-        }
-    }
-
-    public static void addWordsToProtector(String gid, ArrayList<String> words2) {
-
-        ArrayList<String> words = Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(gid);
-
-        if (!words.isEmpty()) {
-            for (String s : words2) {
-                if (!words.contains(s)) {
-                    Main.getInstance().getSqlConnector().getSqlWorker().addChatProtectorWord(gid, s);
-                    words.add(s);
-                }
-            }
-        } else {
-
-            for (String s : words2) {
-                if (!words.contains(s)) {
-                    Main.getInstance().getSqlConnector().getSqlWorker().addChatProtectorWord(gid, s);
-                    words.add(s);
-                }
-            }
-        }
-    }
-
-    public static void removeWordsFromProtector(String gid, ArrayList<String> words2) {
-        ArrayList<String> words = Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(gid);
-
-        if (!words.isEmpty()) {
-            for (String s : words2) {
-                if (words.contains(s)) {
-                    Main.getInstance().getSqlConnector().getSqlWorker().removeChatProtectorWord(gid, s);
-                    words.remove(s);
-                }
-            }
-        }
-    }
-
-    public static void removeWordFromProtector(String gid, String word) {
-        ArrayList<String> words = Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(gid);
-        if(!words.isEmpty()) {
-            if(words.contains(word)) {
-                Main.getInstance().getSqlConnector().getSqlWorker().removeChatProtectorWord(gid, word);
-            }
-        }
-    }
-
-    public static boolean hasChatProtector(String gid) {
-        return Main.getInstance().getSqlConnector().getSqlWorker().isChatProtectorSetup(gid);
-    }
-
-    public static ArrayList<String> getChatProtector(String gid) {
-        return Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(gid);
-    }
-
-    public static boolean checkMessage(String gid, String message) {
-        ArrayList<String> words = getChatProtector(gid);
-        String[] args = message.toLowerCase().split(" ");
-
-        for (String s : args) {
-            if (words.contains(s.toLowerCase())) {
-                return true;
-            }
+    /**
+     * Blacklist a Word.
+     *
+     * @param guildId the ID of the Guild.
+     * @param word    the Word you want to blacklist.
+     * @return true, if the word has been blacklisted | false, if it is already blacklisted.
+     */
+    public static boolean blacklist(String guildId, String word) {
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(guildId).contains(word)) {
+            Main.getInstance().getSqlConnector().getSqlWorker().addChatProtectorWord(guildId, word);
+            return true;
         }
         return false;
+    }
+
+    /**
+     * Blacklist a list of words.
+     *
+     * @param guildId  the ID of the Guild.
+     * @param wordList the List of Words, which should be blacklisted.
+     */
+    public static void blacklist(String guildId, ArrayList<String> wordList) {
+
+        ArrayList<String> blacklisted = Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(guildId);
+
+        wordList.stream().filter(s -> !blacklisted.contains(s)).forEach(s -> Main.getInstance().getSqlConnector().getSqlWorker().addChatProtectorWord(guildId, s));
+    }
+
+    /**
+     * Remove a word from the Blacklist.
+     *
+     * @param guildId the ID of the Guild.
+     * @param word    the Word that should be removed from the Blacklist.
+     * @return true, if it was blacklisted and has been removed | false, if it wasn't blacklisted at all.
+     */
+    public static boolean removeFromBlacklist(String guildId, String word) {
+        if (Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(guildId).contains(word)) {
+            Main.getInstance().getSqlConnector().getSqlWorker().removeChatProtectorWord(guildId, word);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Remove a List of words from the Blacklist.
+     *
+     * @param guildId  the ID of the Guild.
+     * @param wordList the List of Words that should be removed from the Blacklist.
+     */
+    public static void removeFromBlacklist(String guildId, ArrayList<String> wordList) {
+        wordList.stream().filter(Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(guildId)::contains)
+                .forEach(s -> Main.getInstance().getSqlConnector().getSqlWorker().removeChatProtectorWord(guildId, s));
+    }
+
+    /**
+     * Check if the Chat-Protector is set up.
+     *
+     * @param guildId the ID of the Guild.
+     * @return true, if there is the Chat-Protector is set up for the Guild. | false, if not.
+     */
+    public static boolean isChatProtectorSetup(String guildId) {
+        return Main.getInstance().getSqlConnector().getSqlWorker()
+                .isChatProtectorSetup(guildId);
+    }
+
+    /**
+     * Get the Blacklisted Words.
+     *
+     * @param guildId the ID of the Guild.
+     * @return an {@link ArrayList} with every Blacklisted word from the Guild.
+     */
+    public static ArrayList<String> getBlacklist(String guildId) {
+        return Main.getInstance().getSqlConnector().getSqlWorker()
+                .getChatProtectorWords(guildId);
+    }
+
+    /**
+     * Check if the given Message contains any word that is blacklisted.
+     *
+     * @param guildId the ID of the Guild.
+     * @param message the Message-Content.
+     * @return true, if there is a blacklisted for contained.
+     */
+    public static boolean checkMessage(String guildId, String message) {
+        return Arrays.stream(message.toLowerCase().split(" "))
+                .anyMatch(getBlacklist(guildId)::contains);
     }
 }

@@ -29,7 +29,7 @@ public abstract class Command {
      * @param description the description of the command.
      * @param category its category.
      */
-    public Command(String command, String description, Category category) {
+    protected Command(String command, String description, Category category) {
         name = command;
         this.description = description;
         this.category = category;
@@ -44,7 +44,7 @@ public abstract class Command {
      * @param category its category.
      * @param alias the alias of the command.
      */
-    public Command(String command, String description, Category category, String[] alias) {
+    protected Command(String command, String description, Category category, String[] alias) {
         name = command;
         this.description = description;
         this.category = category;
@@ -59,7 +59,7 @@ public abstract class Command {
      * @param category its category.
      * @param commandData the custom CommandData
      */
-    public Command(String command, String description, Category category, CommandData commandData) {
+    protected Command(String command, String description, Category category, CommandData commandData) {
         name = command;
         this.description = description;
         this.category = category;
@@ -75,7 +75,7 @@ public abstract class Command {
      * @param alias the alias of the command.
      * @param commandData the custom CommandData
      */
-    public Command(String command, String description, Category category, String[] alias, CommandData commandData) {
+    protected Command(String command, String description, Category category, String[] alias, CommandData commandData) {
         name = command;
         this.description = description;
         this.category = category;
@@ -87,7 +87,7 @@ public abstract class Command {
      * Method called when the Command is being performed.
      * @param event the CommandEvent used to get information about the command perform.
      */
-    public abstract void onPerform(CommandEvent event);
+    protected abstract void onPerform(CommandEvent event);
 
     /**
      * All aliases of the Command.
@@ -172,10 +172,10 @@ public abstract class Command {
     /**
      * Delete a specific message.
      * @param message the {@link Message} entity.
-     * @param hook the Interaction-hook, if it is a slash event.
+     * @param interactionHook the Interaction-hook, if it is a slash event.
      */
-    public static void deleteMessage(Message message, InteractionHook hook) {
-        Main.getInstance().getCommandManager().deleteMessage(message, hook);
+    public static void deleteMessage(Message message, InteractionHook interactionHook) {
+        Main.getInstance().getCommandManager().deleteMessage(message, interactionHook);
     }
 
     /**
@@ -187,8 +187,8 @@ public abstract class Command {
         if(getAlias() == null || getAlias().length == 0)
             return false;
 
-        for(String alias : getAlias()) {
-            if(alias.equalsIgnoreCase(arguments)) {
+        for(String aliases : getAlias()) {
+            if(aliases.equalsIgnoreCase(arguments)) {
                 return true;
             }
         }

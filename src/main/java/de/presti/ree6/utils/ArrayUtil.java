@@ -14,8 +14,6 @@ import java.util.HashMap;
 @SuppressWarnings("Java8MapApi")
 public class ArrayUtil {
 
-    // TODO maybe rework the Message saving.
-
     // HashMap used to store message contents and their IDs, to show the content when the message gets deleted.
     public static final HashMap<String, Message> messageIDwithMessage = new HashMap<>();
 

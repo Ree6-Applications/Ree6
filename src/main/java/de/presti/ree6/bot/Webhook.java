@@ -11,6 +11,15 @@ import de.presti.ree6.main.Main;
 public class Webhook {
 
     /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     * @throws IllegalStateException it is a utility class.
+     */
+    public Webhook() {
+        throw new IllegalStateException("Utility class");
+    }
+
+
+    /**
      * Send a Webhook-message to the wanted Webhook.
      * @param loggerMessage the MessageContent, if it has been merged.
      * @param message the MessageContent.

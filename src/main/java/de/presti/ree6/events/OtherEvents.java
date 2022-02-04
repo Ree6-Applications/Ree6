@@ -121,7 +121,7 @@ public class OtherEvents extends ListenerAdapter {
             if (event.getAuthor().isBot())
                 return;
 
-            if (ChatProtector.hasChatProtector(event.getGuild().getId())) {
+            if (ChatProtector.isChatProtectorSetup(event.getGuild().getId())) {
                 if (ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
                     Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
                     event.getChannel().sendMessage("You can't write that!").queue();
@@ -164,7 +164,7 @@ public class OtherEvents extends ListenerAdapter {
         // Only accept commands from guilds
         if (!event.isFromGuild() && event.getMember() != null) return;
 
-        event.deferReply(true).complete();
+        event.deferReply(true).queue();
 
         Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getTextChannel(), event);
     }

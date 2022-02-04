@@ -10,6 +10,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.music.AudioPlayerSendHandler;
 import de.presti.ree6.music.GuildMusicManager;
 import net.dv8tion.jda.api.EmbedBuilder;
+
 import java.awt.*;
 
 public class Lyrics extends Command {
@@ -30,12 +31,11 @@ public class Lyrics extends Command {
         AudioPlayerSendHandler sendingHandler = (AudioPlayerSendHandler) commandEvent.getGuild().getAudioManager().getSendingHandler();
 
         if (sendingHandler != null && sendingHandler.isMusicPlaying(commandEvent.getGuild())) {
-            GuildMusicManager gmm = Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild());
-            String title = gmm.player.getPlayingTrack().getInfo().title.replace("(Official Music Video)", "").replace("(Official Video)", "")
-                    .replace("(Music Video)", "").replace("(Official Music)", "").replace("(Official Lyrics)", "")
-                    .replace("(Lyrics)", "").replace("(Audio)", "").replace("(Official Audio)", "");
 
-            // TODO recode.
+            GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild());
+            String title = guildMusicManager.player.getPlayingTrack().getInfo().title.contains("(") && guildMusicManager.player.getPlayingTrack().getInfo().title.contains(")") ?
+                    guildMusicManager.player.getPlayingTrack().getInfo().title.split("(")[0] :
+                    guildMusicManager.player.getPlayingTrack().getInfo().title;
 
             client.getLyrics(title).thenAccept(lyrics -> {
 
@@ -51,21 +51,17 @@ public class Lyrics extends Command {
                 EmbedBuilder eb = new EmbedBuilder()
                         .setAuthor(lyrics.getAuthor())
                         .setTitle(lyrics.getTitle(), lyrics.getURL());
-                if(lyrics.getContent().length()>15000)
-                {
+                if (lyrics.getContent().length() > 15000) {
                     sendMessage("Lyrics for `" + title + "` found but likely not correct: " + lyrics.getURL(), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                }
-                else if(lyrics.getContent().length()>2000)
-                {
+                } else if (lyrics.getContent().length() > 2000) {
                     String content = lyrics.getContent().trim();
-                    while(content.length() > 2000)
-                    {
+                    while (content.length() > 2000) {
                         int index = content.lastIndexOf("\n\n", 2000);
-                        if(index == -1)
+                        if (index == -1)
                             index = content.lastIndexOf("\n", 2000);
-                        if(index == -1)
+                        if (index == -1)
                             index = content.lastIndexOf(" ", 2000);
-                        if(index == -1)
+                        if (index == -1)
                             index = 2000;
                         sendMessage(eb.setDescription(content.substring(0, index).trim()), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                         content = content.substring(index).trim();

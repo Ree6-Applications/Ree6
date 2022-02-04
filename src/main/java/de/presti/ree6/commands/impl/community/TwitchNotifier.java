@@ -43,7 +43,7 @@ public class TwitchNotifier extends Command {
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.getMessage().getMentionedChannels().get(0).createWebhook("Ree6-TwitchNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addTwitchWebhook(commandEvent.getGuild().getId(), name.toLowerCase(), w.getId(), w.getToken()));
+                commandEvent.getMessage().getMentionedChannels().get(0).createWebhook("Ree6-TwitchNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addTwitchWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
                 sendMessage("A TwitchStream Notifier has been created for the User " + name + "!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
 
                 if (!Main.getInstance().getNotifier().isTwitchRegistered(name)) {

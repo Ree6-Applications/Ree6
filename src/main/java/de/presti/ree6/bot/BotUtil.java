@@ -33,11 +33,11 @@ public class BotUtil {
      */
     public static void createBot(BotVersion version, String build) throws LoginException {
         BotInfo.version = version;
-        BotInfo.TOKEN = BotInfo.version == BotVersion.DEV ? Main.getInstance().getConfig().getConfig().getString("bot.tokens.dev") :
+        BotInfo.token = BotInfo.version == BotVersion.DEV ? Main.getInstance().getConfig().getConfig().getString("bot.tokens.dev") :
                 Main.getInstance().getConfig().getConfig().getString("bot.tokens.rel");
         BotInfo.state = BotState.INIT;
         BotInfo.build = build;
-        BotInfo.botInstance = JDABuilder.createDefault(BotInfo.TOKEN).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY).build();
+        BotInfo.botInstance = JDABuilder.createDefault(BotInfo.token).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY).build();
     }
 
     /**

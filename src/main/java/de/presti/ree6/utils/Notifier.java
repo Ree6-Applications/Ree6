@@ -165,27 +165,38 @@ public class Notifier {
     //region Twitter
 
     /**
+     * Used to Register a Tweet Event for the given Twitter Users
+     *
+     * @param twitterUsers the Names of the Twitter Users.
+     */
+    public void registerTwitterUser(List<String> twitterUsers) {
+        twitterUsers.forEach(this::registerTwitterUser);
+    }
+
+    /**
      * Used to Register a Tweet Event for the given Twitter User
      *
      * @param twitterUser the Name of the Twitter User.
+     * @return true, if everything worked out.
      */
-    public void registerTwitterChannel(String twitterUser) {
-        if (getTwitterClient() == null) return;
+    public boolean registerTwitterUser(String twitterUser) {
+        if (getTwitterClient() == null) return false;
 
         twitterUser = twitterUser.toLowerCase();
 
-        twitter4j.User user = null;
+        twitter4j.User user;
 
         try {
             user = getTwitterClient().showUser(twitterUser);
+            if (user.isProtected()) return false;
         } catch (Exception ignore) {
+            return false;
         }
-
-        if (user == null) return;
 
         FilterQuery filterQuery = new FilterQuery();
         filterQuery.follow(user.getId());
 
+        twitter4j.User finalUser = user;
         TwitterStream twitterStream = new TwitterStreamFactory(getTwitterClient().getConfiguration()).getInstance().addListener(new StatusListener() {
 
             /**
@@ -194,43 +205,37 @@ public class Notifier {
              */
             @Override
             public void onStatus(Status status) {
-                if (!status.getUser().isProtected()) {
 
-                    WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+                WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
-                    webhookMessageBuilder.setUsername("Ree6");
-                    webhookMessageBuilder.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                webhookMessageBuilder.setUsername("Ree6");
+                webhookMessageBuilder.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
 
-                    WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+                WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
-                    webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(status.getUser().getName() + " (@" + status.getUser().getScreenName() + ")", null));
-                    webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitter Notifier", BotInfo.botInstance.getSelfUser().getAvatarUrl(), null));
+                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(status.getUser().getName() + " (@" + status.getUser().getScreenName() + ")", null));
+                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitter Notifier", BotInfo.botInstance.getSelfUser().getAvatarUrl(), null));
 
-                    webhookEmbedBuilder.setThumbnailUrl(status.getUser().getBiggerProfileImageURLHttps());
+                webhookEmbedBuilder.setThumbnailUrl(status.getUser().getBiggerProfileImageURLHttps());
 
-                    if (status.getQuotedStatus() != null && !status.isRetweet()) {
-                        webhookEmbedBuilder.setDescription("**Quoted  " + status.getQuotedStatus().getUser().getScreenName() + "**: " + status.getText() + "\n");
-                    } else if (status.getInReplyToScreenName() != null) {
-                        webhookEmbedBuilder.setDescription("**Reply to " + status.getInReplyToScreenName() + "**: " + status.getText() + "\n");
-                    } else if (status.isRetweet()) {
-                        webhookEmbedBuilder.setDescription("**Retweeted from " + status.getRetweetedStatus().getUser().getScreenName() + "**: " + status.getText().split(": ")[1] + "\n");
-                    } else {
-                        webhookEmbedBuilder.setDescription("**" + status.getText() + "**\n");
-                    }
+                webhookEmbedBuilder.setDescription(status.getQuotedStatus() != null && !status.isRetweet() ? "**Quoted  " + status.getQuotedStatus().getUser().getScreenName() + "**: " + status.getText() + "\n" :
+                        status.getInReplyToScreenName() != null ? "**Reply to " + status.getInReplyToScreenName() + "**: " + status.getText() + "\n" :
+                                status.isRetweet() ? "**Retweeted from " + status.getRetweetedStatus().getUser().getScreenName() + "**: " + status.getText().split(": ")[1] + "\n" :
+                                        "**" + status.getText() + "**\n");
 
-                    if (status.getMediaEntities().length > 0 && status.getMediaEntities()[0].getType().equalsIgnoreCase("photo")) {
-                        webhookEmbedBuilder.setImageUrl(status.getMediaEntities()[0].getMediaURLHttps());
-                    }
-
-                    webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotInfo.botInstance.getSelfUser().getAvatarUrl()));
-                    webhookEmbedBuilder.setTimestamp(Instant.now());
-                    webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
-
-                    webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-
-                    Webhook.sendWebhook(null, webhookMessageBuilder.build(), 938352009768222751L,
-                            "ObXUIoiuIZVwjQIfbk_unc2FQJYINfHU3lIBAJoh6Dj7XxbtJ_vgSZ8uujHMznppQeEH", false);
+                if (status.getMediaEntities().length > 0 && status.getMediaEntities()[0].getType().equalsIgnoreCase("photo")) {
+                    webhookEmbedBuilder.setImageUrl(status.getMediaEntities()[0].getMediaURLHttps());
                 }
+
+                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotInfo.botInstance.getSelfUser().getAvatarUrl()));
+                webhookEmbedBuilder.setTimestamp(Instant.now());
+                webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
+
+                webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+                Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName()).forEach(strings ->
+                        Webhook.sendWebhook(null, webhookMessageBuilder.build(), Long.parseLong(strings[0]),
+                                strings[1], false));
             }
 
             /**
@@ -281,6 +286,8 @@ public class Notifier {
         }).filter(filterQuery);
 
         if (!isTwitterRegistered(twitterUser)) registeredTwitterUsers.put(twitterUser, twitterStream);
+
+        return true;
     }
 
     /**
@@ -293,8 +300,7 @@ public class Notifier {
 
         twitterUser = twitterUser.toLowerCase();
 
-        // TODO create SQL for Twitter Notifier.
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(twitterUser).isEmpty())
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(twitterUser).isEmpty())
             return;
 
         if (isTwitterRegistered(twitterUser)) {

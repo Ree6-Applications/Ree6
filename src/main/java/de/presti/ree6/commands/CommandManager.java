@@ -25,11 +25,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-// TODO document.
+/**
+ * Manager class used to manage all Commands and command related operation.
+ */
 public class CommandManager {
 
+    // An Arraylist with all registered Commands.
     static final ArrayList<Command> commands = new ArrayList<>();
 
+    /**
+     * Constructor for the Command-Manager used to register every Command.
+     */
     public CommandManager() {
 
         //Informative
@@ -102,13 +108,16 @@ public class CommandManager {
         //// addCommand(new Test());
     }
 
+    /**
+     * Method used to add all Commands as SlashCommand on Discord.
+     */
     public void addSlashCommand() {
 
         CommandListUpdateAction listUpdateAction = BotInfo.botInstance.updateCommands();
 
         for (Command command : getCommands()) {
-            if (command.getCategory() == Category.HIDDEN) continue;
-            if (command.getCommandData() == null) continue;
+            if (command.getCategory() == Category.HIDDEN ||
+                    command.getCommandData() == null) continue;
             //noinspection ResultOfMethodCallIgnored
             listUpdateAction.addCommands(command.getCommandData());
         }
@@ -116,23 +125,64 @@ public class CommandManager {
         listUpdateAction.queue();
     }
 
-    public void addCommand(Command c) {
-        if (!commands.contains(c)) {
-            commands.add(c);
+    /**
+     * Add a single Command to the Command list.
+     *
+     * @param command the {@link Command}.
+     */
+    public void addCommand(Command command) {
+        if (!commands.contains(command)) {
+            commands.add(command);
         }
     }
 
+    /**
+     * Get a Command by its name.
+     *
+     * @param name the Name of the Command.
+     * @return the {@link Command} with the same Name.
+     */
     public Command getCommandByName(String name) {
-        return getCommands().stream().filter(command -> command.getName().equalsIgnoreCase(name) ||
-                Arrays.stream(command.getAlias()).anyMatch(s -> s.equalsIgnoreCase(name))).findFirst().orElse(null);
+        return getCommands().stream().filter(command -> command.getName().equalsIgnoreCase(name) || Arrays.stream(command.getAlias()).anyMatch(s -> s.equalsIgnoreCase(name))).findFirst().orElse(null);
 
     }
 
+    /**
+     * Remove a Command from the List.
+     *
+     * @param command the Command you want to remove.
+     */
+    @SuppressWarnings("unused")
+    public void removeCommand(Command command) {
+        commands.remove(command);
+    }
+
+    /**
+     * Get every Command in the list.
+     *
+     * @return an {@link ArrayList} with all Commands.
+     */
+    public ArrayList<Command> getCommands() {
+        return commands;
+    }
+
+    /**
+     * Try to perform a Command.
+     *
+     * @param member                       the Member that performed the try.
+     * @param guild                        the Guild the Member is from.
+     * @param messageContent               the Message content (including the prefix + command name).
+     * @param message                      the Message Entity.
+     * @param textChannel                  the TextChannel where the command has been performed.
+     * @param slashCommandInteractionEvent the Slash Command Event if it was a Slash Command.
+     * @return true, if a command has been performed.
+     */
     public boolean perform(Member member, Guild guild, String messageContent, Message message, TextChannel textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
 
-
+        // Check if the User is under Cooldown.
         if (ArrayUtil.commandCooldown.contains(member.getUser().getId())) {
 
+            // Check if it is a Slash Command or not.
             if (slashCommandInteractionEvent != null) {
                 sendMessage("You are on cooldown!", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 deleteMessage(message, slashCommandInteractionEvent.getHook().setEphemeral(true));
@@ -141,141 +191,147 @@ public class CommandManager {
                 deleteMessage(message, null);
             }
 
+            // Return false.
             return false;
         }
 
+        // Check if it is a Slash Command.
         if (slashCommandInteractionEvent != null) {
 
+            //Get the Command by the Slash Command Name.
             Command command = getCommandByName(slashCommandInteractionEvent.getName());
 
-
+            // Check if there is a command with that Name.
             if (command == null) {
                 sendMessage("That Command couldn't be found", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 return false;
             }
 
-            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getName().toLowerCase()).getBooleanValue() &&
-                    command.getCategory() != Category.HIDDEN) {
+            // Check if the command is blocked or not.
+            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getName().toLowerCase()).getBooleanValue() && command.getCategory() != Category.HIDDEN) {
                 sendMessage("This Command is blocked!", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 return false;
             }
 
+            // Perform the Command.
             command.onPerform(new CommandEvent(member, guild, null, textChannel, null, slashCommandInteractionEvent));
 
+            // Update Stats.
             StatsManager.addStatsForCommand(command, guild.getId());
-
-            if (!member.getUser().getId().equalsIgnoreCase("321580743488831490")) {
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException ignore) {
-                        Main.getInstance().getLogger().error("[CommandManager] Command cool-down Thread interrupted!");
-                        Thread.currentThread().interrupt();
-                    }
-
-                    ArrayUtil.commandCooldown.remove(member.getUser().getId());
-
-                    Thread.currentThread().interrupt();
-
-                }).start();
-            }
-
-            if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && !member.getUser().getId().equalsIgnoreCase("321580743488831490")) {
-                ArrayUtil.commandCooldown.add(member.getUser().getId());
-            }
-
-            return true;
 
         } else {
 
+            // Check if the Message is null.
             if (message == null) {
                 sendMessage("There was an Error while executing the Command!", 5, textChannel, null);
                 return false;
             }
 
+            // Check if the message starts with the prefix.
             if (!messageContent.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue()))
                 return false;
 
+            // Parse the Message and remove the prefix from it.
             messageContent = messageContent.substring(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().length());
 
+            // Split all Arguments.
             String[] arguments = messageContent.split(" ");
 
+            // Get the Command by the name.
             Command command = getCommandByName(arguments[0]);
 
+            // Check if there is even a Command with that name.
             if (command == null) {
                 sendMessage("That Command couldn't be found", 5, textChannel, null);
                 return false;
             }
 
-            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getName().toLowerCase()).getBooleanValue() &&
-                    command.getCategory() != Category.HIDDEN) {
+            // Check if the Command is blacklisted.
+            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getName().toLowerCase()).getBooleanValue() && command.getCategory() != Category.HIDDEN) {
                 sendMessage("This Command is blocked!", 5, textChannel, null);
                 return false;
             }
 
+            // Parse the arguments.
             String[] argumentsParsed = Arrays.copyOfRange(arguments, 1, arguments.length);
 
+            // Perform the Command.
             command.onPerform(new CommandEvent(member, guild, message, textChannel, argumentsParsed, null));
 
+            // Add Stats.
             StatsManager.addStatsForCommand(command, guild.getId());
+        }
 
-            if (!member.getUser().getId().equalsIgnoreCase("321580743488831490")) {
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException ignore) {
-                        Main.getInstance().getLogger().error("[CommandManager] Command cool-down Thread interrupted!");
-                        Thread.currentThread().interrupt();
-                    }
-
-                    ArrayUtil.commandCooldown.remove(member.getUser().getId());
-
+        // If the User isn't Presti (Ree6 owner) set Cooldown. Why not for the Owner? Because of tests.
+        if (!member.getUser().getId().equalsIgnoreCase("321580743488831490")) {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ignore) {
+                    Main.getInstance().getLogger().error("[CommandManager] Command cool-down Thread interrupted!");
                     Thread.currentThread().interrupt();
+                }
 
-                }).start();
-            }
+                ArrayUtil.commandCooldown.remove(member.getUser().getId());
 
-            if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && !member.getUser().getId().equalsIgnoreCase("321580743488831490")) {
-                ArrayUtil.commandCooldown.add(member.getUser().getId());
-            }
-            return true;
+                Thread.currentThread().interrupt();
+
+            }).start();
         }
+
+        // Add them to the Cooldown.
+        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && !member.getUser().getId().equalsIgnoreCase("321580743488831490")) {
+            ArrayUtil.commandCooldown.add(member.getUser().getId());
+        }
+
+        // Return that a command has been performed.
+        return true;
     }
 
-    @SuppressWarnings("unused")
-    public void removeCommand(Command c) {
-        commands.remove(c);
+    /**
+     * Send a message to a special Message-Channel.
+     *
+     * @param message        the Message content.
+     * @param messageChannel the Message-Channel.
+     */
+    public void sendMessage(String message, MessageChannel messageChannel) {
+        sendMessage(message, messageChannel, null);
     }
 
-    public ArrayList<Command> getCommands() {
-        return commands;
+    /**
+     * Send a message to a special Message-Channel, with a deletion delay.
+     *
+     * @param message        the Message content.
+     * @param deleteSecond   the delete delay
+     * @param messageChannel the Message-Channel.
+     */
+    public void sendMessage(String message, int deleteSecond, MessageChannel messageChannel) {
+        sendMessage(message, deleteSecond, messageChannel, null);
     }
 
-    public void sendMessage(String msg, MessageChannel m) {
-        sendMessage(msg, m, null);
+    /**
+     * Send a message to a special Message-Channel.
+     *
+     * @param message         the Message content.
+     * @param messageChannel  the Message-Channel.
+     * @param interactionHook the Interaction-hook if it is a slash command.
+     */
+    public void sendMessage(String message, MessageChannel messageChannel, InteractionHook interactionHook) {
+        if (interactionHook == null) messageChannel.sendMessage(message).queue();
+        else interactionHook.sendMessage(message).queue();
     }
 
-    public void sendMessage(String msg, int deleteSecond, MessageChannel m) {
-        sendMessage(msg, deleteSecond, m, null);
-    }
-
-
-    public void sendMessage(EmbedBuilder msg, MessageChannel m) {
-        sendMessage(msg, m, null);
-    }
-
-    public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m) {
-        sendMessage(msg, deleteSecond, m, null);
-    }
-
-    public void sendMessage(String msg, MessageChannel m, InteractionHook hook) {
-        if (hook == null) m.sendMessage(msg).queue();
-        else hook.sendMessage(msg).queue();
-    }
-
-    public void sendMessage(String msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
-        if (hook == null) {
-            m.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+    /**
+     * Send a message to a special Message-Channel, with a deletion delay.
+     *
+     * @param messageContent  the Message content.
+     * @param messageChannel  the Message-Channel.
+     * @param interactionHook the Interaction-hook if it is a slash command.
+     * @param deleteSecond    the delete delay
+     */
+    public void sendMessage(String messageContent, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
+        if (interactionHook == null) {
+            messageChannel.sendMessage(messageContent).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
                 if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
                     return message.delete();
                 }
@@ -283,7 +339,7 @@ public class CommandManager {
                 return null;
             }).queue();
         } else {
-            hook.sendMessage(msg).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+            interactionHook.sendMessage(messageContent).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
                 if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
                     return message.delete();
                 }
@@ -293,15 +349,50 @@ public class CommandManager {
         }
     }
 
-
-    public void sendMessage(EmbedBuilder msg, MessageChannel m, InteractionHook hook) {
-        if (hook == null) m.sendMessageEmbeds(msg.build()).queue();
-        else hook.sendMessageEmbeds(msg.build()).queue();
+    /**
+     * Send an Embed to a special Message-Channel.
+     *
+     * @param embedBuilder   the Embed content.
+     * @param messageChannel the Message-Channel.
+     */
+    public void sendMessage(EmbedBuilder embedBuilder, MessageChannel messageChannel) {
+        sendMessage(embedBuilder, messageChannel, null);
     }
 
-    public void sendMessage(EmbedBuilder msg, int deleteSecond, MessageChannel m, InteractionHook hook) {
-        if (hook == null) {
-            m.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+    /**
+     * Send an Embed to a special Message-Channel, with a deletion delay.
+     *
+     * @param embedBuilder   the Embed content.
+     * @param deleteSecond   the delete delay
+     * @param messageChannel the Message-Channel.
+     */
+    public void sendMessage(EmbedBuilder embedBuilder, int deleteSecond, MessageChannel messageChannel) {
+        sendMessage(embedBuilder, deleteSecond, messageChannel, null);
+    }
+
+    /**
+     * Send an Embed to a special Message-Channel.
+     *
+     * @param embedBuilder    the Embed content.
+     * @param messageChannel  the Message-Channel.
+     * @param interactionHook the Interaction-hook if it is a slash command.
+     */
+    public void sendMessage(EmbedBuilder embedBuilder, MessageChannel messageChannel, InteractionHook interactionHook) {
+        if (interactionHook == null) messageChannel.sendMessageEmbeds(embedBuilder.build()).queue();
+        else interactionHook.sendMessageEmbeds(embedBuilder.build()).queue();
+    }
+
+    /**
+     * Send an Embed to a special Message-Channel, with a deletion delay.
+     *
+     * @param embedBuilder    the Embed content.
+     * @param deleteSecond    the delete delay
+     * @param messageChannel  the Message-Channel.
+     * @param interactionHook the Interaction-hook if it is a slash command.
+     */
+    public void sendMessage(EmbedBuilder embedBuilder, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
+        if (interactionHook == null) {
+            messageChannel.sendMessageEmbeds(embedBuilder.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
                 if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
                     return message.delete();
                 }
@@ -309,7 +400,7 @@ public class CommandManager {
                 return null;
             }).queue();
         } else {
-            hook.sendMessageEmbeds(msg.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+            interactionHook.sendMessageEmbeds(embedBuilder.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
                 if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
                     return message.delete();
                 }
@@ -319,9 +410,13 @@ public class CommandManager {
         }
     }
 
-    public void deleteMessage(Message message, InteractionHook hook) {
-        if (message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
-                message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null && !message.isEphemeral() && hook == null) {
+    /**
+     * Delete a specific message.
+     * @param message the {@link Message} entity.
+     * @param interactionHook the Interaction-hook, if it is a slash event.
+     */
+    public void deleteMessage(Message message, InteractionHook interactionHook) {
+        if (message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) && message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null && !message.isEphemeral() && interactionHook == null) {
             try {
                 message.delete().queue();
             } catch (Exception ex) {

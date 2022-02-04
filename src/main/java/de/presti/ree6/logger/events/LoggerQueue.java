@@ -131,7 +131,7 @@ public class LoggerQueue {
 
                     // Set the new Webhook Message.
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(loggerMessage.getVoiceData().getMember().getUser().getAsTag(),
-                            loggerMessage.getVoiceData().getMember().getUser().getAvatarUrl(), null));
+                            loggerMessage.getMemberData().getMember().getUser().getAvatarUrl(), null));
                     webhookEmbedBuilder.setDescription("The Nickname of " + loggerMessage.getMemberData().getMember().getAsMention() + " has been changed.\n**New Nickname:**\n" +
                             loggerMessage.getMemberData().getCurrentName() + "\n**Old Nickname:**\n" +
                             (memberData.getPreviousName() != null ? memberData.getPreviousName() : loggerMessage.getMemberData().getMember().getUser().getName()));
@@ -190,9 +190,6 @@ public class LoggerQueue {
                     // Merge both lists with the current List.
                     if (memberData != null && memberData.getRemovedRoles() != null && !memberData.getRemovedRoles().isEmpty() && memberData.getRemovedRoles().stream().anyMatch(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
                             !loggerMessage.getMemberData().getRemovedRoles().contains(role))) {
-
-                        // TODO actually handle these two.
-
                         try {
                             memberData.getRemovedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
                                     !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
