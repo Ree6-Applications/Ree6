@@ -240,8 +240,9 @@ public class Main {
                 }
 
                 try {
-                    wait((10 * (60000L)));
-                } catch (InterruptedException ignore) {
+                    Thread.sleep((10 * (60000L)));
+                } catch (InterruptedException exception) {
+                    getInstance().getLogger().error("Checker Thread crashed", exception);
                 }
             }
         });
