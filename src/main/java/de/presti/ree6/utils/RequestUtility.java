@@ -36,11 +36,11 @@ public class RequestUtility {
         }
 
         if (request.getMethode() == Methode.GET) {
-            httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri()).GET();
+            httpRequestBuilder = httpRequestBuilder.GET();
         } else if (request.getMethode() == Methode.POST) {
-            httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri()).POST(request.bodyPublisher);
+            httpRequestBuilder = httpRequestBuilder.POST(request.bodyPublisher);
         } else if (request.getMethode() == Methode.PUT) {
-            httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri()).PUT(request.bodyPublisher);
+            httpRequestBuilder = httpRequestBuilder.PUT(request.bodyPublisher);
         }
 
         HttpRequest httpRequest;

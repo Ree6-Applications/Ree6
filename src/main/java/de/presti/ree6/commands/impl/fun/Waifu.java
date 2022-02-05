@@ -23,7 +23,7 @@ public class Waifu extends Command {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setImage((jsonObject.has("display_picture") ? jsonObject.get("display_picture").getAsString() : "https://images.ree6.tk/notfound.png"));
+        em.setImage((jsonObject.has("display_picture") ? jsonObject.get("display_picture").getAsString() : "https://images.ree6.de/notfound.png"));
         em.addField("**Character**", "``" + (jsonObject.has("name") ? jsonObject.get("name").getAsString() : "Invalid Response by API") + "``", true);
         em.addField("**From**", "``" + (jsonObject1.has("name") ? jsonObject1.get("name").getAsString() : "Invalid Response by API") + "``", true);
         if((jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean())) {
