@@ -376,6 +376,8 @@ public class LoggingEvents extends ListenerAdapter {
                         ? ((ChannelUpdateNameEvent) event).getOldValue() : event.getChannel().getName()));
                 we.addField(new WebhookEmbed.EmbedField(true, "**New name**", ((ChannelUpdateNameEvent) event).getNewValue() != null
                         ? ((ChannelUpdateNameEvent) event).getNewValue() : event.getChannel().getName()));
+            } else {
+                return;
             }
 
             wm.addEmbeds(we.build());
@@ -411,6 +413,8 @@ public class LoggingEvents extends ListenerAdapter {
                         ? ((ChannelUpdateNameEvent) event).getNewValue() : event.getChannel().getName()));
             } else if (event instanceof ChannelUpdateNSFWEvent) {
                 we.addField(new WebhookEmbed.EmbedField(true, "**NSFW**", ((ChannelUpdateNSFWEvent) event).getNewValue() + ""));
+            } else {
+                return;
             }
 
             wm.addEmbeds(we.build());
