@@ -114,7 +114,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotUtil.createBot(BotVersion.PUBLIC, "1.6.1");
+            BotUtil.createBot(BotVersion.DEV, "1.6.2");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {

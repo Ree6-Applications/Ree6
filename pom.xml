@@ -7,7 +7,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
     <build>
         <plugins>
             <plugin>
@@ -256,6 +256,4 @@
         <sonar.organization>dxssucuk</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
-
-
 </project>

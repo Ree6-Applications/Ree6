@@ -3,8 +3,20 @@ package de.presti.ree6.commands.impl.mod;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
+
+import java.awt.*;
+import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Setup extends Command {
 
@@ -23,7 +35,26 @@ public class Setup extends Command {
         // TODO rework.
 
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-            if (commandEvent.getArguments().length >= 1) {
+
+            EmbedBuilder embedBuilder = new EmbedBuilder()
+                    .setTitle("Setup Menu")
+                    .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl())
+                    .setColor(Color.cyan)
+                    .setDescription("Which configuration do you want to check out?");
+
+            List<SelectOption> optionList = new ArrayList<>();
+            optionList.add(SelectOption.of("Audit-Logging", "log"));
+            optionList.add(SelectOption.of("Welcome-channel", "welcome"));
+            optionList.add(SelectOption.of("News-channel", "news"));
+            optionList.add(SelectOption.of("Mute role", "mute"));
+            optionList.add(SelectOption.of("Autorole", "autrorole"));
+
+            //TODO remove R6-Matersearcher.
+
+            commandEvent.getTextChannel().sendMessageEmbeds(embedBuilder.build())
+                    .setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
+
+            /* if (commandEvent.getArguments().length >= 1) {
                 if (commandEvent.getArguments()[0].equalsIgnoreCase("log")) {
                     if (commandEvent.getMessage().getMentionedChannels().isEmpty()) {
                         sendMessage("No Channel mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
@@ -147,7 +178,7 @@ public class Setup extends Command {
             } else {
                 sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "setup log/welcome/news/r6/mute/autorole/rewards/join #Log/#Welcome/#Ree6-News/#R6-Mate-Search/@Mute/@Autorole/vc or chat/Your Custom Join Message", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-            }
+            }*/
         } else {
             sendMessage("You dont have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }

@@ -39,14 +39,23 @@ public class AutoRoleHandler {
             for (String roleIds : Main.getInstance().getSqlConnector().getSqlWorker().getAutoRoles(guild.getId())) {
                 Role role = guild.getRoleById(roleIds);
 
-                if (role == null || !guild.getSelfMember().canInteract(role)) {
+                if (role != null && !guild.getSelfMember().canInteract(role)) {
                     if (guild.getOwner() != null)
                         guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
                                 privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
                                                 "If you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!\n" +
-                                                (role != null ? "The Role that I can't give people when joining is: ``" + role.getName() + "``" :
-                                                        "There is a Role that doesn't exists anymore. Please remove it from the Join AutoRole."))
+                                                "The Role that I can't give people when joining is: ``" + role.getName() + "``")
                                         .queue());
+                    return;
+                } else if (role == null) {
+                    if (guild.getOwner() != null)
+                        guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
+                                privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
+                                                "There was an invalid Role set, which has been removed now from the AutoRole list.\n" +
+                                                "Since it does't exists anymore!")
+                                        .queue());
+
+                    Main.getInstance().getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), roleIds);
                     return;
                 }
 
@@ -90,7 +99,7 @@ public class AutoRoleHandler {
 
                     Role role = guild.getRoleById(entry.getValue());
 
-                    if (role == null || !guild.getSelfMember().canInteract(role)) {
+                    if (role != null && !guild.getSelfMember().canInteract(role)) {
                         if (guild.getOwner() != null)
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
                                     privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
@@ -98,6 +107,16 @@ public class AutoRoleHandler {
                                                     (role != null ? "The Role that i cant give people when leveling up is: ``" + role.getName() + "``" :
                                                             "There is a Role that doesn't exists anymore. Please remove it from the Voice AutoRole."))
                                             .queue());
+                        return;
+                    } else if (role == null) {
+                        if (guild.getOwner() != null)
+                            guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
+                                    privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
+                                                    "There was an invalid Role set, which has been removed now from the Voice-AutoRole list.\n" +
+                                                    "Since it does't exists anymore!")
+                                            .queue());
+
+                        Main.getInstance().getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), entry.getValue());
                         return;
                     }
 
@@ -139,7 +158,7 @@ public class AutoRoleHandler {
                 if (entry.getKey() <= level) {
                     Role role = guild.getRoleById(entry.getValue());
 
-                    if (role == null || !guild.getSelfMember().canInteract(role)) {
+                    if (role != null && !guild.getSelfMember().canInteract(role)) {
                         if (guild.getOwner() != null)
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
                                     privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
@@ -147,6 +166,16 @@ public class AutoRoleHandler {
                                                     (role != null ? "The Role that i cant give people when leveling up is: ``" + role.getName() + "``" :
                                                             "There is a Role that doesn't exists anymore. Please remove it from the Chat AutoRole."))
                                             .queue());
+                        return;
+                    } else if (role == null) {
+                        if (guild.getOwner() != null)
+                            guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
+                                    privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
+                                                    "There was an invalid Role set, which has been removed now from the Chat-AutoRole list.\n" +
+                                                    "Since it does't exists anymore!")
+                                            .queue());
+
+                        Main.getInstance().getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), entry.getValue());
                         return;
                     }
 

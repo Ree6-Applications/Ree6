@@ -218,7 +218,9 @@ public class LoggerQueue {
                             loggerMessage.getMemberData().getMember().getUser().getAvatarUrl(), null));
                     webhookEmbedBuilder.setThumbnailUrl(loggerMessage.getMemberData().getMember().getUser().getAvatarUrl());
                     webhookEmbedBuilder.setDescription(":writing_hand: " + loggerMessage.getMemberData().getMember().getAsMention() + " **has been updated.**");
-                    webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", stringBuilder.toString()));
+
+                    if (!loggerMessage.getMemberData().getAddedRoles().isEmpty() || !loggerMessage.getMemberData().getRemovedRoles().isEmpty())
+                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", stringBuilder.toString()));
 
                     modified = true;
                 }
