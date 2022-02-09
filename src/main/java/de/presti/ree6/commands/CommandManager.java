@@ -95,7 +95,6 @@ public class CommandManager {
         addCommand(new Leaderboards());
 
         //Community
-        addCommand(new Rainbow());
         addCommand(new TwitchNotifier());
         addCommand(new TwitterNotifier());
 

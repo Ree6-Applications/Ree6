@@ -31,6 +31,7 @@ import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -64,8 +65,7 @@ public class OtherEvents extends ListenerAdapter {
 
         AutoRoleHandler.handleMemberJoin(event.getGuild(), event.getMember());
 
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId()))
-            return;
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId())) return;
 
         WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
@@ -107,8 +107,7 @@ public class OtherEvents extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceGuildDeafen(@NotNull GuildVoiceGuildDeafenEvent event) {
-        if (event.getMember() != event.getGuild().getSelfMember())
-            return;
+        if (event.getMember() != event.getGuild().getSelfMember()) return;
 
         if (!event.isGuildDeafened()) {
             event.getMember().deafen(true).queue();
@@ -128,8 +127,7 @@ public class OtherEvents extends ListenerAdapter {
                 ArrayUtil.messageIDwithUser.put(event.getMessageId(), event.getAuthor());
             }
 
-            if (event.getAuthor().isBot())
-                return;
+            if (event.getAuthor().isBot()) return;
 
             if (ChatProtector.isChatProtectorSetup(event.getGuild().getId())) {
                 if (ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
@@ -194,12 +192,11 @@ public class OtherEvents extends ListenerAdapter {
 
         event.deferEdit().queue();
 
+        if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null || event.getInteraction().getSelectedOptions().isEmpty())
+            return;
+
         switch (event.getInteraction().getComponent().getId()) {
             case "setupActionMenu" -> {
-
-                if (event.getMessage().getEmbeds().isEmpty() ||
-                        event.getMessage().getEmbeds().get(0) == null ||
-                        event.getInteraction().getSelectedOptions().isEmpty()) return;
 
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
@@ -214,12 +211,9 @@ public class OtherEvents extends ListenerAdapter {
 
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
 
-                        embedBuilder.setDescription("You can set up our own Audit-Logging which provides all the Information over and Webhook into the Channel of your desire! " +
-                                "But ours is not the same as the default Auditions, ours gives your the ability to set what you want to be logged and what not! " +
-                                "We also allow you to log Voice Events!");
+                        embedBuilder.setDescription("You can set up our own Audit-Logging which provides all the Information over and Webhook into the Channel of your desire! " + "But ours is not the same as the default Auditions, ours gives your the ability to set what you want to be logged and what not! " + "We also allow you to log Voice Events!");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build())
-                                .setActionRows(ActionRow.of(new SelectMenuImpl("setupLogMenu", "Select your Action", 1, 1, false, optionList))).queue();
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupLogMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
 
                     case "welcome" -> {
@@ -230,11 +224,9 @@ public class OtherEvents extends ListenerAdapter {
 
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
 
-                        embedBuilder.setDescription("You can set up our own Welcome-Messages! " +
-                                "You can choice the Welcome-Channel by your own and even configure the Message!");
+                        embedBuilder.setDescription("You can set up our own Welcome-Messages! " + "You can choice the Welcome-Channel by your own and even configure the Message!");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build())
-                                .setActionRows(ActionRow.of(new SelectMenuImpl("setupWelcomeMenu", "Select your Action", 1, 1, false, optionList))).queue();
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupWelcomeMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
 
                     case "news" -> {
@@ -245,23 +237,19 @@ public class OtherEvents extends ListenerAdapter {
 
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
 
-                        embedBuilder.setDescription("You can set up our own Ree6-News! " +
-                                "By setting up Ree6-News on a specific channel your will get a Message in the given Channel, when ever Ree6 gets an update!");
+                        embedBuilder.setDescription("You can set up our own Ree6-News! " + "By setting up Ree6-News on a specific channel your will get a Message in the given Channel, when ever Ree6 gets an update!");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build())
-                                .setActionRows(ActionRow.of(new SelectMenuImpl("setupNewsMenu", "Select your Action", 1, 1, false, optionList))).queue();
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupNewsMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
 
                     case "mute" -> {
-                        embedBuilder.setDescription("You can set up our own Mute-System! " +
-                                "You can select the Role that Ree6 should give an Mute User!");
+                        embedBuilder.setDescription("You can set up our own Mute-System! " + "You can select the Role that Ree6 should give an Mute User!");
 
                         event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(Button.link("https://cp.ree6.de", "Webinterface"))).queue();
                     }
 
                     case "autorole" -> {
-                        embedBuilder.setDescription("You can set up our own Autorole-System! " +
-                                "You can select Roles that Users should get upon joining the Server!");
+                        embedBuilder.setDescription("You can set up our own Autorole-System! " + "You can select Roles that Users should get upon joining the Server!");
 
                         event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(Button.link("https://cp.ree6.de", "Webinterface"))).queue();
                     }
@@ -273,9 +261,6 @@ public class OtherEvents extends ListenerAdapter {
             }
 
             case "setupLogMenu" -> {
-                if (event.getMessage().getEmbeds().isEmpty() ||
-                        event.getMessage().getEmbeds().get(0) == null ||
-                        event.getInteraction().getSelectedOptions().isEmpty()) return;
 
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
@@ -292,8 +277,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("Which configuration do you want to check out?");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build())
-                                .setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
                     }
 
                     case "logSetup" -> {
@@ -303,8 +287,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("Which Channel do you want to use as Logging-Channel?");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build())
-                                .setActionRows(ActionRow.of(new SelectMenuImpl("setupLogChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupLogChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
                     }
 
                     default -> {
@@ -317,10 +300,26 @@ public class OtherEvents extends ListenerAdapter {
                 }
             }
 
+            case "setupLogChannel" -> {
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getSelectedOptions().get(0).getValue());
+
+                if (textChannel != null) {
+                    textChannel.createWebhook("Ree6-Logs").queue(webhook -> {
+                        Main.getInstance().getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
+                        embedBuilder.setDescription("Successfully changed the Logging Channel, nice work!");
+                        embedBuilder.setColor(Color.GREEN);
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                    });
+                } else {
+                    embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
+                    event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
+                }
+
+            }
+
             case "setupWelcomeMenu" -> {
-                if (event.getMessage().getEmbeds().isEmpty() ||
-                        event.getMessage().getEmbeds().get(0) == null ||
-                        event.getInteraction().getSelectedOptions().isEmpty()) return;
 
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
@@ -337,8 +336,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("Which configuration do you want to check out?");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build())
-                                .setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
                     }
 
                     case "welcomeSetup" -> {
@@ -348,8 +346,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("Which Channel do you want to use as Welcome-Channel?");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build())
-                                .setActionRows(ActionRow.of(new SelectMenuImpl("setupWelcomeChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupWelcomeChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
                     }
 
                     default -> {
@@ -359,6 +356,83 @@ public class OtherEvents extends ListenerAdapter {
                         embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
                         event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
                     }
+                }
+            }
+
+            case "setupWelcomeChannel" -> {
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getSelectedOptions().get(0).getValue());
+
+                if (textChannel != null) {
+                    textChannel.createWebhook("Ree6-Welcome").queue(webhook -> {
+                        Main.getInstance().getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
+                        embedBuilder.setDescription("Successfully changed the Welcome-Channel, nice work!");
+                        embedBuilder.setColor(Color.GREEN);
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                    });
+                } else {
+                    embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
+                    event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
+                }
+
+            }
+
+            case "setupNewsMenu" -> {
+
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                List<SelectOption> optionList = new ArrayList<>();
+
+                switch (event.getInteraction().getSelectedOptions().get(0).getValue()) {
+
+                    case "backToSetupMenu" -> {
+                        optionList.add(SelectOption.of("Audit-Logging", "log"));
+                        optionList.add(SelectOption.of("Welcome-channel", "welcome"));
+                        optionList.add(SelectOption.of("News-channel", "news"));
+                        optionList.add(SelectOption.of("Mute role", "mute"));
+                        optionList.add(SelectOption.of("Autorole", "autrorole"));
+
+                        embedBuilder.setDescription("Which configuration do you want to check out?");
+
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
+                    }
+
+                    case "newsSetup" -> {
+                        for (TextChannel channel : event.getGuild().getTextChannels()) {
+                            optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                        }
+
+                        embedBuilder.setDescription("Which Channel do you want to use as News-Channel?");
+
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupNewsChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
+                    }
+
+                    default -> {
+                        if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
+                            return;
+
+                        embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
+                    }
+                }
+            }
+
+            case "setupNewsChannel" -> {
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getSelectedOptions().get(0).getValue());
+
+                if (textChannel != null) {
+                    textChannel.createWebhook("Ree6-News").queue(webhook -> {
+                        Main.getInstance().getSqlConnector().getSqlWorker().setNewsWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
+                        embedBuilder.setDescription("Successfully changed the News-Channel, nice work!");
+                        embedBuilder.setColor(Color.GREEN);
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                    });
+                } else {
+                    embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
+                    event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
                 }
             }
 

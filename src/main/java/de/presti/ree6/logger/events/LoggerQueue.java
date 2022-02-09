@@ -400,18 +400,18 @@ public class LoggerQueue {
                     modified = true;
                 }
             }
-            // Check if it's a User join log.
-            else if (loggerMessage.getType() == LoggerMessage.LogTyp.SERVER_JOIN) {
+            // Check if it's a User leave log.
+            else if (loggerMessage.getType() == LoggerMessage.LogTyp.SERVER_LEAVE) {
                 if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
                         loggerMessages.getUserData() != null &&
                         loggerMessages.getUserData().getUser().getIdLong() == loggerMessage.getUserData().getUser().getIdLong() &&
-                        !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.SERVER_LEAVE)) {
+                        !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.SERVER_JOIN || loggerMessages.getType() == LoggerMessage.LogTyp.USER_BAN)) {
 
-                    // Cancel every Log-Message which indicates that the person left the Server.
+                    // Cancel every Log-Message which indicates that the person joined the Server or got banned.
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
                             loggerMessages.getUserData() != null &&
                             loggerMessages.getUserData().getUser().getIdLong() == loggerMessage.getUserData().getUser().getIdLong() &&
-                            !loggerMessages.isCanceled() && (loggerMessages.getType() == LoggerMessage.LogTyp.SERVER_LEAVE ||
+                            !loggerMessages.isCanceled() && (loggerMessages.getType() == LoggerMessage.LogTyp.SERVER_JOIN ||
                             loggerMessages.getType() == LoggerMessage.LogTyp.USER_BAN)).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
                     // Set the new Webhook Message.
@@ -419,24 +419,15 @@ public class LoggerQueue {
                             loggerMessage.getUserData().getUser().getAvatarUrl(), null));
 
                     if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                            loggerMessages.getUserData() != null &&
-                            loggerMessages.getUserData().getUser().getIdLong() == loggerMessage.getUserData().getUser().getIdLong())
+                                    loggerMessages.getUserData() != null &&
+                                    loggerMessages.getUserData().getUser().getIdLong() == loggerMessage.getUserData().getUser().getIdLong())
                             .anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.USER_BAN)) {
-                        webhookEmbedBuilder.setDescription(loggerMessage.getUserData().getUser().getAsMention() + " **joined and has been banned instantly from this Server.** ");
+                        webhookEmbedBuilder.setDescription(loggerMessage.getUserData().getUser().getAsMention() + " **has been banned.** ");
                     } else{
                         webhookEmbedBuilder.setDescription(loggerMessage.getUserData().getUser().getAsMention() + " **joined and left this Server.** ");
                     }
 
                     modified = true;
-                }
-            }
-            // Check if it's a User leave log.
-            else if (loggerMessage.getType() == LoggerMessage.LogTyp.SERVER_LEAVE) {
-                if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                        loggerMessages.getUserData() != null &&
-                        loggerMessages.getUserData().getUser().getIdLong() == loggerMessage.getUserData().getUser().getIdLong() &&
-                        !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.USER_BAN)) {
-                    loggerMessage.setCanceled(true);
                 }
             }
 

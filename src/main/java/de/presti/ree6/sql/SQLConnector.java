@@ -98,7 +98,6 @@ public class SQLConnector {
         tables.put("LogWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("WelcomeWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("NewsWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        tables.put("RainbowWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("JoinMessage", "(GID VARCHAR(40), MSG VARCHAR(250))");
         tables.put("MuteRoles", "(GID VARCHAR(40), RID VARCHAR(40))");
         tables.put("ChatProtector", "(GID VARCHAR(40), WORD VARCHAR(40))");
