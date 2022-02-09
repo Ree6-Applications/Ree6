@@ -182,8 +182,6 @@ public class OtherEvents extends ListenerAdapter {
         super.onButtonInteraction(event);
     }
 
-    // TODO finish.
-
     @Override
     public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
         super.onSelectMenuInteraction(event);
