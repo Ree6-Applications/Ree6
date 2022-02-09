@@ -29,4 +29,5 @@ Please be aware that im a Student and can't work full-time on the Bot, and that 
 - [Nekos4J](https://github.com/Nekos-life/Nekos4J)
 - [Spotify Web API](https://github.com/thelinmichael/spotify-web-api-java)
 - [Youtube Data API v3](https://github.com/googleapis/google-api-java-client-services/tree/master/clients/google-api-services-youtube/v3)
-- [Twitch4J](https://github.com/twitch4j/twitch4j) (Twitch.tv API Wrapper)
+- [Twitch4J](https://github.com/twitch4j/twitch4j)
+- [Twitter4J](https://github.com/Twitter4J/Twitter4J)
