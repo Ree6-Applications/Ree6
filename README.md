@@ -1,42 +1,32 @@
 # Ree6
-
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6)[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) 
+###### A Open-Source all in one Discord Bot! 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/T6T4AC652)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) 
 
-To keep this Project alive consider supporting me: https://ko-fi.com/presti (just if you want to support you don't have to)
+## What is Ree6?
+Ree6 is a all in one Discord Bot maintained mainly by Presti (Me).
 
-Ree6 is a Moderation Bot similar to Mee6 but with one major difference it is free!
+## Why does Ree6 exists?
+Ree6 has started as a alternativ to Mee6 since alot of features are hidden behind of a paywall and subscriptions.
+And we wanted to provide a Discord Bot that doesn't hide anything behind a paywall or subscriptions.
 
-Isn't Mee6 free too? - Basically yes but for the most Features you are required to have a Subscription!
+## What can Ree6 do?
+As of right now Ree6 has the ability to play Music freely from YouTube, Spotify and Soundcloud.
+Aswell as the "default" moderation ability such as ban, kick etc., Ree6 also provides its own implemantion of the Audit-Logger.
+We also provide a **open-Source** Webinterface, Twitch and Twitter Notification, a Leveling System, a public Rest-API and more!
 
-With Ree6 we want to give you opportunity to use every Feature of Mee6 for free!
 
-Current Features:
-- Overall Logging (Ban, Kick, Role, Permission and more)
-- Invite Logging
-- Chat Protector (Bad Word Detection, adjustable)
-- Music Player (Spotify, YouTube, Soundcloud, Vimeo and more)
-- Fun Commands (Random Memes, Random Dogs, Ping and more)
-- Leveling System
-- Moderation Commands(ban, mute, kick and more)
-- Twitch Notification
-- Web-panel
-- Settings for Logs
-- RestAPI
-
-Upcoming Features:
+## Upcoming Features:
 - YouTube Notification
 - 100% adjustable messages
 
-Please be aware that im a Student and can't work full-time on the Bot!
+## Disclaimer
+Please be aware that im a Student and can't work full-time on the Bot, and that I am paying for every costs that comes up keep this Project alive! Im thankful for every donation that I receive on [Ko-fi](https://ko-fi.com/presti).
 
-Website: https://ree6.de
-
-Used Apis:
-- JDA
-- LavaPlayer
-- Nekos4J (Nekos.life API Wrapper)
-- reliqua (RestAPI Wrapper for Java, used by Nekos4J)
-- spotify-web-api-java (https://github.com/thelinmichael/spotify-web-api-java)
-- Youtube Data API v3 (https://github.com/googleapis/google-api-java-client-services/tree/master/clients/google-api-services-youtube/v3)
-- Twitch4J (Twitch.tv API Wrapper https://github.com/twitch4j/twitch4j)
+# Used APIs.
+- [JDA](https://github.com/DV8FromTheWorld/JDA)
+- [LavaPlayer](https://github.com/sedmelluq/lavaplayer)
+- [Nekos4J](https://github.com/Nekos-life/Nekos4J)
+- [Spotify Web API](https://github.com/thelinmichael/spotify-web-api-java)
+- [Youtube Data API v3](https://github.com/googleapis/google-api-java-client-services/tree/master/clients/google-api-services-youtube/v3)
+- [Twitch4J](https://github.com/twitch4j/twitch4j) (Twitch.tv API Wrapper)
