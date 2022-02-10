@@ -338,13 +338,7 @@ public class CommandManager {
                 return null;
             }).queue();
         } else {
-            interactionHook.sendMessage(messageContent).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
-                    return message.delete();
-                }
-
-                return null;
-            }).queue();
+            interactionHook.sendMessage(messageContent).queue();
         }
     }
 
@@ -399,13 +393,7 @@ public class CommandManager {
                 return null;
             }).queue();
         } else {
-            interactionHook.sendMessageEmbeds(embedBuilder.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
-                    return message.delete();
-                }
-
-                return null;
-            }).queue();
+            interactionHook.sendMessageEmbeds(embedBuilder.build()).queue();
         }
     }
 
@@ -415,7 +403,10 @@ public class CommandManager {
      * @param interactionHook the Interaction-hook, if it is a slash event.
      */
     public void deleteMessage(Message message, InteractionHook interactionHook) {
-        if (message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) && message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null && !message.isEphemeral() && interactionHook == null) {
+        if (message != null &&
+                message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
+                message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null &&
+                !message.isEphemeral() && interactionHook == null) {
             try {
                 message.delete().queue();
             } catch (Exception ex) {

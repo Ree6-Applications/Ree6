@@ -66,7 +66,7 @@ public class Ban extends Command {
     }
 
     public void banMember(Member member, String reason, CommandEvent commandEvent) {
-        if (commandEvent.getGuild().getSelfMember().canInteract(member) &&commandEvent.getMember().canInteract(member)) {
+        if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
             sendMessage("User " + member.getAsMention() + " has been banned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             commandEvent.getGuild().ban(member, 7, reason).queue();
         } else {
