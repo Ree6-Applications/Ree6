@@ -11,7 +11,7 @@ public class BotInfo {
      * Constructor should not be called, since it is a utility class that doesn't need an instance.
      * @throws IllegalStateException it is a utility class.
      */
-    public BotInfo() {
+    private BotInfo() {
         throw new IllegalStateException("Utility class");
     }
 

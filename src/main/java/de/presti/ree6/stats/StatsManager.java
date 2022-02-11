@@ -11,6 +11,14 @@ import java.util.HashMap;
 public class StatsManager {
 
     /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     * @throws IllegalStateException it is a utility class.
+     */
+    private StatsManager() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
      * Add Stats for a Command.
      *
      * @param command an Instance of the Command.

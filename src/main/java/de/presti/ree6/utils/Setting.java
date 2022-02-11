@@ -26,10 +26,10 @@ public class Setting {
      * @return the Value as {@link Boolean}
      */
     public boolean getBooleanValue() {
-        if (value instanceof Boolean) {
-            return (Boolean) value;
-        } else if (value instanceof String) {
-            return Boolean.parseBoolean((String) value);
+        if (value instanceof Boolean booleanValue) {
+            return booleanValue;
+        } else if (value instanceof String stringValue) {
+            return Boolean.parseBoolean(stringValue);
         }
         return true;
     }
@@ -39,12 +39,12 @@ public class Setting {
      * @return Value as {@link String}
      */
     public String getStringValue() {
-        if (value instanceof String) {
-            return (String) value;
+        if (value instanceof String stringValue) {
+            return stringValue;
         } else if (getName().equalsIgnoreCase("chatprefix")) {
             return "ree!";
-        } else if (value instanceof Boolean) {
-            return value + "";
+        } else if (value instanceof Boolean booleanValue) {
+            return booleanValue + "";
         }
         return "";
     }

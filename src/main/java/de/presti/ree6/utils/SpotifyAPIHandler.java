@@ -12,6 +12,7 @@ import se.michaelthelin.spotify.requests.data.tracks.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 //Not by DxsSucuk
 //Credits: Kay-Bilger
@@ -76,11 +77,11 @@ public class SpotifyAPIHandler {
             return listOfTracks;
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     public String getArtistAndName(String trackID) throws ParseException, SpotifyWebApiException, IOException {
-        StringBuilder artistNameAndTrackName = new StringBuilder();
+        StringBuilder artistNameAndTrackName;
         GetTrackRequest trackRequest = spotifyApi.getTrack(trackID).build();
 
         Track track = trackRequest.execute();

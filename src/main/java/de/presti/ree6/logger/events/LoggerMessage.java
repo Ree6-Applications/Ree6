@@ -142,32 +142,12 @@ public class LoggerMessage {
     }
 
     /**
-     * Set the Guild of the Log-Message.
-     *
-     * @param guild the Guild.
-     */
-    @Deprecated
-    public void setGuild(Guild guild) {
-        this.guild = guild;
-    }
-
-    /**
-     * Webhook ID used for Discord to identificate which Webhook is meant.
+     * Webhook ID used for Discord to identify which Webhook is meant.
      *
      * @return the Webhook ID.
      */
     public long getId() {
         return id;
-    }
-
-    /**
-     * Change the Webhook ID.
-     *
-     * @param id the Webhook ID.
-     */
-    @Deprecated
-    public void setId(long id) {
-        this.id = id;
     }
 
     /**
@@ -177,16 +157,6 @@ public class LoggerMessage {
      */
     public String getAuthCode() {
         return authCode;
-    }
-
-    /**
-     * Change the Auth-Code of the Webhook Packet.
-     *
-     * @param authCode the new Auth-Code.
-     */
-    @Deprecated
-    public void setAuthCode(String authCode) {
-        this.authCode = authCode;
     }
 
     /**
@@ -221,7 +191,6 @@ public class LoggerMessage {
      *
      * @param type the new LogTyp.
      */
-    @Deprecated
     public void setType(LogTyp type) {
         this.type = type;
     }

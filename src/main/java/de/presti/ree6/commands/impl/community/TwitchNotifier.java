@@ -36,7 +36,7 @@ public class TwitchNotifier extends Command {
             }
         } else if(commandEvent.getArguments().length == 3) {
 
-            if (commandEvent.getMessage().getMentionedChannels().size() == 0) {
+            if (commandEvent.getMessage().getMentionedChannels().isEmpty()) {
                 sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch add/remove TwitchName #Channel", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 return;
             }

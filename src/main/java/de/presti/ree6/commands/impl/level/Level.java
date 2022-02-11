@@ -78,13 +78,13 @@ public class Level extends Command {
         String end;
 
         if(xp >= 1000000000000L) {
-            end = ((xp / 1000000000000L) + "").replaceAll("l", "") + "mil";
+            end = ((xp / 1000000000000L) + "").replace("l", "") + "mil";
         } else if(xp >= 1000000000) {
-            end = ((xp / 1000000000) + "").replaceAll("l", "") + "mil";
+            end = ((xp / 1000000000) + "").replace("l", "") + "mil";
         } else if(xp >= 1000000) {
-            end = ((xp / 1000000) + "").replaceAll("l", "") + "mio";
+            end = ((xp / 1000000) + "").replace("l", "") + "mio";
         } else if(xp >= 1000) {
-            end = ((xp / 1000) + "").replaceAll("l", "") + "k";
+            end = ((xp / 1000) + "").replace("l", "") + "k";
         } else {
             end = "" + xp;
         }

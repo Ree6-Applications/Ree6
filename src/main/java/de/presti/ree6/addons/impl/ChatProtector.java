@@ -11,6 +11,14 @@ import java.util.Arrays;
 public class ChatProtector {
 
     /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     * @throws IllegalStateException it is a utility class.
+     */
+    private ChatProtector() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
      * Blacklist a Word.
      *
      * @param guildId the ID of the Guild.

@@ -5,6 +5,14 @@ import java.time.Period;
 
 public class TimeUtil {
 
+    /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     * @throws IllegalStateException it is a utility class.
+     */
+    private TimeUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static Period getDifferenceBetween(LocalDateTime start, LocalDateTime end) {
         return Period.between(start.toLocalDate(), end.toLocalDate());
     }
@@ -86,15 +94,15 @@ public class TimeUtil {
         }
 
         if (d != 0) {
-            end += d + " Days" + (((h != 0 || m != 0 || s != 0) ? ", " : ""));
+            end += d + " Days" + ((h != 0 || m != 0 || s != 0) ? ", " : "");
         }
 
         if (h != 0) {
-            end += h + " Hours" + (((m != 0 || s != 0) ? ", " : ""));
+            end += h + " Hours" + ((m != 0 || s != 0) ? ", " : "");
         }
 
         if (m != 0) {
-            end += m + " Minutes" + ((s != 0 ? ", " : ""));
+            end += m + " Minutes" + (s != 0 ? ", " : "");
         }
 
         if (s != 0) {

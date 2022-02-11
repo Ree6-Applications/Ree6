@@ -71,7 +71,7 @@ public class OtherEvents extends ListenerAdapter {
 
         wmb.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         wmb.setUsername("Welcome!");
-        wmb.setContent((Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())).replaceAll("%user_name%", event.getMember().getUser().getName()).replaceAll("%user_mention%", event.getMember().getUser().getAsMention()).replaceAll("%guild_name%", event.getGuild().getName()));
+        wmb.setContent((Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())).replace("%user_name%", event.getMember().getUser().getName()).replace("%user_mention%", event.getMember().getUser().getAsMention()).replace("%guild_name%", event.getGuild().getName()));
 
         String[] info = Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId());
 
@@ -129,12 +129,11 @@ public class OtherEvents extends ListenerAdapter {
 
             if (event.getAuthor().isBot()) return;
 
-            if (ChatProtector.isChatProtectorSetup(event.getGuild().getId())) {
-                if (ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
-                    Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
-                    event.getChannel().sendMessage("You can't write that!").queue();
-                    return;
-                }
+            if (ChatProtector.isChatProtectorSetup(event.getGuild().getId()) &&
+                    ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
+                Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+                event.getChannel().sendMessage("You can't write that!").queue();
+                return;
             }
 
             if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getTextChannel(), null)) {
@@ -175,11 +174,6 @@ public class OtherEvents extends ListenerAdapter {
         event.deferReply(true).queue();
 
         Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getTextChannel(), event);
-    }
-
-    @Override
-    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
-        super.onButtonInteraction(event);
     }
 
     @Override
@@ -254,6 +248,7 @@ public class OtherEvents extends ListenerAdapter {
 
                     default -> {
                         embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
+                        event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
                     }
                 }
             }

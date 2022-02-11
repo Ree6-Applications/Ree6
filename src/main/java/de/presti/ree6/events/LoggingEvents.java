@@ -371,10 +371,10 @@ public class LoggingEvents extends ListenerAdapter {
                 we.setDescription(":house: **VoiceChannel created:** " + event.getChannel().getAsMention());
             } else if (event instanceof ChannelDeleteEvent) {
                 we.setDescription(":house: **VoiceChannel deleted:** ``" + event.getChannel().getName() + "``");
-            } else if (event instanceof ChannelUpdateNameEvent) {
-                we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", ((ChannelUpdateNameEvent) event).getOldValue() != null
+            } else if (event instanceof ChannelUpdateNameEvent channelUpdateNameEvent) {
+                we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", channelUpdateNameEvent.getOldValue() != null
                         ? ((ChannelUpdateNameEvent) event).getOldValue() : event.getChannel().getName()));
-                we.addField(new WebhookEmbed.EmbedField(true, "**New name**", ((ChannelUpdateNameEvent) event).getNewValue() != null
+                we.addField(new WebhookEmbed.EmbedField(true, "**New name**", channelUpdateNameEvent.getNewValue() != null
                         ? ((ChannelUpdateNameEvent) event).getNewValue() : event.getChannel().getName()));
             } else {
                 return;
@@ -406,13 +406,13 @@ public class LoggingEvents extends ListenerAdapter {
                 we.setDescription(":house: **TextChannel created:** " + event.getChannel().getAsMention());
             } else if (event instanceof ChannelDeleteEvent) {
                 we.setDescription(":house: **TextChannel deleted:** ``" + event.getChannel().getName() + "``");
-            } else if (event instanceof ChannelUpdateNameEvent) {
-                we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", ((ChannelUpdateNameEvent) event).getOldValue() != null
+            } else if (event instanceof ChannelUpdateNameEvent channelUpdateNameEvent) {
+                we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", channelUpdateNameEvent.getOldValue() != null
                         ? ((ChannelUpdateNameEvent) event).getOldValue() : event.getChannel().getName()));
-                we.addField(new WebhookEmbed.EmbedField(true, "**New name**", ((ChannelUpdateNameEvent) event).getNewValue() != null
+                we.addField(new WebhookEmbed.EmbedField(true, "**New name**", channelUpdateNameEvent.getNewValue() != null
                         ? ((ChannelUpdateNameEvent) event).getNewValue() : event.getChannel().getName()));
-            } else if (event instanceof ChannelUpdateNSFWEvent) {
-                we.addField(new WebhookEmbed.EmbedField(true, "**NSFW**", ((ChannelUpdateNSFWEvent) event).getNewValue() + ""));
+            } else if (event instanceof ChannelUpdateNSFWEvent channelUpdateNSFWEvent) {
+                we.addField(new WebhookEmbed.EmbedField(true, "**NSFW**", channelUpdateNSFWEvent.getNewValue() + ""));
             } else {
                 return;
             }
@@ -629,37 +629,6 @@ public class LoggingEvents extends ListenerAdapter {
         String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
         Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerRoleData(event.getRole().getIdLong(), (event.getOldColor() != null ? event.getOldColor() : Color.gray), (event.getNewColor() != null ? event.getNewColor() : Color.gray)), LoggerMessage.LogTyp.ROLEDATA_CHANGE));
     }
-
-
-       /* @Override
-    public void onGuildMessageUpdate(@Nonnull GuildMessageUpdateEvent event) {
-
-        if (!Main.sqlWorker.hasLogSetuped(event.getGuild().getId()))
-            return;
-
-        if (event.getMessage().getContentRaw().isEmpty())
-            return;
-
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
-
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getAuthor().getAsTag(), event.getAuthor().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.advertisement, event.getGuild().getIconUrl()));
-
-        we.setDescription(":pencil2: **Message send by** " + event.getMember().getUser().getAsMention() + " **in** " + event.getChannel().getAsMention() + " **has been edited.**\n**Old**\n```" + ArrayUtil.getMessageFromMessageList(event.getMessageId()) + "```\n**New**\n```" + event.getMessage().getContentRaw() + "```");
-
-        wm.addEmbeds(we.build());
-
-        String[] infos = Main.sqlWorker.getLogwebhook(event.getGuild().getId());
-        Webhook.sendWebhook(wm.build(), Long.parseLong(infos[0]), infos[1]);
-
-        ArrayUtil.updateMessage(event.getMessageId(), event.getMessage().getContentRaw());
-
-    } */
 
     @Override
     public void onMessageDelete(@Nonnull MessageDeleteEvent event) {

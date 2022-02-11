@@ -22,7 +22,7 @@ public class Clear extends Command {
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
-        if(commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+        if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 
             if (commandEvent.isSlashCommand()) {
 
@@ -36,7 +36,7 @@ public class Clear extends Command {
                 if (commandEvent.getArguments().length == 1) {
                     try {
                         int amount = Integer.parseInt(commandEvent.getArguments()[0]);
-                        if (amount <= 100 && amount>= 2) {
+                        if (amount <= 100 && amount >= 2) {
 
                             deleteMessages(commandEvent, amount);
 
@@ -60,7 +60,7 @@ public class Clear extends Command {
 
     public void deleteMessages(CommandEvent commandEvent, int amount) {
 
-        if (amount <= 100 && amount>= 2) {
+        if (amount <= 100 && amount >= 2) {
 
             try {
                 deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
@@ -69,14 +69,11 @@ public class Clear extends Command {
 
                 sendMessage(messages.size() + " Messages have been deleted!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
 
-            } catch (Exception ex) {
-                if (ex instanceof IllegalArgumentException) {
-                    sendMessage("" + (ex.toString().toLowerCase().startsWith("java.lang.illegalargumentexception: must provide at") ? "Given Parameter is either above 100 or below 2!" : "Error while deleting:" + ex.toString().split(":")[1]), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                } else {
-                    sendMessage("Error while deleting:" + ex.toString().split(":")[1], 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                }
+            } catch (IllegalArgumentException exception) {
+                sendMessage("" + (exception.toString().toLowerCase().startsWith("java.lang.illegalargumentexception: must provide at") ? "Given Parameter is either above 100 or below 2!" : "Error while deleting:" + exception.toString().split(":")[1]), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            } catch (Exception exception) {
+                sendMessage("Error while deleting:" + exception.toString().split(":")[1], 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
-
         } else {
             sendMessage(amount + " isn't between 2 and 100 !", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

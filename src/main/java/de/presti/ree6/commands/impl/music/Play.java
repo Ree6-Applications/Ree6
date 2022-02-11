@@ -6,7 +6,6 @@ import de.presti.ree6.commands.Command;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.ArrayUtil;
 import de.presti.ree6.utils.SpotifyAPIHandler;
 import de.presti.ree6.utils.YouTubeAPIHandler;
 import net.dv8tion.jda.api.EmbedBuilder;

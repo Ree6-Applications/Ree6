@@ -4,6 +4,14 @@ import java.util.Random;
 
 public final class RandomUtils {
 
+    /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     * @throws IllegalStateException it is a utility class.
+     */
+    private RandomUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static final Random random = new Random();
 
     public static int nextInt(int startInclusive, int endExclusive) {
@@ -24,7 +32,7 @@ public final class RandomUtils {
         if (startInclusive == endInclusive || endInclusive - startInclusive <= 0.0f) {
             return startInclusive;
         }
-        return (float) ((double) startInclusive + (double) (endInclusive - startInclusive) * Math.random());
+        return (float) (startInclusive + (endInclusive - startInclusive) * Math.random());
     }
 
     public static String randomNumber(int length) {

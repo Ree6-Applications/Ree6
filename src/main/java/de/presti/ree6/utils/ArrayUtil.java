@@ -14,6 +14,14 @@ import java.util.HashMap;
 @SuppressWarnings("Java8MapApi")
 public class ArrayUtil {
 
+    /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     * @throws IllegalStateException it is a utility class.
+     */
+    private ArrayUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     // HashMap used to store message contents and their IDs, to show the content when the message gets deleted.
     public static final HashMap<String, Message> messageIDwithMessage = new HashMap<>();
 

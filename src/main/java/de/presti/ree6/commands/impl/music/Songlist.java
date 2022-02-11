@@ -20,7 +20,7 @@ public class Songlist extends Command {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         EmbedBuilder em = new EmbedBuilder();
-        
+
         StringBuilder end = new StringBuilder("```");
 
         for (AudioTrack track : Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.getQueue()) {
@@ -29,12 +29,11 @@ public class Songlist extends Command {
 
         end.append("```");
 
-        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.getQueue().size() == 0 ? "No Song in the Queue" :  (end.length() > 4096 ? "Error (M-SL-01)" : "Songs: " + end));
+        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.getQueue().isEmpty() ? "No Song in the Queue" : (end.length() > 4096 ? "Error (M-SL-01)" : "Songs: " + end));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
         sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

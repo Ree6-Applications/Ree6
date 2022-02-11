@@ -191,8 +191,8 @@ public class LoggerQueue {
                     if (memberData != null && memberData.getRemovedRoles() != null && !memberData.getRemovedRoles().isEmpty() && memberData.getRemovedRoles().stream().anyMatch(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
                             !loggerMessage.getMemberData().getRemovedRoles().contains(role))) {
                         try {
-                            memberData.getRemovedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
-                                    !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
+                            memberData.getRemovedRoles().stream().filter(role -> role != null && !loggerMessage.getMemberData().getAddedRoles().contains(role) &&
+                                    !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getRemovedRoles().add(role));
                         } catch (Exception ignore) {
                         }
                     }
@@ -200,7 +200,7 @@ public class LoggerQueue {
                     if (memberData != null && memberData.getAddedRoles() != null && !memberData.getAddedRoles().isEmpty() && memberData.getAddedRoles().stream().anyMatch(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
                             !loggerMessage.getMemberData().getRemovedRoles().contains(role))) {
                         try {
-                            memberData.getAddedRoles().stream().filter(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
+                            memberData.getAddedRoles().stream().filter(role -> role != null && !loggerMessage.getMemberData().getAddedRoles().contains(role) &&
                                     !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));
                         } catch (Exception ignore) {
                         }
@@ -309,7 +309,7 @@ public class LoggerQueue {
                     if (!loggerMessage.getRoleData().isCreated() && !loggerMessage.getRoleData().isDeleted()) {
 
                         // Set update as Description
-                        webhookEmbedBuilder.setDescription(":family_mmb: ``" + loggerMessage.getRoleData().getPreviousName() + "`` **has been updated.**");
+                        webhookEmbedBuilder.setDescription(":family_mmb: ``" + loggerMessage.getRoleData().getCurrentName() + "`` **has been updated.**");
 
                         // Check if there is a previous and current Name.
                         if (loggerMessage.getRoleData().getPreviousName() != null && loggerMessage.getRoleData().getCurrentName() != null) {
@@ -352,6 +352,7 @@ public class LoggerQueue {
                         // Create empty lists in case of them being null
                         if (loggerMessage.getRoleData().getPreviousPermission() == null)
                             loggerMessage.getRoleData().setPreviousPermission(EnumSet.noneOf(Permission.class));
+
                         if (loggerMessage.getRoleData().getCurrentPermission() == null)
                             loggerMessage.getRoleData().setCurrentPermission(EnumSet.noneOf(Permission.class));
 

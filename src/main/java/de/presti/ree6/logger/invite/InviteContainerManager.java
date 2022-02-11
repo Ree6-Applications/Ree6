@@ -12,6 +12,15 @@ import java.util.List;
  */
 public class InviteContainerManager {
 
+    /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     *
+     * @throws IllegalStateException it is a utility class.
+     */
+    private InviteContainerManager() {
+        throw new IllegalStateException("Utility class");
+    }
+
     // List of every Invite that has been deleted in the current Session.
     private static final ArrayList<InviteContainer> deletedInvites = new ArrayList<>();
 
@@ -69,19 +78,15 @@ public class InviteContainerManager {
                 // Go through every Invite of the Guild from our Database.
                 for (InviteContainer inv2 : cachedInvites) {
                     // Check if the Invites aren't null and if there is one that matches the InviteContainer.
-                    if (inv != null && inv.getInviter() != null && inv.getInviter().getId().equalsIgnoreCase(inv2.getCreatorId()) && inv.getCode().equalsIgnoreCase(inv2.getCode())) {
-                        // Check if the usage is different.
-                        if (inv.getUses() != inv2.getUses()) {
-                            // Return the InviteContainer.
-                            return inv2;
-                        }
+                    if (inv != null && inv.getInviter() != null && inv.getInviter().getId().equalsIgnoreCase(inv2.getCreatorId()) && inv.getCode().equalsIgnoreCase(inv2.getCode()) && inv.getUses() != inv2.getUses()) {
+                        // Return the InviteContainer.
+                        return inv2;
                     }
                 }
             }
         }
 
         return null;
-
     }
 
     /**

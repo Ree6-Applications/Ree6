@@ -46,17 +46,18 @@ public class MusicWorker {
 
     /**
      * Retrieve the GuildMusicManager of a Guild.
+     *
      * @param guild the Guild.
      * @return the MusicManager of that Guild.
      */
     public synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
         long guildId = Long.parseLong(guild.getId());
-        GuildMusicManager musicManager = musicManagers.get(guildId);
 
-        if (musicManager == null) {
-            musicManager = new GuildMusicManager(guild, playerManager);
-            musicManagers.put(guildId, musicManager);
+        if (!musicManagers.containsKey(guildId)) {
+            musicManagers.put(guildId, new GuildMusicManager(guild, playerManager));
         }
+
+        GuildMusicManager musicManager = musicManagers.get(guildId);
 
         guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
 
@@ -66,9 +67,10 @@ public class MusicWorker {
 
     /**
      * Play or add a Song to the Queue without a Message.
-     * @param channel the TextChannel where the command has been performed, used for errors.
-     * @param audioChannel the AudioChannel for the Bot to join.
-     * @param trackUrl the Track URL.
+     *
+     * @param channel         the TextChannel where the command has been performed, used for errors.
+     * @param audioChannel    the AudioChannel for the Bot to join.
+     * @param trackUrl        the Track URL.
      * @param interactionHook a InteractionHook if it was an SlashCommand.
      */
     public void loadAndPlaySilence(final TextChannel channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook) {
@@ -145,9 +147,10 @@ public class MusicWorker {
 
     /**
      * Play or add a Song to the Queue with a Message.
-     * @param channel the TextChannel where the command has been performed.
-     * @param audioChannel the AudioChannel for the Bot to join.
-     * @param trackUrl the Track URL.
+     *
+     * @param channel         the TextChannel where the command has been performed.
+     * @param audioChannel    the AudioChannel for the Bot to join.
+     * @param trackUrl        the Track URL.
      * @param interactionHook a InteractionHook if it was an SlashCommand.
      */
     public void loadAndPlay(final TextChannel channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook) {
@@ -194,8 +197,7 @@ public class MusicWorker {
                 em.setTitle("Music Player!");
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
-                em.setDescription("The Song ``" + firstTrack.getInfo().title
-                        + "`` has been added to the Queue! (The first Song of the Playlist: " + playlist.getName() + ")");
+                em.setDescription("The Song ``" + firstTrack.getInfo().title + "`` has been added to the Queue! (The first Song of the Playlist: " + playlist.getName() + ")");
                 em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
                 Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
@@ -247,9 +249,10 @@ public class MusicWorker {
 
     /**
      * The simple Audio play method, used to Queue songs and let the Bot join the Audio-channel if not present.
+     *
      * @param audioChannel the Audio-channel for the Bot.
      * @param musicManager the Music-Manager of the Guild.
-     * @param track the AudioTrack that should be played.
+     * @param track        the AudioTrack that should be played.
      */
     public void play(AudioChannel audioChannel, GuildMusicManager musicManager, AudioTrack track) {
         connectToAudioChannel(musicManager.guild.getAudioManager(), audioChannel);
@@ -258,7 +261,8 @@ public class MusicWorker {
 
     /**
      * A method use to skip the current AudioTrack that is played.
-     * @param channel the TextChannel, used to inform the user about the skip.
+     *
+     * @param channel         the TextChannel, used to inform the user about the skip.
      * @param interactionHook the Interaction-Hook, used to replace the channel if it is a SlashCommand.
      */
     public void skipTrack(TextChannel channel, InteractionHook interactionHook) {
@@ -279,19 +283,17 @@ public class MusicWorker {
 
     /**
      * Check if the Bot is trying to join an Audio-Channel right now.
+     *
      * @param connectionStatus the current Status of its connection.
      * @return true, if it is connecting | false, if not.
      */
     public boolean isAttemptingToConnect(ConnectionStatus connectionStatus) {
-        return connectionStatus == ConnectionStatus.CONNECTING_ATTEMPTING_UDP_DISCOVERY ||
-                connectionStatus == ConnectionStatus.CONNECTING_AWAITING_AUTHENTICATION ||
-                connectionStatus == ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT ||
-                connectionStatus == ConnectionStatus.CONNECTING_AWAITING_READY ||
-                connectionStatus == ConnectionStatus.CONNECTING_AWAITING_ENDPOINT;
+        return connectionStatus == ConnectionStatus.CONNECTING_ATTEMPTING_UDP_DISCOVERY || connectionStatus == ConnectionStatus.CONNECTING_AWAITING_AUTHENTICATION || connectionStatus == ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT || connectionStatus == ConnectionStatus.CONNECTING_AWAITING_READY || connectionStatus == ConnectionStatus.CONNECTING_AWAITING_ENDPOINT;
     }
 
     /**
      * Let the Bot connect to an Audio-Channel.
+     *
      * @param audioManager the Audio-Manager of the Bot.
      * @param audioChannel the Audio-Channel the Bot should join.
      */
@@ -299,18 +301,15 @@ public class MusicWorker {
         if (!audioManager.isConnected() && !isAttemptingToConnect(audioManager.getConnectionStatus())) {
             audioManager.openAudioConnection(audioChannel);
 
-            if ((audioManager.isConnected() || (audioManager.getGuild().getSelfMember().getVoiceState() != null &&
-                    audioManager.getGuild().getSelfMember().getVoiceState().inAudioChannel())) && !audioManager.isSelfDeafened()) {
-
-                if (audioManager.getGuild().getSelfMember().hasPermission(Permission.VOICE_DEAF_OTHERS)) {
-                    audioManager.getGuild().getSelfMember().deafen(true).queue();
-                }
+            if ((audioManager.isConnected() || (audioManager.getGuild().getSelfMember().getVoiceState() != null && audioManager.getGuild().getSelfMember().getVoiceState().inAudioChannel())) && !audioManager.isSelfDeafened() && audioManager.getGuild().getSelfMember().hasPermission(Permission.VOICE_DEAF_OTHERS)) {
+                audioManager.getGuild().getSelfMember().deafen(true).queue();
             }
         }
     }
 
     /**
      * Check if the Bot is connected to an Audio-Channel on the given Guild.
+     *
      * @param guild the Guild.
      * @return true, if the Bot is connected to an Audio-channel | false, if not.
      */
@@ -320,6 +319,7 @@ public class MusicWorker {
 
     /**
      * Method use to disconnect the Bot from the channel.
+     *
      * @param guild the Guild.
      */
     public void disconnect(Guild guild) {
@@ -328,6 +328,7 @@ public class MusicWorker {
 
     /**
      * Check if the Member is connected to an Audio-Channel on the Guild.
+     *
      * @param member the Member.
      * @return true, if the Member is connected to an Audio-channel | false, if not.
      */
@@ -341,9 +342,7 @@ public class MusicWorker {
             return false;
         }
 
-        if (commandEvent.getGuild().getSelfMember().getVoiceState() != null && commandEvent.getGuild().getSelfMember().getVoiceState().inAudioChannel() &&
-                commandEvent.getGuild().getSelfMember().getVoiceState().getChannel() != null && commandEvent.getMember().getVoiceState().getChannel() != null &&
-                !commandEvent.getGuild().getSelfMember().getVoiceState().getChannel().getId().equalsIgnoreCase(commandEvent.getMember().getVoiceState().getChannel().getId())) {
+        if (commandEvent.getGuild().getSelfMember().getVoiceState() != null && commandEvent.getGuild().getSelfMember().getVoiceState().inAudioChannel() && commandEvent.getGuild().getSelfMember().getVoiceState().getChannel() != null && commandEvent.getMember().getVoiceState().getChannel() != null && !commandEvent.getGuild().getSelfMember().getVoiceState().getChannel().getId().equalsIgnoreCase(commandEvent.getMember().getVoiceState().getChannel().getId())) {
             Main.getInstance().getCommandManager().sendMessage("You have to be in the same Channel as me!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             return false;
         }
