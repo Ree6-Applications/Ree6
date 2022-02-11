@@ -230,11 +230,11 @@ public class Main {
 
                         if (guild.getSelfMember().getVoiceState() != null && guild.getSelfMember().getVoiceState().inAudioChannel() && (playerSendHandler == null ||
                                 !playerSendHandler.isMusicPlaying(guild))) {
-                            guildMusicManager.scheduler.stopAll(null);
+                            guildMusicManager.scheduler.stopAll(guild,null);
                         }
 
                     } catch (Exception ex) {
-                        guildMusicManager.scheduler.stopAll(null);
+                        guildMusicManager.scheduler.stopAll(guild,null);
                         getLogger().error("Error", ex);
                     }
                 }

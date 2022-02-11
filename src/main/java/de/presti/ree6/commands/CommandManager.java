@@ -115,8 +115,7 @@ public class CommandManager {
         CommandListUpdateAction listUpdateAction = BotInfo.botInstance.updateCommands();
 
         for (Command command : getCommands()) {
-            if (command.getCategory() == Category.HIDDEN ||
-                    command.getCommandData() == null) continue;
+            if (command.getCategory() == Category.HIDDEN || command.getCommandData() == null) continue;
             //noinspection ResultOfMethodCallIgnored
             listUpdateAction.addCommands(command.getCommandData());
         }
@@ -330,6 +329,7 @@ public class CommandManager {
      */
     public void sendMessage(String messageContent, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
         if (interactionHook == null) {
+            if (messageChannel == null) return;
             messageChannel.sendMessage(messageContent).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
                 if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
                     return message.delete();
@@ -385,6 +385,7 @@ public class CommandManager {
      */
     public void sendMessage(EmbedBuilder embedBuilder, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
         if (interactionHook == null) {
+            if (messageChannel == null) return;
             messageChannel.sendMessageEmbeds(embedBuilder.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
                 if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
                     return message.delete();
@@ -399,14 +400,12 @@ public class CommandManager {
 
     /**
      * Delete a specific message.
-     * @param message the {@link Message} entity.
+     *
+     * @param message         the {@link Message} entity.
      * @param interactionHook the Interaction-hook, if it is a slash event.
      */
     public void deleteMessage(Message message, InteractionHook interactionHook) {
-        if (message != null &&
-                message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
-                message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null &&
-                !message.isEphemeral() && interactionHook == null) {
+        if (message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) && message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null && !message.isEphemeral() && interactionHook == null) {
             try {
                 message.delete().queue();
             } catch (Exception ex) {
