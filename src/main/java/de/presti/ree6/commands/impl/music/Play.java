@@ -29,7 +29,7 @@ public class Play extends Command {
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
-        if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
+        if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
             return;
         }
 

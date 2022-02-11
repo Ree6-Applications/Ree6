@@ -21,7 +21,7 @@ public class Disconnect extends Command {
 
         if (Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()) != null &&
                 Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getSendHandler().isMusicPlaying(commandEvent.getGuild())) {
-            if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent) && Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
+            if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent) && Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
                 return;
             }
             Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.stopAll(commandEvent.getInteractionHook());

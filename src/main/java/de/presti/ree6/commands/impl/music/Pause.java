@@ -23,7 +23,7 @@ public class Pause extends Command {
             sendMessage("Im not connected to any Channel, so there is nothing to pause!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
 
-        if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
+        if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
             return;
         }
 

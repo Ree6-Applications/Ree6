@@ -12,7 +12,6 @@ import se.michaelthelin.spotify.requests.data.tracks.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 //Not by DxsSucuk
 //Credits: Kay-Bilger

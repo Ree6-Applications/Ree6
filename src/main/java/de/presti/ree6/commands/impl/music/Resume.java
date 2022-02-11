@@ -22,7 +22,7 @@ public class Resume extends Command {
             sendMessage("Im not connected to any Channel, so there is nothing to resume!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
 
-        if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
+        if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
             return;
         }
 

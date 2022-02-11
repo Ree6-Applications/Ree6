@@ -22,7 +22,7 @@ public class Shuffle extends Command {
             sendMessage("Im not connected to any Channel, so there is nothing to shuffle!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
 
-        if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
+        if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
             return;
         }
 
