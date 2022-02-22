@@ -21,7 +21,7 @@ We also provide a **open-Source** Webinterface, Twitch and Twitter Notification,
 - 100% adjustable messages
 
 ## Disclaimer
-Please be aware that im a Student and can't work full-time on the Bot, and that I am paying for every costs that comes up keep this Project alive! Im thankful for every donation that I receive on [Ko-fi](https://ko-fi.com/presti).
+Please be aware that im a Student and can't work full-time on the Bot, and that I am paying for every costs that comes up to keep this Project alive! Im thankful for every donation that I receive on [Ko-fi](https://ko-fi.com/presti).
 
 # Used APIs.
 - [JDA](https://github.com/DV8FromTheWorld/JDA)
