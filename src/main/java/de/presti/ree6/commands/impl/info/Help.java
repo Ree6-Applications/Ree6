@@ -59,7 +59,7 @@ public class Help extends Command {
             if (isValid(categoryString)) {
                 StringBuilder end = new StringBuilder();
 
-                Category category = getCategoryFromString(commandEvent.getArguments()[0]);
+                Category category = getCategoryFromString(categoryString);
                 for (Command cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getCategory() == category).toList()) {
                         end.append("``")
                                 .append(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue())
@@ -72,6 +72,7 @@ public class Help extends Command {
                 em.setDescription(end.toString());
             } else {
                 sendHelpInformation(null, commandEvent);
+                return;
             }
         }
 
@@ -80,7 +81,7 @@ public class Help extends Command {
 
     private boolean isValid(String arg) {
         for (Category cat : Category.values()) {
-            if (cat.name().toLowerCase().equalsIgnoreCase(arg) && cat != Category.HIDDEN) {
+            if (cat.name().equalsIgnoreCase(arg) && cat != Category.HIDDEN) {
                 return true;
             }
         }
@@ -90,7 +91,7 @@ public class Help extends Command {
 
     private Category getCategoryFromString(String arg) {
         for (Category cat : Category.values()) {
-            if (cat.name().toLowerCase().equalsIgnoreCase(arg)) {
+            if (cat.name().equalsIgnoreCase(arg)) {
                 return cat;
             }
         }

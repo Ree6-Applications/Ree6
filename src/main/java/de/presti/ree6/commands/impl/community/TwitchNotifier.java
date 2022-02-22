@@ -49,6 +49,8 @@ public class TwitchNotifier extends Command {
                 if (!Main.getInstance().getNotifier().isTwitchRegistered(name)) {
                     Main.getInstance().getNotifier().registerTwitchChannel(name);
                 }
+            } else if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
+                sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch remove TwitchName", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             } else {
                 sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch add TwitchName #Channel", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
@@ -58,9 +60,11 @@ public class TwitchNotifier extends Command {
                 Main.getInstance().getSqlConnector().getSqlWorker().removeTwitchWebhook(commandEvent.getGuild().getId(), name);
                 sendMessage("A TwitchStream Notifier has been removed from the User " + name + "!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
 
-                if(Main.getInstance().getNotifier().isTwitchRegistered(name)) {
+                if (Main.getInstance().getNotifier().isTwitchRegistered(name)) {
                     Main.getInstance().getNotifier().unregisterTwitchChannel(name);
                 }
+            } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
+                sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch add TwitchName #Channel", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             } else {
                 sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch remove TwitchName", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }

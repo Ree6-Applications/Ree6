@@ -48,6 +48,8 @@ public class TwitterNotifier extends Command {
                 if (!Main.getInstance().getNotifier().isTwitterRegistered(name)) {
                     Main.getInstance().getNotifier().registerTwitterUser(name);
                 }
+            } else if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
+                sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitternotifier remove TwitterName", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             } else {
                 sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitternotifier add TwitterName #Channel", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
@@ -57,9 +59,11 @@ public class TwitterNotifier extends Command {
                 Main.getInstance().getSqlConnector().getSqlWorker().removeTwitterWebhook(commandEvent.getGuild().getId(), name);
                 sendMessage("A TwitterTweet Notifier has been removed from the User " + name + "!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
 
-                if(Main.getInstance().getNotifier().isTwitterRegistered(name)) {
+                if (Main.getInstance().getNotifier().isTwitterRegistered(name)) {
                     Main.getInstance().getNotifier().unregisterTwitterUser(name);
                 }
+            } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
+                sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitternotifier add TwitterName #Channel", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             } else {
                 sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitternotifier remove TwitterName", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
