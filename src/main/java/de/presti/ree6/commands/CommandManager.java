@@ -1,6 +1,7 @@
 package de.presti.ree6.commands;
 
 import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.bot.BotVersion;
 import de.presti.ree6.commands.impl.community.*;
 import de.presti.ree6.commands.impl.fun.*;
 import de.presti.ree6.commands.impl.hidden.*;
@@ -184,7 +185,7 @@ public class CommandManager {
             if (slashCommandInteractionEvent != null) {
                 sendMessage("You are on cooldown!", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 deleteMessage(message, slashCommandInteractionEvent.getHook().setEphemeral(true));
-            } else {
+            } else if (messageContent.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase())) {
                 sendMessage("You are on cooldown!", 5, textChannel, null);
                 deleteMessage(message, null);
             }
@@ -226,7 +227,7 @@ public class CommandManager {
             }
 
             // Check if the message starts with the prefix.
-            if (!messageContent.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue()))
+            if (!messageContent.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase()))
                 return false;
 
             // Parse the Message and remove the prefix from it.
@@ -260,8 +261,8 @@ public class CommandManager {
             StatsManager.addStatsForCommand(command, guild.getId());
         }
 
-        // If the User isn't Presti (Ree6 owner) set Cooldown. Why not for the Owner? Because of tests.
-        if (!member.getUser().getId().equalsIgnoreCase("321580743488831490")) {
+        // Check if this is a Developer build, if not then cooldown the User.
+        if (BotInfo.version != BotVersion.DEV) {
             new Thread(() -> {
                 try {
                     Thread.sleep(5000);
@@ -278,7 +279,7 @@ public class CommandManager {
         }
 
         // Add them to the Cooldown.
-        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && !member.getUser().getId().equalsIgnoreCase("321580743488831490")) {
+        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && BotInfo.version != BotVersion.DEV) {
             ArrayUtil.commandCooldown.add(member.getUser().getId());
         }
 

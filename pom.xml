@@ -7,7 +7,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>1.6.3</version>
+    <version>1.6.4</version>
     <build>
         <plugins>
             <plugin>
@@ -187,7 +187,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.5</version>
+            <version>5.0.0-alpha.9</version>
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>

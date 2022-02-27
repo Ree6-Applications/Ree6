@@ -118,6 +118,15 @@ public class OtherEvents extends ListenerAdapter {
         super.onMessageReceived(event);
 
         if (event.isFromGuild() && event.isFromType(ChannelType.TEXT) && event.getMember() != null) {
+            if (ChatProtector.isChatProtectorSetup(event.getGuild().getId()) &&
+                    ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
+                Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+                event.getChannel().sendMessage("You can't write that!").queue();
+                return;
+            }
+
+            if (event.getAuthor().isBot()) return;
+
             if (!ArrayUtil.messageIDwithMessage.containsKey(event.getMessageId())) {
                 ArrayUtil.messageIDwithMessage.put(event.getMessageId(), event.getMessage());
             }
@@ -126,14 +135,6 @@ public class OtherEvents extends ListenerAdapter {
                 ArrayUtil.messageIDwithUser.put(event.getMessageId(), event.getAuthor());
             }
 
-            if (event.getAuthor().isBot()) return;
-
-            if (ChatProtector.isChatProtectorSetup(event.getGuild().getId()) &&
-                    ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
-                Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
-                event.getChannel().sendMessage("You can't write that!").queue();
-                return;
-            }
 
             if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getTextChannel(), null)) {
 
