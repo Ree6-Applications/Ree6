@@ -1,5 +1,7 @@
 package de.presti.ree6.utils;
 
+import net.dv8tion.jda.api.entities.User;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -11,21 +13,60 @@ import java.net.URL;
 
 public class ImageCreationUtility {
 
-    public static byte[] createRankImage(String userImageUrl) throws Exception {
+    public static byte[] createRankImage(User user, int progress) throws Exception {
+        if (user == null)
+            return new byte[128];
+
         BufferedImage base = new BufferedImage(885, 211, BufferedImage.TYPE_INT_ARGB);
 
-        BufferedImage user = convertToCircleShape(new URL(userImageUrl));
+        BufferedImage userImage = convertToCircleShape(new URL(user.getAvatarUrl()));
 
         Graphics2D graphics2D = base.createGraphics();
 
-        graphics2D.setColor(Color.DARK_GRAY);
+        graphics2D.setColor(Color.BLACK);
         graphics2D.fillRoundRect(0, 0, base.getWidth(), base.getHeight(), 10, 10);
 
-        graphics2D.drawImage(user, null,25, 25);
+        StringBuilder usernameBuilder = new StringBuilder();
+
+        for (char c : user.getName().toCharArray()) {
+            usernameBuilder.append((char)Integer.parseInt(Integer.toHexString(c | 0x10000).substring(1),16));
+        }
+
+        graphics2D.drawImage(userImage, null,25, 45);
         graphics2D.setColor(Color.WHITE);
-        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 25));
-        graphics2D.drawString("Presti", 250, 120);
-        graphics2D.fillRoundRect(250, 130, base.getWidth() - 300, 50, 30, 30);
+        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 40));
+        graphics2D.drawString(usernameBuilder.toString(), 200, 110);
+        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 20));
+        graphics2D.drawString(progress + "", (base.getWidth() - 210), 110);
+        graphics2D.setColor(Color.DARK_GRAY);
+        graphics2D.drawString("/" + progress, (base.getWidth() - 170), 110);
+        graphics2D.fillRoundRect(200, 130, base.getWidth() - 300, 50, 50, 50);
+
+        //region Rank
+
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 20));
+        graphics2D.drawString("Rank", (base.getWidth() - 370), 60);
+
+        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 30));
+        graphics2D.drawString("" + progress, (base.getWidth() - 310), 60);
+
+        //endregion
+
+        //region Level
+
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 20));
+        graphics2D.drawString("Level", (base.getWidth() - 235), 60);
+
+        graphics2D.setColor(Color.magenta.darker().darker());
+        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 30));
+        graphics2D.drawString("" + progress, (base.getWidth() - 175), 60);
+
+        //endregion
+
+        graphics2D.setColor(Color.magenta.darker().darker());
+        graphics2D.fillRoundRect(200, 130, (base.getWidth() - 300) * progress / 100, 50, 50, 50);
 
         graphics2D.dispose();
 
