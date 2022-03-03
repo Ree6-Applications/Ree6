@@ -56,19 +56,10 @@ public class HornyJail extends Command {
             request.setHeader("Authorization", Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"));
             HttpResponse response = httpClient.execute(request);
 
-            try (OutputStream outputStream =
-                         new FileOutputStream("imageapi/hornyjail/" + commandEvent.getMember().getId() + ".png")) {
-
-                int read;
-                byte[] bytes = new byte[1024];
-
-                while ((read = response.getEntity().getContent().read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, read);
-                }
-            }
+            //TODO update.
 
             sendMessage(member.getAsMention() + " is now in the Hornyjail!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-            commandEvent.getTextChannel().sendFile(new File("imageapi/hornyjail/" + commandEvent.getMember().getId() + ".png")).queue(message -> new File("imageapi/hornyjail/" + commandEvent.getMember().getId() + ".png").delete());
+            commandEvent.getTextChannel().sendFile(response.getEntity().getContent(), "hornyjail.png").queue();
             if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
         } catch (Exception ex) {
             sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getTextChannel(), commandEvent.getInteractionHook());

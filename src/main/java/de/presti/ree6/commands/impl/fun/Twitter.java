@@ -73,19 +73,7 @@ public class Twitter extends Command {
             request.setHeader("Authorization", Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"));
             HttpResponse response = httpClient.execute(request);
 
-            try (OutputStream outputStream =
-                         new FileOutputStream("imageapi/twitter/" + commandEvent.getMember().getUser().getId() + ".png")) {
-
-                int read;
-                byte[] bytes = new byte[1024];
-
-                while ((read = response.getEntity().getContent().read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, read);
-                }
-
-            }
-
-            commandEvent.getTextChannel().sendFile(new File("imageapi/twitter/" + commandEvent.getMember().getId() + ".png")).queue(message -> new File("imageapi/twitter/" + commandEvent.getMember().getId() + ".png").delete());
+            commandEvent.getTextChannel().sendFile(response.getEntity().getContent(), "twitter.png").queue();
 
             if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
         } catch (Exception ex) {
