@@ -79,7 +79,7 @@ public class AutoRoleHandler {
 
         new Thread(() -> {
 
-            int level = getLevel(Main.getInstance().getSqlConnector().getSqlWorker().getVoiceXP(guild.getId(), member.getUser().getId()));
+            long level = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(guild.getId(), member.getUser().getId()).getLevel();
 
             if (!guild.getSelfMember().canInteract(member)) {
                 Main.getInstance().getLogger().error("[AutoRole] Failed to give a Role, when someone leveled up in Voice!");
@@ -139,7 +139,7 @@ public class AutoRoleHandler {
 
         new Thread(() -> {
 
-            int level = getLevel(Main.getInstance().getSqlConnector().getSqlWorker().getChatXP(guild.getId(), member.getUser().getId()));
+            long level = (Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(guild.getId(), member.getUser().getId()).getLevel());
 
             if (!guild.getSelfMember().canInteract(member)) {
                 Main.getInstance().getLogger().error("[AutoRole] Failed to give a Role, when someone leveled up in Chat!");
@@ -207,22 +207,4 @@ public class AutoRoleHandler {
                                 "If you didn't notice im not allowed to AutoRole People because the Role is higher than my own Role!").queue());
         }
     }
-
-    /**
-     * Get the Level of the current XP of a Member.
-     *
-     * @param xp the XP of the Member.
-     * @return the Level as {@link Integer}.
-     */
-    private static int getLevel(long xp) {
-        int level = 0;
-
-        while (xp >= 1000) {
-            level++;
-            xp -= 1000;
-        }
-
-        return level;
-    }
-
 }

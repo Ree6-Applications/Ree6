@@ -7,6 +7,7 @@ import de.presti.ree6.bot.BotState;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.bot.Webhook;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.entities.UserLevel;
 import de.presti.ree6.utils.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -93,10 +94,14 @@ public class OtherEvents extends ListenerAdapter {
             int addxp = 0;
 
             for (int i = 1; i <= min; i++) {
-                addxp += RandomUtils.random.nextInt(9) + 1;
+                addxp += RandomUtils.random.nextInt(5, 11);
             }
 
-            Main.getInstance().getSqlConnector().getSqlWorker().addVoiceXP(event.getGuild().getId(), event.getMember().getUser().getId(), addxp);
+            UserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(event.getGuild().getId(), event.getMember().getId());
+            userLevel.setUser(event.getMember().getUser());
+            userLevel.addExperience(addxp);
+
+            Main.getInstance().getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), userLevel);
 
             AutoRoleHandler.handleVoiceLevelReward(event.getGuild(), event.getMember());
 
@@ -144,7 +149,14 @@ public class OtherEvents extends ListenerAdapter {
 
                 if (!ArrayUtil.timeout.contains(event.getMember())) {
 
-                    Main.getInstance().getSqlConnector().getSqlWorker().addChatXP(event.getGuild().getId(), event.getAuthor().getId(), (long) RandomUtils.random.nextInt(25) + 1);
+                    UserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
+                    userLevel.setUser(event.getMember().getUser());
+
+                    if (userLevel.addExperience(RandomUtils.random.nextInt(15,26))) {
+                        Main.getInstance().getCommandManager().sendMessage("You just leveled up to Chat Level " + userLevel.getLevel() + " " + event.getMember().getAsMention() + " !", event.getChannel());
+                    }
+
+                    Main.getInstance().getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), userLevel);
 
                     ArrayUtil.timeout.add(event.getMember());
 

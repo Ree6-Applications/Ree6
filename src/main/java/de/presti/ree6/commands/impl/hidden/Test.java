@@ -3,9 +3,6 @@ package de.presti.ree6.commands.impl.hidden;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.commands.CommandEvent;
-import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.ImageCreationUtility;
-import net.dv8tion.jda.api.utils.TimeFormat;
 
 public class Test extends Command {
 
@@ -15,10 +12,10 @@ public class Test extends Command {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        try {
+        /*try {
             commandEvent.getTextChannel().sendFile(ImageCreationUtility.createRankImage(commandEvent.getMember().getUser(), 100), "image.png").queue();
         } catch (Exception exception) {
             exception.printStackTrace();
-        }
+        }*/
     }
 }

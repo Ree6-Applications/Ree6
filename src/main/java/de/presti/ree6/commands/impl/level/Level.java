@@ -3,9 +3,9 @@ package de.presti.ree6.commands.impl.level;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.commands.CommandEvent;
-import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
-import net.dv8tion.jda.api.EmbedBuilder;
+import de.presti.ree6.sql.entities.UserLevel;
+import de.presti.ree6.utils.ImageCreationUtility;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -45,50 +45,20 @@ public class Level extends Command {
     }
 
     public void sendLevel(Member member, CommandEvent commandEvent) {
-        EmbedBuilder em = new EmbedBuilder();
 
-        em.setThumbnail(member.getUser().getAvatarUrl());
-        em.setTitle("Level");
+        // Add Voice Level support.
 
-        em.addField("Chat Level", getLevel(Main.getInstance().getSqlConnector().getSqlWorker().getChatXP(commandEvent.getGuild().getId(), member.getUser().getId())) + "", true);
-        em.addBlankField(true);
-        em.addField("Voice Level", getLevel(Main.getInstance().getSqlConnector().getSqlWorker().getVoiceXP(commandEvent.getGuild().getId(), member.getUser().getId())) + "", true);
+        UserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getId());
 
-        em.addField("Chat XP", getFormattedXP(Main.getInstance().getSqlConnector().getSqlWorker().getChatXP(commandEvent.getGuild().getId(), member.getUser().getId())) + "", true);
-        em.addBlankField(true);
-        em.addField("Voice XP", getFormattedXP(Main.getInstance().getSqlConnector().getSqlWorker().getVoiceXP(commandEvent.getGuild().getId(), member.getUser().getId())) + "", true);
-
-        em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
-
-        sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-    }
-
-    public int getLevel(long xp) {
-        int level = 0;
-
-        while (xp >= 1000) {
-            xp -= 1000;
-            level++;
-        }
-
-        return level;
-    }
-
-    public String getFormattedXP(long xp) {
-        String end;
-
-        if(xp >= 1000000000000L) {
-            end = ((xp / 1000000000000L) + "").replace("l", "") + "mil";
-        } else if(xp >= 1000000000) {
-            end = ((xp / 1000000000) + "").replace("l", "") + "mil";
-        } else if(xp >= 1000000) {
-            end = ((xp / 1000000) + "").replace("l", "") + "mio";
-        } else if(xp >= 1000) {
-            end = ((xp / 1000) + "").replace("l", "") + "k";
+        userLevel.setUser(member.getUser());
+        if (commandEvent.isSlashCommand()) {
+            try {
+                commandEvent.getInteractionHook().sendFile(ImageCreationUtility.createRankImage(userLevel), "rank.png").queue();
+            } catch (Exception ignore) {}
         } else {
-            end = "" + xp;
+            try {
+                commandEvent.getTextChannel().sendFile(ImageCreationUtility.createRankImage(userLevel),"rank.png").queue();
+            }  catch (Exception ignore) {}
         }
-
-        return end;
     }
 }

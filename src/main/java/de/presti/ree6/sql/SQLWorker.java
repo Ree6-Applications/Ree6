@@ -5,6 +5,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.entities.UserLevel;
 import de.presti.ree6.utils.Setting;
 
 import java.sql.ResultSet;
@@ -41,24 +42,25 @@ public class SQLWorker {
      * @param userId  the ID of the User.
      * @return {@link Long} as XP Count.
      */
-    public Long getChatXP(String guildId, String userId) {
+    public UserLevel getChatLevelData(String guildId, String userId) {
 
         // Check for SQL Statements to prevent SQL Injections.
         if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
                 userId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return 0L;
+            return null;
         }
 
         // Creating a SQL Statement to get the User from the Level Table by the GuildID and UserID.
         try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Level WHERE GID='" + guildId + "' AND UID='" + userId + "'").executeQuery()) {
 
-            // Return the XP as Long if found.
-            if (rs != null && rs.next()) return Long.parseLong(rs.getString("XP"));
-        } catch (Exception ignore) {
-        }
+            // Return the UserLevel data if found.
+            if (rs != null && rs.next()) {
+                return new UserLevel(userId, getAllChatLevelSorted(guildId).indexOf(userId) + 1, Long.parseLong(rs.getString("XP")));
+            }
+        } catch (Exception ignore) {}
 
-        // Return 0 if there was an error OR if the user isn't in the database.
-        return 0L;
+        // Return a new UserLEve if there was an error OR if the user isn't in the database.
+        return new UserLevel(userId, 0, 0);
     }
 
     /**
@@ -68,7 +70,7 @@ public class SQLWorker {
      * @param userId  the ID of the User.
      * @return {@link Boolean} true if there was a match | false if there wasn't a match.
      */
-    public boolean existsInChatXP(String guildId, String userId) {
+    public boolean existsInChatLevel(String guildId, String userId) {
 
         // Check for SQL Statements to prevent SQL Injections.
         if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
@@ -91,30 +93,24 @@ public class SQLWorker {
     /**
      * Give the wanted User more XP.
      *
-     * @param guildId the ID of the Guild.
-     * @param userId  the ID of the User.
-     * @param xp      the wanted XP.
+     * @param guildId   the ID of the Guild.
+     * @param userLevel the UserLevel Entity with all the information.
      */
-    public void addChatXP(String guildId, String userId, long xp) {
+    public void addChatLevelData(String guildId, UserLevel userLevel) {
 
         // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                userId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
+        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
             return;
         }
-
-        // Add the current XP to the new XP.
-        xp += getChatXP(guildId, userId);
-
         // Check if the User is already saved in the Database.
-        if (existsInChatXP(guildId, userId)) {
+        if (existsInChatLevel(guildId, userLevel.getUserId())) {
 
             // If so change the current XP to the new.
-            querySQL("UPDATE Level SET XP='" + xp + "' WHERE GID='" + guildId + "' AND UID='" + userId + "'");
+            querySQL("UPDATE Level SET XP='" + userLevel.getExperience() + "' WHERE GID='" + guildId + "' AND UID='" + userLevel.getUserId() + "'");
         } else {
 
             // If not create a new entry and add the data.
-            querySQL("INSERT INTO Level (GID, UID, XP) VALUES ('" + guildId + "', '" + userId + "', '" + xp + "');");
+            querySQL("INSERT INTO Level (GID, UID, XP) VALUES ('" + guildId + "', '" + userLevel.getUserId() + "', '" + userLevel.getExperience() + "');");
         }
     }
 
@@ -123,9 +119,39 @@ public class SQLWorker {
      *
      * @param guildId the ID of the Guild.
      * @param limit   the Limit of how many should be given back.
+     * @return {@link ArrayList<UserLevel>} as container of the User IDs.
+     */
+    public ArrayList<UserLevel> getTopChat(String guildId, int limit) {
+
+        // Create the List.
+        ArrayList<UserLevel> userLevels = new ArrayList<>();
+
+        // Check for SQL Statements to prevent SQL Injections.
+        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
+            return userLevels;
+        }
+
+        // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
+        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Level WHERE GID='" + guildId + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + limit).executeQuery()) {
+
+            // While there are still entries it should add them to the list.
+            while (rs != null && rs.next()) {
+                userLevels.add(getChatLevelData(guildId, rs.getString("UID")));
+            }
+        } catch (Exception ignore) {
+        }
+
+        // Return the list.
+        return userLevels;
+    }
+
+    /**
+     * Get the Top list of the Guild Chat XP.
+     *
+     * @param guildId the ID of the Guild.
      * @return {@link ArrayList<String>} as container of the User IDs.
      */
-    public ArrayList<String> getTopChat(String guildId, int limit) {
+    public ArrayList<String> getAllChatLevelSorted(String guildId) {
 
         // Create the List.
         ArrayList<String> userIds = new ArrayList<>();
@@ -136,7 +162,7 @@ public class SQLWorker {
         }
 
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Level WHERE GID='" + guildId + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + limit).executeQuery()) {
+        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Level WHERE GID='" + guildId + "' ORDER BY cast(xp as unsigned) DESC").executeQuery()) {
 
             // While there are still entries it should add them to the list.
             while (rs != null && rs.next()) {
@@ -158,26 +184,28 @@ public class SQLWorker {
      *
      * @param guildId the ID of the Guild.
      * @param userId  the ID of the User.
-     * @return {@link Long} as XP Count.
+     * @return {@link UserLevel} with information about the User Level.
      */
-    public Long getVoiceXP(String guildId, String userId) {
+    public UserLevel getVoiceLevelData(String guildId, String userId) {
 
         // Check for SQL Statements to prevent SQL Injections.
         if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
                 userId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return 0L;
+            return null;
         }
 
         // Creating a SQL Statement to get the User from the VCLevel Table by the GuildID and UserID.
         try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM VCLevel WHERE GID='" + guildId + "' AND UID='" + userId + "'").executeQuery()) {
 
-            // Return the XP as Long if found.
-            if (rs != null && rs.next()) return Long.parseLong(rs.getString("XP"));
+            // Return the UserLevel Data if found.
+            if (rs != null && rs.next()) {
+                return new UserLevel(userId, getAllVoiceLevelSorted(guildId).indexOf(userId) + 1, Long.parseLong(rs.getString("XP")));
+            }
         } catch (Exception ignore) {
         }
 
         // Return 0 if there was an error OR if the user isn't in the database.
-        return 0L;
+        return new UserLevel(userId, 0, 0);
     }
 
     /**
@@ -187,7 +215,7 @@ public class SQLWorker {
      * @param userId  the ID of the User.
      * @return {@link Boolean} true if there was a match | false if there wasn't a match.
      */
-    public boolean existsInVoiceXP(String guildId, String userId) {
+    public boolean existsInVoiceLevel(String guildId, String userId) {
 
         // Check for SQL Statements to prevent SQL Injections.
         if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
@@ -210,30 +238,25 @@ public class SQLWorker {
     /**
      * Give the wanted User more XP.
      *
-     * @param guildId the ID of the Guild.
-     * @param userId  the ID of the User.
-     * @param xp      the wanted XP.
+     * @param guildId   the ID of the Guild.
+     * @param userLevel the UserLevel Entity with all the information.
      */
-    public void addVoiceXP(String guildId, String userId, long xp) {
+    public void addVoiceLevelData(String guildId, UserLevel userLevel) {
 
         // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                userId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
+        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
             return;
         }
 
-        // Add the current XP to the new XP.
-        xp += getChatXP(guildId, userId);
-
         // Check if the User is already saved in the Database.
-        if (existsInChatXP(guildId, userId)) {
+        if (existsInVoiceLevel(guildId, userLevel.getUserId())) {
 
             // If so change the current XP to the new.
-            querySQL("UPDATE VCLevel SET XP='" + xp + "' WHERE GID='" + guildId + "' AND UID='" + userId + "'");
+            querySQL("UPDATE VCLevel SET XP='" + userLevel.getExperience() + "' WHERE GID='" + guildId + "' AND UID='" + userLevel.getUserId() + "'");
         } else {
 
             // If not create a new entry and add the data.
-            querySQL("INSERT INTO VCLevel (GID, UID, XP) VALUES ('" + guildId + "', '" + userId + "', '" + xp + "');");
+            querySQL("INSERT INTO VCLevel (GID, UID, XP) VALUES ('" + guildId + "', '" + userLevel.getUserId() + "', '" + userLevel.getExperience() + "');");
         }
     }
 
@@ -242,9 +265,39 @@ public class SQLWorker {
      *
      * @param guildId the ID of the Guild.
      * @param limit   the Limit of how many should be given back.
+     * @return {@link ArrayList<UserLevel>} as container of the User IDs.
+     */
+    public ArrayList<UserLevel> getTopVoice(String guildId, int limit) {
+
+        // Create the List.
+        ArrayList<UserLevel> userLevels = new ArrayList<>();
+
+        // Check for SQL Statements to prevent SQL Injections.
+        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
+            return userLevels;
+        }
+
+        // Creating a SQL Statement to get the Entries from the VCLevel Table by the GuildID.
+        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM VCLevel WHERE GID='" + guildId + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + limit).executeQuery()) {
+
+            // While there are still entries it should add them to the list.
+            while (rs != null && rs.next()) {
+                userLevels.add(getVoiceLevelData(guildId, rs.getString("UID")));
+            }
+        } catch (Exception ignore) {
+        }
+
+        // Return the list.
+        return userLevels;
+    }
+
+    /**
+     * Get the Top list of the Guild Voice XP.
+     *
+     * @param guildId the ID of the Guild.
      * @return {@link ArrayList<String>} as container of the User IDs.
      */
-    public ArrayList<String> getTopVoice(String guildId, int limit) {
+    public ArrayList<String> getAllVoiceLevelSorted(String guildId) {
 
         // Create the List.
         ArrayList<String> userIds = new ArrayList<>();
@@ -254,8 +307,8 @@ public class SQLWorker {
             return userIds;
         }
 
-        // Creating a SQL Statement to get the Entries from the VCLevel Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM VCLevel WHERE GID='" + guildId + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + limit).executeQuery()) {
+        // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
+        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM VCLevel WHERE GID='" + guildId + "' ORDER BY cast(xp as unsigned) DESC").executeQuery()) {
 
             // While there are still entries it should add them to the list.
             while (rs != null && rs.next()) {
@@ -691,7 +744,6 @@ public class SQLWorker {
      * Get every Twitch-Notifier that has been setup for the given Guild.
      *
      * @param guildId the ID of the Guild.
-     *
      * @return {@link ArrayList<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public ArrayList<String> getAllTwitchNames(String guildId) {
@@ -836,7 +888,7 @@ public class SQLWorker {
     /**
      * Get the Twitter-Notify data.
      *
-     * @param guildId    the ID of the Guild.
+     * @param guildId     the ID of the Guild.
      * @param twitterName the Username of the Twitter User.
      * @return {@link String[]} in the first index is the Webhook ID and in the second the Auth-Token.
      */
@@ -921,7 +973,6 @@ public class SQLWorker {
      * Get every Twitter-Notifier that has been set up for the given Guild.
      *
      * @param guildId the ID of the Guild.
-     *
      * @return {@link ArrayList<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public ArrayList<String> getAllTwitterNames(String guildId) {
@@ -949,9 +1000,9 @@ public class SQLWorker {
     /**
      * Set the TwitterNotify in our Database.
      *
-     * @param guildId    the ID of the Guild.
-     * @param webhookId  the ID of the Webhook.
-     * @param authToken  the Auth-token to verify the access.
+     * @param guildId     the ID of the Guild.
+     * @param webhookId   the ID of the Webhook.
+     * @param authToken   the Auth-token to verify the access.
      * @param twitterName the Username of the Twitter User.
      */
     public void addTwitterWebhook(String guildId, String webhookId, String authToken, String twitterName) {
@@ -983,7 +1034,7 @@ public class SQLWorker {
     /**
      * Remove a Twitter Notifier entry from our Database.
      *
-     * @param guildId    the ID of the Guild.
+     * @param guildId     the ID of the Guild.
      * @param twitterName the Name of the Twitter User.
      */
     public void removeTwitterWebhook(String guildId, String twitterName) {
@@ -1035,7 +1086,7 @@ public class SQLWorker {
     /**
      * Check if the Twitter Webhook has been set for the given User in our Database for this Server.
      *
-     * @param guildId    the ID of the Guild.
+     * @param guildId     the ID of the Guild.
      * @param twitterName the Username of the Twitter User.
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
@@ -1611,8 +1662,8 @@ public class SQLWorker {
     /**
      * Remove an entry from our Database.
      *
-     * @param guildId       the ID of the Guild.
-     * @param inviteCode    the Code of the Invite.
+     * @param guildId    the ID of the Guild.
+     * @param inviteCode the Code of the Invite.
      */
     public void removeInvite(String guildId, String inviteCode) {
         // Check for SQL Statements to prevent SQL Injections.
@@ -2081,7 +2132,7 @@ public class SQLWorker {
             if (command.getCategory() == Category.HIDDEN) continue;
 
             if (!hasSetting(guildId, "command_" + command.getName().toLowerCase()))
-                setSetting(guildId, "command_" + command.getName().toLowerCase(),true);
+                setSetting(guildId, "command_" + command.getName().toLowerCase(), true);
         }
 
         // Create Log Settings.
@@ -2336,7 +2387,7 @@ public class SQLWorker {
         try (Statement statement = sqlConnector.getConnection().createStatement()) {
             statement.executeUpdate(sqlQuery);
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery +" )", exception);
+            Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
         }
     }
 }

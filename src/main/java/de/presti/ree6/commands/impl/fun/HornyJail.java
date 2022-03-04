@@ -14,10 +14,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-
 public class HornyJail extends Command {
 
     public HornyJail() {
