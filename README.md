@@ -23,6 +23,15 @@ We also provide a **open-Source** Webinterface, Twitch and Twitter Notification,
 ## Disclaimer
 Please be aware that im a Student and can't work full-time on the Bot, and that I am paying for every costs that comes up to keep this Project alive! Im thankful for every donation that I receive on [Ko-fi](https://ko-fi.com/presti).
 
+## Sponsors/Supports
+
+### [![YourKit](https://www.yourkit.com/images/yklogo.png)](https://www.yourkit.com)
+YourKit supports open source projects with innovative and intelligent tools
+for monitoring and profiling Java and .NET applications.
+YourKit is the creator of <a href="https://www.yourkit.com/java/profiler/">YourKit Java Profiler</a>,
+<a href="https://www.yourkit.com/.net/profiler/">YourKit .NET Profiler</a>,
+and <a href="https://www.yourkit.com/youmonitor/">YourKit YouMonitor</a>.
+
 # Used APIs.
 - [JDA](https://github.com/DV8FromTheWorld/JDA)
 - [LavaPlayer](https://github.com/sedmelluq/lavaplayer)
