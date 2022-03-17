@@ -44,14 +44,8 @@ public class SQLWorker {
      */
     public UserLevel getChatLevelData(String guildId, String userId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                userId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return null;
-        }
-
         // Creating a SQL Statement to get the User from the Level Table by the GuildID and UserID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Level WHERE GID='" + guildId + "' AND UID='" + userId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)) {
 
             // Return the UserLevel data if found.
             if (rs != null && rs.next()) {
@@ -72,14 +66,8 @@ public class SQLWorker {
      */
     public boolean existsInChatLevel(String guildId, String userId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                userId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the User from the Level Table by the GuildID and UserID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Level WHERE GID='" + guildId + "' AND UID='" + userId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -98,19 +86,15 @@ public class SQLWorker {
      */
     public void addChatLevelData(String guildId, UserLevel userLevel) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
         // Check if the User is already saved in the Database.
         if (existsInChatLevel(guildId, userLevel.getUserId())) {
 
             // If so change the current XP to the new.
-            querySQL("UPDATE Level SET XP='" + userLevel.getExperience() + "' WHERE GID='" + guildId + "' AND UID='" + userLevel.getUserId() + "'");
+            querySQL("UPDATE Level SET XP=? WHERE GID=? AND UID=?", userLevel.getExperience(), guildId, userLevel.getUserId());
         } else {
 
             // If not create a new entry and add the data.
-            querySQL("INSERT INTO Level (GID, UID, XP) VALUES ('" + guildId + "', '" + userLevel.getUserId() + "', '" + userLevel.getExperience() + "');");
+            querySQL("INSERT INTO Level (GID, UID, XP) VALUES (?, ?, ?);", guildId, userLevel.getUserId(), userLevel.getExperience());
         }
     }
 
@@ -126,13 +110,8 @@ public class SQLWorker {
         // Create the List.
         ArrayList<UserLevel> userLevels = new ArrayList<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return userLevels;
-        }
-
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Level WHERE GID='" + guildId + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + limit).executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)) {
 
             // While there are still entries it should add them to the list.
             while (rs != null && rs.next()) {
@@ -156,13 +135,8 @@ public class SQLWorker {
         // Create the List.
         ArrayList<String> userIds = new ArrayList<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return userIds;
-        }
-
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Level WHERE GID='" + guildId + "' ORDER BY cast(xp as unsigned) DESC").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId)) {
 
             // While there are still entries it should add them to the list.
             while (rs != null && rs.next()) {
@@ -188,14 +162,8 @@ public class SQLWorker {
      */
     public UserLevel getVoiceLevelData(String guildId, String userId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                userId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return null;
-        }
-
         // Creating a SQL Statement to get the User from the VCLevel Table by the GuildID and UserID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM VCLevel WHERE GID='" + guildId + "' AND UID='" + userId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)) {
 
             // Return the UserLevel Data if found.
             if (rs != null && rs.next()) {
@@ -217,14 +185,8 @@ public class SQLWorker {
      */
     public boolean existsInVoiceLevel(String guildId, String userId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                userId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the User from the VCLevel Table by the GuildID and UserID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM VCLevel WHERE GID='" + guildId + "' AND UID='" + userId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -243,20 +205,15 @@ public class SQLWorker {
      */
     public void addVoiceLevelData(String guildId, UserLevel userLevel) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if the User is already saved in the Database.
         if (existsInVoiceLevel(guildId, userLevel.getUserId())) {
 
             // If so change the current XP to the new.
-            querySQL("UPDATE VCLevel SET XP='" + userLevel.getExperience() + "' WHERE GID='" + guildId + "' AND UID='" + userLevel.getUserId() + "'");
+            querySQL("UPDATE VCLevel SET XP=? WHERE GID=? AND UID=?", userLevel.getExperience(), guildId, userLevel.getUserId());
         } else {
 
             // If not create a new entry and add the data.
-            querySQL("INSERT INTO VCLevel (GID, UID, XP) VALUES ('" + guildId + "', '" + userLevel.getUserId() + "', '" + userLevel.getExperience() + "');");
+            querySQL("INSERT INTO VCLevel (GID, UID, XP) VALUES (?, ?, ?);", guildId, userLevel.getUserId(), userLevel.getExperience());
         }
     }
 
@@ -272,13 +229,8 @@ public class SQLWorker {
         // Create the List.
         ArrayList<UserLevel> userLevels = new ArrayList<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return userLevels;
-        }
-
         // Creating a SQL Statement to get the Entries from the VCLevel Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM VCLevel WHERE GID='" + guildId + "' ORDER BY cast(xp as unsigned) DESC LIMIT " + limit).executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)) {
 
             // While there are still entries it should add them to the list.
             while (rs != null && rs.next()) {
@@ -302,13 +254,8 @@ public class SQLWorker {
         // Create the List.
         ArrayList<String> userIds = new ArrayList<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return userIds;
-        }
-
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM VCLevel WHERE GID='" + guildId + "' ORDER BY cast(xp as unsigned) DESC").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId)) {
 
             // While there are still entries it should add them to the list.
             while (rs != null && rs.next()) {
@@ -327,6 +274,8 @@ public class SQLWorker {
 
     //region Webhooks
 
+    // TODO add remove for every Webhook
+
     //region Logs
 
     /**
@@ -337,14 +286,9 @@ public class SQLWorker {
      */
     public String[] getLogWebhook(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return new String[]{"0", "No setup!"};
-        }
-
         if (isLogSetup(guildId)) {
             // Creating a SQL Statement to get the Entry from the LogWebhooks Table by the GuildID.
-            try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM LogWebhooks WHERE GID='" + guildId + "'").executeQuery()) {
+            try (ResultSet rs = querySQL("SELECT * FROM LogWebhooks WHERE GID=?", guildId)) {
 
                 // Return if there was a match.
                 if (rs != null && rs.next()) {
@@ -369,13 +313,6 @@ public class SQLWorker {
      */
     public void setLogWebhook(String guildId, String webhookId, String authToken) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                webhookId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                authToken.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is already a Webhook set.
         if (isLogSetup(guildId)) {
 
@@ -385,11 +322,11 @@ public class SQLWorker {
                     .forEach(webhook -> webhook.delete().queue()));
 
             // Delete the entry.
-            querySQL("DELETE FROM LogWebhooks WHERE GID='" + guildId + "'");
+            querySQL("DELETE FROM LogWebhooks WHERE GID=?", guildId);
         }
 
         // Add a new entry into the Database.
-        querySQL("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES ('" + guildId + "', '" + webhookId + "', '" + authToken + "');");
+        querySQL("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES (?, ?, ?);", guildId, webhookId, authToken);
 
     }
 
@@ -400,14 +337,8 @@ public class SQLWorker {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isLogSetup(String guildId) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the Entry from the LogWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM LogWebhooks WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM LogWebhooks WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -427,13 +358,8 @@ public class SQLWorker {
      */
     public boolean existsLogData(long webhookId, String authToken) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (authToken.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the Entry from the LogWebhooks Table by the WebhookID and its Auth-Token.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM LogWebhooks WHERE CID='" + webhookId + "' AND TOKEN='" + authToken + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM LogWebhooks WHERE CID=? AND TOKEN=?", webhookId, authToken)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -451,17 +377,11 @@ public class SQLWorker {
      * @param authToken the Auth-Token of the Webhook.
      */
     public void deleteLogWebhook(long webhookId, String authToken) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (authToken.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is a Webhook with this data.
         if (existsLogData(webhookId, authToken)) {
 
             // Delete if so.
-            querySQL("DELETE FROM LogWebhooks WHERE CID='" + webhookId + "' AND TOKEN='" + authToken + "'");
+            querySQL("DELETE FROM LogWebhooks WHERE CID=? AND TOKEN=?", webhookId, authToken);
         }
 
     }
@@ -478,14 +398,9 @@ public class SQLWorker {
      */
     public String[] getWelcomeWebhook(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return new String[]{"0", "No setup!"};
-        }
-
         if (isWelcomeSetup(guildId)) {
             // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-            try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM WelcomeWebhooks WHERE GID='" + guildId + "'").executeQuery()) {
+            try (ResultSet rs = querySQL("SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId)) {
 
                 // Return if there was a match.
                 if (rs != null && rs.next()) {
@@ -510,13 +425,6 @@ public class SQLWorker {
      */
     public void setWelcomeWebhook(String guildId, String webhookId, String authToken) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                webhookId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                authToken.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is already a Webhook set.
         if (isWelcomeSetup(guildId)) {
 
@@ -526,11 +434,11 @@ public class SQLWorker {
                     .forEach(webhook -> webhook.delete().queue()));
 
             // Delete the entry.
-            querySQL("DELETE FROM WelcomeWebhooks WHERE GID='" + guildId + "'");
+            querySQL("DELETE FROM WelcomeWebhooks WHERE GID=?", guildId);
         }
 
         // Add a new entry into the Database.
-        querySQL("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES ('" + guildId + "', '" + webhookId + "', '" + authToken + "');");
+        querySQL("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES (?, ?, ?);", guildId, webhookId, authToken);
 
     }
 
@@ -542,13 +450,8 @@ public class SQLWorker {
      */
     public boolean isWelcomeSetup(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM WelcomeWebhooks WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -571,14 +474,9 @@ public class SQLWorker {
      */
     public String[] getNewsWebhook(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return new String[]{"0", "No setup!"};
-        }
-
         if (isNewsSetup(guildId)) {
             // Creating a SQL Statement to get the Entry from the NewsWebhooks Table by the GuildID.
-            try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM NewsWebhooks WHERE GID='" + guildId + "'").executeQuery()) {
+            try (ResultSet rs = querySQL("SELECT * FROM NewsWebhooks WHERE GID=?", guildId)) {
 
                 // Return if there was a match.
                 if (rs != null && rs.next()) {
@@ -603,13 +501,6 @@ public class SQLWorker {
      */
     public void setNewsWebhook(String guildId, String webhookId, String authToken) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                webhookId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                authToken.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is already a Webhook set.
         if (isNewsSetup(guildId)) {
 
@@ -619,11 +510,11 @@ public class SQLWorker {
                     .forEach(webhook -> webhook.delete().queue()));
 
             // Delete the entry.
-            querySQL("DELETE FROM NewsWebhooks WHERE GID='" + guildId + "'");
+            querySQL("DELETE FROM NewsWebhooks WHERE GID=?", guildId);
         }
 
         // Add a new entry into the Database.
-        querySQL("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES ('" + guildId + "', '" + webhookId + "', '" + authToken + "');");
+        querySQL("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES (?, ?, ?);", guildId, webhookId, authToken);
 
     }
 
@@ -635,13 +526,8 @@ public class SQLWorker {
      */
     public boolean isNewsSetup(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the Entry from the NewsWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM NewsWebhooks WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM NewsWebhooks WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -665,15 +551,9 @@ public class SQLWorker {
      */
     public String[] getTwitchWebhook(String guildId, String twitchName) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                twitchName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return new String[]{"0", "No setup!"};
-        }
-
         if (isTwitchSetup(guildId)) {
             // Creating a SQL Statement to get the Entry from the RainbowWebhooks Table by the GuildID.
-            try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM TwitchNotify WHERE GID='" + guildId + "' AND NAME='" + twitchName + "'").executeQuery()) {
+            try (ResultSet rs = querySQL("SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName)) {
 
                 // Return if there was a match.
                 if (rs != null && rs.next()) {
@@ -699,13 +579,8 @@ public class SQLWorker {
 
         ArrayList<String[]> webhooks = new ArrayList<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (twitchName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return webhooks;
-        }
-
         // Creating a SQL Statement to get the Entry from the RainbowWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM TwitchNotify WHERE NAME='" + twitchName + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM TwitchNotify WHERE NAME=?", twitchName)) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -728,7 +603,7 @@ public class SQLWorker {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM TwitchNotify").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM TwitchNotify")) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -750,13 +625,8 @@ public class SQLWorker {
 
         ArrayList<String> userNames = new ArrayList<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return userNames;
-        }
-
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM TwitchNotify WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -778,28 +648,11 @@ public class SQLWorker {
      */
     public void addTwitchWebhook(String guildId, String webhookId, String authToken, String twitchName) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                webhookId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                authToken.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                twitchName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is already a Webhook set.
-        if (isTwitchSetup(guildId, twitchName)) {
-
-            // Delete the existing Webhook.
-            BotInfo.botInstance.getGuildById(guildId).retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook ->
-                            webhook.getId().equalsIgnoreCase(getTwitchWebhook(guildId, twitchName)[0]) && webhook.getToken().equalsIgnoreCase(getTwitchWebhook(guildId, twitchName)[1]))
-                    .forEach(webhook -> webhook.delete().queue()));
-
-            // Delete the entry.
-            querySQL("DELETE FROM TwitchNotify WHERE GID='" + guildId + "' AND NAME='" + twitchName + "'");
-        }
+        removeTwitterWebhook(guildId, twitchName);
 
         // Add a new entry into the Database.
-        querySQL("INSERT INTO TwitchNotify (GID, NAME, CID, TOKEN) VALUES ('" + guildId + "', '" + twitchName + "', '" + webhookId + "', '" + authToken + "');");
+        querySQL("INSERT INTO TwitchNotify (GID, NAME, CID, TOKEN) VALUES (?, ?, ?, ?);", guildId, twitchName, webhookId, authToken);
     }
 
     /**
@@ -810,12 +663,6 @@ public class SQLWorker {
      */
     public void removeTwitchWebhook(String guildId, String twitchName) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                twitchName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is a Webhook set.
         if (isTwitchSetup(guildId, twitchName)) {
 
@@ -825,7 +672,7 @@ public class SQLWorker {
                     .forEach(webhook -> webhook.delete().queue()));
 
             // Delete the entry.
-            querySQL("DELETE FROM TwitchNotify WHERE GID='" + guildId + "' AND NAME='" + twitchName + "'");
+            querySQL("DELETE FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName);
         }
     }
 
@@ -836,14 +683,8 @@ public class SQLWorker {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitchSetup(String guildId) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM TwitchNotify WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -863,14 +704,8 @@ public class SQLWorker {
      */
     public boolean isTwitchSetup(String guildId, String twitchName) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                twitchName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM TwitchNotify WHERE GID='" + guildId + "' AND NAME='" + twitchName + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -894,15 +729,9 @@ public class SQLWorker {
      */
     public String[] getTwitterWebhook(String guildId, String twitterName) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                twitterName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return new String[]{"0", "No setup!"};
-        }
-
         if (isTwitterSetup(guildId)) {
             // Creating a SQL Statement to get the Entry from the RainbowWebhooks Table by the GuildID.
-            try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM TwitterNotify WHERE GID='" + guildId + "' AND NAME='" + twitterName + "'").executeQuery()) {
+            try (ResultSet rs = querySQL("SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName)) {
 
                 // Return if there was a match.
                 if (rs != null && rs.next()) {
@@ -928,13 +757,8 @@ public class SQLWorker {
 
         ArrayList<String[]> webhooks = new ArrayList<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (twitterName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return webhooks;
-        }
-
         // Creating a SQL Statement to get the Entry from the RainbowWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM TwitterNotify WHERE NAME='" + twitterName + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM TwitterNotify WHERE NAME=?", twitterName)) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -957,7 +781,7 @@ public class SQLWorker {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitterNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM TwitterNotify").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM TwitterNotify")) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -979,13 +803,8 @@ public class SQLWorker {
 
         ArrayList<String> userNames = new ArrayList<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return userNames;
-        }
-
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM TwitterNotify WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -1007,28 +826,11 @@ public class SQLWorker {
      */
     public void addTwitterWebhook(String guildId, String webhookId, String authToken, String twitterName) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                webhookId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                authToken.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                twitterName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is already a Webhook set.
-        if (isTwitterSetup(guildId, twitterName)) {
-
-            // Delete the existing Webhook.
-            BotInfo.botInstance.getGuildById(guildId).retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook ->
-                            webhook.getId().equalsIgnoreCase(getTwitterWebhook(guildId, twitterName)[0]) && webhook.getToken().equalsIgnoreCase(getTwitterWebhook(guildId, twitterName)[1]))
-                    .forEach(webhook -> webhook.delete().queue()));
-
-            // Delete the entry.
-            querySQL("DELETE FROM TwitterNotify WHERE GID='" + guildId + "' AND NAME='" + twitterName + "'");
-        }
+        removeTwitterWebhook(guildId, twitterName);
 
         // Add a new entry into the Database.
-        querySQL("INSERT INTO TwitterNotify (GID, NAME, CID, TOKEN) VALUES ('" + guildId + "', '" + twitterName + "', '" + webhookId + "', '" + authToken + "');");
+        querySQL("INSERT INTO TwitterNotify (GID, NAME, CID, TOKEN) VALUES (?, ?, ?, ?);", guildId, twitterName, webhookId, authToken);
     }
 
     /**
@@ -1038,13 +840,6 @@ public class SQLWorker {
      * @param twitterName the Name of the Twitter User.
      */
     public void removeTwitterWebhook(String guildId, String twitterName) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                twitterName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is a Webhook set.
         if (isTwitterSetup(guildId, twitterName)) {
 
@@ -1054,7 +849,7 @@ public class SQLWorker {
                     .forEach(webhook -> webhook.delete().queue()));
 
             // Delete the entry.
-            querySQL("DELETE FROM TwitterNotify WHERE GID='" + guildId + "' AND NAME='" + twitterName + "'");
+            querySQL("DELETE FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName);
         }
     }
 
@@ -1066,13 +861,8 @@ public class SQLWorker {
      */
     public boolean isTwitterSetup(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM TwitterNotify WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -1091,15 +881,8 @@ public class SQLWorker {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitterSetup(String guildId, String twitterName) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                twitterName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM TwitterNotify WHERE GID='" + guildId + "' AND NAME='" + twitterName + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -1118,6 +901,8 @@ public class SQLWorker {
 
     //region Mute
 
+    // TODO add remove Role.
+
     /**
      * Get the Mute Role ID from the given Guild.
      *
@@ -1126,15 +911,10 @@ public class SQLWorker {
      */
     public String getMuteRole(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return "Error";
-        }
-
         // Check if there is a role in the database.
         if (isMuteSetup(guildId)) {
             // Creating a SQL Statement to get the RoleID from the MuteRoles Table by the GuildID.
-            try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM MuteRoles WHERE GID='" + guildId + "'").executeQuery()) {
+            try (ResultSet rs = querySQL("SELECT * FROM MuteRoles WHERE GID=?", guildId)) {
 
                 // Return the Role ID as String if found.
                 if (rs != null && rs.next()) return rs.getString("RID");
@@ -1154,19 +934,13 @@ public class SQLWorker {
      */
     public void setMuteRole(String guildId, String roleId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                roleId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is a role in the database.
         if (isMuteSetup(guildId)) {
             // Replace the entry with the new Data.
-            querySQL("UPDATE MuteRoles SET RID='" + roleId + "' WHERE GID='" + guildId + "'");
+            querySQL("UPDATE MuteRoles SET RID=? WHERE GID=?", roleId, guildId);
         } else {
             // Add a new entry into the Database.
-            querySQL("INSERT INTO MuteRoles (GID, RID) VALUES ('" + guildId + "', '" + roleId + "');");
+            querySQL("INSERT INTO MuteRoles (GID, RID) VALUES (?, ?);", guildId, roleId);
         }
     }
 
@@ -1178,13 +952,8 @@ public class SQLWorker {
      */
     public boolean isMuteSetup(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the RoleID from the MuteRoles Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM MuteRoles WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM MuteRoles WHERE GID=?", guildId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1210,15 +979,10 @@ public class SQLWorker {
         // Create a new ArrayList to save the Role Ids.
         ArrayList<String> roleIds = new ArrayList<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return roleIds;
-        }
-
         // Check if there is a role in the database.
         if (isAutoRoleSetup(guildId)) {
             // Creating a SQL Statement to get the RoleID from the AutoRoles Table by the GuildID.
-            try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM AutoRoles WHERE GID='" + guildId + "'").executeQuery()) {
+            try (ResultSet rs = querySQL("SELECT * FROM AutoRoles WHERE GID=?", guildId)) {
 
                 // Add the Role ID to the List if found.
                 while (rs != null && rs.next()) roleIds.add(rs.getString("RID"));
@@ -1237,18 +1001,10 @@ public class SQLWorker {
      * @param roleId  the ID of the Role.
      */
     public void addAutoRole(String guildId, String roleId) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                roleId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
-
         // Check if there is a role in the database.
         if (!isAutoRoleSetup(guildId, roleId)) {
             // Add a new entry into the Database.
-            querySQL("INSERT INTO AutoRoles (GID, RID) VALUES ('" + guildId + "', '" + roleId + "');");
+            querySQL("INSERT INTO AutoRoles (GID, RID) VALUES (?, ?);", guildId, roleId);
         }
     }
 
@@ -1259,17 +1015,10 @@ public class SQLWorker {
      * @param roleId  the ID of the Role.
      */
     public void removeAutoRole(String guildId, String roleId) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                roleId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is a role in the database.
         if (isAutoRoleSetup(guildId, roleId)) {
             // Add a new entry into the Database.
-            querySQL("DELETE FROM AutoRoles WHERE GID='" + guildId + "' AND RID='" + roleId + "'");
+            querySQL("DELETE FROM AutoRoles WHERE GID=? AND RID=?", guildId, roleId);
         }
     }
 
@@ -1281,13 +1030,8 @@ public class SQLWorker {
      */
     public boolean isAutoRoleSetup(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the RoleID from the AutoRoles Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM AutoRoles WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM AutoRoles WHERE GID=?", guildId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1306,15 +1050,8 @@ public class SQLWorker {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isAutoRoleSetup(String guildId, String roleId) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                roleId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the RoleID from the AutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM AutoRoles WHERE GID='" + guildId + "' AND RID='" + roleId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM AutoRoles WHERE GID=? AND RID=?", guildId, roleId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1326,6 +1063,8 @@ public class SQLWorker {
     }
 
     //endregion
+
+    // TODO fix Level Rewards checking in saving.
 
     //region Level Rewards
 
@@ -1342,15 +1081,10 @@ public class SQLWorker {
         // Create a new HashMap to save the Role Ids and their needed level.
         HashMap<Integer, String> rewards = new HashMap<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return rewards;
-        }
-
         // Check if there is a role in the database.
         if (isChatLevelRewardSetup(guildId)) {
             // Creating a SQL Statement to get the RoleID and the needed level from the ChatLevelAutoRoles Table by the GuildID.
-            try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM ChatLevelAutoRoles WHERE GID='" + guildId + "'").executeQuery()) {
+            try (ResultSet rs = querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId)) {
 
                 // Add the Role ID and its needed level to the List if found.
                 while (rs != null && rs.next()) rewards.put(Integer.parseInt(rs.getString("LVL")), rs.getString("RID"));
@@ -1370,20 +1104,13 @@ public class SQLWorker {
      * @param level   the Level required to get this Role.
      */
     public void addChatLevelReward(String guildId, String roleId, int level) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                roleId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is a role in the database.
         if (!isChatLevelRewardSetup(guildId, roleId)) {
             // Add a new entry into the Database.
-            querySQL("INSERT INTO ChatLevelAutoRoles (GID, RID) VALUES ('" + guildId + "', '" + roleId + "');");
+            querySQL("INSERT INTO ChatLevelAutoRoles (GID, RID, LVL) VALUES (?, ?, ?);", guildId, roleId, level);
         } else {
             // Update the entry.
-            querySQL("UPDATE ChatLevelAutoRoles SET LVL='" + level + "' WHERE GID='" + guildId + "' AND RID='" + roleId + "'");
+            querySQL("UPDATE ChatLevelAutoRoles SET LVL=? WHERE GID=? AND RID=?", level, guildId, roleId);
         }
     }
 
@@ -1394,16 +1121,10 @@ public class SQLWorker {
      * @param level   the Level required to get this Role.
      */
     public void removeChatLevelReward(String guildId, int level) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is a role in the database.
         if (isChatLevelRewardSetup(guildId)) {
             // Add a new entry into the Database.
-            querySQL("DELETE FROM ChatLevelAutoRoles WHERE GID='" + guildId + "' AND LVL='" + level + "'");
+            querySQL("DELETE FROM ChatLevelAutoRoles WHERE GID=? AND LVL=?", guildId, level);
         }
     }
 
@@ -1415,13 +1136,8 @@ public class SQLWorker {
      */
     public boolean isChatLevelRewardSetup(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM ChatLevelAutoRoles WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1441,14 +1157,8 @@ public class SQLWorker {
      */
     public boolean isChatLevelRewardSetup(String guildId, String roleId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                roleId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM ChatLevelAutoRoles WHERE GID='" + guildId + "' AND RID='" + roleId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=? AND RID=?", guildId, roleId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1474,15 +1184,10 @@ public class SQLWorker {
         // Create a new HashMap to save the Role Ids and their needed level.
         HashMap<Integer, String> rewards = new HashMap<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return rewards;
-        }
-
         // Check if there is a role in the database.
         if (isVoiceLevelRewardSetup(guildId)) {
             // Creating a SQL Statement to get the RoleID and the needed level from the VCLevelAutoRoles Table by the GuildID.
-            try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM VCLevelAutoRoles WHERE GID='" + guildId + "'").executeQuery()) {
+            try (ResultSet rs = querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=?", guildId)) {
 
                 // Add the Role ID and its needed level to the List if found.
                 while (rs != null && rs.next()) rewards.put(Integer.parseInt(rs.getString("LVL")), rs.getString("RID"));
@@ -1503,19 +1208,13 @@ public class SQLWorker {
      */
     public void addVoiceLevelReward(String guildId, String roleId, int level) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                roleId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is a role in the database.
         if (!isVoiceLevelRewardSetup(guildId, roleId)) {
             // Add a new entry into the Database.
-            querySQL("INSERT INTO VCLevelAutoRoles (GID, RID) VALUES ('" + guildId + "', '" + roleId + "');");
+            querySQL("INSERT INTO VCLevelAutoRoles (GID, RID, LVL) VALUES (?, ?, ?);", guildId, roleId, level);
         } else {
             // Update the entry.
-            querySQL("UPDATE VCLevelAutoRoles SET LVL='" + level + "' WHERE GID='" + guildId + "' AND RID='" + roleId + "'");
+            querySQL("UPDATE VCLevelAutoRoles SET LVL=? WHERE GID=? AND RID=?", level, guildId, roleId);
         }
     }
 
@@ -1526,16 +1225,10 @@ public class SQLWorker {
      * @param level   the Level required to get this Role.
      */
     public void removeVoiceLevelReward(String guildId, int level) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is a role in the database.
         if (isVoiceLevelRewardSetup(guildId)) {
             // Add a new entry into the Database.
-            querySQL("DELETE FROM VCLevelAutoRoles WHERE GID='" + guildId + "' AND LVL='" + level + "'");
+            querySQL("DELETE FROM VCLevelAutoRoles WHERE GID=? AND LVL=?", guildId, level);
         }
     }
 
@@ -1546,14 +1239,8 @@ public class SQLWorker {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isVoiceLevelRewardSetup(String guildId) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the RoleID from the VCLevelAutoRoles Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM VCLevelAutoRoles WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=?", guildId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1572,15 +1259,8 @@ public class SQLWorker {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isVoiceLevelRewardSetup(String guildId, String roleId) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                roleId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM VCLevelAutoRoles WHERE GID='" + guildId + "' AND RID='" + roleId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=? AND RID=?", guildId, roleId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1610,13 +1290,8 @@ public class SQLWorker {
         // Create a new ArrayList to save the Invites.
         ArrayList<InviteContainer> inviteContainers = new ArrayList<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return inviteContainers;
-        }
-
         // Creating a SQL Statement to get the Invites from the Invites Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Invites WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM Invites WHERE GID=?", guildId)) {
 
             // Add the Invite to the List if found.
             while (rs != null && rs.next()) inviteContainers.add(
@@ -1638,17 +1313,8 @@ public class SQLWorker {
      * @return {@link Boolean} as Result if true, then it's saved in our Database | if false, we couldn't find anything.
      */
     public boolean existsInvite(String guildId, String inviteCreator, String inviteCode) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                inviteCreator.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                inviteCode.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the Invite from the Invites Table by the GuildID, Invite Creator ID and Invite Code.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Invites WHERE GID='" + guildId + "' AND UID='"
-                + inviteCreator + "' AND CODE='" + inviteCode + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1666,13 +1332,7 @@ public class SQLWorker {
      * @param inviteCode the Code of the Invite.
      */
     public void removeInvite(String guildId, String inviteCode) {
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                inviteCode.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
-        querySQL("DELETE FROM Invites WHERE GID='" + guildId + "' AND CODE='" + inviteCode + "'");
+        querySQL("DELETE FROM Invites WHERE GID=? AND CODE=?", guildId, inviteCode);
     }
 
     /**
@@ -1684,23 +1344,14 @@ public class SQLWorker {
      * @param inviteUsage   the Usage count of the Invite.
      */
     public void setInvite(String guildId, String inviteCreator, String inviteCode, int inviteUsage) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                inviteCreator.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                inviteCode.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is an entry with the same data.
         if (existsInvite(guildId, inviteCreator, inviteCode)) {
             // Update entry.
-            querySQL("UPDATE Invites SET USES='" + inviteUsage + "' WHERE GID='" + guildId + "' AND UID='" + inviteCreator +
-                    "' AND CODE='" + inviteCode + "'");
+            querySQL("UPDATE Invites SET USES=? WHERE GID=? AND UID=? AND CODE=?", inviteUsage, guildId, inviteCreator, inviteCode);
         } else {
             // Create new entry.
-            querySQL("INSERT INTO Invites (GID, UID, USES, CODE) VALUES ('" + guildId + "', '" + inviteCode + "', '" + inviteUsage + "', " +
-                    "'" + inviteCode + "');");
+            querySQL("INSERT INTO Invites (GID, UID, USES, CODE) VALUES (?, ?, ?, " +
+                    "?);", guildId, inviteCreator, inviteUsage, inviteCode);
         }
     }
 
@@ -1712,14 +1363,7 @@ public class SQLWorker {
      * @param inviteCode    the Code of the Invite.
      */
     public void removeInvite(String guildId, String inviteCreator, String inviteCode) {
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                inviteCreator.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                inviteCode.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
-        querySQL("DELETE FROM Invites WHERE GID='" + guildId + "' AND UID='" + inviteCreator + "' AND CODE='" + inviteCode + "'");
+        querySQL("DELETE FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode);
     }
 
     /**
@@ -1730,15 +1374,8 @@ public class SQLWorker {
      * @param inviteCode    the Code of the Invite.
      */
     public void removeInvite(String guildId, String inviteCreator, String inviteCode, int inviteUsage) {
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                inviteCreator.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                inviteCode.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
-        querySQL("DELETE FROM Invites WHERE GID='" + guildId + "' AND UID='" + inviteCreator + "' AND CODE='" + inviteCode + "' " +
-                "AND USES='" + inviteUsage + "'");
+        querySQL("DELETE FROM Invites WHERE GID=? AND UID=? AND CODE=? " +
+                "AND USES=?", guildId, inviteCreator, inviteCode, inviteUsage);
     }
 
     //endregion
@@ -1755,14 +1392,9 @@ public class SQLWorker {
      */
     public String getMessage(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return "Welcome %user_mention%!\nWe wish you a great stay on %guild_name%";
-        }
-
         if (isMessageSetup(guildId)) {
             // Creating a SQL Statement to get the Join Message from the JoinMessage Table by the GuildID.
-            try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM JoinMessage WHERE GID='" + guildId + "'").executeQuery()) {
+            try (ResultSet rs = querySQL("SELECT * FROM JoinMessage WHERE GID=?", guildId)) {
 
                 // Return if found.
                 if (rs != null && rs.next()) return rs.getString("MSG");
@@ -1782,18 +1414,12 @@ public class SQLWorker {
      */
     public void setMessage(String guildId, String content) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                content.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         if (isMessageSetup(guildId)) {
             // If there is already an entry just replace it.
-            querySQL("UPDATE JoinMessage SET MSG='" + content + "' WHERE GID='" + guildId + "'");
+            querySQL("UPDATE JoinMessage SET MSG=? WHERE GID=?", content, guildId);
         } else {
             // Create a new entry, if there was none.
-            querySQL("INSERT INTO JoinMessage (GID, MSG) VALUE ('" + guildId + "', '" + content + "');");
+            querySQL("INSERT INTO JoinMessage (GID, MSG) VALUE (?, ?);", guildId, content);
         }
     }
 
@@ -1805,13 +1431,8 @@ public class SQLWorker {
      */
     public boolean isMessageSetup(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the Join Message from the JoinMessage Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM JoinMessage WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM JoinMessage WHERE GID=?", guildId)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1835,14 +1456,9 @@ public class SQLWorker {
     public ArrayList<String> getChatProtectorWords(String guildId) {
         ArrayList<String> blacklistedWords = new ArrayList<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return blacklistedWords;
-        }
-
         if (isChatProtectorSetup(guildId)) {
             // Creating a SQL Statement to get the Blacklisted Words from the ChatProtector Table by the GuildID.
-            try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM ChatProtector WHERE GID='" + guildId + "'").executeQuery()) {
+            try (ResultSet rs = querySQL("SELECT * FROM ChatProtector WHERE GID = ?", guildId)) {
 
                 // Add if found.
                 while (rs != null && rs.next()) blacklistedWords.add(rs.getString("WORD"));
@@ -1862,13 +1478,8 @@ public class SQLWorker {
      */
     public boolean isChatProtectorSetup(String guildId) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to check if there is an entry in the ChatProtector Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM ChatProtector WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM ChatProtector WHERE GID=?", guildId)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1887,15 +1498,8 @@ public class SQLWorker {
      * @return {@link Boolean} as result. If true, there is an entry in our Database | If false, there is no entry in our Database.
      */
     public boolean isChatProtectorSetup(String guildId, String word) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                word.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to check if there is an entry in the ChatProtector Table by the GuildID and the Word.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM ChatProtector WHERE GID='" + guildId + "' AND WORD='" + word + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM ChatProtector WHERE GID=? AND WORD=?", guildId, word)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1914,17 +1518,11 @@ public class SQLWorker {
      */
     public void addChatProtectorWord(String guildId, String word) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                word.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is already an entry for it.
         if (isChatProtectorSetup(guildId, word)) return;
 
         // If not then just add it.
-        querySQL("INSERT INTO ChatProtector (GID, WORD) VALUES ('" + guildId + "', '" + word + "');");
+        querySQL("INSERT INTO ChatProtector (GID, WORD) VALUES (?, ?);", guildId, word);
     }
 
     public void removeChatProtectorWord(String guildId, String word) {
@@ -1932,7 +1530,7 @@ public class SQLWorker {
         if (!isChatProtectorSetup(guildId, word)) return;
 
         // If so then delete it.
-        querySQL("DELETE FROM ChatProtector WHERE GID='" + guildId + "' AND WORD='" + word + "'");
+        querySQL("DELETE FROM ChatProtector WHERE GID=? AND WORD=?", guildId, word);
     }
 
     //endregion
@@ -1948,16 +1546,10 @@ public class SQLWorker {
      */
     public Setting getSetting(String guildId, String settingName) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                settingName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return new Setting("Detected SQL Injection! Please stop!", false);
-        }
-
         // Check if there is an entry in the database.
         if (hasSetting(guildId, settingName)) {
             // Creating a SQL Statement to get the Setting in the Settings Table by the GuildID and the Setting name.
-            try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Settings WHERE GID='" + guildId + "' AND NAME='" + settingName + "'").executeQuery()) {
+            try (ResultSet rs = querySQL("SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, settingName)) {
 
                 // Return if found.
                 if (rs != null && rs.next()) return new Setting(settingName, rs.getString("VALUE"));
@@ -1981,13 +1573,8 @@ public class SQLWorker {
 
         ArrayList<Setting> settings = new ArrayList<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return settings;
-        }
-
         // Creating a SQL Statement to get the Setting in the Settings Table by the GuildID and the Setting name.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Settings WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM Settings WHERE GID=?", guildId)) {
 
             // Return if found.
             while (rs != null && rs.next()) settings.add(new Setting(rs.getString("NAME"), rs.getObject("VALUE")));
@@ -2025,20 +1612,13 @@ public class SQLWorker {
         // Check if it is null.
         if (settingValue == null) createSettings(guildId);
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                settingName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                ("" + settingValue).matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is an entry.
         if (hasSetting(guildId, settingName)) {
             // If so update it.
-            querySQL("UPDATE Settings SET VALUE='" + ("" + settingValue) + "' WHERE GID='" + guildId + "' AND NAME='" + settingName + "'");
+            querySQL("UPDATE Settings SET VALUE=? WHERE GID=? AND NAME=?", String.valueOf(settingValue), guildId, settingName);
         } else {
             // If not create a new one.
-            querySQL("INSERT INTO Settings (GID, NAME, VALUE) VALUES ('" + guildId + "', '" + settingName + "', '" + ("" + settingValue) + "');");
+            querySQL("INSERT INTO Settings (GID, NAME, VALUE) VALUES (?, ?, ?);", guildId, settingName, String.valueOf(settingValue));
         }
     }
 
@@ -2061,15 +1641,8 @@ public class SQLWorker {
      * @return {@link Boolean} as result. If true, there is a Setting Entry for the Guild | if false, there is no Entry for it.
      */
     public boolean hasSetting(String guildId, String settingName) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                settingName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to get the Setting in the Settings Table by the GuildID and the Setting name.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM Settings WHERE GID='" + guildId + "' AND NAME='" + settingName + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, settingName)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -2096,13 +1669,6 @@ public class SQLWorker {
      * @param settingName the Identifier of the Setting.
      */
     public void checkSetting(String guildId, String settingName) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                settingName.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if the Setting exists in our Database.
         if (!hasSetting(guildId, settingName)) {
             // If not then creat every Setting that doesn't exist for the Guild.
@@ -2116,12 +1682,6 @@ public class SQLWorker {
      * @param guildId the ID of the Guild.
      */
     public void createSettings(String guildId) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Create the Chat Prefix Setting.
         if (!hasSetting(guildId, "chatprefix")) setSetting(guildId, new Setting("chatprefix", "ree!"));
 
@@ -2166,14 +1726,8 @@ public class SQLWorker {
     //region Stats
 
     public Long getStatsCommandGlobal(String command) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (command.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return 0L;
-        }
-
         // Creating a SQL Statement to get an entry in the CommandStats Table by the Command name.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM CommandStats WHERE COMMAND='" + command + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM CommandStats WHERE COMMAND = ?", command)) {
 
             // Return if found.
             if (rs != null && rs.next()) return Long.parseLong(rs.getString("USES"));
@@ -2185,14 +1739,8 @@ public class SQLWorker {
 
     public Long getStatsCommand(String guildId, String command) {
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                command.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return 0L;
-        }
-
         // Creating a SQL Statement to get an entry in the GuildStats Table by Guild and Command name.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM GuildStats WHERE GID='" + guildId + "' AND COMMAND='" + command + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command)) {
 
             // Return if found.
             if (rs != null && rs.next()) return Long.parseLong(rs.getString("USES"));
@@ -2206,13 +1754,8 @@ public class SQLWorker {
         // HashMap with the Command name as key and the usage of it as value.
         HashMap<String, Long> statsMap = new HashMap<>();
 
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return statsMap;
-        }
-
         // Creating a SQL Statement to get every entry in the GuildStats Table by the Guild.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM GuildStats WHERE GID='" + guildId + "' ORDER BY cast(uses as unsigned) DESC LIMIT 5;").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM GuildStats WHERE GID=? ORDER BY cast(uses as unsigned) DESC LIMIT 5;", guildId)) {
 
             // Return if found.
             while (rs != null && rs.next()) statsMap.put(rs.getString("COMMAND"), Long.parseLong(rs.getString("USES")));
@@ -2236,7 +1779,7 @@ public class SQLWorker {
         HashMap<String, Long> statsMap = new HashMap<>();
 
         // Creating a SQL Statement to get every entry in the CommandStats Table.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM CommandStats ORDER BY cast(uses as unsigned) DESC LIMIT 5;").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM CommandStats ORDER BY cast(uses as unsigned) DESC LIMIT 5;")) {
 
             // Return if found.
             while (rs != null && rs.next()) statsMap.put(rs.getString("COMMAND"), Long.parseLong(rs.getString("USES")));
@@ -2261,14 +1804,8 @@ public class SQLWorker {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSaved(String guildId) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to check if there is an entry in the GuildStats Table by the GuildID.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM GuildStats WHERE GID='" + guildId + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM GuildStats WHERE GID = ?", guildId)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -2287,15 +1824,8 @@ public class SQLWorker {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSaved(String guildId, String command) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                command.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to check if there is an entry in the GuildStats Table by the GuildID and the Command name.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM GuildStats WHERE GID='" + guildId + "' AND COMMAND='" + command + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command)) {
 
             // Return if found.
             return (rs != null && rs.next());
