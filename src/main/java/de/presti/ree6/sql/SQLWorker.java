@@ -1900,9 +1900,7 @@ public class SQLWorker {
     public ResultSet querySQL(String sqlQuery, Object... objcObjects) {
         if (!sqlConnector.IsConnected()) return null;
 
-        try {
-            PreparedStatement preparedStatement = sqlConnector.getConnection().prepareStatement(sqlQuery);
-
+        try (PreparedStatement preparedStatement = sqlConnector.getConnection().prepareStatement(sqlQuery)) {
             int index = 1;
 
             for (Object obj : objcObjects) {
