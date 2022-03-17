@@ -8,8 +8,8 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;
 import de.presti.ree6.utils.Setting;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.*;
 
 /**
@@ -2313,14 +2313,8 @@ public class SQLWorker {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSavedGlobal(String command) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (command.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return false;
-        }
-
         // Creating a SQL Statement to check if there is an entry in the CommandStats Table by the Command name.
-        try (ResultSet rs = sqlConnector.getConnection().prepareStatement("SELECT * FROM CommandStats WHERE COMMAND='" + command + "'").executeQuery()) {
+        try (ResultSet rs = querySQL("SELECT * FROM CommandStats WHERE COMMAND=?", command)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -2332,25 +2326,18 @@ public class SQLWorker {
     }
 
     public void addStats(String guildId, String command) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm") ||
-                command.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Check if there is an entry.
         if (isStatsSaved(guildId, command)) {
-            querySQL("UPDATE GuildStats SET USES='" + (getStatsCommand(guildId, command) + 1) + "' WHERE GID='" + guildId + "' AND COMMAND='" + command + "'");
+            querySQL("UPDATE GuildStats SET USES=? WHERE GID=? AND COMMAND=?", (getStatsCommand(guildId, command) + 1), guildId, command);
         } else {
-            querySQL("INSERT INTO GuildStats (GID, COMMAND, USES) VALUES ('" + guildId + "', '" + command + "', '1')");
+            querySQL("INSERT INTO GuildStats (GID, COMMAND, USES) VALUES (?, ?, 1)", guildId, command);
         }
 
         // Check if there is an entry.
         if (isStatsSavedGlobal(command)) {
-            querySQL("UPDATE CommandStats SET USES='" + (getStatsCommandGlobal(command) + 1) + "' WHERE COMMAND='" + command + "'");
+            querySQL("UPDATE CommandStats SET USES=? WHERE COMMAND=?", (getStatsCommandGlobal(command) + 1), command);
         } else {
-            querySQL("INSERT INTO CommandStats (COMMAND, USES) VALUES ('" + command + "', '1')");
+            querySQL("INSERT INTO CommandStats (COMMAND, USES) VALUES (?, 1)", command);
         }
     }
 
@@ -2364,30 +2351,45 @@ public class SQLWorker {
      * @param guildId the ID of the Guild.
      */
     public void deleteAllData(String guildId) {
-
-        // Check for SQL Statements to prevent SQL Injections.
-        if (guildId.matches("/\"((SELECT|DELETE|UPDATE|INSERT INTO) (\\*|[A-Z0-9_]+) (FROM) ([A-Z0-9_]+))( (WHERE) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?|\\$[A-Z]{1}[A-Z_]+)( (AND) ([A-Z0-9_]+) (=|<|>|>=|<=|==|!=) (\\?))?)?\"/igm")) {
-            return;
-        }
-
         // Go through every Table. And delete every entry with the Guild ID.
-        sqlConnector.getTables().forEach((s, s2) -> querySQL("DELETE FROM " + s + " WHERE GID='" + guildId + "'"));
+        sqlConnector.getTables().forEach((s, s2) -> querySQL("DELETE FROM " + s + " WHERE GID= ?", guildId));
     }
 
     //endregion
 
+    //region Utility
+
     /**
-     * Send an SQL-Query to SQL-Server.
+     * Send an SQL-Query to SQL-Server and get the response.
      *
      * @param sqlQuery the SQL-Query.
+     * @param objcObjects the Object in the Query.
+     *
+     * @return The Result from the SQL-Server.
      */
-    public void querySQL(String sqlQuery) {
-        if (!sqlConnector.IsConnected()) return;
+    public ResultSet querySQL(String sqlQuery, Object... objcObjects) {
+        if (!sqlConnector.IsConnected()) return null;
 
-        try (Statement statement = sqlConnector.getConnection().createStatement()) {
-            statement.executeUpdate(sqlQuery);
+        try {
+            PreparedStatement preparedStatement = sqlConnector.getConnection().prepareStatement(sqlQuery);
+
+            int index = 1;
+
+            for (Object obj : objcObjects) {
+                preparedStatement.setObject(index++, objcObjects);
+            }
+
+            try {
+                return preparedStatement.executeQuery();
+            } catch (Exception exception) {
+                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + preparedStatement.toString() + " )", exception);
+            }
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
         }
+
+        return null;
     }
+
+    //endregion
 }
