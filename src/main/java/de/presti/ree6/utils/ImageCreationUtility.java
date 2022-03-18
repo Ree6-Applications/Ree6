@@ -37,7 +37,6 @@ public class ImageCreationUtility {
         // Generate a 885x211 Image Background.
         BufferedImage base = new BufferedImage(885, 211, BufferedImage.TYPE_INT_ARGB);
 
-        // TODO add default Discord PB.
         User user = userLevel.getUser();
         BufferedImage userImage;
 
