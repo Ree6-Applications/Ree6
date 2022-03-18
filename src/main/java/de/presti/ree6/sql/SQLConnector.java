@@ -112,8 +112,9 @@ public class SQLConnector {
         for (Map.Entry<String, String> entry : tables.entrySet()) {
 
             // Create a Table based on the key.
-            try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + entry.getKey() + " " + entry.getValue())) {
-                ps.executeUpdate();
+            try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + entry.getKey() + " ?")) {
+                ps.setString(1, entry.getValue());
+                ps.executeQuery();
             } catch (SQLException exception) {
 
                 // Notify if there was an error.
