@@ -53,9 +53,7 @@ public class MusicWorker {
     public synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
         long guildId = Long.parseLong(guild.getId());
 
-        if (!musicManagers.containsKey(guildId)) {
-            musicManagers.put(guildId, new GuildMusicManager(guild, playerManager));
-        }
+        musicManagers.putIfAbsent(guildId, new GuildMusicManager(guild, playerManager));
 
         GuildMusicManager musicManager = musicManagers.get(guildId);
 

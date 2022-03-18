@@ -189,8 +189,7 @@ public class TrackScheduler extends AudioEventAdapter {
         if (track != null) {
             if (getTextChannel() != null) {
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                        BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
@@ -221,8 +220,7 @@ public class TrackScheduler extends AudioEventAdapter {
         if (track != null) {
             if (getTextChannel() != null) {
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                        BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
                 em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
@@ -258,8 +256,7 @@ public class TrackScheduler extends AudioEventAdapter {
                 } else {
                     if (getTextChannel() != null) {
                         EmbedBuilder em = new EmbedBuilder();
-                        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                                BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                         em.setTitle("Music Player!");
                         em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                         em.setColor(Color.RED);
@@ -275,13 +272,11 @@ public class TrackScheduler extends AudioEventAdapter {
             } else if (endReason == AudioTrackEndReason.LOAD_FAILED) {
                 if (getTextChannel() != null) {
                     EmbedBuilder em = new EmbedBuilder();
-                    em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                            BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                    em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setTitle("Music Player!");
                     em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
                     em.setColor(Color.RED);
-                    em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: "
-                            + endReason.name());
+                    em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: " + endReason.name());
                     em.setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl());
 
                     Main.getInstance().getCommandManager().sendMessage(em, 5, getTextChannel());
@@ -294,20 +289,16 @@ public class TrackScheduler extends AudioEventAdapter {
             // Check if a new song should be played or not.
             if (endReason.mayStartNext) {
                 // Check if there was an error on the current song if so inform user.
-                if (endReason == AudioTrackEndReason.LOAD_FAILED) {
-                    if (getTextChannel() != null) {
-                        EmbedBuilder em = new EmbedBuilder();
-                        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                                BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                        em.setTitle("Music Player!");
-                        em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                        em.setColor(Color.RED);
-                        em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: "
-                                + endReason.name());
-                        em.setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl());
+                if (endReason == AudioTrackEndReason.LOAD_FAILED && getTextChannel() != null) {
+                    EmbedBuilder em = new EmbedBuilder();
+                    em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                    em.setTitle("Music Player!");
+                    em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                    em.setColor(Color.RED);
+                    em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: " + endReason.name());
+                    em.setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl());
 
-                        Main.getInstance().getCommandManager().sendMessage(em, 5, getTextChannel());
-                    }
+                    Main.getInstance().getCommandManager().sendMessage(em, 5, getTextChannel());
                 }
                 nextRandomTrack(getTextChannel());
             }
@@ -316,20 +307,16 @@ public class TrackScheduler extends AudioEventAdapter {
             // Check if a new song shoud be played or not.
             if (endReason.mayStartNext) {
                 // check if there was an error on the current song if so inform user.
-                if (endReason == AudioTrackEndReason.LOAD_FAILED) {
-                    if (getTextChannel() != null) {
-                        EmbedBuilder em = new EmbedBuilder();
-                        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                                BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                        em.setTitle("Music Player!");
-                        em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                        em.setColor(Color.RED);
-                        em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: "
-                                + endReason.name());
-                        em.setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl());
+                if (endReason == AudioTrackEndReason.LOAD_FAILED && getTextChannel() != null) {
+                    EmbedBuilder em = new EmbedBuilder();
+                    em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                    em.setTitle("Music Player!");
+                    em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                    em.setColor(Color.RED);
+                    em.setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: " + endReason.name());
+                    em.setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl());
 
-                        Main.getInstance().getCommandManager().sendMessage(em, 5, getTextChannel());
-                    }
+                    Main.getInstance().getCommandManager().sendMessage(em, 5, getTextChannel());
                 }
                 nextTrack(getTextChannel());
             }
@@ -339,7 +326,7 @@ public class TrackScheduler extends AudioEventAdapter {
     /**
      * Stop every Song-Player on the Guild.
      *
-     * @param guild The Guild entity.
+     * @param guild           The Guild entity.
      * @param interactionHook the InteractionHook, incase it is a SlashCommand.
      */
     public void stopAll(Guild guild, InteractionHook interactionHook) {
@@ -353,15 +340,13 @@ public class TrackScheduler extends AudioEventAdapter {
             gmm.scheduler.clearQueue();
 
             Main.getInstance().getMusicWorker().disconnect(guild);
-            em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                    BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setTitle("Music Player!");
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setColor(Color.GREEN);
             em.setDescription("Successfully stopped the Player!");
         } else {
-            em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                    BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setTitle("Music Player!");
             em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
             em.setColor(Color.RED);

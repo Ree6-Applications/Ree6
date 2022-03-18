@@ -1,6 +1,5 @@
 package de.presti.ree6.utils;
 
-import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.sql.entities.UserLevel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -10,7 +9,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 

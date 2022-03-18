@@ -12,5 +12,6 @@ public class Test extends Command {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
+        // Nothing to test rn.
     }
 }

@@ -60,8 +60,9 @@ public class Level extends Command {
         } else {
             try {
                 commandEvent.getTextChannel().sendFile(ImageCreationUtility.createRankImage(userLevel),"rank.png").queue();
-            }  catch (Exception ignore) {}
-            sendMessage("Couldn't generated Rank Image!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            }  catch (Exception ignore) {
+                sendMessage("Couldn't generated Rank Image!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            }
         }
     }
 }

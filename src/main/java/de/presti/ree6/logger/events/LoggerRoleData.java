@@ -25,7 +25,7 @@ public class LoggerRoleData {
     private EnumSet<Permission> previousPermission, currentPermission;
 
     // Other information about the Role,
-    private boolean IsCreated, IsDeleted, IsHoisted, IsMentioned, changedMentioned, changedHoisted;
+    private boolean isCreated, isDeleted, isHoisted, isMentioned, changedMentioned, changedHoisted;
 
     /**
      * A Constructor for a {@link Role} based Event.
@@ -66,7 +66,7 @@ public class LoggerRoleData {
         this.roleId = roleId;
         this.previousName = previousName;
         this.currentName = currentName;
-        IsCreated = isCreated;
+        this.isCreated = isCreated;
     }
 
     /**
@@ -79,8 +79,8 @@ public class LoggerRoleData {
     public LoggerRoleData(long roleId, String currentName, boolean isCreated) {
         this.roleId = roleId;
         this.currentName = currentName;
-        IsCreated = isCreated;
-        IsDeleted = !isCreated;
+        this.isCreated = isCreated;
+        isDeleted = !isCreated;
     }
 
     /**
@@ -108,7 +108,7 @@ public class LoggerRoleData {
         this.roleId = roleId;
         this.previousColor = previousColor;
         this.currentColor = currentColor;
-        IsCreated = isCreated;
+        this.isCreated = isCreated;
     }
 
     /**
@@ -136,7 +136,7 @@ public class LoggerRoleData {
         this.roleId = roleId;
         this.previousPermission = previousPermission;
         this.currentPermission = currentPermission;
-        IsCreated = isCreated;
+        this.isCreated = isCreated;
     }
 
     /**
@@ -152,8 +152,8 @@ public class LoggerRoleData {
     public LoggerRoleData(long roleId, String currentName, boolean isCreated, boolean isDeleted, boolean isHoisted, boolean isMentioned) {
         this.roleId = roleId;
         this.currentName = currentName;
-        IsCreated = isCreated;
-        IsDeleted = isDeleted;
+        this.isCreated = isCreated;
+        this.isDeleted = isDeleted;
         setChangedHoisted(isHoisted);
         setChangedMentioned(isMentioned);
     }
@@ -287,7 +287,7 @@ public class LoggerRoleData {
      * @return the current State as {@link Boolean}.
      */
     public boolean isCreated() {
-        return IsCreated;
+        return isCreated;
     }
 
     /**
@@ -295,7 +295,7 @@ public class LoggerRoleData {
      * @param created the new state of creation.
      */
     public void setCreated(boolean created) {
-        IsCreated = created;
+        isCreated = created;
     }
 
     /**
@@ -303,7 +303,7 @@ public class LoggerRoleData {
      * @return the current State as {@link Boolean}.
      */
     public boolean isDeleted() {
-        return IsDeleted;
+        return isDeleted;
     }
 
     /**
@@ -311,7 +311,7 @@ public class LoggerRoleData {
      * @param deleted the new state of deletion.
      */
     public void setDeleted(boolean deleted) {
-        IsDeleted = deleted;
+        isDeleted = deleted;
     }
 
     /**
@@ -319,7 +319,7 @@ public class LoggerRoleData {
      * @return the current State as {@link Boolean}.
      */
     public boolean isHoisted() {
-        return IsHoisted;
+        return isHoisted;
     }
 
     /**
@@ -327,7 +327,7 @@ public class LoggerRoleData {
      * @param hoisted the new state of hoisted.
      */
     public void setHoisted(boolean hoisted) {
-        IsHoisted = hoisted;
+        isHoisted = hoisted;
         changedHoisted = true;
     }
 
@@ -336,7 +336,7 @@ public class LoggerRoleData {
      * @return the current State as {@link Boolean}.
      */
     public boolean isMentioned() {
-        return IsMentioned;
+        return isMentioned;
     }
 
     /**
@@ -344,7 +344,7 @@ public class LoggerRoleData {
      * @param mentioned the new state of mentioned.
      */
     public void setMentioned(boolean mentioned) {
-        IsMentioned = mentioned;
+        isMentioned = mentioned;
         changedMentioned = true;
     }
 
