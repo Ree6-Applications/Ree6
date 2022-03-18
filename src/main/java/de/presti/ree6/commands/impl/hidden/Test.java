@@ -12,10 +12,5 @@ public class Test extends Command {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        /*try {
-            commandEvent.getTextChannel().sendFile(ImageCreationUtility.createRankImage(commandEvent.getMember().getUser(), 100), "image.png").queue();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }*/
     }
 }

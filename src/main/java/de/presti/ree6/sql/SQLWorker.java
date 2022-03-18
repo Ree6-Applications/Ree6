@@ -7,6 +7,7 @@ import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;
 import de.presti.ree6.utils.Setting;
+import net.dv8tion.jda.api.entities.Guild;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,21 +16,13 @@ import java.util.*;
 /**
  * A Class to actually handle the SQL data.
  * Used to provide Data from the Database and to save Data into the Database.
+ * <p>
+ * Constructor to create a new Instance of the SQLWorker with a ref to the SQL-Connector.
+ *
+ * @param sqlConnector an Instance of the SQL-Connector to retrieve the data from.
  */
 @SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve", "unused", "SingleStatementInBlock"})
-public class SQLWorker {
-
-    // Instance of the SQL Connector to actually access the SQL Database.
-    private final SQLConnector sqlConnector;
-
-    /**
-     * Constructor to create a new Instance of the SQLWorker with a ref to the SQL-Connector.
-     *
-     * @param sqlConnector an Instance of the SQL-Connector to retrieve the data from.
-     */
-    public SQLWorker(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
-    }
+public record SQLWorker(SQLConnector sqlConnector) {
 
     //region Level
 
@@ -51,7 +44,8 @@ public class SQLWorker {
             if (rs != null && rs.next()) {
                 return new UserLevel(userId, getAllChatLevelSorted(guildId).indexOf(userId) + 1, Long.parseLong(rs.getString("XP")));
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
 
         // Return a new UserLEve if there was an error OR if the user isn't in the database.
         return new UserLevel(userId, 0, 0);
@@ -103,9 +97,9 @@ public class SQLWorker {
      *
      * @param guildId the ID of the Guild.
      * @param limit   the Limit of how many should be given back.
-     * @return {@link ArrayList<UserLevel>} as container of the User IDs.
+     * @return {@link List<UserLevel>} as container of the User IDs.
      */
-    public ArrayList<UserLevel> getTopChat(String guildId, int limit) {
+    public List<UserLevel> getTopChat(String guildId, int limit) {
 
         // Create the List.
         ArrayList<UserLevel> userLevels = new ArrayList<>();
@@ -128,9 +122,9 @@ public class SQLWorker {
      * Get the Top list of the Guild Chat XP.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link ArrayList<String>} as container of the User IDs.
+     * @return {@link List<String>} as container of the User IDs.
      */
-    public ArrayList<String> getAllChatLevelSorted(String guildId) {
+    public List<String> getAllChatLevelSorted(String guildId) {
 
         // Create the List.
         ArrayList<String> userIds = new ArrayList<>();
@@ -222,9 +216,9 @@ public class SQLWorker {
      *
      * @param guildId the ID of the Guild.
      * @param limit   the Limit of how many should be given back.
-     * @return {@link ArrayList<UserLevel>} as container of the User IDs.
+     * @return {@link List<UserLevel>} as container of the User IDs.
      */
-    public ArrayList<UserLevel> getTopVoice(String guildId, int limit) {
+    public List<UserLevel> getTopVoice(String guildId, int limit) {
 
         // Create the List.
         ArrayList<UserLevel> userLevels = new ArrayList<>();
@@ -247,9 +241,9 @@ public class SQLWorker {
      * Get the Top list of the Guild Voice XP.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link ArrayList<String>} as container of the User IDs.
+     * @return {@link List<String>} as container of the User IDs.
      */
-    public ArrayList<String> getAllVoiceLevelSorted(String guildId) {
+    public List<String> getAllVoiceLevelSorted(String guildId) {
 
         // Create the List.
         ArrayList<String> userIds = new ArrayList<>();
@@ -294,8 +288,7 @@ public class SQLWorker {
                 if (rs != null && rs.next()) {
                     if (rs.getString("CID").isEmpty() || rs.getString("TOKEN").isEmpty())
                         return new String[]{"0", "No setup!"};
-                    else
-                        return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
+                    else return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
                 }
             } catch (Exception ignore) {
             }
@@ -316,10 +309,13 @@ public class SQLWorker {
         // Check if there is already a Webhook set.
         if (isLogSetup(guildId)) {
 
-            // Delete the existing Webhook.
-            BotInfo.botInstance.getGuildById(guildId).retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook ->
-                            webhook.getId().equalsIgnoreCase(getLogWebhook(guildId)[0]) && webhook.getToken().equalsIgnoreCase(getLogWebhook(guildId)[1]))
-                    .forEach(webhook -> webhook.delete().queue()));
+            // Get the Guild from the ID.
+            Guild guild = BotInfo.botInstance.getGuildById(guildId);
+
+            if (guild != null) {
+                // Delete the existing Webhook.
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(getLogWebhook(guildId)[0]) && webhook.getToken().equalsIgnoreCase(getLogWebhook(guildId)[1])).forEach(webhook -> webhook.delete().queue()));
+            }
 
             // Delete the entry.
             querySQL("DELETE FROM LogWebhooks WHERE GID=?", guildId);
@@ -406,8 +402,7 @@ public class SQLWorker {
                 if (rs != null && rs.next()) {
                     if (rs.getString("CID").isEmpty() || rs.getString("TOKEN").isEmpty())
                         return new String[]{"0", "No setup!"};
-                    else
-                        return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
+                    else return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
                 }
             } catch (Exception ignore) {
             }
@@ -428,10 +423,13 @@ public class SQLWorker {
         // Check if there is already a Webhook set.
         if (isWelcomeSetup(guildId)) {
 
-            // Delete the existing Webhook.
-            BotInfo.botInstance.getGuildById(guildId).retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook ->
-                            webhook.getId().equalsIgnoreCase(getWelcomeWebhook(guildId)[0]) && webhook.getToken().equalsIgnoreCase(getWelcomeWebhook(guildId)[1]))
-                    .forEach(webhook -> webhook.delete().queue()));
+            // Get the Guild from the ID.
+            Guild guild = BotInfo.botInstance.getGuildById(guildId);
+
+            if (guild != null) {
+                // Delete the existing Webhook.
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(getWelcomeWebhook(guildId)[0]) && webhook.getToken().equalsIgnoreCase(getWelcomeWebhook(guildId)[1])).forEach(webhook -> webhook.delete().queue()));
+            }
 
             // Delete the entry.
             querySQL("DELETE FROM WelcomeWebhooks WHERE GID=?", guildId);
@@ -482,8 +480,7 @@ public class SQLWorker {
                 if (rs != null && rs.next()) {
                     if (rs.getString("CID").isEmpty() || rs.getString("TOKEN").isEmpty())
                         return new String[]{"0", "No setup!"};
-                    else
-                        return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
+                    else return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
                 }
             } catch (Exception ignore) {
             }
@@ -503,11 +500,13 @@ public class SQLWorker {
 
         // Check if there is already a Webhook set.
         if (isNewsSetup(guildId)) {
+            // Get the Guild from the ID.
+            Guild guild = BotInfo.botInstance.getGuildById(guildId);
 
-            // Delete the existing Webhook.
-            BotInfo.botInstance.getGuildById(guildId).retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getToken() != null).filter(webhook ->
-                            webhook.getId().equalsIgnoreCase(getNewsWebhook(guildId)[0]) && webhook.getToken().equalsIgnoreCase(getNewsWebhook(guildId)[1]))
-                    .forEach(webhook -> webhook.delete().queue()));
+            if (guild != null) {
+                // Delete the existing Webhook.
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(getNewsWebhook(guildId)[0]) && webhook.getToken().equalsIgnoreCase(getNewsWebhook(guildId)[1])).forEach(webhook -> webhook.delete().queue()));
+            }
 
             // Delete the entry.
             querySQL("DELETE FROM NewsWebhooks WHERE GID=?", guildId);
@@ -559,8 +558,7 @@ public class SQLWorker {
                 if (rs != null && rs.next()) {
                     if (rs.getString("CID").isEmpty() || rs.getString("TOKEN").isEmpty())
                         return new String[]{"0", "No setup!"};
-                    else
-                        return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
+                    else return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
                 }
             } catch (Exception ignore) {
             }
@@ -573,9 +571,9 @@ public class SQLWorker {
      * Get the TwitchNotify data.
      *
      * @param twitchName the Username of the Twitch User.
-     * @return {@link ArrayList<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
-    public ArrayList<String[]> getTwitchWebhooksByName(String twitchName) {
+    public List<String[]> getTwitchWebhooksByName(String twitchName) {
 
         ArrayList<String[]> webhooks = new ArrayList<>();
 
@@ -596,9 +594,9 @@ public class SQLWorker {
     /**
      * Get the all Twitch-Notifier.
      *
-     * @return {@link ArrayList<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
-    public ArrayList<String> getAllTwitchNames() {
+    public List<String> getAllTwitchNames() {
 
         ArrayList<String> userNames = new ArrayList<>();
 
@@ -616,12 +614,12 @@ public class SQLWorker {
     }
 
     /**
-     * Get every Twitch-Notifier that has been setup for the given Guild.
+     * Get every Twitch-Notifier that has been set up for the given Guild.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link ArrayList<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
-    public ArrayList<String> getAllTwitchNames(String guildId) {
+    public List<String> getAllTwitchNames(String guildId) {
 
         ArrayList<String> userNames = new ArrayList<>();
 
@@ -666,10 +664,13 @@ public class SQLWorker {
         // Check if there is a Webhook set.
         if (isTwitchSetup(guildId, twitchName)) {
 
-            // Delete the existing Webhook.
-            BotInfo.botInstance.getGuildById(guildId).retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook ->
-                            webhook.getId().equalsIgnoreCase(getTwitchWebhook(guildId, twitchName)[0]) && webhook.getToken().equalsIgnoreCase(getTwitchWebhook(guildId, twitchName)[1]))
-                    .forEach(webhook -> webhook.delete().queue()));
+            // Get the Guild from the ID.
+            Guild guild = BotInfo.botInstance.getGuildById(guildId);
+
+            if (guild != null) {
+                // Delete the existing Webhook.
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(getTwitchWebhook(guildId, twitchName)[0]) && webhook.getToken().equalsIgnoreCase(getTwitchWebhook(guildId, twitchName)[1])).forEach(webhook -> webhook.delete().queue()));
+            }
 
             // Delete the entry.
             querySQL("DELETE FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName);
@@ -737,8 +738,7 @@ public class SQLWorker {
                 if (rs != null && rs.next()) {
                     if (rs.getString("CID").isEmpty() || rs.getString("TOKEN").isEmpty())
                         return new String[]{"0", "No setup!"};
-                    else
-                        return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
+                    else return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
                 }
             } catch (Exception ignore) {
             }
@@ -751,9 +751,9 @@ public class SQLWorker {
      * Get the TwitterNotify data.
      *
      * @param twitterName the Username of the Twitter User.
-     * @return {@link ArrayList<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
-    public ArrayList<String[]> getTwitterWebhooksByName(String twitterName) {
+    public List<String[]> getTwitterWebhooksByName(String twitterName) {
 
         ArrayList<String[]> webhooks = new ArrayList<>();
 
@@ -774,9 +774,9 @@ public class SQLWorker {
     /**
      * Get the all Twitter-Notifier.
      *
-     * @return {@link ArrayList<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
-    public ArrayList<String> getAllTwitterNames() {
+    public List<String> getAllTwitterNames() {
 
         ArrayList<String> userNames = new ArrayList<>();
 
@@ -797,9 +797,9 @@ public class SQLWorker {
      * Get every Twitter-Notifier that has been set up for the given Guild.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link ArrayList<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
-    public ArrayList<String> getAllTwitterNames(String guildId) {
+    public List<String> getAllTwitterNames(String guildId) {
 
         ArrayList<String> userNames = new ArrayList<>();
 
@@ -843,10 +843,13 @@ public class SQLWorker {
         // Check if there is a Webhook set.
         if (isTwitterSetup(guildId, twitterName)) {
 
-            // Delete the existing Webhook.
-            BotInfo.botInstance.getGuildById(guildId).retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook ->
-                            webhook.getId().equalsIgnoreCase(getTwitterWebhook(guildId, twitterName)[0]) && webhook.getToken().equalsIgnoreCase(getTwitterWebhook(guildId, twitterName)[1]))
-                    .forEach(webhook -> webhook.delete().queue()));
+            // Get the Guild from the ID.
+            Guild guild = BotInfo.botInstance.getGuildById(guildId);
+
+            if (guild != null) {
+                // Delete the existing Webhook.
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(getTwitterWebhook(guildId, twitterName)[0]) && webhook.getToken().equalsIgnoreCase(getTwitterWebhook(guildId, twitterName)[1])).forEach(webhook -> webhook.delete().queue()));
+            }
 
             // Delete the entry.
             querySQL("DELETE FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName);
@@ -900,8 +903,6 @@ public class SQLWorker {
     //region Roles
 
     //region Mute
-
-    // TODO add remove Role.
 
     /**
      * Get the Mute Role ID from the given Guild.
@@ -964,6 +965,20 @@ public class SQLWorker {
         return false;
     }
 
+    /**
+     * Remove a MuteRole setup for the Guild.
+     *
+     * @param guildId the ID of the Guild.
+     */
+    public void removeMuteRole(String guildId) {
+
+        // Check if there is a Mute Role set if so remove.
+        if (isMuteSetup(guildId)) {
+            querySQL("DELETE FROM MuteRoles WHERE GID=?", guildId);
+        }
+    }
+
+
     //endregion
 
     //region AutoRoles
@@ -972,9 +987,9 @@ public class SQLWorker {
      * Get the all AutoRoles saved in our Database from the given Guild.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link ArrayList<String>} as List with all Role IDs.
+     * @return {@link List<String>} as List with all Role IDs.
      */
-    public ArrayList<String> getAutoRoles(String guildId) {
+    public List<String> getAutoRoles(String guildId) {
 
         // Create a new ArrayList to save the Role Ids.
         ArrayList<String> roleIds = new ArrayList<>();
@@ -1064,8 +1079,6 @@ public class SQLWorker {
 
     //endregion
 
-    // TODO fix Level Rewards checking in saving.
-
     //region Level Rewards
 
     //region Chat Rewards
@@ -1105,12 +1118,9 @@ public class SQLWorker {
      */
     public void addChatLevelReward(String guildId, String roleId, int level) {
         // Check if there is a role in the database.
-        if (!isChatLevelRewardSetup(guildId, roleId)) {
+        if (!isChatLevelRewardSetup(guildId, roleId, level)) {
             // Add a new entry into the Database.
             querySQL("INSERT INTO ChatLevelAutoRoles (GID, RID, LVL) VALUES (?, ?, ?);", guildId, roleId, level);
-        } else {
-            // Update the entry.
-            querySQL("UPDATE ChatLevelAutoRoles SET LVL=? WHERE GID=? AND RID=?", level, guildId, roleId);
         }
     }
 
@@ -1169,6 +1179,28 @@ public class SQLWorker {
         return false;
     }
 
+    /**
+     * Check if a Chat Level Reward has been set in our Database for this Server.
+     *
+     * @param guildId the ID of the Guild.
+     * @param roleId  the ID of the Role.
+     * @param level   the Level needed to get the Role.
+     * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
+     */
+    public boolean isChatLevelRewardSetup(String guildId, String roleId, int level) {
+
+        // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID and its ID.
+        try (ResultSet rs = querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=? AND RID=? AND LVL=?", guildId, roleId, level)) {
+
+            // Return if there was an entry or not.
+            return (rs != null && rs.next());
+        } catch (Exception ignore) {
+        }
+
+        // Return false if there was an error OR if the role isn't in the database.
+        return false;
+    }
+
     //endregion
 
     //region Voice Rewards
@@ -1209,12 +1241,9 @@ public class SQLWorker {
     public void addVoiceLevelReward(String guildId, String roleId, int level) {
 
         // Check if there is a role in the database.
-        if (!isVoiceLevelRewardSetup(guildId, roleId)) {
+        if (!isVoiceLevelRewardSetup(guildId, roleId, level)) {
             // Add a new entry into the Database.
             querySQL("INSERT INTO VCLevelAutoRoles (GID, RID, LVL) VALUES (?, ?, ?);", guildId, roleId, level);
-        } else {
-            // Update the entry.
-            querySQL("UPDATE VCLevelAutoRoles SET LVL=? WHERE GID=? AND RID=?", level, guildId, roleId);
         }
     }
 
@@ -1271,6 +1300,27 @@ public class SQLWorker {
         return false;
     }
 
+    /**
+     * Check if a Voice Level Reward has been set in our Database for this Server.
+     *
+     * @param guildId the ID of the Guild.
+     * @param roleId  the ID of the Role.
+     * @param level   the Level needed to get the Role.
+     * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
+     */
+    public boolean isVoiceLevelRewardSetup(String guildId, String roleId, int level) {
+        // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID and its ID.
+        try (ResultSet rs = querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=? AND RID=? AND LVL=?", guildId, roleId, level)) {
+
+            // Return if there was an entry or not.
+            return (rs != null && rs.next());
+        } catch (Exception ignore) {
+        }
+
+        // Return false if there was an error OR if the role isn't in the database.
+        return false;
+    }
+
     //endregion
 
     //endregion
@@ -1283,9 +1333,9 @@ public class SQLWorker {
      * Get a List of every saved Invite from our Database.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link ArrayList<String>} as List with {@link InviteContainer}.
+     * @return {@link List<String>} as List with {@link InviteContainer}.
      */
-    public ArrayList<InviteContainer> getInvites(String guildId) {
+    public List<InviteContainer> getInvites(String guildId) {
 
         // Create a new ArrayList to save the Invites.
         ArrayList<InviteContainer> inviteContainers = new ArrayList<>();
@@ -1294,9 +1344,8 @@ public class SQLWorker {
         try (ResultSet rs = querySQL("SELECT * FROM Invites WHERE GID=?", guildId)) {
 
             // Add the Invite to the List if found.
-            while (rs != null && rs.next()) inviteContainers.add(
-                    new InviteContainer(rs.getString("UID"), rs.getString("GID"), rs.getString("CODE"),
-                            Integer.parseInt(rs.getString("USES"))));
+            while (rs != null && rs.next())
+                inviteContainers.add(new InviteContainer(rs.getString("UID"), rs.getString("GID"), rs.getString("CODE"), Integer.parseInt(rs.getString("USES"))));
         } catch (Exception ignore) {
         }
 
@@ -1350,8 +1399,7 @@ public class SQLWorker {
             querySQL("UPDATE Invites SET USES=? WHERE GID=? AND UID=? AND CODE=?", inviteUsage, guildId, inviteCreator, inviteCode);
         } else {
             // Create new entry.
-            querySQL("INSERT INTO Invites (GID, UID, USES, CODE) VALUES (?, ?, ?, " +
-                    "?);", guildId, inviteCreator, inviteUsage, inviteCode);
+            querySQL("INSERT INTO Invites (GID, UID, USES, CODE) VALUES (?, ?, ?, " + "?);", guildId, inviteCreator, inviteUsage, inviteCode);
         }
     }
 
@@ -1374,8 +1422,7 @@ public class SQLWorker {
      * @param inviteCode    the Code of the Invite.
      */
     public void removeInvite(String guildId, String inviteCreator, String inviteCode, int inviteUsage) {
-        querySQL("DELETE FROM Invites WHERE GID=? AND UID=? AND CODE=? " +
-                "AND USES=?", guildId, inviteCreator, inviteCode, inviteUsage);
+        querySQL("DELETE FROM Invites WHERE GID=? AND UID=? AND CODE=? " + "AND USES=?", guildId, inviteCreator, inviteCode, inviteUsage);
     }
 
     //endregion
@@ -1451,9 +1498,9 @@ public class SQLWorker {
      * Get every Blacklisted Word saved in our Database from the Guild.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link ArrayList<String>} as list with every Blacklisted Word.
+     * @return {@link List<String>} as list with every Blacklisted Word.
      */
-    public ArrayList<String> getChatProtectorWords(String guildId) {
+    public List<String> getChatProtectorWords(String guildId) {
         ArrayList<String> blacklistedWords = new ArrayList<>();
 
         if (isChatProtectorSetup(guildId)) {
@@ -1567,9 +1614,9 @@ public class SQLWorker {
      * Get the every Setting by the Guild.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link ArrayList<Setting>} which is a List with every Setting that stores every information needed.
+     * @return {@link List<Setting>} which is a List with every Setting that stores every information needed.
      */
-    public ArrayList<Setting> getAllSettings(String guildId) {
+    public List<Setting> getAllSettings(String guildId) {
 
         ArrayList<Setting> settings = new ArrayList<>();
 
@@ -1764,10 +1811,7 @@ public class SQLWorker {
 
         HashMap<String, Long> sortedStatsMap = new HashMap<>();
 
-        statsMap.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .forEachOrdered(x -> sortedStatsMap.put(x.getKey(), x.getValue()));
+        statsMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).forEachOrdered(x -> sortedStatsMap.put(x.getKey(), x.getValue()));
 
         // Return the HashMap.
         return sortedStatsMap;
@@ -1788,10 +1832,7 @@ public class SQLWorker {
 
         HashMap<String, Long> sortedStatsMap = new HashMap<>();
 
-        statsMap.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .forEachOrdered(x -> sortedStatsMap.put(x.getKey(), x.getValue()));
+        statsMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).forEachOrdered(x -> sortedStatsMap.put(x.getKey(), x.getValue()));
 
         // Return the HashMap.
         return sortedStatsMap;
@@ -1882,7 +1923,7 @@ public class SQLWorker {
      */
     public void deleteAllData(String guildId) {
         // Go through every Table. And delete every entry with the Guild ID.
-        sqlConnector.getTables().forEach((s, s2) -> querySQL("DELETE FROM " + s + " WHERE GID= ?", guildId));
+        sqlConnector.getTables().forEach((s, s2) -> querySQL("DELETE FROM ? WHERE GID= ?", s, guildId));
     }
 
     //endregion
@@ -1892,9 +1933,8 @@ public class SQLWorker {
     /**
      * Send an SQL-Query to SQL-Server and get the response.
      *
-     * @param sqlQuery the SQL-Query.
+     * @param sqlQuery    the SQL-Query.
      * @param objcObjects the Object in the Query.
-     *
      * @return The Result from the SQL-Server.
      */
     public ResultSet querySQL(String sqlQuery, Object... objcObjects) {
@@ -1907,11 +1947,7 @@ public class SQLWorker {
                 preparedStatement.setObject(index++, objcObjects);
             }
 
-            try {
-                return preparedStatement.executeQuery();
-            } catch (Exception exception) {
-                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + preparedStatement.toString() + " )", exception);
-            }
+            return preparedStatement.executeQuery();
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
         }

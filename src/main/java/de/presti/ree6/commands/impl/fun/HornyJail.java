@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.RequestUtility;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -51,8 +52,6 @@ public class HornyJail extends Command {
             HttpGet request = new HttpGet("https://api.dagpi.xyz/image/jail/?url=" + member.getUser().getAvatarUrl());
             request.setHeader("Authorization", Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"));
             HttpResponse response = httpClient.execute(request);
-
-            //TODO update.
 
             sendMessage(member.getAsMention() + " is now in the Hornyjail!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             commandEvent.getTextChannel().sendFile(response.getEntity().getContent(), "hornyjail.png").queue();

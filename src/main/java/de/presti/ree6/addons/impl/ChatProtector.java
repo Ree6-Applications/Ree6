@@ -41,7 +41,7 @@ public class ChatProtector {
      */
     public static void blacklist(String guildId, ArrayList<String> wordList) {
 
-        ArrayList<String> blacklisted = Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(guildId);
+        ArrayList<String> blacklisted = (ArrayList<String>) Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(guildId);
 
         wordList.stream().filter(s -> !blacklisted.contains(s)).forEach(s -> Main.getInstance().getSqlConnector().getSqlWorker().addChatProtectorWord(guildId, s));
     }
@@ -90,7 +90,7 @@ public class ChatProtector {
      * @return an {@link ArrayList} with every Blacklisted word from the Guild.
      */
     public static ArrayList<String> getBlacklist(String guildId) {
-        return Main.getInstance().getSqlConnector().getSqlWorker()
+        return (ArrayList<String>) Main.getInstance().getSqlConnector().getSqlWorker()
                 .getChatProtectorWords(guildId);
     }
 

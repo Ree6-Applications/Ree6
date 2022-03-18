@@ -96,7 +96,7 @@ public class InviteContainerManager {
      * @return {@link ArrayList<InviteContainer>} with every Invite saved in our Database.
      */
     public static ArrayList<InviteContainer> getInvites(String guildId) {
-        return Main.getInstance().getSqlConnector().getSqlWorker().getInvites(guildId);
+        return (ArrayList<InviteContainer>) Main.getInstance().getSqlConnector().getSqlWorker().getInvites(guildId);
     }
 
     /**
