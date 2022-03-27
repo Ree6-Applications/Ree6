@@ -8,11 +8,13 @@ import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.bot.Webhook;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;
-import de.presti.ree6.utils.*;
+import de.presti.ree6.utils.others.AutoRoleHandler;
+import de.presti.ree6.utils.others.RandomUtils;
+import de.presti.ree6.utils.others.TimeUtil;
+import de.presti.ree6.utils.storage.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
@@ -202,6 +204,10 @@ public class OtherEvents extends ListenerAdapter {
         switch (event.getInteraction().getComponent().getId()) {
             case "setupActionMenu" -> {
 
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
                 List<SelectOption> optionList = new ArrayList<>();
@@ -267,6 +273,10 @@ public class OtherEvents extends ListenerAdapter {
 
             case "setupLogMenu" -> {
 
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
                 List<SelectOption> optionList = new ArrayList<>();
@@ -306,6 +316,11 @@ public class OtherEvents extends ListenerAdapter {
             }
 
             case "setupLogChannel" -> {
+
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
                 TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getSelectedOptions().get(0).getValue());
@@ -325,6 +340,10 @@ public class OtherEvents extends ListenerAdapter {
             }
 
             case "setupWelcomeMenu" -> {
+
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
 
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
@@ -365,6 +384,11 @@ public class OtherEvents extends ListenerAdapter {
             }
 
             case "setupWelcomeChannel" -> {
+
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
                 TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getSelectedOptions().get(0).getValue());
@@ -384,6 +408,10 @@ public class OtherEvents extends ListenerAdapter {
             }
 
             case "setupNewsMenu" -> {
+
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
 
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
@@ -424,6 +452,10 @@ public class OtherEvents extends ListenerAdapter {
             }
 
             case "setupNewsChannel" -> {
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
                 TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getSelectedOptions().get(0).getValue());
@@ -450,5 +482,14 @@ public class OtherEvents extends ListenerAdapter {
                 event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
             }
         }
+    }
+
+    private boolean checkPerms(Member member, MessageChannel channel) {
+        if (member == null || !member.hasPermission(Permission.ADMINISTRATOR)) {
+            channel.sendMessage("You do not have enough Permissions").queue();
+            return true;
+        }
+
+        return false;
     }
 }

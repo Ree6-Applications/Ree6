@@ -5,6 +5,8 @@ import de.presti.ree6.main.Main;
 
 import java.util.HashMap;
 
+// TODO rework, this class isn't really needed and only serves a single purpose which could be just migrated into a overall utility class.
+
 /**
  * Utility class to manage Stats.
  */

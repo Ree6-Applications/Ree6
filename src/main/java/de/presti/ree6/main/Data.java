@@ -5,6 +5,8 @@ package de.presti.ree6.main;
  */
 public class Data {
 
+    // Completely remove this, and migrate it into the main class.
+
     /**
      * Constructor for the Data Utility class.
      */

@@ -1,4 +1,4 @@
-package de.presti.ree6.utils;
+package de.presti.ree6.utils.others;
 
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Guild;

@@ -1,4 +1,4 @@
-package de.presti.ree6.utils;
+package de.presti.ree6.utils.data;
 
 /**
  * File to store Settings information.

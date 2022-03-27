@@ -13,8 +13,8 @@ import de.presti.ree6.commands.impl.music.*;
 import de.presti.ree6.commands.impl.nsfw.*;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.stats.StatsManager;
-import de.presti.ree6.utils.*;
 
+import de.presti.ree6.utils.storage.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -30,6 +30,8 @@ import java.util.concurrent.TimeUnit;
  * Manager class used to manage all Commands and command related operation.
  */
 public class CommandManager {
+
+    // TODO rework CommandSystem, switch from abstract class to Interface. And add annotations.
 
     // An Arraylist with all registered Commands.
     static final ArrayList<Command> commands = new ArrayList<>();

@@ -1,4 +1,4 @@
-package de.presti.ree6.utils;
+package de.presti.ree6.utils.apis;
 
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;

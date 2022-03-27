@@ -5,7 +5,7 @@ import de.presti.ree6.commands.Command;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;
-import de.presti.ree6.utils.ImageCreationUtility;
+import de.presti.ree6.utils.data.ImageCreationUtility;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;

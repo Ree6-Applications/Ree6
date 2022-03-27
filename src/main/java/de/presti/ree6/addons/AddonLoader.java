@@ -1,7 +1,7 @@
 package de.presti.ree6.addons;
 
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.ArrayUtil;
+import de.presti.ree6.utils.storage.ArrayUtil;
 import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 

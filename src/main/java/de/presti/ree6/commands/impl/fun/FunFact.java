@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
 import de.presti.ree6.commands.CommandEvent;
-import de.presti.ree6.utils.RequestUtility;
+import de.presti.ree6.utils.external.RequestUtility;
 
 public class FunFact extends Command {
 

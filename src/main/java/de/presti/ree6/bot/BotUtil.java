@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BotUtil {
 
-    // TODO rework because of sharding.
+    // TODO rework because of sharding. Gotta do this before release of 1.7.0.
 
     /**
      * Constructor for the Bot Utility class.

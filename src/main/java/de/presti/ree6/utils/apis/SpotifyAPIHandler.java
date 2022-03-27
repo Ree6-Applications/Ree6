@@ -1,4 +1,4 @@
-package de.presti.ree6.utils;
+package de.presti.ree6.utils.apis;
 
 import de.presti.ree6.main.Main;
 import org.apache.hc.core5.http.ParseException;

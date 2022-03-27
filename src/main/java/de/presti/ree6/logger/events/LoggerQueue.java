@@ -19,6 +19,8 @@ import java.util.EnumSet;
  */
 public class LoggerQueue {
 
+    // TODO rework, use a base Log class and add extensions to it by implementing it into new classes, this would make it easier to maintain and add more.
+
     // A List of every Log-Message.
     final ArrayList<LoggerMessage> logs = new ArrayList<>();
 

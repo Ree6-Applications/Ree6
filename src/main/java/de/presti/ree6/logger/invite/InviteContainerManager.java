@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.entities.Invite;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO rework, this still does not work, and has no point in existing since Invites are not being cached anymore since 1.4.0 .
+
 /**
  * Utility class to contain every Invite and manage the Invites in our Database.
  */

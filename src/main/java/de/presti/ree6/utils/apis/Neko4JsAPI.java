@@ -1,4 +1,4 @@
-package de.presti.ree6.utils;
+package de.presti.ree6.utils.apis;
 
 import pw.aru.api.nekos4j.Nekos4J;
 

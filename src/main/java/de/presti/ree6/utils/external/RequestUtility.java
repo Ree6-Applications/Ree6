@@ -1,4 +1,4 @@
-package de.presti.ree6.utils;
+package de.presti.ree6.utils.external;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;

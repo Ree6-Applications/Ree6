@@ -6,7 +6,7 @@ import de.presti.ree6.commands.Command;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;
-import de.presti.ree6.utils.Setting;
+import de.presti.ree6.utils.data.Setting;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.sql.PreparedStatement;

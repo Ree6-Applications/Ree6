@@ -1,6 +1,7 @@
-package de.presti.ree6.utils;
+package de.presti.ree6.utils.storage;
 
 import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;

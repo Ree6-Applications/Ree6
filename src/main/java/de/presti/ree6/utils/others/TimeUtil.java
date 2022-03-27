@@ -1,4 +1,4 @@
-package de.presti.ree6.utils;
+package de.presti.ree6.utils.others;
 
 import java.time.LocalDateTime;
 import java.time.Period;

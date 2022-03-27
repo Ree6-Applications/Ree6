@@ -1,4 +1,4 @@
-package de.presti.ree6.utils;
+package de.presti.ree6.utils.data;
 
 import de.presti.ree6.sql.entities.UserLevel;
 import net.dv8tion.jda.api.entities.User;
