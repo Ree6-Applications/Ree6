@@ -1,7 +1,7 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-public class Kick extends Command {
+public class Kick extends CommandClass {
 
     public Kick() {
         super("kick", "Kick the User from the Server!", Category.MOD,  new CommandDataImpl("kick", "Kick the User from the Server!").addOptions(new OptionData(OptionType.USER, "target", "Which User should be kicked.").setRequired(true)));

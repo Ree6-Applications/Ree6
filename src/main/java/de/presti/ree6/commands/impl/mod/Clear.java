@@ -1,7 +1,7 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.List;
 
-public class Clear extends Command {
+public class Clear extends CommandClass {
 
     public Clear() {
         super("clear", "Clear the Chat!", Category.MOD, new CommandDataImpl("clear", "Clear the Chat!").addOptions(new OptionData(OptionType.INTEGER, "amount", "How many messages should be removed.").setRequired(true)));

@@ -4,7 +4,7 @@ import com.sun.management.OperatingSystemMXBean;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.stats.StatsManager;
@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-public class Stats extends Command {
+public class Stats extends CommandClass {
 
     public Stats() {
         super("stats", "Show some BotStats!", Category.INFO);

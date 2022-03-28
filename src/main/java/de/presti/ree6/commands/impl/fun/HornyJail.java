@@ -1,7 +1,7 @@
 package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
@@ -14,7 +14,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-public class HornyJail extends Command {
+public class HornyJail extends CommandClass {
 
     public HornyJail() {
         super("hornyjail", "Put someone in the Hornyjail!", Category.FUN, new String[]{"horny", "jail"}, new CommandDataImpl("hornyjail", "Put someone in the Hornyjail!")

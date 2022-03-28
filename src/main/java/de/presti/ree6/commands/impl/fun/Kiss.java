@@ -1,7 +1,7 @@
 package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.apis.Neko4JsAPI;
@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
 
-public class Kiss extends Command {
+public class Kiss extends CommandClass {
 
     public Kiss() {
         super("kiss", "Kiss someone!", Category.FUN, new CommandDataImpl("kiss", "Kiss someone")

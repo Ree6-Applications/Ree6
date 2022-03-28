@@ -3,7 +3,7 @@ package de.presti.ree6.commands.impl.nsfw;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.utils.external.RequestUtility;
@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import java.security.SecureRandom;
 import java.util.Locale;
 
-public class NSFW extends Command {
+public class NSFW extends CommandClass {
 
     public NSFW() {
         super("nsfw", "Get NSFW Images from Reddit", Category.NSFW, new String[]{"givensfw", "hentai"});

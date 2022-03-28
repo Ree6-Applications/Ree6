@@ -1,7 +1,7 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-public class Unban extends Command {
+public class Unban extends CommandClass {
 
     public Unban() {
         super("unban", "Unban a User from the Server!", Category.MOD, new CommandDataImpl("unban", "Unban a User from the Server!").addOptions(new OptionData(OptionType.STRING, "id", "Which User should be unbanned.").setRequired(true)));

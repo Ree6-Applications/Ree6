@@ -1,10 +1,10 @@
 package de.presti.ree6.commands.impl.info;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 
-public class Credits extends Command {
+public class Credits extends CommandClass {
 
     public Credits() {
         super("credits", "See the Team behind Ree6!", Category.INFO, new String[] { "cred" });

@@ -1,11 +1,11 @@
 package de.presti.ree6.commands.impl.music;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 
-public class Skip extends Command {
+public class Skip extends CommandClass {
 
     public Skip() {
         super("skip", "Skip a song!", Category.MUSIC, new String[] { "sk", "next" });

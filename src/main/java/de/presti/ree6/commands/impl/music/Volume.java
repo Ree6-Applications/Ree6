@@ -2,7 +2,7 @@ package de.presti.ree6.commands.impl.music;
 
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.awt.*;
 
-public class Volume extends Command {
+public class Volume extends CommandClass {
 
     public Volume() {
         super("volume", "Set the Volume!", Category.MUSIC, new String[] { "vol" }, new CommandDataImpl("volume", "Set the Volume!").addOptions(new OptionData(OptionType.INTEGER, "amount", "The Volume that the Ree6 Music Player should be!").setRequired(true)));

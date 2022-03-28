@@ -1,6 +1,8 @@
 package de.presti.ree6.stats;
 
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
+import de.presti.ree6.commands.ICommand;
 import de.presti.ree6.main.Main;
 
 import java.util.HashMap;
@@ -26,9 +28,9 @@ public class StatsManager {
      * @param command an Instance of the Command.
      * @param guildId the ID of the Guild.
      */
-    public static void addStatsForCommand(Command command, String guildId) {
+    public static void addStatsForCommand(ICommand command, String guildId) {
         if (command != null) {
-            Main.getInstance().getSqlConnector().getSqlWorker().addStats(guildId, command.getName());
+            Main.getInstance().getSqlConnector().getSqlWorker().addStats(guildId, command.getClass().getAnnotation(Command.class).name());
         }
     }
 
@@ -47,7 +49,7 @@ public class StatsManager {
      * @param command the Command.
      * @return {@link Long} as Usage.
      */
-    public static long getUsageForCommand(Command command) {
+    public static long getUsageForCommand(CommandClass command) {
         return Main.getInstance().getSqlConnector().getSqlWorker().getStatsCommandGlobal(command.getName());
     }
 

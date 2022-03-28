@@ -1,7 +1,7 @@
 package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.apis.Neko4JsAPI;
@@ -13,7 +13,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
 
-public class Hug extends Command {
+public class Hug extends CommandClass {
 
     public Hug() {
         super("hug", "Hug someone you like!", Category.FUN, new CommandDataImpl("hug", "Hug someone you like!").addOptions(new OptionData(OptionType.USER, "target", "The User that should be hugged!").setRequired(true)));

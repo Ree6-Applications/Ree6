@@ -3,6 +3,8 @@ package de.presti.ree6.sql;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
+import de.presti.ree6.commands.ICommand;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;
@@ -1733,13 +1735,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (!hasSetting(guildId, "chatprefix")) setSetting(guildId, new Setting("chatprefix", "ree!"));
 
         // Create Command Settings.
-        for (Command command : Main.getInstance().getCommandManager().getCommands()) {
+        for (ICommand command : Main.getInstance().getCommandManager().getCommands()) {
 
             // Skip the hidden Commands.
-            if (command.getCategory() == Category.HIDDEN) continue;
+            if (command.getClass().getAnnotation(Command.class).category() == Category.HIDDEN) continue;
 
-            if (!hasSetting(guildId, "command_" + command.getName().toLowerCase()))
-                setSetting(guildId, "command_" + command.getName().toLowerCase(), true);
+            if (!hasSetting(guildId, "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()))
+                setSetting(guildId, "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase(), true);
         }
 
         // Create Log Settings.

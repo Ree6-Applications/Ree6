@@ -1,7 +1,7 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -15,7 +15,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Setup extends Command {
+public class Setup extends CommandClass {
 
     public Setup() {
         super("setup", "Setup the Welcome and Log Channel!", Category.MOD);

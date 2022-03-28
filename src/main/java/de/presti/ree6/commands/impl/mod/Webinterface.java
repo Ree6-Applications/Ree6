@@ -1,11 +1,11 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import net.dv8tion.jda.api.Permission;
 
-public class Webinterface extends Command {
+public class Webinterface extends CommandClass {
 
 
     public Webinterface() {

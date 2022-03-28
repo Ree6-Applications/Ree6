@@ -1,7 +1,7 @@
 package de.presti.ree6.commands.impl.level;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;
@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-public class Level extends Command {
+public class Level extends CommandClass {
 
     public Level() {
         super("level", "Shows the Level of a User!", Category.LEVEL, new String[] {"lvl", "xp", "rank"}, new CommandDataImpl("level", "Shows the Level of a User!")

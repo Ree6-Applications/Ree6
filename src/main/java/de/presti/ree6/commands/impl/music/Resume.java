@@ -2,7 +2,7 @@ package de.presti.ree6.commands.impl.music;
 
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.awt.*;
 
-public class Resume extends Command {
+public class Resume extends CommandClass {
     
     public Resume() {
         super("resume", "Resume a stopped Song!", Category.MUSIC, new String[] { "res", "re" });

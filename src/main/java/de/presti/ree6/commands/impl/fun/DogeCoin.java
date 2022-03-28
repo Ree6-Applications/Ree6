@@ -2,11 +2,11 @@ package de.presti.ree6.commands.impl.fun;
 
 import com.google.gson.JsonObject;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.utils.external.RequestUtility;
 
-public class DogeCoin extends Command {
+public class DogeCoin extends CommandClass {
 
     public DogeCoin() {
         super("dogecoin", "Shows you the pricing of DogeCoins", Category.FUN, new String[] { "doge" });

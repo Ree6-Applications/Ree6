@@ -3,13 +3,13 @@ package de.presti.ree6.commands.impl.fun;
 import com.google.gson.JsonArray;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 
-public class CatImage extends Command {
+public class CatImage extends CommandClass {
 
     public CatImage() {
         super("randomcat", "Shows you a Random Cat Picture!", Category.FUN, new String[] { "cat", "catimage" });

@@ -1,7 +1,7 @@
 package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
@@ -17,7 +17,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-public class Twitter extends Command {
+public class Twitter extends CommandClass {
 
     public Twitter() {
         super("twitter", "Let the mentioned User Tweet something!", Category.FUN, new CommandDataImpl("twitter", "Let the mentioned User Tweet something!")

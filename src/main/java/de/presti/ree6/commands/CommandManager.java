@@ -2,6 +2,7 @@ package de.presti.ree6.commands;
 
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotVersion;
+import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.impl.community.*;
 import de.presti.ree6.commands.impl.fun.*;
 import de.presti.ree6.commands.impl.hidden.*;
@@ -34,13 +35,13 @@ public class CommandManager {
     // TODO rework CommandSystem, switch from abstract class to Interface. And add annotations.
 
     // An Arraylist with all registered Commands.
-    static final ArrayList<Command> commands = new ArrayList<>();
+    static final ArrayList<ICommand> commands = new ArrayList<>();
 
     /**
      * Constructor for the Command-Manager used to register every Command.
      */
     public CommandManager() {
-
+/*
         //Informative
         addCommand(new Help());
         addCommand(new Support());
@@ -107,7 +108,9 @@ public class CommandManager {
         //Hidden
         addCommand(new ReloadAddons());
         //// addCommand(new Gamer());
-        addCommand(new Test());
+        addCommand(new Test());*/
+
+        // Outmarked, since they are not migrated into the new command systme yet.
     }
 
     /**
@@ -117,8 +120,8 @@ public class CommandManager {
 
         CommandListUpdateAction listUpdateAction = BotInfo.botInstance.updateCommands();
 
-        for (Command command : getCommands()) {
-            if (command.getCategory() == Category.HIDDEN || command.getCommandData() == null) continue;
+        for (ICommand command : getCommands()) {
+            if (command.getClass().getAnnotation(Command.class).category() == Category.HIDDEN || command.getCommandData() == null) continue;
             //noinspection ResultOfMethodCallIgnored
             listUpdateAction.addCommands(command.getCommandData());
         }
@@ -129,9 +132,12 @@ public class CommandManager {
     /**
      * Add a single Command to the Command list.
      *
-     * @param command the {@link Command}.
+     * @param command the {@link ICommand}.
      */
-    public void addCommand(Command command) {
+    public void addCommand(ICommand command) throws CommandInitializerException {
+        if (!command.getClass().isAnnotationPresent(Command.class) || !command.getClass().isInstance(ICommand.class))
+            throw new CommandInitializerException(command.getClass());
+
         if (!commands.contains(command)) {
             commands.add(command);
         }
@@ -141,10 +147,10 @@ public class CommandManager {
      * Get a Command by its name.
      *
      * @param name the Name of the Command.
-     * @return the {@link Command} with the same Name.
+     * @return the {@link ICommand} with the same Name.
      */
-    public Command getCommandByName(String name) {
-        return getCommands().stream().filter(command -> command.getName().equalsIgnoreCase(name) || Arrays.stream(command.getAlias()).anyMatch(s -> s.equalsIgnoreCase(name))).findFirst().orElse(null);
+    public ICommand getCommandByName(String name) {
+        return getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).name().equalsIgnoreCase(name) || Arrays.stream(command.getAlias()).anyMatch(s -> s.equalsIgnoreCase(name))).findFirst().orElse(null);
 
     }
 
@@ -154,7 +160,7 @@ public class CommandManager {
      * @param command the Command you want to remove.
      */
     @SuppressWarnings("unused")
-    public void removeCommand(Command command) {
+    public void removeCommand(ICommand command) {
         commands.remove(command);
     }
 
@@ -163,7 +169,7 @@ public class CommandManager {
      *
      * @return an {@link ArrayList} with all Commands.
      */
-    public ArrayList<Command> getCommands() {
+    public ArrayList<ICommand> getCommands() {
         return commands;
     }
 
@@ -200,7 +206,7 @@ public class CommandManager {
         if (slashCommandInteractionEvent != null) {
 
             //Get the Command by the Slash Command Name.
-            Command command = getCommandByName(slashCommandInteractionEvent.getName());
+            ICommand command = getCommandByName(slashCommandInteractionEvent.getName());
 
             // Check if there is a command with that Name.
             if (command == null) {
@@ -209,7 +215,7 @@ public class CommandManager {
             }
 
             // Check if the command is blocked or not.
-            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getName().toLowerCase()).getBooleanValue() && command.getCategory() != Category.HIDDEN) {
+            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
                 sendMessage("This Command is blocked!", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 return false;
             }
@@ -239,7 +245,7 @@ public class CommandManager {
             String[] arguments = messageContent.split(" ");
 
             // Get the Command by the name.
-            Command command = getCommandByName(arguments[0]);
+            ICommand command = getCommandByName(arguments[0]);
 
             // Check if there is even a Command with that name.
             if (command == null) {
@@ -248,7 +254,7 @@ public class CommandManager {
             }
 
             // Check if the Command is blacklisted.
-            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getName().toLowerCase()).getBooleanValue() && command.getCategory() != Category.HIDDEN) {
+            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category()!= Category.HIDDEN) {
                 sendMessage("This Command is blocked!", 5, textChannel, null);
                 return false;
             }

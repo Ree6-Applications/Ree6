@@ -2,7 +2,7 @@ package de.presti.ree6.commands.impl.music;
 
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
@@ -20,7 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Play extends Command {
+public class Play extends CommandClass {
 
     public Play() {
         super("play", "Play a song!", Category.MUSIC, new String[]{"p", "music"}, new CommandDataImpl("play", "Play a song!").addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true)));

@@ -1,10 +1,10 @@
 package de.presti.ree6.commands.impl.hidden;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 
-public class Test extends Command {
+public class Test extends CommandClass {
 
     public Test() {
         super("sdasdwdawrgawhadawrt45646fwng", "test", Category.HIDDEN);

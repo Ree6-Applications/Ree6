@@ -2,11 +2,11 @@ package de.presti.ree6.commands.impl.fun;
 
 import com.google.gson.JsonObject;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.utils.external.RequestUtility;
 
-public class FunFact extends Command {
+public class FunFact extends CommandClass {
 
     public FunFact() {
         super("funfact", "Just some random Facts!", Category.FUN, new String[] { "randomfact", "facts" });

@@ -1,7 +1,7 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-public class Unmute extends Command {
+public class Unmute extends CommandClass {
 
     public Unmute() {
         super("unmute", "Unmute a User on the Server!", Category.MOD, new CommandDataImpl("unmute", "Unmute a User on the Server!").addOptions(new OptionData(OptionType.USER, "target", "Which User should be unmuted.").setRequired(true)));

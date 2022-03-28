@@ -2,9 +2,7 @@ package de.presti.ree6.commands.impl.info;
 
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotUtil;
-import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
-import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.*;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -13,7 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-public class Help extends Command {
+public class Help extends CommandClass {
 
     public Help() {
         super("help", "Shows a list of every Command!", Category.INFO, new CommandDataImpl("help", "Shows a list of every Command!")
@@ -60,12 +58,12 @@ public class Help extends Command {
                 StringBuilder end = new StringBuilder();
 
                 Category category = getCategoryFromString(categoryString);
-                for (Command cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getCategory() == category).toList()) {
+                for (ICommand cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).category() == category).toList()) {
                         end.append("``")
                                 .append(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue())
-                                .append(cmd.getName())
+                                .append(cmd.getClass().getAnnotation(Command.class).name())
                                 .append("``\n")
-                                .append(cmd.getDescription())
+                                .append(cmd.getClass().getAnnotation(Command.class).description())
                                 .append("\n\n");
                 }
 

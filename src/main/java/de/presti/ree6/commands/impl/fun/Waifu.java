@@ -2,7 +2,7 @@ package de.presti.ree6.commands.impl.fun;
 
 import com.google.gson.JsonObject;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.awt.*;
 
-public class Waifu extends Command {
+public class Waifu extends CommandClass {
 
     public Waifu() {
         super("waifu", "Gives you a Random Waifu!", Category.FUN);

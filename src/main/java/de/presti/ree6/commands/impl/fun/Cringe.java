@@ -1,10 +1,10 @@
 package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 
-public class Cringe extends Command {
+public class Cringe extends CommandClass {
 
 
     public Cringe() {

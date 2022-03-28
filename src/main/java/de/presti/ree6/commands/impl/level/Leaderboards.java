@@ -1,10 +1,10 @@
 package de.presti.ree6.commands.impl.level;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
+import de.presti.ree6.commands.CommandClass;
 import de.presti.ree6.commands.CommandEvent;
 
-public class Leaderboards extends Command {
+public class Leaderboards extends CommandClass {
 
     public Leaderboards() {
         super("leaderboard", "Shows you the Rank Leaderboard", Category.LEVEL, new String[]{ "lb" });
