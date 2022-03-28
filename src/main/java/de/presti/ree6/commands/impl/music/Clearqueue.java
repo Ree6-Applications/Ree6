@@ -24,10 +24,10 @@ public class Clearqueue implements ICommand {
 
         EmbedBuilder em = new EmbedBuilder();
         
-        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
-        em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
         em.setDescription("The Queue has been cleaned!");
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());

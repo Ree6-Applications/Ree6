@@ -5,6 +5,9 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.sharding.DefaultShardManager;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
@@ -16,8 +19,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * Class used to cover small utilities for the Bot.
  */
 public class BotUtil {
-
-    // TODO rework because of sharding. Gotta do this before release of 1.7.0.
 
     /**
      * Constructor for the Bot Utility class.
@@ -35,11 +36,11 @@ public class BotUtil {
      */
     public static void createBot(BotVersion version, String build) throws LoginException {
         BotInfo.version = version;
-        BotInfo.token = BotInfo.version == BotVersion.DEV ? Main.getInstance().getConfig().getConfig().getString("bot.tokens.dev") :
-                Main.getInstance().getConfig().getConfig().getString("bot.tokens.rel");
+        BotInfo.token = BotInfo.version == BotVersion.DEV ? Main.getInstance().getConfig().getConfig().getString("bot.tokens.dev") : Main.getInstance().getConfig().getConfig().getString("bot.tokens.rel");
         BotInfo.state = BotState.INIT;
         BotInfo.build = build;
-        BotInfo.botInstance = JDABuilder.createDefault(BotInfo.token).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY).build();
+
+        BotInfo.shardManager = DefaultShardManagerBuilder.createDefault(BotInfo.token).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY).build();
     }
 
     /**
@@ -50,8 +51,8 @@ public class BotUtil {
      */
     public static void setActivity(String message, Activity.ActivityType activityType) {
         // If the Bot Instance is null, if not set.
-        if (BotInfo.botInstance != null)
-            BotInfo.botInstance.getPresence().setActivity(Activity.of(activityType, message));
+        if (BotInfo.shardManager != null)
+            BotInfo.shardManager.setActivity(Activity.of(activityType, message.replace("%shards%", BotInfo.shardManager.getShardsTotal() + "")));
     }
 
     /**
@@ -59,8 +60,8 @@ public class BotUtil {
      */
     public static void shutdown() {
         // Check if the Instance of null if not, shutdown.
-        if (BotInfo.botInstance != null) {
-            BotInfo.botInstance.shutdownNow();
+        if (BotInfo.shardManager != null) {
+            BotInfo.shardManager.shutdown();
         }
     }
 
@@ -70,7 +71,7 @@ public class BotUtil {
      * @param listenerAdapter the Listener Adapter that should be added.
      */
     public static void addEvent(ListenerAdapter listenerAdapter) {
-        BotInfo.botInstance.addEventListener(listenerAdapter);
+        BotInfo.shardManager.addEventListener(listenerAdapter);
     }
 
     /**

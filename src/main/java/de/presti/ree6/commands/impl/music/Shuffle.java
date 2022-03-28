@@ -30,10 +30,10 @@ public class Shuffle implements ICommand {
         Main.getInstance().getMusicWorker().getGuildAudioPlayer(
                 commandEvent.getGuild()).scheduler.setShuffle(!Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.isShuffle());
 
-        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
-        em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
         em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.isShuffle() ? "Song Shuffle has been activated!"
                 : "Song Shuffle has been deactivated!");

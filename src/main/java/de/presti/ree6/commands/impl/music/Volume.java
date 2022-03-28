@@ -40,17 +40,17 @@ public class Volume implements ICommand {
 
                 Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).player.setVolume(volume);
 
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                        BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                        commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("The Volume has been set to " + volume);
             } else {
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                        BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                        commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.RED);
                 em.setDescription("No Volume was given.");
             }
@@ -68,19 +68,19 @@ public class Volume implements ICommand {
 
                 Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).player.setVolume(vol);
 
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                        BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                        commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("The Volume has been set to " + vol);
 
 
             } else {
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                        BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                        commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("Type " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "volume [voulume]");
             }

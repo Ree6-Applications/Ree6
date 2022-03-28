@@ -65,7 +65,7 @@ public class ArrayUtil {
      */
     public static User getUserFromMessageList(String id) {
         if (!messageIDwithUser.containsKey(id)) {
-            return BotInfo.botInstance.getSelfUser();
+            return null;
         } else {
             return messageIDwithUser.get(id);
         }

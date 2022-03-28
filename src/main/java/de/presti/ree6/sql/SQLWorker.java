@@ -311,7 +311,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isLogSetup(guildId)) {
 
             // Get the Guild from the ID.
-            Guild guild = BotInfo.botInstance.getGuildById(guildId);
+            Guild guild = BotInfo.shardManager.getGuildById(guildId);
 
             if (guild != null) {
                 // Delete the existing Webhook.
@@ -425,7 +425,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isWelcomeSetup(guildId)) {
 
             // Get the Guild from the ID.
-            Guild guild = BotInfo.botInstance.getGuildById(guildId);
+            Guild guild = BotInfo.shardManager.getGuildById(guildId);
 
             if (guild != null) {
                 // Delete the existing Webhook.
@@ -502,7 +502,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is already a Webhook set.
         if (isNewsSetup(guildId)) {
             // Get the Guild from the ID.
-            Guild guild = BotInfo.botInstance.getGuildById(guildId);
+            Guild guild = BotInfo.shardManager.getGuildById(guildId);
 
             if (guild != null) {
                 // Delete the existing Webhook.
@@ -666,7 +666,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isTwitchSetup(guildId, twitchName)) {
 
             // Get the Guild from the ID.
-            Guild guild = BotInfo.botInstance.getGuildById(guildId);
+            Guild guild = BotInfo.shardManager.getGuildById(guildId);
 
             if (guild != null) {
                 // Delete the existing Webhook.
@@ -845,7 +845,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isTwitterSetup(guildId, twitterName)) {
 
             // Get the Guild from the ID.
-            Guild guild = BotInfo.botInstance.getGuildById(guildId);
+            Guild guild = BotInfo.shardManager.getGuildById(guildId);
 
             if (guild != null) {
                 // Delete the existing Webhook.

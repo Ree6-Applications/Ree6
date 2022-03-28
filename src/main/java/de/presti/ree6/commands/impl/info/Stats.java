@@ -31,20 +31,20 @@ public class Stats implements ICommand {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setTitle("Stats!");
-        em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(BotUtil.randomEmbedColor());
 
         int i = 0;
 
-        for (Guild guild : BotInfo.botInstance.getGuilds()) {
+        for (Guild guild : BotInfo.shardManager.getGuilds()) {
             i += guild.getMemberCount();
         }
 
         em.addField("**Server Stats:**", "", true);
-        em.addField("**Guilds**", BotInfo.botInstance.getGuilds().size() + "", true);
+        em.addField("**Guilds**", BotInfo.shardManager.getGuilds().size() + "", true);
         em.addField("**Users**", i + "", true);
 
         em.addField("**Bot Stats:**", "", true);

@@ -114,15 +114,13 @@ public class MusicWorker {
              */
             @Override
             public void noMatches() {
-                EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setColor(Color.GREEN);
-                em.setDescription("A Song with the URL ``" + trackUrl + "`` couldn't be found!");
-                em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
-
-                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
+                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                        .setAuthor(channel.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                        .setTitle("Music Player!")
+                        .setThumbnail(channel.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("A Song with the URL ``" + trackUrl + "`` couldn't be found!")
+                        .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
             }
 
             /**
@@ -130,15 +128,13 @@ public class MusicWorker {
              */
             @Override
             public void loadFailed(FriendlyException exception) {
-                EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setColor(Color.GREEN);
-                em.setDescription("Error while playing: " + exception.getMessage());
-                em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
-
-                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
+                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                        .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                        .setTitle("Music Player!")
+                        .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Error while playing: " + exception.getMessage())
+                        .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
             }
         });
     }
@@ -164,16 +160,13 @@ public class MusicWorker {
              */
             @Override
             public void trackLoaded(AudioTrack track) {
-
-                EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setColor(Color.GREEN);
-                em.setDescription("The Song ``" + track.getInfo().title + "`` has been added to the Queue!");
-                em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
-
-                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
+                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                        .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                        .setTitle("Music Player!")
+                        .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("The Song ``" + track.getInfo().title + "`` has been added to the Queue!")
+                        .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
 
                 play(audioChannel, musicManager, track);
             }
@@ -190,15 +183,14 @@ public class MusicWorker {
                     firstTrack = playlist.getTracks().get(0);
                 }
 
-                EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setColor(Color.GREEN);
-                em.setDescription("The Song ``" + firstTrack.getInfo().title + "`` has been added to the Queue! (The first Song of the Playlist: " + playlist.getName() + ")");
-                em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
 
-                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
+                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                        .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                        .setTitle("Music Player!")
+                        .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("The Song ``" + firstTrack.getInfo().title + "`` has been added to the Queue! (The first Song of the Playlist: " + playlist.getName() + ")")
+                        .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
 
                 play(audioChannel, musicManager, firstTrack);
 
@@ -216,15 +208,13 @@ public class MusicWorker {
              */
             @Override
             public void noMatches() {
-                EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setColor(Color.GREEN);
-                em.setDescription("A Song with the URL ``" + trackUrl + "`` couldn't be found!");
-                em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
-
-                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
+                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                        .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                        .setTitle("Music Player!")
+                        .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("A Song with the URL ``" + trackUrl + "`` couldn't be found!")
+                        .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
             }
 
             /**
@@ -232,15 +222,13 @@ public class MusicWorker {
              */
             @Override
             public void loadFailed(FriendlyException exception) {
-                EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-                em.setColor(Color.GREEN);
-                em.setDescription("Error while playing: " + exception.getMessage());
-                em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
-
-                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
+                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                        .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                        .setTitle("Music Player!")
+                        .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Error while playing: " + exception.getMessage())
+                        .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
             }
         });
     }
@@ -264,19 +252,14 @@ public class MusicWorker {
      * @param interactionHook the Interaction-Hook, used to replace the channel if it is a SlashCommand.
      */
     public void skipTrack(TextChannel channel, InteractionHook interactionHook) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                .setTitle("Music Player!")
+                .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                .setColor(Color.GREEN)
+                .setDescription("Skipping to the next Song!")
+                .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
 
-        EmbedBuilder em = new EmbedBuilder();
-        em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
-        em.setTitle("Music Player!");
-        em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
-        em.setColor(Color.GREEN);
-        em.setDescription("Skipping to the next Song!");
-        em.setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl());
-
-        Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
-
-        musicManager.scheduler.nextTrack(channel);
+        getGuildAudioPlayer(channel.getGuild()).scheduler.nextTrack(channel);
     }
 
     /**

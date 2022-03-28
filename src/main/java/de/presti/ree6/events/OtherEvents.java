@@ -49,7 +49,7 @@ public class OtherEvents extends ListenerAdapter {
 
         Main.getInstance().createCheckerThread();
 
-        BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Guilds", Activity.ActivityType.WATCHING);
+        BotUtil.setActivity(BotInfo.shardManager.getGuilds().size() + " Guilds, with %shards% Shards.", Activity.ActivityType.WATCHING);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class OtherEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
-        wmb.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wmb.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wmb.setUsername("Welcome!");
         wmb.setContent((Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())).replace("%user_name%", event.getMember().getUser().getName()).replace("%user_mention%", event.getMember().getUser().getAsMention()).replace("%guild_name%", event.getGuild().getName()));
 
@@ -145,7 +145,7 @@ public class OtherEvents extends ListenerAdapter {
 
             if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getTextChannel(), null)) {
 
-                if (!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(BotInfo.botInstance.getSelfUser())) {
+                if (!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(event.getJDA().getSelfUser())) {
                     event.getChannel().sendMessage("Usage " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "help").queue();
                 }
 

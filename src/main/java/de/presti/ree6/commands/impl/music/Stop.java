@@ -23,9 +23,9 @@ public class Stop implements ICommand {
             }
             Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.stopAll(commandEvent.getGuild(), commandEvent.getInteractionHook());
         } else {
-            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                            BotInfo.botInstance.getSelfUser().getAvatarUrl()).setTitle("Music Player!")
-                    .setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl())
+            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                            commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle("Music Player!")
+                    .setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl())
                     .setColor(Color.RED)
                     .setDescription("Im not playing any Music!"), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }

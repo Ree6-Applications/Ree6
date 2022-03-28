@@ -34,7 +34,7 @@ public class LoggerQueue {
             logs.add(loggerMessage);
 
             // Creating a new Webhook Message with an Embed.
-            WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder().setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl()).setUsername("Ree6Logs");
+            WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder().setAvatarUrl(loggerMessage.getGuild().getJDA().getSelfUser().getAvatarUrl()).setUsername("Ree6Logs");
             WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder().setColor(Color.BLACK.getRGB())
                     .setFooter(new WebhookEmbed.EmbedFooter(loggerMessage.getGuild().getName() + " - " + Data.ADVERTISEMENT,
                             (loggerMessage.getGuild().getIconUrl() != null ? loggerMessage.getGuild().getIconUrl() : null)))

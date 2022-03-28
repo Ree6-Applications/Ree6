@@ -58,7 +58,7 @@ public class LoggingEvents extends ListenerAdapter {
         if (Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_memberjoin").getBooleanValue()) {
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-            wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
             wm.setUsername("Ree6Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -77,7 +77,7 @@ public class LoggingEvents extends ListenerAdapter {
 
             WebhookMessageBuilder wm2 = new WebhookMessageBuilder();
 
-            wm2.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            wm2.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
             wm2.setUsername("Ree6InviteLogs");
 
             InviteContainer inviteContainer = InviteContainerManager.getRightInvite(event.getGuild());
@@ -103,7 +103,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -130,7 +130,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -156,7 +156,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -184,7 +184,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -216,7 +216,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -241,7 +241,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -266,7 +266,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -291,7 +291,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -323,7 +323,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -356,7 +356,7 @@ public class LoggingEvents extends ListenerAdapter {
                 return;
 
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
-            wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
             wm.setUsername("Ree6Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -391,7 +391,7 @@ public class LoggingEvents extends ListenerAdapter {
 
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-            wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
             wm.setUsername("Ree6Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -434,7 +434,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -458,7 +458,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -482,7 +482,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -508,7 +508,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -534,7 +534,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -560,7 +560,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -612,7 +612,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -639,7 +639,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wm.setUsername("Ree6Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();

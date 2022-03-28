@@ -1,6 +1,7 @@
 package de.presti.ree6.bot;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 /**
  * Class to store information about the bot.
@@ -21,7 +22,11 @@ public class BotInfo {
     // Current Bot Version-Typ.
     public static BotVersion version;
 
+    // Instance of the JDA ShardManager.
+    public static ShardManager shardManager;
+
     // Instance of the JDA Bot Session.
+    @Deprecated(forRemoval = true, since = "1.7.0")
     public static JDA botInstance;
 
     // The used Bot-Token.

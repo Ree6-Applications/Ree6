@@ -43,7 +43,7 @@ public class Help implements ICommand {
 
         em.setColor(BotUtil.randomEmbedColor());
         em.setTitle("Command Index");
-        em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
         if (categoryString == null) {

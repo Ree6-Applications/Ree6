@@ -215,17 +215,17 @@ public class Main {
                     ArrayUtil.messageIDwithMessage.clear();
                     ArrayUtil.messageIDwithUser.clear();
 
-                    BotUtil.setActivity(BotInfo.botInstance.getGuilds().size() + " Guilds", Activity.ActivityType.WATCHING);
+                    BotUtil.setActivity(BotInfo.shardManager.getGuilds().size() + " Guilds, with %shards% Shards.", Activity.ActivityType.WATCHING);
 
                     instance.logger.info("[Stats] ");
                     instance.logger.info("[Stats] Today's Stats:");
-                    instance.logger.info("[Stats] Guilds: " + BotInfo.botInstance.getGuilds().size());
-                    instance.logger.info("[Stats] Overall Users: " + BotInfo.botInstance.getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
+                    instance.logger.info("[Stats] Guilds: " + BotInfo.shardManager.getGuilds().size());
+                    instance.logger.info("[Stats] Overall Users: " + BotInfo.shardManager.getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
                     instance.logger.info("[Stats] ");
                     lastDay = new SimpleDateFormat("dd").format(new Date());
                 }
 
-                for (Guild guild : BotInfo.botInstance.getGuilds().stream().filter(guild -> guild.getAudioManager().getSendingHandler() != null
+                for (Guild guild : BotInfo.shardManager.getGuilds().stream().filter(guild -> guild.getAudioManager().getSendingHandler() != null
                         && guild.getSelfMember().getVoiceState() != null &&
                         guild.getSelfMember().getVoiceState().inAudioChannel()).toList()) {
                     GuildMusicManager guildMusicManager = musicWorker.getGuildAudioPlayer(guild);

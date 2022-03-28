@@ -39,9 +39,9 @@ public class Lyrics implements ICommand {
             client.getLyrics(title).thenAccept(lyrics -> {
 
                 if (lyrics == null) {
-                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                                    BotInfo.botInstance.getSelfUser().getAvatarUrl()).setTitle("Music Player!")
-                            .setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl()).setColor(Color.RED)
+                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                                    commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle("Music Player!")
+                            .setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setColor(Color.RED)
                             .setDescription("Couldn't find the Lyrics for ``" + title + "``.")
                             .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl()), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                     return;

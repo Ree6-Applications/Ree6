@@ -19,6 +19,7 @@ import de.presti.ree6.stats.StatsManager;
 
 import de.presti.ree6.utils.storage.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -115,15 +116,16 @@ public class CommandManager {
      */
     public void addSlashCommand() {
 
-        CommandListUpdateAction listUpdateAction = BotInfo.botInstance.updateCommands();
+         for (JDA shard : BotInfo.shardManager.getShards()) {
+             CommandListUpdateAction listUpdateAction = shard.updateCommands();
+             for (ICommand command : getCommands()) {
+                 if (command.getClass().getAnnotation(Command.class).category() == Category.HIDDEN || command.getCommandData() == null) continue;
+                 //noinspection ResultOfMethodCallIgnored
+                 listUpdateAction.addCommands(command.getCommandData());
+             }
 
-        for (ICommand command : getCommands()) {
-            if (command.getClass().getAnnotation(Command.class).category() == Category.HIDDEN || command.getCommandData() == null) continue;
-            //noinspection ResultOfMethodCallIgnored
-            listUpdateAction.addCommands(command.getCommandData());
-        }
-
-        listUpdateAction.queue();
+             listUpdateAction.queue();
+         }
     }
 
     /**

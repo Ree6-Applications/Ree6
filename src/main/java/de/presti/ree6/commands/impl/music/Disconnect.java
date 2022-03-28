@@ -27,10 +27,10 @@ public class Disconnect implements ICommand {
         } else {
             EmbedBuilder em = new EmbedBuilder();
 
-            em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                    BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                    commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
             em.setTitle("Music Player!");
-            em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+            em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
             em.setColor(Color.RED);
             em.setDescription("Im not playing any Music!");
             em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());

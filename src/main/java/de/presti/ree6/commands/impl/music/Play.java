@@ -40,10 +40,10 @@ public class Play implements ICommand {
                 playSong(valueOption.getAsString(), commandEvent);
             } else {
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                        BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                        commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("Usage: " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
@@ -54,10 +54,10 @@ public class Play implements ICommand {
 
             if (commandEvent.getArguments().length < 1) {
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE,
-                        BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                        commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("Usage: " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
@@ -117,9 +117,9 @@ public class Play implements ICommand {
 
                 if (!loadFailed.isEmpty()) {
                     EmbedBuilder em = new EmbedBuilder();
-                    em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                    em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                     em.setTitle("Music Player!");
-                    em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                    em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                     em.setColor(Color.GREEN);
                     em.setDescription("We couldn't find ``" + loadFailed.size() + "`` Songs!");
                     em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
@@ -141,9 +141,9 @@ public class Play implements ICommand {
 
             if (ytResult == null) {
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(BotInfo.botInstance.getSelfUser().getName(), Data.WEBSITE, BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
-                em.setThumbnail(BotInfo.botInstance.getSelfUser().getAvatarUrl());
+                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription("A Song with the Name ``" + search + "`` couldn't be found!");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
