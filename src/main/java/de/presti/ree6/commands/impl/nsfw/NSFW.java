@@ -2,21 +2,20 @@ package de.presti.ree6.commands.impl.nsfw;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.CommandClass;
-import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.*;
 import de.presti.ree6.main.Data;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.security.SecureRandom;
 import java.util.Locale;
 
-public class NSFW extends CommandClass {
+@Command(name = "nsfw", description = "Get NSFW Image for Reddit", category = Category.NSFW)
+public class NSFW implements ICommand {
 
-    public NSFW() {
-        super("nsfw", "Get NSFW Images from Reddit", Category.NSFW, new String[]{"givensfw", "hentai"});
-    }
+    // TODO gotta rework.
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
@@ -55,9 +54,19 @@ public class NSFW extends CommandClass {
             em.setImage(jsonObject.getAsJsonObject().get("url").getAsString());
             em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
-            sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         } else {
-            sendMessage("Only available in NSFW Channels!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Only available in NSFW Channels!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
+    }
+
+    @Override
+    public CommandData getCommandData() {
+        return null;
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[]{"givensfw", "hentai"};
     }
 }

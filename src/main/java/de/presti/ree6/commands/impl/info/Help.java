@@ -8,15 +8,12 @@ import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-public class Help extends CommandClass {
-
-    public Help() {
-        super("help", "Shows a list of every Command!", Category.INFO, new CommandDataImpl("help", "Shows a list of every Command!")
-                .addOptions(new OptionData(OptionType.STRING, "category", "Which Category you want to check out.")));
-    }
+@Command(name = "help", description = "Shows a list of every Command!", category = Category.INFO)
+public class Help implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
@@ -74,10 +71,23 @@ public class Help extends CommandClass {
             }
         }
 
-        sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[0];
+    }
+
+    @Override
+    public CommandData getCommandData() {
+        return new CommandDataImpl("help", "Shows a list of every Command!")
+                .addOptions(new OptionData(OptionType.STRING, "category", "Which Category you want to check out."));
     }
 
     private boolean isValid(String arg) {
+        if (arg == null) return false;
+
         for (Category cat : Category.values()) {
             if (cat.name().equalsIgnoreCase(arg) && cat != Category.HIDDEN) {
                 return true;
@@ -88,6 +98,7 @@ public class Help extends CommandClass {
     }
 
     private Category getCategoryFromString(String arg) {
+        if (arg == null) return null;
         for (Category cat : Category.values()) {
             if (cat.name().equalsIgnoreCase(arg)) {
                 return cat;
