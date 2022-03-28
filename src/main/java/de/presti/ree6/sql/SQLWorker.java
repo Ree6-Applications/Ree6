@@ -2,9 +2,8 @@ package de.presti.ree6.sql;
 
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.Command;
-import de.presti.ree6.commands.CommandClass;
-import de.presti.ree6.commands.ICommand;
+import de.presti.ree6.commands.interfaces.Command;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;

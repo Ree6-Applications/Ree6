@@ -3,6 +3,8 @@ package de.presti.ree6.commands.impl.info;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.interfaces.Command;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;

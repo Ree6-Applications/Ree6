@@ -1,6 +1,8 @@
 package de.presti.ree6.commands.impl.community;
 
 import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.interfaces.Command;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 

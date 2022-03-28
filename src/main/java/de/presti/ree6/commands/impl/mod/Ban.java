@@ -1,23 +1,20 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.CommandClass;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-public class Ban extends CommandClass {
-
-    public Ban() {
-        super("ban", "Ban the User from the Server!", Category.MOD, new CommandDataImpl("ban", "Ban the User from the Server!")
-                .addOptions(new OptionData(OptionType.USER, "target", "Which User should be banned.").setRequired(true))
-                .addOptions(new OptionData(OptionType.STRING, "reason", "Why do you want to ban this User?").setRequired(false)));
-    }
+@Command(name = "ban", description = "Ban an specific user from the Server.", category = Category.MOD)
+public class Ban implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
@@ -34,13 +31,13 @@ public class Ban extends CommandClass {
                         banMember(targetOption.getAsMember(), null, commandEvent);
                     }
                 } else {
-                    sendMessage("No User was given to Ban!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("No User was given to Ban!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 }
             } else {
                 if (commandEvent.getArguments().length > 0) {
                     if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
-                        sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                        sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "ban @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "ban @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                     } else {
                         if (commandEvent.getArguments().length == 1) {
                             banMember(commandEvent.getMessage().getMentionedMembers().get(0), null, commandEvent);
@@ -54,26 +51,38 @@ public class Ban extends CommandClass {
                         }
                     }
                 } else {
-                    sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                    sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "ban @user [reason]", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "ban @user [reason]", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 }
             }
         } else {
-            sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
 
-        deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+    }
+
+    @Override
+    public CommandData getCommandData() {
+        return new CommandDataImpl("ban", "Ban the User from the Server!")
+                .addOptions(new OptionData(OptionType.USER, "target", "Which User should be banned.").setRequired(true))
+                .addOptions(new OptionData(OptionType.STRING, "reason", "Why do you want to ban this User?").setRequired(false));
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[0];
     }
 
     public void banMember(Member member, String reason, CommandEvent commandEvent) {
         if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
-            sendMessage("User " + member.getAsMention() + " has been banned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("User " + member.getAsMention() + " has been banned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             commandEvent.getGuild().ban(member, 7, reason).queue();
         } else {
             if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
-                sendMessage("Couldn't ban this User because he has the same or a higher Rank then you!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Couldn't ban this User because he has the same or a higher Rank then you!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             } else {
-                sendMessage("Couldn't ban this User because he has a higher Rank then me!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Couldn't ban this User because he has a higher Rank then me!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
         }
     }

@@ -3,17 +3,17 @@ package de.presti.ree6.commands.impl.fun;
 import com.google.gson.JsonObject;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.CommandClass;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-public class MemeImage extends CommandClass {
-
-    public MemeImage() {
-        super("randommeme", "Shows you a Random Meme Picture!", Category.FUN, new String[] { "meme", "memeimage" });
-    }
+@Command(name = "randommeme", description = "Wanna see a Meme?", category = Category.FUN)
+public class MemeImage implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
@@ -32,7 +32,17 @@ public class MemeImage extends CommandClass {
         }
 
         em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
-        sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
 
+    }
+
+    @Override
+    public CommandData getCommandData() {
+        return null;
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[]{"meme", "memeimage"};
     }
 }

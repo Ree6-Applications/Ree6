@@ -2,8 +2,9 @@ package de.presti.ree6.commands.impl.music;
 
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.CommandClass;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
@@ -11,6 +12,7 @@ import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
@@ -20,11 +22,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Play extends CommandClass {
-
-    public Play() {
-        super("play", "Play a song!", Category.MUSIC, new String[]{"p", "music"}, new CommandDataImpl("play", "Play a song!").addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true)));
-    }
+@Command(name = "play", description = "Play a new Song or add a Song to the current Queue.", category = Category.MUSIC)
+public class Play implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
@@ -48,7 +47,7 @@ public class Play extends CommandClass {
                 em.setColor(Color.GREEN);
                 em.setDescription("Usage: " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
 
         } else {
@@ -62,12 +61,22 @@ public class Play extends CommandClass {
                 em.setColor(Color.GREEN);
                 em.setDescription("Usage: " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             } else {
                 playSong(commandEvent.getArguments()[0], commandEvent);
             }
         }
 
+    }
+
+    @Override
+    public CommandData getCommandData() {
+        return new CommandDataImpl("play", "Play a song!").addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true));
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[]{"p", "music"};
     }
 
     public void playSong(String value, CommandEvent commandEvent) {
@@ -114,7 +123,7 @@ public class Play extends CommandClass {
                     em.setColor(Color.GREEN);
                     em.setDescription("We couldn't find ``" + loadFailed.size() + "`` Songs!");
                     em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                    sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 }
             }
         } else {
@@ -138,7 +147,7 @@ public class Play extends CommandClass {
                 em.setColor(Color.GREEN);
                 em.setDescription("A Song with the Name ``" + search + "`` couldn't be found!");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             } else {
                 Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), ytResult, commandEvent.getInteractionHook());
             }

@@ -1,21 +1,20 @@
 package de.presti.ree6.commands.impl.info;
 
 import de.presti.ree6.bot.BotUtil;
-import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.CommandClass;
-import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.interfaces.Command;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
+import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.time.format.DateTimeFormatter;
 
-public class Server extends CommandClass {
-
-    public Server() {
-        super("server", "Shows you Informations about your Server!", Category.INFO);
-    }
+@Command(name = "server", description = "See server specific information.", category = Category.INFO)
+public class Server implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
@@ -33,8 +32,18 @@ public class Server extends CommandClass {
             em.addField(":earth_africa: **Other**", "**Verificationlevel:** " + commandEvent.getGuild().getVerificationLevel().getKey(), true);
             em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-            sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         } else
-            sendMessage("You dont have ADMINISTRATOR Permissions for this Command!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You dont have ADMINISTRATOR Permissions for this Command!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+    }
+
+    @Override
+    public CommandData getCommandData() {
+        return null;
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[0];
     }
 }

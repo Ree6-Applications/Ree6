@@ -3,32 +3,31 @@ package de.presti.ree6.commands.impl.info;
 import com.sun.management.OperatingSystemMXBean;
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotUtil;
-import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.CommandClass;
-import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.interfaces.Command;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.stats.StatsManager;
 import de.presti.ree6.utils.others.TimeUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.lang.management.ManagementFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-public class Stats extends CommandClass {
-
-    public Stats() {
-        super("stats", "Show some BotStats!", Category.INFO);
-    }
+@Command(name = "stats", description = "See Stats of Ree6!", category = Category.INFO)
+public class Stats implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
         long start = System.currentTimeMillis();
 
-        deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
 
         EmbedBuilder em = new EmbedBuilder();
 
@@ -40,7 +39,7 @@ public class Stats extends CommandClass {
 
         int i = 0;
 
-        for(Guild guild : BotInfo.botInstance.getGuilds()) {
+        for (Guild guild : BotInfo.botInstance.getGuilds()) {
             i += guild.getMemberCount();
         }
 
@@ -54,7 +53,7 @@ public class Stats extends CommandClass {
 
         em.addField("**Network Stats:**", "", true);
         em.addField("**Response Time**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);
-        em.addField("**System Date**" , new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
+        em.addField("**System Date**", new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
 
         if (commandEvent.getMember().getId().equalsIgnoreCase("321580743488831490")) {
             em.addField("**Server Stats:**", "", true);
@@ -64,13 +63,13 @@ public class Stats extends CommandClass {
 
         StringBuilder end = new StringBuilder();
 
-        for(Map.Entry<String, Long> sheesh : StatsManager.getCommandStats(commandEvent.getGuild().getId()).entrySet()) {
+        for (Map.Entry<String, Long> sheesh : StatsManager.getCommandStats(commandEvent.getGuild().getId()).entrySet()) {
             end.append(sheesh.getKey()).append(" - ").append(sheesh.getValue()).append("\n");
         }
 
         StringBuilder end2 = new StringBuilder();
 
-        for(Map.Entry<String, Long> sheesh : StatsManager.getCommandStats().entrySet()) {
+        for (Map.Entry<String, Long> sheesh : StatsManager.getCommandStats().entrySet()) {
             end2.append(sheesh.getKey()).append(" - ").append(sheesh.getValue()).append("\n");
         }
 
@@ -80,7 +79,16 @@ public class Stats extends CommandClass {
 
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-        sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+    }
 
+    @Override
+    public CommandData getCommandData() {
+        return null;
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[0];
     }
 }

@@ -1,17 +1,26 @@
 package de.presti.ree6.commands.impl.info;
 
-import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.CommandClass;
-import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.interfaces.Command;
+import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.main.Main;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-public class Invite extends CommandClass {
-
-    public Invite() {
-        super("invite", "Get a Invite Link for Ree6!", Category.INFO, new String[] { "inv" });
-    }
+@Command(name = "invite", description = "Retrieve an Invite link for Ree6!", category = Category.INFO)
+public class Invite implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        sendMessage("https://ree6.de/index.html#invite", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage("https://invite.ree6.de", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+    }
+
+    @Override
+    public CommandData getCommandData() {
+        return null;
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[] { "inv" };
     }
 }

@@ -3,6 +3,8 @@ package de.presti.ree6.commands.impl.nsfw;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.interfaces.Command;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.external.RequestUtility;

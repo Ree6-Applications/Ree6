@@ -3,17 +3,17 @@ package de.presti.ree6.commands.impl.fun;
 import com.google.gson.JsonArray;
 import de.presti.ree6.bot.BotUtil;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.CommandClass;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-public class CatImage extends CommandClass {
-
-    public CatImage() {
-        super("randomcat", "Shows you a Random Cat Picture!", Category.FUN, new String[] { "cat", "catimage" });
-    }
+@Command(name = "randomcat", description = "Shows random Cat Images, from thecatapi.com .", category = Category.FUN)
+public class CatImage implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
@@ -27,6 +27,16 @@ public class CatImage extends CommandClass {
         em.setImage(js.get(0).getAsJsonObject().get("url").getAsString());
         em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
-        sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+    }
+
+    @Override
+    public CommandData getCommandData() {
+        return null;
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[] { "cat", "catimage" };
     }
 }

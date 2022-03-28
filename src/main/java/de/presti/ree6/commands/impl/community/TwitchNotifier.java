@@ -1,9 +1,10 @@
 package de.presti.ree6.commands.impl.community;
 
 import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.interfaces.Command;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 @Command(name = "twitch", description = "Manage your Twitch-Notifier!", category = Category.COMMUNITY)
 public class TwitchNotifier implements ICommand {

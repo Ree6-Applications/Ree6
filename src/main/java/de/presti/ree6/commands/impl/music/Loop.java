@@ -2,23 +2,23 @@ package de.presti.ree6.commands.impl.music;
 
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.CommandClass;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+
 import java.awt.*;
 
-public class Loop extends CommandClass {
-
-    public Loop() {
-        super("loop", "Loop a song!", Category.MUSIC);
-    }
+@Command(name = "loop", description = "Loop the current song!", category = Category.MUSIC)
+public class Loop implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            sendMessage("Im not connected to any Channel, so there is nothing to loop!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to loop!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
 
         if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
@@ -39,6 +39,16 @@ public class Loop extends CommandClass {
                 : "Song Loop has been deactivated!");
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-        sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+    }
+
+    @Override
+    public CommandData getCommandData() {
+        return null;
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[0];
     }
 }

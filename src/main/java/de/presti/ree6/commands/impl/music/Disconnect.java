@@ -2,19 +2,18 @@ package de.presti.ree6.commands.impl.music;
 
 import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.CommandClass;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 
-public class Disconnect extends CommandClass {
-
-    public Disconnect() {
-        super("disconnect", "Disconnect the Bot!", Category.MUSIC, new String[] { "dc", "leave" });
-    }
+@Command(name = "disconnect", description = "Disconnect Ree6 from the current Voice-chat!", category = Category.MUSIC)
+public class Disconnect implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
@@ -36,7 +35,17 @@ public class Disconnect extends CommandClass {
             em.setDescription("Im not playing any Music!");
             em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-            sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
+    }
+
+    @Override
+    public CommandData getCommandData() {
+        return null;
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[] { "dc", "leave" };
     }
 }

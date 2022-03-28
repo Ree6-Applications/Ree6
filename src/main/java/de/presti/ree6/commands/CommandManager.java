@@ -12,6 +12,8 @@ import de.presti.ree6.commands.impl.level.*;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
 import de.presti.ree6.commands.impl.nsfw.*;
+import de.presti.ree6.commands.interfaces.Command;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.stats.StatsManager;
 
@@ -32,16 +34,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class CommandManager {
 
-    // TODO rework CommandSystem, switch from abstract class to Interface. And add annotations.
-
     // An Arraylist with all registered Commands.
     static final ArrayList<ICommand> commands = new ArrayList<>();
 
     /**
      * Constructor for the Command-Manager used to register every Command.
      */
-    public CommandManager() {
-/*
+    public CommandManager() throws CommandInitializerException {
         //Informative
         addCommand(new Help());
         addCommand(new Support());
@@ -64,7 +63,7 @@ public class CommandManager {
         addCommand(new ChatProtector());
 
         //Music
-        addCommand(new Songinfo());
+        addCommand(new SongInfo());
         addCommand(new Lyrics());
         addCommand(new Play());
         addCommand(new Pause());
@@ -76,7 +75,7 @@ public class CommandManager {
         addCommand(new Shuffle());
         addCommand(new Volume());
         addCommand(new Clearqueue());
-        addCommand(new Songlist());
+        addCommand(new SongList());
 
         //Fun
         addCommand(new RandomAnswer());
@@ -108,9 +107,7 @@ public class CommandManager {
         //Hidden
         addCommand(new ReloadAddons());
         //// addCommand(new Gamer());
-        addCommand(new Test());*/
-
-        // Outmarked, since they are not migrated into the new command systme yet.
+        addCommand(new Test());
     }
 
     /**
@@ -135,7 +132,7 @@ public class CommandManager {
      * @param command the {@link ICommand}.
      */
     public void addCommand(ICommand command) throws CommandInitializerException {
-        if (!command.getClass().isAnnotationPresent(Command.class) || !command.getClass().isInstance(ICommand.class))
+        if (!command.getClass().isAnnotationPresent(Command.class) || !command.getClass().isInstance(ICommand.class) || command.getClass().getAnnotation(Command.class).category() == null)
             throw new CommandInitializerException(command.getClass());
 
         if (!commands.contains(command)) {
@@ -230,7 +227,7 @@ public class CommandManager {
 
             // Check if the Message is null.
             if (message == null) {
-                sendMessage("There was an Error while executing the Command!", 5, textChannel, null);
+                sendMessage("There was an error while executing the Command!", 5, textChannel, null);
                 return false;
             }
 

@@ -97,8 +97,13 @@ public class Main {
                 instance.config.getConfig().getString("mysql.db"), instance.config.getConfig().getString("mysql.pw"),
                 instance.config.getConfig().getString("mysql.host"), instance.config.getConfig().getInt("mysql.port"));
 
-        // Create the Command-Manager instance.
-        instance.commandManager = new CommandManager();
+        try {
+            // Create the Command-Manager instance.
+            instance.commandManager = new CommandManager();
+        } catch (Exception exception) {
+            instance.logger.error("Shutting down, because of an critical error!", exception);
+            return;
+        }
 
         // Create the Notifier-Manager instance.
         instance.notifier = new Notifier();
