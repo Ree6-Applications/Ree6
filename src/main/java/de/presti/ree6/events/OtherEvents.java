@@ -48,7 +48,7 @@ public class OtherEvents extends ListenerAdapter {
 
         Main.getInstance().createCheckerThread();
 
-        BotWorker.setActivity(BotWorker.getShardManager().getGuilds().size() + " Guilds, with %shards% Shards.", Activity.ActivityType.WATCHING);
+        BotWorker.setActivity(event.getJDA().getGuilds().size() + " Guilds, on Shard " + event.getJDA().getShardInfo().getShardId() + " with %shards% Shards.", Activity.ActivityType.WATCHING);
     }
 
     @Override
