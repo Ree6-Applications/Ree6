@@ -10,10 +10,10 @@ import net.dv8tion.jda.api.entities.Guild;
 public class LoggerMessage {
 
     // Webhook ID, used to tell Discord which Webhook should be used.
-    private long id;
+    private final long id;
 
     // Webhook AuthCode, used to authenticate.
-    private String authCode;
+    private final String authCode;
 
     //  Webhook State, this is used to cancel Webhooks that have been merged with others.
     private boolean cancel = false;
@@ -22,7 +22,7 @@ public class LoggerMessage {
     private WebhookMessage webhookMessage;
 
     // Webhook Guild, the Guild which fired the Log.
-    private Guild guild;
+    private final Guild guild;
 
     // RoleData from Webhook Logs.
     private LoggerRoleData roleData;

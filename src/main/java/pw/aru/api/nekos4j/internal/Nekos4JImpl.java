@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -199,11 +200,7 @@ public class Nekos4JImpl extends Reliqua implements Nekos4J {
         }
 
         private String encode(String s) {
-            try {
-                return URLEncoder.encode(s, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            }
+            return URLEncoder.encode(s, StandardCharsets.UTF_8);
         }
     }
 

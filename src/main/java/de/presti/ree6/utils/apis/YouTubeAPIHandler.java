@@ -35,7 +35,7 @@ public class YouTubeAPIHandler {
                     .list(Collections.singletonList("snippet"))
                     .setQ(search)
                     .setMaxResults(2L)
-                    .setKey(Main.getInstance().getConfig().getConfig().getString("youtube.api.key"))
+                    .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"))
                     .execute()
                     .getItems();
 

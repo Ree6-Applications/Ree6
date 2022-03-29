@@ -5,7 +5,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.storage.ArrayUtil;
+import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 

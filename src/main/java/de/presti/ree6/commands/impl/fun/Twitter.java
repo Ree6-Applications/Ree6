@@ -75,14 +75,14 @@ public class Twitter implements ICommand {
 
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpGet request = new HttpGet("https://api.dagpi.xyz/image/tweet/?url=" + member.getUser().getAvatarUrl() + "&username=" + name + "&text=" + text);
-            request.setHeader("Authorization", Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"));
+            request.setHeader("Authorization", Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"));
             HttpResponse response = httpClient.execute(request);
 
             commandEvent.getTextChannel().sendFile(response.getEntity().getContent(), "twitter.png").queue();
 
             if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
         } catch (Exception ex) {
-            Main.getInstance().getCommandManager().sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
     }
 

@@ -25,7 +25,10 @@ public class BotInfo {
     // Instance of the JDA ShardManager.
     public static ShardManager shardManager;
 
-    // Instance of the JDA Bot Session.
+    /**
+     * Instance of the main JDA connection.
+     * @deprecated because of the usage of the current ShardManager
+     */
     @Deprecated(forRemoval = true, since = "1.7.0")
     public static JDA botInstance;
 

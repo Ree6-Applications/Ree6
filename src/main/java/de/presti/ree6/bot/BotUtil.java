@@ -1,13 +1,10 @@
 package de.presti.ree6.bot;
 
 import de.presti.ree6.main.Main;
-import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.sharding.DefaultShardManager;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
-import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
@@ -36,7 +33,7 @@ public class BotUtil {
      */
     public static void createBot(BotVersion version, String build) throws LoginException {
         BotInfo.version = version;
-        BotInfo.token = BotInfo.version == BotVersion.DEV ? Main.getInstance().getConfig().getConfig().getString("bot.tokens.dev") : Main.getInstance().getConfig().getConfig().getString("bot.tokens.rel");
+        BotInfo.token = BotInfo.version == BotVersion.DEV ? Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.dev") : Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.rel");
         BotInfo.state = BotState.INIT;
         BotInfo.build = build;
 

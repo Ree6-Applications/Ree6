@@ -11,7 +11,7 @@ import de.presti.ree6.sql.entities.UserLevel;
 import de.presti.ree6.utils.others.AutoRoleHandler;
 import de.presti.ree6.utils.others.RandomUtils;
 import de.presti.ree6.utils.others.TimeUtil;
-import de.presti.ree6.utils.storage.ArrayUtil;
+import de.presti.ree6.utils.data.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;

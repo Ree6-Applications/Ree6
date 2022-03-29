@@ -32,8 +32,8 @@ public class SpotifyAPIHandler {
 
     public void initSpotify() throws ParseException, SpotifyWebApiException, IOException {
         this.spotifyApi = new SpotifyApi.Builder()
-                .setClientId(Main.getInstance().getConfig().getConfig().getString("spotify.client.id"))
-                .setClientSecret(Main.getInstance().getConfig().getConfig().getString("spotify.client.secret"))
+                .setClientId(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.id"))
+                .setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.secret"))
                 .build();
 
         ClientCredentialsRequest.Builder request = new ClientCredentialsRequest.Builder(spotifyApi.getClientId(), spotifyApi.getClientSecret());

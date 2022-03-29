@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.info;
 
-import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.bot.BotUtil;
-import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.Category;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
@@ -11,8 +11,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 @Command(name = "help", description = "Shows a list of every Command!", category = Category.INFO)
 public class Help implements ICommand {

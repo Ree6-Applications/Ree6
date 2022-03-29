@@ -57,14 +57,14 @@ public class HornyJail implements ICommand {
 
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpGet request = new HttpGet("https://api.dagpi.xyz/image/jail/?url=" + member.getUser().getAvatarUrl());
-            request.setHeader("Authorization", Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"));
+            request.setHeader("Authorization", Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"));
             HttpResponse response = httpClient.execute(request);
 
             Main.getInstance().getCommandManager().sendMessage(member.getAsMention() + " is now in the Hornyjail!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             commandEvent.getTextChannel().sendFile(response.getEntity().getContent(), "hornyjail.png").queue();
             if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
         } catch (Exception ex) {
-            Main.getInstance().getCommandManager().sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
         }
     }
 }

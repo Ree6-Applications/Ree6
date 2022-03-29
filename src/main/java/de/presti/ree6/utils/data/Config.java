@@ -1,4 +1,4 @@
-package de.presti.ree6.utils.storage;
+package de.presti.ree6.utils.data;
 
 import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
@@ -7,11 +7,11 @@ import java.io.File;
 
 public class Config {
 
-    public FileConfiguration cfg;
+    private FileConfiguration cfg;
 
     public void init() {
 
-        cfg = getConfig();
+        cfg = createConfiguration();
 
         if (!getFile().exists()) {
             cfg.options().copyDefaults(true);
@@ -51,9 +51,11 @@ public class Config {
         }
     }
 
-    public FileConfiguration getConfig() {
+    public FileConfiguration createConfiguration() {
         return YamlConfiguration.loadConfiguration(getFile());
     }
+
+    public FileConfiguration getConfiguration() { return cfg; }
 
     public File getFile() {
         return new File("config.yml");

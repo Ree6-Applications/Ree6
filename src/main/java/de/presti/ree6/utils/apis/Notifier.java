@@ -41,17 +41,17 @@ public class Notifier {
      * Constructor used to created instance of the API Clients.
      */
     public Notifier() {
-        twitchClient = TwitchClientBuilder.builder().withEnableHelix(true).withClientId(Main.getInstance().getConfig().cfg.getString("twitch.client.id"))
-                .withClientSecret(Main.getInstance().getConfig().cfg.getString("twitch.client.secret")).build();
+        twitchClient = TwitchClientBuilder.builder().withEnableHelix(true).withClientId(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"))
+                .withClientSecret(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret")).build();
 
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 
         if (BotInfo.version == BotVersion.DEV) configurationBuilder.setDebugEnabled(true);
 
-        configurationBuilder.setOAuthConsumerKey(Main.getInstance().getConfig().getConfig().getString("twitter.consumer.key"));
-        configurationBuilder.setOAuthConsumerSecret(Main.getInstance().getConfig().getConfig().getString("twitter.consumer.secret"));
-        configurationBuilder.setOAuthAccessToken(Main.getInstance().getConfig().getConfig().getString("twitter.access.key"));
-        configurationBuilder.setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfig().getString("twitter.access.secret"));
+        configurationBuilder.setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key"));
+        configurationBuilder.setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret"));
+        configurationBuilder.setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"));
+        configurationBuilder.setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"));
 
         twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
     }

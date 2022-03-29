@@ -17,7 +17,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.stats.StatsManager;
 
-import de.presti.ree6.utils.storage.ArrayUtil;
+import de.presti.ree6.utils.data.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;

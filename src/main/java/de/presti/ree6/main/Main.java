@@ -15,8 +15,8 @@ import de.presti.ree6.music.AudioPlayerSendHandler;
 import de.presti.ree6.music.GuildMusicManager;
 import de.presti.ree6.music.MusicWorker;
 import de.presti.ree6.sql.SQLConnector;
-import de.presti.ree6.utils.storage.ArrayUtil;
-import de.presti.ree6.utils.storage.Config;
+import de.presti.ree6.utils.data.ArrayUtil;
+import de.presti.ree6.utils.data.Config;
 import de.presti.ree6.utils.apis.Notifier;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -84,18 +84,18 @@ public class Main {
         instance.config.init();
 
         // Check if there is a default value, if so close application and inform.
-        if (instance.config.getConfig().getString("mysql.pw").equalsIgnoreCase("yourpw")) {
+        if (instance.config.getConfiguration().getString("mysql.pw").equalsIgnoreCase("yourpw")) {
             instance.logger.error("It looks like the default configuration has not been updated! Exiting!");
             System.exit(0);
         }
 
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> new RaygunClient(instance.config.getConfig().getString("raygun.apitoken")).send(e));
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken")).send(e));
 
         // Create a new connection between the Application and the SQL-Server.
-        instance.sqlConnector = new SQLConnector(instance.config.getConfig().getString("mysql.user"),
-                instance.config.getConfig().getString("mysql.db"), instance.config.getConfig().getString("mysql.pw"),
-                instance.config.getConfig().getString("mysql.host"), instance.config.getConfig().getInt("mysql.port"));
+        instance.sqlConnector = new SQLConnector(instance.config.getConfiguration().getString("mysql.user"),
+                instance.config.getConfiguration().getString("mysql.db"), instance.config.getConfiguration().getString("mysql.pw"),
+                instance.config.getConfiguration().getString("mysql.host"), instance.config.getConfiguration().getInt("mysql.port"));
 
         try {
             // Create the Command-Manager instance.
@@ -209,7 +209,7 @@ public class Main {
 
                     if (BotInfo.startTime > System.currentTimeMillis() + 10000) {
                         getSqlConnector().close();
-                        sqlConnector = new SQLConnector(config.getConfig().getString("mysql.user"), config.getConfig().getString("mysql.db"), config.getConfig().getString("mysql.pw"), config.getConfig().getString("mysql.host"), config.getConfig().getInt("mysql.port"));
+                        sqlConnector = new SQLConnector(config.getConfiguration().getString("mysql.user"), config.getConfiguration().getString("mysql.db"), config.getConfiguration().getString("mysql.pw"), config.getConfiguration().getString("mysql.host"), config.getConfiguration().getInt("mysql.port"));
                     }
 
                     ArrayUtil.messageIDwithMessage.clear();

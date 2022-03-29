@@ -1,7 +1,6 @@
 package de.presti.ree6.commands.impl.music;
 
 import com.jagrosh.jlyrics.LyricsClient;
-import de.presti.ree6.bot.BotInfo;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;

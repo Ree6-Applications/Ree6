@@ -18,7 +18,7 @@ public class Waifu implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        JsonObject jsonObject = RequestUtility.request(new RequestUtility.Request("https://api.dagpi.xyz/data/waifu", Main.getInstance().getConfig().getConfig().getString("dagpi.apitoken"))).getAsJsonObject();
+        JsonObject jsonObject = RequestUtility.request(new RequestUtility.Request("https://api.dagpi.xyz/data/waifu", Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"))).getAsJsonObject();
 
         EmbedBuilder em = new EmbedBuilder();
 
