@@ -21,29 +21,30 @@ public class Level implements ICommand {
 
         if (commandEvent.isSlashCommand()) {
             OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
+            OptionMapping levelType = commandEvent.getSlashCommandInteractionEvent().getOption("typ");
 
-            if (targetOption != null && targetOption.getAsMember() != null) {
-                sendLevel(targetOption.getAsMember(), commandEvent);
+            if (targetOption != null && targetOption.getAsMember() != null && levelType != null) {
+                sendLevel(targetOption.getAsMember(), commandEvent, levelType.getAsString());
             } else {
-                sendLevel(commandEvent.getMember(), commandEvent);
+                sendLevel(commandEvent.getMember(), commandEvent, "chat");
             }
         } else {
-            if (commandEvent.getArguments().length <= 1) {
+            if (commandEvent.getArguments().length == 1 || commandEvent.getArguments().length == 2) {
                 if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
-                    sendLevel(commandEvent.getMember(), commandEvent);
+                    sendLevel(commandEvent.getMember(), commandEvent, commandEvent.getArguments()[0]);
                 } else {
-                    sendLevel(commandEvent.getMessage().getMentionedMembers().get(0), commandEvent);
+                    sendLevel(commandEvent.getMessage().getMentionedMembers().get(0), commandEvent, commandEvent.getArguments()[0]);
                 }
             } else {
                 Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "level or " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "level @user", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "level chat/voice or " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "level chat/voice @user", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
         }
     }
 
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("level", "Show your own Level or the Level of another User in the Guild.")
+        return new CommandDataImpl("level", "Show your own Level or the Level of another User in the Guild.").addOptions(new OptionData(OptionType.STRING, "typ", "Do you want to see chat or voice level?").setRequired(true))
                 .addOptions(new OptionData(OptionType.USER, "target", "Show the Level of the User."));
     }
 
@@ -52,11 +53,11 @@ public class Level implements ICommand {
         return new String[] {"lvl", "xp", "rank"};
     }
 
-    public void sendLevel(Member member, CommandEvent commandEvent) {
+    public void sendLevel(Member member, CommandEvent commandEvent, String type) {
 
-        // TODO Add Voice Level support.
-
-        UserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getId());
+        UserLevel userLevel = type.equalsIgnoreCase("chat") ?
+            Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getId()) :
+                Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getId(), member.getId());
 
         userLevel.setUser(member.getUser());
         if (commandEvent.isSlashCommand()) {

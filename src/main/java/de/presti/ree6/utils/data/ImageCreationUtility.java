@@ -52,13 +52,22 @@ public class ImageCreationUtility {
         graphics2D.setColor(Color.BLACK);
         graphics2D.fillRoundRect(0, 0, base.getWidth(), base.getHeight(), 10, 10);
 
-        // TODO find a way to allow unicode Names.
-
         // Draw basic Information, such as the User Image, Username and the Experience Rect.
         graphics2D.drawImage(userImage, null, 25, 45);
         graphics2D.setColor(Color.WHITE);
-        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 40));
-        graphics2D.drawString(new String(user.getName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8), 200, 110);
+        Font verdana40Font = new Font("Verdana", Font.PLAIN, 40);
+
+        String username = new String(user.getName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+
+        if (username.length() > 16) {
+            username = username.substring(0, 15);
+        }
+
+        graphics2D.setFont(verdana40Font);
+        graphics2D.drawString(username, 200, 110);
+        graphics2D.setColor(Color.GRAY);
+        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 20));
+        graphics2D.drawString("#" + user.getDiscriminator(), 200 + graphics2D.getFontMetrics(verdana40Font).stringWidth(username) + 5, 110);
         graphics2D.fillRoundRect(200, 130, base.getWidth() - 300, 50, 50, 50);
 
         //region Experience
