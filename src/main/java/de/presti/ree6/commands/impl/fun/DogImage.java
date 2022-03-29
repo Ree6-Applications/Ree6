@@ -1,7 +1,7 @@
 package de.presti.ree6.commands.impl.fun;
 
 import com.google.gson.JsonObject;
-import de.presti.ree6.bot.BotUtil;
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
@@ -22,7 +22,7 @@ public class DogImage implements ICommand {
         EmbedBuilder em = new EmbedBuilder();
 
         em.setTitle("Random Dog Image!");
-        em.setColor(BotUtil.randomEmbedColor());
+        em.setColor(BotWorker.randomEmbedColor());
         em.setImage(js.get("message").getAsString());
         em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 

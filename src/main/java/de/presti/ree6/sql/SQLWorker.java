@@ -1,6 +1,6 @@
 package de.presti.ree6.sql;
 
-import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
@@ -10,8 +10,10 @@ import de.presti.ree6.sql.entities.UserLevel;
 import de.presti.ree6.utils.data.Setting;
 import net.dv8tion.jda.api.entities.Guild;
 
+import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Types;
 import java.util.*;
 
 /**
@@ -311,7 +313,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isLogSetup(guildId)) {
 
             // Get the Guild from the ID.
-            Guild guild = BotInfo.shardManager.getGuildById(guildId);
+            Guild guild = BotWorker.getShardManager().getGuildById(guildId);
 
             if (guild != null) {
                 // Delete the existing Webhook.
@@ -425,7 +427,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isWelcomeSetup(guildId)) {
 
             // Get the Guild from the ID.
-            Guild guild = BotInfo.shardManager.getGuildById(guildId);
+            Guild guild = BotWorker.getShardManager().getGuildById(guildId);
 
             if (guild != null) {
                 // Delete the existing Webhook.
@@ -502,7 +504,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is already a Webhook set.
         if (isNewsSetup(guildId)) {
             // Get the Guild from the ID.
-            Guild guild = BotInfo.shardManager.getGuildById(guildId);
+            Guild guild = BotWorker.getShardManager().getGuildById(guildId);
 
             if (guild != null) {
                 // Delete the existing Webhook.
@@ -666,7 +668,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isTwitchSetup(guildId, twitchName)) {
 
             // Get the Guild from the ID.
-            Guild guild = BotInfo.shardManager.getGuildById(guildId);
+            Guild guild = BotWorker.getShardManager().getGuildById(guildId);
 
             if (guild != null) {
                 // Delete the existing Webhook.
@@ -845,7 +847,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isTwitterSetup(guildId, twitterName)) {
 
             // Get the Guild from the ID.
-            Guild guild = BotInfo.shardManager.getGuildById(guildId);
+            Guild guild = BotWorker.getShardManager().getGuildById(guildId);
 
             if (guild != null) {
                 // Delete the existing Webhook.
@@ -1945,10 +1947,29 @@ public record SQLWorker(SQLConnector sqlConnector) {
             int index = 1;
 
             for (Object obj : objcObjects) {
-                preparedStatement.setObject(index++, objcObjects);
+                if (obj instanceof String) {
+                    preparedStatement.setObject(index++, obj, Types.VARCHAR);
+                } else if (obj instanceof Blob) {
+                    preparedStatement.setObject(index++, obj, Types.BLOB);
+                } else if (obj instanceof Integer) {
+                    preparedStatement.setObject(index++, obj, Types.INTEGER);
+                } else if (obj instanceof Long) {
+                    preparedStatement.setObject(index++, obj, Types.BIGINT);
+                } else if (obj instanceof Float) {
+                    preparedStatement.setObject(index++, obj, Types.FLOAT);
+                } else if (obj instanceof Double) {
+                    preparedStatement.setObject(index++, obj, Types.DOUBLE);
+                } else if (obj instanceof Boolean) {
+                    preparedStatement.setObject(index++, obj, Types.BOOLEAN);
+                }
             }
 
-            return preparedStatement.executeQuery();
+            if (sqlQuery.startsWith("SELECT")) {
+                return preparedStatement.executeQuery();
+            } else {
+                preparedStatement.executeUpdate();
+                return null;
+            }
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
         }

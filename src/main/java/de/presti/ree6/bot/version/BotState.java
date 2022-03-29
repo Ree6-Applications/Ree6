@@ -1,4 +1,4 @@
-package de.presti.ree6.bot;
+package de.presti.ree6.bot.version;
 
 /**
  * Class with the different Bot States.

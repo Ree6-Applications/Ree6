@@ -3,7 +3,7 @@ package de.presti.ree6.utils.external;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.main.Main;
 
 import java.net.URI;
@@ -30,7 +30,7 @@ public class RequestUtility {
     public static JsonElement request(Request request) {
 
         HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri())
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotInfo.build)
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotWorker.getBuild())
                 .header("Content-Type", "application/json-rpc");
 
         if (request.bearerAuth != null) {

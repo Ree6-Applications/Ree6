@@ -2,10 +2,9 @@ package de.presti.ree6.events;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.addons.impl.ChatProtector;
-import de.presti.ree6.bot.BotInfo;
-import de.presti.ree6.bot.BotState;
-import de.presti.ree6.bot.BotUtil;
-import de.presti.ree6.bot.Webhook;
+import de.presti.ree6.bot.BotWorker;
+import de.presti.ree6.bot.version.BotState;
+import de.presti.ree6.bot.util.Webhook;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;
 import de.presti.ree6.utils.others.AutoRoleHandler;
@@ -42,14 +41,14 @@ public class OtherEvents extends ListenerAdapter {
 
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
-        BotInfo.state = BotState.STARTED;
+        BotWorker.setState(BotState.STARTED);
         Main.getInstance().getLogger().info("Boot up finished!");
 
         Main.getInstance().getCommandManager().addSlashCommand();
 
         Main.getInstance().createCheckerThread();
 
-        BotUtil.setActivity(BotInfo.shardManager.getGuilds().size() + " Guilds, with %shards% Shards.", Activity.ActivityType.WATCHING);
+        BotWorker.setActivity(BotWorker.getShardManager().getGuilds().size() + " Guilds, with %shards% Shards.", Activity.ActivityType.WATCHING);
     }
 
     @Override

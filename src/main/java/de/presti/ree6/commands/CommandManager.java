@@ -1,7 +1,7 @@
 package de.presti.ree6.commands;
 
-import de.presti.ree6.bot.BotInfo;
-import de.presti.ree6.bot.BotVersion;
+import de.presti.ree6.bot.BotWorker;
+import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.impl.community.*;
 import de.presti.ree6.commands.impl.fun.*;
@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,16 +117,22 @@ public class CommandManager {
      */
     public void addSlashCommand() {
 
-         for (JDA shard : BotInfo.shardManager.getShards()) {
-             CommandListUpdateAction listUpdateAction = shard.updateCommands();
-             for (ICommand command : getCommands()) {
-                 if (command.getClass().getAnnotation(Command.class).category() == Category.HIDDEN || command.getCommandData() == null) continue;
-                 //noinspection ResultOfMethodCallIgnored
-                 listUpdateAction.addCommands(command.getCommandData());
-             }
+        for (JDA shard : BotWorker.getShardManager().getShards()) {
+            CommandListUpdateAction listUpdateAction = shard.updateCommands();
+            for (ICommand command : getCommands()) {
+                if (command.getClass().getAnnotation(Command.class).category() == Category.HIDDEN) continue;
 
-             listUpdateAction.queue();
-         }
+                if (command.getCommandData() != null) {
+                    //noinspection ResultOfMethodCallIgnored
+                    listUpdateAction.addCommands(command.getCommandData());
+                } else {
+                    //noinspection ResultOfMethodCallIgnored
+                    listUpdateAction.addCommands(new CommandDataImpl(command.getClass().getAnnotation(Command.class).name(), command.getClass().getAnnotation(Command.class).description()));
+                }
+            }
+
+            listUpdateAction.queue();
+        }
     }
 
     /**
@@ -134,7 +141,7 @@ public class CommandManager {
      * @param command the {@link ICommand}.
      */
     public void addCommand(ICommand command) throws CommandInitializerException {
-        if (!command.getClass().isAnnotationPresent(Command.class) || !command.getClass().isInstance(ICommand.class) || command.getClass().getAnnotation(Command.class).category() == null)
+        if (!command.getClass().isAnnotationPresent(Command.class) || command.getClass().getAnnotation(Command.class).category() == null)
             throw new CommandInitializerException(command.getClass());
 
         if (!commands.contains(command)) {
@@ -253,7 +260,7 @@ public class CommandManager {
             }
 
             // Check if the Command is blacklisted.
-            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category()!= Category.HIDDEN) {
+            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
                 sendMessage("This Command is blocked!", 5, textChannel, null);
                 return false;
             }
@@ -269,7 +276,7 @@ public class CommandManager {
         }
 
         // Check if this is a Developer build, if not then cooldown the User.
-        if (BotInfo.version != BotVersion.DEV) {
+        if (BotWorker.getVersion() != BotVersion.DEV) {
             new Thread(() -> {
                 try {
                     Thread.sleep(5000);
@@ -286,7 +293,7 @@ public class CommandManager {
         }
 
         // Add them to the Cooldown.
-        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && BotInfo.version != BotVersion.DEV) {
+        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && BotWorker.getVersion() != BotVersion.DEV) {
             ArrayUtil.commandCooldown.add(member.getUser().getId());
         }
 

@@ -1,6 +1,6 @@
 package de.presti.ree6.commands.impl.info;
 
-import de.presti.ree6.bot.BotUtil;
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.*;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
@@ -21,7 +21,7 @@ public class Server implements ICommand {
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 
             EmbedBuilder em = new EmbedBuilder();
-            em.setColor(BotUtil.randomEmbedColor());
+            em.setColor(BotWorker.randomEmbedColor());
 
             em.setAuthor(commandEvent.getGuild().getName(), null, commandEvent.getGuild().getIconUrl());
             em.addField(":id: **Server-ID**", commandEvent.getGuild().getId(), true);

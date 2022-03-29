@@ -1,8 +1,7 @@
 package de.presti.ree6.commands.impl.info;
 
 import com.sun.management.OperatingSystemMXBean;
-import de.presti.ree6.bot.BotInfo;
-import de.presti.ree6.bot.BotUtil;
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.*;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
@@ -35,21 +34,21 @@ public class Stats implements ICommand {
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setTitle("Stats!");
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-        em.setColor(BotUtil.randomEmbedColor());
+        em.setColor(BotWorker.randomEmbedColor());
 
         int i = 0;
 
-        for (Guild guild : BotInfo.shardManager.getGuilds()) {
+        for (Guild guild : BotWorker.getShardManager().getGuilds()) {
             i += guild.getMemberCount();
         }
 
         em.addField("**Server Stats:**", "", true);
-        em.addField("**Guilds**", BotInfo.shardManager.getGuilds().size() + "", true);
+        em.addField("**Guilds**", BotWorker.getShardManager().getGuilds().size() + "", true);
         em.addField("**Users**", i + "", true);
 
         em.addField("**Bot Stats:**", "", true);
-        em.addField("**Version**", BotInfo.build + "-" + BotInfo.version.name().toUpperCase(), true);
-        em.addField("**Uptime**", TimeUtil.getTime(BotInfo.startTime), true);
+        em.addField("**Version**", BotWorker.getBuild() + "-" + BotWorker.getVersion().name().toUpperCase(), true);
+        em.addField("**Uptime**", TimeUtil.getTime(BotWorker.getStartTime()), true);
 
         em.addField("**Network Stats:**", "", true);
         em.addField("**Response Time**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);

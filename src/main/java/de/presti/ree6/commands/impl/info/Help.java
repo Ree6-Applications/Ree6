@@ -1,6 +1,6 @@
 package de.presti.ree6.commands.impl.info;
 
-import de.presti.ree6.bot.BotUtil;
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
@@ -41,7 +41,7 @@ public class Help implements ICommand {
     public void sendHelpInformation(String categoryString, CommandEvent commandEvent) {
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setColor(BotUtil.randomEmbedColor());
+        em.setColor(BotWorker.randomEmbedColor());
         em.setTitle("Command Index");
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());

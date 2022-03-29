@@ -1,4 +1,4 @@
-package de.presti.ree6.bot;
+package de.presti.ree6.bot.util;
 
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;

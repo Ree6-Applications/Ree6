@@ -1,6 +1,6 @@
 package de.presti.ree6.addons;
 
-import de.presti.ree6.bot.BotInfo;
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.main.Main;
 
 import java.net.URL;
@@ -38,7 +38,7 @@ public class AddonManager {
         Main.getInstance().getLogger().info("[AddonManager] Loading " + addon.getName() + " (" + addon.getVersion() + ") by " + addon.getAuthor());
 
         // Check if it's made for the current Ree6 Version if not inform.
-        if (!addon.getApiVersion().equalsIgnoreCase(BotInfo.build)) {
+        if (!addon.getApiVersion().equalsIgnoreCase(BotWorker.getBuild())) {
 
             Main.getInstance().getLogger().warn("[AddonManager] The Addon " + addon.getName() + " by " + addon.getAuthor() + " has been developed for the Version" + addon.getApiVersion() +
                             ", which is not the same version you are using. This could mean that the addon doesn't function right!");

@@ -3,10 +3,9 @@ package de.presti.ree6.main;
 import com.mindscapehq.raygun4java.core.RaygunClient;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
-import de.presti.ree6.bot.BotInfo;
-import de.presti.ree6.bot.BotState;
-import de.presti.ree6.bot.BotUtil;
-import de.presti.ree6.bot.BotVersion;
+import de.presti.ree6.bot.BotWorker;
+import de.presti.ree6.bot.version.BotState;
+import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.OtherEvents;
@@ -89,13 +88,20 @@ public class Main {
             System.exit(0);
         }
 
+        instance.logger.info("Starting Ree6!");
+
+        instance.logger.info("Creating RayGun Instance.");
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken")).send(e));
+
+        instance.logger.info("Connecting to SQl.");
 
         // Create a new connection between the Application and the SQL-Server.
         instance.sqlConnector = new SQLConnector(instance.config.getConfiguration().getString("mysql.user"),
                 instance.config.getConfiguration().getString("mysql.db"), instance.config.getConfiguration().getString("mysql.pw"),
                 instance.config.getConfiguration().getString("mysql.host"), instance.config.getConfiguration().getInt("mysql.port"));
+
+        instance.logger.info("Initializing Commands!");
 
         try {
             // Create the Command-Manager instance.
@@ -104,6 +110,8 @@ public class Main {
             instance.logger.error("Shutting down, because of an critical error!", exception);
             return;
         }
+
+        instance.logger.info("Creating Notifier.");
 
         // Create the Notifier-Manager instance.
         instance.notifier = new Notifier();
@@ -117,9 +125,11 @@ public class Main {
         // Register all Twitter Users.
         instance.notifier.registerTwitterUser(instance.sqlConnector.getSqlWorker().getAllTwitterNames());
 
+        instance.logger.info("Creating JDA Instance.");
+
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotUtil.createBot(BotVersion.DEV, "1.7.0");
+            BotWorker.createBot(BotVersion.DEV, "1.7.0");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -130,7 +140,7 @@ public class Main {
         instance.addHooks();
 
         // Set the start Time for stats.
-        BotInfo.startTime = System.currentTimeMillis();
+        BotWorker.setStartTime(System.currentTimeMillis());
 
         // Initialize the Addon-Manager.
         instance.addonManager = new AddonManager();
@@ -146,8 +156,8 @@ public class Main {
      * Called to add all Events.
      */
     private void addEvents() {
-        BotUtil.addEvent(new OtherEvents());
-        BotUtil.addEvent(new LoggingEvents());
+        BotWorker.addEvent(new OtherEvents());
+        BotWorker.addEvent(new LoggingEvents());
     }
 
     /**
@@ -164,7 +174,7 @@ public class Main {
         // Current time for later stats.
         long start = System.currentTimeMillis();
         instance.logger.info("[Main] Shutdown init. !");
-        BotInfo.state = BotState.STOPPED;
+        BotWorker.setState(BotState.STOPPED);
 
         // Check if there is an SQL-connection if so, shutdown.
         if (sqlConnector != null && (sqlConnector.IsConnected())) {
@@ -190,7 +200,7 @@ public class Main {
 
         // Shutdown the Bot instance.
         instance.logger.info("[Main] JDA Instance shutdown init. !");
-        BotUtil.shutdown();
+        BotWorker.shutdown();
         instance.logger.info("[Main] JDA Instance has been shut down!");
 
         // Inform of how long it took.
@@ -203,11 +213,11 @@ public class Main {
      */
     public void createCheckerThread() {
         checker = new Thread(() -> {
-            while (BotInfo.state != BotState.STOPPED) {
+            while (BotWorker.getState() != BotState.STOPPED) {
 
                 if (!lastDay.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 
-                    if (BotInfo.startTime > System.currentTimeMillis() + 10000) {
+                    if (BotWorker.getStartTime() > System.currentTimeMillis() + 10000) {
                         getSqlConnector().close();
                         sqlConnector = new SQLConnector(config.getConfiguration().getString("mysql.user"), config.getConfiguration().getString("mysql.db"), config.getConfiguration().getString("mysql.pw"), config.getConfiguration().getString("mysql.host"), config.getConfiguration().getInt("mysql.port"));
                     }
@@ -215,17 +225,17 @@ public class Main {
                     ArrayUtil.messageIDwithMessage.clear();
                     ArrayUtil.messageIDwithUser.clear();
 
-                    BotUtil.setActivity(BotInfo.shardManager.getGuilds().size() + " Guilds, with %shards% Shards.", Activity.ActivityType.WATCHING);
+                    BotWorker.setActivity(BotWorker.getShardManager().getGuilds().size() + " Guilds, with %shards% Shards.", Activity.ActivityType.WATCHING);
 
                     instance.logger.info("[Stats] ");
                     instance.logger.info("[Stats] Today's Stats:");
-                    instance.logger.info("[Stats] Guilds: " + BotInfo.shardManager.getGuilds().size());
-                    instance.logger.info("[Stats] Overall Users: " + BotInfo.shardManager.getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
+                    instance.logger.info("[Stats] Guilds: " + BotWorker.getShardManager().getGuilds().size());
+                    instance.logger.info("[Stats] Overall Users: " + BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
                     instance.logger.info("[Stats] ");
                     lastDay = new SimpleDateFormat("dd").format(new Date());
                 }
 
-                for (Guild guild : BotInfo.shardManager.getGuilds().stream().filter(guild -> guild.getAudioManager().getSendingHandler() != null
+                for (Guild guild : BotWorker.getShardManager().getGuilds().stream().filter(guild -> guild.getAudioManager().getSendingHandler() != null
                         && guild.getSelfMember().getVoiceState() != null &&
                         guild.getSelfMember().getVoiceState().inAudioChannel()).toList()) {
                     GuildMusicManager guildMusicManager = musicWorker.getGuildAudioPlayer(guild);
