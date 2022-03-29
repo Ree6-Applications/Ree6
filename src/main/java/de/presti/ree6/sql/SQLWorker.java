@@ -10,10 +10,7 @@ import de.presti.ree6.sql.entities.UserLevel;
 import de.presti.ree6.utils.data.Setting;
 import net.dv8tion.jda.api.entities.Guild;
 
-import java.sql.Blob;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Types;
+import java.sql.*;
 import java.util.*;
 
 /**
@@ -1971,7 +1968,12 @@ public record SQLWorker(SQLConnector sqlConnector) {
                 return null;
             }
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
+            if (exception instanceof SQLNonTransientConnectionException) {
+                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
+                sqlConnector.connectToSQLServer();
+            } else {
+                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
+            }
         }
 
         return null;
