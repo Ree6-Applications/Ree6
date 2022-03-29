@@ -37,7 +37,7 @@ public class Setup implements ICommand {
             optionList.add(SelectOption.of("Welcome-channel", "welcome"));
             optionList.add(SelectOption.of("News-channel", "news"));
             optionList.add(SelectOption.of("Mute role", "mute"));
-            optionList.add(SelectOption.of("Autorole", "autrorole"));
+            optionList.add(SelectOption.of("Autorole", "autorole"));
 
             SelectMenu selectMenu = new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList);
 

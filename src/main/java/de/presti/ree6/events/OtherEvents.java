@@ -153,7 +153,7 @@ public class OtherEvents extends ListenerAdapter {
                     UserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
                     userLevel.setUser(event.getMember().getUser());
 
-                    if (userLevel.addExperience(RandomUtils.random.nextInt(15,26))) {
+                    if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26))) {
                         Main.getInstance().getCommandManager().sendMessage("You just leveled up to Chat Level " + userLevel.getLevel() + " " + event.getMember().getAsMention() + " !", event.getChannel());
                     }
 
@@ -195,8 +195,6 @@ public class OtherEvents extends ListenerAdapter {
 
         if (event.getInteraction().getComponent().getId() == null || event.getGuild() == null) return;
 
-        event.deferEdit().queue();
-
         if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null || event.getInteraction().getSelectedOptions().isEmpty())
             return;
 
@@ -222,7 +220,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("You can set up our own Audit-Logging which provides all the Information over and Webhook into the Channel of your desire! " + "But ours is not the same as the default Auditions, ours gives your the ability to set what you want to be logged and what not! " + "We also allow you to log Voice Events!");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupLogMenu", "Select your Action", 1, 1, false, optionList))).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupLogMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
 
                     case "welcome" -> {
@@ -234,8 +232,8 @@ public class OtherEvents extends ListenerAdapter {
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
 
                         embedBuilder.setDescription("You can set up our own Welcome-Messages! " + "You can choice the Welcome-Channel by your own and even configure the Message!");
-
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupWelcomeMenu", "Select your Action", 1, 1, false, optionList))).queue();
+                        
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupWelcomeMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
 
                     case "news" -> {
@@ -248,24 +246,24 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("You can set up our own Ree6-News! " + "By setting up Ree6-News on a specific channel your will get a Message in the given Channel, when ever Ree6 gets an update!");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupNewsMenu", "Select your Action", 1, 1, false, optionList))).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupNewsMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
 
                     case "mute" -> {
                         embedBuilder.setDescription("You can set up our own Mute-System! " + "You can select the Role that Ree6 should give an Mute User!");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(Button.link("https://cp.ree6.de", "Webinterface"))).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(Button.link("https://cp.ree6.de", "Webinterface"))).queue();
                     }
 
                     case "autorole" -> {
                         embedBuilder.setDescription("You can set up our own Autorole-System! " + "You can select Roles that Users should get upon joining the Server!");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(Button.link("https://cp.ree6.de", "Webinterface"))).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(Button.link("https://cp.ree6.de", "Webinterface"))).queue();
                     }
 
                     default -> {
                         embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
                 }
             }
@@ -287,11 +285,11 @@ public class OtherEvents extends ListenerAdapter {
                         optionList.add(SelectOption.of("Welcome-channel", "welcome"));
                         optionList.add(SelectOption.of("News-channel", "news"));
                         optionList.add(SelectOption.of("Mute role", "mute"));
-                        optionList.add(SelectOption.of("Autorole", "autrorole"));
+                        optionList.add(SelectOption.of("Autorole", "autorole"));
 
                         embedBuilder.setDescription("Which configuration do you want to check out?");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
                     }
 
                     case "logSetup" -> {
@@ -301,7 +299,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("Which Channel do you want to use as Logging-Channel?");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupLogChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupLogChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
                     }
 
                     default -> {
@@ -309,7 +307,7 @@ public class OtherEvents extends ListenerAdapter {
                             return;
 
                         embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
                 }
             }
@@ -329,11 +327,11 @@ public class OtherEvents extends ListenerAdapter {
                         Main.getInstance().getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription("Successfully changed the Logging Channel, nice work!");
                         embedBuilder.setColor(Color.GREEN);
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
                     });
                 } else {
                     embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
-                    event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
+                    event.editMessageEmbeds(embedBuilder.build()).queue();
                 }
 
             }
@@ -355,11 +353,11 @@ public class OtherEvents extends ListenerAdapter {
                         optionList.add(SelectOption.of("Welcome-channel", "welcome"));
                         optionList.add(SelectOption.of("News-channel", "news"));
                         optionList.add(SelectOption.of("Mute role", "mute"));
-                        optionList.add(SelectOption.of("Autorole", "autrorole"));
+                        optionList.add(SelectOption.of("Autorole", "autorole"));
 
                         embedBuilder.setDescription("Which configuration do you want to check out?");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
                     }
 
                     case "welcomeSetup" -> {
@@ -369,7 +367,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("Which Channel do you want to use as Welcome-Channel?");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupWelcomeChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupWelcomeChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
                     }
 
                     default -> {
@@ -377,7 +375,7 @@ public class OtherEvents extends ListenerAdapter {
                             return;
 
                         embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
                 }
             }
@@ -397,11 +395,11 @@ public class OtherEvents extends ListenerAdapter {
                         Main.getInstance().getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription("Successfully changed the Welcome-Channel, nice work!");
                         embedBuilder.setColor(Color.GREEN);
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
                     });
                 } else {
                     embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
-                    event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
+                    event.editMessageEmbeds(embedBuilder.build()).queue();
                 }
 
             }
@@ -423,11 +421,11 @@ public class OtherEvents extends ListenerAdapter {
                         optionList.add(SelectOption.of("Welcome-channel", "welcome"));
                         optionList.add(SelectOption.of("News-channel", "news"));
                         optionList.add(SelectOption.of("Mute role", "mute"));
-                        optionList.add(SelectOption.of("Autorole", "autrorole"));
+                        optionList.add(SelectOption.of("Autorole", "autorole"));
 
                         embedBuilder.setDescription("Which configuration do you want to check out?");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
                     }
 
                     case "newsSetup" -> {
@@ -437,7 +435,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("Which Channel do you want to use as News-Channel?");
 
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupNewsChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupNewsChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
                     }
 
                     default -> {
@@ -445,7 +443,7 @@ public class OtherEvents extends ListenerAdapter {
                             return;
 
                         embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
                 }
             }
@@ -464,11 +462,11 @@ public class OtherEvents extends ListenerAdapter {
                         Main.getInstance().getSqlConnector().getSqlWorker().setNewsWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription("Successfully changed the News-Channel, nice work!");
                         embedBuilder.setColor(Color.GREEN);
-                        event.getMessage().editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
                     });
                 } else {
                     embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
-                    event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
+                    event.editMessageEmbeds(embedBuilder.build()).queue();
                 }
             }
 
@@ -478,7 +476,7 @@ public class OtherEvents extends ListenerAdapter {
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
                 embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
-                event.getMessage().editMessageEmbeds(embedBuilder.build()).queue();
+                event.editMessageEmbeds(embedBuilder.build()).queue();
             }
         }
     }
