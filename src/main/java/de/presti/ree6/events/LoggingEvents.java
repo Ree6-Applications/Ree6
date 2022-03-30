@@ -637,22 +637,22 @@ public class LoggingEvents extends ListenerAdapter {
                 !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_messagedelete").getBooleanValue())
             return;
 
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
-
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(ArrayUtil.getUserFromMessageList(event.getMessageId()).getAsTag(), ArrayUtil.getUserFromMessageList(event.getMessageId()).getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
-        we.setTimestamp(Instant.now());
-
-        Message message = ArrayUtil.getMessageFromMessageList(event.getMessageId());
-
         User user = ArrayUtil.getUserFromMessageList(event.getMessageId());
 
         if (user != null) {
+            WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+            wm.setUsername("Ree6Logs");
+
+            WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+            we.setColor(Color.BLACK.getRGB());
+            we.setAuthor(new WebhookEmbed.EmbedAuthor(ArrayUtil.getUserFromMessageList(event.getMessageId()).getAsTag(), ArrayUtil.getUserFromMessageList(event.getMessageId()).getAvatarUrl(), null));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
+            we.setTimestamp(Instant.now());
+
+            Message message = ArrayUtil.getMessageFromMessageList(event.getMessageId());
+
             we.setDescription(":wastebasket: **Message of " + user.getAsMention() + " in " + event.getTextChannel().getAsMention() + " has been deleted.**\n" +
                     (message != null ? message.getContentRaw().length() >= 650 ? "Message is too long to display!" : message.getContentRaw() : ""));
 
