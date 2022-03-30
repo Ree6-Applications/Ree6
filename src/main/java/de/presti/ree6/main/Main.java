@@ -17,6 +17,7 @@ import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
 import de.presti.ree6.utils.apis.Notifier;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;
@@ -129,7 +130,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.PUBLIC, "1.7.0");
+            BotWorker.createBot(BotVersion.PUBLIC, "1.7.1");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -225,7 +226,9 @@ public class Main {
                     ArrayUtil.messageIDwithMessage.clear();
                     ArrayUtil.messageIDwithUser.clear();
 
-                    BotWorker.setActivity(BotWorker.getShardManager().getGuilds().size() + " Guilds, with %shards% Shards.", Activity.ActivityType.WATCHING);
+                    for (JDA jda : BotWorker.getShardManager().getShards()) {
+                        BotWorker.setActivity(jda,"%shard_guilds% Guilds, on Shard %shard% with %shards% Shards.", Activity.ActivityType.WATCHING);
+                    }
 
                     instance.logger.info("[Stats] ");
                     instance.logger.info("[Stats] Today's Stats:");

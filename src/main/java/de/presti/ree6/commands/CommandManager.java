@@ -308,7 +308,7 @@ public class CommandManager {
      * @param messageChannel the Message-Channel.
      */
     public void sendMessage(String message, MessageChannel messageChannel) {
-        sendMessage(message, messageChannel, null);
+        if (messageChannel.canTalk()) sendMessage(message, messageChannel, null);
     }
 
     /**
@@ -319,7 +319,7 @@ public class CommandManager {
      * @param messageChannel the Message-Channel.
      */
     public void sendMessage(String message, int deleteSecond, MessageChannel messageChannel) {
-        sendMessage(message, deleteSecond, messageChannel, null);
+        if (messageChannel.canTalk()) sendMessage(message, deleteSecond, messageChannel, null);
     }
 
     /**
@@ -330,8 +330,9 @@ public class CommandManager {
      * @param interactionHook the Interaction-hook if it is a slash command.
      */
     public void sendMessage(String message, MessageChannel messageChannel, InteractionHook interactionHook) {
-        if (interactionHook == null) messageChannel.sendMessage(message).queue();
-        else interactionHook.sendMessage(message).queue();
+        if (interactionHook == null) {
+            if (messageChannel.canTalk()) messageChannel.sendMessage(message).queue();
+        } else interactionHook.sendMessage(message).queue();
     }
 
     /**
@@ -345,13 +346,14 @@ public class CommandManager {
     public void sendMessage(String messageContent, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
         if (interactionHook == null) {
             if (messageChannel == null) return;
-            messageChannel.sendMessage(messageContent).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
-                    return message.delete();
-                }
+            if (messageChannel.canTalk())
+                messageChannel.sendMessage(messageContent).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+                    if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                        return message.delete();
+                    }
 
-                return null;
-            }).queue();
+                    return null;
+                }).queue();
         } else {
             interactionHook.sendMessage(messageContent).queue();
         }
@@ -364,7 +366,7 @@ public class CommandManager {
      * @param messageChannel the Message-Channel.
      */
     public void sendMessage(EmbedBuilder embedBuilder, MessageChannel messageChannel) {
-        sendMessage(embedBuilder, messageChannel, null);
+        if (messageChannel.canTalk()) sendMessage(embedBuilder, messageChannel, null);
     }
 
     /**
@@ -375,7 +377,7 @@ public class CommandManager {
      * @param messageChannel the Message-Channel.
      */
     public void sendMessage(EmbedBuilder embedBuilder, int deleteSecond, MessageChannel messageChannel) {
-        sendMessage(embedBuilder, deleteSecond, messageChannel, null);
+        if (messageChannel.canTalk()) sendMessage(embedBuilder, deleteSecond, messageChannel, null);
     }
 
     /**
@@ -386,8 +388,9 @@ public class CommandManager {
      * @param interactionHook the Interaction-hook if it is a slash command.
      */
     public void sendMessage(EmbedBuilder embedBuilder, MessageChannel messageChannel, InteractionHook interactionHook) {
-        if (interactionHook == null) messageChannel.sendMessageEmbeds(embedBuilder.build()).queue();
-        else interactionHook.sendMessageEmbeds(embedBuilder.build()).queue();
+        if (interactionHook == null) {
+            if (messageChannel.canTalk()) messageChannel.sendMessageEmbeds(embedBuilder.build()).queue();
+        } else interactionHook.sendMessageEmbeds(embedBuilder.build()).queue();
     }
 
     /**
@@ -401,13 +404,14 @@ public class CommandManager {
     public void sendMessage(EmbedBuilder embedBuilder, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
         if (interactionHook == null) {
             if (messageChannel == null) return;
-            messageChannel.sendMessageEmbeds(embedBuilder.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
-                    return message.delete();
-                }
+            if (messageChannel.canTalk())
+                messageChannel.sendMessageEmbeds(embedBuilder.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+                    if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                        return message.delete();
+                    }
 
-                return null;
-            }).queue();
+                    return null;
+                }).queue();
         } else {
             interactionHook.sendMessageEmbeds(embedBuilder.build()).queue();
         }

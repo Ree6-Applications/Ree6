@@ -81,7 +81,20 @@ public class BotWorker {
     public static void setActivity(String message, Activity.ActivityType activityType) {
         // If the Bot Instance is null, if not set.
         if (shardManager != null)
-            shardManager.setActivity(Activity.of(activityType, message.replace("%shards%", shardManager.getShardsTotal() + "")));
+            shardManager.setActivity(Activity.of(activityType, message.replace("%shards%", shardManager.getShardsTotal() + "").replace("%guilds%", shardManager.getGuilds().size() + "")));
+    }
+
+    /**
+     * Change the current Activity of the Bot.
+     *
+     * @param message      the Message of the Activity.
+     * @param activityType the Activity type.
+     */
+    public static void setActivity(JDA jda, String message, Activity.ActivityType activityType) {
+        // If the Bot Instance is null, if not set.
+        if (jda != null)
+            jda.getPresence().setActivity(Activity.of(activityType, message.replace("%shards%", shardManager.getShardsTotal() + "")
+                    .replace("%shard%", "" + jda.getShardInfo().getShardId()).replace("%guilds%", shardManager.getGuilds().size() + "").replace("%shard_guild%", jda.getGuilds().size() + "")));
     }
 
     /**

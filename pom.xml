@@ -7,7 +7,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>1.7.0</version>
+    <version>1.7.1</version>
     <build>
         <plugins>
             <plugin>
