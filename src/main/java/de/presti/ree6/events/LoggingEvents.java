@@ -13,6 +13,7 @@ import de.presti.ree6.utils.others.TimeUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
@@ -383,7 +384,7 @@ public class LoggingEvents extends ListenerAdapter {
 
             String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
             Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.CHANNELDATA_CHANGE));
-        } else if(event.getChannelType().isMessage()) {
+        } else if (event.getChannelType().isMessage()) {
             if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
                     !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_textchannel").getBooleanValue())
                 return;
@@ -649,13 +650,17 @@ public class LoggingEvents extends ListenerAdapter {
 
         Message message = ArrayUtil.getMessageFromMessageList(event.getMessageId());
 
-        we.setDescription(":wastebasket: **Message of " + ArrayUtil.getUserFromMessageList(event.getMessageId()).getAsMention() + " in " + event.getTextChannel().getAsMention() + " has been deleted.**\n" +
-                (message != null ? message.getContentRaw().length() >= 650 ? "Message is too long to display!" : message.getContentRaw() : ""));
+        User user = ArrayUtil.getUserFromMessageList(event.getMessageId());
 
-        wm.addEmbeds(we.build());
+        if (user != null) {
+            we.setDescription(":wastebasket: **Message of " + user.getAsMention() + " in " + event.getTextChannel().getAsMention() + " has been deleted.**\n" +
+                    (message != null ? message.getContentRaw().length() >= 650 ? "Message is too long to display!" : message.getContentRaw() : ""));
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.MESSAGE_DELETE));
+            wm.addEmbeds(we.build());
+
+            String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+            Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), LoggerMessage.LogTyp.MESSAGE_DELETE));
+        }
     }
 
     @Override
