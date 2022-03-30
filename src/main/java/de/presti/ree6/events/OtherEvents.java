@@ -44,7 +44,7 @@ public class OtherEvents extends ListenerAdapter {
         BotWorker.setState(BotState.STARTED);
         Main.getInstance().getLogger().info("Boot up finished!");
 
-        Main.getInstance().getCommandManager().addSlashCommand();
+        Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
 
         BotWorker.setActivity(event.getJDA(),"%shard_guilds% Guilds, on Shard %shard% with %shards% Shards.", Activity.ActivityType.WATCHING);
     }

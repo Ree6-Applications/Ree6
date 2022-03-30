@@ -114,25 +114,24 @@ public class CommandManager {
 
     /**
      * Method used to add all Commands as SlashCommand on Discord.
+     *
+     * @param jda Instance of the Bot.
      */
-    public void addSlashCommand() {
+    public void addSlashCommand(JDA jda) {
+        CommandListUpdateAction listUpdateAction = jda.updateCommands();
+        for (ICommand command : getCommands()) {
+            if (command.getClass().getAnnotation(Command.class).category() == Category.HIDDEN) continue;
 
-        for (JDA shard : BotWorker.getShardManager().getShards()) {
-            CommandListUpdateAction listUpdateAction = shard.updateCommands();
-            for (ICommand command : getCommands()) {
-                if (command.getClass().getAnnotation(Command.class).category() == Category.HIDDEN) continue;
-
-                if (command.getCommandData() != null) {
-                    //noinspection ResultOfMethodCallIgnored
-                    listUpdateAction.addCommands(command.getCommandData());
-                } else {
-                    //noinspection ResultOfMethodCallIgnored
-                    listUpdateAction.addCommands(new CommandDataImpl(command.getClass().getAnnotation(Command.class).name(), command.getClass().getAnnotation(Command.class).description()));
-                }
+            if (command.getCommandData() != null) {
+                //noinspection ResultOfMethodCallIgnored
+                listUpdateAction.addCommands(command.getCommandData());
+            } else {
+                //noinspection ResultOfMethodCallIgnored
+                listUpdateAction.addCommands(new CommandDataImpl(command.getClass().getAnnotation(Command.class).name(), command.getClass().getAnnotation(Command.class).description()));
             }
-
-            listUpdateAction.queue();
         }
+
+        listUpdateAction.queue();
     }
 
     /**
