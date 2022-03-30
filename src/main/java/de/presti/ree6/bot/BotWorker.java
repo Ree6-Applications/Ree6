@@ -94,7 +94,7 @@ public class BotWorker {
         // If the Bot Instance is null, if not set.
         if (jda != null)
             jda.getPresence().setActivity(Activity.of(activityType, message.replace("%shards%", shardManager.getShardsTotal() + "")
-                    .replace("%shard%", "" + jda.getShardInfo().getShardId()).replace("%guilds%", shardManager.getGuilds().size() + "").replace("%shard_guild%", jda.getGuilds().size() + "")));
+                    .replace("%shard%", "" + jda.getShardInfo().getShardId()).replace("%guilds%", shardManager.getGuilds().size() + "").replace("%shard_guilds%", jda.getGuilds().size() + "")));
     }
 
     /**
