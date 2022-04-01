@@ -58,16 +58,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>2.0.0-alpha5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.0-alpha5</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.Twitter4J.Twitter4J</groupId>
             <artifactId>twitter4j-core</artifactId>
             <version>4.0.7</version>
@@ -101,12 +91,12 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20211205</version>
+            <version>20220320</version>
         </dependency>
         <dependency>
             <groupId>club.minnced</groupId>
             <artifactId>discord-webhooks</artifactId>
-            <version>0.7.4</version>
+            <version>0.8.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>
@@ -116,7 +106,7 @@
         <dependency>
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
-            <version>1.41.4</version>
+            <version>1.41.5</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>
@@ -131,12 +121,12 @@
         <dependency>
             <groupId>com.google.oauth-client</groupId>
             <artifactId>google-oauth-client-jetty</artifactId>
-            <version>1.33.0</version>
+            <version>1.33.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-youtube</artifactId>
-            <version>v3-rev20210915-1.32.1</version>
+            <version>v3-rev20220320-1.32.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -204,12 +194,12 @@
         <dependency>
             <groupId>com.github.twitch4j</groupId>
             <artifactId>twitch4j</artifactId>
-            <version>1.8.0</version>
+            <version>1.9.0</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.10</version>
+            <version>1.2.11</version>
         </dependency>
         <!-- using a fork of this to fix some issues faster -->
         <!-- dependency>
