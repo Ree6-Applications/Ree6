@@ -209,11 +209,6 @@ public class Main {
         // Inform of how long it took.
         instance.logger.info("[Main] Everything has been shut down in " + (System.currentTimeMillis() - start) + "ms!");
         instance.logger.info("[Main] Good bye!");
-        try {
-            throw new Exception("sex");
-        } catch (Exception e) {
-            instance.logger.error("Error:", e);
-        }
     }
 
     /**

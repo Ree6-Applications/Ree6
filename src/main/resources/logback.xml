@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <logger name="com.github.twitch4j" level="INFO" />
-    <logger name="de.presti.ree6" level="INFO" />
-    <logger name="n.d" level="INFO" />
+    <logger name="com.github.twitch4j" level="info" />
+    <logger name="de.presti.ree6" level="info" />
+    <logger name="n.d" level="info" />
 
     <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
 
@@ -27,7 +27,7 @@
     </appender>
 
     <!-- Appender Output Configuration -->
-    <root name="InfoLogger" level="info">
+    <root level="info">
         <appender-ref ref="File"/>
         <appender-ref ref="CONSOLE"/>
     </root>
