@@ -130,7 +130,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.PUBLIC, "1.7.1");
+            BotWorker.createBot(BotVersion.PUBLIC, "1.7.2");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -194,10 +194,12 @@ public class Main {
         getNotifier().getTwitchClient().close();
         instance.logger.info("[Main] Twitch API Instance closed!");
 
-        // Shutdown Checker Thread.
-        instance.logger.info("[Main] Interrupting the Checker thread!");
-        checker.interrupt();
-        instance.logger.info("[Main] Interrupted the Checker thread!");
+        if (checker != null && !checker.isInterrupted()) {
+            // Shutdown Checker Thread.
+            instance.logger.info("[Main] Interrupting the Checker thread!");
+            checker.interrupt();
+            instance.logger.info("[Main] Interrupted the Checker thread!");
+        }
 
         // Shutdown the Bot instance.
         instance.logger.info("[Main] JDA Instance shutdown init. !");
@@ -207,6 +209,11 @@ public class Main {
         // Inform of how long it took.
         instance.logger.info("[Main] Everything has been shut down in " + (System.currentTimeMillis() - start) + "ms!");
         instance.logger.info("[Main] Good bye!");
+        try {
+            throw new Exception("sex");
+        } catch (Exception e) {
+            instance.logger.error("Error:", e);
+        }
     }
 
     /**
