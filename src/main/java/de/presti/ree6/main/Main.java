@@ -151,6 +151,9 @@ public class Main {
 
         // Start all Addons.
         instance.addonManager.startAddons();
+
+        // Create checker Thread.
+        instance.createCheckerThread();
     }
 
     /**
