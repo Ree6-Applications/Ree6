@@ -55,6 +55,7 @@ public class ImageCreationUtility {
         // Draw basic Information, such as the User Image, Username and the Experience Rect.
         graphics2D.drawImage(userImage, null, 25, 45);
         graphics2D.setColor(Color.WHITE);
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Font verdana40Font = new Font("Verdana", Font.PLAIN, 40);
 
         String username = new String(user.getName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
