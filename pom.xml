@@ -19,14 +19,6 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub Ree6-Applications Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/Ree6-Applications/Ree6</url>
-        </repository>
-    </distributionManagement>
-
     <repositories>
         <repository>
             <id>dv8tion</id>
