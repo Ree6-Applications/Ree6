@@ -243,6 +243,11 @@
             <artifactId>mariadb-java-client</artifactId>
             <version>3.0.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.DxsSucuk</groupId>
+            <artifactId>Nekos4J</artifactId>
+            <version>1.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
