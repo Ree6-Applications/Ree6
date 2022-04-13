@@ -95,14 +95,10 @@ public class Main {
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken")).send(e));
 
-        instance.logger.info("Connecting to SQl.");
-
         // Create a new connection between the Application and the SQL-Server.
         instance.sqlConnector = new SQLConnector(instance.config.getConfiguration().getString("mysql.user"),
                 instance.config.getConfiguration().getString("mysql.db"), instance.config.getConfiguration().getString("mysql.pw"),
                 instance.config.getConfiguration().getString("mysql.host"), instance.config.getConfiguration().getInt("mysql.port"));
-
-        instance.logger.info("Initializing Commands!");
 
         try {
             // Create the Command-Manager instance.
@@ -130,7 +126,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.PUBLIC, "1.7.2");
+            BotWorker.createBot(BotVersion.PUBLIC, "1.7.3");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {

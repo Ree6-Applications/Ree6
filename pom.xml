@@ -7,7 +7,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>1.7.2</version>
+    <version>1.7.3</version>
     <packaging>jar</packaging>
     <name>Ree6</name>
     <description>Ree6 is an open-Source Discord Bot.</description>
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
-            <version>1.41.5</version>
+            <version>1.41.6</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>
@@ -111,7 +111,7 @@
         <dependency>
             <groupId>com.google.oauth-client</groupId>
             <artifactId>google-oauth-client-jetty</artifactId>
-            <version>1.33.1</version>
+            <version>1.33.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.apis</groupId>
@@ -126,7 +126,7 @@
         <dependency>
             <groupId>se.michaelthelin.spotify</groupId>
             <artifactId>spotify-web-api-java</artifactId>
-            <version>7.0.0</version>
+            <version>7.0.1</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -233,7 +233,7 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>3.0.3</version>
+            <version>3.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.github.DxsSucuk</groupId>

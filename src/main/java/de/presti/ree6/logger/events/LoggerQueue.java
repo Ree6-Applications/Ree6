@@ -198,8 +198,8 @@ public class LoggerQueue {
                         }
                     }
 
-                    if (memberData != null && memberData.getAddedRoles() != null && !memberData.getAddedRoles().isEmpty() && memberData.getAddedRoles().stream().anyMatch(role -> role != null && loggerMessage.getMemberData().getAddedRoles().contains(role) &&
-                            !loggerMessage.getMemberData().getRemovedRoles().contains(role))) {
+                    if (memberData != null && memberData.getAddedRoles() != null && !memberData.getAddedRoles().isEmpty() && memberData.getAddedRoles().stream().anyMatch(role -> role != null && !loggerMessage.getMemberData().getAddedRoles().contains(role) &&
+                            loggerMessage.getMemberData().getRemovedRoles().contains(role))) {
                         try {
                             memberData.getAddedRoles().stream().filter(role -> role != null && !loggerMessage.getMemberData().getAddedRoles().contains(role) &&
                                     !loggerMessage.getMemberData().getRemovedRoles().contains(role)).forEach(role -> loggerMessage.getMemberData().getAddedRoles().add(role));

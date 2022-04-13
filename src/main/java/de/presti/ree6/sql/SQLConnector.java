@@ -58,7 +58,7 @@ public class SQLConnector {
      * Try to open a connection to the SQL Server with the given data.
      */
     public void connectToSQLServer() {
-
+        Main.getInstance().getLogger().info("Connecting to SQl.");
         // Check if there is already an open Connection.
         if (IsConnected()) {
             try {

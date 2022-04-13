@@ -1923,7 +1923,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void deleteAllData(String guildId) {
         // Go through every Table. And delete every entry with the Guild ID.
-        sqlConnector.getTables().forEach((s, s2) -> querySQL("DELETE FROM ? WHERE GID= ?", s, guildId));
+        sqlConnector.getTables().forEach((s, s2) -> querySQL("DELETE FROM '" + s + "' WHERE GID= ?", guildId));
     }
 
     //endregion

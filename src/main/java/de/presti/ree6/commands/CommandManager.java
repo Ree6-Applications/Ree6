@@ -43,6 +43,8 @@ public class CommandManager {
      * Constructor for the Command-Manager used to register every Command.
      */
     public CommandManager() throws CommandInitializerException {
+        Main.getInstance().getLogger().info("Initializing Commands!");
+
         //Informative
         addCommand(new Help());
         addCommand(new Support());
