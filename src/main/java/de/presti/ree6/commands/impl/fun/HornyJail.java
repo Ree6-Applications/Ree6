@@ -5,6 +5,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.ImageCreationUtility;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -61,7 +62,7 @@ public class HornyJail implements ICommand {
             HttpResponse response = httpClient.execute(request);
 
             Main.getInstance().getCommandManager().sendMessage(member.getAsMention() + " is now in the Hornyjail!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-            commandEvent.getTextChannel().sendFile(response.getEntity().getContent(), "hornyjail.png").queue();
+            commandEvent.getTextChannel().sendFile(ImageCreationUtility.createHornyJailImage(member.getUser()), "hornyjail.png").queue();
             if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
         } catch (Exception ex) {
             Main.getInstance().getCommandManager().sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getTextChannel(), commandEvent.getInteractionHook());

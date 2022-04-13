@@ -121,6 +121,94 @@ public class ImageCreationUtility {
     }
 
     /**
+     * Generate a HornyJail Image with Java native Graphics2D.
+     *
+     * @param user the User Object.
+     * @return the bytes of the Image.
+     * @throws IOException when URL-Format is Invalid or the URL is not a valid Image.
+     */
+    public static byte[] createHornyJailImage(User user) throws IOException {
+        if (user == null)
+            return new byte[128];
+
+        // Generate a 128x128 Image Background.
+        BufferedImage base = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage userImage;
+
+        // Generated a Circle Image with the Avatar of the User.
+        if (user.getAvatarUrl() != null) {
+            userImage = ImageIO.read(new URL(user.getAvatarUrl()));
+        } else {
+            userImage = ImageIO.read(new URL(user.getDefaultAvatarUrl()));
+        }
+
+        // Create a new Graphics2D instance from the base.
+        Graphics2D graphics2D = base.createGraphics();
+
+        // Change the background to black.
+        graphics2D.setColor(Color.BLACK);
+        graphics2D.fillRoundRect(0, 0, base.getWidth(), base.getHeight(), 10, 10);
+
+        // Draw basic Information, such as the User Image, Username and the Experience Rect.
+        graphics2D.drawImage(userImage, null, 0, 0);
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        graphics2D.setColor(Color.DARK_GRAY);
+        graphics2D.drawRect(4, -1, 4, 130);
+        graphics2D.setColor(Color.GRAY);
+        graphics2D.fillRect(5, -1, 3, 130);
+
+        graphics2D.setColor(Color.DARK_GRAY);
+        graphics2D.drawRect(19, -1, 4, 130);
+        graphics2D.setColor(Color.GRAY);
+        graphics2D.fillRect(20, -1, 3, 130);
+
+        graphics2D.setColor(Color.DARK_GRAY);
+        graphics2D.drawRect(33, -1, 4, 130);
+        graphics2D.setColor(Color.GRAY);
+        graphics2D.fillRect(34, -1, 3, 130);
+
+        graphics2D.setColor(Color.DARK_GRAY);
+        graphics2D.drawRect(48, -1, 4, 130);
+        graphics2D.setColor(Color.GRAY);
+        graphics2D.fillRect(49, -1, 3, 130);
+
+        graphics2D.setColor(Color.DARK_GRAY);
+        graphics2D.drawRect(63, -1, 4, 130);
+        graphics2D.setColor(Color.GRAY);
+        graphics2D.fillRect(64, -1, 3, 130);
+
+        graphics2D.setColor(Color.DARK_GRAY);
+        graphics2D.drawRect(78, -1, 4, 130);
+        graphics2D.setColor(Color.GRAY);
+        graphics2D.fillRect(79, -1, 3, 130);
+
+        graphics2D.setColor(Color.DARK_GRAY);
+        graphics2D.drawRect(94, -1, 4, 130);
+        graphics2D.setColor(Color.GRAY);
+        graphics2D.fillRect(95, -1, 3, 130);
+
+        graphics2D.setColor(Color.DARK_GRAY);
+        graphics2D.drawRect(109, -1, 4, 130);
+        graphics2D.setColor(Color.GRAY);
+        graphics2D.fillRect(110, -1, 3, 130);
+
+        graphics2D.setColor(Color.DARK_GRAY);
+        graphics2D.drawRect(124, -1, 4, 130);
+        graphics2D.setColor(Color.GRAY);
+        graphics2D.fillRect(125, -1, 3, 130);
+
+        // Close the Graphics2d instance.
+        graphics2D.dispose();
+
+        // Create a ByteArrayOutputStream to convert the BufferedImage to a Array of Bytes.
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        ImageIO.write(base, "PNG", outputStream);
+        return outputStream.toByteArray();
+    }
+
+    /**
      * Generated a Circle Shaped Version of the given Image.
      *
      * @param url the URL to the Image.
