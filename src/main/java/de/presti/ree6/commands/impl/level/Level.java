@@ -50,14 +50,14 @@ public class Level implements ICommand {
 
     @Override
     public String[] getAlias() {
-        return new String[] {"lvl", "xp", "rank"};
+        return new String[]{"lvl", "xp", "rank"};
     }
 
     public void sendLevel(Member member, CommandEvent commandEvent, String type) {
 
-        UserLevel userLevel = type.equalsIgnoreCase("chat") ?
-            Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getId()) :
-                Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getId(), member.getId());
+        UserLevel userLevel = type.equalsIgnoreCase("voice") ?
+                Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getId(), member.getId()) :
+                Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getId());
 
         userLevel.setUser(member.getUser());
         if (commandEvent.isSlashCommand()) {
@@ -68,8 +68,8 @@ public class Level implements ICommand {
             }
         } else {
             try {
-                commandEvent.getTextChannel().sendFile(ImageCreationUtility.createRankImage(userLevel),"rank.png").queue();
-            }  catch (Exception ignore) {
+                commandEvent.getTextChannel().sendFile(ImageCreationUtility.createRankImage(userLevel), "rank.png").queue();
+            } catch (Exception ignore) {
                 Main.getInstance().getCommandManager().sendMessage("Couldn't generated Rank Image!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
         }

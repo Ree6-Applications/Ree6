@@ -54,12 +54,6 @@ public class Stats implements ICommand {
         em.addField("**Response Time**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);
         em.addField("**System Date**", new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
 
-        if (commandEvent.getMember().getId().equalsIgnoreCase("321580743488831490")) {
-            em.addField("**Server Stats:**", "", true);
-            em.addField("**Ram Usage:**", String.format("%.2f GB / %.2f GB", ((Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory()) / 1e+9), (Runtime.getRuntime().maxMemory() / 1e+9)), true);
-            em.addField("**CPU Usage:**", String.format("%.2f", ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getProcessCpuLoad() * 100) + "%", true);
-        }
-
         StringBuilder end = new StringBuilder();
 
         for (Map.Entry<String, Long> sheesh : StatsManager.getCommandStats(commandEvent.getGuild().getId()).entrySet()) {

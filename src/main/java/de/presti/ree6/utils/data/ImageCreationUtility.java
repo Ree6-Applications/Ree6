@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +34,7 @@ public class ImageCreationUtility {
             return new byte[128];
 
         // Generate a 885x211 Image Background.
-        BufferedImage base = new BufferedImage(885, 211, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage base = ImageIO.read(new File("images/base.png"));
 
         User user = userLevel.getUser();
         BufferedImage userImage;
@@ -49,35 +50,38 @@ public class ImageCreationUtility {
         Graphics2D graphics2D = base.createGraphics();
 
         // Change the background to black.
-        graphics2D.setColor(Color.BLACK);
-        graphics2D.fillRoundRect(0, 0, base.getWidth(), base.getHeight(), 10, 10);
 
         // Draw basic Information, such as the User Image, Username and the Experience Rect.
-        graphics2D.drawImage(userImage, null, 25, 45);
+        graphics2D.drawImage(userImage, null, 175, 450);
         graphics2D.setColor(Color.WHITE);
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        Font verdana40Font = new Font("Verdana", Font.PLAIN, 40);
+
+        Font verdana60 = new Font("Verdana", Font.PLAIN, 60);
+        Font verdana50 = new Font("Verdana", Font.PLAIN, 50);
+        Font verdana40 = new Font("Verdana", Font.PLAIN, 40);
 
         String username = new String(user.getName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 
-        if (username.length() > 16) {
-            username = username.substring(0, 15);
+        if (username.length() > 13) {
+            username = username.substring(0, 12);
         }
 
-        graphics2D.setFont(verdana40Font);
-        graphics2D.drawString(username, 200, 110);
-        graphics2D.setColor(Color.GRAY);
-        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 20));
-        graphics2D.drawString("#" + user.getDiscriminator(), 200 + graphics2D.getFontMetrics(verdana40Font).stringWidth(username) + 5, 110);
-        graphics2D.fillRoundRect(200, 130, base.getWidth() - 300, 50, 50, 50);
+        graphics2D.setFont(verdana60);
+        graphics2D.drawString(username, 425, 675);
+        graphics2D.setColor(Color.LIGHT_GRAY);
+        graphics2D.setFont(verdana40);
+        graphics2D.drawString("#" + user.getDiscriminator(), 425, 675 - graphics2D.getFontMetrics(verdana60).getHeight() + 5);
+        graphics2D.setColor(Color.magenta.darker().darker());
+        graphics2D.fillRoundRect(175, 705, base.getWidth() - 950, 50, 50, 50);
 
         //region Experience
 
         // Draw The current Experience and needed Experience for the next Level.
-        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 20));
-        graphics2D.drawString(userLevel.getFormattedExperience() + "", (base.getWidth() - 210), 110);
-        graphics2D.setColor(Color.DARK_GRAY);
-        graphics2D.drawString("/" + userLevel.getFormattedExperience(userLevel.getExperienceForNextLevel()), (base.getWidth() - 170), 110);
+        graphics2D.setColor(Color.LIGHT_GRAY);
+        graphics2D.setFont(verdana40);
+        graphics2D.drawString(userLevel.getFormattedExperience() + "", (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + userLevel.getFormattedExperience(userLevel.getExperienceForNextLevel()))) - 5 - graphics2D.getFontMetrics().stringWidth(userLevel.getFormattedExperience() + ""), 675);
+        graphics2D.setColor(Color.GRAY);
+        graphics2D.drawString("/" + userLevel.getFormattedExperience(userLevel.getExperienceForNextLevel()), (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + userLevel.getFormattedExperience(userLevel.getExperienceForNextLevel()))), 675);
 
         //endregion
 
@@ -85,11 +89,12 @@ public class ImageCreationUtility {
 
         // Draw the current Ranking.
         graphics2D.setColor(Color.WHITE);
-        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 20));
-        graphics2D.drawString("Rank", (base.getWidth() - 370), 60);
+        graphics2D.setFont(verdana40);
+        graphics2D.drawString("Rank", (base.getWidth() - 800) - (graphics2D.getFontMetrics(verdana50).stringWidth("" + userLevel.getLevel())) - (graphics2D.getFontMetrics().stringWidth("Rank")) - 10, 675 - graphics2D.getFontMetrics().getHeight() - graphics2D.getFontMetrics().getHeight());
 
-        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 30));
-        graphics2D.drawString("" + userLevel.getRank(), (base.getWidth() - 310), 60);
+        graphics2D.setColor(Color.MAGENTA.brighter());
+        graphics2D.setFont(verdana50);
+        graphics2D.drawString("" + userLevel.getRank(), (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("" + userLevel.getRank())), 675 - graphics2D.getFontMetrics(verdana40).getHeight() - graphics2D.getFontMetrics(verdana40).getHeight());
 
         //endregion
 
@@ -97,23 +102,23 @@ public class ImageCreationUtility {
 
         // Draw the current Level.
         graphics2D.setColor(Color.WHITE);
-        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 20));
-        graphics2D.drawString("Level", (base.getWidth() - 235), 60);
+        graphics2D.setFont(verdana40);
+        graphics2D.drawString("Level", (base.getWidth() - 800) - (graphics2D.getFontMetrics(verdana50).stringWidth("" + userLevel.getLevel())) - (graphics2D.getFontMetrics().stringWidth("Level")) - 10, 675 - graphics2D.getFontMetrics().getHeight());
 
-        graphics2D.setColor(Color.magenta.darker().darker());
-        graphics2D.setFont(new Font("Verdana", Font.PLAIN, 30));
-        graphics2D.drawString("" + userLevel.getLevel(), (base.getWidth() - 175), 60);
+        graphics2D.setColor(Color.magenta.brighter());
+        graphics2D.setFont(verdana50);
+        graphics2D.drawString("" + userLevel.getLevel(), (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("" + userLevel.getLevel())), 675 - graphics2D.getFontMetrics(verdana40).getHeight());
 
         //endregion
 
         // Draw the Progressbar.
-        graphics2D.setColor(Color.magenta.darker().darker());
-        graphics2D.fillRoundRect(200, 130, (base.getWidth() - 300) * userLevel.getProgress() / 100, 50, 50, 50);
+        graphics2D.setColor(Color.magenta);
+        graphics2D.fillRoundRect(175, 705, (base.getWidth() - 950) * userLevel.getProgress() / 100, 50, 50, 50);
 
         // Close the Graphics2d instance.
         graphics2D.dispose();
 
-        // Create a ByteArrayOutputStream to convert the BufferedImage to a Array of Bytes.
+        // Create a ByteArrayOutputStream to convert the BufferedImage to an Array of Bytes.
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         ImageIO.write(base, "PNG", outputStream);
@@ -201,7 +206,7 @@ public class ImageCreationUtility {
         // Close the Graphics2d instance.
         graphics2D.dispose();
 
-        // Create a ByteArrayOutputStream to convert the BufferedImage to a Array of Bytes.
+        // Create a ByteArrayOutputStream to convert the BufferedImage to an Array of Bytes.
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         ImageIO.write(base, "PNG", outputStream);
@@ -240,7 +245,28 @@ public class ImageCreationUtility {
 
         g2.dispose();
 
-        return output;
+        return resize(output, 250, 250);
+    }
+
+    /**
+     * Resizes an image to an absolute width and height (the image may not be
+     * proportional)
+     * @param inputImage The original image
+     * @param scaledWidth absolute width in pixels
+     * @param scaledHeight absolute height in pixels
+     */
+    public static BufferedImage resize(BufferedImage inputImage, int scaledWidth, int scaledHeight){
+
+        // creates output image
+        BufferedImage outputImage = new BufferedImage(scaledWidth,
+                scaledHeight, inputImage.getType());
+
+        // scales the input image to the output image
+        Graphics2D g2d = outputImage.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
+        g2d.dispose();
+
+        return outputImage;
     }
 
 }

@@ -7,7 +7,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>1.7.4</version>
+    <version>1.7.5</version>
     <packaging>jar</packaging>
     <name>Ree6</name>
     <description>Ree6 is an open-Source Discord Bot.</description>
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-youtube</artifactId>
-            <version>v3-rev20220320-1.32.1</version>
+            <version>v3-rev20220403-1.32.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
