@@ -9,10 +9,8 @@ import de.presti.ree6.logger.invite.InviteContainerManager;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.utils.others.TimeUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageActivity;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
@@ -42,10 +40,8 @@ import net.dv8tion.jda.api.utils.TimeFormat;
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 public class LoggingEvents extends ListenerAdapter {
 
@@ -668,8 +664,8 @@ public class LoggingEvents extends ListenerAdapter {
                         } else {
                             wm.addFile(attachment.getFileName(), attachment.retrieveInputStream().get());
                         }
-                    } catch (Exception ignored) {
-                        wm.append("Couldn't receive InputStream from Attachment!\n");
+                    } catch (Exception exception) {
+                        wm.append("Couldn't receive InputStream from Attachment, reason: " + exception.getMessage() + "!\n");
                     }
                 }
                 wm.append("The Message had Attachments, please be careful when checking them out!\n");
