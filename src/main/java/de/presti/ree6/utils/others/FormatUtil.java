@@ -18,7 +18,6 @@ package de.presti.ree6.utils.others;
 import java.util.List;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -29,9 +28,17 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
  */
 public class FormatUtil {
 
-    public final static String PLAY_EMOJI  = "\u25B6"; // ▶
-    public final static String PAUSE_EMOJI = "\u23F8"; // ⏸
-    public final static String STOP_EMOJI  = "\u23F9"; // ⏹
+    public static final String PLAY_EMOJI  = "\u25B6"; // ▶
+    public static final String PAUSE_EMOJI = "\u23F8"; // ⏸
+    public static final String STOP_EMOJI  = "\u23F9"; // ⏹
+
+    /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     * @throws IllegalStateException it is a utility class.
+     */
+    private FormatUtil() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static String formatTime(long duration)
     {
