@@ -39,14 +39,6 @@ public class BotWorker {
     // Instance of the JDA ShardManager.
     private static ShardManager shardManager;
 
-    /**
-     * Instance of the main JDA connection.
-     *
-     * @deprecated because of the usage of the current ShardManager
-     */
-    @Deprecated(forRemoval = true, since = "1.7.0")
-    public static JDA botInstance;
-
     // The used Bot-Token.
     private static String token;
 
