@@ -668,9 +668,11 @@ public class LoggingEvents extends ListenerAdapter {
                         } else {
                             wm.addFile(attachment.getFileName(), attachment.retrieveInputStream().get());
                         }
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                        wm.append("Couldn't receive InputStream from Attachment!\n");
+                    }
                 }
-                wm.append("The Message had Attachments, please be careful when checking them out!");
+                wm.append("The Message had Attachments, please be careful when checking them out!\n");
             }
 
             we.setDescription(":wastebasket: **Message of " + user.getAsMention() + " in " + event.getTextChannel().getAsMention() + " has been deleted.**\n" +
