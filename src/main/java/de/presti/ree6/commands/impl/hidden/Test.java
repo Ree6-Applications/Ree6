@@ -1,8 +1,7 @@
 package de.presti.ree6.commands.impl.hidden;
 
 import de.presti.ree6.commands.*;
-import de.presti.ree6.commands.interfaces.Command;
-import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.commands.interfaces.*;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 @Command(name = "test", description = "test", category = Category.HIDDEN)

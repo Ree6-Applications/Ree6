@@ -12,6 +12,7 @@ import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.others.TimeUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageActivity;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
@@ -36,6 +37,7 @@ import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.role.update.*;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.TimeFormat;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -43,8 +45,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
-@SuppressWarnings("CommentedOutCode")
 public class LoggingEvents extends ListenerAdapter {
 
     @Override
@@ -67,7 +69,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
-            we.setDescription(event.getUser().getAsMention() + " **joined the Server.**\n:timer: Age of the Account:\n``" + event.getUser().getTimeCreated().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) + "``\n**" + TimeUtil.getFormattedDate(TimeUtil.getDifferenceBetween(event.getUser().getTimeCreated().toLocalDateTime(), LocalDateTime.now())) + "**");
+            we.setDescription(event.getUser().getAsMention() + " **joined the Server.**\n:timer: Age of the Account:\n``" + event.getUser().getTimeCreated().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) + "``\n**" + TimeFormat.RELATIVE.format(event.getUser().getTimeCreated()) + "**");
 
             wm.addEmbeds(we.build());
             Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerUserData(event.getUser()), LoggerMessage.LogTyp.SERVER_JOIN));
@@ -647,11 +649,29 @@ public class LoggingEvents extends ListenerAdapter {
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
-            we.setAuthor(new WebhookEmbed.EmbedAuthor(ArrayUtil.getUserFromMessageList(event.getMessageId()).getAsTag(), ArrayUtil.getUserFromMessageList(event.getMessageId()).getAvatarUrl(), null));
+            we.setAuthor(new WebhookEmbed.EmbedAuthor(user.getAsTag(), user.getAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
             Message message = ArrayUtil.getMessageFromMessageList(event.getMessageId());
+
+            if (message != null && message.getActivity() != null) return;
+
+            boolean isImageAdded = false;
+
+            if (message != null && !message.getAttachments().isEmpty()) {
+                for (Message.Attachment attachment : message.getAttachments()) {
+                    try {
+                        if (!isImageAdded && attachment.isImage()) {
+                            we.setImageUrl(attachment.getProxyUrl());
+                            isImageAdded = true;
+                        } else {
+                            wm.addFile(attachment.getFileName(), attachment.retrieveInputStream().get());
+                        }
+                    } catch (Exception ignored) {}
+                }
+                wm.append("The Message had Attachments, please be careful when checking them out!");
+            }
 
             we.setDescription(":wastebasket: **Message of " + user.getAsMention() + " in " + event.getTextChannel().getAsMention() + " has been deleted.**\n" +
                     (message != null ? message.getContentRaw().length() >= 650 ? "Message is too long to display!" : message.getContentRaw() : ""));

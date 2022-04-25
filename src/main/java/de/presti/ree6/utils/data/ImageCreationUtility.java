@@ -90,7 +90,7 @@ public class ImageCreationUtility {
         // Draw the current Ranking.
         graphics2D.setColor(Color.WHITE);
         graphics2D.setFont(verdana40);
-        graphics2D.drawString("Rank", (base.getWidth() - 800) - (graphics2D.getFontMetrics(verdana50).stringWidth("" + userLevel.getLevel())) - (graphics2D.getFontMetrics().stringWidth("Rank")) - 10, 675 - graphics2D.getFontMetrics().getHeight() - graphics2D.getFontMetrics().getHeight());
+        graphics2D.drawString("Rank", (base.getWidth() - 800) - (graphics2D.getFontMetrics(verdana50).stringWidth("" + userLevel.getRank())) - (graphics2D.getFontMetrics().stringWidth("Rank")) - 10, 675 - graphics2D.getFontMetrics().getHeight() - graphics2D.getFontMetrics().getHeight());
 
         graphics2D.setColor(Color.MAGENTA.brighter());
         graphics2D.setFont(verdana50);

@@ -6,6 +6,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -25,17 +26,25 @@ public class Unban implements ICommand {
                 OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("id");
 
                 if (targetOption != null) {
-                    commandEvent.getGuild().unban(targetOption.getAsString()).queue();
-                    Main.getInstance().getCommandManager().sendMessage("User <@" + targetOption.getAsString() + "> has been unbanned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    try {
+                        commandEvent.getGuild().unban(UserSnowflake.fromId(targetOption.getAsString())).queue();
+                        Main.getInstance().getCommandManager().sendMessage("User <@" + targetOption.getAsString() + "> has been unbanned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    } catch (Exception ignored) {
+                        Main.getInstance().getCommandManager().sendMessage("Received a Invalid UserID", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    }
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("No User was given to Unban!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("No User was given to Unban!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 }
 
             } else {
                 if (commandEvent.getArguments().length == 1) {
-                    String userId = commandEvent.getArguments()[0];
-                    commandEvent.getGuild().unban(userId).queue();
-                    Main.getInstance().getCommandManager().sendMessage("User <@" + userId + "> has been unbanned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    try {
+                        String userId = commandEvent.getArguments()[0];
+                        commandEvent.getGuild().unban(UserSnowflake.fromId(userId)).queue();
+                        Main.getInstance().getCommandManager().sendMessage("User <@" + userId + "> has been unbanned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    } catch (Exception ignored) {
+                        Main.getInstance().getCommandManager().sendMessage("Received a Invalid UserID", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    }
                 } else {
                     Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                     Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "unban @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

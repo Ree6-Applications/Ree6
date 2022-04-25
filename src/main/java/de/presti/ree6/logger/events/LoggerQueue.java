@@ -425,11 +425,17 @@ public class LoggerQueue {
                                     loggerMessages.getUserData().getUser().getIdLong() == loggerMessage.getUserData().getUser().getIdLong())
                             .anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.USER_BAN)) {
                         webhookEmbedBuilder.setDescription(loggerMessage.getUserData().getUser().getAsMention() + " **has been banned.** ");
-                    } else{
+                    } else {
                         webhookEmbedBuilder.setDescription(loggerMessage.getUserData().getUser().getAsMention() + " **joined and left this Server.** ");
                     }
 
                     modified = true;
+                }
+            } else if (loggerMessage.getType() == LoggerMessage.LogTyp.SERVER_INVITE) {
+                if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId()
+                        && loggerMessages.getUserData() != null && loggerMessages.getUserData().getUser().getIdLong() == loggerMessage.getUserData().getUser().getIdLong()
+                        && !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LoggerMessage.LogTyp.SERVER_LEAVE)) {
+                    loggerMessage.setCanceled(true);
                 }
             }
 
