@@ -147,6 +147,8 @@ public class ImageCreationUtility {
             userImage = ImageIO.read(new URL(user.getDefaultAvatarUrl()));
         }
 
+        userImage = resize(userImage, 128, 128);
+
         // Create a new Graphics2D instance from the base.
         Graphics2D graphics2D = base.createGraphics();
 
