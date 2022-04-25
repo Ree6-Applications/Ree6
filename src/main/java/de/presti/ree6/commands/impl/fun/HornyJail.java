@@ -55,12 +55,6 @@ public class HornyJail implements ICommand {
 
     public void sendHornyJail(Member member, CommandEvent commandEvent) {
         try {
-
-            HttpClient httpClient = HttpClientBuilder.create().build();
-            HttpGet request = new HttpGet("https://api.dagpi.xyz/image/jail/?url=" + member.getUser().getAvatarUrl());
-            request.setHeader("Authorization", Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"));
-            HttpResponse response = httpClient.execute(request);
-
             Main.getInstance().getCommandManager().sendMessage(member.getAsMention() + " is now in the Hornyjail!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             commandEvent.getTextChannel().sendFile(ImageCreationUtility.createHornyJailImage(member.getUser()), "hornyjail.png").queue();
             if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();

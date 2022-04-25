@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.others.FormatUtil;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -192,7 +193,7 @@ public class TrackScheduler extends AudioEventAdapter {
                         .setTitle("Music Player!")
                         .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
-                        .setDescription("Next Song!\nSong: ``" + track.getInfo().title + "``")
+                        .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
                         .setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl()), 5, getTextChannel());
             }
             player.startTrack(track, false);
@@ -221,7 +222,7 @@ public class TrackScheduler extends AudioEventAdapter {
                         .setTitle("Music Player!")
                         .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
-                        .setDescription("Next Song!\nSong: ``" + track.getInfo().title + "``")
+                        .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
                         .setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl()), 5, getTextChannel());
             }
             player.startTrack(track, false);
@@ -255,7 +256,7 @@ public class TrackScheduler extends AudioEventAdapter {
                                 .setTitle("Music Player!")
                                 .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
                                 .setColor(Color.RED)
-                                .setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: Track is not existing!")
+                                .setDescription("Error while playing: ``" + FormatUtil.filter(track.getInfo().title) + "``\nError: Track is not existing!")
                                 .setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl()), 5, getTextChannel());
                     }
 
@@ -269,7 +270,7 @@ public class TrackScheduler extends AudioEventAdapter {
                             .setTitle("Music Player!")
                             .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.RED)
-                            .setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: " + endReason.name())
+                            .setDescription("Error while playing: ``" + FormatUtil.filter(track.getInfo().title) + "``\nError: " + endReason.name())
                             .setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl()), 5, getTextChannel());
                 }
 
@@ -286,7 +287,7 @@ public class TrackScheduler extends AudioEventAdapter {
                             .setTitle("Music Player!")
                             .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.RED)
-                            .setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: " + endReason.name())
+                            .setDescription("Error while playing: ``" + FormatUtil.filter(track.getInfo().title) + "``\nError: " + endReason.name())
                             .setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl()), 5, getTextChannel());
                 }
                 nextRandomTrack(getTextChannel());
@@ -302,7 +303,7 @@ public class TrackScheduler extends AudioEventAdapter {
                             .setTitle("Music Player!")
                             .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.RED)
-                            .setDescription("Error while playing: ``" + track.getInfo().title + "``\nError: " + endReason.name())
+                            .setDescription("Error while playing: ``" + FormatUtil.filter(track.getInfo().title) + "``\nError: " + endReason.name())
                             .setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl()), 5, getTextChannel());
                 }
                 nextTrack(getTextChannel());

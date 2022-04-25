@@ -9,6 +9,7 @@ import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.music.AudioPlayerSendHandler;
 import de.presti.ree6.music.GuildMusicManager;
+import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -41,7 +42,7 @@ public class Lyrics implements ICommand {
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                                     commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle("Music Player!")
                             .setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setColor(Color.RED)
-                            .setDescription("Couldn't find the Lyrics for ``" + title + "``.")
+                            .setDescription("Couldn't find the Lyrics for ``" + FormatUtil.filter(title) + "``.")
                             .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl()), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                     return;
                 }
@@ -50,7 +51,7 @@ public class Lyrics implements ICommand {
                         .setAuthor(lyrics.getAuthor())
                         .setTitle(lyrics.getTitle(), lyrics.getURL());
                 if (lyrics.getContent().length() > 15000) {
-                    Main.getInstance().getCommandManager().sendMessage("Lyrics for `" + title + "` found but likely not correct: " + lyrics.getURL(), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Lyrics for `" + FormatUtil.filter(title) + "` found but likely not correct: " + lyrics.getURL(), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 } else if (lyrics.getContent().length() > 2000) {
                     String content = lyrics.getContent().trim();
                     while (content.length() > 2000) {

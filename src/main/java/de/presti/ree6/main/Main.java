@@ -1,25 +1,18 @@
 package de.presti.ree6.main;
 
 import com.mindscapehq.raygun4java.core.RaygunClient;
-import de.presti.ree6.addons.AddonLoader;
-import de.presti.ree6.addons.AddonManager;
+import de.presti.ree6.addons.*;
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.bot.version.BotState;
-import de.presti.ree6.bot.version.BotVersion;
+import de.presti.ree6.bot.version.*;
 import de.presti.ree6.commands.CommandManager;
-import de.presti.ree6.events.LoggingEvents;
-import de.presti.ree6.events.OtherEvents;
+import de.presti.ree6.events.*;
 import de.presti.ree6.logger.events.LoggerQueue;
-import de.presti.ree6.music.AudioPlayerSendHandler;
-import de.presti.ree6.music.GuildMusicManager;
-import de.presti.ree6.music.MusicWorker;
+import de.presti.ree6.music.*;
 import de.presti.ree6.sql.SQLConnector;
-import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.utils.data.Config;
-import de.presti.ree6.utils.apis.Notifier;
+import de.presti.ree6.utils.apis.*;
+import de.presti.ree6.utils.data.*;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,12 +57,16 @@ public class Main {
 
     /**
      * Main methode called when Application starts.
+     *
      * @param args Start Arguments.
      */
     public static void main(String[] args) {
 
         // Create the Main instance.
         instance = new Main();
+
+        // This is a stupid way to manage it, but the only way that I know right now.
+        String version = "1.7.7";
 
         // Create the Logger Instance.
         instance.logger = LoggerFactory.getLogger(Main.class);
@@ -93,7 +90,10 @@ public class Main {
 
         instance.logger.info("Creating RayGun Instance.");
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken")).send(e));
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            RaygunClient raygunClient = new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken"));
+            raygunClient.setVersion(version);
+        });
 
         // Create a new connection between the Application and the SQL-Server.
         instance.sqlConnector = new SQLConnector(instance.config.getConfiguration().getString("mysql.user"),
@@ -126,7 +126,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.PUBLIC, "1.7.6");
+            BotWorker.createBot(BotVersion.DEV, version);
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -228,7 +228,7 @@ public class Main {
                     ArrayUtil.messageIDwithUser.clear();
 
                     for (JDA jda : BotWorker.getShardManager().getShards()) {
-                        BotWorker.setActivity(jda,"%shard_guilds% Guilds, on Shard %shard% with %shards% Shards.", Activity.ActivityType.WATCHING);
+                        BotWorker.setActivity(jda, "%shard_guilds% Guilds, on Shard %shard% with %shards% Shards.", Activity.ActivityType.WATCHING);
                     }
 
                     instance.logger.info("[Stats] ");
@@ -249,11 +249,11 @@ public class Main {
 
                         if (guild.getSelfMember().getVoiceState() != null && guild.getSelfMember().getVoiceState().inAudioChannel() && (playerSendHandler == null ||
                                 !playerSendHandler.isMusicPlaying(guild))) {
-                            guildMusicManager.scheduler.stopAll(guild,null);
+                            guildMusicManager.scheduler.stopAll(guild, null);
                         }
 
                     } catch (Exception ex) {
-                        guildMusicManager.scheduler.stopAll(guild,null);
+                        guildMusicManager.scheduler.stopAll(guild, null);
                         getLogger().error("Error", ex);
                     }
                 }
@@ -270,6 +270,7 @@ public class Main {
 
     /**
      * Retrieve the Instance of the Main class.
+     *
      * @return {@link Main} Instance of the Main class.
      */
     public static Main getInstance() {
@@ -278,6 +279,7 @@ public class Main {
 
     /**
      * Retrieve the Instance of the Notifier.
+     *
      * @return {@link Notifier} Instance of the Notifier.
      */
     public Notifier getNotifier() {
@@ -286,6 +288,7 @@ public class Main {
 
     /**
      * Retrieve the Instance of the CommandManager.
+     *
      * @return {@link CommandManager} Instance of the CommandManager.
      */
     public CommandManager getCommandManager() {
@@ -294,6 +297,7 @@ public class Main {
 
     /**
      * Retrieve the Instance of the AddonManager.
+     *
      * @return {@link AddonManager} Instance of the AddonManager.
      */
     public AddonManager getAddonManager() {
@@ -302,6 +306,7 @@ public class Main {
 
     /**
      * Retrieve the Instance of the SQL-Connector.
+     *
      * @return {@link SQLConnector} Instance of the SQL-Connector.
      */
     public SQLConnector getSqlConnector() {
@@ -310,6 +315,7 @@ public class Main {
 
     /**
      * Retrieve the Instance of the LoggerQueue.
+     *
      * @return {@link LoggerQueue} Instance of the LoggerQueue.
      */
     public LoggerQueue getLoggerQueue() {
@@ -318,6 +324,7 @@ public class Main {
 
     /**
      * Retrieve the Instance of the Music-Worker.
+     *
      * @return {@link MusicWorker} Instance of the Music-Worker.
      */
     public MusicWorker getMusicWorker() {
@@ -326,12 +333,16 @@ public class Main {
 
     /**
      * Retrieve the Instance of the Logger.
+     *
      * @return {@link Logger} Instance of the Logger.
      */
-    public Logger getLogger() { return logger; }
+    public Logger getLogger() {
+        return logger;
+    }
 
     /**
      * Retrieve the Instance of the Checker-Thread.
+     *
      * @return {@link Thread} Instance of the Checker-Thread.
      */
     public Thread getChecker() {
@@ -340,6 +351,7 @@ public class Main {
 
     /**
      * Retrieve the Instance of the Config.
+     *
      * @return {@link Config} Instance of the Config.
      */
     public Config getConfig() {

@@ -10,6 +10,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
@@ -118,7 +119,7 @@ public class MusicWorker {
                         .setTitle("Music Player!")
                         .setThumbnail(channel.getGuild().getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
-                        .setDescription("A Song with the URL ``" + trackUrl + "`` couldn't be found!")
+                        .setDescription("A Song with the URL ``" + FormatUtil.filter(trackUrl) + "`` couldn't be found!")
                         .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
             }
 
@@ -164,7 +165,7 @@ public class MusicWorker {
                         .setTitle("Music Player!")
                         .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
-                        .setDescription("The Song ``" + track.getInfo().title + "`` has been added to the Queue!")
+                        .setDescription("The Song ``" + FormatUtil.filter(track.getInfo().title) + "`` has been added to the Queue!")
                         .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
 
                 play(audioChannel, musicManager, track);
@@ -188,7 +189,7 @@ public class MusicWorker {
                         .setTitle("Music Player!")
                         .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
-                        .setDescription("The Song ``" + firstTrack.getInfo().title + "`` has been added to the Queue! (The first Song of the Playlist: " + playlist.getName() + ")")
+                        .setDescription("The Song ``" + FormatUtil.filter(firstTrack.getInfo().title) + "`` has been added to the Queue! (The first Song of the Playlist: " + FormatUtil.filter(playlist.getName()) + ")")
                         .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
 
                 play(audioChannel, musicManager, firstTrack);
@@ -212,7 +213,7 @@ public class MusicWorker {
                         .setTitle("Music Player!")
                         .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
-                        .setDescription("A Song with the URL ``" + trackUrl + "`` couldn't be found!")
+                        .setDescription("A Song with the URL ``" + FormatUtil.filter(trackUrl) + "`` couldn't be found!")
                         .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
             }
 

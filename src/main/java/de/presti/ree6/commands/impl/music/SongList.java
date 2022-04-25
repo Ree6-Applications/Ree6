@@ -7,6 +7,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -22,7 +23,7 @@ public class SongList implements ICommand {
         StringBuilder end = new StringBuilder("```");
 
         for (AudioTrack track : Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.getQueue()) {
-            end.append("\n").append(track.getInfo().title);
+            end.append("\n").append(FormatUtil.filter(track.getInfo().title));
         }
 
         end.append("```");
