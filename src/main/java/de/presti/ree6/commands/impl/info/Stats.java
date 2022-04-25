@@ -1,6 +1,5 @@
 package de.presti.ree6.commands.impl.info;
 
-import com.sun.management.OperatingSystemMXBean;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.*;
 import de.presti.ree6.commands.interfaces.Command;
@@ -13,7 +12,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.lang.management.ManagementFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
