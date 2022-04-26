@@ -46,7 +46,7 @@ public class OtherEvents extends ListenerAdapter {
 
         Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
 
-        BotWorker.setActivity(event.getJDA(),"%shard_guilds% Guilds, on Shard %shard% with %shards% Shards.", Activity.ActivityType.WATCHING);
+        BotWorker.setActivity(event.getJDA(),"ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
     }
 
     @Override
