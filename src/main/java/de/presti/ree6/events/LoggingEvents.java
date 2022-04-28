@@ -88,7 +88,7 @@ public class LoggingEvents extends ListenerAdapter {
                 wm2.append("Couldn't find out how " + event.getMember().getAsMention() + " joined :C");
             }
 
-            Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm2.build(), LoggerMessage.LogTyp.SERVER_INVITE));
+            Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm2.build(), new LoggerUserData(event.getUser()), LoggerMessage.LogTyp.SERVER_INVITE));
         }
     }
 

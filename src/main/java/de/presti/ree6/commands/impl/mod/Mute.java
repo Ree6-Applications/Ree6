@@ -17,6 +17,8 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 @Command(name = "mute", description = "Mute a specific user on the Server.", category = Category.MOD)
 public class Mute implements ICommand {
 
+    // TODO rework, to instead use the Timeout feature.
+
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {

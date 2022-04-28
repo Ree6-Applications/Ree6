@@ -65,9 +65,6 @@ public class Main {
         // Create the Main instance.
         instance = new Main();
 
-        // This is a stupid way to manage it, but the only way that I know right now.
-        String version = "1.7.7";
-
         // Create the Logger Instance.
         instance.logger = LoggerFactory.getLogger(Main.class);
 
@@ -92,7 +89,7 @@ public class Main {
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             RaygunClient raygunClient = new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken"));
-            raygunClient.setVersion(version);
+            raygunClient.setVersion("1.7.7");
         });
 
         // Create a new connection between the Application and the SQL-Server.
@@ -126,7 +123,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.PUBLIC, version);
+            BotWorker.createBot(BotVersion.PUBLIC, "1.7.7");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
