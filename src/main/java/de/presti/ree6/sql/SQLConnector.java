@@ -58,9 +58,9 @@ public class SQLConnector {
      * Try to open a connection to the SQL Server with the given data.
      */
     public void connectToSQLServer() {
-        Main.getInstance().getLogger().info("Connecting to SQl.");
+        Main.getInstance().getLogger().info("Connecting to SQl-Service (MariaDB).");
         // Check if there is already an open Connection.
-        if (IsConnected()) {
+        if (isConnected()) {
             try {
                 // Close if there is and notify.
                 connection.close();
@@ -87,7 +87,7 @@ public class SQLConnector {
     public void createTables() {
 
         // Check if there is an open Connection if not, skip.
-        if (!IsConnected()) return;
+        if (!isConnected()) return;
 
         // Registering the tables and values.
         tables.put("Settings", "(GID VARCHAR(40), NAME VARCHAR(40), VALUE VARCHAR(50))");
@@ -120,15 +120,13 @@ public class SQLConnector {
                 Main.getInstance().getLogger().error("Couldn't create " + entry.getKey() + " Table.", exception);
             }
         }
-
-
     }
 
     /**
      * Check if there is an open connection to the Database Server.
      * @return boolean If the connection is opened.
      */
-    public boolean IsConnected() {
+    public boolean isConnected() {
         try {
             return connection != null && !connection.isClosed();
         } catch (Exception ignore) {}
@@ -141,7 +139,7 @@ public class SQLConnector {
      */
     public void close() {
         // Check if there is already an open Connection.
-        if (IsConnected()) {
+        if (isConnected()) {
             try {
                 // Close if there is and notify.
                 connection.close();

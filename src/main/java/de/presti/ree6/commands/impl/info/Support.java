@@ -11,7 +11,7 @@ public class Support implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage("<https://support.ree6.de/>", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage("Join our Support Discord Server!\nhttps://support.ree6.de/", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
     }
 
     @Override

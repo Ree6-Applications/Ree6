@@ -65,7 +65,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
-            we.setDescription(event.getUser().getAsMention() + " **joined the Server.**\n:timer: Age of the Account:\n``" + event.getUser().getTimeCreated().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) + "``\n**" + TimeFormat.RELATIVE.format(event.getUser().getTimeCreated()) + "**");
+            we.setDescription(event.getUser().getAsMention() + " **joined the Server.**\n:timer: Age of the Account:\n``" + TimeFormat.DATE_TIME_SHORT.format(event.getUser().getTimeCreated()) + "``\n**" + TimeFormat.RELATIVE.format(event.getUser().getTimeCreated()) + "**");
 
             wm.addEmbeds(we.build());
             Main.getInstance().getLoggerQueue().add(new LoggerMessage(event.getGuild(), Long.parseLong(infos[0]), infos[1], wm.build(), new LoggerUserData(event.getUser()), LoggerMessage.LogTyp.SERVER_JOIN));

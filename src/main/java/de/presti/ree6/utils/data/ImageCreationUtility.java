@@ -160,50 +160,14 @@ public class ImageCreationUtility {
         graphics2D.drawImage(userImage, null, 0, 0);
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        graphics2D.setColor(Color.DARK_GRAY);
-        graphics2D.drawRect(4, -1, 4, 130);
-        graphics2D.setColor(Color.GRAY);
-        graphics2D.fillRect(5, -1, 3, 130);
+        int xOffset = base.getWidth() / 7;
 
-        graphics2D.setColor(Color.DARK_GRAY);
-        graphics2D.drawRect(19, -1, 4, 130);
-        graphics2D.setColor(Color.GRAY);
-        graphics2D.fillRect(20, -1, 3, 130);
-
-        graphics2D.setColor(Color.DARK_GRAY);
-        graphics2D.drawRect(33, -1, 4, 130);
-        graphics2D.setColor(Color.GRAY);
-        graphics2D.fillRect(34, -1, 3, 130);
-
-        graphics2D.setColor(Color.DARK_GRAY);
-        graphics2D.drawRect(48, -1, 4, 130);
-        graphics2D.setColor(Color.GRAY);
-        graphics2D.fillRect(49, -1, 3, 130);
-
-        graphics2D.setColor(Color.DARK_GRAY);
-        graphics2D.drawRect(63, -1, 4, 130);
-        graphics2D.setColor(Color.GRAY);
-        graphics2D.fillRect(64, -1, 3, 130);
-
-        graphics2D.setColor(Color.DARK_GRAY);
-        graphics2D.drawRect(78, -1, 4, 130);
-        graphics2D.setColor(Color.GRAY);
-        graphics2D.fillRect(79, -1, 3, 130);
-
-        graphics2D.setColor(Color.DARK_GRAY);
-        graphics2D.drawRect(94, -1, 4, 130);
-        graphics2D.setColor(Color.GRAY);
-        graphics2D.fillRect(95, -1, 3, 130);
-
-        graphics2D.setColor(Color.DARK_GRAY);
-        graphics2D.drawRect(109, -1, 4, 130);
-        graphics2D.setColor(Color.GRAY);
-        graphics2D.fillRect(110, -1, 3, 130);
-
-        graphics2D.setColor(Color.DARK_GRAY);
-        graphics2D.drawRect(124, -1, 4, 130);
-        graphics2D.setColor(Color.GRAY);
-        graphics2D.fillRect(125, -1, 3, 130);
+        for (int i = -1; i < 7; i++) {
+            graphics2D.setColor(Color.DARK_GRAY);
+            graphics2D.drawRect((xOffset * i) + xOffset, -1, 4, 130);
+            graphics2D.setColor(Color.GRAY);
+            graphics2D.fillRect((xOffset * i) + xOffset + 1, -1, 3, 130);
+        }
 
         // Close the Graphics2d instance.
         graphics2D.dispose();

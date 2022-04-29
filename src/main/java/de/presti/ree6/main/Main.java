@@ -174,7 +174,7 @@ public class Main {
         BotWorker.setState(BotState.STOPPED);
 
         // Check if there is an SQL-connection if so, shutdown.
-        if (sqlConnector != null && (sqlConnector.IsConnected())) {
+        if (sqlConnector != null && (sqlConnector.isConnected())) {
             instance.logger.info("[Main] Closing Database Connection!");
             getSqlConnector().close();
             instance.logger.info("[Main] Closed Database Connection!");

@@ -1938,7 +1938,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return The Result from the SQL-Server.
      */
     public ResultSet querySQL(String sqlQuery, Object... objcObjects) {
-        if (!sqlConnector.IsConnected()) return null;
+        if (!sqlConnector.isConnected()) return null;
 
         try (PreparedStatement preparedStatement = sqlConnector.getConnection().prepareStatement(sqlQuery)) {
             int index = 1;
@@ -1961,7 +1961,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
                 }
             }
 
-            if (sqlQuery.startsWith("SELECT")) {
+            if (sqlQuery.toUpperCase().startsWith("SELECT")) {
                 return preparedStatement.executeQuery();
             } else {
                 preparedStatement.executeUpdate();
