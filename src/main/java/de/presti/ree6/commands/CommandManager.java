@@ -109,7 +109,7 @@ public class CommandManager {
         addCommand(new NSFW());
 
         //Hidden
-        addCommand(new ReloadAddons());
+        addCommand(new Addon());
         //// addCommand(new Gamer());
         //// addCommand(new Test());
     }

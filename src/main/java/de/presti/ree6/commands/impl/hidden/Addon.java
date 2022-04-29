@@ -1,6 +1,5 @@
 package de.presti.ree6.commands.impl.hidden;
 
-import de.presti.ree6.addons.Addon;
 import de.presti.ree6.commands.*;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
@@ -8,14 +7,14 @@ import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 @Command(name = "addon", description = "Only meant for Developers, used to reload or load new Addons.", category = Category.HIDDEN)
-public class ReloadAddons implements ICommand {
+public class Addon implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if(commandEvent.getMember().getUser().getId().equalsIgnoreCase("321580743488831490")) {
             if (commandEvent.getArguments().length == 0) {
                 StringBuilder stringBuilder = new StringBuilder("```");
-                for (Addon addon : Main.getInstance().getAddonManager().addons) {
+                for (de.presti.ree6.addons.Addon addon : Main.getInstance().getAddonManager().addons) {
                     stringBuilder.append(addon.getName()).append("v").append(addon.getVersion())
                             .append(" ").append("for").append(" ").append("by").append(" ").append(addon.getAuthor()).append("\n");
                 }
