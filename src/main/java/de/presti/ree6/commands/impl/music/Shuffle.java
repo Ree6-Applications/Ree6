@@ -27,15 +27,14 @@ public class Shuffle implements ICommand {
         EmbedBuilder em = new EmbedBuilder();
 
         Main.getInstance().getMusicWorker().getGuildAudioPlayer(
-                commandEvent.getGuild()).scheduler.setShuffle(!Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.isShuffle());
+                commandEvent.getGuild()).scheduler.shuffle();
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.isShuffle() ? "Song Shuffle has been activated!"
-                : "Song Shuffle has been deactivated!");
+        em.setDescription("The current Song-Queue has been shuffled!");
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
         Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

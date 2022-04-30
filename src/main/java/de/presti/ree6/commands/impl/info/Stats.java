@@ -6,7 +6,6 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.stats.StatsManager;
 import de.presti.ree6.utils.others.TimeUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -14,7 +13,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 @Command(name = "stats", description = "See Stats of Ree6!", category = Category.INFO)
 public class Stats implements ICommand {
@@ -54,14 +52,15 @@ public class Stats implements ICommand {
 
         StringBuilder end = new StringBuilder();
 
-        for (Map.Entry<String, Long> sheesh : StatsManager.getCommandStats(commandEvent.getGuild().getId()).entrySet()) {
-            end.append(sheesh.getKey()).append(" - ").append(sheesh.getValue()).append("\n");
+        for (String[] values : Main.getInstance().getSqlConnector().getSqlWorker().getStats(commandEvent.getGuild().getId())) {
+            end.append(values[0]).append(" - ").append(values[1]).append("\n");
         }
 
         StringBuilder end2 = new StringBuilder();
 
-        for (Map.Entry<String, Long> sheesh : StatsManager.getCommandStats().entrySet()) {
-            end2.append(sheesh.getKey()).append(" - ").append(sheesh.getValue()).append("\n");
+
+        for (String[] values : Main.getInstance().getSqlConnector().getSqlWorker().getStatsGlobal()) {
+            end2.append(values[0]).append(" - ").append(values[1]).append("\n");
         }
 
         em.addField("**Command Stats:**", "", true);

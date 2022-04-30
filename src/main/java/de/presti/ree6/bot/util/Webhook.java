@@ -49,8 +49,12 @@ public class Webhook {
                 // If the error 404 comes that means that the webhook is invalid.
                 if (throwable.getMessage().contains("failure 404")) {
                     // Inform and delete invalid webhook.
-                    if (isLog) Main.getInstance().getSqlConnector().getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
-                    Main.getInstance().getLogger().error("[Webhook] Deleted invalid Webhook: " + webhookId + " - " + webhookToken);
+                    if (isLog) {
+                        Main.getInstance().getSqlConnector().getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
+                        Main.getInstance().getLogger().error("[Webhook] Deleted invalid Webhook: " + webhookId + " - " + webhookToken);
+                    } else {
+                        Main.getInstance().getLogger().error("[Webhook] Invalid Webhook: " + webhookId + " - " + webhookToken + ", has not been deleted since it is not a Log-Webhook.");
+                    }
                 } else if (throwable.getMessage().contains("failure 400")) {
                     // If 404 inform that the Message had an invalid Body.
                     Main.getInstance().getLogger().error("[Webhook] Invalid Body with LogTyp: " + loggerMessage.getType().name());

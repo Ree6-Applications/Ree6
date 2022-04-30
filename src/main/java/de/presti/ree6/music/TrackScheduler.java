@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.others.FormatUtil;
-import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -15,6 +14,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -28,7 +28,6 @@ public class TrackScheduler extends AudioEventAdapter {
     private final BlockingQueue<AudioTrack> queue;
     TextChannel textChannel;
     boolean loop = false;
-    boolean shuffle = false;
 
     /**
      * @param player The audio player this scheduler uses
@@ -85,31 +84,14 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     /**
-     * Toggle the shuffle.
-     *
-     * @return if the shuffle is activ or not.
+     * Shuffle the current playlsist.
      */
-    public boolean shuffle() {
-        setShuffle(!shuffle);
-        return shuffle;
-    }
-
-    /**
-     * Check if shuffle is activ or not.
-     *
-     * @return true, if it is activ | false, if not.
-     */
-    public boolean isShuffle() {
-        return shuffle;
-    }
-
-    /**
-     * Toggle the shuffle.
-     *
-     * @param shuffle should the shuffle we activ or not?
-     */
-    public void setShuffle(boolean shuffle) {
-        this.shuffle = shuffle;
+    public void shuffle() {
+        ArrayList<AudioTrack> audioTrackArrayList = new ArrayList<>();
+        queue.addAll(audioTrackArrayList);
+        Collections.shuffle(audioTrackArrayList);
+        queue.clear();
+        queue.addAll(audioTrackArrayList);
     }
 
     /**
@@ -156,51 +138,6 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     /**
-     * Get a random Track from the List.
-     *
-     * @param list the Queue.
-     * @return the random {@link AudioTrack}.
-     */
-    public AudioTrack randomTrack(BlockingQueue<AudioTrack> list) {
-        ArrayList<AudioTrack> tracks = new ArrayList<>();
-
-        tracks.addAll(list);
-
-        AudioTrack track = tracks.get(RandomUtils.random.nextInt((tracks.size() - 1)));
-
-        if (!list.remove(track)) {
-            Main.getInstance().getLogger().error("[TrackScheduler] Couldn't remove a Track!");
-        }
-
-        return track;
-    }
-
-    /**
-     * Start the next track, stopping the current one if it is playing.
-     *
-     * @param textChannel the Text-Channel where the command have been performed from.
-     */
-    public void nextRandomTrack(TextChannel textChannel) {
-
-        setTextChannel(textChannel);
-
-        AudioTrack track = randomTrack(getQueue());
-
-        if (track != null) {
-            if (getTextChannel() != null) {
-                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle("Music Player!")
-                        .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
-                        .setColor(Color.GREEN)
-                        .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
-                        .setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl()), 5, getTextChannel());
-            }
-            player.startTrack(track, false);
-        }
-    }
-
-    /**
      * Get the next Track from the Queue.
      *
      * @param textChannel the Text-Channel where the command have been performed from.
@@ -213,7 +150,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
         setTextChannel(textChannel);
 
-        AudioTrack track = shuffle ? randomTrack(getQueue()) : queue.poll();
+        AudioTrack track = queue.poll();
 
         if (track != null) {
             if (getTextChannel() != null) {
@@ -276,23 +213,6 @@ public class TrackScheduler extends AudioEventAdapter {
 
                 nextTrack(getTextChannel());
             }
-            // Check if shuffle is activ.
-        } else if (shuffle) {
-            // Check if a new song should be played or not.
-            if (endReason.mayStartNext) {
-                // Check if there was an error on the current song if so inform user.
-                if (endReason == AudioTrackEndReason.LOAD_FAILED && getTextChannel() != null) {
-                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                            .setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl())
-                            .setTitle("Music Player!")
-                            .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
-                            .setColor(Color.RED)
-                            .setDescription("Error while playing: ``" + FormatUtil.filter(track.getInfo().title) + "``\nError: " + endReason.name())
-                            .setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl()), 5, getTextChannel());
-                }
-                nextRandomTrack(getTextChannel());
-            }
-            // If neither shuffle or loop is activ do the normal play.
         } else {
             // Check if a new song shoud be played or not.
             if (endReason.mayStartNext) {

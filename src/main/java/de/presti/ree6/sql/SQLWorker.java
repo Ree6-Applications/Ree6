@@ -1797,45 +1797,38 @@ public record SQLWorker(SQLConnector sqlConnector) {
         return 0L;
     }
 
-    public HashMap<String, Long> getStats(String guildId) {
-        // HashMap with the Command name as key and the usage of it as value.
-        HashMap<String, Long> statsMap = new HashMap<>();
+    public List<String[]> getStats(String guildId) {
+
+        // ArrayList with the Command name as key and the usage of it as value.
+        ArrayList<String[]> statsList = new ArrayList<>();
 
         // Creating a SQL Statement to get every entry in the GuildStats Table by the Guild.
-        try (ResultSet rs = querySQL("SELECT * FROM GuildStats WHERE GID=? ORDER BY cast(uses as unsigned) DESC LIMIT 5;", guildId)) {
+        try (ResultSet rs = querySQL("SELECT * FROM GuildStats WHERE GID=? ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", guildId)) {
 
             // Return if found.
-            while (rs != null && rs.next()) statsMap.put(rs.getString("COMMAND"), Long.parseLong(rs.getString("USES")));
+            while (rs != null && rs.next()) statsList.add(new String[] {rs.getString("COMMAND"), rs.getString("USES")});
         } catch (Exception ignore) {
         }
 
-        HashMap<String, Long> sortedStatsMap = new HashMap<>();
-
-        statsMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).forEachOrdered(x -> sortedStatsMap.put(x.getKey(), x.getValue()));
-
         // Return the HashMap.
-        return sortedStatsMap;
+        return statsList;
     }
 
-    public HashMap<String, Long> getStatsGlobal() {
+    public List<String[]> getStatsGlobal() {
 
-        // HashMap with the Command name as key and the usage of it as value.
-        HashMap<String, Long> statsMap = new HashMap<>();
+        // ArrayList with the Command name as key and the usage of it as value.
+        ArrayList<String[]> statsList = new ArrayList<>();
 
         // Creating a SQL Statement to get every entry in the CommandStats Table.
-        try (ResultSet rs = querySQL("SELECT * FROM CommandStats ORDER BY cast(uses as unsigned) DESC LIMIT 5;")) {
+        try (ResultSet rs = querySQL("SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5")) {
 
             // Return if found.
-            while (rs != null && rs.next()) statsMap.put(rs.getString("COMMAND"), Long.parseLong(rs.getString("USES")));
+            while (rs != null && rs.next()) statsList.add(new String[] {rs.getString("COMMAND"), rs.getString("USES")});
         } catch (Exception ignore) {
         }
 
-        HashMap<String, Long> sortedStatsMap = new HashMap<>();
-
-        statsMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).forEachOrdered(x -> sortedStatsMap.put(x.getKey(), x.getValue()));
-
         // Return the HashMap.
-        return sortedStatsMap;
+        return statsList;
     }
 
     /**

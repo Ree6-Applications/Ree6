@@ -15,7 +15,6 @@ import de.presti.ree6.commands.impl.nsfw.*;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.stats.StatsManager;
 
 import de.presti.ree6.utils.data.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -228,11 +227,7 @@ public class CommandManager {
             }
 
             // Perform the Command.
-            command.onPerform(new CommandEvent(member, guild, null, textChannel, null, slashCommandInteractionEvent));
-
-            // Update Stats.
-            StatsManager.addStatsForCommand(command, guild.getId());
-
+            command.onASyncPerform(new CommandEvent(member, guild, null, textChannel, null, slashCommandInteractionEvent));
         } else {
 
             // Check if the Message is null.
@@ -270,10 +265,7 @@ public class CommandManager {
             String[] argumentsParsed = Arrays.copyOfRange(arguments, 1, arguments.length);
 
             // Perform the Command.
-            command.onPerform(new CommandEvent(member, guild, message, textChannel, argumentsParsed, null));
-
-            // Add Stats.
-            StatsManager.addStatsForCommand(command, guild.getId());
+            command.onASyncPerform(new CommandEvent(member, guild, message, textChannel, argumentsParsed, null));
         }
 
         // Check if this is a Developer build, if not then cooldown the User.
