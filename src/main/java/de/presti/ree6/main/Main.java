@@ -225,7 +225,7 @@ public class Main {
                     ArrayUtil.messageIDwithUser.clear();
 
                     for (JDA jda : BotWorker.getShardManager().getShards()) {
-                        BotWorker.setActivity(jda, "%shard_guilds% Guilds, on Shard %shard% with %shards% Shards.", Activity.ActivityType.WATCHING);
+                        BotWorker.setActivity(jda, "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
                     }
 
                     instance.logger.info("[Stats] ");
