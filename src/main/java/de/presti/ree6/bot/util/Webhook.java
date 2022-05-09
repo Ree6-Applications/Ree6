@@ -2,7 +2,7 @@ package de.presti.ree6.bot.util;
 
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;
-import de.presti.ree6.logger.events.LoggerMessage;
+import de.presti.ree6.logger.events.LogMessage;
 import de.presti.ree6.main.Main;
 
 /**
@@ -27,7 +27,7 @@ public class Webhook {
      * @param webhookToken the Auth-Token of the Webhook.
      * @param isLog is the Webhook Message a Log-Message?
      */
-    public static void sendWebhook(LoggerMessage loggerMessage, WebhookMessage message, long webhookId, String webhookToken, boolean isLog) {
+    public static void sendWebhook(LogMessage loggerMessage, WebhookMessage message, long webhookId, String webhookToken, boolean isLog) {
 
         // Check if the given data is valid.
         if (webhookToken.contains("Not setup!") || webhookId == 0) return;
@@ -38,7 +38,7 @@ public class Webhook {
         // Check if the LoggerMessage is canceled.
         if (isLog && (loggerMessage == null || loggerMessage.isCanceled())) {
             // If so, inform about invalid send.
-            Main.getInstance().getLogger().error("[Webhook] Got a Invalid or Canceled LoggerMessage!");
+            Main.getInstance().getLogger().error("[Webhook] Got a Invalid or canceled LoggerMessage!");
             return;
         }
 

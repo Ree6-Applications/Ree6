@@ -297,6 +297,8 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("Which Channel do you want to use as Logging-Channel?");
 
+                        if (event.getGuild().getSelfMember().hasPermission(Permission.VIEW_CHANNEL))
+
                         event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupLogChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
                     }
 

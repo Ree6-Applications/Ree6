@@ -1,13 +1,18 @@
-package de.presti.ree6.logger.events;
+package de.presti.ree6.logger.events.implentation;
 
+import club.minnced.discord.webhook.send.WebhookMessage;
+import de.presti.ree6.logger.events.LogMessage;
+import de.presti.ree6.logger.events.LogTyp;
 import net.dv8tion.jda.api.entities.AudioChannel;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 
 /**
- * This class is used for merging Voice Activity Logs to save Webhook Messages
- * to prevent Rate-Limits.
+ * This is class is used to store VoiceData for Logs which work
+ * with Stuff like the current state of Members in a voice or,
+ * the change of their current voice-state.
  */
-public class LoggerVoiceData {
+public class LogMessageVoice extends LogMessage {
 
     // An instance of the Member Entity.
     private Member member;
@@ -15,39 +20,44 @@ public class LoggerVoiceData {
     // The Audio Channels associated with the Events.
     private AudioChannel previousVoiceChannel, currentVoiceChannel;
 
-    // The Event typ.
-    private LoggerVoiceTyp loggerVoiceTyp;
-
     /**
      * Constructor for an Audio Channel join / leave Event.
      *
+     * @param webhookId       The ID of the Webhook.
+     * @param webhookAuthCode The Auth-Token for the Webhook.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
      * @param member         the {@link Member} associated with the Event.
      * @param voiceChannel   the {@link AudioChannel} associated with the Event.
-     * @param loggerVoiceTyp the {@link LoggerVoiceTyp} of the Event.
      */
-    public LoggerVoiceData(Member member, AudioChannel voiceChannel, LoggerVoiceTyp loggerVoiceTyp) {
+    public LogMessageVoice(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, Member member, AudioChannel voiceChannel) {
+        super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.member = member;
-        if (loggerVoiceTyp == LoggerVoiceTyp.JOIN) {
+        if (logTyp == LogTyp.VC_JOIN) {
             this.currentVoiceChannel = voiceChannel;
-        } else if (loggerVoiceTyp == LoggerVoiceTyp.LEAVE) {
+        } else if (logTyp == LogTyp.VC_LEAVE) {
             this.previousVoiceChannel = voiceChannel;
         }
-        this.loggerVoiceTyp = loggerVoiceTyp;
     }
 
     /**
      * Constructor for a Member Audio Channel Move Event.
      *
+     * @param webhookId       The ID of the Webhook.
+     * @param webhookAuthCode The Auth-Token for the Webhook.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
      * @param member               the {@link Member} associated with the Event.
      * @param previousVoiceChannel the previous {@link AudioChannel} of the Event.
      * @param currentVoiceChannel  the current {@link AudioChannel} of the Event.
-     * @param loggerVoiceTyp       the {@link LoggerVoiceTyp} of the Event.
      */
-    public LoggerVoiceData(Member member, AudioChannel previousVoiceChannel, AudioChannel currentVoiceChannel, LoggerVoiceTyp loggerVoiceTyp) {
+    public LogMessageVoice(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, Member member, AudioChannel previousVoiceChannel, AudioChannel currentVoiceChannel) {
+        super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.member = member;
         this.previousVoiceChannel = previousVoiceChannel;
         this.currentVoiceChannel = currentVoiceChannel;
-        this.loggerVoiceTyp = loggerVoiceTyp;
     }
 
     /**
@@ -64,6 +74,7 @@ public class LoggerVoiceData {
      *
      * @param member the new {@link Member}.
      */
+    @Deprecated(since = "1.7.7", forRemoval = true)
     public void setMember(Member member) {
         this.member = member;
     }
@@ -82,6 +93,7 @@ public class LoggerVoiceData {
      *
      * @param previousVoiceChannel the new previous {@link AudioChannel}.
      */
+    @Deprecated(since = "1.7.7", forRemoval = true)
     public void setPreviousVoiceChannel(AudioChannel previousVoiceChannel) {
         this.previousVoiceChannel = previousVoiceChannel;
     }
@@ -100,30 +112,8 @@ public class LoggerVoiceData {
      *
      * @param currentVoiceChannel the new current {@link AudioChannel}.
      */
+    @Deprecated(since = "1.7.7", forRemoval = true)
     public void setCurrentVoiceChannel(AudioChannel currentVoiceChannel) {
         this.currentVoiceChannel = currentVoiceChannel;
-    }
-
-    /**
-     * The current {@link LoggerVoiceTyp} of the Event-Log.
-     * @return the {@link LoggerVoiceTyp}.
-     */
-    public LoggerVoiceTyp getLoggerVoiceTyp() {
-        return loggerVoiceTyp;
-    }
-
-    /**
-     * Change the current {@link LoggerVoiceTyp} of the Event-Log.
-     * @param loggerVoiceTyp the new {@link LoggerVoiceTyp}.
-     */
-    public void setLoggerVoiceTyp(LoggerVoiceTyp loggerVoiceTyp) {
-        this.loggerVoiceTyp = loggerVoiceTyp;
-    }
-
-    /**
-     * The various LoggerVoiceTypes.
-     */
-    public enum LoggerVoiceTyp {
-        JOIN, MOVE, LEAVE
     }
 }

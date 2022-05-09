@@ -1,6 +1,10 @@
-package de.presti.ree6.logger.events;
+package de.presti.ree6.logger.events.implentation;
 
+import club.minnced.discord.webhook.send.WebhookMessage;
+import de.presti.ree6.logger.events.LogMessage;
+import de.presti.ree6.logger.events.LogTyp;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.awt.*;
@@ -10,7 +14,7 @@ import java.util.EnumSet;
  * This class is used for merging Role Activity Logs to save Webhook Messages
  * to prevent Rate-Limits.
  */
-public class LoggerRoleData {
+public class LogMessageRole extends LogMessage {
 
     // The ID of the Role.
     private long roleId;
@@ -29,10 +33,15 @@ public class LoggerRoleData {
 
     /**
      * A Constructor for a {@link Role} based Event.
-     *
+     * @param webhookId       The ID of the Webhook.
+     * @param webhookAuthCode The Auth-Token for the Webhook.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
      * @param role the {@link Role} of the Event.
      */
-    public LoggerRoleData(Role role) {
+    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, Role role) {
+        super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.roleId = role.getIdLong();
         this.currentName = role.getName();
         this.currentColor = role.getColor();
@@ -44,11 +53,17 @@ public class LoggerRoleData {
     /**
      * A Constructor for a Name change Event.
      *
+     * @param webhookId       The ID of the Webhook.
+     * @param webhookAuthCode The Auth-Token for the Webhook.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
      * @param roleId       the ID of the {@link Role}.
      * @param previousName the previous Name of the {@link Role}.
      * @param currentName  the current Name of the {@link Role}.
      */
-    public LoggerRoleData(long roleId, String previousName, String currentName) {
+    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, String previousName, String currentName) {
+        super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.roleId = roleId;
         this.previousName = previousName;
         this.currentName = currentName;
@@ -57,12 +72,18 @@ public class LoggerRoleData {
     /**
      * A Constructor for a Name change Event.
      *
+     * @param webhookId       The ID of the Webhook.
+     * @param webhookAuthCode The Auth-Token for the Webhook.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
      * @param roleId       the ID of the {@link Role}.
      * @param previousName the previous Name of the {@link Role}.
      * @param currentName  the current Name of the {@link Role}.
      * @param isCreated    the creation State of the {@link Role}.
      */
-    public LoggerRoleData(long roleId, String previousName, String currentName, boolean isCreated) {
+    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, String previousName, String currentName, boolean isCreated) {
+        super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.roleId = roleId;
         this.previousName = previousName;
         this.currentName = currentName;
@@ -72,11 +93,17 @@ public class LoggerRoleData {
     /**
      * A Constructor for a creation Event.
      *
+     * @param webhookId       The ID of the Webhook.
+     * @param webhookAuthCode The Auth-Token for the Webhook.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
      * @param roleId      the ID of the {@link Role}.
      * @param currentName the current Name of the {@link Role}.
      * @param isCreated   the creation State of the {@link Role}.
      */
-    public LoggerRoleData(long roleId, String currentName, boolean isCreated) {
+    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, String currentName, boolean isCreated) {
+        super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.roleId = roleId;
         this.currentName = currentName;
         this.isCreated = isCreated;
@@ -86,11 +113,17 @@ public class LoggerRoleData {
     /**
      * A Constructor for a Name change Event.
      *
+     * @param webhookId       The ID of the Webhook.
+     * @param webhookAuthCode The Auth-Token for the Webhook.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
      * @param roleId        the ID of the {@link Role}.
      * @param previousColor the previous Color of the {@link Role}.
      * @param currentColor  the current Color of the {@link Role}.
      */
-    public LoggerRoleData(long roleId, Color previousColor, Color currentColor) {
+    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, Color previousColor, Color currentColor) {
+        super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.roleId = roleId;
         this.previousColor = previousColor;
         this.currentColor = currentColor;
@@ -99,12 +132,18 @@ public class LoggerRoleData {
     /**
      * A Constructor for a Color change Event.
      *
+     * @param webhookId       The ID of the Webhook.
+     * @param webhookAuthCode The Auth-Token for the Webhook.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
      * @param roleId        the ID of the {@link Role}.
      * @param previousColor the previous Color of the {@link Role}.
      * @param currentColor  the current Color of the {@link Role}.
      * @param isCreated     the creation State of the {@link Role}.
      */
-    public LoggerRoleData(long roleId, Color previousColor, Color currentColor, boolean isCreated) {
+    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, Color previousColor, Color currentColor, boolean isCreated) {
+        super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.roleId = roleId;
         this.previousColor = previousColor;
         this.currentColor = currentColor;
@@ -114,11 +153,17 @@ public class LoggerRoleData {
     /**
      * A Constructor for a Permission change Event.
      *
+     * @param webhookId       The ID of the Webhook.
+     * @param webhookAuthCode The Auth-Token for the Webhook.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
      * @param roleId             the ID of the {@link Role}.
      * @param previousPermission the previous Permissions of the {@link EnumSet<Permission>}.
      * @param currentPermission  the current Permissions of the {@link EnumSet<Permission>}.
      */
-    public LoggerRoleData(long roleId, EnumSet<Permission> previousPermission, EnumSet<Permission> currentPermission) {
+    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, EnumSet<Permission> previousPermission, EnumSet<Permission> currentPermission) {
+        super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.roleId = roleId;
         this.previousPermission = previousPermission;
         this.currentPermission = currentPermission;
@@ -127,12 +172,18 @@ public class LoggerRoleData {
     /**
      * A Constructor for a Permission change Event.
      *
+     * @param webhookId       The ID of the Webhook.
+     * @param webhookAuthCode The Auth-Token for the Webhook.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
      * @param roleId             the ID of the {@link Role}.
      * @param previousPermission the previous Permissions of the {@link EnumSet<Permission>}.
      * @param currentPermission  the current Permissions of the {@link EnumSet<Permission>}.
      * @param isCreated          the creation State of the {@link Role}.
      */
-    public LoggerRoleData(long roleId, EnumSet<Permission> previousPermission, EnumSet<Permission> currentPermission, boolean isCreated) {
+    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, EnumSet<Permission> previousPermission, EnumSet<Permission> currentPermission, boolean isCreated) {
+        super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.roleId = roleId;
         this.previousPermission = previousPermission;
         this.currentPermission = currentPermission;
@@ -142,6 +193,11 @@ public class LoggerRoleData {
     /**
      * A Constructor for a {@link Role} base Event.
      *
+     * @param webhookId       The ID of the Webhook.
+     * @param webhookAuthCode The Auth-Token for the Webhook.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
      * @param roleId      the ID of the {@link Role}.
      * @param currentName the current Name of the {@link Role}.
      * @param isCreated   the creation State of the {@link Role}.
@@ -149,7 +205,8 @@ public class LoggerRoleData {
      * @param isHoisted   the hoisted State of the {@link Role}.
      * @param isMentioned the mentioned State of the {@link Role}.
      */
-    public LoggerRoleData(long roleId, String currentName, boolean isCreated, boolean isDeleted, boolean isHoisted, boolean isMentioned) {
+    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, String currentName, boolean isCreated, boolean isDeleted, boolean isHoisted, boolean isMentioned) {
+        super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.roleId = roleId;
         this.currentName = currentName;
         this.isCreated = isCreated;
