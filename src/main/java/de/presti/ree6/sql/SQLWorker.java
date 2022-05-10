@@ -1741,6 +1741,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Create the Chat Prefix Setting.
         if (!hasSetting(guildId, "chatprefix")) setSetting(guildId, new Setting("chatprefix", "ree!"));
 
+        // Create the Level Message Setting.
+        if (!hasSetting(guildId, "level_message")) setSetting(guildId, new Setting("level_message", false));
+
         // Create Command Settings.
         for (ICommand command : Main.getInstance().getCommandManager().getCommands()) {
 

@@ -20,32 +20,23 @@ public class UserLevel {
     // The Rank of the User.
     int rank;
 
+    // Is this a Voice related Level?
+    boolean isVoice;
+
     /**
      * Constructor to create a UserLevel with the needed Data.
      *
      * @param userId     the ID of the User.
      * @param rank       the current Rank in the leaderboard.
      * @param experience his XP count.
-     * @param voice is this related to VoiceXP?
+     * @param voice      is this related to VoiceXP?
      */
     public UserLevel(String userId, int rank, long experience, boolean voice) {
         this.userId = userId;
         this.experience = experience;
         this.rank = rank;
-
-        long tempXp = experience;
-
-        if (voice) {
-            while (tempXp >= (1000 * level)) {
-                tempXp -= (1000 * level);
-                level++;
-            }
-        } else {
-            while (tempXp >= (1000 * (level * 0.5))) {
-                tempXp -= (1000 * (level * 0.5));
-                level++;
-            }
-        }
+        this.isVoice = voice;
+        level = calculateLevel(experience);
     }
 
 
@@ -138,6 +129,7 @@ public class UserLevel {
 
     /**
      * Get the current Rank of the User.
+     *
      * @return the current rank.
      */
     public int getRank() {
@@ -146,6 +138,7 @@ public class UserLevel {
 
     /**
      * Added experience to the UserLevel.
+     *
      * @param experience the experience that should be added.
      * @return true, if you leveled up | false, if not.
      */
@@ -166,18 +159,45 @@ public class UserLevel {
 
     /**
      * Get the needed Experience for the next Level.
+     *
      * @return the needed Experience.
      */
     public long getExperienceForNextLevel() {
-        float tempXp = getExperience();
+        return getExperienceForLevel(level + 1);
+    }
 
-        int multiplier = 1;
+    /**
+     * Get the needed Experience for the next Level.
+     *
+     * @return the needed Experience.
+     */
+    public long getTotalExperienceForNextLevel() {
+        return getTotalExperienceForLevel(level + 1);
+    }
 
-        while (tempXp > 1000) {
-            tempXp -= 1000;
-            multiplier++;
+
+    /**
+     * Get the needed Experience for the next Level.
+     *
+     * @param level The level.
+     * @return the needed Experience.
+     */
+    public long getTotalExperienceForLevel(long level) {
+        long requiredXP = 0;
+        for (int i = 0; i <= level; i++) {
+            requiredXP += getExperienceForLevel(i);
         }
-        return 1000L * multiplier;
+        return requiredXP;
+    }
+
+    /**
+     * Get the needed Experience for the next Level.
+     *
+     * @param level The level.
+     * @return the needed Experience.
+     */
+    public long getExperienceForLevel(long level) {
+        return (long) (1000 + (1000 * Math.pow(level, isVoice ? 1.05 : 0.55)));
     }
 
     /**
@@ -185,55 +205,35 @@ public class UserLevel {
      *
      * @return the Progress.
      */
-    public int getProgress() {
-        float tempXp = getExperience();
-
-        while (tempXp > 1000) {
-            tempXp -= 1000;
-        }
-
-        return Math.round(((tempXp / 1000F) * 100F));
+    public double getProgress() {
+        return (int)((getExperience() * 100) / getTotalExperienceForNextLevel());
     }
 
     /**
      * Get the current Experience but formatted.
+     *
      * @return a formatted version of the current Experience.
      */
     public String getFormattedExperience() {
-        String end;
-
-        if(getExperience() >= 1000000000000L) {
-            end = ((getExperience() / 1000000000000L) + "").replace("l", "") + "mil";
-        } else if(getExperience() >= 1000000000) {
-            end = ((getExperience() / 1000000000) + "").replace("l", "") + "mil";
-        } else if(getExperience() >= 1000000) {
-            end = ((getExperience() / 1000000) + "").replace("l", "") + "mio";
-        } else if(getExperience() >= 1000) {
-            end = ((getExperience() / 1000) + "").replace("l", "") + "k";
-        } else {
-            end = "" + getExperience();
-        }
-
-        return end;
+        return getFormattedExperience(getExperience());
     }
 
     /**
      * Get the Experience but formatted.
      *
      * @param experience the Experience that should be formatted.
-     *
      * @return a formatted version of the Experience.
      */
     public String getFormattedExperience(long experience) {
         String end;
 
-        if(experience >= 1000000000000L) {
+        if (experience >= 1000000000000L) {
             end = ((experience / 1000000000000L) + "").replace("l", "") + "mil";
-        } else if(experience >= 1000000000) {
+        } else if (experience >= 1000000000) {
             end = ((experience / 1000000000) + "").replace("l", "") + "mil";
-        } else if(experience >= 1000000) {
+        } else if (experience >= 1000000) {
             end = ((experience / 1000000) + "").replace("l", "") + "mio";
-        } else if(experience >= 1000) {
+        } else if (experience >= 1000) {
             end = ((experience / 1000) + "").replace("l", "") + "k";
         } else {
             end = "" + getExperience();
@@ -244,17 +244,16 @@ public class UserLevel {
 
     /**
      * Calculate on which Level you would be by your experience.
+     *
      * @param experience the experience.
      * @return which Level.
      */
     public long calculateLevel(long experience) {
-        long calculatedLevel = 0;
-
-        while (experience > 1000) {
-            experience -= 1000;
-            calculatedLevel++;
+        int i = 0;
+        while (true) {
+            long requiredXP = getTotalExperienceForLevel(i);
+            if (experience <= requiredXP) return (i == 0 ? 1 : i -1);
+            i++;
         }
-
-        return calculatedLevel;
     }
 }

@@ -81,7 +81,7 @@ public class ImageCreationUtility {
         graphics2D.setFont(verdana40);
         graphics2D.drawString(userLevel.getFormattedExperience() + "", (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + userLevel.getFormattedExperience(userLevel.getExperienceForNextLevel()))) - 5 - graphics2D.getFontMetrics().stringWidth(userLevel.getFormattedExperience() + ""), 675);
         graphics2D.setColor(Color.GRAY);
-        graphics2D.drawString("/" + userLevel.getFormattedExperience(userLevel.getExperienceForNextLevel()), (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + userLevel.getFormattedExperience(userLevel.getExperienceForNextLevel()))), 675);
+        graphics2D.drawString("/" + userLevel.getFormattedExperience(userLevel.getTotalExperienceForNextLevel()), (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + userLevel.getFormattedExperience(userLevel.getExperienceForNextLevel()))), 675);
 
         //endregion
 
@@ -113,7 +113,7 @@ public class ImageCreationUtility {
 
         // Draw the Progressbar.
         graphics2D.setColor(Color.magenta);
-        graphics2D.fillRoundRect(175, 705, (base.getWidth() - 950) * userLevel.getProgress() / 100, 50, 50, 50);
+        graphics2D.fillRoundRect(175, 705, (base.getWidth() - 950) * (int) userLevel.getProgress() / 100, 50, 50, 50);
 
         // Close the Graphics2d instance.
         graphics2D.dispose();
