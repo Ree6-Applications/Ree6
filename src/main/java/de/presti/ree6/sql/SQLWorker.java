@@ -42,13 +42,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
             // Return the UserLevel data if found.
             if (rs != null && rs.next()) {
-                return new UserLevel(userId, getAllChatLevelSorted(guildId).indexOf(userId) + 1, Long.parseLong(rs.getString("XP")));
+                return new UserLevel(userId, getAllChatLevelSorted(guildId).indexOf(userId) + 1, Long.parseLong(rs.getString("XP")), false);
             }
         } catch (Exception ignore) {
         }
 
         // Return a new UserLEve if there was an error OR if the user isn't in the database.
-        return new UserLevel(userId, 0, 0);
+        return new UserLevel(userId, 0, 0, false);
     }
 
     /**
@@ -161,13 +161,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
             // Return the UserLevel Data if found.
             if (rs != null && rs.next()) {
-                return new UserLevel(userId, getAllVoiceLevelSorted(guildId).indexOf(userId) + 1, Long.parseLong(rs.getString("XP")));
+                return new UserLevel(userId, getAllVoiceLevelSorted(guildId).indexOf(userId) + 1, Long.parseLong(rs.getString("XP")), true);
             }
         } catch (Exception ignore) {
         }
 
         // Return 0 if there was an error OR if the user isn't in the database.
-        return new UserLevel(userId, 0, 0);
+        return new UserLevel(userId, 0, 0, true);
     }
 
     /**
@@ -1423,6 +1423,15 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void removeInvite(String guildId, String inviteCreator, String inviteCode, int inviteUsage) {
         querySQL("DELETE FROM Invites WHERE GID=? AND UID=? AND CODE=? " + "AND USES=?", guildId, inviteCreator, inviteCode, inviteUsage);
+    }
+
+    /**
+     * Remove all entries from our Database.
+     *
+     * @param guildId       the ID of the Guild.
+     */
+    public void clearInvites(String guildId) {
+        querySQL("DELETE FROM Invites WHERE GID=?", guildId);
     }
 
     //endregion

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is class is used to store MemberData for Logs which work with
@@ -22,7 +23,7 @@ public class LogMessageMember extends LogMessage {
     private String previousName, currentName;
 
     // If it is a Role change Event, two variables to store the removed and added Roles.
-    private ArrayList<Role> removedRoles = new ArrayList<>(), addedRoles = new ArrayList<>();
+    private List<Role> removedRoles = new ArrayList<>(), addedRoles = new ArrayList<>();
 
     /**
      * Constructor for a Log-Message which shouldn't be handled.
@@ -92,7 +93,7 @@ public class LogMessageMember extends LogMessage {
      * @param addedRoles   the Added {@link Role} of the {@link Member}.
      */
     public LogMessageMember(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp,
-                            Member member, String previousName, String currentName, ArrayList<Role> removedRoles, ArrayList<Role> addedRoles) {
+                            Member member, String previousName, String currentName, List<Role> removedRoles, List<Role> addedRoles) {
         super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.member = member;
         this.previousName = previousName;
@@ -158,36 +159,36 @@ public class LogMessageMember extends LogMessage {
     /**
      * Get the remove {@link Role}s of the Member.
      *
-     * @return a {@link ArrayList<Role>} with every removed Role.
+     * @return a {@link List<Role>} with every removed Role.
      */
-    public ArrayList<Role> getRemovedRoles() {
+    public List<Role> getRemovedRoles() {
         return removedRoles;
     }
 
     /**
-     * Set a new deleted Roles as {@link ArrayList<Role>}.
+     * Set a new deleted Roles as {@link List<Role>}.
      *
-     * @param removedRoles the new {@link ArrayList<Role>}.
+     * @param removedRoles the new {@link List<Role>}.
      */
-    public void setRemovedRoles(ArrayList<Role> removedRoles) {
+    public void setRemovedRoles(List<Role> removedRoles) {
         this.removedRoles = removedRoles;
     }
 
     /**
      * Get the add {@link Role}s of the Member.
      *
-     * @return a {@link ArrayList<Role>} with every added Role.
+     * @return a {@link List<Role>} with every added Role.
      */
-    public ArrayList<Role> getAddedRoles() {
+    public List<Role> getAddedRoles() {
         return addedRoles;
     }
 
     /**
-     * Set a new added Roles as {@link ArrayList<Role>}.
+     * Set a new added Roles as {@link List<Role>}.
      *
-     * @param addedRoles the new {@link ArrayList<Role>}.
+     * @param addedRoles the new {@link List<Role>}.
      */
-    public void setAddedRoles(ArrayList<Role> addedRoles) {
+    public void setAddedRoles(List<Role> addedRoles) {
         this.addedRoles = addedRoles;
     }
 }

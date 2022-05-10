@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Role;
 
 import java.awt.*;
 import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * This class is used for merging Role Activity Logs to save Webhook Messages
@@ -26,7 +27,7 @@ public class LogMessageRole extends LogMessage {
     private Color previousColor, currentColor;
 
     // If it is a Permission change Event, two variables to store the previous and current Permissions.
-    private EnumSet<Permission> previousPermission, currentPermission;
+    private Set<Permission> previousPermission, currentPermission;
 
     // Other information about the Role,
     private boolean isCreated, isDeleted, isHoisted, isMentioned, changedMentioned, changedHoisted;
@@ -159,10 +160,10 @@ public class LogMessageRole extends LogMessage {
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
      * @param roleId             the ID of the {@link Role}.
-     * @param previousPermission the previous Permissions of the {@link EnumSet<Permission>}.
-     * @param currentPermission  the current Permissions of the {@link EnumSet<Permission>}.
+     * @param previousPermission the previous Permissions of the {@link Set<Permission>}.
+     * @param currentPermission  the current Permissions of the {@link Set<Permission>}.
      */
-    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, EnumSet<Permission> previousPermission, EnumSet<Permission> currentPermission) {
+    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, Set<Permission> previousPermission, Set<Permission> currentPermission) {
         super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.roleId = roleId;
         this.previousPermission = previousPermission;
@@ -178,11 +179,11 @@ public class LogMessageRole extends LogMessage {
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
      * @param roleId             the ID of the {@link Role}.
-     * @param previousPermission the previous Permissions of the {@link EnumSet<Permission>}.
-     * @param currentPermission  the current Permissions of the {@link EnumSet<Permission>}.
+     * @param previousPermission the previous Permissions of the {@link Set<Permission>}.
+     * @param currentPermission  the current Permissions of the {@link Set<Permission>}.
      * @param isCreated          the creation State of the {@link Role}.
      */
-    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, EnumSet<Permission> previousPermission, EnumSet<Permission> currentPermission, boolean isCreated) {
+    public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, Set<Permission> previousPermission, Set<Permission> currentPermission, boolean isCreated) {
         super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.roleId = roleId;
         this.previousPermission = previousPermission;
@@ -304,38 +305,38 @@ public class LogMessageRole extends LogMessage {
     }
 
     /**
-     * Get the previous {@link EnumSet<Permission>} of the {@link Role}.
+     * Get the previous {@link Set<Permission>} of the {@link Role}.
      *
-     * @return the previous {@link EnumSet<Permission>} of the {@link Role}.
+     * @return the previous {@link Set<Permission>} of the {@link Role}.
      */
-    public EnumSet<Permission> getPreviousPermission() {
+    public Set<Permission> getPreviousPermission() {
         return previousPermission;
     }
 
     /**
-     * Change the previous {@link EnumSet<Permission>} of the {@link Role}.
+     * Change the previous {@link Set<Permission>} of the {@link Role}.
      *
-     * @param previousPermission the new previous {@link EnumSet<Permission>} of the {@link Role}.
+     * @param previousPermission the new previous {@link Set<Permission>} of the {@link Role}.
      */
-    public void setPreviousPermission(EnumSet<Permission> previousPermission) {
+    public void setPreviousPermission(Set<Permission> previousPermission) {
         this.previousPermission = previousPermission;
     }
 
     /**
-     * Get the current {@link EnumSet<Permission>} of the {@link Role}.
+     * Get the current {@link Set<Permission>} of the {@link Role}.
      *
-     * @return the current {@link EnumSet<Permission>} of the {@link Role}.
+     * @return the current {@link Set<Permission>} of the {@link Role}.
      */
-    public EnumSet<Permission> getCurrentPermission() {
+    public Set<Permission> getCurrentPermission() {
         return currentPermission;
     }
 
     /**
-     * Change the current {@link EnumSet<Permission>} of the {@link Role}.
+     * Change the current {@link Set<Permission>} of the {@link Role}.
      *
-     * @param currentPermission the new current {@link EnumSet<Permission>} of the {@link Role}.
+     * @param currentPermission the new current {@link Set<Permission>} of the {@link Role}.
      */
-    public void setCurrentPermission(EnumSet<Permission> currentPermission) {
+    public void setCurrentPermission(Set<Permission> currentPermission) {
         this.currentPermission = currentPermission;
     }
 

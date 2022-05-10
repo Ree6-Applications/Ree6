@@ -50,14 +50,14 @@ public class LoggerQueue {
             // Check if it's a VoiceChannel Join log.
             if (loggerMessage.getType() == LogTyp.VC_JOIN && loggerMessage instanceof LogMessageVoice logMessageVoice) {
                 if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == logMessageVoice.getId() &&
-                        loggerMessages instanceof LogMessageVoice && ((LogMessageVoice)loggerMessages).getMember() == logMessageVoice.getMember() &&
+                        loggerMessages instanceof LogMessageVoice logMessageVoice1 && logMessageVoice1.getMember() == logMessageVoice.getMember() &&
                         !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.VC_LEAVE)) {
 
                     // Cancel every Log-Message which indicates that the person left.
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
                             !loggerMessages.isCanceled() &&
-                            loggerMessages instanceof LogMessageVoice &&
-                            ((LogMessageVoice)loggerMessages).getMember() == logMessageVoice.getMember() &&
+                            loggerMessages instanceof LogMessageVoice logMessageVoice1 &&
+                            logMessageVoice1.getMember() == logMessageVoice.getMember() &&
                             loggerMessages.getType() == LogTyp.VC_LEAVE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
                     // Set the new Webhook Message.
@@ -72,14 +72,14 @@ public class LoggerQueue {
             // Check if it's a VoiceChannel Move log.
             else if (loggerMessage.getType() == LogTyp.VC_MOVE && loggerMessage instanceof LogMessageVoice logMessageVoice) {
                 if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                        loggerMessages instanceof LogMessageVoice && ((LogMessageVoice)loggerMessages).getMember() == logMessageVoice.getMember() &&
+                        loggerMessages instanceof LogMessageVoice logMessageVoice1 && logMessageVoice1.getMember() == logMessageVoice.getMember() &&
                         !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.VC_MOVE)) {
 
                     // Cancel every Log-Message which indicates that the person moved.
                     logs.stream().filter(loggerMessages -> loggerMessages.getId() == loggerMessage.getId() &&
                             loggerMessages != loggerMessage &&
-                            loggerMessages instanceof LogMessageVoice &&
-                            ((LogMessageVoice)loggerMessages).getMember() == logMessageVoice.getMember() && !loggerMessages.isCanceled() &&
+                            loggerMessages instanceof LogMessageVoice logMessageVoice1 &&
+                            logMessageVoice1.getMember() == logMessageVoice.getMember() && !loggerMessages.isCanceled() &&
                             loggerMessages.getType() == LogTyp.VC_MOVE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
                     // Set the new Webhook Message.
@@ -94,13 +94,13 @@ public class LoggerQueue {
             //Check if it's a VoiceChannel Leave log.
             else if (loggerMessage.getType() == LogTyp.VC_LEAVE && loggerMessage instanceof LogMessageVoice logMessageVoice) {
                 if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                        loggerMessages instanceof LogMessageVoice && ((LogMessageVoice)loggerMessages).getMember() == logMessageVoice.getMember() &&
+                        loggerMessages instanceof LogMessageVoice logMessageVoice1 && logMessageVoice1.getMember() == logMessageVoice.getMember() &&
                         !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.VC_JOIN)) {
 
                     // Cancel every Log-Message which indicates that the person joined.
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                            loggerMessages instanceof LogMessageVoice &&
-                            ((LogMessageVoice)loggerMessages).getMember() == logMessageVoice.getMember() &&
+                            loggerMessages instanceof LogMessageVoice logMessageVoice1 &&
+                            logMessageVoice1.getMember() == logMessageVoice.getMember() &&
                             !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.VC_JOIN).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
                     // Set the new Webhook Message.
@@ -115,19 +115,20 @@ public class LoggerQueue {
             // Check if it's a Nickname Change Log.
             else if (loggerMessage.getType() == LogTyp.NICKNAME_CHANGE && loggerMessage instanceof LogMessageMember logMessageMember) {
                 if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                        loggerMessages instanceof LogMessageMember && ((LogMessageMember)loggerMessages).getMember() == logMessageMember.getMember() &&
+                        loggerMessages instanceof LogMessageMember logMessageMember1 && logMessageMember1.getMember() == logMessageMember.getMember() &&
                         !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.NICKNAME_CHANGE)) {
 
                     // Get the latest previous UserData.
                     LogMessageMember memberData = (LogMessageMember) logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage &&
                             loggerMessages.getId() == loggerMessage.getId() &&
-                            loggerMessages instanceof LogMessageMember &&
-                            ((LogMessageMember)loggerMessages).getMember() == logMessageMember.getMember() &&
+                            loggerMessages instanceof LogMessageMember logMessageMember1 &&
+                            logMessageMember1.getMember() == logMessageMember.getMember() &&
                             !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.NICKNAME_CHANGE).findFirst().orElse(null);
 
                     // Cancel every Log-Message which indicates that the person changed their name.
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                            ((LogMessageMember)loggerMessages).getMember() == logMessageMember.getMember() &&
+                            loggerMessages instanceof LogMessageMember logMessageMember1 &&
+                            logMessageMember1.getMember() == logMessageMember.getMember() &&
                             !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.NICKNAME_CHANGE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
                     // Change the current previous Nickname to the old one.
@@ -145,23 +146,23 @@ public class LoggerQueue {
             }
             // Check if it's a Member Role Change log.
             else if (loggerMessage.getType() == LogTyp.MEMBERROLE_CHANGE && loggerMessage instanceof LogMessageMember logMessageMember) {
-                if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages instanceof LogMessageMember &&
-                        ((LogMessageMember)loggerMessages).getMember() == logMessageMember.getMember()
+                if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages instanceof LogMessageMember logMessageMember1 &&
+                        logMessageMember1.getMember() == logMessageMember.getMember()
                         && loggerMessages.getId() == loggerMessage.getId() &&
                         !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.MEMBERROLE_CHANGE)) {
 
                     // Get the latest MemberData.
                     LogMessageMember memberData = (LogMessageMember) logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage &&
                             loggerMessages.getId() == loggerMessage.getId() &&
-                            loggerMessages instanceof LogMessageMember &&
-                            ((LogMessageMember)loggerMessages).getMember() == logMessageMember.getMember() &&
+                            loggerMessages instanceof LogMessageMember logMessageMember1 &&
+                            logMessageMember1.getMember() == logMessageMember.getMember() &&
                             !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.MEMBERROLE_CHANGE).findFirst().orElse(null);
 
                     if (memberData != null) {
                         // Cancel every other LogEvent of that Typ.
                         logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                                loggerMessages instanceof LogMessageMember &&
-                                ((LogMessageMember) loggerMessages).getMember() == logMessageMember.getMember() &&
+                                loggerMessages instanceof LogMessageMember logMessageMember1 &&
+                                logMessageMember1.getMember() == logMessageMember.getMember() &&
                                 !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.MEMBERROLE_CHANGE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
                         // Check if the RemoveRoles is null or empty.
@@ -232,20 +233,20 @@ public class LoggerQueue {
             // Check if it's a Role Update log.
             else if (loggerMessage.getType() == LogTyp.ROLEDATA_CHANGE && loggerMessage instanceof LogMessageRole logMessageRole) {
                 if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                        loggerMessages instanceof LogMessageRole &&
-                        ((LogMessageRole)loggerMessages).getRoleId() == logMessageRole.getId() &&
+                        loggerMessages instanceof LogMessageRole logMessageRole1 &&
+                        logMessageRole1.getRoleId() == logMessageRole.getId() &&
                         !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.ROLEDATA_CHANGE)) {
 
                     // Get the latest RoleData.
                     LogMessageRole roleData = (LogMessageRole) logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                            loggerMessages instanceof LogMessageRole &&
-                            ((LogMessageRole)loggerMessages).getRoleId() == logMessageRole.getId() &&
+                            loggerMessages instanceof LogMessageRole logMessageRole1 &&
+                            logMessageRole1.getRoleId() == logMessageRole.getId() &&
                             !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.ROLEDATA_CHANGE).findFirst().orElse(null);
 
                     // Cancel every Log-Message which indicates that the person changed their name.
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                            loggerMessages instanceof LogMessageRole &&
-                            ((LogMessageRole)loggerMessages).getRoleId() == logMessageRole.getId() &&
+                            loggerMessages instanceof LogMessageRole logMessageRole1 &&
+                            logMessageRole1.getRoleId() == logMessageRole.getId() &&
                             !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.ROLEDATA_CHANGE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
                     // Start merging the Role Permissions
@@ -412,14 +413,14 @@ public class LoggerQueue {
             // Check if it's a User leave log.
             else if (loggerMessage.getType() == LogTyp.SERVER_LEAVE && loggerMessage instanceof LogMessageUser logMessageUser) {
                 if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                        loggerMessages instanceof LogMessageUser &&
-                        ((LogMessageUser) loggerMessages).getUser().getIdLong() == logMessageUser.getUser().getIdLong() &&
+                        loggerMessages instanceof LogMessageUser logMessageUser1 &&
+                        logMessageUser1.getUser().getIdLong() == logMessageUser.getUser().getIdLong() &&
                         !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.SERVER_JOIN || loggerMessages.getType() == LogTyp.USER_BAN)) {
 
                     // Cancel every Log-Message which indicates that the person joined the Server or got banned.
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                            loggerMessages instanceof LogMessageUser &&
-                            ((LogMessageUser) loggerMessages).getUser().getIdLong() == logMessageUser.getUser().getIdLong() &&
+                            loggerMessages instanceof LogMessageUser logMessageUser1 &&
+                            logMessageUser1.getUser().getIdLong() == logMessageUser.getUser().getIdLong() &&
                             !loggerMessages.isCanceled() && (loggerMessages.getType() == LogTyp.SERVER_JOIN ||
                             loggerMessages.getType() == LogTyp.USER_BAN)).forEach(loggerMessages -> loggerMessages.setCanceled(true));
 
@@ -428,8 +429,8 @@ public class LoggerQueue {
                             logMessageUser.getUser().getAvatarUrl(), null));
 
                     if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                                    loggerMessages instanceof LogMessageUser &&
-                                    ((LogMessageUser) loggerMessages).getUser().getIdLong() == logMessageUser.getUser().getIdLong())
+                                    loggerMessages instanceof LogMessageUser logMessageUser1 &&
+                                    logMessageUser1.getUser().getIdLong() == logMessageUser.getUser().getIdLong())
                             .anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.USER_BAN)) {
                         webhookEmbedBuilder.setDescription(logMessageUser.getUser().getAsMention() + " **has been banned.** ");
                     } else {
@@ -440,7 +441,8 @@ public class LoggerQueue {
                 }
             } else if (loggerMessage.getType() == LogTyp.SERVER_INVITE && loggerMessage instanceof LogMessageUser logMessageUser) {
                 if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId()
-                        && loggerMessages instanceof LogMessageUser && ((LogMessageUser) loggerMessages).getUser().getIdLong() == logMessageUser.getUser().getIdLong()
+                        && loggerMessages instanceof LogMessageUser logMessageUser1 &&
+                        logMessageUser1.getUser().getIdLong() == logMessageUser.getUser().getIdLong()
                         && !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.SERVER_LEAVE)) {
                     loggerMessage.setCanceled(true);
                 }

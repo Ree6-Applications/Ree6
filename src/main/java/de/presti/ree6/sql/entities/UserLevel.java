@@ -26,17 +26,25 @@ public class UserLevel {
      * @param userId     the ID of the User.
      * @param rank       the current Rank in the leaderboard.
      * @param experience his XP count.
+     * @param voice is this related to VoiceXP?
      */
-    public UserLevel(String userId, int rank, long experience) {
+    public UserLevel(String userId, int rank, long experience, boolean voice) {
         this.userId = userId;
         this.experience = experience;
         this.rank = rank;
 
         long tempXp = experience;
 
-        while (tempXp > 1000) {
-            tempXp -= 1000;
-            level++;
+        if (voice) {
+            while (tempXp >= (1000 * level)) {
+                tempXp -= (1000 * level);
+                level++;
+            }
+        } else {
+            while (tempXp >= (1000 * (level * 0.5))) {
+                tempXp -= (1000 * (level * 0.5));
+                level++;
+            }
         }
     }
 

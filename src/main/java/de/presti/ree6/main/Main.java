@@ -89,7 +89,7 @@ public class Main {
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             RaygunClient raygunClient = new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken"));
-            raygunClient.setVersion("1.7.8");
+            raygunClient.setVersion("1.7.9");
         });
 
         // Create a new connection between the Application and the SQL-Server.
@@ -123,7 +123,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.PUBLIC, "1.7.8");
+            BotWorker.createBot(BotVersion.PUBLIC, "1.7.9");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {

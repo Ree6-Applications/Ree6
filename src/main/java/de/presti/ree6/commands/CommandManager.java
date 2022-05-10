@@ -54,6 +54,7 @@ public class CommandManager {
         addCommand(new Credits());
 
         //Moderate
+        addCommand(new ClearData());
         addCommand(new Prefix());
         addCommand(new Webinterface());
         addCommand(new Clear());

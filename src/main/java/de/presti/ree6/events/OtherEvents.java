@@ -113,7 +113,7 @@ public class OtherEvents extends ListenerAdapter {
         if (event.getMember() != event.getGuild().getSelfMember()) return;
 
         if (!event.isGuildDeafened()) {
-            event.getMember().deafen(true).queue();
+            event.getGuild().getSelfMember().deafen(true).queue();
         }
     }
 
@@ -152,7 +152,7 @@ public class OtherEvents extends ListenerAdapter {
                     userLevel.setUser(event.getMember().getUser());
 
                     if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26))) {
-                        Main.getInstance().getCommandManager().sendMessage("You just leveled up to Chat Level " + userLevel.getLevel() + " " + event.getMember().getAsMention() + " !", event.getChannel());
+                        if (Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) Main.getInstance().getCommandManager().sendMessage("You just leveled up to Chat Level " + userLevel.getLevel() + " " + event.getMember().getAsMention() + " !", event.getChannel());
                     }
 
                     Main.getInstance().getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), userLevel);
@@ -296,8 +296,6 @@ public class OtherEvents extends ListenerAdapter {
                         }
 
                         embedBuilder.setDescription("Which Channel do you want to use as Logging-Channel?");
-
-                        if (event.getGuild().getSelfMember().hasPermission(Permission.VIEW_CHANNEL))
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupLogChannel", "Select a Channel!", 1, 1, false, optionList))).queue();
                     }

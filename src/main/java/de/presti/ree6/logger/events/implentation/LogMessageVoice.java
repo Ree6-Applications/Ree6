@@ -18,7 +18,8 @@ public class LogMessageVoice extends LogMessage {
     private Member member;
 
     // The Audio Channels associated with the Events.
-    private AudioChannel previousVoiceChannel, currentVoiceChannel;
+    private AudioChannel previousVoiceChannel,
+            currentVoiceChannel;
 
     /**
      * Constructor for an Audio Channel join / leave Event.
@@ -72,6 +73,7 @@ public class LogMessageVoice extends LogMessage {
     /**
      * Change the associated Member of the Log.
      *
+     * @deprecated Will be removed.
      * @param member the new {@link Member}.
      */
     @Deprecated(since = "1.7.7", forRemoval = true)
@@ -91,6 +93,7 @@ public class LogMessageVoice extends LogMessage {
     /**
      * Change the previous {@link AudioChannel} of the {@link Member}
      *
+     * @deprecated Will be removed.
      * @param previousVoiceChannel the new previous {@link AudioChannel}.
      */
     @Deprecated(since = "1.7.7", forRemoval = true)
@@ -110,6 +113,7 @@ public class LogMessageVoice extends LogMessage {
     /**
      * Change the current {@link AudioChannel} of the {@link Member}
      *
+     * @deprecated Will be removed.
      * @param currentVoiceChannel the new current {@link AudioChannel}.
      */
     @Deprecated(since = "1.7.7", forRemoval = true)
