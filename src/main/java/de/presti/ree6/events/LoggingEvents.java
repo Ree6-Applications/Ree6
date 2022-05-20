@@ -3,7 +3,8 @@ package de.presti.ree6.events;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
-import de.presti.ree6.logger.events.*;
+import de.presti.ree6.logger.events.LogMessage;
+import de.presti.ree6.logger.events.LogTyp;
 import de.presti.ree6.logger.events.implentation.LogMessageMember;
 import de.presti.ree6.logger.events.implentation.LogMessageRole;
 import de.presti.ree6.logger.events.implentation.LogMessageUser;
@@ -44,7 +45,6 @@ import net.dv8tion.jda.api.utils.TimeFormat;
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class LoggingEvents extends ListenerAdapter {
@@ -665,7 +665,7 @@ public class LoggingEvents extends ListenerAdapter {
                             we.setImageUrl(attachment.getProxyUrl());
                             isImageAdded = true;
                         } else {
-                            wm.addFile(attachment.getFileName(), attachment.retrieveInputStream().get());
+                            wm.addFile(attachment.getFileName(), attachment.getProxy().download().get());
                         }
                     } catch (Exception exception) {
                         wm.append("Couldn't receive InputStream from Attachment, reason: " + exception.getMessage() + "!\n");

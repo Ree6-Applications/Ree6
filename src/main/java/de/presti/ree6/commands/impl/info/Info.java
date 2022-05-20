@@ -1,6 +1,7 @@
 package de.presti.ree6.commands.impl.info;
 
-import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.Category;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
@@ -10,8 +11,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.time.format.DateTimeFormatter;
 
@@ -32,11 +33,11 @@ public class Info implements ICommand {
 
         } else {
             if (commandEvent.getArguments().length == 1) {
-                if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
+                if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
                     Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                     Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 } else {
-                    sendInfo(commandEvent.getMessage().getMentionedMembers().get(0), commandEvent);
+                    sendInfo(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                 }
             } else {
                 Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

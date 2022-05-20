@@ -1,6 +1,7 @@
 package de.presti.ree6.commands.impl.level;
 
-import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.Category;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
@@ -10,8 +11,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 @Command(name = "level", description = "Show your own Level or the Level of another User in the Guild.", category = Category.LEVEL)
 public class Level implements ICommand {
@@ -30,10 +31,10 @@ public class Level implements ICommand {
             }
         } else {
             if (commandEvent.getArguments().length == 1 || commandEvent.getArguments().length == 2) {
-                if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
+                if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
                     sendLevel(commandEvent.getMember(), commandEvent, commandEvent.getArguments()[0]);
                 } else {
-                    sendLevel(commandEvent.getMessage().getMentionedMembers().get(0), commandEvent, commandEvent.getArguments()[0]);
+                    sendLevel(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent, commandEvent.getArguments()[0]);
                 }
             } else {
                 Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());

@@ -1,9 +1,11 @@
 package de.presti.ree6.commands.impl.community;
 
-import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.Category;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 @Command(name = "twitternotifier", description = "Manage your Twitter-Notifier!", category = Category.COMMUNITY)
@@ -33,14 +35,14 @@ public class TwitterNotifier implements ICommand {
             }
         } else if(commandEvent.getArguments().length == 3) {
 
-            if (commandEvent.getMessage().getMentionedChannels().isEmpty()) {
+            if (commandEvent.getMessage().getMentions().getChannels(TextChannel.class).isEmpty()) {
                 Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitternotifier add/remove TwitterName #Channel", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 return;
             }
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.getMessage().getMentionedChannels().get(0).createWebhook("Ree6-TwitterNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addTwitterWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
+                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-TwitterNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addTwitterWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
                 Main.getInstance().getCommandManager().sendMessage("A TwitterTweet Notifier has been created for the User " + name + "!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
 
                 if (!Main.getInstance().getNotifier().isTwitterRegistered(name)) {

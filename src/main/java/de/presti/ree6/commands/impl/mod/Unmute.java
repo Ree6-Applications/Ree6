@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -11,8 +11,8 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 @Command(name = "unmute", description = "Unmute a specific user on the Server.", category = Category.MOD)
 public class Unmute implements ICommand {
@@ -41,11 +41,11 @@ public class Unmute implements ICommand {
 
             } else {
                 if (commandEvent.getArguments().length == 1) {
-                    if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
+                    if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
                         Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                         Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "unmute @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                     } else {
-                        unmuteMember(commandEvent.getMessage().getMentionedMembers().get(0), commandEvent);
+                        unmuteMember(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                     }
                 } else {
                     Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

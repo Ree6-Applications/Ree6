@@ -1,16 +1,16 @@
 package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -37,7 +37,7 @@ public class Twitter implements ICommand {
 
         } else {
             if (commandEvent.getArguments().length >= 2) {
-                if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
+                if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
                     Main.getInstance().getCommandManager().sendMessage("No User given!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 } else {
                     StringBuilder stringBuilder = new StringBuilder();
@@ -46,7 +46,7 @@ public class Twitter implements ICommand {
                         stringBuilder.append(commandEvent.getArguments()[i]).append(" ");
                     }
 
-                    sendTwitterTweet(commandEvent.getMessage().getMentionedMembers().get(0), stringBuilder.toString(), commandEvent);
+                    sendTwitterTweet(commandEvent.getMessage().getMentions().getMembers().get(0), stringBuilder.toString(), commandEvent);
                 }
             } else {
                 Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitter @User Yourtexthere", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

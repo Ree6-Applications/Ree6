@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ImageCreationUtility;
@@ -28,10 +28,10 @@ public class HornyJail implements ICommand {
             }
         } else {
             if (commandEvent.getArguments().length == 1) {
-                if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
+                if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
                     Main.getInstance().getCommandManager().sendMessage("No User given!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 } else {
-                    sendHornyJail(commandEvent.getMessage().getMentionedMembers().get(0), commandEvent);
+                    sendHornyJail(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                 }
             } else {
                 Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "hornyjail @User", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

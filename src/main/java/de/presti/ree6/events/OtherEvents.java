@@ -3,14 +3,14 @@ package de.presti.ree6.events;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.addons.impl.ChatProtector;
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.bot.util.Webhook;
+import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;
+import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.others.AutoRoleHandler;
 import de.presti.ree6.utils.others.RandomUtils;
 import de.presti.ree6.utils.others.TimeUtil;
-import de.presti.ree6.utils.data.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -142,7 +142,7 @@ public class OtherEvents extends ListenerAdapter {
 
             if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getTextChannel(), null)) {
 
-                if (!event.getMessage().getMentionedUsers().isEmpty() && event.getMessage().getMentionedUsers().contains(event.getJDA().getSelfUser())) {
+                if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
                     event.getChannel().sendMessage("Usage " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "help").queue();
                 }
 

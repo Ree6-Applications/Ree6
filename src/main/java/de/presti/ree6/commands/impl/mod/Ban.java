@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 @Command(name = "ban", description = "Ban an specific user from the Server.", category = Category.MOD)
 public class Ban implements ICommand {
@@ -40,19 +40,19 @@ public class Ban implements ICommand {
                 }
             } else {
                 if (commandEvent.getArguments().length > 0) {
-                    if (commandEvent.getMessage().getMentionedMembers().isEmpty()) {
+                    if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
                         Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                         Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "ban @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                     } else {
                         if (commandEvent.getArguments().length == 1) {
-                            banMember(commandEvent.getMessage().getMentionedMembers().get(0), null, commandEvent);
+                            banMember(commandEvent.getMessage().getMentions().getMembers().get(0), null, commandEvent);
                         } else {
                             StringBuilder reason = new StringBuilder();
                             for (int i = 1; i < commandEvent.getArguments().length; i++) {
                                 reason.append(commandEvent.getArguments()[i]).append(" ");
                             }
 
-                            banMember(commandEvent.getMessage().getMentionedMembers().get(0), reason.toString(), commandEvent);
+                            banMember(commandEvent.getMessage().getMentions().getMembers().get(0), reason.toString(), commandEvent);
                         }
                     }
                 } else {
