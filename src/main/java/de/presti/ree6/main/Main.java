@@ -52,6 +52,7 @@ public class Main {
 
     // Instance of the Logger used to log the Command output.
     Logger logger;
+    Logger analyticsLogger;
 
     // Instance of the Config System.
     Config config;
@@ -74,6 +75,7 @@ public class Main {
 
         // Create the Logger Instance.
         instance.logger = LoggerFactory.getLogger(Main.class);
+        instance.analyticsLogger = LoggerFactory.getLogger("analytics");
 
         // Create the LoggerQueue Instance.
         instance.loggerQueue = new LoggerQueue();
@@ -341,7 +343,22 @@ public class Main {
      * @return {@link Logger} Instance of the Logger.
      */
     public Logger getLogger() {
+        if (logger == null) {
+            return logger = LoggerFactory.getLogger(Main.class);
+        }
         return logger;
+    }
+
+    /**
+     * Retrieve the Instance of the Analytics-Logger.
+     *
+     * @return {@link Logger} Instance of the Logger.
+     */
+    public Logger getAnalyticsLogger() {
+        if (analyticsLogger == null) {
+            return analyticsLogger = LoggerFactory.getLogger("analytics");
+        }
+        return analyticsLogger;
     }
 
     /**
