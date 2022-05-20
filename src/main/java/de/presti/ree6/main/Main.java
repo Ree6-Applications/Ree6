@@ -1,18 +1,25 @@
 package de.presti.ree6.main;
 
 import com.mindscapehq.raygun4java.core.RaygunClient;
-import de.presti.ree6.addons.*;
+import de.presti.ree6.addons.AddonLoader;
+import de.presti.ree6.addons.AddonManager;
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.bot.version.*;
+import de.presti.ree6.bot.version.BotState;
+import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.CommandManager;
-import de.presti.ree6.events.*;
+import de.presti.ree6.events.LoggingEvents;
+import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.logger.events.LoggerQueue;
-import de.presti.ree6.music.*;
+import de.presti.ree6.music.AudioPlayerSendHandler;
+import de.presti.ree6.music.GuildMusicManager;
+import de.presti.ree6.music.MusicWorker;
 import de.presti.ree6.sql.SQLConnector;
-import de.presti.ree6.utils.apis.*;
-import de.presti.ree6.utils.data.*;
+import de.presti.ree6.utils.apis.Notifier;
+import de.presti.ree6.utils.data.ArrayUtil;
+import de.presti.ree6.utils.data.Config;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +130,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.PUBLIC, "1.7.9");
+            BotWorker.createBot(BotVersion.PUBLIC, "1.7.10");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {

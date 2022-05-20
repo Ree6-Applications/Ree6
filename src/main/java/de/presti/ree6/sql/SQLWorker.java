@@ -11,7 +11,9 @@ import de.presti.ree6.utils.data.Setting;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * A Class to actually handle the SQL data.
@@ -1977,6 +1979,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             if (exception instanceof SQLNonTransientConnectionException) {
                 Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
                 sqlConnector.connectToSQLServer();
+                return querySQL(sqlQuery, objcObjects);
             } else {
                 Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
             }

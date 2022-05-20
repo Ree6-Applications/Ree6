@@ -2,6 +2,7 @@ package de.presti.ree6.utils.data;
 
 import de.presti.ree6.sql.entities.UserLevel;
 import net.dv8tion.jda.api.entities.User;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -30,41 +31,60 @@ public class ImageCreationUtility {
      * @throws IOException when URL-Format is Invalid or the URL is not a valid Image.
      */
     public static byte[] createRankImage(UserLevel userLevel) throws IOException {
+        long start = System.currentTimeMillis();
+        long actionPerformance = System.currentTimeMillis();
+
+        LoggerFactory.getLogger("analytics").debug("Started User Rank Image creation.");
         if (userLevel == null || userLevel.getUser() == null)
             return new byte[128];
 
+        LoggerFactory.getLogger("analytics").debug("Loading Background base. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
         // Generate a 885x211 Image Background.
         BufferedImage base = ImageIO.read(new File("images/base.png"));
+        LoggerFactory.getLogger("analytics").debug("Loaded Background base. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
 
         User user = userLevel.getUser();
         BufferedImage userImage;
 
+        LoggerFactory.getLogger("analytics").debug("Getting User avatar. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
         // Generated a Circle Image with the Avatar of the User.
-        if (user.getAvatarUrl() != null) {
-            userImage = convertToCircleShape(new URL(user.getAvatarUrl()));
-        } else {
-            userImage = convertToCircleShape(new URL(user.getDefaultAvatarUrl()));
-        }
+        userImage = convertToCircleShape(new URL(user.getEffectiveAvatarUrl()));
 
+        LoggerFactory.getLogger("analytics").debug("Creating Graphics2D. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
         // Create a new Graphics2D instance from the base.
         Graphics2D graphics2D = base.createGraphics();
-
+        LoggerFactory.getLogger("analytics").debug("Created Graphics2D. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
         // Change the background to black.
 
+        LoggerFactory.getLogger("analytics").debug("Drawing User Image. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
         // Draw basic Information, such as the User Image, Username and the Experience Rect.
         graphics2D.drawImage(userImage, null, 175, 450);
         graphics2D.setColor(Color.WHITE);
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        LoggerFactory.getLogger("analytics").debug("Finished drawing User Image. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
 
         Font verdana60 = new Font("Verdana", Font.PLAIN, 60);
         Font verdana50 = new Font("Verdana", Font.PLAIN, 50);
         Font verdana40 = new Font("Verdana", Font.PLAIN, 40);
+
+        LoggerFactory.getLogger("analytics").debug("Finished creating Fonts. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
 
         String username = new String(user.getName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 
         if (username.length() > 13) {
             username = username.substring(0, 12);
         }
+
+        LoggerFactory.getLogger("analytics").debug("Finished substring on Username. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
 
         graphics2D.setFont(verdana60);
         graphics2D.drawString(username, 425, 675);
@@ -73,6 +93,9 @@ public class ImageCreationUtility {
         graphics2D.drawString("#" + user.getDiscriminator(), 425, 675 - graphics2D.getFontMetrics(verdana60).getHeight() + 5);
         graphics2D.setColor(Color.magenta.darker().darker());
         graphics2D.fillRoundRect(175, 705, base.getWidth() - 950, 50, 50, 50);
+
+        LoggerFactory.getLogger("analytics").debug("Finished drawing User-Info on card. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
 
         //region Experience
 
@@ -83,6 +106,8 @@ public class ImageCreationUtility {
         graphics2D.setColor(Color.GRAY);
         graphics2D.drawString("/" + userLevel.getFormattedExperience(userLevel.getTotalExperienceForNextLevel()), (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + userLevel.getFormattedExperience(userLevel.getExperienceForNextLevel()))), 675);
 
+        LoggerFactory.getLogger("analytics").debug("Finished drawing User-Experience on card. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
         //endregion
 
         //region Rank
@@ -96,6 +121,8 @@ public class ImageCreationUtility {
         graphics2D.setFont(verdana50);
         graphics2D.drawString("" + userLevel.getRank(), (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("" + userLevel.getRank())), 675 - graphics2D.getFontMetrics(verdana40).getHeight() - graphics2D.getFontMetrics(verdana40).getHeight());
 
+        LoggerFactory.getLogger("analytics").debug("Finished drawing User-Rank on card. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
         //endregion
 
         //region Level
@@ -109,19 +136,28 @@ public class ImageCreationUtility {
         graphics2D.setFont(verdana50);
         graphics2D.drawString("" + userLevel.getLevel(), (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("" + userLevel.getLevel())), 675 - graphics2D.getFontMetrics(verdana40).getHeight());
 
+        LoggerFactory.getLogger("analytics").debug("Finished drawing User-Level on card. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
+
         //endregion
 
         // Draw the Progressbar.
         graphics2D.setColor(Color.magenta);
         graphics2D.fillRoundRect(175, 705, (base.getWidth() - 950) * (int) userLevel.getProgress() / 100, 50, 50, 50);
 
+        LoggerFactory.getLogger("analytics").debug("Finished drawing Progressbar on card. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
         // Close the Graphics2d instance.
         graphics2D.dispose();
+        LoggerFactory.getLogger("analytics").debug("Finished disposing Graphics2D instance. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        actionPerformance = System.currentTimeMillis();
 
         // Create a ByteArrayOutputStream to convert the BufferedImage to an Array of Bytes.
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         ImageIO.write(base, "PNG", outputStream);
+        LoggerFactory.getLogger("analytics").debug("Finished writing Image into ByteArrayOutputStream. (" + (System.currentTimeMillis() - actionPerformance) + "ms)");
+        LoggerFactory.getLogger("analytics").debug("Finished creation in " + (System.currentTimeMillis() - start) + "ms");
         return outputStream.toByteArray();
     }
 
