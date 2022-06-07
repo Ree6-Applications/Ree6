@@ -246,12 +246,25 @@ public class ImageCreationUtility {
      * @throws IOException if the link is not a valid Image.
      */
     public static BufferedImage convertToCircleShape(URL url) throws IOException {
+        long start = System.currentTimeMillis();
+        long actionPerformance = System.currentTimeMillis();
+
+        Main.getInstance().getAnalyticsLogger().debug("Started User Image creation.");
 
         BufferedImage mainImage = ImageIO.read(url);
 
+        Main.getInstance().getAnalyticsLogger().debug("Loading Image from URL. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
         BufferedImage output = new BufferedImage(mainImage.getWidth(), mainImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
+        Main.getInstance().getAnalyticsLogger().debug("Creating Output BufferedImage. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
         Graphics2D g2 = output.createGraphics();
+
+        Main.getInstance().getAnalyticsLogger().debug("Created Graphics2D. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
 
         // This is what we want, but it only does hard-clipping, i.e. aliasing
         // g2.setClip(new RoundRectangle2D ...)
@@ -261,15 +274,26 @@ public class ImageCreationUtility {
         g2.setComposite(AlphaComposite.Src);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(Color.WHITE);
+        Main.getInstance().getAnalyticsLogger().debug("Set Graphic Presets. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
         g2.fill(new Ellipse2D.Float(0, 0, mainImage.getHeight(), mainImage.getHeight()));
+        Main.getInstance().getAnalyticsLogger().debug("Filled Graphic Base with Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
 
         // ... then compositing the image on top,
         // using the white shape from above as alpha source
         g2.setComposite(AlphaComposite.SrcAtop);
         g2.drawImage(mainImage, 0, 0, null);
 
+        Main.getInstance().getAnalyticsLogger().debug("Drawing Image finished. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
         g2.dispose();
 
+        Main.getInstance().getAnalyticsLogger().debug("Disposing Graphics2D finished. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
+        Main.getInstance().getAnalyticsLogger().debug("Finished creation. ({}ms)", System.currentTimeMillis() - start);
         return resize(output, 250, 250);
     }
 

@@ -1946,7 +1946,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return The Result from the SQL-Server.
      */
     public ResultSet querySQL(String sqlQuery, Object... objcObjects) {
-        if (!sqlConnector.isConnected()) return null;
+        if (!sqlConnector.isConnected()) {
+            sqlConnector.connectToSQLServer();
+            return querySQL(sqlQuery, objcObjects);
+        }
 
         try (PreparedStatement preparedStatement = sqlConnector.getConnection().prepareStatement(sqlQuery)) {
             int index = 1;
