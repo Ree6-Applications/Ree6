@@ -19,7 +19,7 @@ import java.net.http.HttpResponse;
 public class RequestUtility {
 
     // HTTP Client used to send the Requests.
-    static HttpClient client = HttpClient.newHttpClient();
+    private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
     /**
      * Send a Request.
@@ -29,7 +29,8 @@ public class RequestUtility {
      */
     public static JsonElement request(Request request) {
 
-        HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder().uri(request.getUri())
+        HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder()
+                .uri(request.getUri())
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotWorker.getBuild())
                 .header("Content-Type", "application/json-rpc");
 
@@ -37,15 +38,13 @@ public class RequestUtility {
             httpRequestBuilder = httpRequestBuilder.header("Authorization", request.getBearerAuth());
         }
 
-        if (request.getMethode() == Methode.GET) {
+        if (request.getMethod() == Method.GET) {
             httpRequestBuilder = httpRequestBuilder.GET();
-        } else if (request.getMethode() == Methode.POST) {
+        } else if (request.getMethod() == Method.POST) {
             httpRequestBuilder = httpRequestBuilder.POST(request.bodyPublisher);
-        } else if (request.getMethode() == Methode.PUT) {
+        } else if (request.getMethod() == Method.PUT) {
             httpRequestBuilder = httpRequestBuilder.PUT(request.bodyPublisher);
         }
-
-        HttpRequest httpRequest;
 
         JsonElement jsonObject = new JsonObject();
 
@@ -54,7 +53,7 @@ public class RequestUtility {
             return jsonObject;
         }
 
-        httpRequest = httpRequestBuilder.build();
+        HttpRequest httpRequest = httpRequestBuilder.build();
 
         if (httpRequest == null) {
             jsonObject.getAsJsonObject().addProperty("success", false);
@@ -62,7 +61,7 @@ public class RequestUtility {
         }
 
         try {
-            HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> httpResponse = CLIENT.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
             if (httpResponse.statusCode() == 200) {
                 jsonObject = new GsonBuilder().create().fromJson(httpResponse.body(), JsonElement.class);
@@ -82,8 +81,8 @@ public class RequestUtility {
         // The URL and Auth Token for the Request.
         String url, bearerAuth;
 
-        // The Request Methode.
-        Methode methode;
+        // The Request Method.
+        Method method;
 
         // The Body Publisher used for PUT and POST Requests.
         HttpRequest.BodyPublisher bodyPublisher;
@@ -95,7 +94,7 @@ public class RequestUtility {
          */
         public Request(String url) {
             this.url = url;
-            methode = Methode.GET;
+            method = Method.GET;
         }
 
         /**
@@ -107,7 +106,7 @@ public class RequestUtility {
         public Request(String url, String bearerAuth) {
             this.url = url;
             this.bearerAuth = bearerAuth;
-            methode = Methode.GET;
+            method = Method.GET;
         }
 
         /**
@@ -115,24 +114,24 @@ public class RequestUtility {
          *
          * @param url        the Request URL.
          * @param bearerAuth the AuthToken.
-         * @param methode    the wanted Methode.
+         * @param method     the wanted Method.
          */
-        public Request(String url, String bearerAuth, Methode methode) {
+        public Request(String url, String bearerAuth, Method method) {
             this.url = url;
             this.bearerAuth = bearerAuth;
-            this.methode = methode;
+            this.method = method;
         }
 
         /**
          * Create a simple HTTP Requests.
          *
          * @param url           the Request URL.
-         * @param methode       the wanted Methode.
+         * @param method        the wanted Method.
          * @param bodyPublisher the Body Publisher used for PUT and POST Requests.
          */
-        public Request(String url, Methode methode, HttpRequest.BodyPublisher bodyPublisher) {
+        public Request(String url, Method method, HttpRequest.BodyPublisher bodyPublisher) {
             this.url = url;
-            this.methode = methode;
+            this.method = method;
             this.bodyPublisher = bodyPublisher;
         }
 
@@ -142,13 +141,13 @@ public class RequestUtility {
          *
          * @param url           the Request URL.
          * @param bearerAuth    the AuthToken.
-         * @param methode       the wanted Methode.
+         * @param method        the wanted Method.
          * @param bodyPublisher the Body Publisher used for PUT and POST Requests.
          */
-        public Request(String url, String bearerAuth, Methode methode, HttpRequest.BodyPublisher bodyPublisher) {
+        public Request(String url, String bearerAuth, Method method, HttpRequest.BodyPublisher bodyPublisher) {
             this.url = url;
             this.bearerAuth = bearerAuth;
-            this.methode = methode;
+            this.method = method;
             this.bodyPublisher = bodyPublisher;
         }
 
@@ -180,12 +179,12 @@ public class RequestUtility {
         }
 
         /**
-         * Get the HTTP Methode.
+         * Get the HTTP Method.
          *
-         * @return the Methode.
+         * @return the Method.
          */
-        public Methode getMethode() {
-            return methode;
+        public Method getMethod() {
+            return method;
         }
 
         /**
@@ -201,7 +200,7 @@ public class RequestUtility {
     /**
      * Supported Methods.
      */
-    public enum Methode {
+    public enum Method {
         GET, PUT, POST
     }
 
