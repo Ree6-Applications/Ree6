@@ -21,6 +21,9 @@ public class RequestUtility {
     // HTTP Client used to send the Requests.
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
+    // User-Agent for all the Requests.
+    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotWorker.getBuild();
+
     /**
      * Send a Request.
      *
@@ -31,7 +34,7 @@ public class RequestUtility {
 
         HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder()
                 .uri(request.getUri())
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotWorker.getBuild())
+                .header("User-Agent", USER_AGENT)
                 .header("Content-Type", "application/json-rpc");
 
         if (request.bearerAuth != null) {

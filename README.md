@@ -15,7 +15,7 @@ Ree6 is an all-in-one Discord Bot maintained by Presti, which started as an alte
 # What can Ree6 do?
 As of right now Ree6 has the ability to play Music freely from YouTube, Spotify and Soundcloud.
 As well as the "default" moderation ability such as ban, kick etc., Ree6 also provides its own implementation of the Audit-Logger.
-We also provide a **open-Source** Webinterface, Twitch and Twitter Notification, a Leveling System, a public Rest-API and more!
+We also provide an **open-Source** Webinterface, Twitch and Twitter Notification, a Leveling System, a public Rest-API and more!
 
 # Discord
 Ree6 has its own support Discord that you can join to help us reach the Partner status on Discord and you to get help!
@@ -23,7 +23,7 @@ Ree6 has its own support Discord that you can join to help us reach the Partner 
 [![Discord](https://img.shields.io/discord/805149057004732457?logo=discord&style=for-the-badge)](https://support.ree6.de)
 
 # Disclaimer
-Please be aware that Im a Student and can't work full-time on the Bot, and that I am paying for every costs that comes up to keep this Project alive! I'm thankful for every donation that I receive on [Ko-fi](https://ko-fi.com/presti).
+Please be aware that I'm a Student and can't work full-time on the Bot, and that I am paying for every costs that comes up to keep this Project alive! I'm thankful for every donation that I receive on [Ko-fi](https://ko-fi.com/presti).
 
 # Support
 
@@ -37,7 +37,6 @@ and <a href="https://www.yourkit.com/youmonitor/">YourKit YouMonitor</a>.
 # Used APIs.
 - [JDA](https://github.com/DV8FromTheWorld/JDA)
 - [LavaPlayer](https://github.com/sedmelluq/lavaplayer)
-- [Nekos4J](https://github.com/Nekos-life/Nekos4J)
 - [Spotify Web API](https://github.com/thelinmichael/spotify-web-api-java)
 - [Youtube Data API v3](https://github.com/googleapis/google-api-java-client-services/tree/master/clients/google-api-services-youtube/v3)
 - [Twitch4J](https://github.com/twitch4j/twitch4j)

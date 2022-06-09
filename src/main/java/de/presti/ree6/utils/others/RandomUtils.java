@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.others;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 public final class RandomUtils {
@@ -13,6 +14,8 @@ public final class RandomUtils {
     }
 
     public static final Random random = new Random();
+
+    public static final SecureRandom secureRandom = new SecureRandom();
 
     public static int nextInt(int startInclusive, int endExclusive) {
         if (endExclusive - startInclusive <= 0) {
