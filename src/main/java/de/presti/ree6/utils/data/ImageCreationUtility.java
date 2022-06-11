@@ -251,12 +251,12 @@ public class ImageCreationUtility {
 
         Main.getInstance().getAnalyticsLogger().debug("Started User Image creation.");
 
-        BufferedImage mainImage = ImageIO.read(url);
+        BufferedImage mainImage = resize(ImageIO.read(url), 250, 250);
 
-        Main.getInstance().getAnalyticsLogger().debug("Loading Image from URL. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().getAnalyticsLogger().debug("Loading Image from URL and resizing it. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        BufferedImage output = new BufferedImage(mainImage.getWidth(), mainImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage output = new BufferedImage(mainImage.getWidth(), mainImage.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         Main.getInstance().getAnalyticsLogger().debug("Creating Output BufferedImage. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
