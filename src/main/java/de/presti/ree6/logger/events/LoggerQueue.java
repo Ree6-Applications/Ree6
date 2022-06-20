@@ -58,7 +58,7 @@ public class LoggerQueue {
                             !loggerMessages.isCanceled() &&
                             loggerMessages instanceof LogMessageVoice logMessageVoice1 &&
                             logMessageVoice1.getMember() == logMessageVoice.getMember() &&
-                            loggerMessages.getType() == LogTyp.VC_LEAVE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
+                            loggerMessages.getType() == LogTyp.VC_LEAVE).forEach(LogMessage::cancel);
 
                     // Set the new Webhook Message.
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(logMessageVoice.getMember().getUser().getAsTag(),
@@ -80,7 +80,7 @@ public class LoggerQueue {
                             loggerMessages != loggerMessage &&
                             loggerMessages instanceof LogMessageVoice logMessageVoice1 &&
                             logMessageVoice1.getMember() == logMessageVoice.getMember() && !loggerMessages.isCanceled() &&
-                            loggerMessages.getType() == LogTyp.VC_MOVE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
+                            loggerMessages.getType() == LogTyp.VC_MOVE).forEach(LogMessage::cancel);
 
                     // Set the new Webhook Message.
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(logMessageVoice.getMember().getUser().getAsTag(),
@@ -101,7 +101,7 @@ public class LoggerQueue {
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
                             loggerMessages instanceof LogMessageVoice logMessageVoice1 &&
                             logMessageVoice1.getMember() == logMessageVoice.getMember() &&
-                            !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.VC_JOIN).forEach(loggerMessages -> loggerMessages.setCanceled(true));
+                            !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.VC_JOIN).forEach(LogMessage::cancel);
 
                     // Set the new Webhook Message.
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(logMessageVoice.getMember().getUser().getAsTag(),
@@ -129,7 +129,7 @@ public class LoggerQueue {
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
                             loggerMessages instanceof LogMessageMember logMessageMember1 &&
                             logMessageMember1.getMember() == logMessageMember.getMember() &&
-                            !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.NICKNAME_CHANGE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
+                            !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.NICKNAME_CHANGE).forEach(LogMessage::cancel);
 
                     // Change the current previous Nickname to the old one.
                     if (memberData != null && memberData.getPreviousName() != null) logMessageMember.setPreviousName(memberData.getPreviousName());
@@ -163,7 +163,7 @@ public class LoggerQueue {
                         logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
                                 loggerMessages instanceof LogMessageMember logMessageMember1 &&
                                 logMessageMember1.getMember() == logMessageMember.getMember() &&
-                                !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.MEMBERROLE_CHANGE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
+                                !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.MEMBERROLE_CHANGE).forEach(LogMessage::cancel);
 
                         // Check if the RemoveRoles is null or empty.
                         if ((logMessageMember.getRemovedRoles() == null || logMessageMember.getRemovedRoles().isEmpty()) &&
@@ -247,7 +247,7 @@ public class LoggerQueue {
                     logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
                             loggerMessages instanceof LogMessageRole logMessageRole1 &&
                             logMessageRole1.getRoleId() == logMessageRole.getId() &&
-                            !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.ROLEDATA_CHANGE).forEach(loggerMessages -> loggerMessages.setCanceled(true));
+                            !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.ROLEDATA_CHANGE).forEach(LogMessage::cancel);
 
                     // Start merging the Role Permissions
                     if (roleData != null) {
@@ -422,7 +422,7 @@ public class LoggerQueue {
                             loggerMessages instanceof LogMessageUser logMessageUser1 &&
                             logMessageUser1.getUser().getIdLong() == logMessageUser.getUser().getIdLong() &&
                             !loggerMessages.isCanceled() && (loggerMessages.getType() == LogTyp.SERVER_JOIN ||
-                            loggerMessages.getType() == LogTyp.USER_BAN)).forEach(loggerMessages -> loggerMessages.setCanceled(true));
+                            loggerMessages.getType() == LogTyp.USER_BAN)).forEach(LogMessage::cancel);
 
                     // Set the new Webhook Message.
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(logMessageUser.getUser().getAsTag(),
@@ -433,6 +433,9 @@ public class LoggerQueue {
                                     logMessageUser1.getUser().getIdLong() == logMessageUser.getUser().getIdLong())
                             .anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.USER_BAN)) {
                         webhookEmbedBuilder.setDescription(logMessageUser.getUser().getAsMention() + " **has been banned.** ");
+
+                        logs.stream().filter(logMessage -> logMessage != loggerMessage && logMessage.getId() == loggerMessage.getId() && logMessage instanceof LogMessageUser logMessageUser1 &&
+                                logMessageUser1.getUser().getIdLong() == logMessageUser.getUser().getIdLong()).forEach(LogMessage::cancel);
                     } else {
                         webhookEmbedBuilder.setDescription(logMessageUser.getUser().getAsMention() + " **joined and left this Server.** ");
                     }
