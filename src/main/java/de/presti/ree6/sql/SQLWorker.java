@@ -6,6 +6,8 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.base.annotations.Table;
+import de.presti.ree6.sql.base.data.SQLResponse;
 import de.presti.ree6.sql.entities.UserLevel;
 import de.presti.ree6.utils.data.Setting;
 import net.dv8tion.jda.api.entities.Guild;
@@ -40,7 +42,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public UserLevel getChatLevelData(String guildId, String userId) {
 
         // Creating a SQL Statement to get the User from the Level Table by the GuildID and UserID.
-        try (ResultSet rs = querySQL("SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)) {
 
             // Return the UserLevel data if found.
             if (rs != null && rs.next()) {
@@ -63,7 +65,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean existsInChatLevel(String guildId, String userId) {
 
         // Creating a SQL Statement to get the User from the Level Table by the GuildID and UserID.
-        try (ResultSet rs = querySQL("SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -86,11 +88,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (existsInChatLevel(guildId, userLevel.getUserId())) {
 
             // If so change the current XP to the new.
-            querySQL("UPDATE Level SET XP=? WHERE GID=? AND UID=?", userLevel.getExperience(), guildId, userLevel.getUserId());
+            sqlConnector.querySQL("UPDATE Level SET XP=? WHERE GID=? AND UID=?", userLevel.getExperience(), guildId, userLevel.getUserId());
         } else {
 
             // If not create a new entry and add the data.
-            querySQL("INSERT INTO Level (GID, UID, XP) VALUES (?, ?, ?);", guildId, userLevel.getUserId(), userLevel.getExperience());
+            sqlConnector.querySQL("INSERT INTO Level (GID, UID, XP) VALUES (?, ?, ?);", guildId, userLevel.getUserId(), userLevel.getExperience());
         }
     }
 
@@ -107,7 +109,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<UserLevel> userLevels = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)) {
 
             // While there are still entries it should add them to the list.
             while (rs != null && rs.next()) {
@@ -132,7 +134,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userIds = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId)) {
 
             // While there are still entries it should add them to the list.
             while (rs != null && rs.next()) {
@@ -159,7 +161,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public UserLevel getVoiceLevelData(String guildId, String userId) {
 
         // Creating a SQL Statement to get the User from the VCLevel Table by the GuildID and UserID.
-        try (ResultSet rs = querySQL("SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)) {
 
             // Return the UserLevel Data if found.
             if (rs != null && rs.next()) {
@@ -182,7 +184,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean existsInVoiceLevel(String guildId, String userId) {
 
         // Creating a SQL Statement to get the User from the VCLevel Table by the GuildID and UserID.
-        try (ResultSet rs = querySQL("SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -205,11 +207,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (existsInVoiceLevel(guildId, userLevel.getUserId())) {
 
             // If so change the current XP to the new.
-            querySQL("UPDATE VCLevel SET XP=? WHERE GID=? AND UID=?", userLevel.getExperience(), guildId, userLevel.getUserId());
+            sqlConnector.querySQL("UPDATE VCLevel SET XP=? WHERE GID=? AND UID=?", userLevel.getExperience(), guildId, userLevel.getUserId());
         } else {
 
             // If not create a new entry and add the data.
-            querySQL("INSERT INTO VCLevel (GID, UID, XP) VALUES (?, ?, ?);", guildId, userLevel.getUserId(), userLevel.getExperience());
+            sqlConnector.querySQL("INSERT INTO VCLevel (GID, UID, XP) VALUES (?, ?, ?);", guildId, userLevel.getUserId(), userLevel.getExperience());
         }
     }
 
@@ -226,7 +228,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<UserLevel> userLevels = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entries from the VCLevel Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)) {
 
             // While there are still entries it should add them to the list.
             while (rs != null && rs.next()) {
@@ -251,7 +253,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userIds = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId)) {
 
             // While there are still entries it should add them to the list.
             while (rs != null && rs.next()) {
@@ -284,7 +286,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         if (isLogSetup(guildId)) {
             // Creating a SQL Statement to get the Entry from the LogWebhooks Table by the GuildID.
-            try (ResultSet rs = querySQL("SELECT * FROM LogWebhooks WHERE GID=?", guildId)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM LogWebhooks WHERE GID=?", guildId)) {
 
                 // Return if there was a match.
                 if (rs != null && rs.next()) {
@@ -320,11 +322,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
             }
 
             // Delete the entry.
-            querySQL("DELETE FROM LogWebhooks WHERE GID=?", guildId);
+            sqlConnector.querySQL("DELETE FROM LogWebhooks WHERE GID=?", guildId);
         }
 
         // Add a new entry into the Database.
-        querySQL("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES (?, ?, ?);", guildId, webhookId, authToken);
+        sqlConnector.querySQL("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES (?, ?, ?);", guildId, webhookId, authToken);
 
     }
 
@@ -336,7 +338,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isLogSetup(String guildId) {
         // Creating a SQL Statement to get the Entry from the LogWebhooks Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM LogWebhooks WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM LogWebhooks WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -357,7 +359,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean existsLogData(long webhookId, String authToken) {
 
         // Creating a SQL Statement to get the Entry from the LogWebhooks Table by the WebhookID and its Auth-Token.
-        try (ResultSet rs = querySQL("SELECT * FROM LogWebhooks WHERE CID=? AND TOKEN=?", webhookId, authToken)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM LogWebhooks WHERE CID=? AND TOKEN=?", webhookId, authToken)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -379,7 +381,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (existsLogData(webhookId, authToken)) {
 
             // Delete if so.
-            querySQL("DELETE FROM LogWebhooks WHERE CID=? AND TOKEN=?", webhookId, authToken);
+            sqlConnector.querySQL("DELETE FROM LogWebhooks WHERE CID=? AND TOKEN=?", webhookId, authToken);
         }
 
     }
@@ -398,7 +400,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         if (isWelcomeSetup(guildId)) {
             // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-            try (ResultSet rs = querySQL("SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId)) {
 
                 // Return if there was a match.
                 if (rs != null && rs.next()) {
@@ -434,11 +436,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
             }
 
             // Delete the entry.
-            querySQL("DELETE FROM WelcomeWebhooks WHERE GID=?", guildId);
+            sqlConnector.querySQL("DELETE FROM WelcomeWebhooks WHERE GID=?", guildId);
         }
 
         // Add a new entry into the Database.
-        querySQL("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES (?, ?, ?);", guildId, webhookId, authToken);
+        sqlConnector.querySQL("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES (?, ?, ?);", guildId, webhookId, authToken);
 
     }
 
@@ -451,7 +453,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isWelcomeSetup(String guildId) {
 
         // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -476,7 +478,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         if (isNewsSetup(guildId)) {
             // Creating a SQL Statement to get the Entry from the NewsWebhooks Table by the GuildID.
-            try (ResultSet rs = querySQL("SELECT * FROM NewsWebhooks WHERE GID=?", guildId)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM NewsWebhooks WHERE GID=?", guildId)) {
 
                 // Return if there was a match.
                 if (rs != null && rs.next()) {
@@ -511,11 +513,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
             }
 
             // Delete the entry.
-            querySQL("DELETE FROM NewsWebhooks WHERE GID=?", guildId);
+            sqlConnector.querySQL("DELETE FROM NewsWebhooks WHERE GID=?", guildId);
         }
 
         // Add a new entry into the Database.
-        querySQL("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES (?, ?, ?);", guildId, webhookId, authToken);
+        sqlConnector.querySQL("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES (?, ?, ?);", guildId, webhookId, authToken);
 
     }
 
@@ -528,7 +530,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isNewsSetup(String guildId) {
 
         // Creating a SQL Statement to get the Entry from the NewsWebhooks Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM NewsWebhooks WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM NewsWebhooks WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -554,7 +556,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         if (isTwitchSetup(guildId)) {
             // Creating a SQL Statement to get the Entry from the RainbowWebhooks Table by the GuildID.
-            try (ResultSet rs = querySQL("SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName)) {
 
                 // Return if there was a match.
                 if (rs != null && rs.next()) {
@@ -580,7 +582,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String[]> webhooks = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the RainbowWebhooks Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM TwitchNotify WHERE NAME=?", twitchName)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE NAME=?", twitchName)) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -603,7 +605,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM TwitchNotify")) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify")) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -626,7 +628,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -652,7 +654,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         removeTwitterWebhook(guildId, twitchName);
 
         // Add a new entry into the Database.
-        querySQL("INSERT INTO TwitchNotify (GID, NAME, CID, TOKEN) VALUES (?, ?, ?, ?);", guildId, twitchName, webhookId, authToken);
+        sqlConnector.querySQL("INSERT INTO TwitchNotify (GID, NAME, CID, TOKEN) VALUES (?, ?, ?, ?);", guildId, twitchName, webhookId, authToken);
     }
 
     /**
@@ -675,7 +677,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             }
 
             // Delete the entry.
-            querySQL("DELETE FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName);
+            sqlConnector.querySQL("DELETE FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName);
         }
     }
 
@@ -687,7 +689,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isTwitchSetup(String guildId) {
         // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -708,7 +710,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isTwitchSetup(String guildId, String twitchName) {
 
         // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -734,7 +736,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         if (isTwitterSetup(guildId)) {
             // Creating a SQL Statement to get the Entry from the RainbowWebhooks Table by the GuildID.
-            try (ResultSet rs = querySQL("SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName)) {
 
                 // Return if there was a match.
                 if (rs != null && rs.next()) {
@@ -760,7 +762,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String[]> webhooks = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the RainbowWebhooks Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM TwitterNotify WHERE NAME=?", twitterName)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE NAME=?", twitterName)) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -783,7 +785,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitterNotify Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM TwitterNotify")) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitterNotify")) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -806,7 +808,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -832,7 +834,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         removeTwitterWebhook(guildId, twitterName);
 
         // Add a new entry into the Database.
-        querySQL("INSERT INTO TwitterNotify (GID, NAME, CID, TOKEN) VALUES (?, ?, ?, ?);", guildId, twitterName, webhookId, authToken);
+        sqlConnector.querySQL("INSERT INTO TwitterNotify (GID, NAME, CID, TOKEN) VALUES (?, ?, ?, ?);", guildId, twitterName, webhookId, authToken);
     }
 
     /**
@@ -854,7 +856,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             }
 
             // Delete the entry.
-            querySQL("DELETE FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName);
+            sqlConnector.querySQL("DELETE FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName);
         }
     }
 
@@ -867,7 +869,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isTwitterSetup(String guildId) {
 
         // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -887,7 +889,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isTwitterSetup(String guildId, String twitterName) {
         // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -917,7 +919,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (isMuteSetup(guildId)) {
             // Creating a SQL Statement to get the RoleID from the MuteRoles Table by the GuildID.
-            try (ResultSet rs = querySQL("SELECT * FROM MuteRoles WHERE GID=?", guildId)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM MuteRoles WHERE GID=?", guildId)) {
 
                 // Return the Role ID as String if found.
                 if (rs != null && rs.next()) return rs.getString("RID");
@@ -940,10 +942,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (isMuteSetup(guildId)) {
             // Replace the entry with the new Data.
-            querySQL("UPDATE MuteRoles SET RID=? WHERE GID=?", roleId, guildId);
+            sqlConnector.querySQL("UPDATE MuteRoles SET RID=? WHERE GID=?", roleId, guildId);
         } else {
             // Add a new entry into the Database.
-            querySQL("INSERT INTO MuteRoles (GID, RID) VALUES (?, ?);", guildId, roleId);
+            sqlConnector.querySQL("INSERT INTO MuteRoles (GID, RID) VALUES (?, ?);", guildId, roleId);
         }
     }
 
@@ -956,7 +958,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isMuteSetup(String guildId) {
 
         // Creating a SQL Statement to get the RoleID from the MuteRoles Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM MuteRoles WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM MuteRoles WHERE GID=?", guildId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -976,7 +978,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         // Check if there is a Mute Role set if so remove.
         if (isMuteSetup(guildId)) {
-            querySQL("DELETE FROM MuteRoles WHERE GID=?", guildId);
+            sqlConnector.querySQL("DELETE FROM MuteRoles WHERE GID=?", guildId);
         }
     }
 
@@ -999,7 +1001,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (isAutoRoleSetup(guildId)) {
             // Creating a SQL Statement to get the RoleID from the AutoRoles Table by the GuildID.
-            try (ResultSet rs = querySQL("SELECT * FROM AutoRoles WHERE GID=?", guildId)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM AutoRoles WHERE GID=?", guildId)) {
 
                 // Add the Role ID to the List if found.
                 while (rs != null && rs.next()) roleIds.add(rs.getString("RID"));
@@ -1021,7 +1023,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (!isAutoRoleSetup(guildId, roleId)) {
             // Add a new entry into the Database.
-            querySQL("INSERT INTO AutoRoles (GID, RID) VALUES (?, ?);", guildId, roleId);
+            sqlConnector.querySQL("INSERT INTO AutoRoles (GID, RID) VALUES (?, ?);", guildId, roleId);
         }
     }
 
@@ -1035,7 +1037,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (isAutoRoleSetup(guildId, roleId)) {
             // Add a new entry into the Database.
-            querySQL("DELETE FROM AutoRoles WHERE GID=? AND RID=?", guildId, roleId);
+            sqlConnector.querySQL("DELETE FROM AutoRoles WHERE GID=? AND RID=?", guildId, roleId);
         }
     }
 
@@ -1048,7 +1050,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isAutoRoleSetup(String guildId) {
 
         // Creating a SQL Statement to get the RoleID from the AutoRoles Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM AutoRoles WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM AutoRoles WHERE GID=?", guildId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1068,7 +1070,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isAutoRoleSetup(String guildId, String roleId) {
         // Creating a SQL Statement to get the RoleID from the AutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = querySQL("SELECT * FROM AutoRoles WHERE GID=? AND RID=?", guildId, roleId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM AutoRoles WHERE GID=? AND RID=?", guildId, roleId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1099,7 +1101,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (isChatLevelRewardSetup(guildId)) {
             // Creating a SQL Statement to get the RoleID and the needed level from the ChatLevelAutoRoles Table by the GuildID.
-            try (ResultSet rs = querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId)) {
 
                 // Add the Role ID and its needed level to the List if found.
                 while (rs != null && rs.next()) rewards.put(Integer.parseInt(rs.getString("LVL")), rs.getString("RID"));
@@ -1122,7 +1124,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (!isChatLevelRewardSetup(guildId, roleId, level)) {
             // Add a new entry into the Database.
-            querySQL("INSERT INTO ChatLevelAutoRoles (GID, RID, LVL) VALUES (?, ?, ?);", guildId, roleId, level);
+            sqlConnector.querySQL("INSERT INTO ChatLevelAutoRoles (GID, RID, LVL) VALUES (?, ?, ?);", guildId, roleId, level);
         }
     }
 
@@ -1136,7 +1138,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (isChatLevelRewardSetup(guildId)) {
             // Add a new entry into the Database.
-            querySQL("DELETE FROM ChatLevelAutoRoles WHERE GID=? AND LVL=?", guildId, level);
+            sqlConnector.querySQL("DELETE FROM ChatLevelAutoRoles WHERE GID=? AND LVL=?", guildId, level);
         }
     }
 
@@ -1149,7 +1151,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isChatLevelRewardSetup(String guildId) {
 
         // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1170,7 +1172,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isChatLevelRewardSetup(String guildId, String roleId) {
 
         // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=? AND RID=?", guildId, roleId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=? AND RID=?", guildId, roleId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1192,7 +1194,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isChatLevelRewardSetup(String guildId, String roleId, int level) {
 
         // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=? AND RID=? AND LVL=?", guildId, roleId, level)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=? AND RID=? AND LVL=?", guildId, roleId, level)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1221,7 +1223,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (isVoiceLevelRewardSetup(guildId)) {
             // Creating a SQL Statement to get the RoleID and the needed level from the VCLevelAutoRoles Table by the GuildID.
-            try (ResultSet rs = querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=?", guildId)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=?", guildId)) {
 
                 // Add the Role ID and its needed level to the List if found.
                 while (rs != null && rs.next()) rewards.put(Integer.parseInt(rs.getString("LVL")), rs.getString("RID"));
@@ -1245,7 +1247,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (!isVoiceLevelRewardSetup(guildId, roleId, level)) {
             // Add a new entry into the Database.
-            querySQL("INSERT INTO VCLevelAutoRoles (GID, RID, LVL) VALUES (?, ?, ?);", guildId, roleId, level);
+            sqlConnector.querySQL("INSERT INTO VCLevelAutoRoles (GID, RID, LVL) VALUES (?, ?, ?);", guildId, roleId, level);
         }
     }
 
@@ -1259,7 +1261,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (isVoiceLevelRewardSetup(guildId)) {
             // Add a new entry into the Database.
-            querySQL("DELETE FROM VCLevelAutoRoles WHERE GID=? AND LVL=?", guildId, level);
+            sqlConnector.querySQL("DELETE FROM VCLevelAutoRoles WHERE GID=? AND LVL=?", guildId, level);
         }
     }
 
@@ -1271,7 +1273,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isVoiceLevelRewardSetup(String guildId) {
         // Creating a SQL Statement to get the RoleID from the VCLevelAutoRoles Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=?", guildId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1291,7 +1293,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isVoiceLevelRewardSetup(String guildId, String roleId) {
         // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=? AND RID=?", guildId, roleId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=? AND RID=?", guildId, roleId)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1312,7 +1314,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isVoiceLevelRewardSetup(String guildId, String roleId, int level) {
         // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=? AND RID=? AND LVL=?", guildId, roleId, level)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=? AND RID=? AND LVL=?", guildId, roleId, level)) {
 
             // Return if there was an entry or not.
             return (rs != null && rs.next());
@@ -1343,7 +1345,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<InviteContainer> inviteContainers = new ArrayList<>();
 
         // Creating a SQL Statement to get the Invites from the Invites Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM Invites WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Invites WHERE GID=?", guildId)) {
 
             // Add the Invite to the List if found.
             while (rs != null && rs.next())
@@ -1365,7 +1367,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean existsInvite(String guildId, String inviteCreator, String inviteCode) {
         // Creating a SQL Statement to get the Invite from the Invites Table by the GuildID, Invite Creator ID and Invite Code.
-        try (ResultSet rs = querySQL("SELECT * FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1383,7 +1385,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param inviteCode the Code of the Invite.
      */
     public void removeInvite(String guildId, String inviteCode) {
-        querySQL("DELETE FROM Invites WHERE GID=? AND CODE=?", guildId, inviteCode);
+        sqlConnector.querySQL("DELETE FROM Invites WHERE GID=? AND CODE=?", guildId, inviteCode);
     }
 
     /**
@@ -1398,10 +1400,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is an entry with the same data.
         if (existsInvite(guildId, inviteCreator, inviteCode)) {
             // Update entry.
-            querySQL("UPDATE Invites SET USES=? WHERE GID=? AND UID=? AND CODE=?", inviteUsage, guildId, inviteCreator, inviteCode);
+            sqlConnector.querySQL("UPDATE Invites SET USES=? WHERE GID=? AND UID=? AND CODE=?", inviteUsage, guildId, inviteCreator, inviteCode);
         } else {
             // Create new entry.
-            querySQL("INSERT INTO Invites (GID, UID, USES, CODE) VALUES (?, ?, ?, " + "?);", guildId, inviteCreator, inviteUsage, inviteCode);
+            sqlConnector.querySQL("INSERT INTO Invites (GID, UID, USES, CODE) VALUES (?, ?, ?, " + "?);", guildId, inviteCreator, inviteUsage, inviteCode);
         }
     }
 
@@ -1413,7 +1415,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param inviteCode    the Code of the Invite.
      */
     public void removeInvite(String guildId, String inviteCreator, String inviteCode) {
-        querySQL("DELETE FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode);
+        sqlConnector.querySQL("DELETE FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode);
     }
 
     /**
@@ -1424,7 +1426,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param inviteCode    the Code of the Invite.
      */
     public void removeInvite(String guildId, String inviteCreator, String inviteCode, int inviteUsage) {
-        querySQL("DELETE FROM Invites WHERE GID=? AND UID=? AND CODE=? " + "AND USES=?", guildId, inviteCreator, inviteCode, inviteUsage);
+        sqlConnector.querySQL("DELETE FROM Invites WHERE GID=? AND UID=? AND CODE=? " + "AND USES=?", guildId, inviteCreator, inviteCode, inviteUsage);
     }
 
     /**
@@ -1433,7 +1435,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param guildId       the ID of the Guild.
      */
     public void clearInvites(String guildId) {
-        querySQL("DELETE FROM Invites WHERE GID=?", guildId);
+        sqlConnector.querySQL("DELETE FROM Invites WHERE GID=?", guildId);
     }
 
     //endregion
@@ -1452,7 +1454,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         if (isMessageSetup(guildId)) {
             // Creating a SQL Statement to get the Join Message from the JoinMessage Table by the GuildID.
-            try (ResultSet rs = querySQL("SELECT * FROM JoinMessage WHERE GID=?", guildId)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM JoinMessage WHERE GID=?", guildId)) {
 
                 // Return if found.
                 if (rs != null && rs.next()) return rs.getString("MSG");
@@ -1474,10 +1476,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         if (isMessageSetup(guildId)) {
             // If there is already an entry just replace it.
-            querySQL("UPDATE JoinMessage SET MSG=? WHERE GID=?", content, guildId);
+            sqlConnector.querySQL("UPDATE JoinMessage SET MSG=? WHERE GID=?", content, guildId);
         } else {
             // Create a new entry, if there was none.
-            querySQL("INSERT INTO JoinMessage (GID, MSG) VALUE (?, ?);", guildId, content);
+            sqlConnector.querySQL("INSERT INTO JoinMessage (GID, MSG) VALUE (?, ?);", guildId, content);
         }
     }
 
@@ -1490,7 +1492,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isMessageSetup(String guildId) {
 
         // Creating a SQL Statement to get the Join Message from the JoinMessage Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM JoinMessage WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM JoinMessage WHERE GID=?", guildId)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1516,7 +1518,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         if (isChatProtectorSetup(guildId)) {
             // Creating a SQL Statement to get the Blacklisted Words from the ChatProtector Table by the GuildID.
-            try (ResultSet rs = querySQL("SELECT * FROM ChatProtector WHERE GID = ?", guildId)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatProtector WHERE GID = ?", guildId)) {
 
                 // Add if found.
                 while (rs != null && rs.next()) blacklistedWords.add(rs.getString("WORD"));
@@ -1537,7 +1539,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isChatProtectorSetup(String guildId) {
 
         // Creating a SQL Statement to check if there is an entry in the ChatProtector Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM ChatProtector WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatProtector WHERE GID=?", guildId)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1557,7 +1559,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isChatProtectorSetup(String guildId, String word) {
         // Creating a SQL Statement to check if there is an entry in the ChatProtector Table by the GuildID and the Word.
-        try (ResultSet rs = querySQL("SELECT * FROM ChatProtector WHERE GID=? AND WORD=?", guildId, word)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatProtector WHERE GID=? AND WORD=?", guildId, word)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1580,7 +1582,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isChatProtectorSetup(guildId, word)) return;
 
         // If not then just add it.
-        querySQL("INSERT INTO ChatProtector (GID, WORD) VALUES (?, ?);", guildId, word);
+        sqlConnector.querySQL("INSERT INTO ChatProtector (GID, WORD) VALUES (?, ?);", guildId, word);
     }
 
     public void removeChatProtectorWord(String guildId, String word) {
@@ -1588,7 +1590,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (!isChatProtectorSetup(guildId, word)) return;
 
         // If so then delete it.
-        querySQL("DELETE FROM ChatProtector WHERE GID=? AND WORD=?", guildId, word);
+        sqlConnector.querySQL("DELETE FROM ChatProtector WHERE GID=? AND WORD=?", guildId, word);
     }
 
     //endregion
@@ -1607,7 +1609,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is an entry in the database.
         if (hasSetting(guildId, settingName)) {
             // Creating a SQL Statement to get the Setting in the Settings Table by the GuildID and the Setting name.
-            try (ResultSet rs = querySQL("SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, settingName)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, settingName)) {
 
                 // Return if found.
                 if (rs != null && rs.next()) return new Setting(settingName, rs.getString("VALUE"));
@@ -1632,7 +1634,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<Setting> settings = new ArrayList<>();
 
         // Creating a SQL Statement to get the Setting in the Settings Table by the GuildID and the Setting name.
-        try (ResultSet rs = querySQL("SELECT * FROM Settings WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Settings WHERE GID=?", guildId)) {
 
             // Return if found.
             while (rs != null && rs.next()) settings.add(new Setting(rs.getString("NAME"), rs.getObject("VALUE")));
@@ -1673,10 +1675,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is an entry.
         if (hasSetting(guildId, settingName)) {
             // If so update it.
-            querySQL("UPDATE Settings SET VALUE=? WHERE GID=? AND NAME=?", String.valueOf(settingValue), guildId, settingName);
+            sqlConnector.querySQL("UPDATE Settings SET VALUE=? WHERE GID=? AND NAME=?", String.valueOf(settingValue), guildId, settingName);
         } else {
             // If not create a new one.
-            querySQL("INSERT INTO Settings (GID, NAME, VALUE) VALUES (?, ?, ?);", guildId, settingName, String.valueOf(settingValue));
+            sqlConnector.querySQL("INSERT INTO Settings (GID, NAME, VALUE) VALUES (?, ?, ?);", guildId, settingName, String.valueOf(settingValue));
         }
     }
 
@@ -1700,7 +1702,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean hasSetting(String guildId, String settingName) {
         // Creating a SQL Statement to get the Setting in the Settings Table by the GuildID and the Setting name.
-        try (ResultSet rs = querySQL("SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, settingName)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, settingName)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1788,7 +1790,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     public Long getStatsCommandGlobal(String command) {
         // Creating a SQL Statement to get an entry in the CommandStats Table by the Command name.
-        try (ResultSet rs = querySQL("SELECT * FROM CommandStats WHERE COMMAND = ?", command)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM CommandStats WHERE COMMAND = ?", command)) {
 
             // Return if found.
             if (rs != null && rs.next()) return Long.parseLong(rs.getString("USES"));
@@ -1801,7 +1803,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public Long getStatsCommand(String guildId, String command) {
 
         // Creating a SQL Statement to get an entry in the GuildStats Table by Guild and Command name.
-        try (ResultSet rs = querySQL("SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command)) {
 
             // Return if found.
             if (rs != null && rs.next()) return Long.parseLong(rs.getString("USES"));
@@ -1817,7 +1819,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String[]> statsList = new ArrayList<>();
 
         // Creating a SQL Statement to get every entry in the GuildStats Table by the Guild.
-        try (ResultSet rs = querySQL("SELECT * FROM GuildStats WHERE GID=? ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM GuildStats WHERE GID=? ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", guildId)) {
 
             // Return if found.
             while (rs != null && rs.next()) statsList.add(new String[] {rs.getString("COMMAND"), rs.getString("USES")});
@@ -1834,7 +1836,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String[]> statsList = new ArrayList<>();
 
         // Creating a SQL Statement to get every entry in the CommandStats Table.
-        try (ResultSet rs = querySQL("SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5")) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5")) {
 
             // Return if found.
             while (rs != null && rs.next()) statsList.add(new String[] {rs.getString("COMMAND"), rs.getString("USES")});
@@ -1853,7 +1855,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isStatsSaved(String guildId) {
         // Creating a SQL Statement to check if there is an entry in the GuildStats Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM GuildStats WHERE GID = ?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM GuildStats WHERE GID = ?", guildId)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1873,7 +1875,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isStatsSaved(String guildId, String command) {
         // Creating a SQL Statement to check if there is an entry in the GuildStats Table by the GuildID and the Command name.
-        try (ResultSet rs = querySQL("SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1892,7 +1894,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isStatsSavedGlobal(String command) {
         // Creating a SQL Statement to check if there is an entry in the CommandStats Table by the Command name.
-        try (ResultSet rs = querySQL("SELECT * FROM CommandStats WHERE COMMAND=?", command)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM CommandStats WHERE COMMAND=?", command)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1906,16 +1908,16 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public void addStats(String guildId, String command) {
         // Check if there is an entry.
         if (isStatsSaved(guildId, command)) {
-            querySQL("UPDATE GuildStats SET USES=? WHERE GID=? AND COMMAND=?", (getStatsCommand(guildId, command) + 1), guildId, command);
+            sqlConnector.querySQL("UPDATE GuildStats SET USES=? WHERE GID=? AND COMMAND=?", (getStatsCommand(guildId, command) + 1), guildId, command);
         } else {
-            querySQL("INSERT INTO GuildStats (GID, COMMAND, USES) VALUES (?, ?, 1)", guildId, command);
+            sqlConnector.querySQL("INSERT INTO GuildStats (GID, COMMAND, USES) VALUES (?, ?, 1)", guildId, command);
         }
 
         // Check if there is an entry.
         if (isStatsSavedGlobal(command)) {
-            querySQL("UPDATE CommandStats SET USES=? WHERE COMMAND=?", (getStatsCommandGlobal(command) + 1), command);
+            sqlConnector.querySQL("UPDATE CommandStats SET USES=? WHERE COMMAND=?", (getStatsCommandGlobal(command) + 1), command);
         } else {
-            querySQL("INSERT INTO CommandStats (COMMAND, USES) VALUES (?, 1)", command);
+            sqlConnector.querySQL("INSERT INTO CommandStats (COMMAND, USES) VALUES (?, 1)", command);
         }
     }
 
@@ -1931,64 +1933,29 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public void deleteAllData(String guildId) {
         // Go through every Table. And delete every entry with the Guild ID.
         sqlConnector.getTables().entrySet().stream().filter(stringStringEntry -> stringStringEntry.getValue().contains("GID"))
-                .forEach(stringStringEntry -> querySQL("DELETE FROM " + stringStringEntry.getKey() + " WHERE GID=?", guildId));
+                .forEach(stringStringEntry -> sqlConnector.querySQL("DELETE FROM " + stringStringEntry.getKey() + " WHERE GID=?", guildId));
     }
 
     //endregion
 
-    //region Utility
+    //region Test
 
-    /**
-     * Send an SQL-Query to SQL-Server and get the response.
-     *
-     * @param sqlQuery    the SQL-Query.
-     * @param objcObjects the Object in the Query.
-     * @return The Result from the SQL-Server.
-     */
-    public ResultSet querySQL(String sqlQuery, Object... objcObjects) {
-        if (!sqlConnector.isConnected()) {
-            sqlConnector.connectToSQLServer();
-            return querySQL(sqlQuery, objcObjects);
-        }
+    public SQLResponse getEntity(Class<?> entity) {
+        return getEntity(entity, "");
+    }
 
-        try (PreparedStatement preparedStatement = sqlConnector.getConnection().prepareStatement(sqlQuery)) {
-            int index = 1;
-
-            for (Object obj : objcObjects) {
-                if (obj instanceof String) {
-                    preparedStatement.setObject(index++, obj, Types.VARCHAR);
-                } else if (obj instanceof Blob) {
-                    preparedStatement.setObject(index++, obj, Types.BLOB);
-                } else if (obj instanceof Integer) {
-                    preparedStatement.setObject(index++, obj, Types.INTEGER);
-                } else if (obj instanceof Long) {
-                    preparedStatement.setObject(index++, obj, Types.BIGINT);
-                } else if (obj instanceof Float) {
-                    preparedStatement.setObject(index++, obj, Types.FLOAT);
-                } else if (obj instanceof Double) {
-                    preparedStatement.setObject(index++, obj, Types.DOUBLE);
-                } else if (obj instanceof Boolean) {
-                    preparedStatement.setObject(index++, obj, Types.BOOLEAN);
-                }
-            }
-
-            if (sqlQuery.toUpperCase().startsWith("SELECT")) {
-                return preparedStatement.executeQuery();
+    public SQLResponse getEntity(Class<?> entity, String query, Object... args) {
+        if (query.isEmpty()) {
+            if (entity.isAnnotationPresent(Table.class)) {
+                String queryBuilder = "SELECT * FROM " +
+                        entity.getAnnotation(Table.class).name();
+                return sqlConnector.getEntityMapper().mapEntity(sqlConnector.querySQL(queryBuilder, args), entity);
             } else {
-                preparedStatement.executeUpdate();
                 return null;
             }
-        } catch (Exception exception) {
-            if (exception instanceof SQLNonTransientConnectionException) {
-                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
-                sqlConnector.connectToSQLServer();
-                return querySQL(sqlQuery, objcObjects);
-            } else {
-                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
-            }
+        } else {
+            return sqlConnector.getEntityMapper().mapEntity(sqlConnector.querySQL(query, args), entity);
         }
-
-        return null;
     }
 
     //endregion

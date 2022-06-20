@@ -3,7 +3,7 @@ package de.presti.ree6.events;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.addons.impl.ChatProtector;
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.bot.util.Webhook;
+import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;
@@ -74,7 +74,7 @@ public class OtherEvents extends ListenerAdapter {
 
         String[] info = Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId());
 
-        Webhook.sendWebhook(null, wmb.build(), Long.parseLong(info[0]), info[1], false);
+        WebhookUtil.sendWebhook(null, wmb.build(), Long.parseLong(info[0]), info[1], false);
     }
 
     @Override

@@ -1,11 +1,9 @@
 package de.presti.ree6.sql;
 
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.mapper.EntityMapper;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +29,9 @@ public class SQLConnector {
     // An Instance of the SQL-Worker which works with the Data in the Database.
     private final SQLWorker sqlWorker;
 
+    // An Instance of the EntityMapper which is used to map the Data into classes.
+    private final EntityMapper entityMapper;
+
     // A HashMap with every Table Name as key and the values as value.
     private final HashMap<String, String> tables = new HashMap<>();
 
@@ -52,6 +53,7 @@ public class SQLConnector {
         createTables();
 
         sqlWorker = new SQLWorker(this);
+        entityMapper = new EntityMapper(this);
     }
 
     /**
@@ -122,6 +124,63 @@ public class SQLConnector {
         }
     }
 
+    //region Utility
+
+    /**
+     * Send an SQL-Query to SQL-Server and get the response.
+     *
+     * @param sqlQuery    the SQL-Query.
+     * @param objcObjects the Object in the Query.
+     * @return The Result from the SQL-Server.
+     */
+    public ResultSet querySQL(String sqlQuery, Object... objcObjects) {
+        if (!isConnected()) {
+            connectToSQLServer();
+            return querySQL(sqlQuery, objcObjects);
+        }
+
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sqlQuery)) {
+            int index = 1;
+
+            for (Object obj : objcObjects) {
+                if (obj instanceof String) {
+                    preparedStatement.setObject(index++, obj, Types.VARCHAR);
+                } else if (obj instanceof Blob) {
+                    preparedStatement.setObject(index++, obj, Types.BLOB);
+                } else if (obj instanceof Integer) {
+                    preparedStatement.setObject(index++, obj, Types.INTEGER);
+                } else if (obj instanceof Long) {
+                    preparedStatement.setObject(index++, obj, Types.BIGINT);
+                } else if (obj instanceof Float) {
+                    preparedStatement.setObject(index++, obj, Types.FLOAT);
+                } else if (obj instanceof Double) {
+                    preparedStatement.setObject(index++, obj, Types.DOUBLE);
+                } else if (obj instanceof Boolean) {
+                    preparedStatement.setObject(index++, obj, Types.BOOLEAN);
+                }
+            }
+
+            if (sqlQuery.toUpperCase().startsWith("SELECT")) {
+                return preparedStatement.executeQuery();
+            } else {
+                preparedStatement.executeUpdate();
+                return null;
+            }
+        } catch (Exception exception) {
+            if (exception instanceof SQLNonTransientConnectionException) {
+                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
+                connectToSQLServer();
+                return querySQL(sqlQuery, objcObjects);
+            } else {
+                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
+            }
+        }
+
+        return null;
+    }
+
+    //endregion
+
     /**
      * Check if there is an open connection to the Database Server.
      * @return boolean If the connection is opened.
@@ -165,6 +224,14 @@ public class SQLConnector {
      */
     public SQLWorker getSqlWorker() {
         return sqlWorker;
+    }
+
+    /**
+     * Retrieve an Instance of the entity-Mapper to work with the Data.
+     * @return {@link EntityMapper} the Instance saved in this SQL-Connector.
+     */
+    public EntityMapper getEntityMapper() {
+        return entityMapper;
     }
 
     /**

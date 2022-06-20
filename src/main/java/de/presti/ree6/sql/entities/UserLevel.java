@@ -1,21 +1,27 @@
 package de.presti.ree6.sql.entities;
 
+import de.presti.ree6.sql.base.annotations.Property;
+import de.presti.ree6.sql.base.annotations.Table;
 import net.dv8tion.jda.api.entities.User;
 
 /**
  * Utility class to store information about a Users
  * Experience and their Level.
  */
+@Table(name = "Level")
 public class UserLevel {
 
     // The ID of the User.
+    @Property(name = "uid")
     String userId;
 
     // The User.
     User user;
 
     // His XP and Level.
-    long experience, level = 0;
+    @Property(name = "xp")
+    long experience;
+    long level = 0;
 
     // The Rank of the User.
     int rank;

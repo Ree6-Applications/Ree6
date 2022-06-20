@@ -9,7 +9,7 @@ import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.helix.domain.User;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.version.BotVersion;
-import de.presti.ree6.bot.util.Webhook;
+import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import twitter4j.*;
@@ -96,7 +96,7 @@ public class Notifier {
 
                 wmb.addEmbeds(webhookEmbedBuilder.build());
 
-                Webhook.sendWebhook(null, wmb.build(), Long.parseLong(credits[0]), credits[1], false);
+                WebhookUtil.sendWebhook(null, wmb.build(), Long.parseLong(credits[0]), credits[1], false);
             }
         });
     }
@@ -234,7 +234,7 @@ public class Notifier {
                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
                 Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName()).forEach(strings ->
-                        Webhook.sendWebhook(null, webhookMessageBuilder.build(), Long.parseLong(strings[0]),
+                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), Long.parseLong(strings[0]),
                                 strings[1], false));
             }
 

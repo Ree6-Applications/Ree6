@@ -8,13 +8,13 @@ import de.presti.ree6.main.Main;
 /**
  * Class to handle Webhook sends.
  */
-public class Webhook {
+public class WebhookUtil {
 
     /**
      * Constructor should not be called, since it is a utility class that doesn't need an instance.
      * @throws IllegalStateException it is a utility class.
      */
-    private Webhook() {
+    private WebhookUtil() {
         throw new IllegalStateException("Utility class");
     }
 
