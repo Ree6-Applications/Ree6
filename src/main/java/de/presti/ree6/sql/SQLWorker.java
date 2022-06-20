@@ -6,16 +6,18 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
+import de.presti.ree6.sql.base.data.SQLParameter;
 import de.presti.ree6.sql.base.data.SQLResponse;
-import de.presti.ree6.sql.entities.UserLevel;
+import de.presti.ree6.sql.entities.ChatUserLevel;
+import de.presti.ree6.sql.entities.VoiceUserLevel;
 import de.presti.ree6.utils.data.Setting;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A Class to actually handle the SQL data.
@@ -39,20 +41,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param userId  the ID of the User.
      * @return {@link Long} as XP Count.
      */
-    public UserLevel getChatLevelData(String guildId, String userId) {
-
-        // Creating a SQL Statement to get the User from the Level Table by the GuildID and UserID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)) {
-
-            // Return the UserLevel data if found.
-            if (rs != null && rs.next()) {
-                return new UserLevel(userId, getAllChatLevelSorted(guildId).indexOf(userId) + 1, Long.parseLong(rs.getString("XP")), false);
-            }
-        } catch (Exception ignore) {
-        }
-
-        // Return a new UserLEve if there was an error OR if the user isn't in the database.
-        return new UserLevel(userId, 0, 0, false);
+    public ChatUserLevel getChatLevelData(String guildId, String userId) {
+        // Return a new UserLevel if there was an error OR if the user isn't in the database.
+        return (ChatUserLevel) Objects.requireNonNull(getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)).getEntity();
     }
 
     /**
@@ -63,17 +54,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} true if there was a match | false if there wasn't a match.
      */
     public boolean existsInChatLevel(String guildId, String userId) {
-
-        // Creating a SQL Statement to get the User from the Level Table by the GuildID and UserID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)) {
-
-            // Return if there was a match.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there wasn't a match.
-        return false;
+        return getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId) != null;
     }
 
     /**
@@ -82,7 +63,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param guildId   the ID of the Guild.
      * @param userLevel the UserLevel Entity with all the information.
      */
-    public void addChatLevelData(String guildId, UserLevel userLevel) {
+    public void addChatLevelData(String guildId, ChatUserLevel userLevel) {
 
         // Check if the User is already saved in the Database.
         if (existsInChatLevel(guildId, userLevel.getUserId())) {
@@ -90,9 +71,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             // If so change the current XP to the new.
             sqlConnector.querySQL("UPDATE Level SET XP=? WHERE GID=? AND UID=?", userLevel.getExperience(), guildId, userLevel.getUserId());
         } else {
-
-            // If not create a new entry and add the data.
-            sqlConnector.querySQL("INSERT INTO Level (GID, UID, XP) VALUES (?, ?, ?);", guildId, userLevel.getUserId(), userLevel.getExperience());
+            saveEntity(userLevel);
         }
     }
 
@@ -101,25 +80,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
      *
      * @param guildId the ID of the Guild.
      * @param limit   the Limit of how many should be given back.
-     * @return {@link List<UserLevel>} as container of the User IDs.
+     * @return {@link List< ChatUserLevel >} as container of the User IDs.
      */
-    public List<UserLevel> getTopChat(String guildId, int limit) {
-
-        // Create the List.
-        ArrayList<UserLevel> userLevels = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)) {
-
-            // While there are still entries it should add them to the list.
-            while (rs != null && rs.next()) {
-                userLevels.add(getChatLevelData(guildId, rs.getString("UID")));
-            }
-        } catch (Exception ignore) {
-        }
-
-        // Return the list.
-        return userLevels;
+    public List<ChatUserLevel> getTopChat(String guildId, int limit) {
+        return Objects.requireNonNull(getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities()
+                .stream().map(ChatUserLevel.class::cast).toList();
     }
 
     /**
@@ -156,22 +121,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
      *
      * @param guildId the ID of the Guild.
      * @param userId  the ID of the User.
-     * @return {@link UserLevel} with information about the User Level.
+     * @return {@link VoiceUserLevel} with information about the User Level.
      */
-    public UserLevel getVoiceLevelData(String guildId, String userId) {
-
-        // Creating a SQL Statement to get the User from the VCLevel Table by the GuildID and UserID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)) {
-
-            // Return the UserLevel Data if found.
-            if (rs != null && rs.next()) {
-                return new UserLevel(userId, getAllVoiceLevelSorted(guildId).indexOf(userId) + 1, Long.parseLong(rs.getString("XP")), true);
-            }
-        } catch (Exception ignore) {
-        }
-
+    public VoiceUserLevel getVoiceLevelData(String guildId, String userId) {
         // Return 0 if there was an error OR if the user isn't in the database.
-        return new UserLevel(userId, 0, 0, true);
+        return (VoiceUserLevel) Objects.requireNonNull(getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)).getEntity();
     }
 
     /**
@@ -182,36 +136,26 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} true if there was a match | false if there wasn't a match.
      */
     public boolean existsInVoiceLevel(String guildId, String userId) {
-
-        // Creating a SQL Statement to get the User from the VCLevel Table by the GuildID and UserID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)) {
-
-            // Return if there was a match.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there wasn't a match.
-        return false;
+        return getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId) != null;
     }
 
     /**
      * Give the wanted User more XP.
      *
      * @param guildId   the ID of the Guild.
-     * @param userLevel the UserLevel Entity with all the information.
+     * @param voiceUserLevel the {@link VoiceUserLevel} Entity with all the information.
      */
-    public void addVoiceLevelData(String guildId, UserLevel userLevel) {
+    public void addVoiceLevelData(String guildId, VoiceUserLevel oldVoiceUserLevel, VoiceUserLevel voiceUserLevel) {
 
         // Check if the User is already saved in the Database.
-        if (existsInVoiceLevel(guildId, userLevel.getUserId())) {
+        if (existsInVoiceLevel(guildId, voiceUserLevel.getUserId())) {
 
+            // TODO find a way to update the VoiceUserLevel.
             // If so change the current XP to the new.
-            sqlConnector.querySQL("UPDATE VCLevel SET XP=? WHERE GID=? AND UID=?", userLevel.getExperience(), guildId, userLevel.getUserId());
+            sqlConnector.querySQL("UPDATE VCLevel SET XP=? WHERE GID=? AND UID=?", voiceUserLevel.getExperience(), guildId, voiceUserLevel.getUserId());
+            updateEntity(oldVoiceUserLevel, voiceUserLevel);
         } else {
-
-            // If not create a new entry and add the data.
-            sqlConnector.querySQL("INSERT INTO VCLevel (GID, UID, XP) VALUES (?, ?, ?);", guildId, userLevel.getUserId(), userLevel.getExperience());
+            saveEntity(voiceUserLevel);
         }
     }
 
@@ -220,32 +164,19 @@ public record SQLWorker(SQLConnector sqlConnector) {
      *
      * @param guildId the ID of the Guild.
      * @param limit   the Limit of how many should be given back.
-     * @return {@link List<UserLevel>} as container of the User IDs.
+     * @return {@link List< ChatUserLevel >} as container of the User IDs.
      */
-    public List<UserLevel> getTopVoice(String guildId, int limit) {
-
-        // Create the List.
-        ArrayList<UserLevel> userLevels = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entries from the VCLevel Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)) {
-
-            // While there are still entries it should add them to the list.
-            while (rs != null && rs.next()) {
-                userLevels.add(getVoiceLevelData(guildId, rs.getString("UID")));
-            }
-        } catch (Exception ignore) {
-        }
-
+    public List<VoiceUserLevel> getTopVoice(String guildId, int limit) {
         // Return the list.
-        return userLevels;
+        return Objects.requireNonNull(getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities()
+                .stream().map(VoiceUserLevel.class::cast).toList();
     }
 
     /**
      * Get the Top list of the Guild Voice XP.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link List<String>} as container of the User IDs.
+     * @return {@link List<String>} as container of the UserIds.
      */
     public List<String> getAllVoiceLevelSorted(String guildId) {
 
@@ -1939,6 +1870,204 @@ public record SQLWorker(SQLConnector sqlConnector) {
     //endregion
 
     //region Test
+
+    public boolean createTable(Class<?> clazz) {
+        Table table = clazz.getAnnotation(Table.class);
+        String tableName = table.name();
+        List<SQLParameter> sqlParameters =
+                Arrays.stream(clazz.getFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                        .map(e -> {
+                                    Property property = e.getAnnotation(Property.class);
+                                    return new SQLParameter(property.name(), e.getType(), property.primary());
+                                }
+                        ).toList();
+        StringBuilder query = new StringBuilder();
+        query.append("CREATE TABLE ");
+        query.append(tableName);
+        query.append(" (");
+        sqlParameters.forEach(parameter -> {
+            query.append(parameter.getName());
+            query.append(" ");
+            query.append(parameter.getValue().getSimpleName());
+            query.append(", ");
+        });
+
+        sqlParameters.stream().filter(SQLParameter::isPrimaryKey).findFirst().ifPresent(primaryKey -> {
+            query.append("PRIMARY KEY (");
+            query.append(primaryKey.getName());
+            query.append(")");
+        });
+
+        if (query.charAt(query.length() - 2) == ',') {
+            query.deleteCharAt(query.length() - 2);
+        }
+
+        query.append(")");
+
+        try(ResultSet resultSet = sqlConnector.querySQL(query.toString())) {
+            return resultSet != null && resultSet.next();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public void saveEntity(Object entity) {
+        Class<?> entityClass = entity.getClass();
+
+        if (!entityClass.isAnnotationPresent(Table.class)) {
+            throw new IllegalArgumentException("Entity must be annotated with @Table");
+        }
+
+        List<SQLParameter> sqlParameters =
+                Arrays.stream(entityClass.getFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                        .map(e -> {
+                                    Property property = e.getAnnotation(Property.class);
+                                    return new SQLParameter(property.name(), e.getType(), property.primary());
+                                }
+                        ).toList();
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO ");
+        query.append(entityClass.getAnnotation(Table.class).name());
+        query.append(" (");
+        sqlParameters.forEach(parameter -> {
+            query.append(parameter.getName());
+            query.append(", ");
+        });
+
+        if (query.charAt(query.length() - 1) == ',') {
+            query.deleteCharAt(query.length() - 1);
+        }
+
+        query.append(") VALUES (");
+
+        query.append("?, ".repeat(sqlParameters.size()));
+
+        if (query.charAt(query.length() - 2) == ',') {
+            query.deleteCharAt(query.length() - 2);
+        }
+
+        query.append(")");
+        try {
+            sqlConnector.querySQL(query.toString(), Arrays.stream(entityClass.getFields()).map(field -> {
+                try {
+                    if (!field.canAccess(entity)) field.trySetAccessible();
+                    return field.get(entity);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }).toArray());
+        } catch (Exception exception) {
+            Main.getInstance().getLogger().error("Error while saving Entity: " + entityClass.getName(), exception);
+        }
+    }
+
+    public void updateEntity(Object oldEntity, Object newEntity) {
+        Class<?> entityClass = oldEntity.getClass();
+
+        if (!entityClass.isAnnotationPresent(Table.class)) {
+            throw new IllegalArgumentException("Entities must be annotated with @Table");
+        }
+
+        if (!oldEntity.getClass().equals(newEntity.getClass())) {
+            throw new IllegalArgumentException("Entities must be of the same type");
+        }
+
+        List<SQLParameter> sqlParameters =
+                Arrays.stream(entityClass.getFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                        .map(e -> {
+                                    Property property = e.getAnnotation(Property.class);
+                                    return new SQLParameter(property.name(), e.getType(), property.primary());
+                                }
+                        ).toList();
+        StringBuilder query = new StringBuilder();
+        query.append("UPDATE ");
+        query.append(entityClass.getAnnotation(Table.class).name());
+        query.append(" SET ");
+        sqlParameters.forEach(parameter -> {
+            query.append(parameter.getName());
+            query.append(" = ?, ");
+        });
+
+        if (query.charAt(query.length() - 2) == ',') {
+            query.deleteCharAt(query.length() - 2);
+        }
+
+        query.append(" WHERE ");
+        sqlParameters.forEach(parameter -> {
+            query.append(parameter.getName());
+            query.append(" = ?, ");
+        });
+
+        if (query.charAt(query.length() - 2) == ',') {
+            query.deleteCharAt(query.length() - 2);
+        }
+
+        try {
+            List<Object> args = new ArrayList<>(Arrays.stream(entityClass.getFields()).map(field -> {
+                try {
+                    if (!field.canAccess(oldEntity)) field.trySetAccessible();
+                    return field.get(oldEntity);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }).toList());
+
+            List<Object> newArgs = Arrays.stream(entityClass.getFields()).map(field -> {
+                try {
+                    if (!field.canAccess(newEntity)) field.trySetAccessible();
+                    return field.get(newEntity);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }).toList();
+
+            args.addAll(newArgs);
+            sqlConnector.querySQL(query.toString(), args.toArray());
+        } catch (Exception exception) {
+            Main.getInstance().getLogger().error("Error while updating Entity: " + entityClass.getName(), exception);
+        }
+    }
+
+    public void deleteEntity(Object entity) {
+        Class<?> entityClass = entity.getClass();
+
+        if (!entityClass.isAnnotationPresent(Table.class)) {
+            throw new IllegalArgumentException("Entity must be annotated with @Table");
+        }
+
+        List<SQLParameter> sqlParameters =
+                Arrays.stream(entityClass.getFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                        .map(e -> {
+                                    Property property = e.getAnnotation(Property.class);
+                                    return new SQLParameter(property.name(), e.getType(), property.primary());
+                                }
+                        ).toList();
+        StringBuilder query = new StringBuilder();
+        query.append("DELETE FROM ");
+        query.append(entityClass.getAnnotation(Table.class).name());
+        query.append(" WHERE ");
+        sqlParameters.forEach(parameter -> {
+            query.append(parameter.getName());
+            query.append("= ? AND ");
+        });
+
+        if (query.indexOf("AND", query.length() - 3) != -1) {
+            query.delete(query.length() - 3, query.length());
+        }
+
+        try {
+            sqlConnector.querySQL(query.toString(), Arrays.stream(entityClass.getFields()).map(field -> {
+                try {
+                    if (!field.canAccess(entity)) field.trySetAccessible();
+                    return field.get(entity);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }).toArray());
+        } catch (Exception exception) {
+            Main.getInstance().getLogger().error("Error while deleting Entity: " + entityClass.getName(), exception);
+        }
+    }
 
     public SQLResponse getEntity(Class<?> entity) {
         return getEntity(entity, "");

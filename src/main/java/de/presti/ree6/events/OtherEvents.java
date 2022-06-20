@@ -6,7 +6,8 @@ import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.entities.UserLevel;
+import de.presti.ree6.sql.entities.ChatUserLevel;
+import de.presti.ree6.sql.entities.VoiceUserLevel;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.others.AutoRoleHandler;
 import de.presti.ree6.utils.others.RandomUtils;
@@ -96,11 +97,12 @@ public class OtherEvents extends ListenerAdapter {
                 addxp += RandomUtils.random.nextInt(5, 11);
             }
 
-            UserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(event.getGuild().getId(), event.getMember().getId());
-            userLevel.setUser(event.getMember().getUser());
-            userLevel.addExperience(addxp);
+            VoiceUserLevel oldUserLevel = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(event.getGuild().getId(), event.getMember().getId());
+            VoiceUserLevel newUserLevel = oldUserLevel;
+            newUserLevel.setUser(event.getMember().getUser());
+            newUserLevel.addExperience(addxp);
 
-            Main.getInstance().getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), userLevel);
+            Main.getInstance().getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), oldUserLevel, newUserLevel);
 
             AutoRoleHandler.handleVoiceLevelReward(event.getGuild(), event.getMember());
 
@@ -148,7 +150,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 if (!ArrayUtil.timeout.contains(event.getMember())) {
 
-                    UserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
+                    ChatUserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
                     userLevel.setUser(event.getMember().getUser());
 
                     if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) {

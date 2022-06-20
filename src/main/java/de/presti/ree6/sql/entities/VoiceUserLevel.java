@@ -1,5 +1,6 @@
 package de.presti.ree6.sql.entities;
 
+import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
 import net.dv8tion.jda.api.entities.User;
@@ -8,8 +9,12 @@ import net.dv8tion.jda.api.entities.User;
  * Utility class to store information about a Users
  * Experience and their Level.
  */
-@Table(name = "Level")
-public class UserLevel {
+@Table(name = "VCLevel")
+public class VoiceUserLevel {
+
+    // The ID of the Guild.
+    @Property(name = "gid")
+    String guildId;
 
     // The ID of the User.
     @Property(name = "uid")
@@ -26,39 +31,36 @@ public class UserLevel {
     // The Rank of the User.
     int rank;
 
-    // Is this a Voice related Level?
-    boolean isVoice;
-
     /**
      * Constructor to create a UserLevel with the needed Data.
      *
+     * @param guildId    the ID of the Guild.
      * @param userId     the ID of the User.
-     * @param rank       the current Rank in the leaderboard.
      * @param experience his XP count.
-     * @param voice      is this related to VoiceXP?
      */
-    public UserLevel(String userId, int rank, long experience, boolean voice) {
+    public VoiceUserLevel(String guildId, String userId, long experience) {
+        this.guildId = guildId;
         this.userId = userId;
         this.experience = experience;
-        this.rank = rank;
-        this.isVoice = voice;
         level = calculateLevel(experience);
+        this.rank = Main.getInstance().getSqlConnector().getSqlWorker().getAllChatLevelSorted(guildId).indexOf(userId);
     }
 
 
     /**
      * Constructor to create a UserLevel with the needed Data.
      *
+     * @param guildId    the ID of the Guild.
      * @param userId     the ID of the User.
-     * @param rank       the current Rank of the User.
      * @param experience his XP count.
      * @param level      his Level.
      */
-    public UserLevel(String userId, int rank, long experience, long level) {
+    public VoiceUserLevel(String guildId, String userId, long experience, long level) {
+        this.guildId = guildId;
         this.userId = userId;
-        this.rank = rank;
         this.experience = experience;
         this.level = level;
+        this.rank = Main.getInstance().getSqlConnector().getSqlWorker().getAllChatLevelSorted(guildId).indexOf(userId);
     }
 
     /**
@@ -203,7 +205,7 @@ public class UserLevel {
      * @return the needed Experience.
      */
     public long getExperienceForLevel(long level) {
-        return (long) (1000 + (1000 * Math.pow(level, isVoice ? 1.05 : 0.55)));
+        return (long) (1000 + (1000 * Math.pow(level, 1.05)));
     }
 
     /**

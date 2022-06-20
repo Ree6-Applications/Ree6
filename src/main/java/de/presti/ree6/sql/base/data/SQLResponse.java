@@ -4,23 +4,23 @@ import java.util.ArrayList;
 
 public class SQLResponse {
 
-    ArrayList<Class<?>> entities = new ArrayList<>();
+    ArrayList<Object> entities = new ArrayList<>();
 
-    Class<?> entity = null;
+    Object entity = null;
 
-    public SQLResponse(Class<?> entity) {
+    public SQLResponse(Object entity) {
         this.entity = entity;
     }
 
-    public SQLResponse(ArrayList<Class<?>> entities) {
+    public SQLResponse(ArrayList<Object> entities) {
         this.entities = entities;
     }
 
-    public Class<?> getEntity() {
+    public Object getEntity() {
         return entity;
     }
 
-    public ArrayList<Class<?>> getEntities() {
+    public ArrayList<Object> getEntities() {
         return entities;
     }
 

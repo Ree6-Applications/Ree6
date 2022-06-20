@@ -53,7 +53,7 @@ public class SQLConnector {
         createTables();
 
         sqlWorker = new SQLWorker(this);
-        entityMapper = new EntityMapper(this);
+        entityMapper = new EntityMapper();
     }
 
     /**
