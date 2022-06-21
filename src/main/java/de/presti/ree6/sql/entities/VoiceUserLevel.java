@@ -3,6 +3,7 @@ package de.presti.ree6.sql.entities;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
+import de.presti.ree6.sql.base.data.SQLEntity;
 import net.dv8tion.jda.api.entities.User;
 
 /**
@@ -10,7 +11,7 @@ import net.dv8tion.jda.api.entities.User;
  * Experience and their Level.
  */
 @Table(name = "VCLevel")
-public class VoiceUserLevel {
+public class VoiceUserLevel extends SQLEntity {
 
     // The ID of the Guild.
     @Property(name = "gid")

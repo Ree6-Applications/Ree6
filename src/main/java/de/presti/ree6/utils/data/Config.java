@@ -5,10 +5,19 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.File;
 
+/**
+ * Config.
+ */
 public class Config {
 
+    /**
+     * The Configuration.
+     */
     private FileConfiguration cfg;
 
+    /**
+     * Initialize the Configuration.
+     */
     public void init() {
 
         cfg = createConfiguration();
@@ -51,12 +60,24 @@ public class Config {
         }
     }
 
+    /**
+     * Create a new Configuration.
+     * @return The Configuration as {@link FileConfiguration}.
+     */
     public FileConfiguration createConfiguration() {
         return YamlConfiguration.loadConfiguration(getFile());
     }
 
+    /**
+     * Get the Configuration.
+     * @return The Configuration as {@link FileConfiguration}.
+     */
     public FileConfiguration getConfiguration() { return cfg; }
 
+    /**
+     * Get the Configuration File.
+     * @return The Configuration File as {@link File}.
+     */
     public File getFile() {
         return new File("config.yml");
     }

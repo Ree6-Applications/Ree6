@@ -2,6 +2,9 @@ package de.presti.ree6.utils.apis;
 
 import pw.aru.api.nekos4j.Nekos4J;
 
+/**
+ * Neko4JsAPI.
+ */
 public class Neko4JsAPI {
 
     /**
@@ -12,5 +15,8 @@ public class Neko4JsAPI {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Get an Instance of the Neko4JsAPI.
+     */
     public static final Nekos4J imageAPI = new Nekos4J.Builder().build();
 }

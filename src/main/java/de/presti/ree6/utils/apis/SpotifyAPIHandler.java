@@ -13,14 +13,26 @@ import se.michaelthelin.spotify.requests.data.tracks.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
-//Not by DxsSucuk
-//Credits: Kay-Bilger
+/**
+ * SpotifyAPIHandler.
+ *
+ * @author Kay-Bilger
+ */
 public class SpotifyAPIHandler {
 
-
+    /**
+     * The Spotify API.
+     */
     private SpotifyApi spotifyApi;
+
+    /**
+     * The Spotify API-Handler.
+     */
     public static SpotifyAPIHandler instance;
 
+    /**
+     * Constructor.
+     */
     public SpotifyAPIHandler() {
         try {
             initSpotify();
@@ -30,17 +42,30 @@ public class SpotifyAPIHandler {
         instance = this;
     }
 
+    /**
+     * Initialize the Spotify API.
+     *
+     * @throws ParseException         if the response is not a Valid JSON.
+     * @throws SpotifyWebApiException if the and error occurs.
+     * @throws IOException            if there was a network error.
+     */
     public void initSpotify() throws ParseException, SpotifyWebApiException, IOException {
-        this.spotifyApi = new SpotifyApi.Builder()
-                .setClientId(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.id"))
-                .setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.secret"))
-                .build();
+        this.spotifyApi = new SpotifyApi.Builder().setClientId(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.id")).setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.secret")).build();
 
         ClientCredentialsRequest.Builder request = new ClientCredentialsRequest.Builder(spotifyApi.getClientId(), spotifyApi.getClientSecret());
         ClientCredentials creds = request.grant_type("client_credentials").build().execute();
         spotifyApi.setAccessToken(creds.getAccessToken());
     }
 
+    /**
+     * Convert a Spotify Playlist Link into a List with all Track names.
+     *
+     * @param link The Spotify Playlist Link.
+     * @return A List with all Track names.
+     * @throws ParseException         if the response is not a Valid JSON.
+     * @throws SpotifyWebApiException if the and error occurs.
+     * @throws IOException            if there was a network error.
+     */
     public ArrayList<String> convert(String link) throws ParseException, SpotifyWebApiException, IOException {
         String[] firstSplit = link.split("/");
         String[] secondSplit;
@@ -79,6 +104,15 @@ public class SpotifyAPIHandler {
         return new ArrayList<>();
     }
 
+    /**
+     * Get the Artist and Track Name of a Track.
+     *
+     * @param trackID The Track ID.
+     * @return The Artist and Track Name.
+     * @throws ParseException         if the response is not a Valid JSON.
+     * @throws SpotifyWebApiException if the and error occurs.
+     * @throws IOException            if there was a network error.
+     */
     public String getArtistAndName(String trackID) throws ParseException, SpotifyWebApiException, IOException {
         StringBuilder artistNameAndTrackName;
         GetTrackRequest trackRequest = spotifyApi.getTrack(trackID).build();
@@ -94,6 +128,10 @@ public class SpotifyAPIHandler {
         return artistNameAndTrackName.toString();
     }
 
+    /**
+     * Get the Spotify API.
+     * @return The Spotify API.
+     */
     public static SpotifyAPIHandler getInstance() {
         return instance;
     }

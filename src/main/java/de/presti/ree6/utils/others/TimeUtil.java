@@ -7,16 +7,30 @@ public class TimeUtil {
 
     /**
      * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     *
      * @throws IllegalStateException it is a utility class.
      */
     private TimeUtil() {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Get the difference between the two given LocalDateTime.
+     *
+     * @param start The start LocalDateTime.
+     * @param end   The end LocalDateTime.
+     * @return The difference between the two given LocalDateTime.
+     */
     public static Period getDifferenceBetween(LocalDateTime start, LocalDateTime end) {
         return Period.between(start.toLocalDate(), end.toLocalDate());
     }
 
+    /**
+     * Get a formatted String of a Time-period.
+     *
+     * @param period The Time-period.
+     * @return A formatted String of a Time-period.
+     */
     public static String getFormattedDate(Period period) {
         String end = "";
 
@@ -35,6 +49,12 @@ public class TimeUtil {
         return end;
     }
 
+    /**
+     * Get a specific time amount that is presented as milliseconds as seconds.
+     *
+     * @param time The time amount.
+     * @return The time amount as seconds.
+     */
     public static int getTimeinSec(long time) {
         long current = System.currentTimeMillis();
         long dif = current - time;
@@ -48,6 +68,12 @@ public class TimeUtil {
         return s;
     }
 
+    /**
+     * Get a specific time amount that is presented as seconds as minutes.
+     *
+     * @param s The time amount.
+     * @return The time amount as minutes.
+     */
     public static int getTimeinMin(int s) {
 
         int m = 0;
@@ -61,6 +87,12 @@ public class TimeUtil {
 
     }
 
+    /**
+     * Get a formatted String of the difference between the given time and the current Time.
+     *
+     * @param t The time.
+     * @return A formatted String of the difference between the given time and the current Time.
+     */
     public static String getTime(long t) {
         String end = "";
 

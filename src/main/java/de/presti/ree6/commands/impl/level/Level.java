@@ -52,7 +52,7 @@ public class Level implements ICommand {
 
     @Override
     public String[] getAlias() {
-        return new String[]{"lvl", "xp", "rank"};
+        return new String[] {"lvl", "xp", "rank"};
     }
 
     public void sendLevel(Member member, CommandEvent commandEvent, String type) {
@@ -61,14 +61,14 @@ public class Level implements ICommand {
                 Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getId(), member.getId()) :
                 Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getId());
 
-        if (type.equalsIgnoreCase("voice")) {
-            VoiceUserLevel voiceUserLevel = (VoiceUserLevel) userLevel;
+        if (userLevel instanceof VoiceUserLevel voiceUserLevel) {
             voiceUserLevel.setUser(member.getUser());
             userLevel = voiceUserLevel;
-        } else {
-            ChatUserLevel chatUserLevel = (ChatUserLevel) userLevel;
+        } else if (userLevel instanceof ChatUserLevel chatUserLevel) {
             chatUserLevel.setUser(member.getUser());
             userLevel = chatUserLevel;
+        } else {
+            return;
         }
 
         if (commandEvent.isSlashCommand()) {

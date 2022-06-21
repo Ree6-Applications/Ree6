@@ -11,12 +11,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * YouTubeAPIHandler.
+ */
 public class YouTubeAPIHandler {
 
+    /**
+     * The YouTube API.
+     */
     private YouTube youTube;
+
+    /**
+     * The YouTube API-Handler.
+     */
     public final YouTubeAPIHandler instance;
+
+    /**
+     * Instance of the JsonFactory.
+     */
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
+    /**
+     * Constructor.
+     */
     public YouTubeAPIHandler() {
         try {
             createYouTube();
@@ -26,8 +43,14 @@ public class YouTubeAPIHandler {
         instance = this;
     }
 
+    /**
+     * Search on YouTube a specific query.
+     *
+     * @param search The query.
+     * @return A link to the first Video result.
+     */
     public String searchYoutube(String search) {
-        if(youTube == null) {
+        if (youTube == null) {
             createYouTube();
         }
         try {
@@ -40,11 +63,11 @@ public class YouTubeAPIHandler {
                     .execute()
                     .getItems();
 
-            if(!results.isEmpty()) {
+            if (!results.isEmpty()) {
                 String videoId = results.get(0).getId().getVideoId();
 
 
-                if(videoId == null) {
+                if (videoId == null) {
                     createYouTube();
                     return searchYoutube(search);
                 } else {
@@ -52,14 +75,19 @@ public class YouTubeAPIHandler {
                 }
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Main.getInstance().getLogger().error("Couldn't search on YouTube", e);
         }
 
         return null;
     }
 
+    /**
+     * Get the YouTube uploads of a specific user.
+     *
+     * @param channelId The channel id.
+     * @return A list of all Video ids.
+     */
     public List<PlaylistItem> getYouTubeUploads(String channelId) {
         List<PlaylistItem> playlistItemList = new ArrayList<>();
         try {
@@ -90,6 +118,9 @@ public class YouTubeAPIHandler {
         return playlistItemList;
     }
 
+    /**
+     * Create a YouTube instance.
+     */
     public void createYouTube() {
         try {
             youTube = new YouTube.Builder(
@@ -98,8 +129,7 @@ public class YouTubeAPIHandler {
                     null)
                     .setApplicationName("Ree6")
                     .build();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Main.getInstance().getLogger().error("Couldn't create a YouTube Instance", e);
         }
     }

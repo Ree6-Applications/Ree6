@@ -1,11 +1,15 @@
 package de.presti.ree6.sql;
 
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.base.data.SQLEntity;
+import de.presti.ree6.sql.entities.Webhook;
 import de.presti.ree6.sql.mapper.EntityMapper;
+import org.reflections.Reflections;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A "Connector" Class which connect with the used Database Server.
@@ -120,6 +124,20 @@ public class SQLConnector {
 
                 // Notify if there was an error.
                 Main.getInstance().getLogger().error("Couldn't create " + entry.getKey() + " Table.", exception);
+            }
+        }
+
+        Reflections reflections = new Reflections("de.presti.ree6");
+        Set<Class<? extends SQLEntity>> classes = reflections.getSubTypesOf(SQLEntity.class);
+        for (Class<? extends SQLEntity> aClass : classes) {
+            Main.getInstance().getAnalyticsLogger().info("Creating Table " + aClass.getName());
+            // Create a Table based on the key.
+            try {
+                sqlWorker.createTable(aClass);
+            } catch (Exception exception) {
+
+                // Notify if there was an error.
+                Main.getInstance().getLogger().error("Couldn't create " + aClass.getName() + " Table.", exception);
             }
         }
     }

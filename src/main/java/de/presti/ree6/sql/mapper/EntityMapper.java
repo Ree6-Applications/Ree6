@@ -8,8 +8,18 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * This class is used to map an SQL Result into the right Class-Entity.
+ */
 public class EntityMapper {
 
+    /**
+     * This method is used to map a ResultSet into a Class-Entity.
+     *
+     * @param resultSet The ResultSet to map.
+     * @param clazz     The Class-Entity to map the ResultSet into.
+     * @return The mapped Class-Entity in the form of a {@link SQLResponse}.
+     */
     public SQLResponse mapEntity(ResultSet resultSet, Class<?> clazz) {
         try {
             resultSet.last();
@@ -31,6 +41,13 @@ public class EntityMapper {
         return null;
     }
 
+    /**
+     * This method is used to map a ResultSet into a Class-Entity.
+     *
+     * @param resultSet The ResultSet to map.
+     * @param clazz     The Class-Entity to map the ResultSet into.
+     * @return The mapped Class-Entity.
+     */
     private Object mapClass(ResultSet resultSet, Class<?> clazz) {
         try {
             Object entity = clazz.newInstance();

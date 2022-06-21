@@ -142,7 +142,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Give the wanted User more XP.
      *
-     * @param guildId   the ID of the Guild.
+     * @param guildId        the ID of the Guild.
      * @param voiceUserLevel the {@link VoiceUserLevel} Entity with all the information.
      */
     public void addVoiceLevelData(String guildId, VoiceUserLevel oldVoiceUserLevel, VoiceUserLevel voiceUserLevel) {
@@ -1363,7 +1363,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Remove all entries from our Database.
      *
-     * @param guildId       the ID of the Guild.
+     * @param guildId the ID of the Guild.
      */
     public void clearInvites(String guildId) {
         sqlConnector.querySQL("DELETE FROM Invites WHERE GID=?", guildId);
@@ -1753,7 +1753,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM GuildStats WHERE GID=? ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", guildId)) {
 
             // Return if found.
-            while (rs != null && rs.next()) statsList.add(new String[] {rs.getString("COMMAND"), rs.getString("USES")});
+            while (rs != null && rs.next()) statsList.add(new String[]{rs.getString("COMMAND"), rs.getString("USES")});
         } catch (Exception ignore) {
         }
 
@@ -1770,7 +1770,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5")) {
 
             // Return if found.
-            while (rs != null && rs.next()) statsList.add(new String[] {rs.getString("COMMAND"), rs.getString("USES")});
+            while (rs != null && rs.next()) statsList.add(new String[]{rs.getString("COMMAND"), rs.getString("USES")});
         } catch (Exception ignore) {
         }
 
@@ -1869,8 +1869,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     //endregion
 
-    //region Test
+    //region Entity-System
 
+    /**
+     * Create a Table for the Entity.
+     * @param clazz the Class of the Entity.
+     * @return {@link Boolean} as result. If true, the Table was created | If false, the Table was not created.
+     */
     public boolean createTable(Class<?> clazz) {
         Table table = clazz.getAnnotation(Table.class);
         String tableName = table.name();
@@ -1904,13 +1909,17 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         query.append(")");
 
-        try(ResultSet resultSet = sqlConnector.querySQL(query.toString())) {
+        try (ResultSet resultSet = sqlConnector.querySQL(query.toString())) {
             return resultSet != null && resultSet.next();
         } catch (Exception e) {
             return false;
         }
     }
 
+    /**
+     * Save an Entity to the Database.
+     * @param entity the Entity to save.
+     */
     public void saveEntity(Object entity) {
         Class<?> entityClass = entity.getClass();
 
@@ -1961,6 +1970,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
     }
 
+    /**
+     * Update an Entity in the Database.
+     * @param oldEntity the old Entity.
+     * @param newEntity the new Entity.
+     */
     public void updateEntity(Object oldEntity, Object newEntity) {
         Class<?> entityClass = oldEntity.getClass();
 
@@ -2028,6 +2042,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
     }
 
+    /**
+     * Delete an entity from the database
+     *
+     * @param entity the Entity-class instance that is to be deleted.
+     */
     public void deleteEntity(Object entity) {
         Class<?> entityClass = entity.getClass();
 
@@ -2069,11 +2088,29 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
     }
 
+    /**
+     * Constructs a new mapped Version of the Entity-class.
+     *
+     * @param entity The entity to get.
+     * @return The mapped entity.
+     */
     public SQLResponse getEntity(Class<?> entity) {
         return getEntity(entity, "");
     }
 
+    /**
+     * Constructs a query for the given Class-Entity, and returns a mapped Version of the given Class-Entity.
+     *
+     * @param entity The Class-Entity to get.
+     * @param query  The query to use.
+     * @param args   The arguments to use.
+     * @return The mapped Version of the given Class-Entity.
+     */
     public SQLResponse getEntity(Class<?> entity, String query, Object... args) {
+        if (!entity.isAnnotationPresent(Table.class)) {
+            throw new IllegalArgumentException("Entity must be annotated with @Table");
+        }
+
         if (query.isEmpty()) {
             if (entity.isAnnotationPresent(Table.class)) {
                 String queryBuilder = "SELECT * FROM " +
