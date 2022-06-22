@@ -1873,10 +1873,15 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Create a Table for the Entity.
-     * @param clazz the Class of the Entity.
+     * @param entity the Entity.
      * @return {@link Boolean} as result. If true, the Table was created | If false, the Table was not created.
      */
-    public boolean createTable(Class<?> clazz) {
+    public boolean createTable(Object entity) {
+        Class<?> clazz = entity.getClass();
+        if (!clazz.isAnnotationPresent(Table.class)) {
+            throw new IllegalArgumentException("The given Entity is not annotated with @Table!");
+        }
+
         Table table = clazz.getAnnotation(Table.class);
         String tableName = table.name();
         List<SQLParameter> sqlParameters =
