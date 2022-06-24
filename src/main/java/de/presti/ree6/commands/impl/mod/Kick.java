@@ -13,9 +13,15 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+/**
+ * A command to kick a user from the server.
+ */
 @Command(name = "kick", description = "Kick a specific user from the Server.", category = Category.MOD)
 public class Kick implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.KICK_MEMBERS)) {
@@ -55,16 +61,27 @@ public class Kick implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("kick", "Kick the User from the Server!").addOptions(new OptionData(OptionType.USER, "target", "Which User should be kicked.").setRequired(true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
     }
 
+    /**
+     * Kick a specific Member from the Server.
+     * @param member The Member to kick.
+     * @param commandEvent The CommandEvent.
+     */
     public void kickMember(Member member, CommandEvent commandEvent) {
         if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
             Main.getInstance().getCommandManager().sendMessage("User " + member.getAsMention() + " has been kicked!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

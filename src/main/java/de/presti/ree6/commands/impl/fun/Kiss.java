@@ -15,9 +15,15 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
 
+/**
+ * A command to send someone a kiss.
+ */
 @Command(name = "kiss", description = "Kiss someone", category = Category.FUN)
 public class Kiss implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
@@ -43,17 +49,28 @@ public class Kiss implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("kiss", "Kiss someone")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should be kissed!").setRequired(true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
     }
 
+    /**
+     * Sends a kiss to the given user.
+     * @param member The user that should be kissed.
+     * @param commandEvent The command event.
+     */
     public void sendKiss(Member member, CommandEvent commandEvent) {
 
         Main.getInstance().getCommandManager().sendMessage(commandEvent.getMember().getAsMention() + " kissed " + member.getAsMention(), commandEvent.getTextChannel(), null);

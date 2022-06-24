@@ -2,8 +2,8 @@ package de.presti.ree6.commands.impl.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
@@ -13,9 +13,15 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 
+/**
+ * Get the current list of songs.
+ */
 @Command(name = "songlist", description = "Show the current Song-Queue.", category = Category.MUSIC)
 public class SongList implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         EmbedBuilder em = new EmbedBuilder();
@@ -38,11 +44,17 @@ public class SongList implements ICommand {
         Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

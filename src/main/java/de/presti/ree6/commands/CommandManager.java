@@ -3,19 +3,9 @@ package de.presti.ree6.commands;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.exceptions.CommandInitializerException;
-import de.presti.ree6.commands.impl.community.*;
-import de.presti.ree6.commands.impl.fun.*;
-import de.presti.ree6.commands.impl.hidden.*;
-import de.presti.ree6.commands.impl.info.*;
-import de.presti.ree6.commands.impl.info.Invite;
-import de.presti.ree6.commands.impl.level.*;
-import de.presti.ree6.commands.impl.mod.*;
-import de.presti.ree6.commands.impl.music.*;
-import de.presti.ree6.commands.impl.nsfw.*;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-
 import de.presti.ree6.utils.data.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -25,9 +15,11 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import org.reflections.Reflections;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,77 +33,16 @@ public class CommandManager {
     /**
      * Constructor for the Command-Manager used to register every Command.
      */
-    public CommandManager() throws CommandInitializerException {
+    public CommandManager() throws CommandInitializerException, InstantiationException, IllegalAccessException {
         Main.getInstance().getLogger().info("Initializing Commands!");
 
-        //Informative
-        addCommand(new Help());
-        addCommand(new Support());
-        addCommand(new Info());
-        addCommand(new Stats());
-        addCommand(new Invite());
-        addCommand(new Server());
-        addCommand(new Credits());
+        Reflections reflections = new Reflections("de.presti.ree6.commands");
+        Set<Class<? extends ICommand>> classes = reflections.getSubTypesOf(ICommand.class);
 
-        //Moderate
-        addCommand(new ClearData());
-        addCommand(new Prefix());
-        addCommand(new Webinterface());
-        addCommand(new Clear());
-        addCommand(new Setup());
-        addCommand(new Mute());
-        addCommand(new Unmute());
-        addCommand(new Kick());
-        addCommand(new Ban());
-        addCommand(new Unban());
-        addCommand(new ChatProtector());
-
-        //Music
-        addCommand(new SongInfo());
-        addCommand(new Lyrics());
-        addCommand(new Play());
-        addCommand(new Pause());
-        addCommand(new Resume());
-        addCommand(new Stop());
-        addCommand(new Disconnect());
-        addCommand(new Skip());
-        addCommand(new Loop());
-        addCommand(new Shuffle());
-        addCommand(new Volume());
-        addCommand(new Clearqueue());
-        addCommand(new SongList());
-
-        //Fun
-        addCommand(new RandomAnswer());
-        addCommand(new FunFact());
-        addCommand(new CatImage());
-        addCommand(new DogImage());
-        addCommand(new MemeImage());
-        addCommand(new Ping());
-        addCommand(new Slap());
-        addCommand(new Twitter());
-        addCommand(new HornyJail());
-        addCommand(new Waifu());
-        addCommand(new Kiss());
-        addCommand(new Hug());
-        addCommand(new Cringe());
-        addCommand(new DogeCoin());
-
-        //Level
-        addCommand(new Level());
-        addCommand(new Leaderboards());
-
-        //Community
-        addCommand(new TwitchNotifier());
-        addCommand(new TwitterNotifier());
-
-        //NSFW
-        addCommand(new NSFW());
-
-        //Hidden
-        addCommand(new Addon());
-        //// addCommand(new Gamer());
-        //// addCommand(new Test());
+        for (Class<? extends ICommand> aClass : classes) {
+            Main.getInstance().getAnalyticsLogger().info("Loading Command " + aClass.getName());
+            addCommand(aClass.newInstance());
+        }
     }
 
     /**
@@ -270,7 +201,7 @@ public class CommandManager {
         }
 
         // Check if this is a Developer build, if not then cooldown the User.
-        if (BotWorker.getVersion() != BotVersion.DEV) {
+        if (BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD) {
             new Thread(() -> {
                 try {
                     Thread.sleep(5000);
@@ -287,7 +218,7 @@ public class CommandManager {
         }
 
         // Add them to the Cooldown.
-        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && BotWorker.getVersion() != BotVersion.DEV) {
+        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD) {
             ArrayUtil.commandCooldown.add(member.getUser().getId());
         }
 

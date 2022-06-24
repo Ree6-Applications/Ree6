@@ -8,8 +8,8 @@ import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.helix.domain.User;
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.bot.util.WebhookUtil;
+import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
 import twitter4j.*;
@@ -17,8 +17,8 @@ import twitter4j.conf.ConfigurationBuilder;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * Utility class used for Event Notifiers. Such as Twitch Livestream, YouTube Upload or Twitter Tweet.
@@ -46,7 +46,7 @@ public class Notifier {
 
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 
-        if (BotWorker.getVersion() == BotVersion.DEV) configurationBuilder.setDebugEnabled(true);
+        if (BotWorker.getVersion() == BotVersion.DEVELOPMENT_BUILD) configurationBuilder.setDebugEnabled(true);
 
         configurationBuilder.setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key"));
         configurationBuilder.setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret"));

@@ -19,8 +19,15 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * A command to create a fake tweet.
+ */
 @Command(name = "twitter", description = "Create a \"realistic\" looking Tweet!", category = Category.FUN)
 public class Twitter implements ICommand {
+
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -54,6 +61,9 @@ public class Twitter implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("twitter", "Let the mentioned User Tweet something!")
@@ -61,11 +71,20 @@ public class Twitter implements ICommand {
                 .addOptions(new OptionData(OptionType.STRING, "content", "The Tweet Content!").setRequired(true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
     }
 
+    /**
+     * The method to create the Tweet.
+     * @param member The Member that should tweet.
+     * @param content The content of the Tweet.
+     * @param commandEvent The CommandEvent.
+     */
     public void sendTwitterTweet(Member member, String content, CommandEvent commandEvent) {
         try {
 

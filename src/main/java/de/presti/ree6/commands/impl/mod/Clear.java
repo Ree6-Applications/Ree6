@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -10,14 +10,20 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.util.List;
 
+/**
+ * A command to clear messages.
+ */
 @Command(name = "clear", description = "Clear the current Chat.", category = Category.MOD)
 public class Clear implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -53,16 +59,27 @@ public class Clear implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("clear", "Clear the Chat!").addOptions(new OptionData(OptionType.INTEGER, "amount", "How many messages should be removed.").setRequired(true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[]{"cc", "clearchat", "chatclear"};
     }
 
+    /**
+     * Delete Messages.
+     * @param commandEvent CommandEvent.
+     * @param amount Amount of Messages.
+     */
     public void deleteMessages(CommandEvent commandEvent, int amount) {
 
         if (amount <= 100 && amount >= 2) {

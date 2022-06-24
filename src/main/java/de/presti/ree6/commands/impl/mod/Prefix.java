@@ -1,20 +1,26 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+/**
+ * A command to change the prefix.
+ */
 @Command(name = "prefix", description = "Change Ree6's Command prefix for the current Server.", category = Category.MOD)
 public class Prefix implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -43,11 +49,17 @@ public class Prefix implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("prefix", "Change Ree6's Bot-Prefix!").addOptions(new OptionData(OptionType.STRING, "new-prefix", "What should the new Prefix be?").setRequired(true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[]{"setprefix", "changeprefix"};

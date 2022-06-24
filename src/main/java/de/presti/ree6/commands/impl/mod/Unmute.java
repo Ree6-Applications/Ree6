@@ -14,13 +14,18 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+/**
+ * A command to unmute a user.
+ * TODO:: rework
+ */
 @Command(name = "unmute", description = "Unmute a specific user on the Server.", category = Category.MOD)
 public class Unmute implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-
-        // TODO rework.
 
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 
@@ -59,16 +64,27 @@ public class Unmute implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("unmute", "Unmute a User on the Server!").addOptions(new OptionData(OptionType.USER, "target", "Which User should be unmuted.").setRequired(true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
     }
 
+    /**
+     * Unmutes a Member.
+     * @param member The Member to unmute.
+     * @param commandEvent The CommandEvent.
+     */
     public void unmuteMember(Member member, CommandEvent commandEvent) {
         Role role = commandEvent.getGuild().getRoleById(Main.getInstance().getSqlConnector().getSqlWorker().getMuteRole(commandEvent.getGuild().getId()));
 

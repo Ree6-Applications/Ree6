@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
@@ -18,9 +18,15 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A command to set Ree6 up.
+ */
 @Command(name = "setup", description = "Setup specific default operations for Ree6!", category = Category.MOD)
 public class Setup implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -54,11 +60,17 @@ public class Setup implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

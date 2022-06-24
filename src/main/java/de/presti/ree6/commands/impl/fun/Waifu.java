@@ -2,8 +2,8 @@ package de.presti.ree6.commands.impl.fun;
 
 import com.google.gson.JsonObject;
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
@@ -16,6 +16,9 @@ import java.awt.*;
 @Command(name = "waifu", description = "Wanna see some Waifus or Husbandos?", category = Category.FUN)
 public class Waifu implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         JsonObject jsonObject = RequestUtility.request(new RequestUtility.Request("https://api.dagpi.xyz/data/waifu", Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"))).getAsJsonObject();
@@ -44,11 +47,17 @@ public class Waifu implements ICommand {
         Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

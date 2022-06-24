@@ -14,11 +14,17 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+/**
+ * A command to mute a user.
+ */
 @Command(name = "mute", description = "Mute a specific user on the Server.", category = Category.MOD)
 public class Mute implements ICommand {
 
     // TODO rework, to instead use the Timeout feature.
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
@@ -56,16 +62,27 @@ public class Mute implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("mute", "Mute a User on the Server!").addOptions(new OptionData(OptionType.USER, "target", "Which User should be muted.").setRequired(true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
     }
 
+    /**
+     * Mutes a Member.
+     * @param member The Member to mute.
+     * @param commandEvent The CommandEvent.
+     */
     public void muteMember(Member member, CommandEvent commandEvent) {
         Role role = commandEvent.getGuild().getRoleById(Main.getInstance().getSqlConnector().getSqlWorker().getMuteRole(commandEvent.getGuild().getId()));
 

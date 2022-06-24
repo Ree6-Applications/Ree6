@@ -57,11 +57,11 @@ public class BotWorker {
      */
     public static void createBot(BotVersion version1, String build1) throws LoginException {
         version = version1;
-        token = BotWorker.version == BotVersion.DEV ? Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.dev") : Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.rel");
+        token = BotWorker.version == BotVersion.DEVELOPMENT_BUILD ? Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.dev") : Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.rel");
         state = BotState.INIT;
         build = build1;
 
-        shardManager = DefaultShardManagerBuilder.createDefault(token).setShardsTotal(getVersion() == BotVersion.DEV ? 1 : 10).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY).build();
+        shardManager = DefaultShardManagerBuilder.createDefault(token).setShardsTotal(getVersion() == BotVersion.DEVELOPMENT_BUILD ? 1 : 10).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY).build();
     }
 
     /**

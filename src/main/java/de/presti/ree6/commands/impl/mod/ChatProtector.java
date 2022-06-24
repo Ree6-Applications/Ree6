@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -10,10 +10,16 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.ArrayList;
 
-// TODO for the love of god, I have to remove this or completely rework this. Otherwise there is no reason for this command since you can manage it over the Panel.
-
+/**
+ * A command to manage the word blacklist.
+ * TODO:: for the love of god, I have to remove this or completely rework this. Otherwise there is no reason for this command since you can manage it over the Panel.
+ */
 @Command(name = "chatprotector", description = "Manage your Chat Filter.", category = Category.MOD)
 public class ChatProtector implements ICommand {
+
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
@@ -80,11 +86,17 @@ public class ChatProtector implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[]{ "blacklist", "badword" };

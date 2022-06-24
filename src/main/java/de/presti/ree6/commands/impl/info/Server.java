@@ -1,7 +1,8 @@
 package de.presti.ree6.commands.impl.info;
 
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.Category;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
@@ -14,9 +15,15 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.time.format.DateTimeFormatter;
 
+/**
+ * A command to show you some info about the Server.
+ */
 @Command(name = "server", description = "See server specific information.", category = Category.INFO)
 public class Server implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
@@ -40,11 +47,17 @@ public class Server implements ICommand {
             Main.getInstance().getCommandManager().sendMessage("You dont have ADMINISTRATOR Permissions for this Command!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

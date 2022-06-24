@@ -15,9 +15,15 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+/**
+ * A command to see your current Level.
+ */
 @Command(name = "level", description = "Show your own Level or the Level of another User in the Guild.", category = Category.LEVEL)
 public class Level implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -44,17 +50,29 @@ public class Level implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("level", "Show your own Level or the Level of another User in the Guild.").addOptions(new OptionData(OptionType.STRING, "typ", "Do you want to see chat or voice level?").setRequired(true))
                 .addOptions(new OptionData(OptionType.USER, "target", "Show the Level of the User."));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[] {"lvl", "xp", "rank"};
     }
 
+    /**
+     * Sends the Level of the User.
+     * @param member The Member to get the Level of.
+     * @param commandEvent The CommandEvent.
+     * @param type The Type of the Level.
+     */
     public void sendLevel(Member member, CommandEvent commandEvent, String type) {
 
         Object userLevel = type.equalsIgnoreCase("voice") ?

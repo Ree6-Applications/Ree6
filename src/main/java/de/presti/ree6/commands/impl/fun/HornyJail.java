@@ -13,9 +13,15 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+/**
+ * A command to send someone to the horny-jail.
+ */
 @Command(name = "hornyjail", description = "Put someone into the Horny-Jail", category = Category.FUN)
 public class HornyJail implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
@@ -39,16 +45,27 @@ public class HornyJail implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("hornyjail", "Put someone in the Hornyjail!").addOptions(new OptionData(OptionType.USER, "target", "The User that should be put into the Hornyjail!").setRequired(true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[]{"horny", "jail"};
     }
 
+    /**
+     * Sends the given User into the horny-jail.
+     * @param member The User that should be put into the horny-jail.
+     * @param commandEvent The CommandEvent.
+     */
     public void sendHornyJail(Member member, CommandEvent commandEvent) {
         try {
             Main.getInstance().getCommandManager().sendMessage(member.getAsMention() + " is now in the Hornyjail!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());

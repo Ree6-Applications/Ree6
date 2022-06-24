@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.music;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
@@ -12,8 +12,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.awt.*;
 import java.net.MalformedURLException;
@@ -21,9 +21,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * Play a Song.
+ */
 @Command(name = "play", description = "Play a new Song or add a Song to the current Queue.", category = Category.MUSIC)
 public class Play implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -68,16 +74,27 @@ public class Play implements ICommand {
 
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("play", "Play a song!").addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[]{"p", "music"};
     }
 
+    /**
+     * Play a specific song.
+     * @param value The song name or url.
+     * @param commandEvent The command event.
+     */
     public void playSong(String value, CommandEvent commandEvent) {
         if (isUrl(value)) {
             boolean isspotify = false;
@@ -153,6 +170,11 @@ public class Play implements ICommand {
         }
     }
 
+    /**
+     * Check if the given string is an url.
+     * @param input The string to check.
+     * @return True if the string is an url.
+     */
     private boolean isUrl(String input) {
         try {
             new URL(input);

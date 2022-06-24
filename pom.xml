@@ -5,12 +5,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <name>Ree6</name>
+    <description>Ree6 is an open-Source Discord Bot.</description>
+
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
     <version>1.7.12</version>
     <packaging>jar</packaging>
-    <name>Ree6</name>
-    <description>Ree6 is an open-Source Discord Bot.</description>
 
     <properties>
         <java.version>17</java.version>

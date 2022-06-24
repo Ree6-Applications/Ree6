@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.music;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
@@ -11,6 +11,9 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 
+/**
+ * Stop the Ree6 from playing Music.
+ */
 @Command(name = "stop", description = "Stop the current playing Song.", category = Category.MUSIC)
 public class Stop implements ICommand {
 
@@ -30,11 +33,17 @@ public class Stop implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

@@ -14,9 +14,15 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+/**
+ * A command to help the user navigate.
+ */
 @Command(name = "help", description = "Shows a list of every Command!", category = Category.INFO)
 public class Help implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -38,6 +44,11 @@ public class Help implements ICommand {
         }
     }
 
+    /**
+     * Sends the help information to the user.
+     * @param categoryString The category to show the help for.
+     * @param commandEvent The command event.
+     */
     public void sendHelpInformation(String categoryString, CommandEvent commandEvent) {
         EmbedBuilder em = new EmbedBuilder();
 
@@ -76,17 +87,28 @@ public class Help implements ICommand {
         Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("help", "Shows a list of every Command!")
                 .addOptions(new OptionData(OptionType.STRING, "category", "Which Category you want to check out."));
     }
 
+    /**
+     * Check if a String is a valid category.
+     * @param arg The String to check.
+     * @return True if the String is a valid category.
+     */
     private boolean isValid(String arg) {
         if (arg == null) return false;
 
@@ -99,6 +121,11 @@ public class Help implements ICommand {
         return false;
     }
 
+    /**
+     * Get the Category from a String.
+     * @param arg The String to use.
+     * @return The Category.
+     */
     private Category getCategoryFromString(String arg) {
         if (arg == null) return null;
         for (Category cat : Category.values()) {
