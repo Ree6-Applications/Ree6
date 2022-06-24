@@ -8,7 +8,7 @@ import de.presti.ree6.logger.events.implentation.LogMessageMember;
 import de.presti.ree6.logger.events.implentation.LogMessageRole;
 import de.presti.ree6.logger.events.implentation.LogMessageUser;
 import de.presti.ree6.logger.events.implentation.LogMessageVoice;
-import de.presti.ree6.main.Data;
+import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.Permission;
 
 import java.awt.*;

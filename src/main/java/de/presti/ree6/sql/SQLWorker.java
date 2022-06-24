@@ -1885,7 +1885,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         Table table = clazz.getAnnotation(Table.class);
         String tableName = table.name();
         List<SQLParameter> sqlParameters =
-                Arrays.stream(clazz.getFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
                         .map(e -> {
                                     Property property = e.getAnnotation(Property.class);
                                     return new SQLParameter(property.name(), e.getType(), property.primary());
@@ -1933,7 +1933,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         List<SQLParameter> sqlParameters =
-                Arrays.stream(entityClass.getFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                Arrays.stream(entityClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
                         .map(e -> {
                                     Property property = e.getAnnotation(Property.class);
                                     return new SQLParameter(property.name(), e.getType(), property.primary());
@@ -1962,7 +1962,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         query.append(")");
         try {
-            sqlConnector.querySQL(query.toString(), Arrays.stream(entityClass.getFields()).map(field -> {
+            sqlConnector.querySQL(query.toString(), Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
                 try {
                     if (!field.canAccess(entity)) field.trySetAccessible();
                     return field.get(entity);
@@ -1992,7 +1992,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         List<SQLParameter> sqlParameters =
-                Arrays.stream(entityClass.getFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                Arrays.stream(entityClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
                         .map(e -> {
                                     Property property = e.getAnnotation(Property.class);
                                     return new SQLParameter(property.name(), e.getType(), property.primary());
@@ -2022,7 +2022,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         try {
-            List<Object> args = new ArrayList<>(Arrays.stream(entityClass.getFields()).map(field -> {
+            List<Object> args = new ArrayList<>(Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
                 try {
                     if (!field.canAccess(oldEntity)) field.trySetAccessible();
                     return field.get(oldEntity);
@@ -2031,7 +2031,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
                 }
             }).toList());
 
-            List<Object> newArgs = Arrays.stream(entityClass.getFields()).map(field -> {
+            List<Object> newArgs = Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
                 try {
                     if (!field.canAccess(newEntity)) field.trySetAccessible();
                     return field.get(newEntity);
@@ -2060,7 +2060,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         List<SQLParameter> sqlParameters =
-                Arrays.stream(entityClass.getFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                Arrays.stream(entityClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
                         .map(e -> {
                                     Property property = e.getAnnotation(Property.class);
                                     return new SQLParameter(property.name(), e.getType(), property.primary());
@@ -2080,7 +2080,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         try {
-            sqlConnector.querySQL(query.toString(), Arrays.stream(entityClass.getFields()).map(field -> {
+            sqlConnector.querySQL(query.toString(), Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
                 try {
                     if (!field.canAccess(entity)) field.trySetAccessible();
                     return field.get(entity);

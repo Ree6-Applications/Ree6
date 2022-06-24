@@ -280,6 +280,10 @@ public class Main {
      * @return {@link Main} Instance of the Main class.
      */
     public static Main getInstance() {
+        if (instance == null) {
+            instance = new Main();
+        }
+
         return instance;
     }
 

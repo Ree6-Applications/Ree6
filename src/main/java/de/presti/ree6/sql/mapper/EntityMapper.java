@@ -51,7 +51,7 @@ public class EntityMapper {
     private Object mapClass(ResultSet resultSet, Class<?> clazz) {
         try {
             Object entity = clazz.newInstance();
-            Arrays.stream(clazz.getFields()).filter(field -> field.isAnnotationPresent(Property.class))
+            Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
                     .forEach(field -> {
                         Property property = field.getAnnotation(Property.class);
                         String columnName = property.name();

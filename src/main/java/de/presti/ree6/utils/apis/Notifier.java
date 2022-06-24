@@ -10,7 +10,7 @@ import com.github.twitch4j.helix.domain.User;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotVersion;
-import de.presti.ree6.main.Data;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
