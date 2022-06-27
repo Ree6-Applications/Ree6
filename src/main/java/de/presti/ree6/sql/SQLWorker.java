@@ -1401,7 +1401,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             querySQL("UPDATE Invites SET USES=? WHERE GID=? AND UID=? AND CODE=?", inviteUsage, guildId, inviteCreator, inviteCode);
         } else {
             // Create new entry.
-            querySQL("INSERT INTO Invites (GID, UID, USES, CODE) VALUES (?, ?, ?, " + "?);", guildId, inviteCreator, inviteUsage, inviteCode);
+            querySQL("INSERT INTO Invites (GID, UID, USES, CODE) VALUES (?, ?, ?, ?);", guildId, inviteCreator, inviteUsage, inviteCode);
         }
     }
 

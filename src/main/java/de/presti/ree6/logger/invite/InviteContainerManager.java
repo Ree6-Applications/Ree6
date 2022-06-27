@@ -30,11 +30,10 @@ public class InviteContainerManager {
      * Methode to add or update an Invitation on the Database.
      *
      * @param inviteContainer the {@link InviteContainer} with the data of the Invite.
-     * @param guildID         the ID of the Guild.
      */
-    public static void addInvite(InviteContainer inviteContainer, String guildID) {
+    public static void addInvite(InviteContainer inviteContainer) {
         try {
-            Main.getInstance().getSqlConnector().getSqlWorker().setInvite(guildID, inviteContainer.getCode(), inviteContainer.getCreatorId(), inviteContainer.getUses());
+            Main.getInstance().getSqlConnector().getSqlWorker().setInvite(inviteContainer.getGuildId(), inviteContainer.getCode(), inviteContainer.getCreatorId(), inviteContainer.getUses());
         } catch (Exception ex) {
             Main.getInstance().getLogger().error("[InviteManager] Error while Saving Invites: " + ex.getMessage());
         }
@@ -68,23 +67,33 @@ public class InviteContainerManager {
      * @return the {@link InviteContainer} of the Invite.
      */
     public static InviteContainer getRightInvite(Guild guild) {
-        if (getInvites(guild.getId()) != null) {
-            // Every Invite from our Database.
-            ArrayList<InviteContainer> cachedInvites = getInvites(guild.getId());
+        // Every Invite from our Database.
+        ArrayList<InviteContainer> cachedInvites = getInvites(guild.getId());
 
-            // Every Invite from the Guild.
-            List<Invite> guildInvites = guild.retrieveInvites().complete();
+        // Every Invite from the Guild.
+        List<Invite> guildInvites = guild.retrieveInvites().complete();
 
-            // Go through every Invite of the Guild.
-            for (Invite inv : guildInvites) {
-                // Go through every Invite of the Guild from our Database.
-                for (InviteContainer inv2 : cachedInvites) {
-                    // Check if the Invites aren't null and if there is one that matches the InviteContainer.
-                    if (inv != null && inv.getInviter() != null && inv.getInviter().getId().equalsIgnoreCase(inv2.getCreatorId()) && inv.getCode().equalsIgnoreCase(inv2.getCode()) && inv.getUses() != inv2.getUses()) {
-                        // Return the InviteContainer.
-                        return inv2;
-                    }
+        // Go through every Invite of the Guild.
+        for (Invite inv : guildInvites) {
+
+            boolean foundOne = false;
+            // Go through every Invite of the Guild from our Database.
+            for (InviteContainer inv2 : cachedInvites) {
+                if (!foundOne && inv.getCode().equalsIgnoreCase(inv2.getCode())) {
+                    foundOne = true;
                 }
+
+                if (inv.getInviter() == null) continue;
+                if (!inv.getCode().equalsIgnoreCase(inv2.getCode())) continue;
+                if (!inv.getInviter().getId().equalsIgnoreCase(inv2.getCreatorId())) continue;
+
+                if (inv.getUses() > inv2.getUses()) {
+                    return inv2;
+                }
+            }
+
+            if (!foundOne && inv != null && inv.getInviter() != null) {
+                InviteContainerManager.addInvite(new InviteContainer(inv.getInviter().getId(), guild.getId(), inv.getCode(), inv.getUses()));
             }
         }
 
