@@ -85,7 +85,6 @@ public class InviteContainerManager {
 
                 if (inv.getInviter() == null ||
                         !inv.getCode().equalsIgnoreCase(inv2.getCode()) ||
-                        !inv.getCode().equalsIgnoreCase(inv2.getCode()) ||
                         !inv.getInviter().getId().equalsIgnoreCase(inv2.getCreatorId())) continue;
 
                 if (inv.getUses() > inv2.getUses()) {
