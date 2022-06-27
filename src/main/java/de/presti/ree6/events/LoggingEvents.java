@@ -44,6 +44,7 @@ import net.dv8tion.jda.api.utils.TimeFormat;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 
@@ -676,6 +677,8 @@ public class LoggingEvents extends ListenerAdapter {
 
             we.setDescription(":wastebasket: **Message of " + user.getAsMention() + " in " + event.getTextChannel().getAsMention() + " has been deleted.**\n" +
                     (message != null ? message.getContentRaw().length() >= 650 ? "Message is too long to display!" : message.getContentRaw() : ""));
+
+            if (message != null && message.getContentRaw().length() >= 650) wm.addFile("message.txt", message.getContentRaw().getBytes(StandardCharsets.UTF_8));
 
             wm.addEmbeds(we.build());
 
