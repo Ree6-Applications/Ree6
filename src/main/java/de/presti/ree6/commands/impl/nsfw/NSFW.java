@@ -3,12 +3,12 @@ package de.presti.ree6.commands.impl.nsfw;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.Category;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.apis.Neko4JsAPI;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -19,7 +19,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 @Command(name = "nsfw", description = "Get NSFW Image for reddit.com/r/hentai", category = Category.NSFW)
 public class NSFW implements ICommand {
