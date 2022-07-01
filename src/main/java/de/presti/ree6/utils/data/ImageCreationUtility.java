@@ -170,7 +170,8 @@ public class ImageCreationUtility {
 
         Main.getInstance().getAnalyticsLogger().debug("Finished drawing Progressbar on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
-        // Close the Graphics2d instance.
+
+        // Close the Graphics2D instance.
         graphics2D.dispose();
         Main.getInstance().getAnalyticsLogger().debug("Finished disposing Graphics2D instance. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -196,17 +197,15 @@ public class ImageCreationUtility {
             return new byte[128];
 
         // Generate a 128x128 Image Background.
-        BufferedImage base = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage base = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
         BufferedImage userImage;
 
         // Generated a Circle Image with the Avatar of the User.
         if (user.getAvatarUrl() != null) {
-            userImage = ImageIO.read(new URL(user.getAvatarUrl()));
+            userImage = resize(ImageIO.read(new URL(user.getAvatarUrl())), 128, 128);
         } else {
-            userImage = ImageIO.read(new URL(user.getDefaultAvatarUrl()));
+            userImage = resize(ImageIO.read(new URL(user.getDefaultAvatarUrl())), 128, 128);
         }
-
-        userImage = resize(userImage, 128, 128);
 
         // Create a new Graphics2D instance from the base.
         Graphics2D graphics2D = base.createGraphics();
@@ -256,7 +255,7 @@ public class ImageCreationUtility {
         Main.getInstance().getAnalyticsLogger().debug("Loading Image from URL and resizing it. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        BufferedImage output = new BufferedImage(mainImage.getWidth(), mainImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+        BufferedImage output = new BufferedImage(mainImage.getWidth(), mainImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
         Main.getInstance().getAnalyticsLogger().debug("Creating Output BufferedImage. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -294,7 +293,7 @@ public class ImageCreationUtility {
         actionPerformance = System.currentTimeMillis();
 
         Main.getInstance().getAnalyticsLogger().debug("Finished creation. ({}ms)", System.currentTimeMillis() - start);
-        return resize(output, 250, 250);
+        return output;
     }
 
     /**

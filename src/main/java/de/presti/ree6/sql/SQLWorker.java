@@ -1430,7 +1430,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Remove all entries from our Database.
      *
-     * @param guildId       the ID of the Guild.
+     * @param guildId the ID of the Guild.
      */
     public void clearInvites(String guildId) {
         querySQL("DELETE FROM Invites WHERE GID=?", guildId);
@@ -1820,7 +1820,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         try (ResultSet rs = querySQL("SELECT * FROM GuildStats WHERE GID=? ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", guildId)) {
 
             // Return if found.
-            while (rs != null && rs.next()) statsList.add(new String[] {rs.getString("COMMAND"), rs.getString("USES")});
+            while (rs != null && rs.next()) statsList.add(new String[]{rs.getString("COMMAND"), rs.getString("USES")});
         } catch (Exception ignore) {
         }
 
@@ -1837,7 +1837,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         try (ResultSet rs = querySQL("SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5")) {
 
             // Return if found.
-            while (rs != null && rs.next()) statsList.add(new String[] {rs.getString("COMMAND"), rs.getString("USES")});
+            while (rs != null && rs.next()) statsList.add(new String[]{rs.getString("COMMAND"), rs.getString("USES")});
         } catch (Exception ignore) {
         }
 
@@ -1947,8 +1947,12 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public ResultSet querySQL(String sqlQuery, Object... objcObjects) {
         if (!sqlConnector.isConnected()) {
-            sqlConnector.connectToSQLServer();
-            return querySQL(sqlQuery, objcObjects);
+            if (sqlConnector().connectedOnce()) {
+                sqlConnector.connectToSQLServer();
+                return querySQL(sqlQuery, objcObjects);
+            } else {
+                return null;
+            }
         }
 
         try (PreparedStatement preparedStatement = sqlConnector.getConnection().prepareStatement(sqlQuery)) {
@@ -1980,9 +1984,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
             }
         } catch (Exception exception) {
             if (exception instanceof SQLNonTransientConnectionException) {
-                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
-                sqlConnector.connectToSQLServer();
-                return querySQL(sqlQuery, objcObjects);
+                if (sqlConnector.connectedOnce()) {
+                    Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
+                    sqlConnector.connectToSQLServer();
+                    return querySQL(sqlQuery, objcObjects);
+                }
             } else {
                 Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
             }

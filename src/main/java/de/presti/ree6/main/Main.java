@@ -88,7 +88,8 @@ public class Main {
 
         // Check if there is a default value, if so close application and inform.
         if (instance.config.getConfiguration().getString("mysql.pw").equalsIgnoreCase("yourpw")) {
-            instance.logger.error("It looks like the default configuration has not been updated! Exiting!");
+            instance.logger.error("It looks like the default configuration has not been updated!");
+            instance.logger.error("Please update the configuration file and restart the application!");
             System.exit(0);
         }
 
@@ -98,7 +99,7 @@ public class Main {
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             RaygunClient raygunClient = new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken"));
-            raygunClient.setVersion("1.7.13");
+            raygunClient.setVersion("1.7.14");
         });
 
         // Create a new connection between the Application and the SQL-Server.
@@ -132,7 +133,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.PUBLIC, "1.7.13");
+            BotWorker.createBot(BotVersion.PUBLIC, "1.7.14");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {

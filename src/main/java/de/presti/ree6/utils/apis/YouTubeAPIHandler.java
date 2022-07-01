@@ -26,35 +26,28 @@ public class YouTubeAPIHandler {
         instance = this;
     }
 
-    public String searchYoutube(String search) {
-        if(youTube == null) {
+    public String searchYoutube(String search) throws Exception {
+        if (youTube == null) {
             createYouTube();
         }
-        try {
+        List<SearchResult> results = youTube.search()
+                .list(Collections.singletonList("snippet"))
+                .setQ(search)
+                .setMaxResults(2L)
+                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"))
+                .execute()
+                .getItems();
 
-            List<SearchResult> results = youTube.search()
-                    .list(Collections.singletonList("snippet"))
-                    .setQ(search)
-                    .setMaxResults(2L)
-                    .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"))
-                    .execute()
-                    .getItems();
-
-            if(!results.isEmpty()) {
-                String videoId = results.get(0).getId().getVideoId();
+        if (!results.isEmpty()) {
+            String videoId = results.get(0).getId().getVideoId();
 
 
-                if(videoId == null) {
-                    createYouTube();
-                    return searchYoutube(search);
-                } else {
-                    return "https://www.youtube.com/watch?v=" + videoId;
-                }
+            if (videoId == null) {
+                createYouTube();
+                return searchYoutube(search);
+            } else {
+                return "https://www.youtube.com/watch?v=" + videoId;
             }
-
-        }
-        catch (Exception e) {
-            Main.getInstance().getLogger().error("Couldn't search on YouTube", e);
         }
 
         return null;
@@ -98,8 +91,7 @@ public class YouTubeAPIHandler {
                     null)
                     .setApplicationName("Ree6")
                     .build();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Main.getInstance().getLogger().error("Couldn't create a YouTube Instance", e);
         }
     }

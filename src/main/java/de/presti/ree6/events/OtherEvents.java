@@ -191,9 +191,16 @@ public class OtherEvents extends ListenerAdapter {
     public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
         super.onSelectMenuInteraction(event);
 
-        if (event.getInteraction().getComponent().getId() == null || event.getGuild() == null) return;
+        if (event.getInteraction().getComponent().getId() == null ||
+                event.getGuild() == null)
+            return;
 
-        if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null || event.getInteraction().getSelectedOptions().isEmpty())
+        if (event.getMessage().getEmbeds().isEmpty() ||
+                event.getMessage().getEmbeds().get(0) == null ||
+                event.getInteraction().getSelectedOptions().isEmpty())
+            return;
+
+        if (event.getInteraction().getValues().isEmpty())
             return;
 
         switch (event.getInteraction().getComponent().getId()) {
@@ -207,7 +214,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 List<SelectOption> optionList = new ArrayList<>();
 
-                switch (event.getInteraction().getSelectedOptions().get(0).getValue()) {
+                switch (event.getInteraction().getValues().get(0)) {
                     case "log" -> {
                         optionList.add(SelectOption.of("Setup", "logSetup"));
 
@@ -276,7 +283,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 List<SelectOption> optionList = new ArrayList<>();
 
-                switch (event.getInteraction().getSelectedOptions().get(0).getValue()) {
+                switch (event.getInteraction().getValues().get(0)) {
 
                     case "backToSetupMenu" -> {
                         optionList.add(SelectOption.of("Audit-Logging", "log"));
@@ -318,7 +325,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
-                TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getSelectedOptions().get(0).getValue());
+                TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getValues().get(0));
 
                 if (textChannel != null) {
                     textChannel.createWebhook("Ree6-Logs").queue(webhook -> {
@@ -344,7 +351,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 List<SelectOption> optionList = new ArrayList<>();
 
-                switch (event.getInteraction().getSelectedOptions().get(0).getValue()) {
+                switch (event.getInteraction().getValues().get(0)) {
 
                     case "backToSetupMenu" -> {
                         optionList.add(SelectOption.of("Audit-Logging", "log"));
@@ -386,7 +393,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
-                TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getSelectedOptions().get(0).getValue());
+                TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getValues().get(0));
 
                 if (textChannel != null) {
                     textChannel.createWebhook("Ree6-Welcome").queue(webhook -> {
@@ -412,7 +419,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 List<SelectOption> optionList = new ArrayList<>();
 
-                switch (event.getInteraction().getSelectedOptions().get(0).getValue()) {
+                switch (event.getInteraction().getValues().get(0)) {
 
                     case "backToSetupMenu" -> {
                         optionList.add(SelectOption.of("Audit-Logging", "log"));
@@ -453,7 +460,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
-                TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getSelectedOptions().get(0).getValue());
+                TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getValues().get(0));
 
                 if (textChannel != null) {
                     textChannel.createWebhook("Ree6-News").queue(webhook -> {

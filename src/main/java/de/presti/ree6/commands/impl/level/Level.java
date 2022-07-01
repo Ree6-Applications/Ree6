@@ -30,11 +30,15 @@ public class Level implements ICommand {
                 sendLevel(commandEvent.getMember(), commandEvent, "chat");
             }
         } else {
-            if (commandEvent.getArguments().length == 1 || commandEvent.getArguments().length == 2) {
+            if (commandEvent.getArguments().length <= 2) {
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    sendLevel(commandEvent.getMember(), commandEvent, commandEvent.getArguments()[0]);
+                    sendLevel(commandEvent.getMember(), commandEvent,
+                            commandEvent.getArguments().length == 0 ? "chat"
+                            : commandEvent.getArguments()[0]);
                 } else {
-                    sendLevel(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent, commandEvent.getArguments()[0]);
+                    sendLevel(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent,
+                            commandEvent.getArguments().length == 0 ? "chat"
+                                    : commandEvent.getArguments()[0]);
                 }
             } else {
                 Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
@@ -45,7 +49,7 @@ public class Level implements ICommand {
 
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("level", "Show your own Level or the Level of another User in the Guild.").addOptions(new OptionData(OptionType.STRING, "typ", "Do you want to see chat or voice level?").setRequired(true))
+        return new CommandDataImpl("level", "Show your own Level or the Level of another User in the Guild.").addOptions(new OptionData(OptionType.STRING, "typ", "Do you want to see chat or voice level?"))
                 .addOptions(new OptionData(OptionType.USER, "target", "Show the Level of the User."));
     }
 
