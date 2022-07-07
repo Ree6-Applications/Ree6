@@ -234,7 +234,7 @@
         <dependency>
             <groupId>com.github.Ree6-Applications</groupId>
             <artifactId>lavaplayer</artifactId>
-            <version>1.3.80</version>
+            <version>1.3.83</version>
         </dependency>
         <!-- this is needed, but isn't actually hosted anywhere anymore... uh -->
         <!--dependency>
