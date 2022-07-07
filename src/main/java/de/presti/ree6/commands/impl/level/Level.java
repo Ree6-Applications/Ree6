@@ -31,14 +31,12 @@ public class Level implements ICommand {
             }
         } else {
             if (commandEvent.getArguments().length <= 2) {
+                String typ = commandEvent.getArguments().length == 0 ? "chat"
+                        : commandEvent.getArguments()[0];
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    sendLevel(commandEvent.getMember(), commandEvent,
-                            commandEvent.getArguments().length == 0 ? "chat"
-                            : commandEvent.getArguments()[0]);
+                    sendLevel(commandEvent.getMember(), commandEvent, typ);
                 } else {
-                    sendLevel(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent,
-                            commandEvent.getArguments().length == 0 ? "chat"
-                                    : commandEvent.getArguments()[0]);
+                    sendLevel(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent, typ);
                 }
             } else {
                 Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
