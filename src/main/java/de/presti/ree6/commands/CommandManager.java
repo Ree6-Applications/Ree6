@@ -3,19 +3,20 @@ package de.presti.ree6.commands;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.exceptions.CommandInitializerException;
-import de.presti.ree6.commands.impl.community.*;
+import de.presti.ree6.commands.impl.community.TwitchNotifier;
+import de.presti.ree6.commands.impl.community.TwitterNotifier;
 import de.presti.ree6.commands.impl.fun.*;
-import de.presti.ree6.commands.impl.hidden.*;
-import de.presti.ree6.commands.impl.info.*;
+import de.presti.ree6.commands.impl.hidden.Addon;
 import de.presti.ree6.commands.impl.info.Invite;
-import de.presti.ree6.commands.impl.level.*;
+import de.presti.ree6.commands.impl.info.*;
+import de.presti.ree6.commands.impl.level.Leaderboards;
+import de.presti.ree6.commands.impl.level.Level;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
-import de.presti.ree6.commands.impl.nsfw.*;
+import de.presti.ree6.commands.impl.nsfw.NSFW;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-
 import de.presti.ree6.utils.data.ArrayUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -194,7 +195,7 @@ public class CommandManager {
     public boolean perform(Member member, Guild guild, String messageContent, Message message, TextChannel textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
 
         // Check if the User is under Cooldown.
-        if (ArrayUtil.commandCooldown.contains(member.getUser().getId())) {
+        if (isTimeout(member.getUser())) {
 
             // Check if it is a Slash Command or not.
             if (slashCommandInteractionEvent != null) {
@@ -211,62 +212,13 @@ public class CommandManager {
 
         // Check if it is a Slash Command.
         if (slashCommandInteractionEvent != null) {
-
-            //Get the Command by the Slash Command Name.
-            ICommand command = getCommandByName(slashCommandInteractionEvent.getName());
-
-            // Check if there is a command with that Name.
-            if (command == null) {
-                sendMessage("That Command couldn't be found", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
+            if (!performSlashCommand(slashCommandInteractionEvent)) {
                 return false;
             }
-
-            // Check if the command is blocked or not.
-            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-                sendMessage("This Command is blocked!", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
-                return false;
-            }
-
-            // Perform the Command.
-            command.onASyncPerform(new CommandEvent(member, guild, null, textChannel, null, slashCommandInteractionEvent));
         } else {
-
-            // Check if the Message is null.
-            if (message == null) {
-                sendMessage("There was an error while executing the Command!", 5, textChannel, null);
+            if (!performMessageCommand(member, guild, messageContent, message, textChannel)) {
                 return false;
             }
-
-            // Check if the message starts with the prefix.
-            if (!messageContent.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase()))
-                return false;
-
-            // Parse the Message and remove the prefix from it.
-            messageContent = messageContent.substring(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().length());
-
-            // Split all Arguments.
-            String[] arguments = messageContent.split(" ");
-
-            // Get the Command by the name.
-            ICommand command = getCommandByName(arguments[0]);
-
-            // Check if there is even a Command with that name.
-            if (command == null) {
-                sendMessage("That Command couldn't be found", 5, textChannel, null);
-                return false;
-            }
-
-            // Check if the Command is blacklisted.
-            if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-                sendMessage("This Command is blocked!", 5, textChannel, null);
-                return false;
-            }
-
-            // Parse the arguments.
-            String[] argumentsParsed = Arrays.copyOfRange(arguments, 1, arguments.length);
-
-            // Perform the Command.
-            command.onASyncPerform(new CommandEvent(member, guild, message, textChannel, argumentsParsed, null));
         }
 
         // Check if this is a Developer build, if not then cooldown the User.
@@ -293,6 +245,77 @@ public class CommandManager {
 
         // Return that a command has been performed.
         return true;
+    }
+
+    private boolean performMessageCommand(Member member, Guild guild, String messageContent, Message message, TextChannel textChannel) {
+        // Check if the Message is null.
+        if (message == null) {
+            sendMessage("There was an error while executing the Command!", 5, textChannel, null);
+            return false;
+        }
+
+        // Check if the message starts with the prefix.
+        if (!messageContent.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase()))
+            return false;
+
+        // Parse the Message and remove the prefix from it.
+        messageContent = messageContent.substring(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().length());
+
+        // Split all Arguments.
+        String[] arguments = messageContent.split(" ");
+
+        // Get the Command by the name.
+        ICommand command = getCommandByName(arguments[0]);
+
+        // Check if there is even a Command with that name.
+        if (command == null) {
+            sendMessage("That Command couldn't be found", 5, textChannel, null);
+            return false;
+        }
+
+        // Check if the Command is blacklisted.
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
+            sendMessage("This Command is blocked!", 5, textChannel, null);
+            return false;
+        }
+
+        // Parse the arguments.
+        String[] argumentsParsed = Arrays.copyOfRange(arguments, 1, arguments.length);
+
+        // Perform the Command.
+        command.onASyncPerform(new CommandEvent(member, guild, message, textChannel, argumentsParsed, null));
+
+        return true;
+    }
+
+    /**
+     * Call when a slash command has been performed.
+     * @param slashCommandInteractionEvent the Slash-Command Event.
+     */
+    private boolean performSlashCommand(SlashCommandInteractionEvent slashCommandInteractionEvent) {
+        //Get the Command by the Slash Command Name.
+        ICommand command = getCommandByName(slashCommandInteractionEvent.getName());
+
+        // Check if there is a command with that Name.
+        if (command == null || slashCommandInteractionEvent.getGuild() == null || slashCommandInteractionEvent.getMember() == null) {
+            sendMessage("That Command couldn't be found", 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+            return false;
+        }
+
+        // Check if the command is blocked or not.
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
+            sendMessage("This Command is blocked!", 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+            return false;
+        }
+
+        // Perform the Command.
+        command.onASyncPerform(new CommandEvent(slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, null, null, slashCommandInteractionEvent));
+
+        return true;
+    }
+
+    public boolean isTimeout(User user) {
+        return ArrayUtil.commandCooldown.contains(user.getId()) && BotWorker.getVersion() != BotVersion.DEV;
     }
 
     /**
