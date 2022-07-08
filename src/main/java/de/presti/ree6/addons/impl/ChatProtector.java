@@ -10,6 +10,7 @@ import java.util.Arrays;
  * @deprecated This command will be removed soon. In addition to a new upcoming feature, which uses AI Recognition to detect "bad words".
  * @since 1.7.13
  */
+@Deprecated(forRemoval = true)
 public class ChatProtector {
 
     /**

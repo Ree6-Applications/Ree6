@@ -14,6 +14,7 @@ import java.util.ArrayList;
  * @deprecated This command will be removed soon. In addition to a new upcoming feature, which uses AI Recognition to detect "bad words".
  * @since 1.7.13
  */
+@Deprecated(forRemoval = true)
 @Command(name = "chatprotector", description = "Manage your Chat Filter.", category = Category.MOD)
 public class ChatProtector implements ICommand {
     @Override
