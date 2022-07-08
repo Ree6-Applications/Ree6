@@ -100,7 +100,7 @@ public class Mute implements ICommand {
             if (!executor.canInteract(member)) {
                 Main.getInstance().getCommandManager().sendMessage("I couldn't timeout the Member, because you do not have enough permissions!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             } else {
-                Main.getInstance().getCommandManager().sendMessage("I couldn't timeout the Member, because I have not enough permissions for this!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("I couldn't timeout the Member, because I do not have enough permissions for this!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             }
         }
     }
