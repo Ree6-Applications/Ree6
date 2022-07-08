@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
@@ -24,7 +24,7 @@ public class Setup implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
-        if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+        if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR) && commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
 
             EmbedBuilder embedBuilder = new EmbedBuilder()
                     .setTitle("Setup Menu")

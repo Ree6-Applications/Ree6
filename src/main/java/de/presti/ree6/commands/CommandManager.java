@@ -24,6 +24,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
@@ -123,14 +125,28 @@ public class CommandManager {
     public void addSlashCommand(JDA jda) {
         CommandListUpdateAction listUpdateAction = jda.updateCommands();
         for (ICommand command : getCommands()) {
-            if (command.getClass().getAnnotation(Command.class).category() == Category.HIDDEN) continue;
+            Command commandAnnotation = command.getClass().getAnnotation(Command.class);
+            if (commandAnnotation.category() == Category.HIDDEN) continue;
+
+            CommandData commandData = null;
 
             if (command.getCommandData() != null) {
-                //noinspection ResultOfMethodCallIgnored
-                listUpdateAction.addCommands(command.getCommandData());
+                commandData = command.getCommandData();
             } else {
+                commandData = new CommandDataImpl(command.getClass().getAnnotation(Command.class).name(), command.getClass().getAnnotation(Command.class).description());
+            }
+
+            if (commandData != null) {
+
+                if (commandAnnotation.category() == Category.MOD) {
+                    if (commandData.getDefaultPermissions().equals(DefaultMemberPermissions.ENABLED)) {
+                        commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+                    }
+                }
+
+                commandData.setGuildOnly(true);
                 //noinspection ResultOfMethodCallIgnored
-                listUpdateAction.addCommands(new CommandDataImpl(command.getClass().getAnnotation(Command.class).name(), command.getClass().getAnnotation(Command.class).description()));
+                listUpdateAction.addCommands(commandData);
             }
         }
 

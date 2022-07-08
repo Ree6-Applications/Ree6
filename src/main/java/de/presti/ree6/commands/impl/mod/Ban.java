@@ -7,6 +7,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -19,7 +20,7 @@ public class Ban implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
-            Main.getInstance().getCommandManager().sendMessage("It seems like I dont have any Permission to do that :/\nPlease re-invite me!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("It seems like I do not have the permissions to do that :/\nPlease re-invite me!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             return;
         }
 
@@ -71,7 +72,10 @@ public class Ban implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("ban", "Ban the User from the Server!")
                 .addOptions(new OptionData(OptionType.USER, "target", "Which User should be banned.").setRequired(true))
-                .addOptions(new OptionData(OptionType.STRING, "reason", "Why do you want to ban this User?").setRequired(false));
+                .addOptions(new OptionData(OptionType.INTEGER, "del_days", "Delete messages from the past days.")
+                        .setRequiredRange(0, 7))
+                .addOptions(new OptionData(OptionType.STRING, "reason", "Why do you want to ban this User?").setRequired(false))
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS));
     }
 
     @Override
