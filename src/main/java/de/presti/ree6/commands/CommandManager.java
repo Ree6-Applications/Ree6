@@ -124,8 +124,10 @@ public class CommandManager {
      */
     public void addSlashCommand(JDA jda) {
         CommandListUpdateAction listUpdateAction = jda.updateCommands();
+
         for (ICommand command : getCommands()) {
             Command commandAnnotation = command.getClass().getAnnotation(Command.class);
+
             if (commandAnnotation.category() == Category.HIDDEN) continue;
 
             CommandData commandData = null;
@@ -138,13 +140,12 @@ public class CommandManager {
 
             if (commandData != null) {
 
-                if (commandAnnotation.category() == Category.MOD) {
-                    if (commandData.getDefaultPermissions().equals(DefaultMemberPermissions.ENABLED)) {
-                        commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
-                    }
+                if (commandAnnotation.category() == Category.MOD &&
+                        commandData.getDefaultPermissions().equals(DefaultMemberPermissions.ENABLED)) {
+                    commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
                 }
-
                 commandData.setGuildOnly(true);
+
                 //noinspection ResultOfMethodCallIgnored
                 listUpdateAction.addCommands(commandData);
             }
@@ -306,6 +307,7 @@ public class CommandManager {
 
     /**
      * Call when a slash command has been performed.
+     *
      * @param slashCommandInteractionEvent the Slash-Command Event.
      */
     private boolean performSlashCommand(SlashCommandInteractionEvent slashCommandInteractionEvent) {
