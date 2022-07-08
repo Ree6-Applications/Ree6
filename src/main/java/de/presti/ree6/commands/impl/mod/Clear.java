@@ -6,15 +6,12 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
-
-import java.util.List;
 
 @Command(name = "clear", description = "Clear the current Chat.", category = Category.MOD)
 public class Clear implements ICommand {
@@ -73,13 +70,16 @@ public class Clear implements ICommand {
 
     public void deleteMessages(CommandEvent commandEvent, int amount) {
 
-        if (amount <= 100 && amount >= 2) {
+        if (amount <= 200 && amount >= 2) {
             try {
                 Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
-                List<Message> messages = commandEvent.getTextChannel().getHistory().retrievePast(amount).complete();
-                commandEvent.getTextChannel().deleteMessages(messages).queue();
-
-                Main.getInstance().getCommandManager().sendMessage(messages.size() + " Messages have been deleted!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                commandEvent.getTextChannel().getIterableHistory().takeAsync(amount).thenAccept(messages -> {
+                    commandEvent.getTextChannel().purgeMessages(messages);
+                    Main.getInstance().getCommandManager().sendMessage("Successfully deleted " + messages.size() + " Messages!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                }).exceptionally(throwable -> {
+                    Main.getInstance().getCommandManager().sendMessage("An Error occurred while deleting the Messages!\nError: " + throwable.getMessage(), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    return null;
+                });
             } catch (IllegalArgumentException exception) {
                 Main.getInstance().getCommandManager().sendMessage("" + (exception.toString().toLowerCase().startsWith("java.lang.illegalargumentexception: must provide at") ? "Given Parameter is either above 100 or below 2!" : "Error while deleting:" + exception.toString().split(":")[1]), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             } catch (Exception exception) {
