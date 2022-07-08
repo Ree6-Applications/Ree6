@@ -43,6 +43,7 @@ public class CommandManager {
 
     /**
      * Constructor for the Command-Manager used to register every Command.
+     * @throws CommandInitializerException if an error occurs while initializing the Commands.
      */
     public CommandManager() throws CommandInitializerException {
         Main.getInstance().getLogger().info("Initializing Commands!");
@@ -130,7 +131,7 @@ public class CommandManager {
 
             if (commandAnnotation.category() == Category.HIDDEN) continue;
 
-            CommandData commandData = null;
+            CommandData commandData;
 
             if (command.getCommandData() != null) {
                 commandData = command.getCommandData();
