@@ -29,20 +29,22 @@ public class Kick implements ICommand {
             if (commandEvent.isSlashCommand()) {
 
                 OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
+                OptionMapping reasonOption = commandEvent.getSlashCommandInteractionEvent().getOption("reason");
 
                 if (targetOption != null) {
-                    kickMember(targetOption.getAsMember(), commandEvent);
+                    kickMember(targetOption.getAsMember(), (reasonOption != null ? reasonOption.getAsString() : "No Reason given!"), commandEvent);
                 } else {
                     Main.getInstance().getCommandManager().sendMessage("No User was given to Kick!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 }
 
             } else {
-                if (commandEvent.getArguments().length == 1) {
+                if (commandEvent.getArguments().length <= 1 && commandEvent.getArguments().length <= 2) {
                     if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
                         Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                         Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "kick @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                     } else {
-                        kickMember(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
+                        String reason = commandEvent.getArguments().length == 2 ? commandEvent.getArguments()[1] : "No Reason given!";
+                        kickMember(commandEvent.getMessage().getMentions().getMembers().get(0), reason, commandEvent);
                     }
                 } else {
                     Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
@@ -60,6 +62,7 @@ public class Kick implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("kick", "Kick the User from the Server!")
                 .addOptions(new OptionData(OptionType.USER, "target", "Which User should be kicked.").setRequired(true))
+                .addOptions(new OptionData(OptionType.STRING, "reason", "The Reason why the User should be kicked.").setRequired(false))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.KICK_MEMBERS));
     }
 
@@ -68,10 +71,10 @@ public class Kick implements ICommand {
         return new String[0];
     }
 
-    public void kickMember(Member member, CommandEvent commandEvent) {
+    public void kickMember(Member member, String reason, CommandEvent commandEvent) {
         if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
             Main.getInstance().getCommandManager().sendMessage("User " + member.getAsMention() + " has been kicked!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-            commandEvent.getGuild().kick(member).queue();
+            commandEvent.getGuild().kick(member).reason(reason).queue();
         } else {
             if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
                 Main.getInstance().getCommandManager().sendMessage("Couldn't kick this User because he has the same or a higher Rank then you!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());

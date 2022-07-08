@@ -32,6 +32,7 @@ public class Mute implements ICommand {
 
                 OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
                 OptionMapping timeOption = commandEvent.getSlashCommandInteractionEvent().getOption("time");
+                OptionMapping reasonOption = commandEvent.getSlashCommandInteractionEvent().getOption("reason");
 
                 if (targetOption != null && timeOption != null) {
                     long time;
@@ -42,13 +43,13 @@ public class Mute implements ICommand {
                         return;
                     }
                     Duration duration = Duration.ofMinutes(time);
-                    muteMember(commandEvent.getMember(), targetOption.getAsMember(), duration, commandEvent);
+                    muteMember(commandEvent.getMember(), targetOption.getAsMember(), duration, (reasonOption != null ? reasonOption.getAsString() : "No Reason given!"), commandEvent);
                 } else {
                     Main.getInstance().getCommandManager().sendMessage("No User was given to Mute!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                 }
 
             } else {
-                if (commandEvent.getArguments().length == 2) {
+                if (commandEvent.getArguments().length <= 2 && commandEvent.getArguments().length <= 3) {
                     if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
                         Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
                         Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "mute @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
@@ -61,7 +62,8 @@ public class Mute implements ICommand {
                             return;
                         }
                         Duration duration = Duration.ofMinutes(time);
-                        muteMember(commandEvent.getMember(), commandEvent.getMessage().getMentions().getMembers().get(0), duration, commandEvent);
+                        String reason = commandEvent.getArguments().length == 3 ? commandEvent.getArguments()[2] : "No Reason given!";
+                        muteMember(commandEvent.getMember(), commandEvent.getMessage().getMentions().getMembers().get(0), duration, reason, commandEvent);
                     }
                 } else {
                     Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
@@ -79,6 +81,7 @@ public class Mute implements ICommand {
         return new CommandDataImpl("mute", "Mute a User on the Server!")
                 .addOptions(new OptionData(OptionType.USER, "target", "Which User should be muted.").setRequired(true))
                 .addOptions(new OptionData(OptionType.INTEGER, "time", "How long the User should be muted for. (in minutes)").setRequired(true))
+                .addOptions(new OptionData(OptionType.STRING, "reason", "The Reason why the User should be muted.").setRequired(false))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MODERATE_MEMBERS));
     }
 
@@ -87,10 +90,10 @@ public class Mute implements ICommand {
         return new String[0];
     }
 
-    public void muteMember(Member executor, Member member, Duration duration, CommandEvent commandEvent) {
+    public void muteMember(Member executor, Member member, Duration duration, String reason, CommandEvent commandEvent) {
 
         if (executor.canInteract(member) && commandEvent.getGuild().getSelfMember().canInteract(member)) {
-            member.timeoutFor(duration).onErrorFlatMap(throwable -> {
+            member.timeoutFor(duration).reason(reason).onErrorFlatMap(throwable -> {
                 Main.getInstance().getCommandManager().sendMessage("Couldn't mute " + member.getAsMention() + "!\nReason: " + throwable.getMessage(), commandEvent.getTextChannel()
                         , commandEvent.getInteractionHook());
                 return null;
