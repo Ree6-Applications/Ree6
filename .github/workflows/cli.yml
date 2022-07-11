@@ -17,5 +17,5 @@ jobs:
       - run: mkdir staging && cp target/*.jar staging
       - uses: actions/upload-artifact@v3
         with:
-          name: Package
+          name: Ree6-all
           path: staging
