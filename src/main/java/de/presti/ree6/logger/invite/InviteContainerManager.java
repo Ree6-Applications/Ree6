@@ -33,7 +33,7 @@ public class InviteContainerManager {
      */
     public static void addInvite(InviteContainer inviteContainer) {
         try {
-            Main.getInstance().getSqlConnector().getSqlWorker().setInvite(inviteContainer.getGuildId(), inviteContainer.getCode(), inviteContainer.getCreatorId(), inviteContainer.getUses());
+            Main.getInstance().getSqlConnector().getSqlWorker().setInvite(inviteContainer.getGuildId(), inviteContainer.getCreatorId(), inviteContainer.getCode(), inviteContainer.getUses());
         } catch (Exception ex) {
             Main.getInstance().getLogger().error("[InviteManager] Error while Saving Invites: " + ex.getMessage());
         }

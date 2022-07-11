@@ -52,6 +52,7 @@ public class CommandManager {
         addCommand(new Help());
         addCommand(new Support());
         addCommand(new Info());
+        addCommand(new Optout());
         addCommand(new Stats());
         addCommand(new Invite());
         addCommand(new Server());
@@ -99,7 +100,7 @@ public class CommandManager {
         addCommand(new Kiss());
         addCommand(new Hug());
         addCommand(new Cringe());
-        addCommand(new DogeCoin());
+        addCommand(new FunnyCryptocurrencies());
 
         //Level
         addCommand(new Level());

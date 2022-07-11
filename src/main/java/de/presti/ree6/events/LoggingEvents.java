@@ -64,7 +64,7 @@ public class LoggingEvents extends ListenerAdapter {
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
             wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-            wm.setUsername("Ree6Logs");
+            wm.setUsername("Ree6-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
@@ -83,7 +83,7 @@ public class LoggingEvents extends ListenerAdapter {
             WebhookMessageBuilder wm2 = new WebhookMessageBuilder();
 
             wm2.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-            wm2.setUsername("Ree6InviteLogs");
+            wm2.setUsername("Ree6-InviteLogs");
 
             InviteContainer inviteContainer = InviteContainerManager.getRightInvite(event.getGuild());
 
@@ -128,7 +128,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -136,7 +136,12 @@ public class LoggingEvents extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
-        we.setDescription(event.getUser().getAsMention() + " **left the Server.**");
+
+        if (event.getMember() != null) {
+            we.setDescription(event.getUser().getAsMention() + " **left the Server.**\n:timer: Joined :\n**" + TimeFormat.DATE_TIME_SHORT.format(event.getMember().getTimeJoined()));
+        } else {
+            we.setDescription(event.getUser().getAsMention() + " **left the Server.**");
+        }
 
         wm.addEmbeds(we.build());
 
@@ -154,7 +159,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -180,7 +185,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -208,7 +213,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -240,7 +245,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -265,7 +270,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -290,7 +295,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -315,7 +320,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -347,7 +352,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -380,7 +385,7 @@ public class LoggingEvents extends ListenerAdapter {
 
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
             wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-            wm.setUsername("Ree6Logs");
+            wm.setUsername("Ree6-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
@@ -415,7 +420,7 @@ public class LoggingEvents extends ListenerAdapter {
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
             wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-            wm.setUsername("Ree6Logs");
+            wm.setUsername("Ree6-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
@@ -458,7 +463,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -482,7 +487,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -506,7 +511,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -532,7 +537,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -558,7 +563,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -584,7 +589,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -636,7 +641,7 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6Logs");
+        wm.setUsername("Ree6-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
@@ -666,7 +671,7 @@ public class LoggingEvents extends ListenerAdapter {
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
             wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-            wm.setUsername("Ree6Logs");
+            wm.setUsername("Ree6-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
