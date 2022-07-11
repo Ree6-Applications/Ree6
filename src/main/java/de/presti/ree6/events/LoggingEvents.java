@@ -709,7 +709,7 @@ public class LoggingEvents extends ListenerAdapter {
             wm.addEmbeds(we.build());
 
             String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-            Main.getInstance().getLoggerQueue().add(new LogMessage(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.MESSAGE_DELETE));
+            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.MESSAGE_DELETE, (message != null ? message.getAuthor() :  null)));
         }
     }
 
