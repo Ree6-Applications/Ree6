@@ -18,10 +18,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 @Command(name = "rule34", description = "Get NSFW Image from rule34.xxx", category = Category.NSFW)
 public class Rule34 implements ICommand {
