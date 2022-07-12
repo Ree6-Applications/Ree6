@@ -83,10 +83,8 @@ public class Level implements ICommand {
 
         if (userLevel instanceof VoiceUserLevel voiceUserLevel) {
             voiceUserLevel.setUser(member.getUser());
-            userLevel = voiceUserLevel;
         } else if (userLevel instanceof ChatUserLevel chatUserLevel) {
             chatUserLevel.setUser(member.getUser());
-            userLevel = chatUserLevel;
         } else {
             return;
         }

@@ -12,7 +12,7 @@ public class MigrationMain {
     /**
      * Instance.
      */
-    public static MigrationMain instance;
+    private static MigrationMain instance;
     /**
      * SQLConnector.
      */
@@ -21,6 +21,10 @@ public class MigrationMain {
      * Config.
      */
     Config config;
+
+    public MigrationMain() {
+        instance = this;
+    }
 
     /**
      * Main method.

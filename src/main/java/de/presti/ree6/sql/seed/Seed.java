@@ -22,28 +22,28 @@ public abstract class Seed {
         /**
          * The Major version of the Seed.
          */
-        public int MAJOR = 0;
+        public int majorVersion;
 
         /**
          * The Minor version of the Seed.
          */
-        public int MINOR = 0;
+        public int minorVersion;
 
         /**
          * The Patch version of the Seed.
          */
-        public int PATCH = 0;
+        public int patchVersion;
 
         /**
          * Constructor for the SeedVersion.
-         * @param MAJOR The Major version of the Seed.
-         * @param MINOR The Minor version of the Seed.
-         * @param PATCH The Patch version of the Seed.
+         * @param majorVersion The Major version of the Seed.
+         * @param minorVersion The Minor version of the Seed.
+         * @param patchVersion The Patch version of the Seed.
          */
-        public SeedVersion(int MAJOR, int MINOR, int PATCH) {
-            this.MAJOR = MAJOR;
-            this.MINOR = MINOR;
-            this.PATCH = PATCH;
+        public SeedVersion(int majorVersion, int minorVersion, int patchVersion) {
+            this.majorVersion = majorVersion;
+            this.minorVersion = minorVersion;
+            this.patchVersion = patchVersion;
         }
     }
 }
