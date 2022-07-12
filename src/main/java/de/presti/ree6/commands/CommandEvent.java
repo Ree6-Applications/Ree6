@@ -7,6 +7,10 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Event class used to parse and provide Information about a command execution.
@@ -14,21 +18,27 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 public class CommandEvent {
 
     // The Member associated with the Command execution.
+    @Nonnull
     Member member;
 
     // The Guild associated with the Command execution.
+    @Nonnull
     Guild guild;
 
     // The Message that has been parsed.
+    @Nullable
     Message message;
 
     // The Text channel which has been used, to fire the Event.
+    @Nonnull
     MessageChannelUnion channel;
 
     // Argument that have been given.
+    @Nullable
     String[] arguments;
 
     // The Slash Command Event that is associated with the Command execution.
+    @Nullable
     SlashCommandInteractionEvent slashCommandInteractionEvent;
 
     /**
@@ -40,7 +50,7 @@ public class CommandEvent {
      * @param arguments the given Arguments.
      * @param slashCommandInteractionEvent the {@link SlashCommandInteractionEvent} Entity.
      */
-    public CommandEvent(Member member, Guild guild, Message message, MessageChannelUnion textChannel, String[] arguments, SlashCommandInteractionEvent slashCommandInteractionEvent) {
+    public CommandEvent(@Nonnull Member member, @Nonnull Guild guild, @Nullable Message message, @Nonnull MessageChannelUnion textChannel, @Nullable String[] arguments, @Nullable SlashCommandInteractionEvent slashCommandInteractionEvent) {
         this.member = member;
         this.guild = guild;
         this.message = message;
@@ -53,7 +63,7 @@ public class CommandEvent {
      * Get the {@link Member} Entity associated with the Event.
      * @return the {@link Member} Entity.
      */
-    public Member getMember() {
+    public @NotNull Member getMember() {
         return member;
     }
 
@@ -61,7 +71,7 @@ public class CommandEvent {
      * Get the {@link Guild} Entity associated with the Event.
      * @return the {@link Guild} Entity.
      */
-    public Guild getGuild() {
+    public @NotNull Guild getGuild() {
         return guild;
     }
 
@@ -69,7 +79,7 @@ public class CommandEvent {
      * Get the {@link Message} Entity associated with the Event.
      * @return the {@link Message} Entity.
      */
-    public Message getMessage() {
+    public @Nullable Message getMessage() {
         return message;
     }
 
@@ -77,7 +87,7 @@ public class CommandEvent {
      * Get the {@link TextChannel} Entity associated with the Event.
      * @return the {@link TextChannel} Entity.
      */
-    public MessageChannelUnion getChannel() {
+    public @NotNull MessageChannelUnion getChannel() {
         return channel;
     }
 
@@ -96,7 +106,7 @@ public class CommandEvent {
      * Get the {@link SlashCommandInteractionEvent} Entity associated with the Event.
      * @return the {@link SlashCommandInteractionEvent} Entity.
      */
-    public SlashCommandInteractionEvent getSlashCommandInteractionEvent() {
+    public @Nullable SlashCommandInteractionEvent getSlashCommandInteractionEvent() {
         return slashCommandInteractionEvent;
     }
 

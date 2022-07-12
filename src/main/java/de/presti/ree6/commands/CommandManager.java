@@ -237,7 +237,7 @@ public class CommandManager {
 
         // Check if it is a Slash Command.
         if (slashCommandInteractionEvent != null) {
-            if (!performSlashCommand(slashCommandInteractionEvent)) {
+            if (!performSlashCommand(textChannel, slashCommandInteractionEvent)) {
                 return false;
             }
         } else {
@@ -316,9 +316,10 @@ public class CommandManager {
     /**
      * Call when a slash command has been performed.
      *
+     * @param textChannel the TextChannel where the command has been performed.
      * @param slashCommandInteractionEvent the Slash-Command Event.
      */
-    private boolean performSlashCommand(SlashCommandInteractionEvent slashCommandInteractionEvent) {
+    private boolean performSlashCommand(MessageChannelUnion textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
         //Get the Command by the Slash Command Name.
         ICommand command = getCommandByName(slashCommandInteractionEvent.getName());
 
@@ -335,7 +336,7 @@ public class CommandManager {
         }
 
         // Perform the Command.
-        command.onASyncPerform(new CommandEvent(slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, null, null, slashCommandInteractionEvent));
+        command.onASyncPerform(new CommandEvent(slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, textChannel, null, slashCommandInteractionEvent));
 
         return true;
     }

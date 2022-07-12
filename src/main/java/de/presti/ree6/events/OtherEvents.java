@@ -184,6 +184,7 @@ public class OtherEvents extends ListenerAdapter {
 
         event.deferReply(true).queue();
 
+        event.getChannel();
         Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getChannel(), event);
     }
 
