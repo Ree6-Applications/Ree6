@@ -15,6 +15,7 @@ import de.presti.ree6.commands.impl.level.Level;
 import de.presti.ree6.commands.impl.mod.*;
 import de.presti.ree6.commands.impl.music.*;
 import de.presti.ree6.commands.impl.nsfw.NSFW;
+import de.presti.ree6.commands.impl.nsfw.Rule34;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
@@ -116,6 +117,7 @@ public class CommandManager {
 
         //NSFW
         addCommand(new NSFW());
+        addCommand(new Rule34());
 
         //Hidden
         addCommand(new Addon());
