@@ -30,7 +30,9 @@ public class Record implements ICommand {
                 AudioManager audioManager = commandEvent.getGuild().getAudioManager();
                 audioManager.openAudioConnection(voiceChannel);
 
-                audioManager.setReceivingHandler(new AudioPlayerReceiveHandler(voiceChannel));
+                AudioPlayerReceiveHandler handler = new AudioPlayerReceiveHandler(voiceChannel);
+
+                audioManager.setReceivingHandler(handler);
 
                 Main.getInstance().getCommandManager().sendMessage("I am now recording the voice channel!",
                         commandEvent.getChannel(), commandEvent.getInteractionHook());

@@ -1,9 +1,12 @@
 package de.presti.ree6.audio;
 
+import de.presti.ree6.utils.data.AudioUtil;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.apache.commons.lang.ArrayUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -19,6 +22,11 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
      * Queue of audio to be sent afterwards.
      */
     private final Queue<byte[]> queue = new ConcurrentLinkedQueue<>();
+
+    /**
+     * Boolean used to indicated that handler finished his Job.
+     */
+    private boolean finished = false;
 
     /**
      * The voice channel this handler is currently handling.
@@ -48,13 +56,30 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     }
 
     /**
+     * @see AudioReceiveHandler#canReceiveUser()
+     */
+    @Override
+    public boolean includeUserInCombinedAudio(@NotNull User user) {
+        return !user.isBot();
+    }
+
+    /**
      * @see AudioReceiveHandler#handleCombinedAudio(CombinedAudio)
      */
     @Override
     public void handleCombinedAudio(CombinedAudio combinedAudio)
     {
         if (combinedAudio.getUsers().isEmpty()) {
+            if (voiceChannel.getMembers().size() == 1) {
+                endReceiving();
+                return;
+            }
+            return;
+        }
+
+        if (voiceChannel.getMembers().size() == 1) {
             endReceiving();
+            return;
         }
 
         byte[] data = combinedAudio.getAudioData(1.0f);
@@ -70,12 +95,25 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
      */
     private void endReceiving()
     {
+        if (finished) {
+            return;
+        }
+
+        finished = true;
+
         byte[] rawData = new byte[0];
         for (byte[] data : queue)
         {
             rawData = ArrayUtils.addAll(rawData, data);
         }
-        voiceChannel.sendMessage("Here is your audio!").addFile(rawData, "audio.wav").queue();
+
+        try {
+            byte[] data = AudioUtil.rawToWave(rawData);
+            voiceChannel.sendMessage("Here is your audio!").addFile(data, "audio.wav").queue();
+        } catch (Exception ex) {
+            voiceChannel.sendMessage("Something went wrong while converting your audio!").queue();
+        }
+
         voiceChannel.getGuild().getAudioManager().closeAudioConnection();
         queue.clear();
     }
