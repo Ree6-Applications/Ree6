@@ -31,6 +31,12 @@ public class AudioUtil {
      */
     private static final int CHANNELS = 2;
 
+    /**
+     * Convert a PCM ByteBuffer into a WAV encoded byte array.
+     * @param byteBuffer The PCM ByteBuffer.
+     * @return The WAV encoded byte array.
+     * @throws IOException If an error occurs.
+     */
     public static byte[] convert(ByteBuffer byteBuffer) throws IOException {
         AudioInputStream audioInputStream =
                 AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED,
