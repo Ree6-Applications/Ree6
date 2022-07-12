@@ -47,7 +47,7 @@ public class Play implements ICommand {
                 em.setColor(Color.GREEN);
                 em.setDescription("Usage: " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
 
         } else {
@@ -61,7 +61,7 @@ public class Play implements ICommand {
                 em.setColor(Color.GREEN);
                 em.setDescription("Usage: " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
                 playSong(commandEvent.getArguments()[0], commandEvent);
             }
@@ -94,7 +94,7 @@ public class Play implements ICommand {
             }
 
             if (!isspotify) {
-                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), value, commandEvent.getInteractionHook());
+                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), value, commandEvent.getInteractionHook());
             } else {
                 ArrayList<String> loadFailed = new ArrayList<>();
 
@@ -112,10 +112,10 @@ public class Play implements ICommand {
                         loadFailed.add(search);
                     } else {
                         if (!tempBoolean) {
-                            Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), result, commandEvent.getInteractionHook());
+                            Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), result, commandEvent.getInteractionHook());
                             tempBoolean = true;
                         } else {
-                            Main.getInstance().getMusicWorker().loadAndPlaySilence(commandEvent.getTextChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), result, commandEvent.getInteractionHook());
+                            Main.getInstance().getMusicWorker().loadAndPlaySilence(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), result, commandEvent.getInteractionHook());
                         }
                     }
                 }
@@ -128,7 +128,7 @@ public class Play implements ICommand {
                     em.setColor(Color.GREEN);
                     em.setDescription("We couldn't find ``" + loadFailed.size() + "`` Songs!");
                     em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                    Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
             }
         } else {
@@ -154,7 +154,7 @@ public class Play implements ICommand {
                 em.setColor(Color.RED);
                 em.setDescription("We had an Issue searching for the Song, please try again in 15 minutes!");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 Main.getInstance().getLogger().error("Error while searching for " + search + " on YouTube", exception);
                 return;
             }
@@ -167,9 +167,9 @@ public class Play implements ICommand {
                 em.setColor(Color.YELLOW);
                 em.setDescription("A Song with the Name ``" + FormatUtil.filter(search.toString()) + "`` couldn't be found!");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
-                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getTextChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), ytResult, commandEvent.getInteractionHook());
+                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), ytResult, commandEvent.getInteractionHook());
             }
         }
     }

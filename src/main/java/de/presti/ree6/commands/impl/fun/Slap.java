@@ -26,19 +26,19 @@ public class Slap implements ICommand {
             if (targetOption != null && targetOption.getAsMember() != null) {
                 sendSlap(targetOption.getAsMember(), commandEvent);
             } else {
-                Main.getInstance().getCommandManager().sendMessage("No User was given to Slap!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("No User was given to Slap!" , 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else {
             if (commandEvent.getArguments().length == 1) {
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "slap @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "slap @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 } else {
                     sendSlap(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                 }
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "slap @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "slap @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         }
     }
@@ -55,7 +55,7 @@ public class Slap implements ICommand {
     }
 
     public void sendSlap(Member member, CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage(commandEvent.getMember().getAsMention() + " slapped " + member.getAsMention(), commandEvent.getTextChannel(), null);
+        Main.getInstance().getCommandManager().sendMessage(commandEvent.getMember().getAsMention() + " slapped " + member.getAsMention(), commandEvent.getChannel(), null);
 
         ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
@@ -65,7 +65,7 @@ public class Slap implements ICommand {
         } catch (Exception ignored) {
         }
 
-        Main.getInstance().getCommandManager().sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), commandEvent.getTextChannel(), null);
+        Main.getInstance().getCommandManager().sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), commandEvent.getChannel(), null);
         if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
     }
 }

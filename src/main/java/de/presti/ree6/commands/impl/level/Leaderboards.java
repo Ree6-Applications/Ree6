@@ -17,7 +17,7 @@ public class Leaderboards implements ICommand {
                 "chat leaderboard: <https://cp.ree6.de/leaderboard/chat?guildId=" + commandEvent.getGuild().getId() + ">\n" +
                 "Please noted that you have to be logged in to see these stats, reason for this is Discords Guidelines.\n" +
                 "If you want to read more about this please visit: <https://support-dev.discord.com/hc/de/articles/360043053492-Statistics-Bot-Policy>",
-                commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
     @Override

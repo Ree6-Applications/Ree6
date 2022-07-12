@@ -39,8 +39,8 @@ public class Level implements ICommand {
                     sendLevel(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent, typ);
                 }
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "level chat/voice or " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "level chat/voice @user", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "level chat/voice or " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "level chat/voice @user", commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         }
     }
@@ -67,13 +67,13 @@ public class Level implements ICommand {
             try {
                 commandEvent.getInteractionHook().sendFile(ImageCreationUtility.createRankImage(userLevel), "rank.png").queue();
             } catch (Exception ignore) {
-                Main.getInstance().getCommandManager().sendMessage("Couldn't generated Rank Image!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Couldn't generated Rank Image!", commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else {
             try {
-                commandEvent.getTextChannel().sendFile(ImageCreationUtility.createRankImage(userLevel), "rank.png").queue();
+                commandEvent.getChannel().sendFile(ImageCreationUtility.createRankImage(userLevel), "rank.png").queue();
             } catch (Exception ignore) {
-                Main.getInstance().getCommandManager().sendMessage("Couldn't generated Rank Image!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Couldn't generated Rank Image!", commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         }
     }

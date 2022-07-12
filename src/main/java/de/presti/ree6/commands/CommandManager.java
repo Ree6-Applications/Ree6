@@ -5,6 +5,7 @@ import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.impl.community.TwitchNotifier;
 import de.presti.ree6.commands.impl.community.TwitterNotifier;
+import de.presti.ree6.commands.impl.fun.Record;
 import de.presti.ree6.commands.impl.fun.*;
 import de.presti.ree6.commands.impl.hidden.Addon;
 import de.presti.ree6.commands.impl.info.Invite;
@@ -22,6 +23,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -43,6 +45,7 @@ public class CommandManager {
 
     /**
      * Constructor for the Command-Manager used to register every Command.
+     *
      * @throws CommandInitializerException if an error occurs while initializing the Commands.
      */
     public CommandManager() throws CommandInitializerException {
@@ -87,6 +90,7 @@ public class CommandManager {
         addCommand(new SongList());
 
         //Fun
+        addCommand(new Record());
         addCommand(new RandomAnswer());
         addCommand(new FunFact());
         addCommand(new CatImage());
@@ -211,7 +215,7 @@ public class CommandManager {
      * @param slashCommandInteractionEvent the Slash Command Event if it was a Slash Command.
      * @return true, if a command has been performed.
      */
-    public boolean perform(Member member, Guild guild, String messageContent, Message message, TextChannel textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
+    public boolean perform(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
 
         // Check if the User is under Cooldown.
         if (isTimeout(member.getUser())) {
@@ -266,7 +270,7 @@ public class CommandManager {
         return true;
     }
 
-    private boolean performMessageCommand(Member member, Guild guild, String messageContent, Message message, TextChannel textChannel) {
+    private boolean performMessageCommand(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel) {
         // Check if the Message is null.
         if (message == null) {
             sendMessage("There was an error while executing the Command!", 5, textChannel, null);
@@ -385,7 +389,7 @@ public class CommandManager {
             if (messageChannel == null) return;
             if (messageChannel.canTalk())
                 messageChannel.sendMessage(messageContent).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                    if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                    if (message != null && message.getChannel().retrieveMessageById(message.getId()).complete() != null) {
                         return message.delete();
                     }
 
@@ -443,7 +447,7 @@ public class CommandManager {
             if (messageChannel == null) return;
             if (messageChannel.canTalk())
                 messageChannel.sendMessageEmbeds(embedBuilder.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                    if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                    if (message != null && message.getChannel().retrieveMessageById(message.getId()).complete() != null) {
                         return message.delete();
                     }
 
@@ -461,12 +465,16 @@ public class CommandManager {
      * @param interactionHook the Interaction-hook, if it is a slash event.
      */
     public void deleteMessage(Message message, InteractionHook interactionHook) {
-        if (message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) && message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null && !message.isEphemeral() && interactionHook == null) {
-            try {
-                message.delete().queue();
-            } catch (Exception ex) {
-                Main.getInstance().getLogger().error("[CommandManager] Couldn't delete a Message!");
-            }
+        if (message != null &&
+                message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
+                message.getChannel().retrieveMessageById(message.getIdLong()).complete() != null &&
+                message.getType().canDelete() &&
+                !message.isEphemeral() &&
+                interactionHook == null) {
+            message.delete().onErrorFlatMap(throwable -> {
+                Main.getInstance().getLogger().error("[CommandManager] Couldn't delete a Message!", throwable);
+                return null;
+            }).queue();
         }
     }
 

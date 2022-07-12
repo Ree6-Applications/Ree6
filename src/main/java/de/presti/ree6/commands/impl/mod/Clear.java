@@ -20,7 +20,7 @@ public class Clear implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
 
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-            Main.getInstance().getCommandManager().sendMessage("It seems like I do not have the permissions to do that :/\nPlease re-invite me!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("It seems like I do not have the permissions to do that :/\nPlease re-invite me!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             return;
         }
 
@@ -39,20 +39,20 @@ public class Clear implements ICommand {
                         if (amount <= 100 && amount >= 2) {
                             deleteMessages(commandEvent, amount);
                         } else {
-                            Main.getInstance().getCommandManager().sendMessage(commandEvent.getArguments()[0] + " isn't between 2 and 100 !", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                            Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                            Main.getInstance().getCommandManager().sendMessage(commandEvent.getArguments()[0] + " isn't between 2 and 100 !", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                            Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                         }
                     } catch (Exception ex) {
-                        Main.getInstance().getCommandManager().sendMessage(commandEvent.getArguments()[0] + " isn't a number!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage(commandEvent.getArguments()[0] + " isn't a number!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     }
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 
@@ -73,21 +73,21 @@ public class Clear implements ICommand {
         if (amount <= 200 && amount >= 2) {
             try {
                 Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
-                commandEvent.getTextChannel().getIterableHistory().takeAsync(amount).thenAccept(messages -> {
-                    commandEvent.getTextChannel().purgeMessages(messages);
-                    Main.getInstance().getCommandManager().sendMessage("Successfully deleted " + messages.size() + " Messages!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                commandEvent.getChannel().getIterableHistory().takeAsync(amount).thenAccept(messages -> {
+                    commandEvent.getChannel().purgeMessages(messages);
+                    Main.getInstance().getCommandManager().sendMessage("Successfully deleted " + messages.size() + " Messages!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }).exceptionally(throwable -> {
-                    Main.getInstance().getCommandManager().sendMessage("An Error occurred while deleting the Messages!\nError: " + throwable.getMessage(), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("An Error occurred while deleting the Messages!\nError: " + throwable.getMessage(), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     return null;
                 });
             } catch (IllegalArgumentException exception) {
-                Main.getInstance().getCommandManager().sendMessage("" + (exception.toString().toLowerCase().startsWith("java.lang.illegalargumentexception: must provide at") ? "Given Parameter is either above 100 or below 2!" : "Error while deleting:" + exception.toString().split(":")[1]), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("" + (exception.toString().toLowerCase().startsWith("java.lang.illegalargumentexception: must provide at") ? "Given Parameter is either above 100 or below 2!" : "Error while deleting:" + exception.toString().split(":")[1]), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } catch (Exception exception) {
-                Main.getInstance().getCommandManager().sendMessage("Error while deleting:" + exception.toString().split(":")[1], 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Error while deleting:" + exception.toString().split(":")[1], 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage(amount + " isn't between 2 and 100 !", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-            Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(amount + " isn't between 2 and 100 !", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 }

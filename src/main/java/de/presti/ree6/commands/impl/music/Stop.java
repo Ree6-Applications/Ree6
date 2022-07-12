@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.music;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
@@ -26,7 +26,7 @@ public class Stop implements ICommand {
                             commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle("Music Player!")
                     .setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl())
                     .setColor(Color.RED)
-                    .setDescription("Im not playing any Music!"), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    .setDescription("Im not playing any Music!"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 

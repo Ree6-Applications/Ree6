@@ -1,6 +1,7 @@
 package de.presti.ree6.commands.impl.info;
 
-import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.Category;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
@@ -11,7 +12,7 @@ public class Support implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage("Join our Support Discord Server!\nhttps://support.ree6.de/", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage("Join our Support Discord Server!\nhttps://support.ree6.de/", commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
     @Override

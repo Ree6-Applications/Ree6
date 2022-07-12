@@ -12,7 +12,7 @@ public class Ping implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage("Pong", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage("Pong", commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
     @Override
