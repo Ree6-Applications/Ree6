@@ -8,6 +8,9 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -21,7 +24,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     /**
      * Queue of audio to be sent afterwards.
      */
-    private final Queue<byte[]> queue = new ConcurrentLinkedQueue<>();
+    private final List<byte[]> queue = new ArrayList<>();
 
     /**
      * Boolean used to indicated that handler finished his Job.
@@ -35,6 +38,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
     /**
      * Constructor.
+     *
      * @param voiceChannel The voice channel this handler should handle.
      */
     public AudioPlayerReceiveHandler(VoiceChannel voiceChannel) {
@@ -45,8 +49,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
      * @see AudioReceiveHandler#canReceiveCombined()
      */
     @Override // combine multiple user audio-streams into a single one
-    public boolean canReceiveCombined()
-    {
+    public boolean canReceiveCombined() {
         /* one entry = 20ms of audio, which means 20 * 100 = 2000ms = 2s of audio,
          * but since we want to allow up to 5 minute of audio we have to do
          * 20 * 100 * 150 =  300.000ms = 5 minutes of audio.
@@ -67,8 +70,11 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
      * @see AudioReceiveHandler#handleCombinedAudio(CombinedAudio)
      */
     @Override
-    public void handleCombinedAudio(CombinedAudio combinedAudio)
-    {
+    public void handleCombinedAudio(CombinedAudio combinedAudio) {
+        if (finished) {
+            return;
+        }
+
         if (combinedAudio.getUsers().isEmpty()) {
             if (voiceChannel.getMembers().size() == 1) {
                 endReceiving();
@@ -92,25 +98,25 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     /**
      * Method called when the recording should stop.
      */
-    private void endReceiving()
-    {
+    private void endReceiving() {
         if (finished) {
             return;
         }
 
         finished = true;
 
-        byte[] rawData = new byte[0];
-        for (byte[] data : queue)
-        {
-            rawData = ArrayUtils.addAll(rawData, data);
-        }
-
         try {
-            byte[] data = AudioUtil.rawToWave(rawData);
+            int queueSize = queue.stream().mapToInt(data -> data.length).sum();
+            ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[queueSize]);
+            for (byte[] data : queue) {
+                byteBuffer.put(data);
+            }
+
+            byte[] data = AudioUtil.convert(byteBuffer);
             voiceChannel.sendMessage("Here is your audio!").addFile(data, "audio.wav").queue();
         } catch (Exception ex) {
             voiceChannel.sendMessage("Something went wrong while converting your audio!").queue();
+            ex.printStackTrace();
         }
 
         voiceChannel.getGuild().getAudioManager().closeAudioConnection();
