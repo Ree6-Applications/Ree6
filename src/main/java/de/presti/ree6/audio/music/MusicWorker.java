@@ -1,4 +1,4 @@
-package de.presti.ree6.music;
+package de.presti.ree6.audio.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
