@@ -3,6 +3,9 @@ package de.presti.ree6.main;
 import com.mindscapehq.raygun4java.core.RaygunClient;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
+import de.presti.ree6.audio.AudioPlayerSendHandler;
+import de.presti.ree6.audio.music.GuildMusicManager;
+import de.presti.ree6.audio.music.MusicWorker;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.bot.version.BotVersion;
@@ -10,9 +13,6 @@ import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.logger.events.LoggerQueue;
-import de.presti.ree6.music.AudioPlayerSendHandler;
-import de.presti.ree6.music.GuildMusicManager;
-import de.presti.ree6.music.MusicWorker;
 import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
@@ -88,7 +88,8 @@ public class Main {
 
         // Check if there is a default value, if so close application and inform.
         if (instance.config.getConfiguration().getString("mysql.pw").equalsIgnoreCase("yourpw")) {
-            instance.logger.error("It looks like the default configuration has not been updated! Exiting!");
+            instance.logger.error("It looks like the default configuration has not been updated!");
+            instance.logger.error("Please update the configuration file and restart the application!");
             System.exit(0);
         }
 
@@ -98,7 +99,7 @@ public class Main {
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             RaygunClient raygunClient = new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken"));
-            raygunClient.setVersion("1.7.12");
+            raygunClient.setVersion("1.7.17");
         });
 
         // Create a new connection between the Application and the SQL-Server.
@@ -132,7 +133,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.RELEASE, "1.7.12");
+            BotWorker.createBot(BotVersion.RELEASE, "1.7.17");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {

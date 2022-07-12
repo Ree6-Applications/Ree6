@@ -1,4 +1,4 @@
-package de.presti.ree6.music;
+package de.presti.ree6.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
@@ -54,7 +54,8 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
      * @return true, if yes.
      */
     public boolean isMusicPlaying(Guild guild) {
-        return guild.getSelfMember().getVoiceState() != null && guild.getSelfMember().getVoiceState().inAudioChannel() && audioPlayer.getPlayingTrack() != null && !audioPlayer.isPaused();
+        return guild.getSelfMember().getVoiceState() != null && guild.getSelfMember().getVoiceState().inAudioChannel() &&
+                audioPlayer.getPlayingTrack() != null && !audioPlayer.isPaused();
     }
 
     /**

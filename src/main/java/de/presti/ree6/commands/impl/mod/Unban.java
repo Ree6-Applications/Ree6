@@ -7,6 +7,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -25,7 +26,7 @@ public class Unban implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
-        if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+        if (commandEvent.getMember().hasPermission(Permission.BAN_MEMBERS)) {
 
             if (commandEvent.isSlashCommand()) {
 
@@ -68,7 +69,9 @@ public class Unban implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("unban", "Unban a User from the Server!").addOptions(new OptionData(OptionType.STRING, "id", "Which User should be unbanned.").setRequired(true));
+        return new CommandDataImpl("unban", "Unban a User from the Server!")
+                .addOptions(new OptionData(OptionType.STRING, "id", "Which User should be unbanned.").setRequired(true))
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS));
     }
 
     /**

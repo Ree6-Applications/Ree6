@@ -5,9 +5,9 @@ import java.io.File;
 /**
  * Created a new Local-Addon
  *
- * @param name       Addon Name.
- * @param author     Addon Author.
- * @param version    Addon Version.
+ * @param name       Add-on Name.
+ * @param author     Add-on Author.
+ * @param version    Add-on Version.
  * @param apiVersion Ree6 Version used for the Addon.
  * @param path       Path to the Main-Class in the JAR.
  * @param file       The actual JAR as File.
@@ -16,9 +16,9 @@ public record Addon(String name, String author, String version,
                     String apiVersion, String path, File file) {
     
     /**
-     * Get the Addon Name.
+     * Get the Add-on Name.
      *
-     * @return Addon Name.
+     * @return Add-on Name.
      */
     public String getName() {
         return name;
@@ -34,9 +34,9 @@ public record Addon(String name, String author, String version,
     }
 
     /**
-     * Get the Addon Version.
+     * Get the Add-on Version.
      *
-     * @return Addon Version.
+     * @return Add-on Version.
      */
     public String getVersion() {
         return version;

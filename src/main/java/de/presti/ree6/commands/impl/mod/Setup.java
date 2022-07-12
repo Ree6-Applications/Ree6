@@ -30,7 +30,7 @@ public class Setup implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
-        if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+        if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR) && commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
 
             EmbedBuilder embedBuilder = new EmbedBuilder()
                     .setTitle("Setup Menu")

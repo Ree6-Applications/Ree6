@@ -105,6 +105,13 @@ public class LogMessage {
     }
 
     /**
+     * Cancel the current Log-Message.
+     */
+    public void cancel() {
+        setCanceled(true);
+    }
+
+    /**
      * Check if the Message is canceled or not.
      *
      * @return is the Message canceled.

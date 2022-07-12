@@ -1,13 +1,13 @@
 package de.presti.ree6.commands.impl.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import de.presti.ree6.audio.music.GuildMusicManager;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.music.GuildMusicManager;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;

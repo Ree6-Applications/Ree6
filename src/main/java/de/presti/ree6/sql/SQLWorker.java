@@ -1334,7 +1334,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             sqlConnector.querySQL("UPDATE Invites SET USES=? WHERE GID=? AND UID=? AND CODE=?", inviteUsage, guildId, inviteCreator, inviteCode);
         } else {
             // Create new entry.
-            sqlConnector.querySQL("INSERT INTO Invites (GID, UID, USES, CODE) VALUES (?, ?, ?, " + "?);", guildId, inviteCreator, inviteUsage, inviteCode);
+            sqlConnector.querySQL("INSERT INTO Invites (GID, UID, USES, CODE) VALUES (?, ?, ?, ?);", guildId, inviteCreator, inviteUsage, inviteCode);
         }
     }
 

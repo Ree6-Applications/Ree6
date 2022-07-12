@@ -18,7 +18,12 @@ public class Leaderboards implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage("For the Voice Leaderboard: <https://cp.ree6.de/leaderboard/voice?guildId=" + commandEvent.getGuild().getId() + ">\nAnd for the Chat Leaderboard: <https://cp.ree6.de/leaderboard/chat?guildId=" + commandEvent.getGuild().getId() + ">", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage("For the leaderboards of this Server visit:\n" +
+                "voice leaderboard: <https://cp.ree6.de/leaderboard/voice?guildId=" + commandEvent.getGuild().getId() + ">\n" +
+                "chat leaderboard: <https://cp.ree6.de/leaderboard/chat?guildId=" + commandEvent.getGuild().getId() + ">\n" +
+                "Please noted that you have to be logged in to see these stats, reason for this is Discords Guidelines.\n" +
+                "If you want to read more about this please visit: <https://support-dev.discord.com/hc/de/articles/360043053492-Statistics-Bot-Policy>",
+                commandEvent.getTextChannel(), commandEvent.getInteractionHook());
     }
 
     /**

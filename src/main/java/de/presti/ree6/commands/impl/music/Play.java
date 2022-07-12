@@ -8,6 +8,7 @@ import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
+import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -117,7 +118,12 @@ public class Play implements ICommand {
                 boolean tempBoolean = false;
 
                 for (String search : spotiftrackinfos) {
-                    String result = new YouTubeAPIHandler().searchYoutube(search);
+                    String result = null;
+                    try {
+                        result = new YouTubeAPIHandler().searchYoutube(search);
+                    } catch (Exception exception) {
+                        Main.getInstance().getLogger().error("Error while searching for " + search + " on YouTube", exception);
+                    }
 
                     if (result == null) {
                         loadFailed.add(search);
@@ -153,15 +159,30 @@ public class Play implements ICommand {
                 }
             }
 
-            String ytResult = new YouTubeAPIHandler().searchYoutube(search.toString());
+            String ytResult = null;
+
+            try {
+                ytResult = new YouTubeAPIHandler().searchYoutube(search.toString());
+            } catch (Exception exception) {
+                EmbedBuilder em = new EmbedBuilder();
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                em.setTitle("Music Player!");
+                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                em.setColor(Color.RED);
+                em.setDescription("We had an Issue searching for the Song, please try again in 15 minutes!");
+                em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getLogger().error("Error while searching for " + search + " on YouTube", exception);
+                return;
+            }
 
             if (ytResult == null) {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle("Music Player!");
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setColor(Color.GREEN);
-                em.setDescription("A Song with the Name ``" + search + "`` couldn't be found!");
+                em.setColor(Color.YELLOW);
+                em.setDescription("A Song with the Name ``" + FormatUtil.filter(search.toString()) + "`` couldn't be found!");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                 Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
             } else {

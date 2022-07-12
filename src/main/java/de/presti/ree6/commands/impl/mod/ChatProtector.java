@@ -11,9 +11,10 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import java.util.ArrayList;
 
 /**
- * A command to manage the word blacklist.
- * TODO:: for the love of god, I have to remove this or completely rework this. Otherwise there is no reason for this command since you can manage it over the Panel.
+ * @deprecated This command will be removed soon. In addition to a new upcoming feature, which uses AI Recognition to detect "bad words".
+ * @since 1.7.13
  */
+@Deprecated(forRemoval = true)
 @Command(name = "chatprotector", description = "Manage your Chat Filter.", category = Category.MOD)
 public class ChatProtector implements ICommand {
 

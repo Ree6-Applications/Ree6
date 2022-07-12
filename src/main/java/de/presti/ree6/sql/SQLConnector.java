@@ -36,6 +36,9 @@ public class SQLConnector {
     // An Instance of the EntityMapper which is used to map the Data into classes.
     private final EntityMapper entityMapper;
 
+    // A boolean to keep track if there was at least one valid connection.
+    private boolean connectedOnce = false;
+
     // A HashMap with every Table Name as key and the values as value.
     private final HashMap<String, String> tables = new HashMap<>();
 
@@ -81,6 +84,7 @@ public class SQLConnector {
             // Create a new Connection by using the SQL DriverManager and the MariaDB Java Driver and notify if successful.
             connection = DriverManager.getConnection("jdbc:mariadb://" + databaseServerIP + ":" + databaseServerPort + "/" + databaseName + "?autoReconnect=true", databaseUser, databasePassword);
             Main.getInstance().getLogger().info("Service (MariaDB) has been started. Connection was successful.");
+            connectedOnce = true;
         } catch (Exception exception) {
             // Notify if there was an error.
             Main.getInstance().getLogger().error("Service (MariaDB) couldn't be started. Connection was unsuccessful.", exception);
@@ -257,4 +261,12 @@ public class SQLConnector {
      * @return {@link HashMap} with all Tables as Key and all values as value.
      */
     public HashMap<String, String> getTables() { return tables; }
+
+    /**
+     * Check if there was at least one successful Connection to the Database Server.
+     * @return boolean If there was at least one successful Connection.
+     */
+    public boolean connectedOnce() {
+        return connectedOnce;
+    }
 }

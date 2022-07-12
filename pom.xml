@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>1.7.12</version>
+    <version>1.7.17</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -214,7 +214,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.12</version>
+            <version>5.0.0-alpha.13</version>
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
@@ -240,7 +240,7 @@
         <dependency>
             <groupId>com.github.Ree6-Applications</groupId>
             <artifactId>lavaplayer</artifactId>
-            <version>1.3.80</version>
+            <version>1.3.83</version>
         </dependency>
         <!-- this is needed, but isn't actually hosted anywhere anymore... uh -->
         <!--dependency>

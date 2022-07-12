@@ -47,36 +47,31 @@ public class YouTubeAPIHandler {
      * Search on YouTube a specific query.
      *
      * @param search The query.
+     * @throws Exception if there was a search problem.
      * @return A link to the first Video result.
      */
-    public String searchYoutube(String search) {
+    public String searchYoutube(String search) throws Exception {
         if (youTube == null) {
             createYouTube();
         }
-        try {
+        List<SearchResult> results = youTube.search()
+                .list(Collections.singletonList("snippet"))
+                .setQ(search)
+                .setMaxResults(2L)
+                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"))
+                .execute()
+                .getItems();
 
-            List<SearchResult> results = youTube.search()
-                    .list(Collections.singletonList("snippet"))
-                    .setQ(search)
-                    .setMaxResults(2L)
-                    .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"))
-                    .execute()
-                    .getItems();
-
-            if (!results.isEmpty()) {
-                String videoId = results.get(0).getId().getVideoId();
+        if (!results.isEmpty()) {
+            String videoId = results.get(0).getId().getVideoId();
 
 
-                if (videoId == null) {
-                    createYouTube();
-                    return searchYoutube(search);
-                } else {
-                    return "https://www.youtube.com/watch?v=" + videoId;
-                }
+            if (videoId == null) {
+                createYouTube();
+                return searchYoutube(search);
+            } else {
+                return "https://www.youtube.com/watch?v=" + videoId;
             }
-
-        } catch (Exception e) {
-            Main.getInstance().getLogger().error("Couldn't search on YouTube", e);
         }
 
         return null;
