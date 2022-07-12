@@ -13,7 +13,7 @@ public class Optout implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         Main.getInstance().getCommandManager().sendMessage("This command is yet to be implemented.",
-                commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                commandEvent.getChannel(), commandEvent.getInteractionHook());
 
         /* Main.getInstance().getCommandManager().sendMessage("You have successfully opted out of any data collection on this Guild.",
                 commandEvent.getTextChannel(), commandEvent.getInteractionHook());*/

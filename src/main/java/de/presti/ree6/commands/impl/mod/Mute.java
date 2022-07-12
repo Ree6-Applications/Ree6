@@ -22,7 +22,7 @@ public class Mute implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS)) {
-            Main.getInstance().getCommandManager().sendMessage("It seems like I do not have the permissions to do that :/\nPlease re-invite me!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("It seems like I do not have the permissions to do that :/\nPlease re-invite me!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             return;
         }
 
@@ -39,26 +39,26 @@ public class Mute implements ICommand {
                     try {
                         time = timeOption.getAsLong();
                     } catch (Exception ignore) {
-                        Main.getInstance().getCommandManager().sendMessage("The given Time is not a valid Number!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("The given Time is not a valid Number!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                         return;
                     }
                     Duration duration = Duration.ofMinutes(time);
                     muteMember(commandEvent.getMember(), targetOption.getAsMember(), duration, (reasonOption != null ? reasonOption.getAsString() : "No Reason given!"), commandEvent);
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("No User was given to Mute!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("No User was given to Mute!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
 
             } else {
                 if (commandEvent.getArguments().length <= 2 && commandEvent.getArguments().length <= 3) {
                     if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                        Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "mute @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "mute @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     } else {
                         long time;
                         try {
                             time = Long.parseLong(commandEvent.getArguments()[1]);
                         } catch (Exception ignore) {
-                            Main.getInstance().getCommandManager().sendMessage("The given Time is not a valid Number!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                            Main.getInstance().getCommandManager().sendMessage("The given Time is not a valid Number!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                             return;
                         }
                         Duration duration = Duration.ofMinutes(time);
@@ -66,12 +66,12 @@ public class Mute implements ICommand {
                         muteMember(commandEvent.getMember(), commandEvent.getMessage().getMentions().getMembers().get(0), duration, reason, commandEvent);
                     }
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "mute @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "mute @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
@@ -94,16 +94,16 @@ public class Mute implements ICommand {
 
         if (executor.canInteract(member) && commandEvent.getGuild().getSelfMember().canInteract(member)) {
             member.timeoutFor(duration).reason(reason).onErrorFlatMap(throwable -> {
-                Main.getInstance().getCommandManager().sendMessage("Couldn't mute " + member.getAsMention() + "!\nReason: " + throwable.getMessage(), commandEvent.getTextChannel()
+                Main.getInstance().getCommandManager().sendMessage("Couldn't mute " + member.getAsMention() + "!\nReason: " + throwable.getMessage(), commandEvent.getChannel()
                         , commandEvent.getInteractionHook());
                 return null;
-            }).queue(unused -> Main.getInstance().getCommandManager().sendMessage(member.getAsMention() + " was muted for " + duration.getSeconds() + " seconds!", commandEvent.getTextChannel()
+            }).queue(unused -> Main.getInstance().getCommandManager().sendMessage(member.getAsMention() + " was muted for " + duration.getSeconds() + " seconds!", commandEvent.getChannel()
                     , commandEvent.getInteractionHook()));
         } else {
             if (!executor.canInteract(member)) {
-                Main.getInstance().getCommandManager().sendMessage("I couldn't timeout the Member, because you do not have enough permissions!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("I couldn't timeout the Member, because you do not have enough permissions!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
-                Main.getInstance().getCommandManager().sendMessage("I couldn't timeout the Member, because I do not have enough permissions for this!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("I couldn't timeout the Member, because I do not have enough permissions for this!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         }
     }

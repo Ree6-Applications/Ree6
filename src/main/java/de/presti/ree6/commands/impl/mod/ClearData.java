@@ -23,7 +23,7 @@ public class ClearData implements ICommand {
                 Main.getInstance().getSqlConnector().getSqlWorker().clearInvites(commandEvent.getGuild().getId());
                 if (commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER))
                     commandEvent.getGuild().retrieveInvites().queue(invites -> invites.stream().filter(invite -> invite.getInviter() != null).forEach(invite -> Main.getInstance().getSqlConnector().getSqlWorker().setInvite(commandEvent.getGuild().getId(), invite.getInviter().getId(), invite.getCode(), invite.getUses())));
-                Main.getInstance().getCommandManager().sendMessage("All stored Invites have been cleared, and replaced.", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("All stored Invites have been cleared, and replaced.", commandEvent.getChannel(), commandEvent.getInteractionHook());
                 new Thread(() -> {
                     try {
                         Thread.sleep(Duration.ofMinutes(10).toMillis());
@@ -31,10 +31,10 @@ public class ClearData implements ICommand {
                     timeout.remove(commandEvent.getGuild().getId());
                 }).start();
             } else {
-                Main.getInstance().getCommandManager().sendMessage("You already used this Command in the last 10 Minutes, please wait until you use it again.", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("You already used this Command in the last 10 Minutes, please wait until you use it again.", commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 

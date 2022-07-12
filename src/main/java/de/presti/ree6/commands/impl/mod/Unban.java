@@ -29,12 +29,12 @@ public class Unban implements ICommand {
                 if (targetOption != null) {
                     try {
                         commandEvent.getGuild().unban(UserSnowflake.fromId(targetOption.getAsString())).queue();
-                        Main.getInstance().getCommandManager().sendMessage("User <@" + targetOption.getAsString() + "> has been unbanned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("User <@" + targetOption.getAsString() + "> has been unbanned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     } catch (Exception ignored) {
-                        Main.getInstance().getCommandManager().sendMessage("Received a Invalid UserID", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Received a Invalid UserID", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     }
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("No User was given to Unban!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("No User was given to Unban!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
 
             } else {
@@ -42,17 +42,17 @@ public class Unban implements ICommand {
                     try {
                         String userId = commandEvent.getArguments()[0];
                         commandEvent.getGuild().unban(UserSnowflake.fromId(userId)).queue();
-                        Main.getInstance().getCommandManager().sendMessage("User <@" + userId + "> has been unbanned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("User <@" + userId + "> has been unbanned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     } catch (Exception ignored) {
-                        Main.getInstance().getCommandManager().sendMessage("Received a Invalid UserID", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Received a Invalid UserID", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     }
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "unban @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "unban @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You dont have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You dont have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
 
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());

@@ -39,7 +39,7 @@ public class FunnyCryptocurrencies implements ICommand {
         embedBuilder.addField("**DogeCoin**", dogeCoin + " USD", true);
         embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-        Main.getInstance().getCommandManager().sendMessage(embedBuilder, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage(embedBuilder, commandEvent.getChannel(), commandEvent.getInteractionHook());
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 

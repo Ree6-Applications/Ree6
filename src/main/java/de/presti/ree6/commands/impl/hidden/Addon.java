@@ -1,6 +1,7 @@
 package de.presti.ree6.commands.impl.hidden;
 
-import de.presti.ree6.commands.*;
+import de.presti.ree6.commands.Category;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
@@ -19,18 +20,18 @@ public class Addon implements ICommand {
                             .append(" ").append("for").append(" ").append("by").append(" ").append(addon.getAuthor()).append("\n");
                 }
                 stringBuilder.append("```");
-                Main.getInstance().getCommandManager().sendMessage("List of all Addons: " + (stringBuilder.length() == 6 ? "None" : stringBuilder), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("List of all Addons: " + (stringBuilder.length() == 6 ? "None" : stringBuilder), commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
                 if (commandEvent.getArguments()[0].equalsIgnoreCase("reload")) {
-                    Main.getInstance().getCommandManager().sendMessage("Reloading Addons ...", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Reloading Addons ...", commandEvent.getChannel(), commandEvent.getInteractionHook());
                     Main.getInstance().getAddonManager().reload();
-                    Main.getInstance().getCommandManager().sendMessage("Reloaded Addons!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Reloaded Addons!", commandEvent.getChannel(), commandEvent.getInteractionHook());
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("Invalid Argument!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Invalid Argument!", commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("This Command is not made for users.", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("This Command is not made for users.", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 

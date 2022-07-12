@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
@@ -14,7 +14,7 @@ public class RandomAnswer implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage(ArrayUtil.answers[RandomUtils.random.nextInt((ArrayUtil.answers.length - 1))], commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage(ArrayUtil.answers[RandomUtils.random.nextInt((ArrayUtil.answers.length - 1))], commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
     @Override

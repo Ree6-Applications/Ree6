@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
@@ -22,7 +23,7 @@ public class CommandEvent {
     Message message;
 
     // The Text channel which has been used, to fire the Event.
-    TextChannel textChannel;
+    MessageChannelUnion channel;
 
     // Argument that have been given.
     String[] arguments;
@@ -39,11 +40,11 @@ public class CommandEvent {
      * @param arguments the given Arguments.
      * @param slashCommandInteractionEvent the {@link SlashCommandInteractionEvent} Entity.
      */
-    public CommandEvent(Member member, Guild guild, Message message, TextChannel textChannel, String[] arguments, SlashCommandInteractionEvent slashCommandInteractionEvent) {
+    public CommandEvent(Member member, Guild guild, Message message, MessageChannelUnion textChannel, String[] arguments, SlashCommandInteractionEvent slashCommandInteractionEvent) {
         this.member = member;
         this.guild = guild;
         this.message = message;
-        this.textChannel = textChannel;
+        this.channel = textChannel;
         this.arguments = arguments;
         this.slashCommandInteractionEvent = slashCommandInteractionEvent;
     }
@@ -76,8 +77,8 @@ public class CommandEvent {
      * Get the {@link TextChannel} Entity associated with the Event.
      * @return the {@link TextChannel} Entity.
      */
-    public TextChannel getTextChannel() {
-        return textChannel;
+    public MessageChannelUnion getChannel() {
+        return channel;
     }
 
     /**

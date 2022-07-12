@@ -20,7 +20,7 @@ public class Ban implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
-            Main.getInstance().getCommandManager().sendMessage("It seems like I do not have the permissions to do that :/\nPlease re-invite me!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("It seems like I do not have the permissions to do that :/\nPlease re-invite me!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             return;
         }
 
@@ -37,13 +37,13 @@ public class Ban implements ICommand {
                         banMember(targetOption.getAsMember(), null, commandEvent);
                     }
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("No User was given to Ban!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("No User was given to Ban!" , 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
             } else {
                 if (commandEvent.getArguments().length > 0) {
                     if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                        Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "ban @user", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "ban @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     } else {
                         if (commandEvent.getArguments().length == 1) {
                             banMember(commandEvent.getMessage().getMentions().getMembers().get(0), null, commandEvent);
@@ -57,12 +57,12 @@ public class Ban implements ICommand {
                         }
                     }
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "ban @user [reason]", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "ban @user [reason]", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
 
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
@@ -85,13 +85,13 @@ public class Ban implements ICommand {
 
     public void banMember(Member member, String reason, CommandEvent commandEvent) {
         if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
-            Main.getInstance().getCommandManager().sendMessage("User " + member.getAsMention() + " has been banned!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("User " + member.getAsMention() + " has been banned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             commandEvent.getGuild().ban(member, 7, reason).queue();
         } else {
             if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
-                Main.getInstance().getCommandManager().sendMessage("Couldn't ban this User because he has the same or a higher Rank then you!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Couldn't ban this User because he has the same or a higher Rank then you!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Couldn't ban this User because he has a higher Rank then me!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Couldn't ban this User because he has a higher Rank then me!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         }
     }

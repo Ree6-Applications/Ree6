@@ -1,8 +1,8 @@
 package de.presti.ree6.commands.impl.mod;
 
 import de.presti.ree6.commands.Category;
-import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -15,9 +15,9 @@ public class Webinterface implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
 
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR) && commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
-            Main.getInstance().getCommandManager().sendMessage("Please visit <https://cp.ree6.de>", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Please visit <https://cp.ree6.de>", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You can't use this Command you need the following Permissions: Administrator and Manage Server", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You can't use this Command you need the following Permissions: Administrator and Manage Server", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }

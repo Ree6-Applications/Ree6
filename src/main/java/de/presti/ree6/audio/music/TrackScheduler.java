@@ -10,6 +10,7 @@ import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.awt.*;
@@ -26,7 +27,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
     private final BlockingQueue<AudioTrack> queue;
-    TextChannel textChannel;
+    MessageChannelUnion channel;
     boolean loop = false;
 
     /**
@@ -99,17 +100,17 @@ public class TrackScheduler extends AudioEventAdapter {
      *
      * @return the {@link TextChannel}.
      */
-    public TextChannel getTextChannel() {
-        return textChannel;
+    public MessageChannelUnion getChannel() {
+        return channel;
     }
 
     /**
      * Change the Text-Channel where the commands have been performed from.
      *
-     * @param textChannel the {@link TextChannel}.
+     * @param channel the {@link TextChannel}.
      */
-    public void setTextChannel(TextChannel textChannel) {
-        this.textChannel = textChannel;
+    public void setChannel(MessageChannelUnion channel) {
+        this.channel = channel;
     }
 
     /**
@@ -142,25 +143,25 @@ public class TrackScheduler extends AudioEventAdapter {
      *
      * @param textChannel the Text-Channel where the command have been performed from.
      */
-    public void nextTrack(TextChannel textChannel) {
+    public void nextTrack(MessageChannelUnion textChannel) {
         // Start the next track, regardless of if something is already playing or not.
         // In case queue was empty, we are
         // giving null to startTrack, which is a valid argument and will simply stop the
         // player.
 
-        setTextChannel(textChannel);
+        setChannel(textChannel);
 
         AudioTrack track = queue.poll();
 
         if (track != null) {
-            if (getTextChannel() != null) {
+            if (getChannel() != null) {
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl())
                         .setTitle("Music Player!")
                         .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
-                        .setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl()), 5, getTextChannel());
+                        .setFooter(getChannel().asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getChannel().asGuildMessageChannel().getGuild().getIconUrl()), 5, getChannel());
             }
             player.startTrack(track, false);
         }
@@ -187,46 +188,46 @@ public class TrackScheduler extends AudioEventAdapter {
                 if (loopTrack != null && player != null) {
                     player.startTrack(loopTrack, false);
                 } else {
-                    if (getTextChannel() != null) {
+                    if (getChannel() != null) {
                         Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                                .setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl())
+                                .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
                                 .setTitle("Music Player!")
-                                .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
+                                .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                                 .setColor(Color.RED)
                                 .setDescription("Error while playing: ``" + FormatUtil.filter(track.getInfo().title) + "``\nError: Track is not existing!")
-                                .setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl()), 5, getTextChannel());
+                                .setFooter(getChannel().asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getChannel().asGuildMessageChannel().getGuild().getIconUrl()), 5, getChannel());
                     }
 
-                    nextTrack(getTextChannel());
+                    nextTrack(getChannel());
                 }
                 // If there was a error cancel the loop, and go to the next song in the playlist.
             } else if (endReason == AudioTrackEndReason.LOAD_FAILED) {
-                if (getTextChannel() != null) {
+                if (getChannel() != null) {
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                            .setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl())
+                            .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
                             .setTitle("Music Player!")
-                            .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
+                            .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.RED)
                             .setDescription("Error while playing: ``" + FormatUtil.filter(track.getInfo().title) + "``\nError: " + endReason.name())
-                            .setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl()), 5, getTextChannel());
+                            .setFooter(getChannel().asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getChannel().asGuildMessageChannel().getGuild().getIconUrl()), 5, getChannel());
                 }
 
-                nextTrack(getTextChannel());
+                nextTrack(getChannel());
             }
         } else {
             // Check if a new song shoud be played or not.
             if (endReason.mayStartNext) {
                 // check if there was an error on the current song if so inform user.
-                if (endReason == AudioTrackEndReason.LOAD_FAILED && getTextChannel() != null) {
+                if (endReason == AudioTrackEndReason.LOAD_FAILED && getChannel() != null) {
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                            .setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl())
+                            .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
                             .setTitle("Music Player!")
-                            .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
+                            .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.RED)
                             .setDescription("Error while playing: ``" + FormatUtil.filter(track.getInfo().title) + "``\nError: " + endReason.name())
-                            .setFooter(getTextChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getTextChannel().getGuild().getIconUrl()), 5, getTextChannel());
+                            .setFooter(getChannel().asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getChannel().asGuildMessageChannel().getGuild().getIconUrl()), 5, getChannel());
                 }
-                nextTrack(getTextChannel());
+                nextTrack(getChannel());
             }
         }
     }
@@ -239,7 +240,7 @@ public class TrackScheduler extends AudioEventAdapter {
      */
     public void stopAll(Guild guild, InteractionHook interactionHook) {
         EmbedBuilder em = new EmbedBuilder();
-        if (Main.getInstance().getMusicWorker().isConnected(getTextChannel().getGuild()) || getPlayer().getPlayingTrack() != null) {
+        if (Main.getInstance().getMusicWorker().isConnected(getChannel().asGuildMessageChannel().getGuild()) || getPlayer().getPlayingTrack() != null) {
 
             GuildMusicManager gmm = Main.getInstance().getMusicWorker().getGuildAudioPlayer(guild);
 
@@ -248,20 +249,20 @@ public class TrackScheduler extends AudioEventAdapter {
             gmm.scheduler.clearQueue();
 
             Main.getInstance().getMusicWorker().disconnect(guild);
-            em.setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl());
+            em.setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl());
             em.setTitle("Music Player!");
-            em.setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl());
+            em.setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl());
             em.setColor(Color.GREEN);
             em.setDescription("Successfully stopped the Player!");
         } else {
-            em.setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl());
+            em.setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl());
             em.setTitle("Music Player!");
-            em.setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl());
+            em.setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl());
             em.setColor(Color.RED);
             em.setDescription("Im not playing any Music!");
         }
 
         em.setFooter(Data.ADVERTISEMENT);
-        Main.getInstance().getCommandManager().sendMessage(em, 5, getTextChannel(), interactionHook);
+        Main.getInstance().getCommandManager().sendMessage(em, 5, getChannel(), interactionHook);
     }
 }
