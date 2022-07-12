@@ -5,16 +5,12 @@ import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.SimpleFormatter;
 
 /*
     All methods in this class are called by JDA threads when resources are available/ready for processing.
@@ -26,7 +22,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     /**
      * Queue of audio to be sent afterwards.
      */
-    private final List<byte[]> queue = new ArrayList<>();
+    private final Queue<byte[]> queue = new ConcurrentLinkedQueue<>();
 
     /**
      * Boolean used to indicated that handler finished his Job.
