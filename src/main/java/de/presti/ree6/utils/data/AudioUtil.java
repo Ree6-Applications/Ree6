@@ -11,6 +11,19 @@ import java.nio.ByteOrder;
  */
 public class AudioUtil {
 
+    /**
+     * Constructor for the AudioUtil class.
+     */
+    private AudioUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
+     * Get an WAV file out of PCM data.
+     * @param inputRawData the PCM data.
+     * @return the WAV file.
+     * @throws IOException if something goes wrong.
+     */
     public static byte[] rawToWave(final byte[] inputRawData) throws IOException {
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -45,6 +58,12 @@ public class AudioUtil {
         return byteArrayOutputStream.toByteArray();
     }
 
+    /**
+     * Write an int to the output stream.
+     * @param output the output stream.
+     * @param value the value.
+     * @throws IOException if something goes wrong.
+     */
     private static void writeInt(final DataOutputStream output, final int value) throws IOException {
         output.write(value >> 0);
         output.write(value >> 8);
@@ -52,11 +71,23 @@ public class AudioUtil {
         output.write(value >> 24);
     }
 
+    /**
+     * Write a short to the output stream.
+     * @param output the output stream.
+     * @param value the value.
+     * @throws IOException if something goes wrong.
+     */
     private static void writeShort(final DataOutputStream output, final short value) throws IOException {
         output.write(value >> 0);
         output.write(value >> 8);
     }
 
+    /**
+     * Write a string to the output stream.
+     * @param output the output stream.
+     * @param value the value.
+     * @throws IOException if something goes wrong.
+     */
     private static void writeString(final DataOutputStream output, final String value) throws IOException {
         for (int i = 0; i < value.length(); i++) {
             output.write(value.charAt(i));

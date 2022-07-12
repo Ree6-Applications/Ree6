@@ -72,7 +72,6 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
         if (combinedAudio.getUsers().isEmpty()) {
             if (voiceChannel.getMembers().size() == 1) {
                 endReceiving();
-                return;
             }
             return;
         }
