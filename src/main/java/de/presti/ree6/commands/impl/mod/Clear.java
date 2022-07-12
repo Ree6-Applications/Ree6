@@ -36,10 +36,10 @@ public class Clear implements ICommand {
                 if (commandEvent.getArguments().length == 1) {
                     try {
                         int amount = Integer.parseInt(commandEvent.getArguments()[0]);
-                        if (amount <= 100 && amount >= 2) {
+                        if (amount <= 200 && amount >= 2) {
                             deleteMessages(commandEvent, amount);
                         } else {
-                            Main.getInstance().getCommandManager().sendMessage(commandEvent.getArguments()[0] + " isn't between 2 and 100 !", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                            Main.getInstance().getCommandManager().sendMessage(commandEvent.getArguments()[0] + " isn't between 2 and 200 !", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                             Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                         }
                     } catch (Exception ex) {
@@ -81,12 +81,12 @@ public class Clear implements ICommand {
                     return null;
                 });
             } catch (IllegalArgumentException exception) {
-                Main.getInstance().getCommandManager().sendMessage("" + (exception.toString().toLowerCase().startsWith("java.lang.illegalargumentexception: must provide at") ? "Given Parameter is either above 100 or below 2!" : "Error while deleting:" + exception.toString().split(":")[1]), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("" + (exception.toString().toLowerCase().startsWith("java.lang.illegalargumentexception: must provide at") ? "Given Parameter is either above 200 or below 2!" : "Error while deleting:" + exception.toString().split(":")[1]), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } catch (Exception exception) {
                 Main.getInstance().getCommandManager().sendMessage("Error while deleting:" + exception.toString().split(":")[1], 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage(amount + " isn't between 2 and 100 !", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(amount + " isn't between 2 and 200 !", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "clear 2-100", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
