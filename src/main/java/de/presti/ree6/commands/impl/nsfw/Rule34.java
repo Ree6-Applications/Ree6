@@ -33,19 +33,17 @@ public class Rule34 implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand() &&
                 commandEvent.getInteractionHook().getInteraction().getChannel() != null &&
-                commandEvent.getGuild().getTextChannelById(commandEvent.getInteractionHook().getInteraction().getGuild().getId()) != null &&
-                commandEvent.getGuild().getTextChannelById(commandEvent.getInteractionHook().getInteraction().getGuild().getId()).isNSFW()) {
+                commandEvent.getGuild().getTextChannelById(commandEvent.getInteractionHook().getInteraction().getChannel().getId()) != null &&
+                commandEvent.getGuild().getTextChannelById(commandEvent.getInteractionHook().getInteraction().getChannel().getId()).isNSFW()) {
+
+            sendMessage(commandEvent);
+        } else if (commandEvent.getChannel() != null &&
+                commandEvent.getChannel().getType() == ChannelType.TEXT &&
+                commandEvent.getChannel().asTextChannel().isNSFW()) {
 
             sendMessage(commandEvent);
         } else {
-            if (commandEvent.getChannel() != null &&
-                    commandEvent.getChannel().getType() == ChannelType.TEXT &&
-                    commandEvent.getChannel().asTextChannel().isNSFW()) {
-
-                sendMessage(commandEvent);
-            } else {
-                Main.getInstance().getCommandManager().sendMessage("Only available in NSFW Channels!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-            }
+            Main.getInstance().getCommandManager().sendMessage("Only available in NSFW Channels!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 
@@ -114,7 +112,7 @@ public class Rule34 implements ICommand {
 
                         if (commandEvent.isSlashCommand()) {
                             message.editMessage("Image found!").queue();
-                            Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), null);
+                            Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getInteractionHook().getInteraction().getMessageChannel(), null);
                         } else {
                             message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage("Image found!").queue());
                         }

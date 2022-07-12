@@ -86,6 +86,9 @@ public class CommandEvent {
      * @return the Arguments.
      */
     public String[] getArguments() {
+        if (arguments == null) {
+            arguments = new String[0];
+        }
         return arguments;
     }
 
