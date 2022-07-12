@@ -46,6 +46,10 @@ public class Record implements ICommand {
         }
     }
 
+    /**
+     * Start the recording of the voice channel.
+     * @param commandEvent the command event.
+     */
     public void connectAndRecord(CommandEvent commandEvent) {
         GuildVoiceState voiceState = commandEvent.getMember().getVoiceState();
         if (voiceState != null &&
