@@ -35,7 +35,7 @@ public class LoggerQueue {
             logs.add(loggerMessage);
 
             // Creating a new Webhook Message with an Embed.
-            WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder().setAvatarUrl(loggerMessage.getGuild().getJDA().getSelfUser().getAvatarUrl()).setUsername("event.getInteraction().getValues().get(0)");
+            WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder().setAvatarUrl(loggerMessage.getGuild().getJDA().getSelfUser().getAvatarUrl()).setUsername("Ree6-Logs");
             WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder().setColor(Color.BLACK.getRGB())
                     .setFooter(new WebhookEmbed.EmbedFooter(loggerMessage.getGuild().getName() + " - " + Data.ADVERTISEMENT,
                             (loggerMessage.getGuild().getIconUrl() != null ? loggerMessage.getGuild().getIconUrl() : null)))
@@ -46,6 +46,9 @@ public class LoggerQueue {
 
             // Stop if the Guild is null.
             if (loggerMessage.getGuild() == null) return;
+
+            // Ignore if it is a Log Message related to a User but the User is null.
+            if (loggerMessage instanceof LogMessageUser logMessageUser && logMessageUser.getUser() == null) return;
 
             // Check if it's a VoiceChannel Join log.
             if (loggerMessage.getType() == LogTyp.VC_JOIN && loggerMessage instanceof LogMessageVoice logMessageVoice) {
@@ -447,6 +450,17 @@ public class LoggerQueue {
                         && loggerMessages instanceof LogMessageUser logMessageUser1 &&
                         logMessageUser1.getUser().getIdLong() == logMessageUser.getUser().getIdLong()
                         && !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.SERVER_LEAVE)) {
+                    loggerMessage.setCanceled(true);
+                }
+            } else if (loggerMessage.getType() == LogTyp.MESSAGE_DELETE && loggerMessage instanceof LogMessageUser logMessageUser) {
+                if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId()
+                        && loggerMessages instanceof LogMessageUser logMessageUser1 &&
+                        logMessageUser1.getUser().getIdLong() == logMessageUser.getUser().getIdLong()
+                        && !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.USER_BAN)) {
+                    loggerMessage.setCanceled(true);
+                }
+
+                if (!logMessageUser.getGuild().isMember(logMessageUser.getUser())) {
                     loggerMessage.setCanceled(true);
                 }
             }

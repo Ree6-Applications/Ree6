@@ -125,7 +125,7 @@ public class OtherEvents extends ListenerAdapter {
             if (ChatProtector.isChatProtectorSetup(event.getGuild().getId()) &&
                     ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
                 Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
-                event.getChannel().sendMessage("You can't write that!").queue();
+                Main.getInstance().getCommandManager().sendMessage("You can't write that!", event.getTextChannel(), null);
                 return;
             }
 
