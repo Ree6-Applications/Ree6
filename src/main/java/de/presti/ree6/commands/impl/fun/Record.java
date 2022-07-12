@@ -33,11 +33,10 @@ public class Record implements ICommand {
 
                 if (handler != null) {
                     handler.endReceiving();
-                    connectAndRecord(commandEvent);
                 } else {
                     commandEvent.getGuild().getAudioManager().closeAudioConnection();
-                    connectAndRecord(commandEvent);
                 }
+                Main.getInstance().getCommandManager().sendMessage("Recording stopped!", commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
                 Main.getInstance().getCommandManager().sendMessage("I am already in a channel!",
                         commandEvent.getChannel(), commandEvent.getInteractionHook());

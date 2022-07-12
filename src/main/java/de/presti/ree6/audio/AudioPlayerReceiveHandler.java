@@ -9,10 +9,12 @@ import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.SimpleFormatter;
 
 /*
     All methods in this class are called by JDA threads when resources are available/ready for processing.
@@ -112,7 +114,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 byteBuffer.put(data);
             }
 
-            voiceChannel.sendMessage("Here is your audio!").addFile(AudioUtil.convert(byteBuffer), "audio.wav").queue();
+            voiceChannel.sendMessage("Here is your audio!").addFile(AudioUtil.convert(byteBuffer), new SimpleDateFormat("dd.MM.yyyy HH/mm").format(System.currentTimeMillis()) + "-" + voiceChannel.getId() + ".wav").queue();
         } catch (Exception ex) {
             voiceChannel.sendMessage("Something went wrong while converting your audio!\nReason: " + ex.getMessage()).queue();
         }
