@@ -2,7 +2,6 @@ package de.presti.ree6.sql;
 
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.data.SQLEntity;
-import de.presti.ree6.sql.entities.Webhook;
 import de.presti.ree6.sql.mapper.EntityMapper;
 import org.reflections.Reflections;
 
@@ -157,8 +156,12 @@ public class SQLConnector {
      */
     public ResultSet querySQL(String sqlQuery, Object... objcObjects) {
         if (!isConnected()) {
-            connectToSQLServer();
-            return querySQL(sqlQuery, objcObjects);
+            if (connectedOnce()) {
+                connectToSQLServer();
+                return querySQL(sqlQuery, objcObjects);
+            } else {
+                return null;
+            }
         }
 
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sqlQuery)) {
@@ -190,9 +193,11 @@ public class SQLConnector {
             }
         } catch (Exception exception) {
             if (exception instanceof SQLNonTransientConnectionException) {
-                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
-                connectToSQLServer();
-                return querySQL(sqlQuery, objcObjects);
+                if (connectedOnce()) {
+                    Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
+                    connectToSQLServer();
+                    return querySQL(sqlQuery, objcObjects);
+                }
             } else {
                 Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
             }

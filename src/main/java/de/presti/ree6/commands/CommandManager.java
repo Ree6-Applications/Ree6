@@ -187,7 +187,7 @@ public class CommandManager {
         }
 
         // Add them to the Cooldown.
-        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && BotWorker.getVersion() != BotVersion.DEV) {
+        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD) {
             ArrayUtil.commandCooldown.add(member.getUser().getId());
         }
 
