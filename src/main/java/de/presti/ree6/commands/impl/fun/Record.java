@@ -1,6 +1,7 @@
 package de.presti.ree6.commands.impl.fun;
 
 import de.presti.ree6.audio.AudioPlayerReceiveHandler;
+import de.presti.ree6.audio.music.GuildMusicManager;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
@@ -12,42 +13,72 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 
+/**
+ * A command used to record the conversation of a voice channel.
+ */
 @Command(name = "record", description = "Record the voice channel!", category = Category.FUN)
 public class Record implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.getGuild().getAudioManager().isConnected()) {
-            Main.getInstance().getCommandManager().sendMessage("I am already in a channel!",
-                    commandEvent.getChannel(), commandEvent.getInteractionHook());
-        } else {
-            GuildVoiceState voiceState = commandEvent.getMember().getVoiceState();
-            if (voiceState != null &&
-                    voiceState.inAudioChannel() &&
-                    voiceState.getChannel().getType() == ChannelType.VOICE &&
-                    voiceState.getChannel() instanceof VoiceChannel voiceChannel) {
-
+            GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild());
+            if (guildMusicManager == null || !guildMusicManager.getSendHandler().isMusicPlaying(commandEvent.getGuild())) {
                 AudioManager audioManager = commandEvent.getGuild().getAudioManager();
-                audioManager.openAudioConnection(voiceChannel);
 
-                AudioPlayerReceiveHandler handler = new AudioPlayerReceiveHandler(voiceChannel);
+                AudioPlayerReceiveHandler handler = (AudioPlayerReceiveHandler) audioManager.getReceivingHandler();
 
-                audioManager.setReceivingHandler(handler);
-
-                Main.getInstance().getCommandManager().sendMessage("I am now recording the voice channel!",
-                        commandEvent.getChannel(), commandEvent.getInteractionHook());
+                if (handler != null) {
+                    handler.endReceiving();
+                    connectAndRecord(commandEvent);
+                } else {
+                    commandEvent.getGuild().getAudioManager().closeAudioConnection();
+                    connectAndRecord(commandEvent);
+                }
             } else {
-                Main.getInstance().getCommandManager().sendMessage("You are not in a voice channel!",
+                Main.getInstance().getCommandManager().sendMessage("I am already in a channel!",
                         commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
+        } else {
+            connectAndRecord(commandEvent);
         }
     }
 
+    public void connectAndRecord(CommandEvent commandEvent) {
+        GuildVoiceState voiceState = commandEvent.getMember().getVoiceState();
+        if (voiceState != null &&
+                voiceState.inAudioChannel() &&
+                voiceState.getChannel().getType() == ChannelType.VOICE &&
+                voiceState.getChannel() instanceof VoiceChannel voiceChannel) {
+            AudioManager audioManager = commandEvent.getGuild().getAudioManager();
+            audioManager.openAudioConnection(voiceChannel);
+
+            AudioPlayerReceiveHandler handler = new AudioPlayerReceiveHandler(voiceChannel);
+
+            audioManager.setReceivingHandler(handler);
+
+            Main.getInstance().getCommandManager().sendMessage("I am now recording the voice channel!",
+                    commandEvent.getChannel(), commandEvent.getInteractionHook());
+        } else {
+            Main.getInstance().getCommandManager().sendMessage("You are not in a voice channel!",
+                    commandEvent.getChannel(), commandEvent.getInteractionHook());
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

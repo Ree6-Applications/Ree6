@@ -98,7 +98,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     /**
      * Method called when the recording should stop.
      */
-    private void endReceiving() {
+    public void endReceiving() {
         if (finished) {
             return;
         }
@@ -112,11 +112,9 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 byteBuffer.put(data);
             }
 
-            byte[] data = AudioUtil.convert(byteBuffer);
-            voiceChannel.sendMessage("Here is your audio!").addFile(data, "audio.wav").queue();
+            voiceChannel.sendMessage("Here is your audio!").addFile(AudioUtil.convert(byteBuffer), "audio.wav").queue();
         } catch (Exception ex) {
-            voiceChannel.sendMessage("Something went wrong while converting your audio!").queue();
-            ex.printStackTrace();
+            voiceChannel.sendMessage("Something went wrong while converting your audio!\nReason: " + ex.getMessage()).queue();
         }
 
         voiceChannel.getGuild().getAudioManager().closeAudioConnection();
