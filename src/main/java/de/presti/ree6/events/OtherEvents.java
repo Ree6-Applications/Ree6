@@ -1,7 +1,6 @@
 package de.presti.ree6.events;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
-import de.presti.ree6.addons.impl.ChatProtector;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.Webhook;
 import de.presti.ree6.bot.version.BotState;
@@ -9,6 +8,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.others.AutoRoleHandler;
+import de.presti.ree6.utils.others.ModerationUtil;
 import de.presti.ree6.utils.others.RandomUtils;
 import de.presti.ree6.utils.others.TimeUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -122,11 +122,33 @@ public class OtherEvents extends ListenerAdapter {
         super.onMessageReceived(event);
 
         if (event.isFromGuild() && event.isFromType(ChannelType.TEXT) && event.getMember() != null) {
-            if (ChatProtector.isChatProtectorSetup(event.getGuild().getId()) &&
-                    ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
-                Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
-                Main.getInstance().getCommandManager().sendMessage("You can't write that!", event.getChannel(), null);
-                return;
+            if (ModerationUtil.shouldModerate(event.getGuild().getId())) {
+                if (ModerationUtil.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
+                    Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+                    Main.getInstance().getCommandManager().sendMessage("Your message contains blacklisted words!", event.getChannel(), null);
+                    return;
+                } else if (!event.getMessage().getAttachments().isEmpty()) {
+                    for (Message.Attachment attachment : event.getMessage().getAttachments()) {
+                        if (attachment.isImage()) {
+                            if (ModerationUtil.checkImage(event.getGuild().getId(), attachment.getUrl())) {
+                                Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+                                Main.getInstance().getCommandManager().sendMessage("The Image contained blacklisted words!", event.getChannel(), null);
+                                return;
+                            }
+                        }
+                    }
+                } else {
+                    String messageContent = event.getMessage().getContentRaw();
+                    String extractedUrl = ModerationUtil.extractUrl(messageContent);
+
+                    if (extractedUrl != null &&!extractedUrl.isEmpty()) {
+                        if (ModerationUtil.checkImage(event.getGuild().getId(), extractedUrl)) {
+                            Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+                            Main.getInstance().getCommandManager().sendMessage("The Image contained blacklisted words!", event.getChannel(), null);
+                            return;
+                        }
+                    }
+                }
             }
 
             if (event.getAuthor().isBot()) return;
