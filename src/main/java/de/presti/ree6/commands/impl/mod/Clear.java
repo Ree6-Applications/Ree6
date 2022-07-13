@@ -59,7 +59,10 @@ public class Clear implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("clear", "Clear the Chat!")
-                .addOptions(new OptionData(OptionType.INTEGER, "amount", "How many messages should be removed.").setRequired(true))
+                .addOptions(new OptionData(OptionType.INTEGER, "amount", "How many messages should be removed.")
+                        .setRequired(true)
+                        .setMinValue(2)
+                        .setMaxValue(200))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_MANAGE));
     }
 
