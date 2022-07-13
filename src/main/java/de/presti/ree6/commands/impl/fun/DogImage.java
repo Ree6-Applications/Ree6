@@ -17,7 +17,7 @@ public class DogImage implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        JsonObject js = RequestUtility.request(new RequestUtility.Request("https://dog.ceo/api/breeds/image/random")).getAsJsonObject();
+        JsonObject js = RequestUtility.request(RequestUtility.Request.builder().url("https://dog.ceo/api/breeds/image/random").build()).getAsJsonObject();
 
         EmbedBuilder em = new EmbedBuilder();
 

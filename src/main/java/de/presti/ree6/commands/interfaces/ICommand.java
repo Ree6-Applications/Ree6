@@ -18,7 +18,11 @@ public interface ICommand {
      * @param commandEvent the Event, with every needed data.
      */
     default void onASyncPerform(CommandEvent commandEvent) {
-        CompletableFuture.runAsync(() -> onPerform(commandEvent));
+        CompletableFuture.runAsync(() -> onPerform(commandEvent)).exceptionally(throwable -> {
+            Main.getInstance().getCommandManager().sendMessage("An Error occurred while performing the Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getLogger().error("An error occurred while executing the command!", throwable);
+            return null;
+        });
         // Update Stats.
         Main.getInstance().getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getId(), this.getClass().getAnnotation(Command.class).name());
     }

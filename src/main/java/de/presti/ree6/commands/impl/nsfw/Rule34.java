@@ -31,8 +31,7 @@ public class Rule34 implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        if (commandEvent.getChannel() != null &&
-                commandEvent.getChannel().getType() == ChannelType.TEXT &&
+        if (commandEvent.getChannel().getType() == ChannelType.TEXT &&
                 commandEvent.getChannel().asTextChannel().isNSFW()) {
 
             sendMessage(commandEvent);
@@ -69,7 +68,7 @@ public class Rule34 implements ICommand {
         if (builder.toString().endsWith(" "))
             builder = new StringBuilder(builder.substring(0, builder.length() - 1));
 
-        if (args.length > 1)
+        if (args.length > 0)
             tags = "&tags=" + URLEncoder.encode(builder.toString(), StandardCharsets.UTF_8).toLowerCase();
 
         if (tags.contains("loli") || tags.contains("l0li") || tags.contains("lol1") || tags.contains("l0l1")) {
@@ -88,7 +87,8 @@ public class Rule34 implements ICommand {
      * @param tags         the Tags.
      */
     public void sendImage(CommandEvent commandEvent, Message message, String tags) {
-        final JsonElement jsonElement = RequestUtility.request(new RequestUtility.Request("https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=50" + tags));
+        final JsonElement jsonElement =
+                RequestUtility.request(RequestUtility.Request.builder().url("https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=50" + tags).build());
 
         if (jsonElement != null && jsonElement.isJsonArray()) {
             final JsonArray array = jsonElement.getAsJsonArray();

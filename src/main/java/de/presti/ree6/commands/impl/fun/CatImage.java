@@ -18,7 +18,7 @@ public class CatImage implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
-        JsonArray js = RequestUtility.request(new RequestUtility.Request("https://api.thecatapi.com/v1/images/search")).getAsJsonArray();
+        JsonArray js = RequestUtility.request(RequestUtility.Request.builder().url("https://api.thecatapi.com/v1/images/search").build()).getAsJsonArray();
 
         EmbedBuilder em = new EmbedBuilder();
 
