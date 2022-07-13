@@ -93,6 +93,8 @@ public class CommandManager {
         //Fun
         addCommand(new Record());
         addCommand(new RandomAnswer());
+        addCommand(new Anime());
+        addCommand(new Manga());
         addCommand(new FunFact());
         addCommand(new CatImage());
         addCommand(new DogImage());

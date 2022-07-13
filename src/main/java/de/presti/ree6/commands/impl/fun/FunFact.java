@@ -14,7 +14,7 @@ public class FunFact implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        JsonObject js = RequestUtility.request(new RequestUtility.Request("https://useless-facts.sameerkumar.website/api")).getAsJsonObject();
+        JsonObject js = RequestUtility.request(RequestUtility.Request.builder().url("https://useless-facts.sameerkumar.website/api").build()).getAsJsonObject();
 
         Main.getInstance().getCommandManager().sendMessage(js.get("data").getAsString(), commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
