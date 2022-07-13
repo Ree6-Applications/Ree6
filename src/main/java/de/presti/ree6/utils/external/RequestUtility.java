@@ -10,6 +10,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 // TODO rework.
 
@@ -34,8 +36,17 @@ public class RequestUtility {
 
         HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder()
                 .uri(request.getUri())
-                .header("User-Agent", USER_AGENT)
-                .header("Content-Type", "application/json-rpc");
+                .header("User-Agent", USER_AGENT);
+
+        if (request.getHeaders().isEmpty()) {
+            httpRequestBuilder = httpRequestBuilder.header("Content-Type", "application/json-rpc");
+        } else {
+            for (String[] header : request.getHeaders()) {
+                if (header.length == 2) {
+                    httpRequestBuilder = httpRequestBuilder.header(header[0], header[1]);
+                }
+            }
+        }
 
         if (request.bearerAuth != null) {
             httpRequestBuilder = httpRequestBuilder.header("Authorization", request.getBearerAuth());
@@ -85,73 +96,20 @@ public class RequestUtility {
         String url, bearerAuth;
 
         // The Request Method.
-        Method method;
+        Method method = Method.GET;
 
         // The Body Publisher used for PUT and POST Requests.
         HttpRequest.BodyPublisher bodyPublisher;
 
-        /**
-         * Create a simple HTTP GET Requests.
-         *
-         * @param url the Request URL.
-         */
-        public Request(String url) {
-            this.url = url;
-            method = Method.GET;
-        }
+        // Custom Headers.
+        List<String[]> headers = new ArrayList<>();
 
         /**
-         * Create a simple HTTP GET Requests with a AuthToken.
-         *
-         * @param url        the Request URL.
-         * @param bearerAuth the AuthToken.
+         * Create a new Request builder.
+         * @return a new Request builder.
          */
-        public Request(String url, String bearerAuth) {
-            this.url = url;
-            this.bearerAuth = bearerAuth;
-            method = Method.GET;
-        }
-
-        /**
-         * Create a simple HTTP Requests with a AuthToken.
-         *
-         * @param url        the Request URL.
-         * @param bearerAuth the AuthToken.
-         * @param method     the wanted Method.
-         */
-        public Request(String url, String bearerAuth, Method method) {
-            this.url = url;
-            this.bearerAuth = bearerAuth;
-            this.method = method;
-        }
-
-        /**
-         * Create a simple HTTP Requests.
-         *
-         * @param url           the Request URL.
-         * @param method        the wanted Method.
-         * @param bodyPublisher the Body Publisher used for PUT and POST Requests.
-         */
-        public Request(String url, Method method, HttpRequest.BodyPublisher bodyPublisher) {
-            this.url = url;
-            this.method = method;
-            this.bodyPublisher = bodyPublisher;
-        }
-
-
-        /**
-         * Create a simple HTTP Requests with a AuthToken.
-         *
-         * @param url           the Request URL.
-         * @param bearerAuth    the AuthToken.
-         * @param method        the wanted Method.
-         * @param bodyPublisher the Body Publisher used for PUT and POST Requests.
-         */
-        public Request(String url, String bearerAuth, Method method, HttpRequest.BodyPublisher bodyPublisher) {
-            this.url = url;
-            this.bearerAuth = bearerAuth;
-            this.method = method;
-            this.bodyPublisher = bodyPublisher;
+        public static RequestBuilder builder() {
+            return new RequestBuilder();
         }
 
         /**
@@ -197,6 +155,91 @@ public class RequestUtility {
          */
         public HttpRequest.BodyPublisher getBodyPublisher() {
             return bodyPublisher;
+        }
+
+        /**
+         * Get the Headers.
+         * @return the Headers.
+         */
+        public List<String[]> getHeaders() {
+            return headers;
+        }
+
+        /**
+         * Builder class for a Request class.
+         */
+        public static class RequestBuilder {
+            // The URL and Auth Token for the Request.
+            String url, bearerAuth;
+
+            // The Request Method.
+            Method method = Method.GET;
+
+            // The Body Publisher used for PUT and POST Requests.
+            HttpRequest.BodyPublisher bodyPublisher;
+
+            // Custom Headers.
+            List<String[]> headers = new ArrayList<>();
+
+            /**
+             * Change the Url of the Request.
+             * @param url the new Url.
+             * @return the Request.
+             */
+            public RequestBuilder url(String url) {
+                this.url = url;
+                return this;
+            }
+
+            /**
+             * Change the Bearer Auth Token.
+             * @param bearerAuth the new Auth Token.
+             * @return the Request.
+             */
+            public RequestBuilder bearerAuth(String bearerAuth) {
+                this.bearerAuth = bearerAuth;
+                return this;
+            }
+
+            /**
+             * Change the Request method.
+             * @param method the new Method.
+             * @return the Request.
+             */
+            public RequestBuilder method(Method method) {
+                this.method = method;
+                return this;
+            }
+
+            /**
+             * Change the Body publisher used.
+             * @param bodyPublisher the Body Publisher used for PUT and POST Requests.
+             * @return the Request.
+             */
+            public RequestBuilder bodyPublisher(HttpRequest.BodyPublisher bodyPublisher) {
+                this.bodyPublisher = bodyPublisher;
+                return this;
+            }
+
+            /**
+             * Change the Headers.
+             * @param header the new Header.
+             * @return the Request.
+             */
+            public RequestBuilder header(String[] header) {
+                this.headers.add(header);
+                return this;
+            }
+
+            public Request build() {
+                Request request = new Request();
+                request.url = this.url;
+                request.method = this.method;
+                request.bodyPublisher = this.bodyPublisher;
+                request.headers = this.headers;
+                request.bearerAuth = this.bearerAuth;
+                return request;
+            }
         }
     }
 

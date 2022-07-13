@@ -24,15 +24,15 @@ public class FunnyCryptocurrencies implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        JsonObject js =  RequestUtility.request(new RequestUtility.Request("https://data.messari.io/api/v1/assets/doge/metrics")).getAsJsonObject();
+        JsonObject js =  RequestUtility.request(RequestUtility.Request.builder().url("https://data.messari.io/api/v1/assets/doge/metrics").build()).getAsJsonObject();
 
         float dogeCoin = js.get("data").getAsJsonObject().get("market_data").getAsJsonObject().get("price_usd").getAsFloat();
 
-        js =  RequestUtility.request(new RequestUtility.Request("https://data.messari.io/api/v1/assets/btc/metrics")).getAsJsonObject();
+        js =  RequestUtility.request(RequestUtility.Request.builder().url("https://data.messari.io/api/v1/assets/btc/metrics").build()).getAsJsonObject();
 
         float bitcoin = js.get("data").getAsJsonObject().get("market_data").getAsJsonObject().get("price_usd").getAsFloat();
 
-        js =  RequestUtility.request(new RequestUtility.Request("https://data.messari.io/api/v1/assets/ltc/metrics")).getAsJsonObject();
+        js =  RequestUtility.request(RequestUtility.Request.builder().url("https://data.messari.io/api/v1/assets/ltc/metrics").build()).getAsJsonObject();
 
         float liteCoin = js.get("data").getAsJsonObject().get("market_data").getAsJsonObject().get("price_usd").getAsFloat();
 

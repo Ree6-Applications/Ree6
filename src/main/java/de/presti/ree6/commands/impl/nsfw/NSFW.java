@@ -33,7 +33,6 @@ public class NSFW implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.getChannel().getType() == ChannelType.TEXT && commandEvent.getChannel().asTextChannel().isNSFW()) {
-
             sendImage(commandEvent);
         } else {
             Main.getInstance().getCommandManager().sendMessage("Only available in NSFW Channels!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
@@ -50,7 +49,7 @@ public class NSFW implements ICommand {
                 commandEvent.getInteractionHook().sendMessage("Searching for Image...").complete() :
                 commandEvent.getChannel().sendMessage("Searching for Image...").complete();
 
-        JsonElement jsonElement = RequestUtility.request(new RequestUtility.Request("https://www.reddit.com/r/hentai/new.json?sort=hot&limit=50"));
+        JsonElement jsonElement = RequestUtility.request(RequestUtility.Request.builder().url("https://www.reddit.com/r/hentai/new.json?sort=hot&limit=50").build());
 
         if (jsonElement.isJsonObject() &&
                 jsonElement.getAsJsonObject().has("data") &&

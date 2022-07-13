@@ -24,7 +24,7 @@ public class MemeImage implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
-        JsonObject js = RequestUtility.request(new RequestUtility.Request("https://meme-api.herokuapp.com/gimme")).getAsJsonObject();
+        JsonObject js = RequestUtility.request(RequestUtility.Request.builder().url("https://meme-api.herokuapp.com/gimme").build()).getAsJsonObject();
 
         EmbedBuilder em = new EmbedBuilder();
 
