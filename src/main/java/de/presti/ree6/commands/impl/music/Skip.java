@@ -19,14 +19,14 @@ public class Skip implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to skip!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to skip!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
 
         if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
             return;
         }
 
-        Main.getInstance().getMusicWorker().skipTrack(commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getMusicWorker().skipTrack(commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
     /**

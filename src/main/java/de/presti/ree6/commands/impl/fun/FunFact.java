@@ -22,7 +22,7 @@ public class FunFact implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         JsonObject js = RequestUtility.request(new RequestUtility.Request("https://useless-facts.sameerkumar.website/api")).getAsJsonObject();
 
-        Main.getInstance().getCommandManager().sendMessage(js.get("data").getAsString(), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage(js.get("data").getAsString(), commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
     /**

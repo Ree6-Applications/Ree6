@@ -20,7 +20,7 @@ public class TwitchNotifier implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
-            Main.getInstance().getCommandManager().sendMessage("This Command doesn't support slash commands yet.", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("This Command doesn't support slash commands yet.", commandEvent.getChannel(), commandEvent.getInteractionHook());
             return;
         }
 
@@ -34,47 +34,47 @@ public class TwitchNotifier implements ICommand {
 
                 end.append("```");
 
-                Main.getInstance().getCommandManager().sendMessage(end.toString(), 10, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(end.toString(), 10, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch list/add/remove", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch list/add/remove", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else if (commandEvent.getArguments().length == 3) {
 
             if (commandEvent.getMessage().getMentions().getChannels(TextChannel.class).isEmpty()) {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch add/remove TwitchName #Channel", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch add/remove TwitchName #Channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 return;
             }
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
                 commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-TwitchNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addTwitchWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
-                Main.getInstance().getCommandManager().sendMessage("A TwitchStream Notifier has been created for the User " + name + "!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("A TwitchStream Notifier has been created for the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
                 if (!Main.getInstance().getNotifier().isTwitchRegistered(name)) {
                     Main.getInstance().getNotifier().registerTwitchChannel(name);
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch remove TwitchName", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch remove TwitchName", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch add TwitchName #Channel", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch add TwitchName #Channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else if (commandEvent.getArguments().length == 2) {
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
                 Main.getInstance().getSqlConnector().getSqlWorker().removeTwitchWebhook(commandEvent.getGuild().getId(), name);
-                Main.getInstance().getCommandManager().sendMessage("A TwitchStream Notifier has been removed from the User " + name + "!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("A TwitchStream Notifier has been removed from the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
                 if (Main.getInstance().getNotifier().isTwitchRegistered(name)) {
                     Main.getInstance().getNotifier().unregisterTwitchChannel(name);
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch add TwitchName #Channel", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch add TwitchName #Channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch remove TwitchName", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch remove TwitchName", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch list/add/remove", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitch list/add/remove", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }

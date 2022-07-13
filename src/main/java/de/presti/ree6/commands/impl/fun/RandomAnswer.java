@@ -20,7 +20,7 @@ public class RandomAnswer implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage(ArrayUtil.answers[RandomUtils.random.nextInt((ArrayUtil.answers.length - 1))], commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage(ArrayUtil.answers[RandomUtils.random.nextInt((ArrayUtil.answers.length - 1))], commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
     /**

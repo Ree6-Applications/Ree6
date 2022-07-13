@@ -21,9 +21,9 @@ public class Webinterface implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
 
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR) && commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
-            Main.getInstance().getCommandManager().sendMessage("Please visit <https://cp.ree6.de>", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Please visit <https://cp.ree6.de>", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You can't use this Command you need the following Permissions: Administrator and Manage Server", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You can't use this Command you need the following Permissions: Administrator and Manage Server", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }

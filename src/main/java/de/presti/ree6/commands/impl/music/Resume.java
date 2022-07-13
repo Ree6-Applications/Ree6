@@ -23,7 +23,7 @@ public class Resume implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to resume!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to resume!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
 
         if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
@@ -42,7 +42,7 @@ public class Resume implements ICommand {
         em.setDescription("Song is going to be resumed!");
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-        Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
     /**

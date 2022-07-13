@@ -24,7 +24,7 @@ public class Pause implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
 
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to pause!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to pause!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
 
         if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
@@ -42,7 +42,7 @@ public class Pause implements ICommand {
         em.setColor(Color.GREEN);
         em.setDescription("Song has been paused!");
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-        Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
     /**

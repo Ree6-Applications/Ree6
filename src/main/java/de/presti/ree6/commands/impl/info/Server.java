@@ -42,9 +42,9 @@ public class Server implements ICommand {
             em.addField(":earth_africa: **Other**", "**Verification-level:** " + commandEvent.getGuild().getVerificationLevel().getKey(), true);
             em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-            Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), commandEvent.getInteractionHook());
         } else
-            Main.getInstance().getCommandManager().sendMessage("You dont have ADMINISTRATOR Permissions for this Command!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You dont have ADMINISTRATOR Permissions for this Command!", commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
     /**

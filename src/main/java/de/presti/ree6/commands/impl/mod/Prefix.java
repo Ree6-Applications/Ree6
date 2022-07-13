@@ -32,21 +32,21 @@ public class Prefix implements ICommand {
 
                 if (prefixOption != null) {
                     Main.getInstance().getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", prefixOption.getAsString());
-                    Main.getInstance().getCommandManager().sendMessage("Your new Prefix has been set to: " + prefixOption.getAsString(), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Your new Prefix has been set to: " + prefixOption.getAsString(), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "prefix PREFIX", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "prefix PREFIX", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
             } else {
                 if (commandEvent.getArguments().length != 1) {
-                    Main.getInstance().getCommandManager().sendMessage((commandEvent.getArguments().length < 1 ? "Not enough" : "Too many") + " Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "prefix PREFIX", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage((commandEvent.getArguments().length < 1 ? "Not enough" : "Too many") + " Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "prefix PREFIX", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 } else {
                     Main.getInstance().getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", commandEvent.getArguments()[0]);
-                    Main.getInstance().getCommandManager().sendMessage("Your new Prefix has been set to: " + commandEvent.getArguments()[0], 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Your new Prefix has been set to: " + commandEvent.getArguments()[0], 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 

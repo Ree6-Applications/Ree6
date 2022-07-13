@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -34,6 +35,7 @@ public class CommandManager {
 
     /**
      * Constructor for the Command-Manager used to register every Command.
+     *
      * @throws CommandInitializerException if an error occurs while initializing the Commands.
      */
     public CommandManager() throws CommandInitializerException, InstantiationException, IllegalAccessException {
@@ -140,7 +142,7 @@ public class CommandManager {
      * @param slashCommandInteractionEvent the Slash Command Event if it was a Slash Command.
      * @return true, if a command has been performed.
      */
-    public boolean perform(Member member, Guild guild, String messageContent, Message message, TextChannel textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
+    public boolean perform(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
 
         // Check if the User is under Cooldown.
         if (isTimeout(member.getUser())) {
@@ -160,7 +162,7 @@ public class CommandManager {
 
         // Check if it is a Slash Command.
         if (slashCommandInteractionEvent != null) {
-            if (!performSlashCommand(slashCommandInteractionEvent)) {
+            if (!performSlashCommand(textChannel, slashCommandInteractionEvent)) {
                 return false;
             }
         } else {
@@ -195,7 +197,7 @@ public class CommandManager {
         return true;
     }
 
-    private boolean performMessageCommand(Member member, Guild guild, String messageContent, Message message, TextChannel textChannel) {
+    private boolean performMessageCommand(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel) {
         // Check if the Message is null.
         if (message == null) {
             sendMessage("There was an error while executing the Command!", 5, textChannel, null);
@@ -239,9 +241,10 @@ public class CommandManager {
     /**
      * Call when a slash command has been performed.
      *
+     * @param textChannel the TextChannel where the command has been performed.
      * @param slashCommandInteractionEvent the Slash-Command Event.
      */
-    private boolean performSlashCommand(SlashCommandInteractionEvent slashCommandInteractionEvent) {
+    private boolean performSlashCommand(MessageChannelUnion textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
         //Get the Command by the Slash Command Name.
         ICommand command = getCommandByName(slashCommandInteractionEvent.getName());
 
@@ -258,7 +261,7 @@ public class CommandManager {
         }
 
         // Perform the Command.
-        command.onASyncPerform(new CommandEvent(slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, null, null, slashCommandInteractionEvent));
+        command.onASyncPerform(new CommandEvent(slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, textChannel, null, slashCommandInteractionEvent));
 
         return true;
     }
@@ -314,7 +317,7 @@ public class CommandManager {
             if (messageChannel == null) return;
             if (messageChannel.canTalk())
                 messageChannel.sendMessage(messageContent).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                    if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                    if (message != null && message.getChannel().retrieveMessageById(message.getId()).complete() != null) {
                         return message.delete();
                     }
 
@@ -372,7 +375,7 @@ public class CommandManager {
             if (messageChannel == null) return;
             if (messageChannel.canTalk())
                 messageChannel.sendMessageEmbeds(embedBuilder.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                    if (message != null && message.getTextChannel().retrieveMessageById(message.getId()).complete() != null) {
+                    if (message != null && message.getChannel().retrieveMessageById(message.getId()).complete() != null) {
                         return message.delete();
                     }
 
@@ -390,12 +393,16 @@ public class CommandManager {
      * @param interactionHook the Interaction-hook, if it is a slash event.
      */
     public void deleteMessage(Message message, InteractionHook interactionHook) {
-        if (message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) && message.getTextChannel().retrieveMessageById(message.getIdLong()).complete() != null && !message.isEphemeral() && interactionHook == null) {
-            try {
-                message.delete().queue();
-            } catch (Exception ex) {
-                Main.getInstance().getLogger().error("[CommandManager] Couldn't delete a Message!");
-            }
+        if (message != null &&
+                message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
+                message.getChannel().retrieveMessageById(message.getIdLong()).complete() != null &&
+                message.getType().canDelete() &&
+                !message.isEphemeral() &&
+                interactionHook == null) {
+            message.delete().onErrorFlatMap(throwable -> {
+                Main.getInstance().getLogger().error("[CommandManager] Couldn't delete a Message!", throwable);
+                return null;
+            }).queue();
         }
     }
 

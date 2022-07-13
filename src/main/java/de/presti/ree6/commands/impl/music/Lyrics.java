@@ -34,7 +34,7 @@ public class Lyrics implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
 
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to see the lyrics of!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to see the lyrics of!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
 
         AudioPlayerSendHandler sendingHandler = (AudioPlayerSendHandler) commandEvent.getGuild().getAudioManager().getSendingHandler();
@@ -53,7 +53,7 @@ public class Lyrics implements ICommand {
                                     commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle("Music Player!")
                             .setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setColor(Color.RED)
                             .setDescription("Couldn't find the Lyrics for ``" + FormatUtil.filter(title) + "``.")
-                            .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl()), 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                            .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl()), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     return;
                 }
 
@@ -61,7 +61,7 @@ public class Lyrics implements ICommand {
                         .setAuthor(lyrics.getAuthor())
                         .setTitle(lyrics.getTitle(), lyrics.getURL());
                 if (lyrics.getContent().length() > 15000) {
-                    Main.getInstance().getCommandManager().sendMessage("Lyrics for `" + FormatUtil.filter(title) + "` found but likely not correct: " + lyrics.getURL(), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("Lyrics for `" + FormatUtil.filter(title) + "` found but likely not correct: " + lyrics.getURL(), commandEvent.getChannel(), commandEvent.getInteractionHook());
                 } else if (lyrics.getContent().length() > 2000) {
                     String content = lyrics.getContent().trim();
                     while (content.length() > 2000) {
@@ -72,15 +72,15 @@ public class Lyrics implements ICommand {
                             index = content.lastIndexOf(" ", 2000);
                         if (index == -1)
                             index = 2000;
-                        Main.getInstance().getCommandManager().sendMessage(eb.setDescription(content.substring(0, index).trim()), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage(eb.setDescription(content.substring(0, index).trim()), commandEvent.getChannel(), commandEvent.getInteractionHook());
                         content = content.substring(index).trim();
                         eb.setAuthor(null).setTitle(null, null);
                         eb.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                     }
 
-                    Main.getInstance().getCommandManager().sendMessage(eb.setDescription(content), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage(eb.setDescription(content), commandEvent.getChannel(), commandEvent.getInteractionHook());
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage(eb.setDescription(lyrics.getContent()), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage(eb.setDescription(lyrics.getContent()), commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
             });
         }

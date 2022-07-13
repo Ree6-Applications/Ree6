@@ -24,7 +24,7 @@ public class ChatProtector implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
-            Main.getInstance().getCommandManager().sendMessage("This Command doesn't support slash commands yet.", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("This Command doesn't support slash commands yet.", commandEvent.getChannel(), commandEvent.getInteractionHook());
             return;
         }
 
@@ -32,11 +32,11 @@ public class ChatProtector implements ICommand {
             if(commandEvent.getArguments().length >= 1) {
                 if(commandEvent.getArguments().length == 1) {
                     if(commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                        Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     } else if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                        Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector remove WORD", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector remove WORD", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     } else if (commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
                         if(de.presti.ree6.addons.impl.ChatProtector.isChatProtectorSetup(commandEvent.getGuild().getId())) {
                             StringBuilder end = new StringBuilder();
@@ -45,14 +45,14 @@ public class ChatProtector implements ICommand {
                                 end.append("\n").append(s);
                             }
 
-                            Main.getInstance().getCommandManager().sendMessage("```" + end + "```", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                            Main.getInstance().getCommandManager().sendMessage("```" + end + "```", commandEvent.getChannel(), commandEvent.getInteractionHook());
                         } else {
-                            Main.getInstance().getCommandManager().sendMessage("Your ChatProtector isn't setuped!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                            Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                            Main.getInstance().getCommandManager().sendMessage("Your ChatProtector isn't setuped!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                            Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add WORD WORD2 WORD3 AND MORE WORDS", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                         }
                     } else {
-                        Main.getInstance().getCommandManager().sendMessage("Couldn't find " + commandEvent.getArguments()[0] + "!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add/remove/list", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Couldn't find " + commandEvent.getArguments()[0] + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add/remove/list", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     }
                 } else {
                     if(commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
@@ -64,25 +64,25 @@ public class ChatProtector implements ICommand {
                                 end.append("\n").append(commandEvent.getArguments()[i]);
                             }
                             de.presti.ree6.addons.impl.ChatProtector.blacklist(commandEvent.getGuild().getId(), words);
-                            Main.getInstance().getCommandManager().sendMessage("The Wordlist has been added to your ChatProtector!\nYour Wordlist:\n```" + end + "```", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                            Main.getInstance().getCommandManager().sendMessage("The Wordlist has been added to your ChatProtector!\nYour Wordlist:\n```" + end + "```", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                         } else {
                             de.presti.ree6.addons.impl.ChatProtector.blacklist(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
-                            Main.getInstance().getCommandManager().sendMessage("The Word " + commandEvent.getArguments()[1] + " has been added to your ChatProtector!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                            Main.getInstance().getCommandManager().sendMessage("The Word " + commandEvent.getArguments()[1] + " has been added to your ChatProtector!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                         }
                     } else if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
                         de.presti.ree6.addons.impl.ChatProtector.removeFromBlacklist(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
-                        Main.getInstance().getCommandManager().sendMessage("The Word " + commandEvent.getArguments()[1] + " has been removed from your ChatProtector!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("The Word " + commandEvent.getArguments()[1] + " has been removed from your ChatProtector!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     } else {
-                        Main.getInstance().getCommandManager().sendMessage("Couldn't find " + commandEvent.getArguments()[0] + "!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add/remove/list", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Couldn't find " + commandEvent.getArguments()[0] + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add/remove/list", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                     }
                 }
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add/remove/list", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "chatprotector add/remove/list", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }

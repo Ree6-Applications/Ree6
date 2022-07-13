@@ -701,7 +701,7 @@ public class LoggingEvents extends ListenerAdapter {
                 wm.append("The Message had Attachments, please be careful when checking them out!\n");
             }
 
-            we.setDescription(":wastebasket: **Message of " + user.getAsMention() + " in " + event.getTextChannel().getAsMention() + " has been deleted.**\n" +
+            we.setDescription(":wastebasket: **Message of " + user.getAsMention() + " in " + event.getChannel().getAsMention() + " has been deleted.**\n" +
                     (message != null ? message.getContentRaw().length() >= 650 ? "Message is too long to display!" : message.getContentRaw() : ""));
 
             if (message != null && message.getContentRaw().length() >= 650) wm.addFile("message.txt", message.getContentRaw().getBytes(StandardCharsets.UTF_8));

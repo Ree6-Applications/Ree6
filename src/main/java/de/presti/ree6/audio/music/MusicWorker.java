@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.managers.AudioManager;
 
@@ -77,10 +77,10 @@ public class MusicWorker {
      * @param trackUrl        the Track URL.
      * @param interactionHook a InteractionHook if it was an SlashCommand.
      */
-    public void loadAndPlaySilence(final TextChannel channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+    public void loadAndPlaySilence(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild());
 
-        musicManager.scheduler.textChannel = channel;
+        musicManager.scheduler.channel = channel;
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             /**
@@ -121,12 +121,12 @@ public class MusicWorker {
             @Override
             public void noMatches() {
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(channel.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                        .setAuthor(channel.asGuildMessageChannel().getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, channel.asGuildMessageChannel().getGuild().getJDA().getSelfUser().getAvatarUrl())
                         .setTitle("Music Player!")
-                        .setThumbnail(channel.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                        .setThumbnail(channel.asGuildMessageChannel().getGuild().getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
                         .setDescription("A Song with the URL ``" + FormatUtil.filter(trackUrl) + "`` couldn't be found!")
-                        .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
+                        .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
             }
 
             /**
@@ -140,7 +140,7 @@ public class MusicWorker {
                         .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Error while playing: " + exception.getMessage())
-                        .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
+                        .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
             }
         });
     }
@@ -153,10 +153,10 @@ public class MusicWorker {
      * @param trackUrl        the Track URL.
      * @param interactionHook a InteractionHook if it was an SlashCommand.
      */
-    public void loadAndPlay(final TextChannel channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+    public void loadAndPlay(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild());
 
-        musicManager.scheduler.textChannel = channel;
+        musicManager.scheduler.channel = channel;
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
 
@@ -172,7 +172,7 @@ public class MusicWorker {
                         .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
                         .setDescription("The Song ``" + FormatUtil.filter(track.getInfo().title) + "`` has been added to the Queue!")
-                        .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
+                        .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
 
                 play(audioChannel, musicManager, track);
             }
@@ -196,7 +196,7 @@ public class MusicWorker {
                         .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
                         .setDescription("The Song ``" + FormatUtil.filter(firstTrack.getInfo().title) + "`` has been added to the Queue! (The first Song of the Playlist: " + FormatUtil.filter(playlist.getName()) + ")")
-                        .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
+                        .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
 
                 play(audioChannel, musicManager, firstTrack);
 
@@ -220,7 +220,7 @@ public class MusicWorker {
                         .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
                         .setDescription("A Song with the URL ``" + FormatUtil.filter(trackUrl) + "`` couldn't be found!")
-                        .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
+                        .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
             }
 
             /**
@@ -234,7 +234,7 @@ public class MusicWorker {
                         .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Error while playing: " + exception.getMessage())
-                        .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
+                        .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
             }
         });
     }
@@ -257,15 +257,15 @@ public class MusicWorker {
      * @param channel         the TextChannel, used to inform the user about the skip.
      * @param interactionHook the Interaction-Hook, used to replace the channel if it is a SlashCommand.
      */
-    public void skipTrack(TextChannel channel, InteractionHook interactionHook) {
+    public void skipTrack(MessageChannelUnion channel, InteractionHook interactionHook) {
         Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
                 .setTitle("Music Player!")
                 .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                 .setColor(Color.GREEN)
                 .setDescription("Skipping to the next Song!")
-                .setFooter(channel.getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.getGuild().getIconUrl()), 5, channel, interactionHook);
+                .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
 
-        getGuildAudioPlayer(channel.getGuild()).scheduler.nextTrack(channel);
+        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).scheduler.nextTrack(channel);
     }
 
     /**
@@ -325,12 +325,12 @@ public class MusicWorker {
 
     public boolean checkInteractPermission(CommandEvent commandEvent) {
         if (commandEvent.getMember().getVoiceState() == null || !commandEvent.getMember().getVoiceState().inAudioChannel()) {
-            Main.getInstance().getCommandManager().sendMessage("Please join a Channel!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Please join a Channel!", commandEvent.getChannel(), commandEvent.getInteractionHook());
             return false;
         }
 
         if (commandEvent.getGuild().getSelfMember().getVoiceState() != null && commandEvent.getGuild().getSelfMember().getVoiceState().inAudioChannel() && commandEvent.getGuild().getSelfMember().getVoiceState().getChannel() != null && commandEvent.getMember().getVoiceState().getChannel() != null && !commandEvent.getGuild().getSelfMember().getVoiceState().getChannel().getId().equalsIgnoreCase(commandEvent.getMember().getVoiceState().getChannel().getId())) {
-            Main.getInstance().getCommandManager().sendMessage("You have to be in the same Channel as me!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You have to be in the same Channel as me!", commandEvent.getChannel(), commandEvent.getInteractionHook());
             return false;
         }
 

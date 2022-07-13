@@ -30,17 +30,17 @@ public class HornyJail implements ICommand {
             if (targetOption != null) {
                 sendHornyJail(targetOption.getAsMember(), commandEvent);
             } else {
-                Main.getInstance().getCommandManager().sendMessage("No User was given to put into the Hornyjail!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("No User was given to put into the Hornyjail!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else {
             if (commandEvent.getArguments().length == 1) {
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    Main.getInstance().getCommandManager().sendMessage("No User given!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("No User given!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 } else {
                     sendHornyJail(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                 }
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "hornyjail @User", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "hornyjail @User", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         }
     }
@@ -68,11 +68,11 @@ public class HornyJail implements ICommand {
      */
     public void sendHornyJail(Member member, CommandEvent commandEvent) {
         try {
-            Main.getInstance().getCommandManager().sendMessage(member.getAsMention() + " is now in the Hornyjail!", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-            commandEvent.getTextChannel().sendFile(ImageCreationUtility.createHornyJailImage(member.getUser()), "hornyjail.png").queue();
+            Main.getInstance().getCommandManager().sendMessage(member.getAsMention() + " is now in the Hornyjail!", commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.getChannel().sendFile(ImageCreationUtility.createHornyJailImage(member.getUser()), "hornyjail.png").queue();
             if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
         } catch (Exception ex) {
-            Main.getInstance().getCommandManager().sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 }

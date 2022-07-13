@@ -38,14 +38,14 @@ public class Twitter implements ICommand {
             if (targetOption != null && contentOption != null) {
                 sendTwitterTweet(targetOption.getAsMember(), contentOption.getAsString(), commandEvent);
             } else {
-                if (targetOption == null) Main.getInstance().getCommandManager().sendMessage("No User was given to use for the Tweet!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
-                if (contentOption == null) Main.getInstance().getCommandManager().sendMessage("No Tweet Content was given!" , 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                if (targetOption == null) Main.getInstance().getCommandManager().sendMessage("No User was given to use for the Tweet!" , 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                if (contentOption == null) Main.getInstance().getCommandManager().sendMessage("No Tweet Content was given!" , 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
 
         } else {
             if (commandEvent.getArguments().length >= 2) {
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    Main.getInstance().getCommandManager().sendMessage("No User given!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                    Main.getInstance().getCommandManager().sendMessage("No User given!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 } else {
                     StringBuilder stringBuilder = new StringBuilder();
 
@@ -56,7 +56,7 @@ public class Twitter implements ICommand {
                     sendTwitterTweet(commandEvent.getMessage().getMentions().getMembers().get(0), stringBuilder.toString(), commandEvent);
                 }
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitter @User Yourtexthere", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitter @User Yourtexthere", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         }
     }
@@ -97,11 +97,11 @@ public class Twitter implements ICommand {
             request.setHeader("Authorization", Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"));
             HttpResponse response = httpClient.execute(request);
 
-            commandEvent.getTextChannel().sendFile(response.getEntity().getContent(), "twitter.png").queue();
+            commandEvent.getChannel().sendFile(response.getEntity().getContent(), "twitter.png").queue();
 
             if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
         } catch (Exception ex) {
-            Main.getInstance().getCommandManager().sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 

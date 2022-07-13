@@ -19,7 +19,7 @@ public class Credits implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         Main.getInstance().getCommandManager().sendMessage("Lead Developer : Presti | 平和#0240\nSupport Developer : xazed | xazed#5014\ndavid. | david.#3120",
-                commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+                commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
     /**

@@ -18,7 +18,7 @@ public class Invite implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage("https://invite.ree6.de", commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+        Main.getInstance().getCommandManager().sendMessage("https://invite.ree6.de", commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
     /**

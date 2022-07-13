@@ -51,11 +51,11 @@ public class Setup implements ICommand {
                 commandEvent.getInteractionHook().sendMessageEmbeds(embedBuilder.build())
                         .addActionRow(selectMenu).queue();
             } else {
-                commandEvent.getTextChannel().sendMessageEmbeds(embedBuilder.build())
+                commandEvent.getChannel().sendMessageEmbeds(embedBuilder.build())
                         .setActionRows(ActionRow.of(selectMenu)).queue();
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You dont have the Permission for this Command!", 5, commandEvent.getTextChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage("You dont have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }

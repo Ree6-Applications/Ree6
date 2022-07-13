@@ -127,7 +127,7 @@ public class OtherEvents extends ListenerAdapter {
             if (ChatProtector.isChatProtectorSetup(event.getGuild().getId()) &&
                     ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
                 Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
-                Main.getInstance().getCommandManager().sendMessage("You can't write that!", event.getTextChannel(), null);
+                Main.getInstance().getCommandManager().sendMessage("You can't write that!", event.getChannel(), null);
                 return;
             }
 
@@ -142,7 +142,7 @@ public class OtherEvents extends ListenerAdapter {
             }
 
 
-            if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getTextChannel(), null)) {
+            if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
 
                 if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
                     event.getChannel().sendMessage("Usage " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "help").queue();
@@ -186,7 +186,8 @@ public class OtherEvents extends ListenerAdapter {
 
         event.deferReply(true).queue();
 
-        Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getTextChannel(), event);
+        event.getChannel();
+        Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getChannel(), event);
     }
 
     @Override
