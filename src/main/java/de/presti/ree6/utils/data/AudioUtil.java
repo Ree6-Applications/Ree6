@@ -37,7 +37,7 @@ public class AudioUtil {
      * @return The WAV encoded byte array.
      * @throws IOException If an error occurs.
      */
-    public static byte[] convert(ByteBuffer byteBuffer) throws IOException {
+    public static byte[] convertPCMtoWAV(ByteBuffer byteBuffer) throws IOException {
         AudioInputStream audioInputStream =
                 AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED,
                         new AudioInputStream(new ByteArrayInputStream(byteBuffer.array()),

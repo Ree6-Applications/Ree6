@@ -1,5 +1,6 @@
 package de.presti.ree6.audio;
 
+import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.AudioUtil;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
@@ -110,9 +111,17 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 byteBuffer.put(data);
             }
 
-            voiceChannel.sendMessage("Here is your audio!").addFile(AudioUtil.convert(byteBuffer), new SimpleDateFormat("dd.MM.yyyy HH/mm").format(System.currentTimeMillis()) + "-" + voiceChannel.getId() + ".wav").queue();
+            if (voiceChannel.canTalk()) {
+                voiceChannel.sendMessage("Here is your audio!")
+                        .addFile(AudioUtil.convertPCMtoWAV(byteBuffer), new SimpleDateFormat("dd.MM.yyyy HH/mm").format(System.currentTimeMillis()) + "-" + voiceChannel.getId() + ".wav").queue();
+            }
+            // Find a way to still notify that the bot couldn't send the audio.
         } catch (Exception ex) {
-            voiceChannel.sendMessage("Something went wrong while converting your audio!\nReason: " + ex.getMessage()).queue();
+            if (voiceChannel.canTalk()) {
+                voiceChannel.sendMessage("Something went wrong while converting your audio!\nReason: " + ex.getMessage()).queue();
+            }
+
+            Main.getInstance().getLogger().error("Something went wrong while converting a recording!", ex);
         }
 
         voiceChannel.getGuild().getAudioManager().closeAudioConnection();
