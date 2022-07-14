@@ -91,7 +91,7 @@
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client</artifactId>
-            <version>1.35.1</version>
+            <version>1.35.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.oauth-client</groupId>
@@ -186,7 +186,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.14.3</version>
+            <version>1.15.2</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
