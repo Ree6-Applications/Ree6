@@ -21,7 +21,7 @@ public class ModerationUtil {
      */
     private static final Pattern urlPattern = Pattern.compile(
             "(?:^|\\W)((ht|f)tp(s?):|www\\.)"
-                    + "(([\\w\\-]+\\.)+?([\\w\\-.~]+?)*"
+                    + "(([\\w\\-]+\\.)+([\\w\\-.~]+?)*"
                     + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]*$~@!:/{};']*)",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
