@@ -15,15 +15,6 @@ import java.util.regex.Pattern;
 public class ModerationUtil {
 
     /**
-     * This pattern is used to get URLs from a string.
-     */
-    private static final Pattern urlPattern = Pattern.compile(
-            "(?:^|\\W)((ht|f)tp(s?):|www\\.)"
-                    + "(([\\w\\-]+\\.)+([\\w\\-.~]+?)*"
-                    + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]*$~@!:/{};']*)",
-            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
-
-    /**
      * Constructor should not be called, since it is a utility class that doesn't need an instance.
      *
      * @throws IllegalStateException it is a utility class.
@@ -126,19 +117,5 @@ public class ModerationUtil {
      */
     public static void removeBlacklist(String guildId, List<String> wordList) {
         wordList.forEach(word -> removeBlacklist(guildId, word));
-    }
-
-    /**
-     * Extract an url from a Message.
-     * @param message the Message.
-     * @return the url.
-     */
-    public static String extractUrl(String message) {
-        Matcher matcher = urlPattern.matcher(message);
-        if (matcher.find()) {
-            return message.substring(matcher.start(), matcher.end());
-        }
-
-        return null;
     }
 }
