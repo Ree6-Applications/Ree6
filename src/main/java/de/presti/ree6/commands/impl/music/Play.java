@@ -120,7 +120,7 @@ public class Play implements ICommand {
                 for (String search : spotiftrackinfos) {
                     String result = null;
                     try {
-                        result = new YouTubeAPIHandler().searchYoutube(search);
+                        result = YouTubeAPIHandler.getInstance().searchYoutube(search);
                     } catch (Exception exception) {
                         Main.getInstance().getLogger().error("Error while searching for " + search + " on YouTube", exception);
                     }
@@ -162,7 +162,7 @@ public class Play implements ICommand {
             String ytResult = null;
 
             try {
-                ytResult = new YouTubeAPIHandler().searchYoutube(search.toString());
+                ytResult = YouTubeAPIHandler.getInstance().searchYoutube(search.toString());
             } catch (Exception exception) {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
