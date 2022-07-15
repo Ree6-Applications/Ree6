@@ -1,7 +1,5 @@
 package de.presti.ree6.utils.others;
 
-import com.google.cloud.vision.v1.*;
-import com.google.protobuf.ByteString;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.apis.GoogleVisionAPI;
 
@@ -40,8 +38,8 @@ public class ModerationUtil {
      * @param guildId the ID of the Guild.
      * @return an {@link ArrayList} with every Blacklisted word from the Guild.
      */
-    public static ArrayList<String> getBlacklist(String guildId) {
-        return (ArrayList<String>) Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(guildId);
+    public static List<String> getBlacklist(String guildId) {
+        return Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(guildId);
     }
 
     /**
@@ -104,7 +102,7 @@ public class ModerationUtil {
      * @param guildId  the ID of the Guild.
      * @param wordList the List of Words, which should be blacklisted.
      */
-    public static void blacklist(String guildId, ArrayList<String> wordList) {
+    public static void blacklist(String guildId, List<String> wordList) {
         wordList.forEach(word -> blacklist(guildId, word));
     }
 
@@ -126,7 +124,7 @@ public class ModerationUtil {
      * @param guildId  the ID of the Guild.
      * @param wordList the List of Words that should be removed from the Blacklist.
      */
-    public static void removeBlacklist(String guildId, ArrayList<String> wordList) {
+    public static void removeBlacklist(String guildId, List<String> wordList) {
         wordList.forEach(word -> removeBlacklist(guildId, word));
     }
 
