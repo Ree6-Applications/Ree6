@@ -15,7 +15,7 @@ public class UserLevel {
     User user;
 
     // His XP and Level.
-    long experience, level = 0;
+    long experience, level;
 
     // The Rank of the User.
     int rank;

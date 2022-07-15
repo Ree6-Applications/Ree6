@@ -69,7 +69,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
      * @see AudioReceiveHandler#handleCombinedAudio(CombinedAudio)
      */
     @Override
-    public void handleCombinedAudio(CombinedAudio combinedAudio) {
+    public void handleCombinedAudio(@NotNull CombinedAudio combinedAudio) {
         if (finished) {
             return;
         }

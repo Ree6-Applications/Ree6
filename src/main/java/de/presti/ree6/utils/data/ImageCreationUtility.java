@@ -227,7 +227,7 @@ public class ImageCreationUtility {
             graphics2D.fillRect((xOffset * i) + xOffset + 1, -1, 3, 130);
         }
 
-        // Close the Graphics2d instance.
+        // Close the Graphics2D instance.
         graphics2D.dispose();
 
         // Create a ByteArrayOutputStream to convert the BufferedImage to an Array of Bytes.
@@ -290,7 +290,6 @@ public class ImageCreationUtility {
         g2.dispose();
 
         Main.getInstance().getAnalyticsLogger().debug("Disposing Graphics2D finished. ({}ms)", System.currentTimeMillis() - actionPerformance);
-        actionPerformance = System.currentTimeMillis();
 
         Main.getInstance().getAnalyticsLogger().debug("Finished creation. ({}ms)", System.currentTimeMillis() - start);
         return output;

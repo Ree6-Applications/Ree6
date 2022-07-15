@@ -82,6 +82,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void addChatLevelData(String guildId, UserLevel userLevel) {
 
+        if (isOptOut(guildId, userLevel.getUserId())) {
+            return;
+        }
+
         // Check if the User is already saved in the Database.
         if (existsInChatLevel(guildId, userLevel.getUserId())) {
 
@@ -200,6 +204,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param userLevel the UserLevel Entity with all the information.
      */
     public void addVoiceLevelData(String guildId, UserLevel userLevel) {
+
+        if (isOptOut(guildId, userLevel.getUserId())) {
+            return;
+        }
 
         // Check if the User is already saved in the Database.
         if (existsInVoiceLevel(guildId, userLevel.getUserId())) {
@@ -1916,6 +1924,51 @@ public record SQLWorker(SQLConnector sqlConnector) {
             querySQL("UPDATE CommandStats SET USES=? WHERE COMMAND=?", (getStatsCommandGlobal(command) + 1), command);
         } else {
             querySQL("INSERT INTO CommandStats (COMMAND, USES) VALUES (?, 1)", command);
+        }
+    }
+
+    //endregion
+
+    //region Opt-out
+
+    /**
+     * Check if the given User is opted out.
+     * @param guildId the ID of the Guild.
+     * @param userId the ID of the User.
+     * @return {@link Boolean} as result. If true, the User is opted out | If false, the User is not opted out.
+     */
+    public boolean isOptOut(String guildId, String userId) {
+        // Creating a SQL Statement to check if there is an entry in the Opt-out Table by the Guild Id and User Id
+        try (ResultSet rs = querySQL("SELECT * FROM Opt_out WHERE GID=? AND UID=?", guildId, userId)) {
+
+            // Return if found.
+            return (rs != null && rs.next());
+        } catch (Exception ignore) {
+        }
+
+        //Return false if there was an error.
+        return false;
+    }
+
+    /**
+     * Opt a User out of the given Guild.
+     * @param guildId the ID of the Guild.
+     * @param userId the ID of the User.
+     */
+    public void optOut(String guildId, String userId) {
+        if (!isOptOut(guildId, userId)) {
+            querySQL("INSERT INTO Opt_out (GID, UID) VALUES (?, ?)", guildId, userId);
+        }
+    }
+
+    /**
+     * Opt in a User to the given Guild.
+     * @param guildId the ID of the Guild.
+     * @param userId the ID of the User.
+     */
+    public void optIn(String guildId, String userId) {
+        if (isOptOut(guildId, userId)) {
+            querySQL("DELETE FROM Opt_out WHERE GID=? AND UID=?", guildId, userId);
         }
     }
 

@@ -13,8 +13,6 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO rework.
-
 /**
  * Utility used to work with HTTP Requests.
  */

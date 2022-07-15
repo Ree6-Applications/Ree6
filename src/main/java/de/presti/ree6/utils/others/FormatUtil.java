@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
 /**
- * From https://github.com/jagrosh/MusicBot
+ * From <a href="https://github.com/jagrosh/MusicBot">...</a>
  * @author John Grosh <john.a.grosh@gmail.com>
  */
 public class FormatUtil {
