@@ -41,6 +41,7 @@ public class GoogleVisionAPI {
         // Initialize client that will be used to send requests. This client only needs to be created
         // once, and can be reused for multiple requests. After completing all of your requests, call
         // the "close" method on the client to safely clean up any remaining background resources.
+        String[] texts = new String[0];
         try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
             BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
             List<AnnotateImageResponse> responses = response.getResponsesList();
@@ -52,12 +53,12 @@ public class GoogleVisionAPI {
                 }
 
                 // For full list of available annotations, see http://g.co/cloud/vision/docs
-                return res.getFullTextAnnotation().getText().split("\n");
+                texts = res.getFullTextAnnotation().getText().split("\n");
             }
         } catch (Exception ignored) {
         }
 
-        return new String[0];
+        return texts;
     }
 
     /**
@@ -76,6 +77,8 @@ public class GoogleVisionAPI {
         // Initialize client that will be used to send requests. This client only needs to be created
         // once, and can be reused for multiple requests. After completing all of your requests, call
         // the "close" method on the client to safely clean up any remaining background resources.
+
+        String[] texts = new String[0];
         try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
             BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
             List<AnnotateImageResponse> responses = response.getResponsesList();
@@ -87,12 +90,12 @@ public class GoogleVisionAPI {
                 }
 
                 // For full list of available annotations, see http://g.co/cloud/vision/docs
-                return res.getFullTextAnnotation().getText().split("\n");
+                texts = res.getFullTextAnnotation().getText().split("\n");
             }
         } catch (Exception exception) {
             exception.printStackTrace();
         }
 
-        return new String[0];
+        return texts;
     }
 }
