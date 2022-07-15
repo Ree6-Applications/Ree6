@@ -3,23 +3,28 @@ package de.presti.ree6.utils.apis;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.others.ThreadUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.time.Duration;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class YouTubeAPIHandler {
 
     private YouTube youTube;
-    public final YouTubeAPIHandler instance;
+    public static YouTubeAPIHandler instance;
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+
+    private final HashMap<String, Consumer<PlaylistItem>> listenerChannelId = new HashMap<>();
 
     public YouTubeAPIHandler() {
         try {
             createYouTube();
+            createUploadStream();
         } catch (Exception e) {
             Main.getInstance().getLogger().error("Couldn't create a YouTube Instance", e);
         }
@@ -53,31 +58,31 @@ public class YouTubeAPIHandler {
         return null;
     }
 
-    public List<PlaylistItem> getYouTubeUploads(String channelId) {
+    public List<PlaylistItem> getYouTubeUploads(String channelId) throws Exception {
         List<PlaylistItem> playlistItemList = new ArrayList<>();
-        try {
-            YouTube.Channels.List request = youTube.channels().list(Collections.singletonList("snippet, contentDetails"));
-            ChannelListResponse channelListResponse = request.setId(Collections.singletonList(channelId)).execute();
 
-            if (!channelListResponse.getItems().isEmpty()) {
-                Channel channel = channelListResponse.getItems().get(0);
-                YouTube.PlaylistItems.List playlistItemRequest =
-                        youTube.playlistItems().list(Collections.singletonList("id,contentDetails,snippet"));
-                playlistItemRequest.setPlaylistId(channel.getContentDetails().getRelatedPlaylists().getUploads());
-                playlistItemRequest.setFields(
-                        "items(contentDetails/videoId,snippet/title,snippet/publishedAt),nextPageToken,pageInfo");
+        YouTube.Channels.List request = youTube.channels()
+                .list(Collections.singletonList("snippet, contentDetails"))
+                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
+        ChannelListResponse channelListResponse = request.setId(Collections.singletonList(channelId)).execute();
 
-                String nexToken = "";
-                while (nexToken != null) {
-                    playlistItemRequest.setPageToken(nexToken);
-                    PlaylistItemListResponse playlistItemListResponse = playlistItemRequest.execute();
+        if (!channelListResponse.getItems().isEmpty()) {
+            Channel channel = channelListResponse.getItems().get(0);
+            YouTube.PlaylistItems.List playlistItemRequest =
+                    youTube.playlistItems().list(Collections.singletonList("id,contentDetails,snippet"));
+            playlistItemRequest.setPlaylistId(channel.getContentDetails().getRelatedPlaylists().getUploads());
+            playlistItemRequest.setFields(
+                    "items(snippet/title,snippet/description,snippet/thumbnails,snippet/publishedAt),nextPageToken,pageInfo");
+            playlistItemRequest.setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
 
-                    playlistItemList.addAll(playlistItemListResponse.getItems());
-                    nexToken = playlistItemListResponse.getNextPageToken();
-                }
+            String nextToken = "";
+            while (nextToken != null) {
+                playlistItemRequest.setPageToken(nextToken);
+                PlaylistItemListResponse playlistItemListResponse = playlistItemRequest.execute();
+
+                playlistItemList.addAll(playlistItemListResponse.getItems());
+                nextToken = playlistItemListResponse.getNextPageToken();
             }
-        } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Couldn't search on YouTube", exception);
         }
 
         return playlistItemList;
@@ -94,5 +99,60 @@ public class YouTubeAPIHandler {
         } catch (Exception e) {
             Main.getInstance().getLogger().error("Couldn't create a YouTube Instance", e);
         }
+    }
+
+    public void createUploadStream() {
+        ThreadUtil.createNewASyncThread(x -> {
+            try {
+                for (Map.Entry<?, ?> channelListener : listenerChannelId.entrySet()) {
+                    String channelId = (String) channelListener.getKey();
+                    Consumer<PlaylistItem> listener = (Consumer<PlaylistItem>) channelListener.getValue();
+                    List<PlaylistItem> playlistItemList = getYouTubeUploads(channelId);
+                    if (!playlistItemList.isEmpty()) {
+                        for (PlaylistItem playlistItem : playlistItemList) {
+                            PlaylistItemSnippet snippet = playlistItem.getSnippet();
+                            DateTime dateTime = snippet.getPublishedAt();
+                            if (dateTime != null &&
+                                    dateTime.getValue() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) {
+                                listener.accept(playlistItem);
+                            }
+                        }
+                    }
+                }
+                System.out.println("Finished Listening");
+            } catch (Exception e) {
+                Main.getInstance().getLogger().error("Couldn't get Upload data!", e);
+
+            }
+        }, x -> {
+            Main.getInstance().getLogger().error("Couldn't start Upload Stream!");
+        }, Duration.ofMinutes(5));
+    }
+
+    public boolean isListening(String channelId) {
+        return listenerChannelId.containsKey(channelId);
+    }
+
+    public void addChannelToListener(String channelId, Consumer<PlaylistItem> success) {
+        if (isListening(channelId)) {
+            return;
+        }
+
+        listenerChannelId.put(channelId, success);
+    }
+
+    public void removeChannelFromListener(String channelId) {
+        if (!isListening(channelId)) {
+            return;
+        }
+
+        listenerChannelId.remove(channelId);
+    }
+
+    public static YouTubeAPIHandler getInstance() {
+        if (instance == null) {
+            return instance = new YouTubeAPIHandler();
+        }
+        return instance;
     }
 }
