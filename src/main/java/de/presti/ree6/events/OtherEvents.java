@@ -127,7 +127,7 @@ public class OtherEvents extends ListenerAdapter {
                     Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
                     Main.getInstance().getCommandManager().sendMessage("Your message contains blacklisted words!", event.getChannel(), null);
                     return;
-                } else if (!event.getMessage().getAttachments().isEmpty()) {
+                } /* else if (!event.getMessage().getAttachments().isEmpty()) {
                     for (Message.Attachment attachment : event.getMessage().getAttachments()) {
                         if (attachment.isImage()) {
                             if (ModerationUtil.checkImage(event.getGuild().getId(), attachment.getUrl())) {
@@ -148,7 +148,7 @@ public class OtherEvents extends ListenerAdapter {
                             return;
                         }
                     }
-                }
+                } */
             }
 
             if (event.getAuthor().isBot()) return;
