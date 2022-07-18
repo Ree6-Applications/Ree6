@@ -10,6 +10,8 @@ import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
 import de.presti.ree6.sql.base.data.SQLParameter;
 import de.presti.ree6.sql.base.data.SQLResponse;
+import de.presti.ree6.sql.entities.Invite;
+import de.presti.ree6.sql.entities.Role;
 import de.presti.ree6.sql.entities.Webhook;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
@@ -899,26 +901,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * Get the all AutoRoles saved in our Database from the given Guild.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link List<String>} as List with all Role IDs.
+     * @return {@link List<Role>} as List with all Roles.
      */
-    public List<String> getAutoRoles(String guildId) {
-
-        // Create a new ArrayList to save the Role Ids.
-        ArrayList<String> roleIds = new ArrayList<>();
-
-        // Check if there is a role in the database.
-        if (isAutoRoleSetup(guildId)) {
-            // Creating a SQL Statement to get the RoleID from the AutoRoles Table by the GuildID.
-            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM AutoRoles WHERE GID=?", guildId)) {
-
-                // Add the Role ID to the List if found.
-                while (rs != null && rs.next()) roleIds.add(rs.getString("RID"));
-            } catch (Exception ignore) {
-            }
-        }
-
-        // Return the Arraylist.
-        return roleIds;
+    public List<Role> getAutoRoles(String guildId) {
+        return getEntity(Role.class, "SELECT * FROM AutoRoles WHERE GID=?", guildId).getEntities().stream().map(Role.class::cast).toList();
     }
 
     /**
@@ -992,6 +978,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
     //endregion
 
     //region Level Rewards
+
+    // TODO migrate.
 
     //region Chat Rewards
 
@@ -1248,21 +1236,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<String>} as List with {@link InviteContainer}.
      */
     public List<InviteContainer> getInvites(String guildId) {
-
-        // Create a new ArrayList to save the Invites.
-        ArrayList<InviteContainer> inviteContainers = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Invites from the Invites Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Invites WHERE GID=?", guildId)) {
-
-            // Add the Invite to the List if found.
-            while (rs != null && rs.next())
-                inviteContainers.add(new InviteContainer(rs.getString("UID"), rs.getString("GID"), rs.getString("CODE"), Integer.parseInt(rs.getString("USES"))));
-        } catch (Exception ignore) {
-        }
-
-        // Return an Arraylist with all Invites.
-        return inviteContainers;
+        return getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=?", guildId).getEntities().stream().map(o -> {
+            Invite invite = (Invite) o;
+            return new InviteContainer(invite.getUserId(), invite.getGuild(), invite.getCode(), invite.getUses());
+        }).toList();
     }
 
     /**
@@ -1304,14 +1281,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param inviteCode    the Code of the Invite Code.
      * @param inviteUsage   the Usage count of the Invite.
      */
-    public void setInvite(String guildId, String inviteCreator, String inviteCode, int inviteUsage) {
+    public void setInvite(String guildId, String inviteCreator, String inviteCode, long inviteUsage) {
         // Check if there is an entry with the same data.
         if (existsInvite(guildId, inviteCreator, inviteCode)) {
             // Update entry.
             sqlConnector.querySQL("UPDATE Invites SET USES=? WHERE GID=? AND UID=? AND CODE=?", inviteUsage, guildId, inviteCreator, inviteCode);
         } else {
-            // Create new entry.
-            sqlConnector.querySQL("INSERT INTO Invites (GID, UID, USES, CODE) VALUES (?, ?, ?, ?);", guildId, inviteCreator, inviteUsage, inviteCode);
+            saveEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
         }
     }
 
@@ -1334,7 +1310,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param inviteCode    the Code of the Invite.
      */
     public void removeInvite(String guildId, String inviteCreator, String inviteCode, int inviteUsage) {
-        sqlConnector.querySQL("DELETE FROM Invites WHERE GID=? AND UID=? AND CODE=? " + "AND USES=?", guildId, inviteCreator, inviteCode, inviteUsage);
+        deleteEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
     }
 
     /**
@@ -1351,6 +1327,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
     //region Configuration
 
     //region Join Message.
+
+    // TODO:: make a setting out of this.
 
     /**
      * Get the Join Message of the given Guild.
@@ -1414,6 +1392,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
     //endregion
 
     //region Chat Protector / Word Blacklist
+
+    // TODO:: migrate.
 
     /**
      * Get every Blacklisted Word saved in our Database from the Guild.
@@ -1504,6 +1484,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
     //endregion
 
     //region Settings
+
+    // TODO:: migrate.
 
     /**
      * Get the current Setting by the Guild and its Identifier.
@@ -1696,6 +1678,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     //region Stats
 
+    // TODO:: migrate.
+
     public Long getStatsCommandGlobal(String command) {
         // Creating a SQL Statement to get an entry in the CommandStats Table by the Command name.
         try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM CommandStats WHERE COMMAND = ?", command)) {
@@ -1880,6 +1864,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
     //endregion
 
     //region Data delete
+
+    // TODO:: migrate.
 
     /**
      * Delete Data saved in our Database by the given Guild ID.
@@ -2140,10 +2126,6 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return The mapped Version of the given Class-Entity.
      */
     public SQLResponse getEntity(Class<?> entity, String query, Object... args) {
-        if (!entity.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("Entity must be annotated with @Table");
-        }
-
         if (query.isEmpty()) {
             if (entity.isAnnotationPresent(Table.class)) {
                 String queryBuilder = "SELECT * FROM " +

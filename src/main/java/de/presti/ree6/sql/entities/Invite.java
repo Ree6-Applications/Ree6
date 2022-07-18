@@ -7,7 +7,7 @@ import de.presti.ree6.sql.base.data.SQLEntity;
 /**
  * Invite class to store information about an Invite.
  */
-@Table(name = "Invite")
+@Table(name = "Invites")
 public class Invite extends SQLEntity {
 
     /**

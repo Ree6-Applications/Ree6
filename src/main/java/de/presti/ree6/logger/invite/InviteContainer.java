@@ -9,7 +9,7 @@ public class InviteContainer {
     String creatorId, guildId, code;
 
     // The use count from our Database.
-    int uses;
+    long uses;
 
     /**
      * Constructor for the InviteContainer which saved the Data.
@@ -18,7 +18,7 @@ public class InviteContainer {
      * @param code the Code of the Invite.
      * @param uses the Usage Count of the Invite.
      */
-    public InviteContainer(String creatorId, String guildId, String code, int uses) {
+    public InviteContainer(String creatorId, String guildId, String code, long uses) {
         this.creatorId = creatorId;
         this.guildId = guildId;
         this.code = code;
@@ -75,9 +75,9 @@ public class InviteContainer {
 
     /**
      * Get the Usage Count of the Invite.
-     * @return {@link Integer} as Usage Count.
+     * @return {@link Long} as Usage Count.
      */
-    public int getUses() {
+    public long getUses() {
         return uses;
     }
 
@@ -85,7 +85,7 @@ public class InviteContainer {
      * Set the Usage Count of the Invite.
      * @param uses the Usage Count of the Invite.
      */
-    public void setUses(int uses) {
+    public void setUses(long uses) {
         this.uses = uses;
     }
 }
