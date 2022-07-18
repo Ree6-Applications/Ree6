@@ -1899,12 +1899,21 @@ public record SQLWorker(SQLConnector sqlConnector) {
         Table table = entity.getAnnotation(Table.class);
         String tableName = table.name();
         List<SQLParameter> sqlParameters =
-                Arrays.stream(entity.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                new ArrayList<>(Arrays.stream(entity.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
                         .map(e -> {
                                     Property property = e.getAnnotation(Property.class);
                                     return new SQLParameter(property.name(), e.getType(), property.primary());
                                 }
-                        ).toList();
+                        ).toList());
+
+        if (entity.getSuperclass() != null && !entity.getSuperclass().isInstance(SQLEntity.class)) {
+            sqlParameters.addAll(Arrays.stream(entity.getSuperclass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                    .map(e -> {
+                                Property property = e.getAnnotation(Property.class);
+                                return new SQLParameter(property.name(), e.getType(), property.primary());
+                            }
+                    ).toList());
+        }
 
         if (sqlParameters.isEmpty()) {
             return false;
