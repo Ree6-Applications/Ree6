@@ -159,7 +159,7 @@ public class Play implements ICommand {
                 }
             }
 
-            String ytResult = null;
+            String ytResult;
 
             try {
                 ytResult = YouTubeAPIHandler.getInstance().searchYoutube(search.toString());

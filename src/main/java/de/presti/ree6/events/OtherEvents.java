@@ -1,7 +1,6 @@
 package de.presti.ree6.events;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
-import de.presti.ree6.addons.impl.ChatProtector;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
@@ -9,9 +8,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.ChatUserLevel;
 import de.presti.ree6.sql.entities.VoiceUserLevel;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.utils.others.AutoRoleHandler;
-import de.presti.ree6.utils.others.RandomUtils;
-import de.presti.ree6.utils.others.TimeUtil;
+import de.presti.ree6.utils.others.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -34,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -124,11 +122,33 @@ public class OtherEvents extends ListenerAdapter {
         super.onMessageReceived(event);
 
         if (event.isFromGuild() && event.isFromType(ChannelType.TEXT) && event.getMember() != null) {
-            if (ChatProtector.isChatProtectorSetup(event.getGuild().getId()) &&
-                    ChatProtector.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
-                Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
-                Main.getInstance().getCommandManager().sendMessage("You can't write that!", event.getChannel(), null);
-                return;
+            if (ModerationUtil.shouldModerate(event.getGuild().getId())) {
+                if (ModerationUtil.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
+                    Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+                    Main.getInstance().getCommandManager().sendMessage("Your message contains blacklisted words!", event.getChannel(), null);
+                    return;
+                } /* else if (!event.getMessage().getAttachments().isEmpty()) {
+                    for (Message.Attachment attachment : event.getMessage().getAttachments()) {
+                        if (attachment.isImage()) {
+                            if (ModerationUtil.checkImage(event.getGuild().getId(), attachment.getUrl())) {
+                                Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+                                Main.getInstance().getCommandManager().sendMessage("The Image contained blacklisted words!", event.getChannel(), null);
+                                return;
+                            }
+                        }
+                    }
+                } else {
+                    String messageContent = event.getMessage().getContentRaw();
+                    String extractedUrl = ModerationUtil.extractUrl(messageContent);
+
+                    if (extractedUrl != null &&!extractedUrl.isEmpty()) {
+                        if (ModerationUtil.checkImage(event.getGuild().getId(), extractedUrl)) {
+                            Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+                            Main.getInstance().getCommandManager().sendMessage("The Image contained blacklisted words!", event.getChannel(), null);
+                            return;
+                        }
+                    }
+                } */
             }
 
             if (event.getAuthor().isBot()) return;
@@ -161,17 +181,7 @@ public class OtherEvents extends ListenerAdapter {
 
                     ArrayUtil.timeout.add(event.getMember());
 
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(30000);
-                        } catch (InterruptedException ignored) {
-                            Main.getInstance().getLogger().error("[OtherEvents] User cool-down Thread interrupted!");
-                            Thread.currentThread().interrupt();
-                        }
-
-                        ArrayUtil.timeout.remove(event.getMember());
-
-                    }).start();
+                    ThreadUtil.createNewThread(x -> ArrayUtil.timeout.remove(event.getMember()), null, Duration.ofSeconds(30), false, false);
                 }
 
                 AutoRoleHandler.handleChatLevelReward(event.getGuild(), event.getMember());

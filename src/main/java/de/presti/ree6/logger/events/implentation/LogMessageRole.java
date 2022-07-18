@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.awt.*;
-import java.util.EnumSet;
 import java.util.Set;
 
 /**

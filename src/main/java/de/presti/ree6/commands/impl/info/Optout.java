@@ -12,12 +12,13 @@ public class Optout implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage("This command is yet to be implemented.",
-                commandEvent.getChannel(), commandEvent.getInteractionHook());
-
-        /* Main.getInstance().getCommandManager().sendMessage("You have successfully opted out of any data collection on this Guild.",
-                commandEvent.getTextChannel(), commandEvent.getInteractionHook());*/
-        // TODO implement
+        if (Main.getInstance().getSqlConnector().getSqlWorker().isOptOut(commandEvent.getGuild().getId(), commandEvent.getMember().getId())) {
+            Main.getInstance().getSqlConnector().getSqlWorker().optIn(commandEvent.getGuild().getId(), commandEvent.getMember().getId());
+            Main.getInstance().getCommandManager().sendMessage("You are now opted in to data collection!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+        } else {
+            Main.getInstance().getSqlConnector().getSqlWorker().optOut(commandEvent.getGuild().getId(), commandEvent.getMember().getId());
+            Main.getInstance().getCommandManager().sendMessage("You are now opted out of data collection!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+        }
     }
 
     @Override
@@ -27,6 +28,6 @@ public class Optout implements ICommand {
 
     @Override
     public String[] getAlias() {
-        return new String[] { "opt-out", "out", "opt", "privacy", "ireject" };
+        return new String[] { "opt-out", "out", "opt", "privacy" };
     }
 }

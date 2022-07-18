@@ -65,6 +65,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void addChatLevelData(String guildId, ChatUserLevel userLevel) {
 
+        if (isOptOut(guildId, userLevel.getUserId())) {
+            return;
+        }
+
         // Check if the User is already saved in the Database.
         if (existsInChatLevel(guildId, userLevel.getUserId())) {
 
@@ -146,6 +150,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param voiceUserLevel the {@link VoiceUserLevel} Entity with all the information.
      */
     public void addVoiceLevelData(String guildId, VoiceUserLevel oldVoiceUserLevel, VoiceUserLevel voiceUserLevel) {
+
+        if (isOptOut(guildId, userLevel.getUserId())) {
+            return;
+        }
 
         // Check if the User is already saved in the Database.
         if (existsInVoiceLevel(guildId, voiceUserLevel.getUserId())) {
@@ -582,7 +590,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public void addTwitchWebhook(String guildId, String webhookId, String authToken, String twitchName) {
 
         // Check if there is already a Webhook set.
-        removeTwitterWebhook(guildId, twitchName);
+        removeTwitchWebhook(guildId, twitchName);
 
         // Add a new entry into the Database.
         sqlConnector.querySQL("INSERT INTO TwitchNotify (GID, NAME, CID, TOKEN) VALUES (?, ?, ?, ?);", guildId, twitchName, webhookId, authToken);
@@ -642,6 +650,186 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
         try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName)) {
+
+            // Return if there was a match.
+            return (rs != null && rs.next());
+        } catch (Exception ignore) {
+        }
+
+        // Return if there wasn't a match.
+        return false;
+    }
+
+    //endregion
+
+    //region YouTube Notifier
+
+    /**
+     * Get the YouTubeNotify data.
+     *
+     * @param guildId    the ID of the Guild.
+     * @param youtubeChannel the Username of the YouTube channel.
+     * @return {@link String[]} in the first index is the Webhook ID and in the second the Auth-Token.
+     */
+    public String[] getYouTubeWebhook(String guildId, String youtubeChannel) {
+
+        if (isYouTubeSetup(guildId)) {
+            // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
+            try (ResultSet rs = querySQL("SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel)) {
+
+                // Return if there was a match.
+                if (rs != null && rs.next()) {
+                    if (rs.getString("CID").isEmpty() || rs.getString("TOKEN").isEmpty())
+                        return new String[]{"0", "No setup!"};
+                    else return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
+                }
+            } catch (Exception ignore) {
+            }
+        }
+
+        return new String[]{"0", "No setup!"};
+    }
+
+    /**
+     * Get the YouTubeNotify data.
+     *
+     * @param youtubeChannel the Username of the YouTube channel.
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     */
+    public List<String[]> getYouTubeWebhooksByName(String youtubeChannel) {
+
+        ArrayList<String[]> webhooks = new ArrayList<>();
+
+        // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
+        try (ResultSet rs = querySQL("SELECT * FROM YouTubeNotify WHERE NAME=?", youtubeChannel)) {
+
+            // Return if there was a match.
+            while (rs != null && rs.next()) {
+                if (!rs.getString("CID").isEmpty() && !rs.getString("TOKEN").isEmpty())
+                    webhooks.add(new String[]{rs.getString("CID"), rs.getString("TOKEN")});
+            }
+        } catch (Exception ignore) {
+        }
+
+        return webhooks;
+    }
+
+    /**
+     * Get the all YouTube-Notifier.
+     *
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     */
+    public List<String> getAllYouTubeChannels() {
+
+        ArrayList<String> userNames = new ArrayList<>();
+
+        // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
+        try (ResultSet rs = querySQL("SELECT * FROM YouTubeNotify")) {
+
+            // Return if there was a match.
+            while (rs != null && rs.next()) {
+                userNames.add(rs.getString("NAME"));
+            }
+        } catch (Exception ignore) {
+        }
+
+        return userNames;
+    }
+
+    /**
+     * Get every YouTube-Notifier that has been set up for the given Guild.
+     *
+     * @param guildId the ID of the Guild.
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     */
+    public List<String> getAllYouTubeChannels(String guildId) {
+
+        ArrayList<String> userNames = new ArrayList<>();
+
+        // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
+        try (ResultSet rs = querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId)) {
+
+            // Return if there was a match.
+            while (rs != null && rs.next()) {
+                userNames.add(rs.getString("NAME"));
+            }
+        } catch (Exception ignore) {
+        }
+
+        return userNames;
+    }
+
+    /**
+     * Set the YouTubeNotify in our Database.
+     *
+     * @param guildId    the ID of the Guild.
+     * @param webhookId  the ID of the Webhook.
+     * @param authToken  the Auth-token to verify the access.
+     * @param youtubeChannel the Username of the YouTube channel.
+     */
+    public void addYouTubeWebhook(String guildId, String webhookId, String authToken, String youtubeChannel) {
+
+        // Check if there is already a Webhook set.
+        removeYouTubeWebhook(guildId, youtubeChannel);
+
+        // Add a new entry into the Database.
+        querySQL("INSERT INTO YouTubeNotify (GID, NAME, CID, TOKEN) VALUES (?, ?, ?, ?);", guildId, youtubeChannel, webhookId, authToken);
+    }
+
+    /**
+     * Remove a YouTube Notifier entry from our Database.
+     *
+     * @param guildId    the ID of the Guild.
+     * @param youtubeChannel the Name of the YouTube channel.
+     */
+    public void removeYouTubeWebhook(String guildId, String youtubeChannel) {
+
+        // Check if there is a Webhook set.
+        if (isYouTubeSetup(guildId, youtubeChannel)) {
+
+            // Get the Guild from the ID.
+            Guild guild = BotWorker.getShardManager().getGuildById(guildId);
+
+            if (guild != null) {
+                // Delete the existing Webhook.
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(getYouTubeWebhook(guildId, youtubeChannel)[0]) && webhook.getToken().equalsIgnoreCase(getYouTubeWebhook(guildId, youtubeChannel)[1])).forEach(webhook -> webhook.delete().queue()));
+            }
+
+            // Delete the entry.
+            querySQL("DELETE FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel);
+        }
+    }
+
+    /**
+     * Check if the YouTube Webhook has been set in our Database for this Server.
+     *
+     * @param guildId the ID of the Guild.
+     * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
+     */
+    public boolean isYouTubeSetup(String guildId) {
+        // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
+        try (ResultSet rs = querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId)) {
+
+            // Return if there was a match.
+            return (rs != null && rs.next());
+        } catch (Exception ignore) {
+        }
+
+        // Return if there wasn't a match.
+        return false;
+    }
+
+    /**
+     * Check if the YouTube Webhook has been set for the given User in our Database for this Server.
+     *
+     * @param guildId    the ID of the Guild.
+     * @param youtubeChannel the Username of the YouTube channel.
+     * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
+     */
+    public boolean isYouTubeSetup(String guildId, String youtubeChannel) {
+
+        // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
+        try (ResultSet rs = querySQL("SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -1849,6 +2037,51 @@ public record SQLWorker(SQLConnector sqlConnector) {
             sqlConnector.querySQL("UPDATE CommandStats SET USES=? WHERE COMMAND=?", (getStatsCommandGlobal(command) + 1), command);
         } else {
             sqlConnector.querySQL("INSERT INTO CommandStats (COMMAND, USES) VALUES (?, 1)", command);
+        }
+    }
+
+    //endregion
+
+    //region Opt-out
+
+    /**
+     * Check if the given User is opted out.
+     * @param guildId the ID of the Guild.
+     * @param userId the ID of the User.
+     * @return {@link Boolean} as result. If true, the User is opted out | If false, the User is not opted out.
+     */
+    public boolean isOptOut(String guildId, String userId) {
+        // Creating a SQL Statement to check if there is an entry in the Opt-out Table by the Guild Id and User Id
+        try (ResultSet rs = querySQL("SELECT * FROM Opt_out WHERE GID=? AND UID=?", guildId, userId)) {
+
+            // Return if found.
+            return (rs != null && rs.next());
+        } catch (Exception ignore) {
+        }
+
+        //Return false if there was an error.
+        return false;
+    }
+
+    /**
+     * Opt a User out of the given Guild.
+     * @param guildId the ID of the Guild.
+     * @param userId the ID of the User.
+     */
+    public void optOut(String guildId, String userId) {
+        if (!isOptOut(guildId, userId)) {
+            querySQL("INSERT INTO Opt_out (GID, UID) VALUES (?, ?)", guildId, userId);
+        }
+    }
+
+    /**
+     * Opt in a User to the given Guild.
+     * @param guildId the ID of the Guild.
+     * @param userId the ID of the User.
+     */
+    public void optIn(String guildId, String userId) {
+        if (isOptOut(guildId, userId)) {
+            querySQL("DELETE FROM Opt_out WHERE GID=? AND UID=?", guildId, userId);
         }
     }
 

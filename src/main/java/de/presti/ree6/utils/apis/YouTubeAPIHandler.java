@@ -3,15 +3,13 @@ package de.presti.ree6.utils.apis;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.others.ThreadUtil;
 
-import java.time.Duration;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * YouTubeAPIHandler.
@@ -35,17 +33,11 @@ public class YouTubeAPIHandler {
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
     /**
-     * List with all channels and consumers for notifications.
-     */
-    private final HashMap<String, Consumer<PlaylistItem>> listenerChannelId = new HashMap<>();
-
-    /**
      * Constructor.
      */
     public YouTubeAPIHandler() {
         try {
             createYouTube();
-            createUploadStream();
         } catch (Exception e) {
             Main.getInstance().getLogger().error("Couldn't create a YouTube Instance", e);
         }
@@ -101,13 +93,15 @@ public class YouTubeAPIHandler {
                 .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
         ChannelListResponse channelListResponse = request.setId(Collections.singletonList(channelId)).execute();
 
-        if (!channelListResponse.getItems().isEmpty()) {
+        if (channelListResponse != null &&
+                channelListResponse.getItems() != null &&
+                !channelListResponse.getItems().isEmpty()) {
             Channel channel = channelListResponse.getItems().get(0);
             YouTube.PlaylistItems.List playlistItemRequest =
                     youTube.playlistItems().list(Collections.singletonList("id,contentDetails,snippet"));
             playlistItemRequest.setPlaylistId(channel.getContentDetails().getRelatedPlaylists().getUploads());
             playlistItemRequest.setFields(
-                    "items(snippet/title,snippet/description,snippet/thumbnails,snippet/publishedAt),nextPageToken,pageInfo");
+                    "items(contentDetails/videoId,snippet/title,snippet/description,snippet/thumbnails,snippet/publishedAt,snippet/channelTitle),nextPageToken,pageInfo");
             playlistItemRequest.setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
 
             String nextToken = "";
@@ -137,72 +131,6 @@ public class YouTubeAPIHandler {
         } catch (Exception e) {
             Main.getInstance().getLogger().error("Couldn't create a YouTube Instance", e);
         }
-    }
-
-    /**
-     * Creates an Thread for the Upload-Notifier.
-     */
-    public void createUploadStream() {
-        ThreadUtil.createNewASyncThread(x -> {
-            try {
-                for (Map.Entry<?, ?> channelListener : listenerChannelId.entrySet()) {
-                    String channelId = (String) channelListener.getKey();
-                    Consumer<PlaylistItem> listener = (Consumer<PlaylistItem>) channelListener.getValue();
-                    List<PlaylistItem> playlistItemList = getYouTubeUploads(channelId);
-                    if (!playlistItemList.isEmpty()) {
-                        for (PlaylistItem playlistItem : playlistItemList) {
-                            PlaylistItemSnippet snippet = playlistItem.getSnippet();
-                            DateTime dateTime = snippet.getPublishedAt();
-                            if (dateTime != null &&
-                                    dateTime.getValue() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) {
-                                listener.accept(playlistItem);
-                            }
-                        }
-                    }
-                }
-                System.out.println("Finished Listening");
-            } catch (Exception e) {
-                Main.getInstance().getLogger().error("Couldn't get Upload data!", e);
-
-            }
-        }, x -> {
-            Main.getInstance().getLogger().error("Couldn't start Upload Stream!");
-        }, Duration.ofMinutes(5));
-    }
-
-    /**
-     * Check if the notifier is listening for this specific channel.
-     *
-     * @param channelId the ChannelId.
-     */
-    public boolean isListening(String channelId) {
-        return listenerChannelId.containsKey(channelId);
-    }
-
-    /**
-     * Add an specific channel to the notifier.
-     *
-     * @param channelId the ChannelId.
-     * @param success   the success consumer.
-     */
-    public void addChannelToListener(String channelId, Consumer<PlaylistItem> success) {
-        if (isListening(channelId)) {
-            return;
-        }
-
-        listenerChannelId.put(channelId, success);
-    }
-
-    /**
-     * Remove an channel from the notifier.
-     * @param channelId the ChannelId.
-     */
-    public void removeChannelFromListener(String channelId) {
-        if (!isListening(channelId)) {
-            return;
-        }
-
-        listenerChannelId.remove(channelId);
     }
 
     /**

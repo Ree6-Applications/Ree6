@@ -138,7 +138,7 @@ public class LoggingEvents extends ListenerAdapter {
         we.setTimestamp(Instant.now());
 
         if (event.getMember() != null) {
-            we.setDescription(event.getUser().getAsMention() + " **left the Server.**\n:timer: Joined :\n**" + TimeFormat.DATE_TIME_SHORT.format(event.getMember().getTimeJoined()));
+            we.setDescription(event.getUser().getAsMention() + " **left the Server.**\n:timer: **Joined:**\n" + TimeFormat.DATE_TIME_SHORT.format(event.getMember().getTimeJoined()));
         } else {
             we.setDescription(event.getUser().getAsMention() + " **left the Server.**");
         }
@@ -679,7 +679,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
-            Message message = ArrayUtil.getMessageFromMessageList(event.getMessageId());
+            Message message = ArrayUtil.getMessageFromMessageListAndRemove(event.getMessageId());
 
             if (message != null && message.getActivity() != null) return;
 

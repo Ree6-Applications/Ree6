@@ -7,15 +7,22 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.helix.domain.User;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.util.DateTime;
+import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.PlaylistItemContentDetails;
+import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.others.ThreadUtil;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.awt.*;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.*;
@@ -33,6 +40,9 @@ public class Notifier {
 
     // Local list of registered Twitch Channels.
     private final ArrayList<String> registeredTwitchChannels = new ArrayList<>();
+
+    // Local list of registered YouTube Channels.
+    private final ArrayList<String> registeredYouTubeChannels = new ArrayList<>();
 
     // Local list of registered Twitter Users.
     private final Map<String, TwitterStream> registeredTwitterUsers = new HashMap<>();
@@ -54,6 +64,7 @@ public class Notifier {
         configurationBuilder.setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"));
 
         twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
+        createUploadStream();
     }
 
     //region Twitch
@@ -64,38 +75,37 @@ public class Notifier {
     public void registerTwitchEventHandler() {
         getTwitchClient().getEventManager().onEvent(ChannelGoLiveEvent.class, channelGoLiveEvent -> {
 
+            // Create Webhook Message.
+            WebhookMessageBuilder wmb = new WebhookMessageBuilder();
+
+            wmb.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+            wmb.setUsername("Ree6");
+
+            WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+            webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(channelGoLiveEvent.getStream().getUserName(), null));
+            webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitch Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+
+            // Try getting the User.
+            Optional<User> twitchUserRequest = getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(channelGoLiveEvent.getStream().getUserName())).execute().getUsers().stream().findFirst();
+            if (getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(channelGoLiveEvent.getStream().getUserName())).execute().getUsers().stream().findFirst().isPresent()) {
+                webhookEmbedBuilder.setImageUrl(twitchUserRequest.orElseThrow().getProfileImageUrl());
+            } else {
+                webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrl());
+            }
+
+            // Set rest of the Information.
+            webhookEmbedBuilder.setDescription(channelGoLiveEvent.getStream().getUserName() + " is now Live on Twitch! Come and join the Stream <https://twitch.tv/" + channelGoLiveEvent.getChannel().getName() + "> !");
+            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", channelGoLiveEvent.getStream().getTitle()));
+            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Game**", channelGoLiveEvent.getStream().getGameName()));
+            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Viewer**", "" + channelGoLiveEvent.getStream().getViewerCount()));
+            webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+            webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
+
+            wmb.addEmbeds(webhookEmbedBuilder.build());
+
             // Go through every Webhook that is registered for the Twitch Channel
             for (String[] credits : Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getStream().getUserName().toLowerCase())) {
-
-                // Create Webhook Message.
-                WebhookMessageBuilder wmb = new WebhookMessageBuilder();
-
-                wmb.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
-                wmb.setUsername("Ree6");
-
-                WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
-
-                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(channelGoLiveEvent.getStream().getUserName(), null));
-                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitch Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
-
-                // Try getting the User.
-                Optional<User> twitchUserRequest = getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(channelGoLiveEvent.getStream().getUserName())).execute().getUsers().stream().findFirst();
-                if (getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(channelGoLiveEvent.getStream().getUserName())).execute().getUsers().stream().findFirst().isPresent()) {
-                    webhookEmbedBuilder.setImageUrl(twitchUserRequest.orElseThrow().getProfileImageUrl());
-                } else {
-                    webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrl());
-                }
-
-                // Set rest of the Information.
-                webhookEmbedBuilder.setDescription(channelGoLiveEvent.getStream().getUserName() + " is now Live on Twitch! Come and join the Stream <https://twitch.tv/" + channelGoLiveEvent.getChannel().getName() + "> !");
-                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", channelGoLiveEvent.getStream().getTitle()));
-                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Game**", channelGoLiveEvent.getStream().getGameName()));
-                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Viewer**", "" + channelGoLiveEvent.getStream().getViewerCount()));
-                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
-                webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
-
-                wmb.addEmbeds(webhookEmbedBuilder.build());
-
                 WebhookUtil.sendWebhook(null, wmb.build(), Long.parseLong(credits[0]), credits[1], false);
             }
         });
@@ -323,10 +333,123 @@ public class Notifier {
 
     //endregion
 
+    //region YouTube
+
+    /**
+     * Used to create a Thread that listens for new YouTube uploads.
+     */
+    public void createUploadStream() {
+        ThreadUtil.createNewThread(x -> {
+            try {
+                for (String channel : registeredYouTubeChannels) {
+                    List<PlaylistItem> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
+                    if (!playlistItemList.isEmpty()) {
+                        for (PlaylistItem playlistItem : playlistItemList) {
+                            PlaylistItemSnippet snippet = playlistItem.getSnippet();
+                            DateTime dateTime = snippet.getPublishedAt();
+                            if (dateTime != null &&
+                                    dateTime.getValue() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) {
+                                PlaylistItemContentDetails contentDetails = playlistItem.getContentDetails();
+                                // Create Webhook Message.
+                                WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+
+                                webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+                                webhookMessageBuilder.setUsername("Ree6");
+
+                                WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(snippet.getChannelTitle(), null));
+                                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("YouTube Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+
+                                webhookEmbedBuilder.setImageUrl(snippet.getThumbnails().getHigh().getUrl());
+
+                                // Set rest of the Information.
+                                webhookEmbedBuilder.setDescription(snippet.getChannelTitle() + " just uploaded a new Video! Check it out <https://www.youtube.com/watch?v=" + contentDetails.getVideoId() + "/> !");
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", snippet.getTitle()));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", snippet.getDescription().isEmpty() ? "No Description" : snippet.getDescription()));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", snippet.getPublishedAt().toStringRfc3339()));
+                                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                                webhookEmbedBuilder.setColor(Color.RED.getRGB());
+
+                                webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+                                Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel).forEach(strings ->
+                                        Webhook.sendWebhook(null, webhookMessageBuilder.build(), Long.parseLong(strings[0]),
+                                                strings[1], false));
+                            }
+                        }
+                    }
+                }
+            } catch (GoogleJsonResponseException googleJsonResponseException) {
+                Main.getInstance().getAnalyticsLogger().error("Encountered an error, while trying to get the YouTube Uploads!", googleJsonResponseException);
+            } catch (Exception e) {
+                Main.getInstance().getLogger().error("Couldn't get upload data!", e);
+            }
+        }, x -> Main.getInstance().getLogger().error("Couldn't start upload Stream!"), Duration.ofSeconds(10), true, true);
+    }
+
+    /**
+     * Used to register an Upload Event for the given YouTube Channel.
+     *
+     * @param youtubeChannel the Name of the YouTube Channel.
+     */
+    public void registerYouTubeChannel(String youtubeChannel) {
+        if (getTwitchClient() == null) return;
+
+        if (!isYouTubeRegistered(youtubeChannel)) registeredYouTubeChannels.add(youtubeChannel);
+    }
+
+    /**
+     * Used to register an upload Event for the given YouTube Channels.
+     *
+     * @param youtubeChannels the Names of the YouTube Channels.
+     */
+    public void registerYouTubeChannel(List<String> youtubeChannels) {
+        if (YouTubeAPIHandler.getInstance() == null) return;
+
+        youtubeChannels.forEach(s -> {
+            if (!isYouTubeRegistered(s)) registeredYouTubeChannels.add(s);
+        });
+    }
+
+    /**
+     * Used to unregister an Upload Event for the given YouTube Channel
+     *
+     * @param youtubeChannel the Name of the YouTube Channel.
+     */
+    public void unregisterYouTubeChannel(String youtubeChannel) {
+        if (YouTubeAPIHandler.getInstance() == null) return;
+
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(youtubeChannel).isEmpty())
+            return;
+
+        if (isYouTubeRegistered(youtubeChannel)) registeredYouTubeChannels.remove(youtubeChannel);
+    }
+
+    /**
+     * Check if a YouTube Channel is already being checked.
+     *
+     * @param youtubeChannel the Name of the YouTube Channel.
+     * @return true, if there is an Event for the Channel | false, if there isn't an Event for the Channel.
+     */
+    public boolean isYouTubeRegistered(String youtubeChannel) {
+        return registeredYouTubeChannels.contains(youtubeChannel);
+    }
+
+    //endregion
+
+    /**
+     * Get an instance of the TwitchClient.
+     * @return instance of the TwitchClient.
+     */
     public TwitchClient getTwitchClient() {
         return twitchClient;
     }
 
+    /**
+     * Get an instance of the TwitterClient.
+     * @return instance of the TwitterClient.
+     */
     public Twitter getTwitterClient() {
         return twitterClient;
     }

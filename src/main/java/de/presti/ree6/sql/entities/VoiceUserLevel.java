@@ -24,10 +24,12 @@ public class VoiceUserLevel extends SQLEntity {
     // The User.
     User user;
 
-    // His XP and Level.
+    // Experience of the User.
     @Property(name = "xp")
     long experience;
-    long level = 0;
+
+    // Level of the User.
+    long level;
 
     // The Rank of the User.
     int rank;

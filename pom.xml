@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>1.7.17</version>
+    <version>1.7.18</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -48,6 +48,11 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-vision</artifactId>
+            <version>3.0.1</version>
+        </dependency>
         <dependency>
             <groupId>com.github.Twitter4J.Twitter4J</groupId>
             <artifactId>twitter4j-core</artifactId>
@@ -118,12 +123,12 @@
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client-jackson2</artifactId>
-            <version>2.0.0</version>
+            <version>1.35.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client-java6</artifactId>
-            <version>1.35.1</version>
+            <version>1.35.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.oauth-client</groupId>
@@ -139,7 +144,7 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-youtube</artifactId>
-            <version>v3-rev20220711-1.32.1</version>
+            <version>v3-rev20220713-1.32.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -214,7 +219,7 @@
         <dependency>
             <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>07e8166fc5</version>
+            <version>62ec3b0d378fade393a52c8cde6a0c3c1b906659</version>
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
@@ -260,9 +265,9 @@
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>com.github.jagrosh</groupId>
+            <groupId>com.github.Ree6-Applications</groupId>
             <artifactId>JLyrics</artifactId>
-            <version>0f9ac5df83852b7b8e735e1390eed39bb0a90fce</version>
+            <version>master-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
@@ -273,7 +278,7 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>3.0.5</version>
+            <version>3.0.6</version>
         </dependency>
         <dependency>
             <groupId>com.github.DxsSucuk</groupId>

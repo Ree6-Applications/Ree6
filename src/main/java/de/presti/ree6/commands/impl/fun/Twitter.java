@@ -12,8 +12,8 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.net.URLEncoder;
@@ -38,8 +38,10 @@ public class Twitter implements ICommand {
             if (targetOption != null && contentOption != null) {
                 sendTwitterTweet(targetOption.getAsMember(), contentOption.getAsString(), commandEvent);
             } else {
-                if (targetOption == null) Main.getInstance().getCommandManager().sendMessage("No User was given to use for the Tweet!" , 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-                if (contentOption == null) Main.getInstance().getCommandManager().sendMessage("No Tweet Content was given!" , 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                if (targetOption == null)
+                    Main.getInstance().getCommandManager().sendMessage("No User was given to use for the Tweet!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                if (contentOption == null)
+                    Main.getInstance().getCommandManager().sendMessage("No Tweet Content was given!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
 
         } else {
@@ -86,20 +88,18 @@ public class Twitter implements ICommand {
      * @param commandEvent The CommandEvent.
      */
     public void sendTwitterTweet(Member member, String content, CommandEvent commandEvent) {
-        try {
+        String name = URLEncoder.encode(member.getUser().getName(), StandardCharsets.UTF_8);
+        String text = URLEncoder.encode(content, StandardCharsets.UTF_8);
 
-
-            String name = URLEncoder.encode(member.getUser().getName(), StandardCharsets.UTF_8);
-            String text = URLEncoder.encode(content, StandardCharsets.UTF_8);
-
-            HttpClient httpClient = HttpClientBuilder.create().build();
+        try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
             HttpGet request = new HttpGet("https://api.dagpi.xyz/image/tweet/?url=" + member.getUser().getAvatarUrl() + "&username=" + name + "&text=" + text);
             request.setHeader("Authorization", Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"));
             HttpResponse response = httpClient.execute(request);
 
             commandEvent.getChannel().sendFile(response.getEntity().getContent(), "twitter.png").queue();
 
-            if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
+            if (commandEvent.isSlashCommand())
+                commandEvent.getInteractionHook().sendMessage("Check below!").queue();
         } catch (Exception ex) {
             Main.getInstance().getCommandManager().sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getChannel(), commandEvent.getInteractionHook());
         }

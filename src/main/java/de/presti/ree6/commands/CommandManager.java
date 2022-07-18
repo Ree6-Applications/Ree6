@@ -7,6 +7,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
+import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -20,6 +21,7 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.reflections.Reflections;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -173,19 +175,7 @@ public class CommandManager {
 
         // Check if this is a Developer build, if not then cooldown the User.
         if (BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD) {
-            new Thread(() -> {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ignore) {
-                    Main.getInstance().getLogger().error("[CommandManager] Command cool-down Thread interrupted!");
-                    Thread.currentThread().interrupt();
-                }
-
-                ArrayUtil.commandCooldown.remove(member.getUser().getId());
-
-                Thread.currentThread().interrupt();
-
-            }).start();
+            ThreadUtil.createNewThread(x -> ArrayUtil.commandCooldown.remove(member.getUser().getId()), null, Duration.ofMinutes(5), false, false);
         }
 
         // Add them to the Cooldown.
@@ -266,6 +256,11 @@ public class CommandManager {
         return true;
     }
 
+    /**
+     * Check if an User is time-outed.
+     * @param user the User.
+     * @return true, if yes | false, if not.
+     */
     public boolean isTimeout(User user) {
         return ArrayUtil.commandCooldown.contains(user.getId()) && BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD;
     }
@@ -399,7 +394,7 @@ public class CommandManager {
                 message.getType().canDelete() &&
                 !message.isEphemeral() &&
                 interactionHook == null) {
-            message.delete().onErrorFlatMap(throwable -> {
+            message.delete().onErrorMap(throwable -> {
                 Main.getInstance().getLogger().error("[CommandManager] Couldn't delete a Message!", throwable);
                 return null;
             }).queue();

@@ -104,6 +104,7 @@ public class SQLConnector {
         tables.put("GuildStats", "(GID VARCHAR(40), COMMAND VARCHAR(40), USES VARCHAR(50))");
         tables.put("TwitchNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("TwitterNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
+        tables.put("YouTubeNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("LogWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("WelcomeWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("NewsWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
@@ -116,6 +117,7 @@ public class SQLConnector {
         tables.put("VCLevel", "(GID VARCHAR(40), UID VARCHAR(40), XP VARCHAR(500))");
         tables.put("VCLevelAutoRoles", "(GID VARCHAR(40), RID VARCHAR(40), LVL VARCHAR(500))");
         tables.put("ChatLevelAutoRoles", "(GID VARCHAR(40), RID VARCHAR(40), LVL VARCHAR(500))");
+        tables.put("Opt_out", "(GID VARCHAR(40), UID VARCHAR(40))");
 
         // Iterating through all table presets.
         for (Map.Entry<String, String> entry : tables.entrySet()) {
