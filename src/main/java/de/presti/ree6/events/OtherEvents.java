@@ -7,10 +7,7 @@ import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserLevel;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.utils.others.AutoRoleHandler;
-import de.presti.ree6.utils.others.ModerationUtil;
-import de.presti.ree6.utils.others.RandomUtils;
-import de.presti.ree6.utils.others.TimeUtil;
+import de.presti.ree6.utils.others.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -33,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -181,17 +179,7 @@ public class OtherEvents extends ListenerAdapter {
 
                     ArrayUtil.timeout.add(event.getMember());
 
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(30000);
-                        } catch (InterruptedException ignored) {
-                            Main.getInstance().getLogger().error("[OtherEvents] User cool-down Thread interrupted!");
-                            Thread.currentThread().interrupt();
-                        }
-
-                        ArrayUtil.timeout.remove(event.getMember());
-
-                    }).start();
+                    ThreadUtil.createNewThread(x -> ArrayUtil.timeout.remove(event.getMember()), null, Duration.ofSeconds(30), false, false);
                 }
 
                 AutoRoleHandler.handleChatLevelReward(event.getGuild(), event.getMember());

@@ -5,6 +5,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -24,12 +25,7 @@ public class ClearData implements ICommand {
                 if (commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER))
                     commandEvent.getGuild().retrieveInvites().queue(invites -> invites.stream().filter(invite -> invite.getInviter() != null).forEach(invite -> Main.getInstance().getSqlConnector().getSqlWorker().setInvite(commandEvent.getGuild().getId(), invite.getInviter().getId(), invite.getCode(), invite.getUses())));
                 Main.getInstance().getCommandManager().sendMessage("All stored Invites have been cleared, and replaced.", commandEvent.getChannel(), commandEvent.getInteractionHook());
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(Duration.ofMinutes(10).toMillis());
-                    } catch (Exception ignored) {}
-                    timeout.remove(commandEvent.getGuild().getId());
-                }).start();
+                ThreadUtil.createNewThread(x -> timeout.remove(commandEvent.getGuild().getId()), null, Duration.ofMinutes(10), false, false);
             } else {
                 Main.getInstance().getCommandManager().sendMessage("You already used this Command in the last 10 Minutes, please wait until you use it again.", commandEvent.getChannel(), commandEvent.getInteractionHook());
             }

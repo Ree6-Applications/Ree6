@@ -102,7 +102,7 @@ public class YouTubeAPIHandler {
     }
 
     public void createUploadStream() {
-        ThreadUtil.createNewASyncThread(x -> {
+        ThreadUtil.createNewThread(x -> {
             try {
                 for (Map.Entry<?, ?> channelListener : listenerChannelId.entrySet()) {
                     String channelId = (String) channelListener.getKey();
@@ -126,7 +126,7 @@ public class YouTubeAPIHandler {
             }
         }, x -> {
             Main.getInstance().getLogger().error("Couldn't start Upload Stream!");
-        }, Duration.ofMinutes(5));
+        }, Duration.ofMinutes(5), true, true);
     }
 
     public boolean isListening(String channelId) {

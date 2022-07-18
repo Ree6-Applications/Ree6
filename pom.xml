@@ -213,7 +213,7 @@
         <dependency>
             <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>07e8166fc5</version>
+            <version>62ec3b0d378fade393a52c8cde6a0c3c1b906659</version>
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>

@@ -13,24 +13,38 @@ public class ThreadUtil {
     /**
      * The Thread-pool used to create ASyncThreads.
      */
-    static ExecutorService executorService = Executors.newFixedThreadPool(50);
+    static ExecutorService executorService = Executors.newFixedThreadPool(150);
 
     /**
-     * Creates a ASyncThread with a Consumer.
-     * @param success the Consumer, that will be executed, when the Thread is finished.
-     * @param failure the Consumer, that will be executed, when the Thread failed.
+     * Creates a Thread with a Consumer.
+     *
+     * @param success  the Consumer, that will be executed, when the Thread is finished.
+     * @param failure  the Consumer, that will be executed, when the Thread failed.
      * @param duration the delay duration of the Thread.
+     * @param loop     if the Thread should be looped.
+     * @param pre      the Consumer, that will be executed, before the Thread is going into the sleep state.
      */
-    public static void createNewASyncThread(Consumer<Void> success, Consumer<Throwable> failure, Duration duration) {
-        executorService.submit(() ->  {
-            while(!Thread.currentThread().isInterrupted()) {
-                success.accept(null);
+    public static void createNewThread(Consumer<Void> success, Consumer<Throwable> failure, Duration duration, boolean loop, boolean pre) {
+        executorService.submit(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                if (pre) {
+                    success.accept(null);
+                    if (!loop)
+                        Thread.currentThread().interrupt();
+                }
 
                 try {
-                    Thread.sleep(duration.toMillis());
+                    if (duration != null)
+                        Thread.sleep(duration.toMillis());
                 } catch (InterruptedException e) {
                     failure.accept(e);
                     Thread.currentThread().interrupt();
+                }
+
+                if (!pre) {
+                    success.accept(null);
+                    if (!loop)
+                        Thread.currentThread().interrupt();
                 }
             }
         });

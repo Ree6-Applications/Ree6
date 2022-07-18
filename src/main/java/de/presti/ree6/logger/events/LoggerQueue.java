@@ -9,9 +9,11 @@ import de.presti.ree6.logger.events.implentation.LogMessageRole;
 import de.presti.ree6.logger.events.implentation.LogMessageUser;
 import de.presti.ree6.logger.events.implentation.LogMessageVoice;
 import de.presti.ree6.main.Data;
+import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.Permission;
 
 import java.awt.*;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -474,14 +476,7 @@ public class LoggerQueue {
             }
 
             // Create new Thread for Log-Message to send.
-            new Thread(() -> {
-
-                // Let it wait for 10 seconds.
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException ignored) {
-                }
-
+            ThreadUtil.createNewThread(x -> {
                 // If not canceled send it.
                 if (!loggerMessage.isCanceled()) {
                     Webhook.sendWebhook(loggerMessage, loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode(), true);
@@ -489,7 +484,7 @@ public class LoggerQueue {
 
                 // Remove it from the list.
                 logs.remove(loggerMessage);
-            }).start();
+            }, null, Duration.ofSeconds(10), false, false);
         }
     }
 }
