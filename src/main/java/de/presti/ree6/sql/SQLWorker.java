@@ -15,9 +15,8 @@ import de.presti.ree6.sql.entities.VoiceUserLevel;
 import de.presti.ree6.utils.data.Setting;
 import net.dv8tion.jda.api.entities.Guild;
 
-import java.sql.*;
+import java.sql.ResultSet;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A Class to actually handle the SQL data.
@@ -151,7 +150,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void addVoiceLevelData(String guildId, VoiceUserLevel oldVoiceUserLevel, VoiceUserLevel voiceUserLevel) {
 
-        if (isOptOut(guildId, userLevel.getUserId())) {
+        if (isOptOut(guildId, voiceUserLevel.getUserId())) {
             return;
         }
 
@@ -675,7 +674,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         if (isYouTubeSetup(guildId)) {
             // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-            try (ResultSet rs = querySQL("SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel)) {
+            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel)) {
 
                 // Return if there was a match.
                 if (rs != null && rs.next()) {
@@ -701,7 +700,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String[]> webhooks = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM YouTubeNotify WHERE NAME=?", youtubeChannel)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE NAME=?", youtubeChannel)) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -724,7 +723,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM YouTubeNotify")) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM YouTubeNotify")) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -747,7 +746,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             while (rs != null && rs.next()) {
@@ -773,7 +772,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         removeYouTubeWebhook(guildId, youtubeChannel);
 
         // Add a new entry into the Database.
-        querySQL("INSERT INTO YouTubeNotify (GID, NAME, CID, TOKEN) VALUES (?, ?, ?, ?);", guildId, youtubeChannel, webhookId, authToken);
+        sqlConnector.querySQL("INSERT INTO YouTubeNotify (GID, NAME, CID, TOKEN) VALUES (?, ?, ?, ?);", guildId, youtubeChannel, webhookId, authToken);
     }
 
     /**
@@ -796,7 +795,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             }
 
             // Delete the entry.
-            querySQL("DELETE FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel);
+            sqlConnector.querySQL("DELETE FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel);
         }
     }
 
@@ -808,7 +807,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isYouTubeSetup(String guildId) {
         // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -829,7 +828,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isYouTubeSetup(String guildId, String youtubeChannel) {
 
         // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        try (ResultSet rs = querySQL("SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel)) {
 
             // Return if there was a match.
             return (rs != null && rs.next());
@@ -2052,7 +2051,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isOptOut(String guildId, String userId) {
         // Creating a SQL Statement to check if there is an entry in the Opt-out Table by the Guild Id and User Id
-        try (ResultSet rs = querySQL("SELECT * FROM Opt_out WHERE GID=? AND UID=?", guildId, userId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Opt_out WHERE GID=? AND UID=?", guildId, userId)) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -2070,7 +2069,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void optOut(String guildId, String userId) {
         if (!isOptOut(guildId, userId)) {
-            querySQL("INSERT INTO Opt_out (GID, UID) VALUES (?, ?)", guildId, userId);
+            sqlConnector.querySQL("INSERT INTO Opt_out (GID, UID) VALUES (?, ?)", guildId, userId);
         }
     }
 
@@ -2081,7 +2080,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void optIn(String guildId, String userId) {
         if (isOptOut(guildId, userId)) {
-            querySQL("DELETE FROM Opt_out WHERE GID=? AND UID=?", guildId, userId);
+            sqlConnector.querySQL("DELETE FROM Opt_out WHERE GID=? AND UID=?", guildId, userId);
         }
     }
 

@@ -15,8 +15,8 @@ import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotVersion;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
@@ -374,7 +374,7 @@ public class Notifier {
                                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
                                 Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel).forEach(strings ->
-                                        Webhook.sendWebhook(null, webhookMessageBuilder.build(), Long.parseLong(strings[0]),
+                                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), Long.parseLong(strings[0]),
                                                 strings[1], false));
                             }
                         }

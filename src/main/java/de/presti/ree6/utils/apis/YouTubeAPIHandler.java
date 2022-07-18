@@ -20,7 +20,6 @@ public class YouTubeAPIHandler {
      * The YouTube API.
      */
     private YouTube youTube;
-    public static YouTubeAPIHandler instance;
 
     /**
      * The YouTube API-Handler.
