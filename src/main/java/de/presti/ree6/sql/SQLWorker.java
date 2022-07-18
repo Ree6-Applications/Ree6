@@ -10,8 +10,9 @@ import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
 import de.presti.ree6.sql.base.data.SQLParameter;
 import de.presti.ree6.sql.base.data.SQLResponse;
-import de.presti.ree6.sql.entities.ChatUserLevel;
-import de.presti.ree6.sql.entities.VoiceUserLevel;
+import de.presti.ree6.sql.entities.Webhook;
+import de.presti.ree6.sql.entities.level.ChatUserLevel;
+import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.utils.data.Setting;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -210,33 +211,16 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     //region Webhooks
 
-    // TODO add remove for every Webhook
-
     //region Logs
 
     /**
      * Get the LogWebhook data.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link String[]} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link Webhook} with all the needed data.
      */
-    public String[] getLogWebhook(String guildId) {
-
-        if (isLogSetup(guildId)) {
-            // Creating a SQL Statement to get the Entry from the LogWebhooks Table by the GuildID.
-            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM LogWebhooks WHERE GID=?", guildId)) {
-
-                // Return if there was a match.
-                if (rs != null && rs.next()) {
-                    if (rs.getString("CID").isEmpty() || rs.getString("TOKEN").isEmpty())
-                        return new String[]{"0", "No setup!"};
-                    else return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
-                }
-            } catch (Exception ignore) {
-            }
-        }
-
-        return new String[]{"0", "No setup!"};
+    public Webhook getLogWebhook(String guildId) {
+        return (Webhook) getEntity(Webhook.class, "SELECT * FROM LogWebhooks WHERE GID=?", guildId).getEntity();
     }
 
     /**
@@ -255,17 +239,16 @@ public record SQLWorker(SQLConnector sqlConnector) {
             Guild guild = BotWorker.getShardManager().getGuildById(guildId);
 
             if (guild != null) {
+                Webhook webhookEntity = getLogWebhook(guildId);
                 // Delete the existing Webhook.
-                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(getLogWebhook(guildId)[0]) && webhook.getToken().equalsIgnoreCase(getLogWebhook(guildId)[1])).forEach(webhook -> webhook.delete().queue()));
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) && webhook.getToken().equalsIgnoreCase(webhookEntity.getToken())).forEach(webhook -> webhook.delete().queue()));
             }
 
             // Delete the entry.
             sqlConnector.querySQL("DELETE FROM LogWebhooks WHERE GID=?", guildId);
         }
 
-        // Add a new entry into the Database.
-        sqlConnector.querySQL("INSERT INTO LogWebhooks (GID, CID, TOKEN) VALUES (?, ?, ?);", guildId, webhookId, authToken);
-
+        saveEntity(new Webhook(guildId, webhookId, authToken));
     }
 
     /**
@@ -332,25 +315,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * Get the WelcomeWebhooks data.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link String[]} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link Webhook} with all the needed data.
      */
-    public String[] getWelcomeWebhook(String guildId) {
-
-        if (isWelcomeSetup(guildId)) {
-            // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId)) {
-
-                // Return if there was a match.
-                if (rs != null && rs.next()) {
-                    if (rs.getString("CID").isEmpty() || rs.getString("TOKEN").isEmpty())
-                        return new String[]{"0", "No setup!"};
-                    else return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
-                }
-            } catch (Exception ignore) {
-            }
-        }
-
-        return new String[]{"0", "No setup!"};
+    public Webhook getWelcomeWebhook(String guildId) {
+        return (Webhook) getEntity(Webhook.class, "SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId).getEntity();
     }
 
     /**
@@ -369,16 +337,16 @@ public record SQLWorker(SQLConnector sqlConnector) {
             Guild guild = BotWorker.getShardManager().getGuildById(guildId);
 
             if (guild != null) {
+                Webhook webhookEntity = getWelcomeWebhook(guildId);
                 // Delete the existing Webhook.
-                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(getWelcomeWebhook(guildId)[0]) && webhook.getToken().equalsIgnoreCase(getWelcomeWebhook(guildId)[1])).forEach(webhook -> webhook.delete().queue()));
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) && webhook.getToken().equalsIgnoreCase(webhookEntity.getToken())).forEach(webhook -> webhook.delete().queue()));
             }
 
             // Delete the entry.
             sqlConnector.querySQL("DELETE FROM WelcomeWebhooks WHERE GID=?", guildId);
         }
 
-        // Add a new entry into the Database.
-        sqlConnector.querySQL("INSERT INTO WelcomeWebhooks (GID, CID, TOKEN) VALUES (?, ?, ?);", guildId, webhookId, authToken);
+        saveEntity(new Webhook(guildId, webhookId, authToken));
 
     }
 
@@ -410,25 +378,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * Get the NewsWebhooks data.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link String[]} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link Webhook} with all the needed data.
      */
-    public String[] getNewsWebhook(String guildId) {
-
-        if (isNewsSetup(guildId)) {
-            // Creating a SQL Statement to get the Entry from the NewsWebhooks Table by the GuildID.
-            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM NewsWebhooks WHERE GID=?", guildId)) {
-
-                // Return if there was a match.
-                if (rs != null && rs.next()) {
-                    if (rs.getString("CID").isEmpty() || rs.getString("TOKEN").isEmpty())
-                        return new String[]{"0", "No setup!"};
-                    else return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
-                }
-            } catch (Exception ignore) {
-            }
-        }
-
-        return new String[]{"0", "No setup!"};
+    public Webhook getNewsWebhook(String guildId) {
+        return (Webhook) getEntity(Webhook.class, "SELECT * FROM NewsWebhooks WHERE GID=?", guildId).getEntity();
     }
 
     /**
@@ -446,16 +399,16 @@ public record SQLWorker(SQLConnector sqlConnector) {
             Guild guild = BotWorker.getShardManager().getGuildById(guildId);
 
             if (guild != null) {
+                Webhook webhookEntity = getNewsWebhook(guildId);
                 // Delete the existing Webhook.
-                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(getNewsWebhook(guildId)[0]) && webhook.getToken().equalsIgnoreCase(getNewsWebhook(guildId)[1])).forEach(webhook -> webhook.delete().queue()));
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) && webhook.getToken().equalsIgnoreCase(webhookEntity.getToken())).forEach(webhook -> webhook.delete().queue()));
             }
 
             // Delete the entry.
             sqlConnector.querySQL("DELETE FROM NewsWebhooks WHERE GID=?", guildId);
         }
 
-        // Add a new entry into the Database.
-        sqlConnector.querySQL("INSERT INTO NewsWebhooks (GID, CID, TOKEN) VALUES (?, ?, ?);", guildId, webhookId, authToken);
+        saveEntity(new Webhook(guildId, webhookId, authToken));
 
     }
 
@@ -488,49 +441,20 @@ public record SQLWorker(SQLConnector sqlConnector) {
      *
      * @param guildId    the ID of the Guild.
      * @param twitchName the Username of the Twitch User.
-     * @return {@link String[]} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link Webhook} with all the needed data.
      */
-    public String[] getTwitchWebhook(String guildId, String twitchName) {
-
-        if (isTwitchSetup(guildId)) {
-            // Creating a SQL Statement to get the Entry from the RainbowWebhooks Table by the GuildID.
-            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName)) {
-
-                // Return if there was a match.
-                if (rs != null && rs.next()) {
-                    if (rs.getString("CID").isEmpty() || rs.getString("TOKEN").isEmpty())
-                        return new String[]{"0", "No setup!"};
-                    else return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
-                }
-            } catch (Exception ignore) {
-            }
-        }
-
-        return new String[]{"0", "No setup!"};
+    public Webhook getTwitchWebhook(String guildId, String twitchName) {
+        return (Webhook) getEntity(Webhook.class, "SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName).getEntity();
     }
 
     /**
      * Get the TwitchNotify data.
      *
      * @param twitchName the Username of the Twitch User.
-     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link List<Webhook>} with all the needed data.
      */
-    public List<String[]> getTwitchWebhooksByName(String twitchName) {
-
-        ArrayList<String[]> webhooks = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the RainbowWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE NAME=?", twitchName)) {
-
-            // Return if there was a match.
-            while (rs != null && rs.next()) {
-                if (!rs.getString("CID").isEmpty() && !rs.getString("TOKEN").isEmpty())
-                    webhooks.add(new String[]{rs.getString("CID"), rs.getString("TOKEN")});
-            }
-        } catch (Exception ignore) {
-        }
-
-        return webhooks;
+    public List<Webhook> getTwitchWebhooksByName(String twitchName) {
+        return getEntity(Webhook.class, "SELECT * FROM TwitchNotify WHERE NAME=?", twitchName).getEntities().stream().map(Webhook.class::cast).toList();
     }
 
     /**
@@ -610,8 +534,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
             Guild guild = BotWorker.getShardManager().getGuildById(guildId);
 
             if (guild != null) {
+                Webhook webhookEntity = getTwitchWebhook(guildId, twitchName);
                 // Delete the existing Webhook.
-                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(getTwitchWebhook(guildId, twitchName)[0]) && webhook.getToken().equalsIgnoreCase(getTwitchWebhook(guildId, twitchName)[1])).forEach(webhook -> webhook.delete().queue()));
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) && webhook.getToken().equalsIgnoreCase(webhookEntity.getToken())).forEach(webhook -> webhook.delete().queue()));
             }
 
             // Delete the entry.
@@ -666,51 +591,22 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Get the YouTubeNotify data.
      *
-     * @param guildId    the ID of the Guild.
+     * @param guildId        the ID of the Guild.
      * @param youtubeChannel the Username of the YouTube channel.
-     * @return {@link String[]} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link Webhook} with all the needed data.
      */
-    public String[] getYouTubeWebhook(String guildId, String youtubeChannel) {
-
-        if (isYouTubeSetup(guildId)) {
-            // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel)) {
-
-                // Return if there was a match.
-                if (rs != null && rs.next()) {
-                    if (rs.getString("CID").isEmpty() || rs.getString("TOKEN").isEmpty())
-                        return new String[]{"0", "No setup!"};
-                    else return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
-                }
-            } catch (Exception ignore) {
-            }
-        }
-
-        return new String[]{"0", "No setup!"};
+    public Webhook getYouTubeWebhook(String guildId, String youtubeChannel) {
+        return (Webhook) getEntity(Webhook.class, "SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel).getEntity();
     }
 
     /**
      * Get the YouTubeNotify data.
      *
      * @param youtubeChannel the Username of the YouTube channel.
-     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link List<Webhook>} with all the needed data.
      */
-    public List<String[]> getYouTubeWebhooksByName(String youtubeChannel) {
-
-        ArrayList<String[]> webhooks = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE NAME=?", youtubeChannel)) {
-
-            // Return if there was a match.
-            while (rs != null && rs.next()) {
-                if (!rs.getString("CID").isEmpty() && !rs.getString("TOKEN").isEmpty())
-                    webhooks.add(new String[]{rs.getString("CID"), rs.getString("TOKEN")});
-            }
-        } catch (Exception ignore) {
-        }
-
-        return webhooks;
+    public List<Webhook> getYouTubeWebhooksByName(String youtubeChannel) {
+        return getEntity(Webhook.class, "SELECT * FROM YouTubeNotify WHERE NAME=?", youtubeChannel).getEntities().stream().map(Webhook.class::cast).toList();
     }
 
     /**
@@ -761,9 +657,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Set the YouTubeNotify in our Database.
      *
-     * @param guildId    the ID of the Guild.
-     * @param webhookId  the ID of the Webhook.
-     * @param authToken  the Auth-token to verify the access.
+     * @param guildId        the ID of the Guild.
+     * @param webhookId      the ID of the Webhook.
+     * @param authToken      the Auth-token to verify the access.
      * @param youtubeChannel the Username of the YouTube channel.
      */
     public void addYouTubeWebhook(String guildId, String webhookId, String authToken, String youtubeChannel) {
@@ -778,7 +674,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Remove a YouTube Notifier entry from our Database.
      *
-     * @param guildId    the ID of the Guild.
+     * @param guildId        the ID of the Guild.
      * @param youtubeChannel the Name of the YouTube channel.
      */
     public void removeYouTubeWebhook(String guildId, String youtubeChannel) {
@@ -790,8 +686,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
             Guild guild = BotWorker.getShardManager().getGuildById(guildId);
 
             if (guild != null) {
+                Webhook webhookEntity = getYouTubeWebhook(guildId, youtubeChannel);
                 // Delete the existing Webhook.
-                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(getYouTubeWebhook(guildId, youtubeChannel)[0]) && webhook.getToken().equalsIgnoreCase(getYouTubeWebhook(guildId, youtubeChannel)[1])).forEach(webhook -> webhook.delete().queue()));
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) && webhook.getToken().equalsIgnoreCase(webhookEntity.getToken())).forEach(webhook -> webhook.delete().queue()));
             }
 
             // Delete the entry.
@@ -821,7 +718,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Check if the YouTube Webhook has been set for the given User in our Database for this Server.
      *
-     * @param guildId    the ID of the Guild.
+     * @param guildId        the ID of the Guild.
      * @param youtubeChannel the Username of the YouTube channel.
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
@@ -848,49 +745,20 @@ public record SQLWorker(SQLConnector sqlConnector) {
      *
      * @param guildId     the ID of the Guild.
      * @param twitterName the Username of the Twitter User.
-     * @return {@link String[]} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link Webhook} with all the needed data.
      */
-    public String[] getTwitterWebhook(String guildId, String twitterName) {
-
-        if (isTwitterSetup(guildId)) {
-            // Creating a SQL Statement to get the Entry from the RainbowWebhooks Table by the GuildID.
-            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName)) {
-
-                // Return if there was a match.
-                if (rs != null && rs.next()) {
-                    if (rs.getString("CID").isEmpty() || rs.getString("TOKEN").isEmpty())
-                        return new String[]{"0", "No setup!"};
-                    else return new String[]{rs.getString("CID"), rs.getString("TOKEN")};
-                }
-            } catch (Exception ignore) {
-            }
-        }
-
-        return new String[]{"0", "No setup!"};
+    public Webhook getTwitterWebhook(String guildId, String twitterName) {
+        return (Webhook) getEntity(Webhook.class, "SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName).getEntity();
     }
 
     /**
      * Get the TwitterNotify data.
      *
      * @param twitterName the Username of the Twitter User.
-     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     * @return {@link List<Webhook>} with all the needed data.
      */
-    public List<String[]> getTwitterWebhooksByName(String twitterName) {
-
-        ArrayList<String[]> webhooks = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the RainbowWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE NAME=?", twitterName)) {
-
-            // Return if there was a match.
-            while (rs != null && rs.next()) {
-                if (!rs.getString("CID").isEmpty() && !rs.getString("TOKEN").isEmpty())
-                    webhooks.add(new String[]{rs.getString("CID"), rs.getString("TOKEN")});
-            }
-        } catch (Exception ignore) {
-        }
-
-        return webhooks;
+    public List<Webhook> getTwitterWebhooksByName(String twitterName) {
+        return getEntity(Webhook.class, "SELECT * FROM TwitterNotify WHERE NAME=?", twitterName).getEntities().stream().map(Webhook.class::cast).toList();
     }
 
     /**
@@ -969,8 +837,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
             Guild guild = BotWorker.getShardManager().getGuildById(guildId);
 
             if (guild != null) {
+                Webhook webhookEntity = getTwitterWebhook(guildId, twitterName);
                 // Delete the existing Webhook.
-                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(getTwitterWebhook(guildId, twitterName)[0]) && webhook.getToken().equalsIgnoreCase(getTwitterWebhook(guildId, twitterName)[1])).forEach(webhook -> webhook.delete().queue()));
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) && webhook.getToken().equalsIgnoreCase(webhookEntity.getToken())).forEach(webhook -> webhook.delete().queue()));
             }
 
             // Delete the entry.
@@ -1023,85 +892,6 @@ public record SQLWorker(SQLConnector sqlConnector) {
     //endregion
 
     //region Roles
-
-    //region Mute
-
-    /**
-     * Get the Mute Role ID from the given Guild.
-     *
-     * @param guildId the ID of the Guild.
-     * @return {@link String} as Role ID.
-     */
-    public String getMuteRole(String guildId) {
-
-        // Check if there is a role in the database.
-        if (isMuteSetup(guildId)) {
-            // Creating a SQL Statement to get the RoleID from the MuteRoles Table by the GuildID.
-            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM MuteRoles WHERE GID=?", guildId)) {
-
-                // Return the Role ID as String if found.
-                if (rs != null && rs.next()) return rs.getString("RID");
-            } catch (Exception ignore) {
-            }
-        }
-
-        // Return Error if there was an error OR if the role isn't in the database.
-        return "Error";
-    }
-
-    /**
-     * Set the MuteRole in our Database.
-     *
-     * @param guildId the ID of the Guild.
-     * @param roleId  the ID of the Role.
-     */
-    public void setMuteRole(String guildId, String roleId) {
-
-        // Check if there is a role in the database.
-        if (isMuteSetup(guildId)) {
-            // Replace the entry with the new Data.
-            sqlConnector.querySQL("UPDATE MuteRoles SET RID=? WHERE GID=?", roleId, guildId);
-        } else {
-            // Add a new entry into the Database.
-            sqlConnector.querySQL("INSERT INTO MuteRoles (GID, RID) VALUES (?, ?);", guildId, roleId);
-        }
-    }
-
-    /**
-     * Check if a Mute Role has been set in our Database for this Server.
-     *
-     * @param guildId the ID of the Guild.
-     * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
-     */
-    public boolean isMuteSetup(String guildId) {
-
-        // Creating a SQL Statement to get the RoleID from the MuteRoles Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM MuteRoles WHERE GID=?", guildId)) {
-
-            // Return if there was an entry or not.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return false if there was an error OR if the role isn't in the database.
-        return false;
-    }
-
-    /**
-     * Remove a MuteRole setup for the Guild.
-     *
-     * @param guildId the ID of the Guild.
-     */
-    public void removeMuteRole(String guildId) {
-
-        // Check if there is a Mute Role set if so remove.
-        if (isMuteSetup(guildId)) {
-            sqlConnector.querySQL("DELETE FROM MuteRoles WHERE GID=?", guildId);
-        }
-    }
-
-
-    //endregion
 
     //region AutoRoles
 
@@ -2045,8 +1835,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Check if the given User is opted out.
+     *
      * @param guildId the ID of the Guild.
-     * @param userId the ID of the User.
+     * @param userId  the ID of the User.
      * @return {@link Boolean} as result. If true, the User is opted out | If false, the User is not opted out.
      */
     public boolean isOptOut(String guildId, String userId) {
@@ -2064,8 +1855,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Opt a User out of the given Guild.
+     *
      * @param guildId the ID of the Guild.
-     * @param userId the ID of the User.
+     * @param userId  the ID of the User.
      */
     public void optOut(String guildId, String userId) {
         if (!isOptOut(guildId, userId)) {
@@ -2075,8 +1867,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Opt in a User to the given Guild.
+     *
      * @param guildId the ID of the Guild.
-     * @param userId the ID of the User.
+     * @param userId  the ID of the User.
      */
     public void optIn(String guildId, String userId) {
         if (isOptOut(guildId, userId)) {
@@ -2105,6 +1898,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Create a Table for the Entity.
+     *
      * @param entity the Entity.
      * @return {@link Boolean} as result. If true, the Table was created | If false, the Table was not created.
      */
@@ -2155,6 +1949,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Save an Entity to the Database.
+     *
      * @param entity the Entity to save.
      */
     public void saveEntity(Object entity) {
@@ -2209,6 +2004,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Update an Entity in the Database.
+     *
      * @param oldEntity the old Entity.
      * @param newEntity the new Entity.
      */

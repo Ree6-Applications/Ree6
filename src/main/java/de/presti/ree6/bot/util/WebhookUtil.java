@@ -4,6 +4,7 @@ import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import de.presti.ree6.logger.events.LogMessage;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.entities.Webhook;
 
 /**
  * Class to handle Webhook sends.
@@ -16,6 +17,17 @@ public class WebhookUtil {
      */
     private WebhookUtil() {
         throw new IllegalStateException("Utility class");
+    }
+
+    /**
+     * Send a Webhook-message to the wanted Webhook.
+     * @param loggerMessage the MessageContent, if it has been merged.
+     * @param message the MessageContent.
+     * @param webhook the Webhook.
+     * @param isLog is the Webhook Message a Log-Message?
+     */
+    public static void sendWebhook(LogMessage loggerMessage, WebhookMessage message, Webhook webhook, boolean isLog) {
+        sendWebhook(loggerMessage, message, Long.parseLong(webhook.getChannelId()), webhook.getToken(), isLog);
     }
 
 

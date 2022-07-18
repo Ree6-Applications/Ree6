@@ -1,8 +1,7 @@
 package de.presti.ree6.utils.data;
 
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.entities.ChatUserLevel;
-import de.presti.ree6.sql.entities.VoiceUserLevel;
+import de.presti.ree6.sql.entities.level.UserLevel;
 import net.dv8tion.jda.api.entities.User;
 
 import javax.imageio.ImageIO;
@@ -34,7 +33,7 @@ public class ImageCreationUtility {
      * @return the bytes of the Image.
      * @throws IOException when URL-Format is Invalid or the URL is not a valid Image.
      */
-    public static byte[] createRankImage(Object userLevel) throws IOException {
+    public static byte[] createRankImage(UserLevel userLevel) throws IOException {
         long start = System.currentTimeMillis();
         long actionPerformance = System.currentTimeMillis();
 
@@ -42,40 +41,28 @@ public class ImageCreationUtility {
         Main.getInstance().getAnalyticsLogger().debug("Getting User. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        User user = userLevel instanceof ChatUserLevel chatUserLevel ? chatUserLevel.getUser() :
-                userLevel instanceof VoiceUserLevel voiceUserLevel ? voiceUserLevel.getUser() :
-                        null;
+        User user = userLevel.getUser();
 
         Main.getInstance().getAnalyticsLogger().debug("Getting default needed Data. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        String formattedExperience = "",
-                formattedMaxExperience = "",
-                level = "",
-                rank = "";
+        String formattedExperience,
+                formattedMaxExperience,
+                level,
+                rank;
 
-        double progress = 0;
+        double progress;
 
-        if (userLevel instanceof ChatUserLevel chatUserLevel) {
-            formattedExperience = chatUserLevel.getFormattedExperience();
-            formattedMaxExperience = chatUserLevel.getFormattedExperience(chatUserLevel.getTotalExperienceForNextLevel());
-            level = chatUserLevel.getLevel() + "";
-            rank = chatUserLevel.getRank() + "";
-            progress = chatUserLevel.getProgress();
-        } else if (userLevel instanceof VoiceUserLevel voiceUserLevel) {
-            formattedExperience = voiceUserLevel.getFormattedExperience();
-            formattedMaxExperience = voiceUserLevel.getFormattedExperience(voiceUserLevel.getTotalExperienceForNextLevel());
-            level = voiceUserLevel.getLevel() + "";
-            rank = voiceUserLevel.getRank() + "";
-            progress = voiceUserLevel.getProgress();
-        } else {
-            return new byte[128];
-        }
+            formattedExperience = userLevel.getFormattedExperience();
+            formattedMaxExperience = userLevel.getFormattedExperience(userLevel.getTotalExperienceForNextLevel());
+            level = userLevel.getLevel() + "";
+            rank = userLevel.getRank() + "";
+            progress = userLevel.getProgress();
 
         Main.getInstance().getAnalyticsLogger().debug("Starting actual creation. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        if (userLevel == null || user == null)
+        if (user == null)
             return new byte[128];
 
         Main.getInstance().getAnalyticsLogger().debug("Loading and creating Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);

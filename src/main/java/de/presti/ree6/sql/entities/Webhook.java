@@ -11,7 +11,7 @@ public class Webhook extends SQLEntity {
     /**
      * The GuildID of the Webhook.
      */
-    @Property(name = "gid", primary = true)
+    @Property(name = "gid")
     private String guildId;
 
     /**

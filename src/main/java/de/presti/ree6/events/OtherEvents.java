@@ -5,8 +5,8 @@ import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.entities.ChatUserLevel;
-import de.presti.ree6.sql.entities.VoiceUserLevel;
+import de.presti.ree6.sql.entities.level.ChatUserLevel;
+import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.others.*;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -71,9 +71,7 @@ public class OtherEvents extends ListenerAdapter {
         wmb.setUsername("Welcome!");
         wmb.setContent((Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())).replace("%user_name%", event.getMember().getUser().getName()).replace("%user_mention%", event.getMember().getUser().getAsMention()).replace("%guild_name%", event.getGuild().getName()));
 
-        String[] info = Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId());
-
-        WebhookUtil.sendWebhook(null, wmb.build(), Long.parseLong(info[0]), info[1], false);
+        WebhookUtil.sendWebhook(null, wmb.build(), Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()), false);
     }
 
     @Override

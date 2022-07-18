@@ -5,8 +5,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.entities.ChatUserLevel;
-import de.presti.ree6.sql.entities.VoiceUserLevel;
+import de.presti.ree6.sql.entities.level.UserLevel;
 import de.presti.ree6.utils.data.ImageCreationUtility;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -77,17 +76,11 @@ public class Level implements ICommand {
      */
     public void sendLevel(Member member, CommandEvent commandEvent, String type) {
 
-        Object userLevel = type.equalsIgnoreCase("voice") ?
+        UserLevel userLevel = type.equalsIgnoreCase("voice") ?
                 Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getId(), member.getId()) :
                 Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getId());
 
-        if (userLevel instanceof VoiceUserLevel voiceUserLevel) {
-            voiceUserLevel.setUser(member.getUser());
-        } else if (userLevel instanceof ChatUserLevel chatUserLevel) {
-            chatUserLevel.setUser(member.getUser());
-        } else {
-            return;
-        }
+        userLevel.setUser(commandEvent.getMember().getUser());
 
         if (commandEvent.isSlashCommand()) {
             try {

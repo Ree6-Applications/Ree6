@@ -1,17 +1,9 @@
-package de.presti.ree6.sql.entities;
+package de.presti.ree6.sql.entities.level;
 
-import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.data.SQLEntity;
 import net.dv8tion.jda.api.entities.User;
 
-/**
- * Utility class to store information about a Users
- * Experience and their Level.
- */
-@Table(name = "Level")
-public class ChatUserLevel extends SQLEntity {
+public class UserLevel {
 
     // The ID of the Guild.
     @Property(name = "gid")
@@ -38,13 +30,14 @@ public class ChatUserLevel extends SQLEntity {
      * @param guildId    the ID of the Guild.
      * @param userId     the ID of the User.
      * @param experience his XP count.
+     * @param rank       the Rank of the User.
      */
-    public ChatUserLevel(String guildId, String userId, long experience) {
+    public UserLevel(String guildId, String userId, long experience, int rank) {
         this.guildId = guildId;
         this.userId = userId;
         this.experience = experience;
         level = calculateLevel(experience);
-        this.rank = Main.getInstance().getSqlConnector().getSqlWorker().getAllChatLevelSorted(guildId).indexOf(userId);
+        this.rank = rank;
     }
 
 
@@ -55,13 +48,14 @@ public class ChatUserLevel extends SQLEntity {
      * @param userId     the ID of the User.
      * @param experience his XP count.
      * @param level      his Level.
+     * @param rank       the Rank of the User.
      */
-    public ChatUserLevel(String guildId, String userId, long experience, long level) {
+    public UserLevel(String guildId, String userId, long experience, long level, int rank) {
         this.guildId = guildId;
         this.userId = userId;
         this.experience = experience;
         this.level = level;
-        this.rank = Main.getInstance().getSqlConnector().getSqlWorker().getAllChatLevelSorted(guildId).indexOf(userId);
+        this.rank = rank;
     }
 
     /**
@@ -192,11 +186,7 @@ public class ChatUserLevel extends SQLEntity {
      * @return the needed Experience.
      */
     public long getTotalExperienceForLevel(long level) {
-        long requiredXP = 0;
-        for (int i = 0; i <= level; i++) {
-            requiredXP += getExperienceForLevel(i);
-        }
-        return requiredXP;
+        return level;
     }
 
     /**
@@ -206,7 +196,7 @@ public class ChatUserLevel extends SQLEntity {
      * @return the needed Experience.
      */
     public long getExperienceForLevel(long level) {
-        return (long) (1000 + (1000 * Math.pow(level, 0.55)));
+        return level / 100;
     }
 
     /**
@@ -261,7 +251,7 @@ public class ChatUserLevel extends SQLEntity {
         int i = 0;
         while (true) {
             long requiredXP = getTotalExperienceForLevel(i);
-            if (experience <= requiredXP) return (i == 0 ? 1 : i - 1);
+            if (experience <= requiredXP) return (i == 0 ? 1 : i -1);
             i++;
         }
     }

@@ -12,7 +12,10 @@ import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * MigrationBuilder is used to build a Migration.
@@ -134,8 +137,10 @@ public class MigrationBuilder {
         return this;
     }
 
+    /**
+     * Store a migration.
+     */
     public void storeMigration() {
         MigrationUtil.saveMigration(migration);
     }
-
 }

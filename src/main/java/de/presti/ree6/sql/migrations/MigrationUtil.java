@@ -10,6 +10,10 @@ import java.io.PrintWriter;
  */
 public class MigrationUtil {
 
+    /**
+     * Save a migration to a file.
+     * @param migration The Migration.
+     */
     public static void saveMigration(Migration migration) {
         Main.getInstance().getLogger().info("Saving Migration: " + migration.getName());
         String path = new File("migrations/").getAbsolutePath();
@@ -20,7 +24,7 @@ public class MigrationUtil {
         }
 
         if (!folder.isDirectory()) {
-            throw new IllegalArgumentException("migrations is not a directory");
+            throw new IllegalArgumentException("Migrations is not a directory");
         }
 
         File file = new File(path,migration.getName() + ".migration");
@@ -28,7 +32,7 @@ public class MigrationUtil {
         System.out.println(file.getAbsolutePath());
 
         if (file.exists()) {
-            throw new IllegalArgumentException("migration already exists");
+            throw new IllegalArgumentException("Migration already exists");
         }
 
         try (PrintWriter printWriter = new PrintWriter(file)) {

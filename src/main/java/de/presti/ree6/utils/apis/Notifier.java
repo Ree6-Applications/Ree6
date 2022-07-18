@@ -105,9 +105,8 @@ public class Notifier {
             wmb.addEmbeds(webhookEmbedBuilder.build());
 
             // Go through every Webhook that is registered for the Twitch Channel
-            for (String[] credits : Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getStream().getUserName().toLowerCase())) {
-                WebhookUtil.sendWebhook(null, wmb.build(), Long.parseLong(credits[0]), credits[1], false);
-            }
+            Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getStream().getUserName().toLowerCase()).forEach(webhook ->
+                    WebhookUtil.sendWebhook(null, wmb.build(), webhook, false));
         });
     }
 
@@ -243,9 +242,8 @@ public class Notifier {
 
                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName()).forEach(strings ->
-                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), Long.parseLong(strings[0]),
-                                strings[1], false));
+                Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName()).forEach(webhook ->
+                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
             }
 
             /**
@@ -373,9 +371,8 @@ public class Notifier {
 
                                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                                Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel).forEach(strings ->
-                                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), Long.parseLong(strings[0]),
-                                                strings[1], false));
+                                Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel).forEach(webhook ->
+                                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
                             }
                         }
                     }
