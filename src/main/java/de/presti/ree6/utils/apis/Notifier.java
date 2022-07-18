@@ -7,6 +7,7 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.helix.domain.User;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemContentDetails;
@@ -379,9 +380,10 @@ public class Notifier {
                         }
                     }
                 }
+            } catch (GoogleJsonResponseException googleJsonResponseException) {
+                Main.getInstance().getAnalyticsLogger().error("Encountered an error, while trying to get the YouTube Uploads!", googleJsonResponseException);
             } catch (Exception e) {
                 Main.getInstance().getLogger().error("Couldn't get upload data!", e);
-
             }
         }, x -> {
             Main.getInstance().getLogger().error("Couldn't start upload Stream!");
