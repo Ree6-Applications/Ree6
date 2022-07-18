@@ -51,7 +51,7 @@ public class SQLParameter {
      * @return The name of the parameter.
      */
     public String getName() {
-        return name;
+        return name.toUpperCase();
     }
 
     /**

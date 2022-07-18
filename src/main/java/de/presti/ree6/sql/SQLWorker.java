@@ -8,13 +8,15 @@ import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
+import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.base.data.SQLParameter;
 import de.presti.ree6.sql.base.data.SQLResponse;
 import de.presti.ree6.sql.entities.Invite;
-import de.presti.ree6.sql.entities.Role;
-import de.presti.ree6.sql.entities.Webhook;
+import de.presti.ree6.sql.entities.roles.Role;
+import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
+import de.presti.ree6.utils.data.SQLUtil;
 import de.presti.ree6.utils.data.Setting;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -1888,29 +1890,34 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param entity the Entity.
      * @return {@link Boolean} as result. If true, the Table was created | If false, the Table was not created.
      */
-    public boolean createTable(Object entity) {
-        Class<?> clazz = entity.getClass();
-        if (!clazz.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("The given Entity is not annotated with @Table! (" + ((Class) entity).getSimpleName() + ")");
+    public boolean createTable(Class<? extends SQLEntity> entity) {
+        if (!entity.isAnnotationPresent(Table.class)) {
+            return false;
+            //// throw new IllegalArgumentException("The given Entity is not annotated with @Table! (" + ((Class) entity).getSimpleName() + ")");
         }
 
-        Table table = clazz.getAnnotation(Table.class);
+        Table table = entity.getAnnotation(Table.class);
         String tableName = table.name();
         List<SQLParameter> sqlParameters =
-                Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                Arrays.stream(entity.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
                         .map(e -> {
                                     Property property = e.getAnnotation(Property.class);
                                     return new SQLParameter(property.name(), e.getType(), property.primary());
                                 }
                         ).toList();
+
+        if (sqlParameters.isEmpty()) {
+            return false;
+        }
+
         StringBuilder query = new StringBuilder();
-        query.append("CREATE TABLE ");
+        query.append("CREATE TABLE IF NOT EXISTS ");
         query.append(tableName);
         query.append(" (");
         sqlParameters.forEach(parameter -> {
             query.append(parameter.getName());
             query.append(" ");
-            query.append(parameter.getValue().getSimpleName());
+            query.append(SQLUtil.mapJavaToSQL(parameter.getValue()));
             query.append(", ");
         });
 
@@ -1921,7 +1928,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         });
 
         if (query.charAt(query.length() - 2) == ',') {
-            query.deleteCharAt(query.length() - 2);
+            query.delete(query.length() - 2, query.length());
         }
 
         query.append(")");
@@ -1970,7 +1977,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         query.append("?, ".repeat(sqlParameters.size()));
 
         if (query.charAt(query.length() - 2) == ',') {
-            query.deleteCharAt(query.length() - 2);
+            query.delete(query.length() - 2, query.length());
         }
 
         query.append(")");
@@ -2022,7 +2029,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         });
 
         if (query.charAt(query.length() - 2) == ',') {
-            query.deleteCharAt(query.length() - 2);
+            query.delete(query.length() - 2, query.length());
         }
 
         query.append(" WHERE ");
@@ -2032,7 +2039,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         });
 
         if (query.charAt(query.length() - 2) == ',') {
-            query.deleteCharAt(query.length() - 2);
+            query.delete(query.length() - 2, query.length());
         }
 
         try {

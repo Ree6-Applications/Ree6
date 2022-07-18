@@ -1,9 +1,10 @@
 package de.presti.ree6.sql.entities.level;
 
 import de.presti.ree6.sql.base.annotations.Property;
+import de.presti.ree6.sql.base.data.SQLEntity;
 import net.dv8tion.jda.api.entities.User;
 
-public class UserLevel {
+public class UserLevel extends SQLEntity {
 
     /**
      * The ID of the Guild.

@@ -35,7 +35,7 @@ public class AutoRoleHandler {
                 return;
             }
 
-            for (de.presti.ree6.sql.entities.Role roles : Main.getInstance().getSqlConnector().getSqlWorker().getAutoRoles(guild.getId())) {
+            for (de.presti.ree6.sql.entities.roles.Role roles : Main.getInstance().getSqlConnector().getSqlWorker().getAutoRoles(guild.getId())) {
                 Role role = guild.getRoleById(roles.getRoleId());
 
                 if (role != null && !guild.getSelfMember().canInteract(role)) {

@@ -4,7 +4,7 @@ import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import de.presti.ree6.logger.events.LogMessage;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.entities.Webhook;
+import de.presti.ree6.sql.entities.webhook.Webhook;
 
 /**
  * Class to handle Webhook sends.
