@@ -139,7 +139,9 @@ public class SQLConnector {
             Main.getInstance().getAnalyticsLogger().info("Creating Table " + aClass.getName());
             // Create a Table based on the key.
             try {
-                sqlWorker.createTable(aClass);
+                if (!sqlWorker.createTable(aClass)) {
+                    throw new IllegalStateException("Couldn't create " + aClass.getName() + " Table.");
+                }
             } catch (Exception exception) {
 
                 // Notify if there was an error.
