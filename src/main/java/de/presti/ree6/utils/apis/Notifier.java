@@ -385,9 +385,7 @@ public class Notifier {
             } catch (Exception e) {
                 Main.getInstance().getLogger().error("Couldn't get upload data!", e);
             }
-        }, x -> {
-            Main.getInstance().getLogger().error("Couldn't start upload Stream!");
-        }, Duration.ofSeconds(10), true, true);
+        }, x -> Main.getInstance().getLogger().error("Couldn't start upload Stream!"), Duration.ofSeconds(10), true, true);
     }
 
     /**
