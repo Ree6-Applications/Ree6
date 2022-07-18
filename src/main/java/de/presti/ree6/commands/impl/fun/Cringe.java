@@ -6,6 +6,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 @Command(name = "cringe", description = "Let shrek tell them that their message was cringe!", category = Category.FUN)
 public class Cringe implements ICommand {
@@ -19,7 +20,7 @@ public class Cringe implements ICommand {
 
     @Override
     public CommandData getCommandData() {
-        return null;
+        return new CommandDataImpl("shrekImage", "Let shrek tell them that their message was not funny!");
     }
 
     @Override

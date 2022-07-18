@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-@Command(name = "nsfw", description = "Get NSFW Image from reddit.com/r/hentai", category = Category.NSFW)
+@Command(name = "nsfw", description = "Get NSFW Image from reddit", category = Category.NSFW)
 public class NSFW implements ICommand {
 
     @Override

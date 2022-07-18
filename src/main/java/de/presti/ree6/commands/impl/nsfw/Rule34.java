@@ -23,7 +23,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-@Command(name = "rule34", description = "Get NSFW Image from rule34.xxx", category = Category.NSFW)
+@Command(name = "r34", description = "Get NSFW Image from rule34.xxx", category = Category.NSFW)
 public class Rule34 implements ICommand {
 
     /**
@@ -129,7 +129,7 @@ public class Rule34 implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("rule34", "Get NSFW Image from rule34.xxx")
+        return new CommandDataImpl("r34", "Get NSFW Image from r34")
                 .addOptions(new OptionData(OptionType.STRING, "tags", "Tags for the image search"));
     }
 
@@ -138,6 +138,6 @@ public class Rule34 implements ICommand {
      */
     @Override
     public String[] getAlias() {
-        return new String[]{"r34", "34"};
+        return new String[]{"rule34", "34"};
     }
 }
