@@ -6,8 +6,6 @@ import de.presti.ree6.utils.apis.GoogleVisionAPI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Class to handle the moderation user behaviour.
