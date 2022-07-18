@@ -35,8 +35,8 @@ public class AutoRoleHandler {
                 return;
             }
 
-            for (String roleIds : Main.getInstance().getSqlConnector().getSqlWorker().getAutoRoles(guild.getId())) {
-                Role role = guild.getRoleById(roleIds);
+            for (de.presti.ree6.sql.entities.Role roles : Main.getInstance().getSqlConnector().getSqlWorker().getAutoRoles(guild.getId())) {
+                Role role = guild.getRoleById(roles.getRoleId());
 
                 if (role != null && !guild.getSelfMember().canInteract(role)) {
                     if (guild.getOwner() != null)
@@ -54,11 +54,11 @@ public class AutoRoleHandler {
                                                 "Since it doesn't exists anymore!")
                                         .queue());
 
-                    Main.getInstance().getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), roleIds);
+                    Main.getInstance().getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), roles.getRoleId());
                     return;
                 }
 
-                if (!member.getRoles().contains(guild.getRoleById(roleIds))) {
+                if (!member.getRoles().contains(guild.getRoleById(roles.getRoleId()))) {
                     guild.addRoleToMember(member, role).queue();
                 }
             }
