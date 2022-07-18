@@ -20,7 +20,7 @@ public class Cringe implements ICommand {
 
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("shrekImage", "Let shrek tell them that their message was not funny!");
+        return new CommandDataImpl("shrekimage", "Let shrek tell them that their message was not funny!");
     }
 
     @Override
