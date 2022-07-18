@@ -5,6 +5,7 @@ import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.impl.community.TwitchNotifier;
 import de.presti.ree6.commands.impl.community.TwitterNotifier;
+import de.presti.ree6.commands.impl.community.YouTubeNotifier;
 import de.presti.ree6.commands.impl.fun.Record;
 import de.presti.ree6.commands.impl.fun.*;
 import de.presti.ree6.commands.impl.hidden.Addon;
@@ -118,6 +119,7 @@ public class CommandManager {
         //Community
         addCommand(new TwitchNotifier());
         addCommand(new TwitterNotifier());
+        addCommand(new YouTubeNotifier());
 
         //NSFW
         addCommand(new NSFW());
@@ -466,7 +468,7 @@ public class CommandManager {
                 message.getType().canDelete() &&
                 !message.isEphemeral() &&
                 interactionHook == null) {
-            message.delete().onErrorFlatMap(throwable -> {
+            message.delete().onErrorMap(throwable -> {
                 Main.getInstance().getLogger().error("[CommandManager] Couldn't delete a Message!", throwable);
                 return null;
             }).queue();

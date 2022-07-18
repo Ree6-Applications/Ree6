@@ -129,6 +129,9 @@ public class Main {
         // Register all Twitter Users.
         instance.notifier.registerTwitterUser(instance.sqlConnector.getSqlWorker().getAllTwitterNames());
 
+        // Register all YouTube channels.
+        instance.notifier.registerYouTubeChannel(instance.sqlConnector.getSqlWorker().getAllYouTubeChannels());
+
         instance.logger.info("Creating JDA Instance.");
 
         // Create a new Instance of the Bot, as well as add the Events.

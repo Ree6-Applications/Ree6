@@ -99,6 +99,7 @@ public class SQLConnector {
         tables.put("GuildStats", "(GID VARCHAR(40), COMMAND VARCHAR(40), USES VARCHAR(50))");
         tables.put("TwitchNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("TwitterNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
+        tables.put("YouTubeNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("LogWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("WelcomeWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
         tables.put("NewsWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");

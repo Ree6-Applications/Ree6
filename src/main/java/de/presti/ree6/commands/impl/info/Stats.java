@@ -51,6 +51,10 @@ public class Stats implements ICommand {
         em.addField("**Response Time**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);
         em.addField("**System Date**", new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
 
+        em.addField("**Discord Stats:**", "", true);
+        em.addField("**Gateway Time**", BotWorker.getShardManager().getAverageGatewayPing() + "ms", true);
+        em.addField("**Shard Amount**", BotWorker.getShardManager().getShards().size() + " Shards", true);
+
         StringBuilder end = new StringBuilder();
 
         for (String[] values : Main.getInstance().getSqlConnector().getSqlWorker().getStats(commandEvent.getGuild().getId())) {
