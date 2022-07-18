@@ -82,4 +82,17 @@ public class ArrayUtil {
             return messageIDwithMessage.get(id);
         }
     }
+
+    /**
+     * Get the Message content, of a deleted Message, by the ID.
+     * @param id the ID of the Message.
+     * @return the {@link Message} Entity of the deleted Message.
+     */
+    public static Message getMessageFromMessageListAndRemove(String id) {
+        if (!messageIDwithMessage.containsKey(id)) {
+            return null;
+        } else {
+            return messageIDwithMessage.remove(id);
+        }
+    }
 }

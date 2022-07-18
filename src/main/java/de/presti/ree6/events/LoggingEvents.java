@@ -679,7 +679,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
-            Message message = ArrayUtil.getMessageFromMessageList(event.getMessageId());
+            Message message = ArrayUtil.getMessageFromMessageListAndRemove(event.getMessageId());
 
             if (message != null && message.getActivity() != null) return;
 
