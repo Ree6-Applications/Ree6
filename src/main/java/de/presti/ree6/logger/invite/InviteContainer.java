@@ -5,18 +5,23 @@ package de.presti.ree6.logger.invite;
  */
 public class InviteContainer {
 
-    // information about the Invite.
+    /**
+     * information about the Invite.
+     */
     String creatorId, guildId, code;
 
-    // The use count from our Database.
+    /**
+     * The use count from our Database.
+     */
     long uses;
 
     /**
      * Constructor for the InviteContainer which saved the Data.
+     *
      * @param creatorId the ID of the Creator.
-     * @param guildId the ID of the Guild.
-     * @param code the Code of the Invite.
-     * @param uses the Usage Count of the Invite.
+     * @param guildId   the ID of the Guild.
+     * @param code      the Code of the Invite.
+     * @param uses      the Usage Count of the Invite.
      */
     public InviteContainer(String creatorId, String guildId, String code, long uses) {
         this.creatorId = creatorId;
@@ -27,6 +32,7 @@ public class InviteContainer {
 
     /**
      * Get the UserID of the Invite Creator.
+     *
      * @return {@link String} as User ID.
      */
     public String getCreatorId() {
@@ -35,6 +41,7 @@ public class InviteContainer {
 
     /**
      * Set the ID of the Creator.
+     *
      * @param creatorId the ID of the Creator.
      */
     public void setCreatorId(String creatorId) {
@@ -43,6 +50,7 @@ public class InviteContainer {
 
     /**
      * Get the GuildID of the Guild.
+     *
      * @return {@link String} as Guild ID.
      */
     public String getGuildId() {
@@ -51,6 +59,7 @@ public class InviteContainer {
 
     /**
      * Set the ID of the Guild.
+     *
      * @param guildId the ID of the Guild.
      */
     public void setGuildId(String guildId) {
@@ -59,6 +68,7 @@ public class InviteContainer {
 
     /**
      * Get the Invite Code.
+     *
      * @return {@link String} as Invite code.
      */
     public String getCode() {
@@ -67,6 +77,7 @@ public class InviteContainer {
 
     /**
      * Set the Code of the Invite.
+     *
      * @param code the Code of the Invite.
      */
     public void setCode(String code) {
@@ -75,6 +86,7 @@ public class InviteContainer {
 
     /**
      * Get the Usage Count of the Invite.
+     *
      * @return {@link Long} as Usage Count.
      */
     public long getUses() {
@@ -83,6 +95,7 @@ public class InviteContainer {
 
     /**
      * Set the Usage Count of the Invite.
+     *
      * @param uses the Usage Count of the Invite.
      */
     public void setUses(long uses) {

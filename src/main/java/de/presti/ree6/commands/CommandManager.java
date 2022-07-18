@@ -39,6 +39,8 @@ public class CommandManager {
      * Constructor for the Command-Manager used to register every Command.
      *
      * @throws CommandInitializerException if an error occurs while initializing the Commands.
+     * @throws IllegalStateException if an Invalid Command was used to initialize.
+     * @throws IllegalAccessException when an Instance of a Command is not accessible.
      */
     public CommandManager() throws CommandInitializerException, InstantiationException, IllegalAccessException {
         Main.getInstance().getLogger().info("Initializing Commands!");
@@ -187,6 +189,15 @@ public class CommandManager {
         return true;
     }
 
+    /**
+     * Perform a Message based Command.
+     * @param member the Member that performed the command.
+     * @param guild the Guild the Member is from.
+     * @param messageContent the Message content (including the prefix + command name).
+     * @param message the Message Entity.
+     * @param textChannel the TextChannel where the command has been performed.
+     * @return true, if a command has been performed.
+     */
     private boolean performMessageCommand(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel) {
         // Check if the Message is null.
         if (message == null) {

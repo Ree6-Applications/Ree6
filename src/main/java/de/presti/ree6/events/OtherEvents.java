@@ -38,6 +38,9 @@ import java.util.Objects;
 
 public class OtherEvents extends ListenerAdapter {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         BotWorker.setState(BotState.STARTED);
@@ -48,16 +51,25 @@ public class OtherEvents extends ListenerAdapter {
         BotWorker.setActivity(event.getJDA(),"ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
         Main.getInstance().getSqlConnector().getSqlWorker().createSettings(event.getGuild().getId());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildLeave(@Nonnull GuildLeaveEvent event) {
         Main.getInstance().getSqlConnector().getSqlWorker().deleteAllData(event.getGuild().getId());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
 
@@ -74,6 +86,9 @@ public class OtherEvents extends ListenerAdapter {
         WebhookUtil.sendWebhook(null, wmb.build(), Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()), false);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
         if (!ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
@@ -82,6 +97,9 @@ public class OtherEvents extends ListenerAdapter {
         super.onGuildVoiceJoin(event);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
         if (ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
@@ -106,6 +124,9 @@ public class OtherEvents extends ListenerAdapter {
         super.onGuildVoiceLeave(event);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildVoiceGuildDeafen(@NotNull GuildVoiceGuildDeafenEvent event) {
         if (event.getMember() != event.getGuild().getSelfMember()) return;
@@ -115,6 +136,9 @@ public class OtherEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         super.onMessageReceived(event);
@@ -187,6 +211,9 @@ public class OtherEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         // Only accept commands from guilds
@@ -198,6 +225,9 @@ public class OtherEvents extends ListenerAdapter {
         Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getChannel(), event);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
         super.onSelectMenuInteraction(event);
@@ -497,6 +527,12 @@ public class OtherEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * Checks if the user has the required Permissions to use the Command.
+     * @param member The Member who should be checked.
+     * @param channel The Channel used.
+     * @return True if the user has the required Permissions, false if not.
+     */
     private boolean checkPerms(Member member, MessageChannel channel) {
         if (member == null || !member.hasPermission(Permission.ADMINISTRATOR)) {
             channel.sendMessage("You do not have enough Permissions").queue();

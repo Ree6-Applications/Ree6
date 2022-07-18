@@ -53,6 +53,9 @@ import java.util.ArrayList;
 
 public class LoggingEvents extends ListenerAdapter {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
 
@@ -119,6 +122,9 @@ public class LoggingEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberRemove(@Nonnull GuildMemberRemoveEvent event) {
 
@@ -150,6 +156,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.SERVER_LEAVE, event.getUser()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildBan(@Nonnull GuildBanEvent event) {
 
@@ -176,6 +185,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildUnban(@Nonnull GuildUnbanEvent event) {
 
@@ -203,6 +215,9 @@ public class LoggingEvents extends ListenerAdapter {
     }
 
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberUpdateNickname(@Nonnull GuildMemberUpdateNicknameEvent event) {
 
@@ -235,6 +250,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.NICKNAME_CHANGE, event.getEntity(), event.getOldNickname(), event.getNewNickname()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
 
@@ -261,6 +279,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_JOIN, event.getEntity(), event.getChannelJoined()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
 
@@ -286,6 +307,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_MOVE, event.getEntity(), event.getChannelLeft(), event.getChannelJoined()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
 
@@ -311,6 +335,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_LEAVE, event.getEntity(), event.getChannelLeft()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {
 
@@ -344,6 +371,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), null, new ArrayList<>(event.getRoles())));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
 
@@ -376,6 +406,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), new ArrayList<>(event.getRoles()), null));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGenericChannel(@Nonnull GenericChannelEvent event) {
 
@@ -454,6 +487,9 @@ public class LoggingEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleCreate(@Nonnull RoleCreateEvent event) {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
@@ -479,6 +515,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), true, false, false, false));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleDelete(@Nonnull RoleDeleteEvent event) {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
@@ -503,6 +542,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, true, false, false));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleUpdateName(@Nonnull RoleUpdateNameEvent event) {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
@@ -529,6 +571,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getOldName(), event.getNewName()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleUpdateMentionable(@Nonnull RoleUpdateMentionableEvent event) {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
@@ -555,6 +600,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, false, false, true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) &&
@@ -581,6 +629,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, false, true, false));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) &&
@@ -632,6 +683,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getOldPermissions(), event.getNewPermissions()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleUpdateColor(@Nonnull RoleUpdateColorEvent event) {
 
@@ -659,6 +713,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), (event.getOldColor() != null ? event.getOldColor() : Color.gray), (event.getNewColor() != null ? event.getNewColor() : Color.gray)));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onMessageDelete(@Nonnull MessageDeleteEvent event) {
 
@@ -714,6 +771,9 @@ public class LoggingEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {
 
@@ -727,6 +787,9 @@ public class LoggingEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildInviteDelete(@Nonnull GuildInviteDeleteEvent event) {
 

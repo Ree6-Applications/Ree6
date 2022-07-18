@@ -14,10 +14,14 @@ import net.dv8tion.jda.api.entities.Member;
  */
 public class LogMessageVoice extends LogMessage {
 
-    // An instance of the Member Entity.
+    /**
+     * An instance of the Member Entity.
+     */
     private Member member;
 
-    // The Audio Channels associated with the Events.
+    /**
+     * The Audio Channels associated with the Events.
+     */
     private AudioChannel previousVoiceChannel,
             currentVoiceChannel;
 

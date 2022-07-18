@@ -5,23 +5,37 @@ import net.dv8tion.jda.api.entities.User;
 
 public class UserLevel {
 
-    // The ID of the Guild.
+    /**
+     * The ID of the Guild.
+     */
     @Property(name = "gid")
     String guildId;
 
-    // The ID of the User.
+    /**
+     * The ID of the User.
+     */
     @Property(name = "uid")
     String userId;
 
-    // The User.
+    /**
+     * The User.
+     */
     User user;
 
-    // His XP and Level.
+    /**
+     * The experience of the User.
+     */
     @Property(name = "xp")
     long experience;
-    long level = 0;
 
-    // The Rank of the User.
+    /**
+     * The level of the User.
+     */
+    long level;
+
+    /**
+     * The Rank of the User.
+     */
     int rank;
 
     /**
@@ -251,7 +265,7 @@ public class UserLevel {
         int i = 0;
         while (true) {
             long requiredXP = getTotalExperienceForLevel(i);
-            if (experience <= requiredXP) return (i == 0 ? 1 : i -1);
+            if (experience <= requiredXP) return (i == 0 ? 1 : i - 1);
             i++;
         }
     }

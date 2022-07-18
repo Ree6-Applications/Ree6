@@ -30,22 +30,34 @@ public class BotWorker {
         throw new IllegalStateException("Utility class");
     }
 
-    // Current state of the Bot.
+    /**
+     * Current Bot state.
+     */
     private static BotState state;
 
-    // Current Bot Version-Typ.
+    /**
+     * Current Bot version.
+     */
     private static BotVersion version;
 
-    // Instance of the JDA ShardManager.
+    /**
+     * Current {@link ShardManager}.
+     */
     private static ShardManager shardManager;
 
-    // The used Bot-Token.
+    /**
+     * Current Bot-Token.
+     */
     private static String token;
 
-    // The current build / version.
+    /**
+     * Current Bot build.
+     */
     private static String build;
 
-    // Start time of the Bot.
+    /**
+     * Bot start time.
+     */
     private static long startTime;
 
     /**

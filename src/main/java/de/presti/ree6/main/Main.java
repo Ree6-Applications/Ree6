@@ -31,36 +31,64 @@ import java.util.Date;
  */
 public class Main {
 
-    // An Instance of the class itself.
+    /**
+     * An Instance of the class itself.
+     */
     static Main instance;
 
-    // Instance of the Notifier Manager, used to manage the Notifier Tools.
+    /**
+     * Instance of the Notifier Manager, used to manage the Notifier Tools.
+     */
     Notifier notifier;
 
-    // Instance of the Command and Addon Manager
+    /**
+     * Instance of the Command.
+     */
     CommandManager commandManager;
+
+    /**
+     * Addon Manager, used to manage the Addons.
+     */
     AddonManager addonManager;
 
-    // Instance of the SQL-Connector used to manage the connection between the SQL Server and the Application
+    /**
+     * Instance of the SQL-Connector used to manage the connection between the SQL Server and the Application.
+     */
     SQLConnector sqlConnector;
 
-    // Instance of the LoggerQueue, used to merge Logs to prevent Rate-Limits
+    /**
+     * Instance of the LoggerQueue, used to merge Logs to prevent Rate-Limits.
+     */
     LoggerQueue loggerQueue;
 
-    // Instance of the MusicWorker used to manage the Music-Player.
+    /**
+     * Instance of the MusicWorker used to manage the Music-Player.
+     */
     MusicWorker musicWorker;
 
-    // Instance of the Logger used to log the Command output.
+    /**
+     * Instance of the Logger used to log the Command output.
+     */
     Logger logger;
+
+    /**
+     * Instance of the Logger used to store debug information.
+     */
     Logger analyticsLogger;
 
-    // Instance of the Config System.
+    /**
+     * Instance of the Config System.
+     */
     Config config;
 
-    // A Thread used to check if a day has passed, and if so to clean the cache
+    /**
+     * A Thread used to check if a day has passed, and if so to clean the cache.
+     */
     Thread checker;
 
-    // String used to identify the last day.
+    /**
+     * String used to identify the last day.
+     */
     String lastDay = "";
 
     /**

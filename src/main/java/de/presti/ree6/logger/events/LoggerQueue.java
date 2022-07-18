@@ -24,7 +24,9 @@ import java.util.EnumSet;
  */
 public class LoggerQueue {
 
-    // A List of every Log-Message.
+    /**
+     * A List of every Log-Message.
+     */
     final ArrayList<LogMessage> logs = new ArrayList<>();
 
     /**

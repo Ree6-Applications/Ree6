@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is used to mark a class with it's SQL table.
+ * This annotation is used to mark a class with its SQL table.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

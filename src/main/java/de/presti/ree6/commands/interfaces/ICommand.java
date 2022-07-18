@@ -11,7 +11,6 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface ICommand {
 
-    // TODO think about and better way.
     /**
      * Will be fired when the Command is called.
      *

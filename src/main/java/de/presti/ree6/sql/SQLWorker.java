@@ -1891,7 +1891,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean createTable(Object entity) {
         Class<?> clazz = entity.getClass();
         if (!clazz.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("The given Entity is not annotated with @Table!");
+            throw new IllegalArgumentException("The given Entity is not annotated with @Table! (" + ((Class) entity).getSimpleName() + ")");
         }
 
         Table table = clazz.getAnnotation(Table.class);
@@ -1942,7 +1942,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         Class<?> entityClass = entity.getClass();
 
         if (!entityClass.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("Entity must be annotated with @Table");
+            throw new IllegalArgumentException("Entity must be annotated with @Table! (" + entityClass.getSimpleName() + ")");
         }
 
         List<SQLParameter> sqlParameters =
@@ -1984,7 +1984,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
                 }
             }).toArray());
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while saving Entity: " + entityClass.getName(), exception);
+            Main.getInstance().getLogger().error("Error while saving Entity: " + ((Class) entity).getSimpleName(), exception);
         }
     }
 
@@ -1998,7 +1998,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         Class<?> entityClass = oldEntity.getClass();
 
         if (!entityClass.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("Entities must be annotated with @Table");
+            throw new IllegalArgumentException("Entities must be annotated with @Table! (" + ((Class) oldEntity).getSimpleName() + ")");
         }
 
         if (!oldEntity.getClass().equals(newEntity.getClass())) {
@@ -2057,7 +2057,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             args.addAll(newArgs);
             sqlConnector.querySQL(query.toString(), args.toArray());
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while updating Entity: " + entityClass.getName(), exception);
+            Main.getInstance().getLogger().error("Error while updating Entity: " + ((Class) oldEntity).getSimpleName(), exception);
         }
     }
 
@@ -2070,7 +2070,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         Class<?> entityClass = entity.getClass();
 
         if (!entityClass.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("Entity must be annotated with @Table");
+            throw new IllegalArgumentException("Entity must be annotated with @Table! (" + ((Class) entity).getSimpleName() + ")");
         }
 
         List<SQLParameter> sqlParameters =
@@ -2103,7 +2103,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
                 }
             }).toArray());
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while deleting Entity: " + entityClass.getName(), exception);
+            Main.getInstance().getLogger().error("Error while deleting Entity: " + ((Class) entity).getSimpleName(), exception);
         }
     }
 
