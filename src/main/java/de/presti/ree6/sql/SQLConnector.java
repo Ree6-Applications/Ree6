@@ -55,11 +55,12 @@ public class SQLConnector {
         this.databasePassword = databasePassword;
         this.databaseServerIP = databaseServerIP;
         this.databaseServerPort = databaseServerPort;
-        connectToSQLServer();
-        createTables();
 
         sqlWorker = new SQLWorker(this);
         entityMapper = new EntityMapper();
+
+        connectToSQLServer();
+        createTables();
     }
 
     /**
