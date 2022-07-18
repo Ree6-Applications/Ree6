@@ -365,7 +365,7 @@ public class Notifier {
                                 // Set rest of the Information.
                                 webhookEmbedBuilder.setDescription(snippet.getChannelTitle() + " just uploaded a new Video! Check it out <https://www.youtube.com/watch?v=" + contentDetails.getVideoId() + "/> !");
                                 webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", snippet.getTitle()));
-                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", snippet.getDescription()));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", snippet.getDescription().isEmpty() ? "No Description" : snippet.getDescription()));
                                 webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", snippet.getPublishedAt().toStringRfc3339()));
                                 webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
                                 webhookEmbedBuilder.setColor(Color.RED.getRGB());
@@ -385,7 +385,7 @@ public class Notifier {
             }
         }, x -> {
             Main.getInstance().getLogger().error("Couldn't start upload Stream!");
-        }, Duration.ofMinutes(5), true, true);
+        }, Duration.ofSeconds(10), true, true);
     }
 
     /**
@@ -395,8 +395,6 @@ public class Notifier {
      */
     public void registerYouTubeChannel(String youtubeChannel) {
         if (getTwitchClient() == null) return;
-
-        youtubeChannel = youtubeChannel.toLowerCase();
 
         if (!isYouTubeRegistered(youtubeChannel)) registeredYouTubeChannels.add(youtubeChannel);
     }
@@ -410,7 +408,6 @@ public class Notifier {
         if (YouTubeAPIHandler.getInstance() == null) return;
 
         youtubeChannels.forEach(s -> {
-            s = s.toLowerCase();
             if (!isYouTubeRegistered(s)) registeredYouTubeChannels.add(s);
         });
     }
@@ -422,8 +419,6 @@ public class Notifier {
      */
     public void unregisterYouTubeChannel(String youtubeChannel) {
         if (YouTubeAPIHandler.getInstance() == null) return;
-
-        youtubeChannel = youtubeChannel.toLowerCase();
 
         if (!Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(youtubeChannel).isEmpty())
             return;
@@ -438,7 +433,7 @@ public class Notifier {
      * @return true, if there is an Event for the Channel | false, if there isn't an Event for the Channel.
      */
     public boolean isYouTubeRegistered(String youtubeChannel) {
-        return registeredYouTubeChannels.contains(youtubeChannel.toLowerCase());
+        return registeredYouTubeChannels.contains(youtubeChannel);
     }
 
     //endregion

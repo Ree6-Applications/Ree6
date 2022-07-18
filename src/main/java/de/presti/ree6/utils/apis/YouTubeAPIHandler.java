@@ -61,7 +61,9 @@ public class YouTubeAPIHandler {
                 .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
         ChannelListResponse channelListResponse = request.setId(Collections.singletonList(channelId)).execute();
 
-        if (!channelListResponse.getItems().isEmpty()) {
+        if (channelListResponse != null &&
+                channelListResponse.getItems() != null &&
+                !channelListResponse.getItems().isEmpty()) {
             Channel channel = channelListResponse.getItems().get(0);
             YouTube.PlaylistItems.List playlistItemRequest =
                     youTube.playlistItems().list(Collections.singletonList("id,contentDetails,snippet"));
