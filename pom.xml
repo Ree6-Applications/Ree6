@@ -259,9 +259,9 @@
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>com.github.jagrosh</groupId>
+            <groupId>com.github.Ree6-Applications</groupId>
             <artifactId>JLyrics</artifactId>
-            <version>0f9ac5df83852b7b8e735e1390eed39bb0a90fce</version>
+            <version>master-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
