@@ -6,6 +6,7 @@ import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
 import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.base.data.SQLParameter;
+import de.presti.ree6.utils.data.SQLUtil;
 import de.presti.ree6.utils.data.StoredResultSet;
 import org.reflections.Reflections;
 
@@ -73,7 +74,7 @@ public class MigrationBuilder {
 
                             if (!found) {
                                 Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getSimpleName() + ": " + field.getAnnotation(Property.class).name());
-                                upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD COLUMN ").append(field.getAnnotation(Property.class).name()).append(" ").append(field.getType().getSimpleName()).append(";\n");
+                                upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD COLUMN ").append(field.getAnnotation(Property.class).name()).append(" ").append(SQLUtil.mapJavaToSQL(field.getType())).append(";\n");
                                 downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" DROP COLUMN ").append(field.getAnnotation(Property.class).name()).append(";\n");
                             }
                         }
@@ -90,7 +91,7 @@ public class MigrationBuilder {
 
                         if (!found) {
                             Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getSimpleName() + ": " + field.getAnnotation(Property.class).name());
-                            upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD COLUMN ").append(field.getAnnotation(Property.class).name()).append(" ").append(field.getType().getSimpleName()).append(";\n");
+                            upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD COLUMN ").append(field.getAnnotation(Property.class).name()).append(" ").append(SQLUtil.mapJavaToSQL(field.getType())).append(";\n");
                             downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" DROP COLUMN ").append(field.getAnnotation(Property.class).name()).append(";\n");
                         }
                     }
@@ -98,20 +99,14 @@ public class MigrationBuilder {
                     Main.getInstance().getLogger().info("Could not get any data from table " + aClass.getAnnotation(Table.class).name() + ", trying to create it.");
                     Table table = aClass.getAnnotation(Table.class);
                     String tableName = table.name();
-                    List<SQLParameter> sqlParameters =
-                            Arrays.stream(aClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
-                                    .map(e -> {
-                                                Property property = e.getAnnotation(Property.class);
-                                                return new SQLParameter(property.name(), e.getType(), property.primary());
-                                            }
-                                    ).toList();
+                    List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(aClass, false);
                     upQuery.append("CREATE TABLE ");
                     upQuery.append(tableName);
                     upQuery.append(" (");
                     sqlParameters.forEach(parameter -> {
                         upQuery.append(parameter.getName());
                         upQuery.append(" ");
-                        upQuery.append(parameter.getValue().getSimpleName());
+                        upQuery.append(SQLUtil.mapJavaToSQL(parameter.getValue()));
                         upQuery.append(", ");
                     });
 
@@ -122,7 +117,7 @@ public class MigrationBuilder {
                     });
 
                     if (upQuery.charAt(upQuery.length() - 2) == ',') {
-                        upQuery.deleteCharAt(upQuery.length() - 2);
+                        upQuery.delete(upQuery.length() - 2, upQuery.length());
                     }
 
                     upQuery.append(");\n");
