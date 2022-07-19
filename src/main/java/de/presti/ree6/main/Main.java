@@ -98,6 +98,9 @@ public class Main {
      */
     public static void main(String[] args) {
 
+        // To allow Image creation on CPU.
+        System.setProperty("java.awt.headless", "true");
+
         // Create the Main instance.
         instance = new Main();
 
