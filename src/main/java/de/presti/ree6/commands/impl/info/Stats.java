@@ -70,7 +70,6 @@ public class Stats implements ICommand {
 
         StringBuilder end2 = new StringBuilder();
 
-
         for (de.presti.ree6.sql.entities.stats.Stats values : Main.getInstance().getSqlConnector().getSqlWorker().getStatsGlobal()) {
             end2.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
         }

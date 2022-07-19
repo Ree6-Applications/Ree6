@@ -6,9 +6,8 @@ import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.base.data.SQLParameter;
 
 import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -107,16 +106,21 @@ public class SQLUtil {
 
     /**
      * Get all SQLParameters from a class Entity.
-     * @param entity the Entity.
+     *
+     * @param entity          the Entity.
+     * @param onlyUpdateField if fields with the updateQuery value set to false should still be included.
      * @return {@link List} of {@link SQLParameter} as the SQLParameters.
      */
-    public static List<SQLParameter> getAllSQLParameter(Class<?> entity) {
+    public static List<SQLParameter> getAllSQLParameter(Class<?> entity, boolean onlyUpdateField) {
         List<SQLParameter> parameters = new ArrayList<>();
 
         if (entity.getSuperclass() != null && !entity.getSuperclass().isInstance(SQLEntity.class)) {
             for (Field field : entity.getSuperclass().getDeclaredFields()) {
                 if (field.isAnnotationPresent(Property.class)) {
                     Property property = field.getAnnotation(Property.class);
+                    if (onlyUpdateField && !property.updateQuery())
+                        continue;
+
                     parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
                 }
             }
@@ -125,6 +129,10 @@ public class SQLUtil {
         for (Field field : entity.getDeclaredFields()) {
             if (field.isAnnotationPresent(Property.class)) {
                 Property property = field.getAnnotation(Property.class);
+
+                if (onlyUpdateField && !property.updateQuery())
+                    continue;
+
                 parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
             }
         }
@@ -133,31 +141,49 @@ public class SQLUtil {
     }
 
     /**
-     * Parse the data of a {@link ResultSet} into a {@link StoredResultSet}
-     * @param resultSet the {@link ResultSet} to parse.
-     * @return {@link StoredResultSet} as the parsed data.
+     * Get all SQLParameters values from a class Entity.
+     * @param entityClass the Entity.
+     * @param entityInstance the Entity instance.
+     * @param onlyUpdateField if fields with the updateQuery value set to false should still be included.
+     * @return {@link List} of {@link Object} as the {@link SQLParameter} value.
      */
-    public static StoredResultSet createStoredResultSet(ResultSet resultSet) throws SQLException {
-        StoredResultSet storedResultSet = new StoredResultSet();
+    public static List<Object> getValuesFromSQLEntity(Class<?> entityClass, Object entityInstance, boolean onlyUpdateField) {
+        List<Object> args = new ArrayList<>();
 
-        storedResultSet.setColumns(resultSet.getMetaData().getColumnCount());
-        resultSet.last();
-        storedResultSet.setRows(resultSet.getRow());
-        resultSet.beforeFirst();
-
-        for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-            storedResultSet.addColumn(i, resultSet.getMetaData().getColumnName(i));
-        }
-
-        if (storedResultSet.getRowsCount() > 0) {
-            while (resultSet.next()) {
-                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                    storedResultSet.setValue(resultSet.getRow() - 1, i, resultSet.getObject(i));
+        if (entityClass.getSuperclass() != null && !entityClass.isInstance(SQLEntity.class)) {
+            Arrays.stream(entityClass.getSuperclass().getDeclaredFields()).filter(field -> {
+                if (!field.isAnnotationPresent(Property.class)) {
+                    return false;
                 }
-            }
-            storedResultSet.setHasResults(true);
+                Property property = field.getAnnotation(Property.class);
+
+                return !onlyUpdateField || property.updateQuery();
+            }).map(field -> {
+                try {
+                    if (!field.canAccess(entityInstance)) field.trySetAccessible();
+                    return field.get(entityInstance);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }).forEach(args::add);
         }
 
-        return storedResultSet;
+        Arrays.stream(entityClass.getDeclaredFields()).filter(field -> {
+            if (!field.isAnnotationPresent(Property.class)) {
+                return false;
+            }
+            Property property = field.getAnnotation(Property.class);
+
+            return !onlyUpdateField || property.updateQuery();
+        }).map(field -> {
+            try {
+                if (!field.canAccess(entityInstance)) field.trySetAccessible();
+                return field.get(entityInstance);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }).forEach(args::add);
+
+        return args;
     }
 }

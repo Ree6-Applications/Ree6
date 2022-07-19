@@ -210,11 +210,11 @@ public class StoredResultSet {
         public Object getValue(String name) {
             int columnIndex = getColumnByName(name);
 
-            if (data.isEmpty() || columnIndex == -1) {
+            if (rowData.isEmpty() || columnIndex == -1) {
                 return new Object();
             }
 
-            return data.get(0).get((columnIndex));
+            return rowData.get((columnIndex));
         }
 
         public void add(int columIndex, Object object) {

@@ -19,7 +19,7 @@ public class Stats extends SQLEntity {
     /**
      * Number of times the Command was used.
      */
-    @Property(name = "uses")
+    @Property(name = "uses", updateQuery = true)
     private int uses;
 
     /**

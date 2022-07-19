@@ -26,7 +26,7 @@ public class UserLevel extends SQLEntity {
     /**
      * The experience of the User.
      */
-    @Property(name = "xp")
+    @Property(name = "xp", updateQuery = true)
     long experience;
 
     /**

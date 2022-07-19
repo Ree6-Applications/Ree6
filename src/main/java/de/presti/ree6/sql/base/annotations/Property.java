@@ -25,4 +25,10 @@ public @interface Property {
      * @return if it is or not.
      */
     boolean primary() default false;
+
+    /**
+     * Check if the property should be used in the update SQL query.
+     * @return if it should be used or not.
+     */
+    boolean updateQuery() default false;
 }

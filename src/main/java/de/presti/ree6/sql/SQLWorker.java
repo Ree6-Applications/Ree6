@@ -1534,7 +1534,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         for (Class<? extends SQLEntity> aClass : classes) {
 
             String tableName = SQLUtil.getTable(aClass);
-            List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(aClass);
+            List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(aClass,true);
 
             if (sqlParameters.isEmpty()) {
                 return;
@@ -1562,7 +1562,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entity);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity,true);
 
         if (sqlParameters.isEmpty()) {
             return false;
@@ -1616,7 +1616,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass,true);
 
         if (sqlParameters.isEmpty()) {
             return;
@@ -1649,32 +1649,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         query.append(")");
         try {
-            ArrayList<Object> parameter = new ArrayList<>();
-
-            if (entityClass.getSuperclass() != null && !entityClass.isInstance(SQLEntity.class)) {
-                Arrays.stream(entityClass.getSuperclass().getDeclaredFields()).map(field -> {
-                    try {
-                        if (!field.canAccess(entity)) field.trySetAccessible();
-                        return field.get(entity);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).forEach(parameter::add);
-            }
-
-            Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
-                try {
-                    if (!field.canAccess(entity)) field.trySetAccessible();
-                    return field.get(entity);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }).forEach(parameter::add);
-
-            if (parameter.isEmpty()) {
-                return;
-            }
-            sqlConnector.querySQL(query.toString(), parameter.toArray());
+            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, true).toArray());
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Error while saving Entity: " + entity, exception);
         }
@@ -1698,7 +1673,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass, true);
 
         if (sqlParameters.isEmpty()) {
             return;
@@ -1722,7 +1697,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
 
         query.append(" WHERE ");
-        sqlParameters.forEach(parameter -> {
+        SQLUtil.getAllSQLParameter(entityClass, false).forEach(parameter -> {
             query.append(parameter.getName());
             query.append(" = ? AND ");
         });
@@ -1732,49 +1707,12 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         try {
-            List<Object> args = new ArrayList<>();
+            ArrayList<Object> parameter = new ArrayList<>();
 
-            if (entityClass.getSuperclass() != null && !entityClass.isInstance(SQLEntity.class)) {
-                Arrays.stream(entityClass.getSuperclass().getDeclaredFields()).map(field -> {
-                    try {
-                        if (!field.canAccess(oldEntity)) field.trySetAccessible();
-                        return field.get(oldEntity);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).forEach(args::add);
-            }
+            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, newEntity, true));
+            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, oldEntity, false));
 
-             Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
-                try {
-                    if (!field.canAccess(oldEntity)) field.trySetAccessible();
-                    return field.get(oldEntity);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }).forEach(args::add);
-
-            if (entityClass.getSuperclass() != null && !entityClass.isInstance(SQLEntity.class)) {
-                Arrays.stream(entityClass.getSuperclass().getDeclaredFields()).map(field -> {
-                    try {
-                        if (!field.canAccess(newEntity)) field.trySetAccessible();
-                        return field.get(newEntity);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).forEach(args::add);
-            }
-
-            Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
-                try {
-                    if (!field.canAccess(newEntity)) field.trySetAccessible();
-                    return field.get(newEntity);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }).forEach(args::add);
-
-            sqlConnector.querySQL(query.toString(), args.toArray());
+            sqlConnector.querySQL(query.toString(), parameter.toArray());
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Error while updating Entity: " + ((Class) oldEntity).getSimpleName(), exception);
         }
@@ -1793,7 +1731,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass,true);
 
         if (sqlParameters.isEmpty()) {
             return;
@@ -1817,29 +1755,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         try {
-            List<Object> args = new ArrayList<>();
-
-            if (entityClass.getSuperclass() != null && !entityClass.isInstance(SQLEntity.class)) {
-                Arrays.stream(entityClass.getSuperclass().getDeclaredFields()).map(field -> {
-                    try {
-                        if (!field.canAccess(entity)) field.trySetAccessible();
-                        return field.get(entity);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).forEach(args::add);
-            }
-
-            Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
-                try {
-                    if (!field.canAccess(entity)) field.trySetAccessible();
-                    return field.get(entity);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }).forEach(args::add);
-
-            sqlConnector.querySQL(query.toString(), args.toArray());
+            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, true).toArray());
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Error while deleting Entity: " + ((Class) entity).getSimpleName(), exception);
         }

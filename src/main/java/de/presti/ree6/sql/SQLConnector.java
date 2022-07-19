@@ -3,7 +3,6 @@ package de.presti.ree6.sql;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.mapper.EntityMapper;
-import de.presti.ree6.utils.data.SQLUtil;
 import de.presti.ree6.utils.data.StoredResultSet;
 import org.reflections.Reflections;
 
@@ -103,23 +102,6 @@ public class SQLConnector {
         if (!isConnected()) return;
 
         // Registering the tables and values.
-        //// tables.put("Settings", "(GID VARCHAR(40), NAME VARCHAR(40), VALUE VARCHAR(50))");
-        //// tables.put("CommandStats", "(COMMAND VARCHAR(40), USES VARCHAR(50))");
-        //// tables.put("GuildStats", "(GID VARCHAR(40), COMMAND VARCHAR(40), USES VARCHAR(50))");
-        //// tables.put("TwitchNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        //// tables.put("TwitterNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        //// tables.put("YouTubeNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        //// tables.put("LogWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        //// tables.put("WelcomeWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        //// tables.put("NewsWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        //// tables.put("JoinMessage", "(GID VARCHAR(40), MSG VARCHAR(250))");
-        //// tables.put("ChatProtector", "(GID VARCHAR(40), WORD VARCHAR(40))");
-        //// tables.put("AutoRoles", "(GID VARCHAR(40), RID VARCHAR(40))");
-        ////tables.put("Invites", "(GID VARCHAR(40), UID VARCHAR(40), USES VARCHAR(40), CODE VARCHAR(40))");
-        ////tables.put("Level", "(GID VARCHAR(40), UID VARCHAR(40), XP VARCHAR(500))");
-        ////tables.put("VCLevel", "(GID VARCHAR(40), UID VARCHAR(40), XP VARCHAR(500))");
-        //// tables.put("VCLevelAutoRoles", "(GID VARCHAR(40), RID VARCHAR(40), LVL VARCHAR(500))");
-        //// tables.put("ChatLevelAutoRoles", "(GID VARCHAR(40), RID VARCHAR(40), LVL VARCHAR(500))");
         tables.put("Opt_out", "(GID VARCHAR(40), UID VARCHAR(40))");
 
         // Iterating through all table presets.
@@ -171,7 +153,8 @@ public class SQLConnector {
             }
         }
 
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try {
+            PreparedStatement preparedStatement = getConnection().prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             int index = 1;
 
             for (Object obj : objcObjects) {
@@ -193,9 +176,33 @@ public class SQLConnector {
             }
 
             if (sqlQuery.toUpperCase().startsWith("SELECT")) {
-                return SQLUtil.createStoredResultSet(preparedStatement.executeQuery());
+                ResultSet resultSet = preparedStatement.executeQuery();
+                StoredResultSet storedResultSet = new StoredResultSet();
+
+                storedResultSet.setColumns(resultSet.getMetaData().getColumnCount());
+                resultSet.last();
+                storedResultSet.setRows(resultSet.getRow() + 1);
+                resultSet.beforeFirst();
+
+                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                    storedResultSet.addColumn(i, resultSet.getMetaData().getColumnName(i));
+                }
+
+                if (storedResultSet.getRowsCount() > 0) {
+                    while (resultSet.next()) {
+                        for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                            storedResultSet.setValue(resultSet.getRow() - 1, i, resultSet.getObject(i));
+                        }
+                    }
+                    storedResultSet.setHasResults(true);
+                }
+
+                resultSet.close();
+                preparedStatement.close();
+                return storedResultSet;
             } else {
                 preparedStatement.executeUpdate();
+                preparedStatement.close();
                 return null;
             }
         } catch (SQLNonTransientConnectionException exception) {
