@@ -1,28 +1,49 @@
-package de.presti.ree6.utils.data;
+package de.presti.ree6.sql.entities;
+
+import de.presti.ree6.sql.base.annotations.Property;
+import de.presti.ree6.sql.base.annotations.Table;
+import de.presti.ree6.sql.base.data.SQLEntity;
 
 /**
  * File to store Settings information.
  */
-public class Setting {
+@Table(name = "Settings")
+public class Setting extends SQLEntity {
 
-    // Name / Identifier of the Setting.
+    /**
+     * The ID of the Guild.
+     */
+    @Property(name = "gid")
+    private String guildId;
+
+    /**
+     * Name / Identifier of the Setting.
+     */
+    @Property(name = "name")
     private String name;
 
-    // The value of the Setting.
+    /**
+     * The value of the Setting.
+     */
+    @Property(name = "value")
     private Object value;
 
     /**
      * Constructor for the Setting.
-     * @param name the Name / Identifier of the Setting.
-     * @param value the Value of the Setting.
+     *
+     * @param guildId the GuildID of the Setting.
+     * @param name    the Name / Identifier of the Setting.
+     * @param value   the Value of the Setting.
      */
-    public Setting(String name, Object value) {
+    public Setting(String guildId, String name, Object value) {
+        this.guildId = guildId;
         this.name = name;
         this.value = value;
     }
 
     /**
      * Get the Value as Boolean.
+     *
      * @return the Value as {@link Boolean}
      */
     public boolean getBooleanValue() {
@@ -36,6 +57,7 @@ public class Setting {
 
     /**
      * Get the Value as String.
+     *
      * @return Value as {@link String}
      */
     public String getStringValue() {
@@ -50,7 +72,17 @@ public class Setting {
     }
 
     /**
+     * Get the Guild.
+     *
+     * @return the Guild ID.
+     */
+    public String getGuild() {
+        return guildId;
+    }
+
+    /**
      * The Name / Identifier of the Setting.
+     *
      * @return {@link String} which is the Name / Identifier.
      */
     public String getName() {
@@ -59,6 +91,7 @@ public class Setting {
 
     /**
      * Change the Name / Identifier of the Setting.
+     *
      * @param name new Name / Identifier as {@link String}.
      */
     public void setName(String name) {
@@ -67,6 +100,7 @@ public class Setting {
 
     /**
      * Get the Value as Object.
+     *
      * @return Value as {@link Object}
      */
     public Object getValue() {
@@ -75,6 +109,7 @@ public class Setting {
 
     /**
      * Change the Value Object of the Setting.
+     *
      * @param value new Value as {@link Object}
      */
     public void setValue(Object value) {

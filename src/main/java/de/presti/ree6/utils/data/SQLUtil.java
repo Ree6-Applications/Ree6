@@ -1,5 +1,14 @@
 package de.presti.ree6.utils.data;
 
+import de.presti.ree6.sql.base.annotations.Property;
+import de.presti.ree6.sql.base.annotations.Table;
+import de.presti.ree6.sql.base.data.SQLEntity;
+import de.presti.ree6.sql.base.data.SQLParameter;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * SQLUtil class to help with SQL-Queries.
  */
@@ -15,6 +24,7 @@ public class SQLUtil {
     /**
      * Get the name of the SQL DataTyp e.g. "VARCHAR".
      * From their Java equivalent: e.g. "String" -> "VARCHAR".
+     *
      * @param javaObjectClass the Java ObjectClass.
      * @return {@link String} as the SQL DataType.
      */
@@ -72,5 +82,46 @@ public class SQLUtil {
         }
 
         throw new IllegalArgumentException("Unsupported Java-Type: " + javaObjectClass.getName());
+    }
+
+    /**
+     * Get the Table from a class Entity.
+     *
+     * @param entity the Entity.
+     * @return {@link String} as the Table.
+     */
+    public static String getTable(Class<?> entity) {
+        if (!entity.isAnnotationPresent(Table.class)) {
+            return null;
+        }
+
+        Table table = entity.getAnnotation(Table.class);
+        if (table != null) {
+            return table.name();
+        }
+
+        throw new IllegalArgumentException("No Table annotation found for class: " + entity.getName());
+    }
+
+    public static List<SQLParameter> getAllSQLParameter(Class<?> entity) {
+        List<SQLParameter> parameters = new ArrayList<>();
+
+        for (Field field : entity.getDeclaredFields()) {
+            if (field.isAnnotationPresent(Property.class)) {
+                Property property = field.getAnnotation(Property.class);
+                parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
+            }
+        }
+
+        if (entity.getSuperclass() != null && !entity.getSuperclass().isInstance(SQLEntity.class)) {
+            for (Field field : entity.getSuperclass().getDeclaredFields()) {
+                if (field.isAnnotationPresent(Property.class)) {
+                    Property property = field.getAnnotation(Property.class);
+                    parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
+                }
+            }
+        }
+
+        return parameters;
     }
 }

@@ -6,21 +6,22 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
 import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.base.data.SQLParameter;
 import de.presti.ree6.sql.base.data.SQLResponse;
 import de.presti.ree6.sql.entities.Blacklist;
 import de.presti.ree6.sql.entities.Invite;
+import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.roles.AutoRole;
+import de.presti.ree6.sql.entities.roles.ChatAutoRole;
+import de.presti.ree6.sql.entities.roles.VoiceAutoRole;
 import de.presti.ree6.sql.entities.stats.GuildStats;
 import de.presti.ree6.sql.entities.stats.Stats;
 import de.presti.ree6.sql.entities.webhook.*;
 import de.presti.ree6.utils.data.SQLUtil;
-import de.presti.ree6.utils.data.Setting;
 import net.dv8tion.jda.api.entities.Guild;
 import org.reflections.Reflections;
 
@@ -70,9 +71,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Give the wanted User more XP.
      *
-     * @param guildId   the ID of the Guild.
+     * @param guildId          the ID of the Guild.
      * @param oldChatuserLevel the old {@link ChatUserLevel} Entity with all the information.
-     * @param userLevel the {@link ChatUserLevel} Entity with all the information.
+     * @param userLevel        the {@link ChatUserLevel} Entity with all the information.
      */
     public void addChatLevelData(String guildId, @Nullable ChatUserLevel oldChatuserLevel, @Nonnull ChatUserLevel userLevel) {
 
@@ -157,9 +158,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Give the wanted User more XP.
      *
-     * @param guildId        the ID of the Guild.
+     * @param guildId           the ID of the Guild.
      * @param oldVoiceUserLevel the old {@link VoiceUserLevel} with all the information.
-     * @param voiceUserLevel the {@link VoiceUserLevel} Entity with all the information.
+     * @param voiceUserLevel    the {@link VoiceUserLevel} Entity with all the information.
      */
     public void addVoiceLevelData(String guildId, @Nullable VoiceUserLevel oldVoiceUserLevel, @Nonnull VoiceUserLevel voiceUserLevel) {
 
@@ -987,8 +988,6 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     //region Level Rewards
 
-    // TODO migrate.
-
     //region Chat Rewards
 
     /**
@@ -1002,16 +1001,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Create a new HashMap to save the Role Ids and their needed level.
         HashMap<Integer, String> rewards = new HashMap<>();
 
-        // Check if there is a role in the database.
-        if (isChatLevelRewardSetup(guildId)) {
-            // Creating a SQL Statement to get the RoleID and the needed level from the ChatLevelAutoRoles Table by the GuildID.
-            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId)) {
-
-                // Add the Role ID and its needed level to the List if found.
-                while (rs != null && rs.next()) rewards.put(Integer.parseInt(rs.getString("LVL")), rs.getString("RID"));
-            } catch (Exception ignore) {
-            }
-        }
+        getEntity(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId).getEntities().stream().map(ChatAutoRole.class::cast).forEach(chatAutoRole -> rewards.put(chatAutoRole.getLevel(), chatAutoRole.getRoleId()));
 
         // Return the HashMap.
         return rewards;
@@ -1028,7 +1018,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (!isChatLevelRewardSetup(guildId, roleId, level)) {
             // Add a new entry into the Database.
-            sqlConnector.querySQL("INSERT INTO ChatLevelAutoRoles (GID, RID, LVL) VALUES (?, ?, ?);", guildId, roleId, level);
+            saveEntity(new ChatAutoRole(guildId, roleId, level));
         }
     }
 
@@ -1124,16 +1114,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Create a new HashMap to save the Role Ids and their needed level.
         HashMap<Integer, String> rewards = new HashMap<>();
 
-        // Check if there is a role in the database.
-        if (isVoiceLevelRewardSetup(guildId)) {
-            // Creating a SQL Statement to get the RoleID and the needed level from the VCLevelAutoRoles Table by the GuildID.
-            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=?", guildId)) {
-
-                // Add the Role ID and its needed level to the List if found.
-                while (rs != null && rs.next()) rewards.put(Integer.parseInt(rs.getString("LVL")), rs.getString("RID"));
-            } catch (Exception ignore) {
-            }
-        }
+        getEntity(VoiceAutoRole.class, "SELECT * FROM VoiceLevelAutoRoles WHERE GID=?", guildId).getEntities().stream().map(VoiceAutoRole.class::cast).forEach(voiceAutoRole -> rewards.put(voiceAutoRole.getLevel(), voiceAutoRole.getRoleId()));
 
         // Return the HashMap.
         return rewards;
@@ -1151,7 +1132,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (!isVoiceLevelRewardSetup(guildId, roleId, level)) {
             // Add a new entry into the Database.
-            sqlConnector.querySQL("INSERT INTO VCLevelAutoRoles (GID, RID, LVL) VALUES (?, ?, ?);", guildId, roleId, level);
+            saveEntity(new VoiceAutoRole(guildId, roleId, level));
         }
     }
 
@@ -1336,8 +1317,6 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     //region Join Message.
 
-    // TODO:: make a setting out of this.
-
     /**
      * Get the Join Message of the given Guild.
      *
@@ -1345,19 +1324,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Message as {@link String}
      */
     public String getMessage(String guildId) {
-
-        if (isMessageSetup(guildId)) {
-            // Creating a SQL Statement to get the Join Message from the JoinMessage Table by the GuildID.
-            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM JoinMessage WHERE GID=?", guildId)) {
-
-                // Return if found.
-                if (rs != null && rs.next()) return rs.getString("MSG");
-            } catch (Exception ignore) {
-            }
-        }
-
-        // If No setup return default Message.
-        return "Welcome %user_mention%!\nWe wish you a great stay on %guild_name%";
+        return (String) getEntity(Setting.class, "SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, "message_join").getEntity();
     }
 
     /**
@@ -1370,10 +1337,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         if (isMessageSetup(guildId)) {
             // If there is already an entry just replace it.
-            sqlConnector.querySQL("UPDATE JoinMessage SET MSG=? WHERE GID=?", content, guildId);
+            updateEntity(getSetting(guildId, "message_join"), new Setting(guildId, "message_join", content));
         } else {
             // Create a new entry, if there was none.
-            sqlConnector.querySQL("INSERT INTO JoinMessage (GID, MSG) VALUE (?, ?);", guildId, content);
+            saveEntity(new Setting(guildId, "message_join", content));
         }
     }
 
@@ -1386,7 +1353,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean isMessageSetup(String guildId) {
 
         // Creating a SQL Statement to get the Join Message from the JoinMessage Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM JoinMessage WHERE GID=?", guildId)) {
+        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, "message_join")) {
 
             // Return if found.
             return (rs != null && rs.next());
@@ -1474,8 +1441,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Remove a Word from the blacklist for the given Guild.
+     *
      * @param guildId the ID of the Guild.
-     * @param word   the Word to be removed.
+     * @param word    the Word to be removed.
      */
     public void removeChatProtectorWord(String guildId, String word) {
         // Check if there is no entry for it.
@@ -1489,8 +1457,6 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     //region Settings
 
-    // TODO:: migrate.
-
     /**
      * Get the current Setting by the Guild and its Identifier.
      *
@@ -1499,22 +1465,15 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Setting} which stores every information needed.
      */
     public Setting getSetting(String guildId, String settingName) {
-
         // Check if there is an entry in the database.
         if (hasSetting(guildId, settingName)) {
-            // Creating a SQL Statement to get the Setting in the Settings Table by the GuildID and the Setting name.
-            try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, settingName)) {
-
-                // Return if found.
-                if (rs != null && rs.next()) return new Setting(settingName, rs.getString("VALUE"));
-            } catch (Exception ignore) {
-            }
+            return (Setting) getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ? AND NAME = ?", guildId, settingName).getEntity();
         } else {
             // Check if everything is alright with the config.
             checkSetting(guildId, settingName);
         }
 
-        return new Setting(settingName, true);
+        return new Setting(guildId, settingName, true);
     }
 
     /**
@@ -1527,13 +1486,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         ArrayList<Setting> settings = new ArrayList<>();
 
-        // Creating a SQL Statement to get the Setting in the Settings Table by the GuildID and the Setting name.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Settings WHERE GID=?", guildId)) {
-
-            // Return if found.
-            while (rs != null && rs.next()) settings.add(new Setting(rs.getString("NAME"), rs.getObject("VALUE")));
-        } catch (Exception ignore) {
-        }
+        getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ?", guildId).getEntities().stream().map(Setting.class::cast).forEach(settings::add);
 
         // If there is no setting to be found, create every setting.
         if (settings.isEmpty()) {
@@ -1544,14 +1497,14 @@ public record SQLWorker(SQLConnector sqlConnector) {
         return settings;
     }
 
+
     /**
-     * Set the Setting by the Guild and its Identifier.
+     * Set the Setting by its Identifier.
      *
-     * @param guildId the ID of the Guild.
      * @param setting the Setting.
      */
-    public void setSetting(String guildId, Setting setting) {
-        setSetting(guildId, setting.getName(), setting.getStringValue());
+    public void setSetting(Setting setting) {
+        setSetting(setting.getGuild(), setting.getName(), setting.getStringValue());
     }
 
     /**
@@ -1568,11 +1521,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         // Check if there is an entry.
         if (hasSetting(guildId, settingName)) {
+            // TODO:: update the System to not require every parameter to be the given.
             // If so update it.
             sqlConnector.querySQL("UPDATE Settings SET VALUE=? WHERE GID=? AND NAME=?", String.valueOf(settingValue), guildId, settingName);
         } else {
-            // If not create a new one.
-            sqlConnector.querySQL("INSERT INTO Settings (GID, NAME, VALUE) VALUES (?, ?, ?);", guildId, settingName, String.valueOf(settingValue));
+            saveEntity(new Setting(guildId, settingName, settingValue));
         }
     }
 
@@ -1637,10 +1590,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void createSettings(String guildId) {
         // Create the Chat Prefix Setting.
-        if (!hasSetting(guildId, "chatprefix")) setSetting(guildId, new Setting("chatprefix", "ree!"));
+        if (!hasSetting(guildId, "chatprefix")) setSetting(new Setting(guildId, "chatprefix", "ree!"));
 
         // Create the Level Message Setting.
-        if (!hasSetting(guildId, "level_message")) setSetting(guildId, new Setting("level_message", false));
+        if (!hasSetting(guildId, "level_message")) setSetting(new Setting(guildId, "level_message", false));
+
+        // Create the Join Message Setting
+        if (!hasSetting(guildId, "message_join")) setSetting(new Setting(guildId, "message_join", "Welcome %user_mention%!\nWe wish you a great stay on %guild_name%"));
 
         // Create Command Settings.
         for (ICommand command : Main.getInstance().getCommandManager().getCommands()) {
@@ -1684,6 +1640,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Get the Stats of the Command.
+     *
      * @param command the Command.
      * @return the Stats of the Command.
      */
@@ -1693,6 +1650,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Get the Stats of the Command in the specific Guild.
+     *
      * @param guildId the ID of the Guild.
      * @param command the Command.
      * @return the Stats of the Command.
@@ -1703,6 +1661,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Get all the Command-Stats related to the given Guild.
+     *
      * @param guildId the ID of the Guild.
      * @return all the Command-Stats related to the given Guild.
      */
@@ -1712,6 +1671,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Get all the Command-Stats globally.
+     *
      * @return all the Command-Stats globally.
      */
     public List<Stats> getStatsGlobal() {
@@ -1778,6 +1738,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Save the Stats of the Command in the Database.
+     *
      * @param guildId the ID of the Guild.
      * @param command the Command.
      */
@@ -1863,28 +1824,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
         Reflections reflections = new Reflections("de.presti.ree6");
         Set<Class<? extends SQLEntity>> classes = reflections.getSubTypesOf(SQLEntity.class);
         for (Class<? extends SQLEntity> aClass : classes) {
-            if (!aClass.isAnnotationPresent(Table.class)) {
-                return;
-            }
 
-            Table table = aClass.getAnnotation(Table.class);
-            String tableName = table.name();
-            List<SQLParameter> sqlParameters =
-                    new ArrayList<>(Arrays.stream(aClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
-                            .map(e -> {
-                                        Property property = e.getAnnotation(Property.class);
-                                        return new SQLParameter(property.name(), e.getType(), property.primary());
-                                    }
-                            ).toList());
-
-            if (aClass.getSuperclass() != null && !aClass.getSuperclass().isInstance(SQLEntity.class)) {
-                sqlParameters.addAll(Arrays.stream(aClass.getSuperclass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
-                        .map(e -> {
-                                    Property property = e.getAnnotation(Property.class);
-                                    return new SQLParameter(property.name(), e.getType(), property.primary());
-                                }
-                        ).toList());
-            }
+            String tableName = SQLUtil.getTable(aClass);
+            List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(aClass);
 
             if (sqlParameters.isEmpty()) {
                 return;
@@ -1912,26 +1854,14 @@ public record SQLWorker(SQLConnector sqlConnector) {
             //// throw new IllegalArgumentException("The given Entity is not annotated with @Table! (" + ((Class) entity).getSimpleName() + ")");
         }
 
-        Table table = entity.getAnnotation(Table.class);
-        String tableName = table.name();
-        List<SQLParameter> sqlParameters =
-                new ArrayList<>(Arrays.stream(entity.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
-                        .map(e -> {
-                                    Property property = e.getAnnotation(Property.class);
-                                    return new SQLParameter(property.name(), e.getType(), property.primary());
-                                }
-                        ).toList());
-
-        if (entity.getSuperclass() != null && !entity.getSuperclass().isInstance(SQLEntity.class)) {
-            sqlParameters.addAll(Arrays.stream(entity.getSuperclass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
-                    .map(e -> {
-                                Property property = e.getAnnotation(Property.class);
-                                return new SQLParameter(property.name(), e.getType(), property.primary());
-                            }
-                    ).toList());
-        }
+        String tableName = SQLUtil.getTable(entity);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity);
 
         if (sqlParameters.isEmpty()) {
+            return false;
+        }
+
+        if (tableName == null) {
             return false;
         }
 
@@ -1977,16 +1907,20 @@ public record SQLWorker(SQLConnector sqlConnector) {
             throw new IllegalArgumentException("Entity must be annotated with @Table! (" + entityClass.getSimpleName() + ")");
         }
 
-        List<SQLParameter> sqlParameters =
-                Arrays.stream(entityClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
-                        .map(e -> {
-                                    Property property = e.getAnnotation(Property.class);
-                                    return new SQLParameter(property.name(), e.getType(), property.primary());
-                                }
-                        ).toList();
+        String tableName = SQLUtil.getTable(entityClass);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass);
+
+        if (sqlParameters.isEmpty()) {
+            return;
+        }
+
+        if (tableName == null) {
+            return;
+        }
+
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO ");
-        query.append(entityClass.getAnnotation(Table.class).name());
+        query.append(tableName);
         query.append(" (");
         sqlParameters.forEach(parameter -> {
             query.append(parameter.getName());
@@ -2037,16 +1971,19 @@ public record SQLWorker(SQLConnector sqlConnector) {
             throw new IllegalArgumentException("Entities must be of the same type");
         }
 
-        List<SQLParameter> sqlParameters =
-                Arrays.stream(entityClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
-                        .map(e -> {
-                                    Property property = e.getAnnotation(Property.class);
-                                    return new SQLParameter(property.name(), e.getType(), property.primary());
-                                }
-                        ).toList();
+        String tableName = SQLUtil.getTable(entityClass);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass);
+
+        if (sqlParameters.isEmpty()) {
+            return;
+        }
+
+        if (tableName == null) {
+            return;
+        }
         StringBuilder query = new StringBuilder();
         query.append("UPDATE ");
-        query.append(entityClass.getAnnotation(Table.class).name());
+        query.append(tableName);
         query.append(" SET ");
         sqlParameters.forEach(parameter -> {
             query.append(parameter.getName());
@@ -2105,16 +2042,20 @@ public record SQLWorker(SQLConnector sqlConnector) {
             throw new IllegalArgumentException("Entity must be annotated with @Table! (" + ((Class) entity).getSimpleName() + ")");
         }
 
-        List<SQLParameter> sqlParameters =
-                Arrays.stream(entityClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
-                        .map(e -> {
-                                    Property property = e.getAnnotation(Property.class);
-                                    return new SQLParameter(property.name(), e.getType(), property.primary());
-                                }
-                        ).toList();
+        String tableName = SQLUtil.getTable(entityClass);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass);
+
+        if (sqlParameters.isEmpty()) {
+            return;
+        }
+
+        if (tableName == null) {
+            return;
+        }
+
         StringBuilder query = new StringBuilder();
         query.append("DELETE FROM ");
-        query.append(entityClass.getAnnotation(Table.class).name());
+        query.append(tableName);
         query.append(" WHERE ");
         sqlParameters.forEach(parameter -> {
             query.append(parameter.getName());
@@ -2160,8 +2101,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public SQLResponse getEntity(Class<?> entity, String query, Object... args) {
         if (query.isEmpty()) {
             if (entity.isAnnotationPresent(Table.class)) {
-                String queryBuilder = "SELECT * FROM " +
-                        entity.getAnnotation(Table.class).name();
+                String queryBuilder = "SELECT * FROM " + SQLUtil.getTable(entity);
                 return sqlConnector.getEntityMapper().mapEntity(sqlConnector.querySQL(queryBuilder, args), entity);
             } else {
                 return new SQLResponse(null);

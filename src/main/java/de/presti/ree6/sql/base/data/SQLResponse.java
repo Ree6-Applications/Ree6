@@ -35,6 +35,9 @@ public class SQLResponse {
      */
     public SQLResponse(ArrayList<Object> entities) {
         this.entities = Objects.requireNonNullElseGet(entities, () -> (ArrayList<Object>) Collections.emptyList());
+        if (!entities.isEmpty()) {
+            entity = entities.get(0);
+        }
     }
 
     /**

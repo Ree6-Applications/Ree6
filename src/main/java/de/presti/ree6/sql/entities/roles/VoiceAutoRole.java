@@ -23,4 +23,13 @@ public class VoiceAutoRole extends Role {
         super(guildId, roleId);
         this.level = level;
     }
+
+    /**
+     * Get the needed level for this AutoRole.
+     *
+     * @return the needed level for this AutoRole.
+     */
+    public int getLevel() {
+        return level;
+    }
 }
