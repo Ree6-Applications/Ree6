@@ -29,8 +29,6 @@ public class MigrationUtil {
 
         File file = new File(path,migration.getName() + ".migration");
 
-        System.out.println(file.getAbsolutePath());
-
         if (file.exists()) {
             throw new IllegalArgumentException("Migration already exists");
         }

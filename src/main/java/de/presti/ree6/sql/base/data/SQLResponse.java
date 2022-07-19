@@ -1,6 +1,8 @@
 package de.presti.ree6.sql.base.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Objects;
 
 /**
  * This class is used to represent a SQL Response.
@@ -15,7 +17,7 @@ public class SQLResponse {
     /**
      * The data of the response.
      */
-    Object entity = null;
+    Object entity = new SQLEntity();
 
     /**
      * Constructor.
@@ -23,7 +25,7 @@ public class SQLResponse {
      * @param entity The data of the response.
      */
     public SQLResponse(Object entity) {
-        this.entity = entity;
+        this.entity = Objects.requireNonNullElseGet(entity, SQLEntity::new);
     }
 
     /**
@@ -32,7 +34,7 @@ public class SQLResponse {
      * @param entities The data of the response.
      */
     public SQLResponse(ArrayList<Object> entities) {
-        this.entities = entities;
+        this.entities = Objects.requireNonNullElseGet(entities, () -> (ArrayList<Object>) Collections.emptyList());
     }
 
     /**

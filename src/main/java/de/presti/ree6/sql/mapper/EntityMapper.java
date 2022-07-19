@@ -38,7 +38,7 @@ public class EntityMapper {
             Main.getInstance().getLogger().error("Couldn't map Entity: " + e.getMessage());
         }
 
-        return null;
+        return new SQLResponse(null);
     }
 
     /**
