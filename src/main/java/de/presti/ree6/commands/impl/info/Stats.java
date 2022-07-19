@@ -5,8 +5,9 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.entities.stats.GuildStats;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.TimeUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -63,15 +64,15 @@ public class Stats implements ICommand {
 
         StringBuilder end = new StringBuilder();
 
-        for (String[] values : Main.getInstance().getSqlConnector().getSqlWorker().getStats(commandEvent.getGuild().getId())) {
-            end.append(values[0]).append(" - ").append(values[1]).append("\n");
+        for (GuildStats values : Main.getInstance().getSqlConnector().getSqlWorker().getStats(commandEvent.getGuild().getId())) {
+            end.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
         }
 
         StringBuilder end2 = new StringBuilder();
 
 
-        for (String[] values : Main.getInstance().getSqlConnector().getSqlWorker().getStatsGlobal()) {
-            end2.append(values[0]).append(" - ").append(values[1]).append("\n");
+        for (de.presti.ree6.sql.entities.stats.Stats values : Main.getInstance().getSqlConnector().getSqlWorker().getStatsGlobal()) {
+            end2.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
         }
 
         em.addField("**Command Stats:**", "", true);

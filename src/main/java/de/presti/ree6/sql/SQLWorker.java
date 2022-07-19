@@ -65,7 +65,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} true if there was a match | false if there wasn't a match.
      */
     public boolean existsInChatLevel(String guildId, String userId) {
-        return getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId) != null;
+        return getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId).isSuccess();
     }
 
     /**
@@ -152,7 +152,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} true if there was a match | false if there wasn't a match.
      */
     public boolean existsInVoiceLevel(String guildId, String userId) {
-        return getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId) != null;
+        return getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId).isSuccess();
     }
 
     /**
@@ -269,16 +269,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isLogSetup(String guildId) {
-        // Creating a SQL Statement to get the Entry from the LogWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM LogWebhooks WHERE GID=?", guildId)) {
-
-            // Return if there was a match.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there wasn't a match.
-        return false;
+        return getEntity(Webhook.class, "SELECT * FROM LogWebhooks WHERE GID=?", guildId).isSuccess();
     }
 
     /**
@@ -289,17 +280,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean existsLogData(long webhookId, String authToken) {
-
-        // Creating a SQL Statement to get the Entry from the LogWebhooks Table by the WebhookID and its Auth-Token.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM LogWebhooks WHERE CID=? AND TOKEN=?", webhookId, authToken)) {
-
-            // Return if there was a match.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there wasn't a match.
-        return false;
+        return getEntity(Webhook.class, "SELECT * FROM LogWebhooks WHERE CID=? AND TOKEN=?", webhookId, authToken).isSuccess();
     }
 
     /**
@@ -368,17 +349,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isWelcomeSetup(String guildId) {
-
-        // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId)) {
-
-            // Return if there was a match.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there wasn't a match.
-        return false;
+        return getEntity(WebhookWelcome.class, "SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId).isSuccess();
     }
 
     //endregion
@@ -430,17 +401,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isNewsSetup(String guildId) {
-
-        // Creating a SQL Statement to get the Entry from the NewsWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM NewsWebhooks WHERE GID=?", guildId)) {
-
-            // Return if there was a match.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there wasn't a match.
-        return false;
+        return getEntity(WebhookNews.class, "SELECT * FROM NewsWebhooks WHERE GID=?", guildId).isSuccess();
     }
 
     //endregion
@@ -562,16 +523,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitchSetup(String guildId) {
-        // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId)) {
-
-            // Return if there was a match.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there wasn't a match.
-        return false;
+        return getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=?", guildId).isSuccess();
     }
 
     /**
@@ -582,17 +534,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitchSetup(String guildId, String twitchName) {
-
-        // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName)) {
-
-            // Return if there was a match.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there wasn't a match.
-        return false;
+        return getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName).isSuccess();
     }
 
     //endregion
@@ -714,16 +656,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isYouTubeSetup(String guildId) {
-        // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId)) {
-
-            // Return if there was a match.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there wasn't a match.
-        return false;
+        return getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=?", guildId).isSuccess();
     }
 
     /**
@@ -734,17 +667,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isYouTubeSetup(String guildId, String youtubeChannel) {
-
-        // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel)) {
-
-            // Return if there was a match.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there wasn't a match.
-        return false;
+        return getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel).isSuccess();
     }
 
     //endregion
@@ -865,17 +788,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitterSetup(String guildId) {
-
-        // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId)) {
-
-            // Return if there was a match.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there wasn't a match.
-        return false;
+        return getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE GID=?", guildId).isSuccess();
     }
 
     /**
@@ -886,16 +799,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitterSetup(String guildId, String twitterName) {
-        // Creating a SQL Statement to get the Entry from the WelcomeWebhooks Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName)) {
-
-            // Return if there was a match.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there wasn't a match.
-        return false;
+        return getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName).isSuccess();
     }
 
     //endregion
@@ -951,17 +855,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isAutoRoleSetup(String guildId) {
-
-        // Creating a SQL Statement to get the RoleID from the AutoRoles Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM AutoRoles WHERE GID=?", guildId)) {
-
-            // Return if there was an entry or not.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return false if there was an error OR if the role isn't in the database.
-        return false;
+        return getEntity(AutoRole.class, "SELECT * FROM AutoRoles WHERE GID=?", guildId).isSuccess();
     }
 
     /**
@@ -972,16 +866,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isAutoRoleSetup(String guildId, String roleId) {
-        // Creating a SQL Statement to get the RoleID from the AutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM AutoRoles WHERE GID=? AND RID=?", guildId, roleId)) {
-
-            // Return if there was an entry or not.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return false if there was an error OR if the role isn't in the database.
-        return false;
+        return getEntity(AutoRole.class, "SELECT * FROM AutoRoles WHERE GID=? AND RID=?", guildId, roleId).isSuccess();
     }
 
     //endregion
@@ -1043,17 +928,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isChatLevelRewardSetup(String guildId) {
-
-        // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId)) {
-
-            // Return if there was an entry or not.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return false if there was an error OR if the role isn't in the database.
-        return false;
+        return getEntity(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId).isSuccess();
     }
 
     /**
@@ -1064,17 +939,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isChatLevelRewardSetup(String guildId, String roleId) {
-
-        // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=? AND RID=?", guildId, roleId)) {
-
-            // Return if there was an entry or not.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return false if there was an error OR if the role isn't in the database.
-        return false;
+        return getEntity(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=? AND RID=?", guildId, roleId).isSuccess();
     }
 
     /**
@@ -1086,17 +951,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isChatLevelRewardSetup(String guildId, String roleId, int level) {
-
-        // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatLevelAutoRoles WHERE GID=? AND RID=? AND LVL=?", guildId, roleId, level)) {
-
-            // Return if there was an entry or not.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return false if there was an error OR if the role isn't in the database.
-        return false;
+        return getEntity(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=? AND RID=? AND LVL=?", guildId, roleId, level).isSuccess();
     }
 
     //endregion
@@ -1157,16 +1012,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isVoiceLevelRewardSetup(String guildId) {
-        // Creating a SQL Statement to get the RoleID from the VCLevelAutoRoles Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=?", guildId)) {
-
-            // Return if there was an entry or not.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return false if there was an error OR if the role isn't in the database.
-        return false;
+        return getEntity(VoiceAutoRole.class, "SELECT * FROM VCLevelAutoRoles WHERE GID=?", guildId).isSuccess();
     }
 
     /**
@@ -1177,16 +1023,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isVoiceLevelRewardSetup(String guildId, String roleId) {
-        // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=? AND RID=?", guildId, roleId)) {
-
-            // Return if there was an entry or not.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return false if there was an error OR if the role isn't in the database.
-        return false;
+        return getEntity(VoiceAutoRole.class, "SELECT * FROM VCLevelAutoRoles WHERE GID=? AND RID=?", guildId, roleId).isSuccess();
     }
 
     /**
@@ -1198,16 +1035,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isVoiceLevelRewardSetup(String guildId, String roleId, int level) {
-        // Creating a SQL Statement to get the RoleID from the ChatLevelAutoRoles Table by the GuildID and its ID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevelAutoRoles WHERE GID=? AND RID=? AND LVL=?", guildId, roleId, level)) {
-
-            // Return if there was an entry or not.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return false if there was an error OR if the role isn't in the database.
-        return false;
+        return getEntity(VoiceAutoRole.class, "SELECT * FROM VCLevelAutoRoles WHERE GID=? AND RID=? AND LVL=?", guildId, roleId, level).isSuccess();
     }
 
     //endregion
@@ -1240,16 +1068,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as Result if true, then it's saved in our Database | if false, we couldn't find anything.
      */
     public boolean existsInvite(String guildId, String inviteCreator, String inviteCode) {
-        // Creating a SQL Statement to get the Invite from the Invites Table by the GuildID, Invite Creator ID and Invite Code.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode)) {
-
-            // Return if found.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // Return if there was an error or if it couldn't be found in our Database.
-        return false;
+        return getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode).isSuccess();
     }
 
     /**
@@ -1274,6 +1093,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is an entry with the same data.
         if (existsInvite(guildId, inviteCreator, inviteCode)) {
             // Update entry.
+            // TODO:: add a getInvite method to get the Invite object and update it.
             sqlConnector.querySQL("UPDATE Invites SET USES=? WHERE GID=? AND UID=? AND CODE=?", inviteUsage, guildId, inviteCreator, inviteCode);
         } else {
             saveEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
@@ -1351,17 +1171,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, then there is an entry in our Database | If false, there is no entry in our Database for that Guild.
      */
     public boolean isMessageSetup(String guildId) {
-
-        // Creating a SQL Statement to get the Join Message from the JoinMessage Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, "message_join")) {
-
-            // Return if found.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        // If error, return false.
-        return false;
+        return getEntity(Setting.class, "SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, "message_join").isSuccess();
     }
 
     //endregion
@@ -1391,17 +1201,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is an entry in our Database | If false, there is no entry in our Database.
      */
     public boolean isChatProtectorSetup(String guildId) {
-
-        // Creating a SQL Statement to check if there is an entry in the ChatProtector Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatProtector WHERE GID=?", guildId)) {
-
-            // Return if found.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        //Return false if there was an error.
-        return false;
+        return getEntity(Blacklist.class, "SELECT * FROM ChatProtector WHERE GID = ?", guildId).isSuccess();
     }
 
     /**
@@ -1412,16 +1212,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is an entry in our Database | If false, there is no entry in our Database.
      */
     public boolean isChatProtectorSetup(String guildId, String word) {
-        // Creating a SQL Statement to check if there is an entry in the ChatProtector Table by the GuildID and the Word.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM ChatProtector WHERE GID=? AND WORD=?", guildId, word)) {
-
-            // Return if found.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        //Return false if there was an error.
-        return false;
+        return getEntity(Blacklist.class, "SELECT * FROM ChatProtector WHERE GID = ? AND WORD = ?", guildId, word).isSuccess();
     }
 
     /**
@@ -1685,16 +1476,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSaved(String guildId) {
-        // Creating a SQL Statement to check if there is an entry in the GuildStats Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM GuildStats WHERE GID = ?", guildId)) {
-
-            // Return if found.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        //Return false if there was an error.
-        return false;
+        return getEntity(Stats.class, "SELECT * FROM GuildStats WHERE GID = ?", guildId).isSuccess();
     }
 
     /**
@@ -1705,16 +1487,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSaved(String guildId, String command) {
-        // Creating a SQL Statement to check if there is an entry in the GuildStats Table by the GuildID and the Command name.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command)) {
-
-            // Return if found.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        //Return false if there was an error.
-        return false;
+        return getEntity(Stats.class, "SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command).isSuccess();
     }
 
     /**
@@ -1724,16 +1497,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSavedGlobal(String command) {
-        // Creating a SQL Statement to check if there is an entry in the CommandStats Table by the Command name.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM CommandStats WHERE COMMAND=?", command)) {
-
-            // Return if found.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        //Return false if there was an error.
-        return false;
+        return getEntity(Stats.class, "SELECT * FROM CommandStats WHERE COMMAND = ?", command).isSuccess();
     }
 
     /**

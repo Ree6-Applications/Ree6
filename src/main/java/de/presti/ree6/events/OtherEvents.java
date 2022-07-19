@@ -192,14 +192,15 @@ public class OtherEvents extends ListenerAdapter {
 
                 if (!ArrayUtil.timeout.contains(event.getMember())) {
 
-                    ChatUserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
+                    ChatUserLevel olduserLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
+                    ChatUserLevel userLevel = olduserLevel;
                     userLevel.setUser(event.getMember().getUser());
 
                     if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) {
                         Main.getInstance().getCommandManager().sendMessage("You just leveled up to Chat Level " + userLevel.getLevel() + " " + event.getMember().getAsMention() + " !", event.getChannel());
                     }
 
-                    Main.getInstance().getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), userLevel);
+                    Main.getInstance().getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), olduserLevel, userLevel);
 
                     ArrayUtil.timeout.add(event.getMember());
 

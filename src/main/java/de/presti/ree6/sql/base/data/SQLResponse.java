@@ -20,11 +20,19 @@ public class SQLResponse {
     Object entity = new SQLEntity();
 
     /**
+     * boolean to inform if the request was successful.
+     */
+    boolean isSuccess = false;
+
+    /**
      * Constructor.
      *
      * @param entity The data of the response.
      */
     public SQLResponse(Object entity) {
+        if (entity != null)
+            isSuccess = true;
+
         this.entity = Objects.requireNonNullElseGet(entity, SQLEntity::new);
     }
 
@@ -34,7 +42,11 @@ public class SQLResponse {
      * @param entities The data of the response.
      */
     public SQLResponse(ArrayList<Object> entities) {
+        if (entities != null)
+            isSuccess = true;
+
         this.entities = Objects.requireNonNullElseGet(entities, () -> (ArrayList<Object>) Collections.emptyList());
+
         if (!entities.isEmpty()) {
             entity = entities.get(0);
         }
@@ -56,6 +68,14 @@ public class SQLResponse {
      */
     public ArrayList<Object> getEntities() {
         return entities;
+    }
+
+    /**
+     * Gives you the information if not result was found.
+     * @return True if no result was found.
+     */
+    public boolean isSuccess() {
+        return isSuccess;
     }
 
 }
