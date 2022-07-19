@@ -14,6 +14,12 @@ public class VoiceAutoRole extends Role {
 
     /**
      * Constructor.
+     */
+    public VoiceAutoRole() {
+    }
+
+    /**
+     * Constructor.
      *
      * @param guildId the GuildID of the Role.
      * @param roleId  the ID of the Role.

@@ -1397,7 +1397,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Stats of the Command.
      */
     public GuildStats getStatsCommand(String guildId, String command) {
-        return (GuildStats) getEntity(GuildStats.class, "SELECT * FROM CommandStats WHERE GID = ? AND COMMAND = ?", guildId, command).getEntity();
+        return (GuildStats) getEntity(GuildStats.class, "SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command).getEntity();
     }
 
     /**
@@ -1648,14 +1648,6 @@ public record SQLWorker(SQLConnector sqlConnector) {
         query.append(")");
         try {
             ArrayList<Object> parameter = new ArrayList<>();
-            Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
-                try {
-                    if (!field.canAccess(entity)) field.trySetAccessible();
-                    return field.get(entity);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }).forEach(parameter::add);
 
             if (entityClass.getSuperclass() != null && !entityClass.isInstance(SQLEntity.class)) {
                 Arrays.stream(entityClass.getSuperclass().getDeclaredFields()).map(field -> {
@@ -1667,6 +1659,15 @@ public record SQLWorker(SQLConnector sqlConnector) {
                     }
                 }).forEach(parameter::add);
             }
+
+            Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
+                try {
+                    if (!field.canAccess(entity)) field.trySetAccessible();
+                    return field.get(entity);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }).forEach(parameter::add);
 
             if (parameter.isEmpty()) {
                 return;
@@ -1713,40 +1714,64 @@ public record SQLWorker(SQLConnector sqlConnector) {
             query.append(" = ?, ");
         });
 
-        if (query.charAt(query.length() - 2) == ',') {
+        if (query.indexOf(",", query.length() - 2) != -1) {
             query.delete(query.length() - 2, query.length());
         }
+
 
         query.append(" WHERE ");
         sqlParameters.forEach(parameter -> {
             query.append(parameter.getName());
-            query.append(" = ?, ");
+            query.append(" = ? AND ");
         });
 
-        if (query.charAt(query.length() - 2) == ',') {
-            query.delete(query.length() - 2, query.length());
+        if (query.indexOf("AND", query.length() - 5) != -1) {
+            query.delete(query.length() - 5, query.length());
         }
 
         try {
-            List<Object> args = new ArrayList<>(Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
+            List<Object> args = new ArrayList<>();
+
+            if (entityClass.getSuperclass() != null && !entityClass.isInstance(SQLEntity.class)) {
+                Arrays.stream(entityClass.getSuperclass().getDeclaredFields()).map(field -> {
+                    try {
+                        if (!field.canAccess(oldEntity)) field.trySetAccessible();
+                        return field.get(oldEntity);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).forEach(args::add);
+            }
+
+             Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
                 try {
                     if (!field.canAccess(oldEntity)) field.trySetAccessible();
                     return field.get(oldEntity);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-            }).toList());
+            }).forEach(args::add);
 
-            List<Object> newArgs = Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
+            if (entityClass.getSuperclass() != null && !entityClass.isInstance(SQLEntity.class)) {
+                Arrays.stream(entityClass.getSuperclass().getDeclaredFields()).map(field -> {
+                    try {
+                        if (!field.canAccess(newEntity)) field.trySetAccessible();
+                        return field.get(newEntity);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).forEach(args::add);
+            }
+
+            Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
                 try {
                     if (!field.canAccess(newEntity)) field.trySetAccessible();
                     return field.get(newEntity);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-            }).toList();
+            }).forEach(args::add);
 
-            args.addAll(newArgs);
             sqlConnector.querySQL(query.toString(), args.toArray());
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Error while updating Entity: " + ((Class) oldEntity).getSimpleName(), exception);
@@ -1790,14 +1815,29 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         try {
-            sqlConnector.querySQL(query.toString(), Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
+            List<Object> args = new ArrayList<>();
+
+            if (entityClass.getSuperclass() != null && !entityClass.isInstance(SQLEntity.class)) {
+                Arrays.stream(entityClass.getSuperclass().getDeclaredFields()).map(field -> {
+                    try {
+                        if (!field.canAccess(entity)) field.trySetAccessible();
+                        return field.get(entity);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).forEach(args::add);
+            }
+
+            Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
                 try {
                     if (!field.canAccess(entity)) field.trySetAccessible();
                     return field.get(entity);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-            }).toArray());
+            }).forEach(args::add);
+
+            sqlConnector.querySQL(query.toString(), args.toArray());
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Error while deleting Entity: " + ((Class) entity).getSimpleName(), exception);
         }

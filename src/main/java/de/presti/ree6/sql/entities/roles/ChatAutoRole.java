@@ -14,6 +14,12 @@ public class ChatAutoRole extends Role {
 
     /**
      * Constructor.
+     */
+    public ChatAutoRole() {
+    }
+
+    /**
+     * Constructor.
      *
      * @param guildId the GuildID of the Role.
      * @param roleId  the ID of the Role.

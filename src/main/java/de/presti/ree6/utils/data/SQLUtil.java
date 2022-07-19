@@ -113,19 +113,19 @@ public class SQLUtil {
     public static List<SQLParameter> getAllSQLParameter(Class<?> entity) {
         List<SQLParameter> parameters = new ArrayList<>();
 
-        for (Field field : entity.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Property.class)) {
-                Property property = field.getAnnotation(Property.class);
-                parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
-            }
-        }
-
         if (entity.getSuperclass() != null && !entity.getSuperclass().isInstance(SQLEntity.class)) {
             for (Field field : entity.getSuperclass().getDeclaredFields()) {
                 if (field.isAnnotationPresent(Property.class)) {
                     Property property = field.getAnnotation(Property.class);
                     parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
                 }
+            }
+        }
+
+        for (Field field : entity.getDeclaredFields()) {
+            if (field.isAnnotationPresent(Property.class)) {
+                Property property = field.getAnnotation(Property.class);
+                parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
             }
         }
 

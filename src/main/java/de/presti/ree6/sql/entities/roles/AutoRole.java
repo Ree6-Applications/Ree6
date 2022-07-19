@@ -9,6 +9,12 @@ import de.presti.ree6.sql.base.annotations.Table;
 public class AutoRole extends Role {
 
     /**
+     * Constructor.
+     */
+    public AutoRole() {
+    }
+
+    /**
      * @inheritDoc
      */
     public AutoRole(String guildId, String roleId) {

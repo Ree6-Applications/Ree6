@@ -17,6 +17,12 @@ public class GuildStats extends Stats {
 
     /**
      * Constructor.
+     */
+    public GuildStats() {
+    }
+
+    /**
+     * Constructor.
      *
      * @param command Name of the Command.
      * @param uses    Number of times the Command was used.

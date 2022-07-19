@@ -1,5 +1,6 @@
 package de.presti.ree6.sql.entities.webhook;
 
+import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
 
 /**
@@ -11,7 +12,15 @@ public class WebhookYouTube extends Webhook {
     /**
      * Name of the Channel.
      */
+    @Property(name = "name")
     private String name;
+
+    /**
+     * Constructor.
+     */
+    public WebhookYouTube() {
+    }
+
 
     /**
      * Constructor.

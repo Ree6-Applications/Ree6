@@ -58,17 +58,6 @@ public class EntityMapper {
     private Object mapClass(StoredResultSet.StoredData resultSet, Class<?> clazz) {
         try {
             Object entity = clazz.newInstance();
-            Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
-                    .forEach(field -> {
-                        Property property = field.getAnnotation(Property.class);
-                        String columnName = property.name().toUpperCase();
-                        try {
-                            if (!field.canAccess(entity)) field.trySetAccessible();
-                            field.set(entity, resultSet.getValue(columnName));
-                        } catch (Exception e) {
-                            Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
-                        }
-                    });
 
             if (clazz.getSuperclass() != null && !clazz.getSuperclass().isInstance(SQLEntity.class)) {
                 Arrays.stream(clazz.getSuperclass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
@@ -83,6 +72,19 @@ public class EntityMapper {
                             }
                         });
             }
+
+            Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                    .forEach(field -> {
+                        Property property = field.getAnnotation(Property.class);
+                        String columnName = property.name().toUpperCase();
+                        try {
+                            if (!field.canAccess(entity)) field.trySetAccessible();
+                            field.set(entity, resultSet.getValue(columnName));
+                        } catch (Exception e) {
+                            Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
+                        }
+                    });
+
             return entity;
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Couldn't map Class: " + clazz.getSimpleName(), exception);

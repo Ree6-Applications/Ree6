@@ -11,6 +11,12 @@ import de.presti.ree6.sql.base.annotations.Table;
 public class VoiceUserLevel extends UserLevel {
 
     /**
+     * Constructor.
+     */
+    public VoiceUserLevel() {
+    }
+
+    /**
      * Constructor to create a UserLevel with the needed Data.
      *
      * @param guildId    the ID of the Guild.

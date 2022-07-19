@@ -9,6 +9,12 @@ import de.presti.ree6.sql.base.annotations.Table;
 public class WebhookLog extends Webhook {
 
     /**
+     * Constructor.
+     */
+    public WebhookLog() {
+    }
+
+    /**
      * @inheritDoc
      */
     public WebhookLog(String guildId, String channelId, String token) {
