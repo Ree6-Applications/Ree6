@@ -153,8 +153,9 @@ public class SQLConnector {
             }
         }
 
+        PreparedStatement preparedStatement = null;
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            preparedStatement = getConnection().prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             int index = 1;
 
             for (Object obj : objcObjects) {
@@ -196,13 +197,10 @@ public class SQLConnector {
                     }
                     storedResultSet.setHasResults(true);
                 }
-
                 resultSet.close();
-                preparedStatement.close();
                 return storedResultSet;
             } else {
                 preparedStatement.executeUpdate();
-                preparedStatement.close();
                 return null;
             }
         } catch (SQLNonTransientConnectionException exception) {
@@ -213,6 +211,12 @@ public class SQLConnector {
             }
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
+        } finally {
+            try {
+                if (preparedStatement != null)
+                    preparedStatement.close();
+            } catch (Exception ignore) {
+            }
         }
 
         return null;
