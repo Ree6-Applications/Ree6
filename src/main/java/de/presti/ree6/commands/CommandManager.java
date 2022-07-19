@@ -111,6 +111,7 @@ public class CommandManager {
         addCommand(new Hug());
         addCommand(new Cringe());
         addCommand(new FunnyCryptocurrencies());
+        addCommand(new ShibaImage());
 
         //Level
         addCommand(new Level());
