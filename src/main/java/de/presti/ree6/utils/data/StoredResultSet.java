@@ -217,6 +217,11 @@ public class StoredResultSet {
             return rowData.get((columnIndex));
         }
 
+        /**
+         * Add data to a specific Column.
+         * @param columIndex the index of the Column.
+         * @param object the value of the data.
+         */
         public void add(int columIndex, Object object) {
             if (columIndex >= rowData.size()) {
                 rowData.add(null);
