@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utility class used to store Data for a shorter period of time.
@@ -23,13 +24,13 @@ public class ArrayUtil {
     }
 
     // HashMap used to store message contents and their IDs, to show the content when the message gets deleted.
-    public static final HashMap<String, Message> messageIDwithMessage = new HashMap<>();
+    public static final Map<String, Message> messageIDwithMessage = new HashMap<>();
 
     // HashMap used to store user Ids that are associated with a message, to show the content when the message gets deleted.
-    public static final HashMap<String, User> messageIDwithUser = new HashMap<>();
+    public static final Map<String, User> messageIDwithUser = new HashMap<>();
 
     // HashMap used to store user Ids and their VC join time, to track VoiceXP.
-    public static final HashMap<User, Long> voiceJoined = new HashMap<>();
+    public static final Map<User, Long> voiceJoined = new HashMap<>();
 
     // HashMap used to store a users Ids, to keep them from spamming commands.
     public static final ArrayList<String> commandCooldown = new ArrayList<>();

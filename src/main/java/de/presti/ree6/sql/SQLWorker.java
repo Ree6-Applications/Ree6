@@ -253,7 +253,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             sqlConnector.querySQL("DELETE FROM LogWebhooks WHERE GID=?", guildId);
         }
 
-        saveEntity(new Webhook(guildId, webhookId, authToken));
+        saveEntity(new WebhookLog(guildId, webhookId, authToken));
     }
 
     /**
@@ -839,10 +839,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param guildId the ID of the Guild.
      * @return {@link HashMap<>} as List with all Role IDs and the needed Level.
      */
-    public HashMap<Integer, String> getChatLevelRewards(String guildId) {
+    public Map<Integer, String> getChatLevelRewards(String guildId) {
 
         // Create a new HashMap to save the Role Ids and their needed level.
-        HashMap<Integer, String> rewards = new HashMap<>();
+        Map<Integer, String> rewards = new HashMap<>();
 
         getEntity(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId).getEntities().stream().map(ChatAutoRole.class::cast).forEach(chatAutoRole -> rewards.put(chatAutoRole.getLevel(), chatAutoRole.getRoleId()));
 
@@ -920,12 +920,12 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * Get the all Voice Rewards saved in our Database from the given Guild.
      *
      * @param guildId the ID of the Guild.
-     * @return {@link HashMap<>} as List with all Role IDs and the needed Level.
+     * @return {@link Map<>} as List with all Role IDs and the needed Level.
      */
-    public HashMap<Integer, String> getVoiceLevelRewards(String guildId) {
+    public Map<Integer, String> getVoiceLevelRewards(String guildId) {
 
         // Create a new HashMap to save the Role Ids and their needed level.
-        HashMap<Integer, String> rewards = new HashMap<>();
+        Map<Integer, String> rewards = new HashMap<>();
 
         getEntity(VoiceAutoRole.class, "SELECT * FROM VoiceLevelAutoRoles WHERE GID=?", guildId).getEntities().stream().map(VoiceAutoRole.class::cast).forEach(voiceAutoRole -> rewards.put(voiceAutoRole.getLevel(), voiceAutoRole.getRoleId()));
 

@@ -41,7 +41,7 @@ public class SQLConnector {
     private boolean connectedOnce = false;
 
     // A HashMap with every Table Name as key and the values as value.
-    private final HashMap<String, String> tables = new HashMap<>();
+    private final Map<String, String> tables = new HashMap<>();
 
     /**
      * Constructor with the needed data to open an SQL connection.
@@ -274,9 +274,9 @@ public class SQLConnector {
     /**
      * Retrieve a list with all Tables and it values.
      *
-     * @return {@link HashMap} with all Tables as Key and all values as value.
+     * @return {@link Map} with all Tables as Key and all values as value.
      */
-    public HashMap<String, String> getTables() {
+    public Map<String, String> getTables() {
         return tables;
     }
 

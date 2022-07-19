@@ -30,7 +30,7 @@ public class StoredResultSet {
     /**
      * Mappings to map a Column-Name to its respected index.
      */
-    private final HashMap<String, Integer> columnMappings = new HashMap<>();
+    private final Map<String, Integer> columnMappings = new HashMap<>();
 
     /**
      * Set the Columns count of the ResultSet.

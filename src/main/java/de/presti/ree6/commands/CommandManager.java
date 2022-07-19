@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.reflections.Reflections;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,8 +42,10 @@ public class CommandManager {
      * @throws CommandInitializerException if an error occurs while initializing the Commands.
      * @throws IllegalStateException if an Invalid Command was used to initialize.
      * @throws IllegalAccessException when an Instance of a Command is not accessible.
+     * @throws InstantiationException when an Instance of a Command is not instantiable.
+     * @throws NoSuchMethodException when a Constructor Instance of a Command is not found.
      */
-    public CommandManager() throws CommandInitializerException, InstantiationException, IllegalAccessException {
+    public CommandManager() throws CommandInitializerException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Main.getInstance().getLogger().info("Initializing Commands!");
 
         Reflections reflections = new Reflections("de.presti.ree6.commands");
@@ -50,7 +53,7 @@ public class CommandManager {
 
         for (Class<? extends ICommand> aClass : classes) {
             Main.getInstance().getAnalyticsLogger().info("Loading Command " + aClass.getSimpleName());
-            addCommand(aClass.newInstance());
+            addCommand(aClass.getDeclaredConstructor().newInstance());
         }
     }
 

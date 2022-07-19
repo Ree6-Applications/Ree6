@@ -205,7 +205,9 @@ public class ImageCreationUtility {
         ImageIO.write(base, "PNG", outputStream);
         Main.getInstance().getAnalyticsLogger().debug("Finished writing Image into ByteArrayOutputStream. ({}ms)", System.currentTimeMillis() - actionPerformance);
         Main.getInstance().getAnalyticsLogger().debug("Finished creation in {}ms", System.currentTimeMillis() - start);
-        return outputStream.toByteArray();
+        byte[] bytes = outputStream.toByteArray();
+        outputStream.close();
+        return bytes;
     }
 
     /**
@@ -257,7 +259,9 @@ public class ImageCreationUtility {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         ImageIO.write(base, "PNG", outputStream);
-        return outputStream.toByteArray();
+        byte[] bytes = outputStream.toByteArray();
+        outputStream.close();
+        return bytes;
     }
 
     /**

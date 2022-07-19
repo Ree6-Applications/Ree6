@@ -57,7 +57,7 @@ public class EntityMapper {
      */
     private Object mapClass(StoredResultSet.StoredData resultSet, Class<?> clazz) {
         try {
-            Object entity = clazz.newInstance();
+            Object entity = clazz.getDeclaredConstructor().newInstance();
 
             if (clazz.getSuperclass() != null && !clazz.getSuperclass().isInstance(SQLEntity.class)) {
                 Arrays.stream(clazz.getSuperclass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
