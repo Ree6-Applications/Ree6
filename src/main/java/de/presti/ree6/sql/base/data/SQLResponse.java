@@ -47,7 +47,7 @@ public class SQLResponse {
 
         this.entities = Objects.requireNonNullElseGet(entities, () -> (ArrayList<Object>) Collections.emptyList());
 
-        if (!entities.isEmpty()) {
+        if (entities != null && !entities.isEmpty()) {
             entity = entities.get(0);
         }
     }
