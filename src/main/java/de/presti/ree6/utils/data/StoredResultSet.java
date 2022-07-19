@@ -1,6 +1,9 @@
 package de.presti.ree6.utils.data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A class used to store all data from a ResultSet for further use.
@@ -121,7 +124,7 @@ public class StoredResultSet {
         int columnIndex = getColumnByName(name);
 
         if (data.isEmpty() || columnIndex == -1) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         return data.stream().map(l -> l.get((columnIndex - 1))).toList();

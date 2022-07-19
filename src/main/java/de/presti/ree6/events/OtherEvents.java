@@ -296,12 +296,6 @@ public class OtherEvents extends ListenerAdapter {
                         event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupNewsMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
 
-                    case "mute" -> {
-                        embedBuilder.setDescription("You can set up our own Mute-System! " + "You can select the Role that Ree6 should give an Mute User!");
-
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(Button.link("https://cp.ree6.de", "Webinterface"))).queue();
-                    }
-
                     case "autorole" -> {
                         embedBuilder.setDescription("You can set up our own Autorole-System! " + "You can select Roles that Users should get upon joining the Server!");
 
@@ -331,7 +325,6 @@ public class OtherEvents extends ListenerAdapter {
                         optionList.add(SelectOption.of("Audit-Logging", "log"));
                         optionList.add(SelectOption.of("Welcome-channel", "welcome"));
                         optionList.add(SelectOption.of("News-channel", "news"));
-                        optionList.add(SelectOption.of("Mute role", "mute"));
                         optionList.add(SelectOption.of("Autorole", "autorole"));
 
                         embedBuilder.setDescription("Which configuration do you want to check out?");
@@ -399,7 +392,6 @@ public class OtherEvents extends ListenerAdapter {
                         optionList.add(SelectOption.of("Audit-Logging", "log"));
                         optionList.add(SelectOption.of("Welcome-channel", "welcome"));
                         optionList.add(SelectOption.of("News-channel", "news"));
-                        optionList.add(SelectOption.of("Mute role", "mute"));
                         optionList.add(SelectOption.of("Autorole", "autorole"));
 
                         embedBuilder.setDescription("Which configuration do you want to check out?");
@@ -467,7 +459,6 @@ public class OtherEvents extends ListenerAdapter {
                         optionList.add(SelectOption.of("Audit-Logging", "log"));
                         optionList.add(SelectOption.of("Welcome-channel", "welcome"));
                         optionList.add(SelectOption.of("News-channel", "news"));
-                        optionList.add(SelectOption.of("Mute role", "mute"));
                         optionList.add(SelectOption.of("Autorole", "autorole"));
 
                         embedBuilder.setDescription("Which configuration do you want to check out?");

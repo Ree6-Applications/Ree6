@@ -4,8 +4,8 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -42,7 +42,6 @@ public class Setup implements ICommand {
             optionList.add(SelectOption.of("Audit-Logging", "log"));
             optionList.add(SelectOption.of("Welcome-channel", "welcome"));
             optionList.add(SelectOption.of("News-channel", "news"));
-            optionList.add(SelectOption.of("Mute role", "mute"));
             optionList.add(SelectOption.of("Autorole", "autorole"));
 
             SelectMenu selectMenu = new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList);

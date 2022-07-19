@@ -145,7 +145,7 @@ public class LoggingEvents extends ListenerAdapter {
         we.setTimestamp(Instant.now());
 
         if (event.getMember() != null) {
-            we.setDescription(event.getUser().getAsMention() + " **left the Server.**\n:timer: **Joined:**\n" + TimeFormat.DATE_TIME_SHORT.format(event.getMember().getTimeJoined()));
+            we.setDescription(event.getUser().getAsMention() + " **left the Server.**\n:timer: Joined:\n**" + TimeFormat.DATE_TIME_SHORT.format(event.getMember().getTimeJoined()) + "**");
         } else {
             we.setDescription(event.getUser().getAsMention() + " **left the Server.**");
         }

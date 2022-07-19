@@ -1011,10 +1011,12 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<String>} as List with {@link InviteContainer}.
      */
     public List<InviteContainer> getInvites(String guildId) {
-        return getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=?", guildId).getEntities().stream().map(o -> {
+        ArrayList<InviteContainer> invites = new ArrayList<>();
+        getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=?", guildId).getEntities().stream().map(o -> {
             Invite invite = (Invite) o;
             return new InviteContainer(invite.getUserId(), invite.getGuild(), invite.getCode(), invite.getUses());
-        }).toList();
+        }).forEach(invites::add);
+        return invites;
     }
 
     /**
@@ -1102,7 +1104,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Message as {@link String}
      */
     public String getMessage(String guildId) {
-        return (String) getEntity(Setting.class, "SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, "message_join").getEntity();
+        return ((Setting) getEntity(Setting.class, "SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, "message_join").getEntity()).getStringValue();
     }
 
     /**
@@ -1149,7 +1151,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         // return the ArrayList with every blacklisted Word. (Can be empty!)
-        return Collections.emptyList();
+        return new ArrayList<>();
     }
 
     /**
