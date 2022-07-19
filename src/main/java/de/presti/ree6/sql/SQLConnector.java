@@ -154,6 +154,7 @@ public class SQLConnector {
         }
 
         PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
         try {
             preparedStatement = getConnection().prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             int index = 1;
@@ -177,7 +178,7 @@ public class SQLConnector {
             }
 
             if (sqlQuery.toUpperCase().startsWith("SELECT")) {
-                ResultSet resultSet = preparedStatement.executeQuery();
+                resultSet = preparedStatement.executeQuery();
                 StoredResultSet storedResultSet = new StoredResultSet();
 
                 storedResultSet.setColumns(resultSet.getMetaData().getColumnCount());
@@ -215,6 +216,9 @@ public class SQLConnector {
             try {
                 if (preparedStatement != null)
                     preparedStatement.close();
+
+                if (resultSet != null)
+                    resultSet.close();
             } catch (Exception ignore) {
             }
         }

@@ -1534,7 +1534,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         for (Class<? extends SQLEntity> aClass : classes) {
 
             String tableName = SQLUtil.getTable(aClass);
-            List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(aClass,true);
+            List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(aClass,false);
 
             if (sqlParameters.isEmpty()) {
                 return;
@@ -1562,7 +1562,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entity);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity,true);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity,false);
 
         if (sqlParameters.isEmpty()) {
             return false;
@@ -1616,7 +1616,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass,true);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass,false);
 
         if (sqlParameters.isEmpty()) {
             return;
@@ -1731,7 +1731,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass,true);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass,false);
 
         if (sqlParameters.isEmpty()) {
             return;
