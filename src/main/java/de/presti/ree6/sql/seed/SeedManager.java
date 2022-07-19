@@ -19,13 +19,12 @@ public class SeedManager {
         Set<Class<? extends Seed>> classes = reflections.getSubTypesOf(Seed.class);
         for (Class<? extends Seed> aClass : classes) {
             try {
+                Main.getInstance().getLogger().info("Trying to run Seed " + aClass.getSimpleName());
                 Seed seed = aClass.getDeclaredConstructor().newInstance();
-                Main.getInstance().getLogger().info("Trying to run Seed " + seed.getClass().getName());
                 seed.run();
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
                      InvocationTargetException e) {
-                e.printStackTrace();
-                Main.getInstance().getLogger().error("Could not run Seed!");
+                Main.getInstance().getLogger().error("Could not run Seed!", e);
             }
         }
     }

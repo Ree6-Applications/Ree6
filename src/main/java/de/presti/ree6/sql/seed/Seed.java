@@ -22,17 +22,17 @@ public abstract class Seed {
         /**
          * The Major version of the Seed.
          */
-        public int majorVersion;
+        public final int majorVersion;
 
         /**
          * The Minor version of the Seed.
          */
-        public int minorVersion;
+        public final int minorVersion;
 
         /**
          * The Patch version of the Seed.
          */
-        public int patchVersion;
+        public final int patchVersion;
 
         /**
          * Constructor for the SeedVersion.
