@@ -1,11 +1,12 @@
 package de.presti.ree6.sql.entities.roles;
 
 import de.presti.ree6.sql.base.annotations.Property;
+import de.presti.ree6.sql.base.data.SQLEntity;
 
 /**
  * Role class to store data about roles.
  */
-public class Role {
+public class Role extends SQLEntity {
 
     /**
      * The Name of the Role.
@@ -18,6 +19,12 @@ public class Role {
      */
     @Property(name = "rid")
     String roleId;
+
+    /**
+     * Constructor.
+     */
+    public Role() {
+    }
 
     /**
      * Constructor.

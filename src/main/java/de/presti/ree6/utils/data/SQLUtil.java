@@ -6,6 +6,8 @@ import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.base.data.SQLParameter;
 
 import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class SQLUtil {
      */
     public static String mapJavaToSQL(Class<?> javaObjectClass) {
         if (javaObjectClass.isAssignableFrom(String.class)) {
-            return "VARCHAR(255)";
+            return "VARCHAR(500)";
         } else if (javaObjectClass.isAssignableFrom(Integer.class) ||
                 javaObjectClass.isAssignableFrom(int.class)) {
             return "INT";
@@ -103,6 +105,11 @@ public class SQLUtil {
         throw new IllegalArgumentException("No Table annotation found for class: " + entity.getName());
     }
 
+    /**
+     * Get all SQLParameters from a class Entity.
+     * @param entity the Entity.
+     * @return {@link List} of {@link SQLParameter} as the SQLParameters.
+     */
     public static List<SQLParameter> getAllSQLParameter(Class<?> entity) {
         List<SQLParameter> parameters = new ArrayList<>();
 
@@ -123,5 +130,34 @@ public class SQLUtil {
         }
 
         return parameters;
+    }
+
+    /**
+     * Parse the data of a {@link ResultSet} into a {@link StoredResultSet}
+     * @param resultSet the {@link ResultSet} to parse.
+     * @return {@link StoredResultSet} as the parsed data.
+     */
+    public static StoredResultSet createStoredResultSet(ResultSet resultSet) throws SQLException {
+        StoredResultSet storedResultSet = new StoredResultSet();
+
+        storedResultSet.setColumns(resultSet.getMetaData().getColumnCount());
+        resultSet.last();
+        storedResultSet.setRows(resultSet.getRow());
+        resultSet.beforeFirst();
+
+        for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+            storedResultSet.addColumn(i, resultSet.getMetaData().getColumnName(i));
+        }
+
+        if (storedResultSet.getRowsCount() > 0) {
+            while (resultSet.next()) {
+                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                    storedResultSet.setValue(resultSet.getRow() - 1, i, resultSet.getObject(i));
+                }
+            }
+            storedResultSet.setHasResults(true);
+        }
+
+        return storedResultSet;
     }
 }

@@ -51,19 +51,24 @@ public class Notifier {
      * Constructor used to created instance of the API Clients.
      */
     public Notifier() {
+        Main.getInstance().getAnalyticsLogger().info("Initializing Twitch Client...");
         twitchClient = TwitchClientBuilder.builder().withEnableHelix(true).withClientId(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"))
                 .withClientSecret(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret")).build();
 
+        Main.getInstance().getAnalyticsLogger().info("Initializing Twitter Client...");
+
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 
-        if (BotWorker.getVersion() == BotVersion.DEVELOPMENT_BUILD) configurationBuilder.setDebugEnabled(true);
-
-        configurationBuilder.setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key"));
-        configurationBuilder.setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret"));
-        configurationBuilder.setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"));
-        configurationBuilder.setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"));
+        configurationBuilder
+                .setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key"))
+                .setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret"))
+                .setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token"))
+                .setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token.secret"))
+                .setDebugEnabled(BotWorker.getVersion() == BotVersion.DEVELOPMENT_BUILD);
 
         twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
+
+        Main.getInstance().getAnalyticsLogger().info("Initializing YouTube Streams...");
         createUploadStream();
     }
 

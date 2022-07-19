@@ -1,8 +1,11 @@
 package de.presti.ree6.sql.entities.webhook;
 
+import de.presti.ree6.sql.base.annotations.Table;
+
 /**
  * SQL Entity for the YouTube-Webhooks.
  */
+@Table(name = "YouTubeNotify")
 public class WebhookYouTube extends Webhook {
 
     /**

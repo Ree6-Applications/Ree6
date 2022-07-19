@@ -29,6 +29,12 @@ public class Setting extends SQLEntity {
     private Object value;
 
     /**
+     * Constructor.
+     */
+    public Setting() {
+    }
+
+    /**
      * Constructor for the Setting.
      *
      * @param guildId the GuildID of the Setting.
@@ -50,6 +56,7 @@ public class Setting extends SQLEntity {
         if (value instanceof Boolean booleanValue) {
             return booleanValue;
         } else if (value instanceof String stringValue) {
+            if (stringValue.equals("1")) return true;
             return Boolean.parseBoolean(stringValue);
         }
         return true;

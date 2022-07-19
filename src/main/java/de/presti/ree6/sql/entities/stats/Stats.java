@@ -24,6 +24,12 @@ public class Stats extends SQLEntity {
 
     /**
      * Constructor.
+     */
+    public Stats() {
+    }
+
+    /**
+     * Constructor.
      * @param command Name of the Command.
      * @param uses Number of times the Command was used.
      */

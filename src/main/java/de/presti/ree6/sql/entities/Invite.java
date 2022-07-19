@@ -35,6 +35,12 @@ public class Invite extends SQLEntity {
     String code;
 
     /**
+     * Constructor.
+     */
+    public Invite() {
+    }
+
+    /**
      * Constructor for the Invite.
      *
      * @param guild  the GuildID of the Invite.

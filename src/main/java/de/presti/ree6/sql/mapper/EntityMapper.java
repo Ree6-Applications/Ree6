@@ -2,9 +2,10 @@ package de.presti.ree6.sql.mapper;
 
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.annotations.Property;
+import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.base.data.SQLResponse;
+import de.presti.ree6.utils.data.StoredResultSet;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -20,22 +21,28 @@ public class EntityMapper {
      * @param clazz     The Class-Entity to map the ResultSet into.
      * @return The mapped Class-Entity in the form of a {@link SQLResponse}.
      */
-    public SQLResponse mapEntity(ResultSet resultSet, Class<?> clazz) {
+    public SQLResponse mapEntity(StoredResultSet resultSet, Class<?> clazz) {
         try {
-            resultSet.last();
-            int rowCount = resultSet.getRow();
-            resultSet.beforeFirst();
+            int rowCount = resultSet.getRowsCount();
             if (rowCount == 0) {
-                return new SQLResponse(mapClass(resultSet, clazz));
-            } else {
-                ArrayList<Object> classes = new ArrayList<>();
-                while (resultSet.next()) {
-                    classes.add(mapClass(resultSet, clazz));
+                if (resultSet.hasResults()) {
+                    return new SQLResponse(mapClass(resultSet.getStoredData().get(0), clazz));
+                } else {
+                    return new SQLResponse(null);
                 }
-                return new SQLResponse(classes);
+            } else {
+                if (resultSet.hasResults()) {
+                    ArrayList<Object> classes = new ArrayList<>();
+                    for (StoredResultSet.StoredData entries : resultSet.getStoredData()) {
+                        classes.add(mapClass(entries, clazz));
+                    }
+                    return new SQLResponse(classes);
+                } else {
+                    return new SQLResponse(null);
+                }
             }
         } catch (Exception e) {
-            Main.getInstance().getLogger().error("Couldn't map Entity: " + e.getMessage());
+            Main.getInstance().getLogger().error("Couldn't map Entity: " + clazz.getSimpleName(), e);
         }
 
         return new SQLResponse(null);
@@ -48,23 +55,37 @@ public class EntityMapper {
      * @param clazz     The Class-Entity to map the ResultSet into.
      * @return The mapped Class-Entity.
      */
-    private Object mapClass(ResultSet resultSet, Class<?> clazz) {
+    private Object mapClass(StoredResultSet.StoredData resultSet, Class<?> clazz) {
         try {
             Object entity = clazz.newInstance();
             Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
                     .forEach(field -> {
                         Property property = field.getAnnotation(Property.class);
-                        String columnName = property.name();
+                        String columnName = property.name().toUpperCase();
                         try {
                             if (!field.canAccess(entity)) field.trySetAccessible();
-                            field.set(entity, resultSet.getObject(columnName));
+                            field.set(entity, resultSet.getValue(columnName));
                         } catch (Exception e) {
-                            Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getName());
+                            Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
                         }
                     });
+
+            if (clazz.getSuperclass() != null && !clazz.getSuperclass().isInstance(SQLEntity.class)) {
+                Arrays.stream(clazz.getSuperclass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
+                        .forEach(field -> {
+                            Property property = field.getAnnotation(Property.class);
+                            String columnName = property.name().toUpperCase();
+                            try {
+                                if (!field.canAccess(entity)) field.trySetAccessible();
+                                field.set(entity, resultSet.getValue(columnName));
+                            } catch (Exception e) {
+                                Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
+                            }
+                        });
+            }
             return entity;
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Couldn't map Class: " + exception.getMessage());
+            Main.getInstance().getLogger().error("Couldn't map Class: " + clazz.getSimpleName(), exception);
         }
 
         return null;

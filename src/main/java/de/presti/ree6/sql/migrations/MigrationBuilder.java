@@ -6,11 +6,10 @@ import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
 import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.base.data.SQLParameter;
+import de.presti.ree6.utils.data.StoredResultSet;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -55,25 +54,42 @@ public class MigrationBuilder {
         Reflections reflections = new Reflections("de.presti.ree6");
         Set<Class<? extends SQLEntity>> classes = reflections.getSubTypesOf(SQLEntity.class);
         for (Class<? extends SQLEntity> aClass : classes) {
-            Main.getInstance().getLogger().info("Checking " + aClass.getName());
+            Main.getInstance().getLogger().info("Checking " + aClass.getSimpleName());
 
-            try (ResultSet resultSet = sqlConnector.querySQL("SELECT * FROM " + aClass.getAnnotation(Table.class).name() + " LIMIT 1")) {
-                if (resultSet != null && resultSet.next()) {
-                    int columns = resultSet.getMetaData().getColumnCount();
+            try {
+                StoredResultSet resultSet = sqlConnector.querySQL("SELECT * FROM " + aClass.getAnnotation(Table.class).name() + " LIMIT 1");
+                if (resultSet != null && resultSet.hasResults()) {
+                    int columns = resultSet.getColumnCount();
 
-                    ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+                    if (aClass.getSuperclass() != null && !aClass.getSuperclass().isInstance(SQLEntity.class)) {
+                        for (Field field : Arrays.stream(aClass.getSuperclass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class)).toList()) {
+                            boolean found = false;
+
+                            for (int i = 1; i <= columns; i++) {
+                                if (resultSet.getColumnName(i).equals(field.getAnnotation(Property.class).name())) {
+                                    found = true;
+                                }
+                            }
+
+                            if (!found) {
+                                Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getSimpleName() + ": " + field.getAnnotation(Property.class).name());
+                                upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD COLUMN ").append(field.getAnnotation(Property.class).name()).append(" ").append(field.getType().getSimpleName()).append(";\n");
+                                downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" DROP COLUMN ").append(field.getAnnotation(Property.class).name()).append(";\n");
+                            }
+                        }
+                    }
 
                     for (Field field : Arrays.stream(aClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class)).toList()) {
                         boolean found = false;
 
                         for (int i = 1; i <= columns; i++) {
-                            if (resultSetMetaData.getColumnName(i).equals(field.getAnnotation(Property.class).name())) {
+                            if (resultSet.getColumnName(i).equals(field.getAnnotation(Property.class).name())) {
                                 found = true;
                             }
                         }
 
                         if (!found) {
-                            Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getName() + ": " + field.getAnnotation(Property.class).name());
+                            Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getSimpleName() + ": " + field.getAnnotation(Property.class).name());
                             upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD COLUMN ").append(field.getAnnotation(Property.class).name()).append(" ").append(field.getType().getSimpleName()).append(";\n");
                             downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" DROP COLUMN ").append(field.getAnnotation(Property.class).name()).append(";\n");
                         }

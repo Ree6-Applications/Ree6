@@ -24,6 +24,12 @@ public class Blacklist extends SQLEntity {
 
     /**
      * Constructor.
+     */
+    public Blacklist() {
+    }
+
+    /**
+     * Constructor.
      *
      * @param guildId the GuildID of the Blacklist.
      * @param word    the blacklisted word.

@@ -40,6 +40,12 @@ public class UserLevel extends SQLEntity {
     int rank;
 
     /**
+     * Constructor.
+     */
+    public UserLevel() {
+    }
+
+    /**
      * Constructor to create a UserLevel with the needed Data.
      *
      * @param guildId    the ID of the Guild.

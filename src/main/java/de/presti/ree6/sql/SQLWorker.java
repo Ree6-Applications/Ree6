@@ -27,7 +27,6 @@ import org.reflections.Reflections;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.sql.ResultSet;
 import java.util.*;
 
 /**
@@ -53,8 +52,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Long} as XP Count.
      */
     public ChatUserLevel getChatLevelData(String guildId, String userId) {
-        // Return a new UserLevel if there was an error OR if the user isn't in the database.
-        return (ChatUserLevel) Objects.requireNonNull(getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)).getEntity();
+        if (existsInChatLevel(guildId, userId)) {
+            // Return a new UserLevel if there was an error OR if the user isn't in the database.
+            return (ChatUserLevel) Objects.requireNonNull(getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)).getEntity();
+        }
+        return new ChatUserLevel(guildId, userId,0);
     }
 
     /**
@@ -115,14 +117,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userIds = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId)) {
-
-            // While there are still entries it should add them to the list.
-            while (rs != null && rs.next()) {
-                userIds.add(rs.getString("UID"));
-            }
-        } catch (Exception ignore) {
-        }
+        sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId).getValues("UID")
+                .stream().map(String.class::cast).forEach(userIds::add);
 
         // Return the list.
         return userIds;
@@ -140,8 +136,12 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link VoiceUserLevel} with information about the User Level.
      */
     public VoiceUserLevel getVoiceLevelData(String guildId, String userId) {
-        // Return 0 if there was an error OR if the user isn't in the database.
-        return (VoiceUserLevel) Objects.requireNonNull(getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)).getEntity();
+        if (existsInVoiceLevel(guildId, userId)) {
+            // Return 0 if there was an error OR if the user isn't in the database.
+            return (VoiceUserLevel) Objects.requireNonNull(getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)).getEntity();
+        }
+
+        return new VoiceUserLevel(guildId, userId,0);
     }
 
     /**
@@ -203,14 +203,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userIds = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId)) {
-
-            // While there are still entries it should add them to the list.
-            while (rs != null && rs.next()) {
-                userIds.add(rs.getString("UID"));
-            }
-        } catch (Exception ignore) {
-        }
+        sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId).getValues("UID")
+                .stream().map(String.class::cast).forEach(userIds::add);
 
         // Return the list.
         return userIds;
@@ -439,14 +433,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify")) {
-
-            // Return if there was a match.
-            while (rs != null && rs.next()) {
-                userNames.add(rs.getString("NAME"));
-            }
-        } catch (Exception ignore) {
-        }
+        sqlConnector.querySQL("SELECT * FROM TwitchNotify").getValues("NAME")
+                .stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -462,14 +450,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId)) {
-
-            // Return if there was a match.
-            while (rs != null && rs.next()) {
-                userNames.add(rs.getString("NAME"));
-            }
-        } catch (Exception ignore) {
-        }
+        sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId).getValues("NAME")
+                .stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -572,14 +554,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM YouTubeNotify")) {
-
-            // Return if there was a match.
-            while (rs != null && rs.next()) {
-                userNames.add(rs.getString("NAME"));
-            }
-        } catch (Exception ignore) {
-        }
+        sqlConnector.querySQL("SELECT * FROM YouTubeNotify").getValues("NAME")
+                .stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -595,14 +571,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId)) {
-
-            // Return if there was a match.
-            while (rs != null && rs.next()) {
-                userNames.add(rs.getString("NAME"));
-            }
-        } catch (Exception ignore) {
-        }
+        sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId).getValues("NAME")
+                .stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -705,14 +675,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitterNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitterNotify")) {
-
-            // Return if there was a match.
-            while (rs != null && rs.next()) {
-                userNames.add(rs.getString("NAME"));
-            }
-        } catch (Exception ignore) {
-        }
+        sqlConnector.querySQL("SELECT * FROM TwitterNotify").getValues("NAME")
+                .stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -728,14 +692,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId)) {
-
-            // Return if there was a match.
-            while (rs != null && rs.next()) {
-                userNames.add(rs.getString("NAME"));
-            }
-        } catch (Exception ignore) {
-        }
+        sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId).getValues("NAME")
+                .stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -1339,15 +1297,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is a Setting Entry for the Guild | if false, there is no Entry for it.
      */
     public boolean hasSetting(String guildId, String settingName) {
-        // Creating a SQL Statement to get the Setting in the Settings Table by the GuildID and the Setting name.
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, settingName)) {
-
-            // Return if found.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        return false;
+        return getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ? AND NAME = ?", guildId, settingName).isSuccess();
     }
 
     /**
@@ -1539,15 +1489,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isOptOut(String guildId, String userId) {
         // Creating a SQL Statement to check if there is an entry in the Opt-out Table by the Guild Id and User Id
-        try (ResultSet rs = sqlConnector.querySQL("SELECT * FROM Opt_out WHERE GID=? AND UID=?", guildId, userId)) {
-
-            // Return if found.
-            return (rs != null && rs.next());
-        } catch (Exception ignore) {
-        }
-
-        //Return false if there was an error.
-        return false;
+        return sqlConnector.querySQL("SELECT * FROM Opt_out WHERE GID=? AND UID=?", guildId, userId).hasResults();
     }
 
     /**
@@ -1615,7 +1557,6 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public boolean createTable(Class<? extends SQLEntity> entity) {
         if (!entity.isAnnotationPresent(Table.class)) {
             return false;
-            //// throw new IllegalArgumentException("The given Entity is not annotated with @Table! (" + ((Class) entity).getSimpleName() + ")");
         }
 
         String tableName = SQLUtil.getTable(entity);
@@ -1652,8 +1593,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         query.append(")");
 
-        try (ResultSet resultSet = sqlConnector.querySQL(query.toString())) {
-            return resultSet != null && resultSet.next();
+        try {
+            sqlConnector.querySQL(query.toString());
+            return true;
         } catch (Exception e) {
             return false;
         }
@@ -1691,8 +1633,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
             query.append(", ");
         });
 
-        if (query.charAt(query.length() - 1) == ',') {
-            query.deleteCharAt(query.length() - 1);
+        if (query.charAt(query.length() - 2) == ',') {
+            query.delete(query.length() - 2, query.length());
         }
 
         query.append(") VALUES (");
@@ -1705,16 +1647,33 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         query.append(")");
         try {
-            sqlConnector.querySQL(query.toString(), Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
+            ArrayList<Object> parameter = new ArrayList<>();
+            Arrays.stream(entityClass.getDeclaredFields()).map(field -> {
                 try {
                     if (!field.canAccess(entity)) field.trySetAccessible();
                     return field.get(entity);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-            }).toArray());
+            }).forEach(parameter::add);
+
+            if (entityClass.getSuperclass() != null && !entityClass.isInstance(SQLEntity.class)) {
+                Arrays.stream(entityClass.getSuperclass().getDeclaredFields()).map(field -> {
+                    try {
+                        if (!field.canAccess(entity)) field.trySetAccessible();
+                        return field.get(entity);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).forEach(parameter::add);
+            }
+
+            if (parameter.isEmpty()) {
+                return;
+            }
+            sqlConnector.querySQL(query.toString(), parameter.toArray());
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while saving Entity: " + ((Class) entity).getSimpleName(), exception);
+            Main.getInstance().getLogger().error("Error while saving Entity: " + entity, exception);
         }
     }
 

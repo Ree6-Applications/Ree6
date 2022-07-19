@@ -49,7 +49,7 @@ public class CommandManager {
         Set<Class<? extends ICommand>> classes = reflections.getSubTypesOf(ICommand.class);
 
         for (Class<? extends ICommand> aClass : classes) {
-            Main.getInstance().getAnalyticsLogger().info("Loading Command " + aClass.getName());
+            Main.getInstance().getAnalyticsLogger().info("Loading Command " + aClass.getSimpleName());
             addCommand(aClass.newInstance());
         }
     }
@@ -225,7 +225,8 @@ public class CommandManager {
         }
 
         // Check if the Command is blacklisted.
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() &&
+                command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
             sendMessage("This Command is blocked!", 5, textChannel, null);
             return false;
         }

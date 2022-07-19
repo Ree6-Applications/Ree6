@@ -1,7 +1,6 @@
 package de.presti.ree6.sql.base.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -45,7 +44,7 @@ public class SQLResponse {
         if (entities != null)
             isSuccess = true;
 
-        this.entities = Objects.requireNonNullElseGet(entities, () -> (ArrayList<Object>) Collections.emptyList());
+        this.entities = Objects.requireNonNullElseGet(entities, ArrayList::new);
 
         if (entities != null && !entities.isEmpty()) {
             entity = entities.get(0);

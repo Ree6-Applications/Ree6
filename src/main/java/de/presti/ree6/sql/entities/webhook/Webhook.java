@@ -28,6 +28,12 @@ public class Webhook extends SQLEntity {
 
     /**
      * Constructor.
+     */
+    public Webhook() {
+    }
+
+    /**
+     * Constructor.
      *
      * @param guildId   The GuildID of the Webhook.
      * @param channelId The ChannelID of the Webhook.
