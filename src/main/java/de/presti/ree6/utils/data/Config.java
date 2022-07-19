@@ -52,7 +52,11 @@ public class Config {
     }
 
     public FileConfiguration createConfiguration() {
-        return YamlConfiguration.loadConfiguration(getFile());
+        try {
+            return YamlConfiguration.loadConfiguration(getFile());
+        } catch (Exception e) {
+            return new YamlConfiguration();
+        }
     }
 
     public FileConfiguration getConfiguration() { return cfg; }
