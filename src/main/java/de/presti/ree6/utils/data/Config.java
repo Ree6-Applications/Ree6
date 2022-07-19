@@ -66,7 +66,7 @@ public class Config {
 
     /**
      * Create a new Configuration.
-     * @return The Configuration as {@link FileConfiguration}.
+     * @return The Configuration as {@link YamlFile}.
      */
     public YamlFile createConfiguration() {
         try {
@@ -78,9 +78,13 @@ public class Config {
 
     /**
      * Get the Configuration.
-     * @return The Configuration as {@link FileConfiguration}.
+     * @return The Configuration as {@link YamlFile}.
      */
     public YamlFile getConfiguration() {
+        if (yamlFile == null) {
+            init();
+        }
+
         return yamlFile;
     }
 
