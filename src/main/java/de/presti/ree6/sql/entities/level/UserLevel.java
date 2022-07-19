@@ -207,7 +207,11 @@ public class UserLevel extends SQLEntity {
      * @return the needed Experience.
      */
     public long getTotalExperienceForLevel(long level) {
-        return level;
+        long requiredXP = 0;
+        for (int i = 0; i <= level; i++) {
+            requiredXP += getExperienceForLevel(i);
+        }
+        return requiredXP;
     }
 
     /**
