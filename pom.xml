@@ -224,7 +224,7 @@
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
             <artifactId>Simple-Yaml</artifactId>
-            <version>1.7.2</version>
+            <version>1.8</version>
         </dependency>
         <dependency>
             <groupId>com.github.twitch4j</groupId>
