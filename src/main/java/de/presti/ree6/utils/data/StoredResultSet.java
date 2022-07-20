@@ -21,11 +21,6 @@ public class StoredResultSet {
     private int rowsCount;
 
     /**
-     * A boolean to check if the ResultSet had any data.
-     */
-    private boolean hasResults = false;
-
-    /**
      * All the data from a ResultSet.
      */
     private final List<List<Object>> data = new ArrayList<>();
@@ -181,15 +176,7 @@ public class StoredResultSet {
      * @return true if the ResultSet had any data.
      */
     public boolean hasResults() {
-        return hasResults;
-    }
-
-    /**
-     * Set if the ResultSet had any data.
-     * @param hasResults true if the ResultSet had any data.
-     */
-    public void setHasResults(boolean hasResults) {
-        this.hasResults = hasResults;
+        return getRowsCount() > 0;
     }
 
     /**

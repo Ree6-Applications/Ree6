@@ -55,11 +55,12 @@ public class MigrationUtil {
         Migration migration = loadMigration(file);
 
         if (sqlConnector.querySQL("SELECT * FROM Migrations WHERE NAME=?", migration.getName()).hasResults()) {
-            System.out.println("Migration " + migration.getName() + " already ran.");
+            Main.getInstance().getLogger().info("Migration " + migration.getName() + " already ran.");
             return;
         }
 
         migration.up(sqlConnector);
+        Main.getInstance().getLogger().info("Migration " + migration.getName() + " ran.");
     }
 
     /**
@@ -72,7 +73,7 @@ public class MigrationUtil {
     public static Migration loadMigration(File file) throws IOException {
         String migrationFileContent = Files.readString(file.toPath());
 
-        String migrationName = migrationFileContent.split("name: ")[1].split("\n")[0];
+        String migrationName = migrationFileContent.split("name: ")[1].split("\n")[0].trim();
         String[] upQuery = migrationFileContent.split("up: ")[1].split("down:")[0].split("\n");
         String[] downQuery = migrationFileContent.split("down: ")[1].split("\n");
 

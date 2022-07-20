@@ -193,20 +193,19 @@ public class SQLConnector {
 
                 storedResultSet.setColumns(resultSet.getMetaData().getColumnCount());
                 resultSet.last();
-                storedResultSet.setRows(resultSet.getRow() + 1);
+                storedResultSet.setRows(resultSet.getRow());
                 resultSet.beforeFirst();
 
                 for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
                     storedResultSet.addColumn(i, resultSet.getMetaData().getColumnName(i));
                 }
 
-                if (storedResultSet.getRowsCount() > 0) {
+                if (storedResultSet.hasResults()) {
                     while (resultSet.next()) {
                         for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
                             storedResultSet.setValue(resultSet.getRow() - 1, i, resultSet.getObject(i));
                         }
                     }
-                    storedResultSet.setHasResults(true);
                 }
                 resultSet.close();
                 return storedResultSet;
