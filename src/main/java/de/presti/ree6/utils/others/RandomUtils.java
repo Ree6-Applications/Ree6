@@ -1,6 +1,7 @@
 package de.presti.ree6.utils.others;
 
 import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Random;
 
 public final class RandomUtils {
@@ -22,6 +23,16 @@ public final class RandomUtils {
      * An instance of the used SecureRandom.
      */
     public static final SecureRandom secureRandom = new SecureRandom();
+
+    /**
+     * Create a new 126 Byte Base64 String.
+     * @return {@link String} A 126 Byte Base64 String.
+     */
+    public static String getRandomBase64String() {
+        byte[] randomBytes = new byte[128];
+        secureRandom.nextBytes(randomBytes);
+        return Base64.getUrlEncoder().encodeToString(randomBytes);
+    }
 
     /**
      * Generates a random number between the given min and the given max.
