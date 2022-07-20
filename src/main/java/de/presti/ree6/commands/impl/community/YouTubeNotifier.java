@@ -53,7 +53,7 @@ public class YouTubeNotifier implements ICommand {
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-YouTubeNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addYouTubeWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
+                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-YouTubeNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addYouTubeWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name));
                 Main.getInstance().getCommandManager().sendMessage("A YouTube Notifier has been created for the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
                 if (!Main.getInstance().getNotifier().isYouTubeRegistered(name)) {

@@ -396,7 +396,7 @@ public class Notifier {
      * @param youtubeChannel the Name of the YouTube Channel.
      */
     public void registerYouTubeChannel(String youtubeChannel) {
-        if (getTwitchClient() == null) return;
+        if (YouTubeAPIHandler.getInstance() == null) return;
 
         if (!isYouTubeRegistered(youtubeChannel)) registeredYouTubeChannels.add(youtubeChannel);
     }
