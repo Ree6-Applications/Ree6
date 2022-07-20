@@ -503,6 +503,11 @@ public class OtherEvents extends ListenerAdapter {
             return true;
         }
 
+        if (!member.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
+            channel.sendMessage("I do not have enough Permissions to create Webhooks").queue();
+            return true;
+        }
+
         return false;
     }
 }
