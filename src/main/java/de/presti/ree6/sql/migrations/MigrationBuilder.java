@@ -6,6 +6,7 @@ import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
 import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.base.data.SQLParameter;
+import de.presti.ree6.utils.data.MigrationUtil;
 import de.presti.ree6.utils.data.SQLUtil;
 import de.presti.ree6.utils.data.StoredResultSet;
 import org.reflections.Reflections;
@@ -135,12 +136,12 @@ public class MigrationBuilder {
             }
 
             @Override
-            String getUpQuery() {
+            public String getUpQuery() {
                 return upQuery.toString();
             }
 
             @Override
-            String getDownQuery() {
+            public String getDownQuery() {
                 return downQuery.toString();
             }
         };

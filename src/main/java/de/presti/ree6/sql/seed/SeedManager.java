@@ -14,7 +14,7 @@ public class SeedManager {
     /**
      * Method called to run all Seeds.
      */
-    public void runAllSeeds() {
+    public static void runAllSeeds() {
         Reflections reflections = new Reflections("de.presti.ree6");
         Set<Class<? extends Seed>> classes = reflections.getSubTypesOf(Seed.class);
         for (Class<? extends Seed> aClass : classes) {

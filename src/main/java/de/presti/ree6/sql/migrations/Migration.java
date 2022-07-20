@@ -12,19 +12,19 @@ public abstract class Migration {
      *
      * @return the name of the Migration.
      */
-    abstract String getName();
+    public abstract String getName();
 
     /**
      * The Query that is being called on Migration load.
      * @return The Query.
      */
-    abstract String getUpQuery();
+    public abstract String getUpQuery();
 
     /**
      * The Query being called on migration deletion.
      * @return The Query.
      */
-    abstract String getDownQuery();
+    public abstract String getDownQuery();
 
 
     /**
@@ -32,7 +32,7 @@ public abstract class Migration {
      *
      * @param sqlConnector the current Instance of the {@link SQLConnector}.
      */
-    void up(SQLConnector sqlConnector) {
+    public void up(SQLConnector sqlConnector) {
         sqlConnector.querySQL(getUpQuery());
     }
 
@@ -41,7 +41,7 @@ public abstract class Migration {
      *
      * @param sqlConnector the current Instance of the {@link SQLConnector}.
      */
-    void down(SQLConnector sqlConnector){
+    public void down(SQLConnector sqlConnector){
         sqlConnector.querySQL(getDownQuery());
     }
 

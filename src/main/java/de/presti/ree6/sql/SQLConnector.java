@@ -3,6 +3,8 @@ package de.presti.ree6.sql;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.mapper.EntityMapper;
+import de.presti.ree6.sql.seed.SeedManager;
+import de.presti.ree6.utils.data.MigrationUtil;
 import de.presti.ree6.utils.data.StoredResultSet;
 import org.reflections.Reflections;
 
@@ -63,6 +65,14 @@ public class SQLConnector {
         entityMapper = new EntityMapper();
 
         connectToSQLServer();
+        try {
+            MigrationUtil.runAllMigrations();
+        } catch (Exception exception) {
+            Main.getInstance().getLogger().error("Error while running Migrations!", exception);
+        }
+
+        SeedManager.runAllSeeds();
+
         createTables();
     }
 

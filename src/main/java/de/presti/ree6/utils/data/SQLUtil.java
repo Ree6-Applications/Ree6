@@ -164,7 +164,7 @@ public class SQLUtil {
                     if (ignoreNull) {
                         try {
                             if (!field.canAccess(entity))
-                                field.setAccessible(true);
+                                field.trySetAccessible();
 
                             if (field.get(entity) == null)
                                 continue;
@@ -188,7 +188,7 @@ public class SQLUtil {
                 if (ignoreNull) {
                     try {
                         if (!field.canAccess(entity))
-                            field.setAccessible(true);
+                            field.trySetAccessible();
 
                         if (field.get(entity) == null)
                             continue;
