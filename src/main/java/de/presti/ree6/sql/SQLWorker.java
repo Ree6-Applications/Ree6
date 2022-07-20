@@ -1292,9 +1292,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         // Check if there is an entry.
         if (hasSetting(guildId, settingName)) {
-            // TODO:: update the System to not require every parameter to be the given.
             // If so update it.
-            sqlConnector.querySQL("UPDATE Settings SET VALUE=? WHERE GID=? AND NAME=?", String.valueOf(settingValue), guildId, settingName);
+            updateEntity(getSetting(guildId, settingName), new Setting(null, null, settingValue), true);
         } else {
             saveEntity(new Setting(guildId, settingName, settingValue));
         }

@@ -25,7 +25,7 @@ public class Setting extends SQLEntity {
     /**
      * The value of the Setting.
      */
-    @Property(name = "value")
+    @Property(name = "value", updateQuery = true)
     private Object value;
 
     /**

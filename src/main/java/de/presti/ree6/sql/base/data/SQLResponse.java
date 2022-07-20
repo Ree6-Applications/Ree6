@@ -41,7 +41,7 @@ public class SQLResponse {
      *
      * @param entities The data of the response.
      */
-    public SQLResponse(ArrayList<Object> entities) {
+    public SQLResponse(List<Object> entities) {
         if (entities != null)
             isSuccess = true;
 
