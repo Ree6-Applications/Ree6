@@ -5,6 +5,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -19,6 +20,10 @@ public class YouTubeNotifier implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
+        if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
+            Main.getInstance().getCommandManager().sendMessage("I need the permission `Manage Webhooks` to use this command!", commandEvent.getChannel(), commandEvent.getInteractionHook());
+        }
+
         if (commandEvent.isSlashCommand()) {
             Main.getInstance().getCommandManager().sendMessage("This Command doesn't support slash commands yet.", commandEvent.getChannel(), commandEvent.getInteractionHook());
             return;
