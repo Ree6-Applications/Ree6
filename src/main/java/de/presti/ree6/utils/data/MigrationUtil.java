@@ -110,8 +110,7 @@ public class MigrationUtil {
             printWriter.println("up: " + migration.getUpQuery());
             printWriter.println("down: " + migration.getDownQuery());
         } catch (Exception exception) {
-            Main.getInstance().getLogger().info("Could not save migration, reason: " + exception.getMessage());
-            exception.printStackTrace();
+            Main.getInstance().getLogger().info("Could not save migration, reason: " + exception.getMessage(), exception);
         }
     }
 

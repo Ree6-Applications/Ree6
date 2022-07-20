@@ -93,7 +93,7 @@ public class GoogleVisionAPI {
                 texts = res.getFullTextAnnotation().getText().split("\n");
             }
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Main.getInstance().getLogger().error("Error while trying to get the data", exception);
         }
 
         return texts;
