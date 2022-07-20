@@ -1053,11 +1053,31 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is an entry with the same data.
         if (existsInvite(guildId, inviteCreator, inviteCode)) {
             // Update entry.
-            // TODO:: add a getInvite method to get the Invite object and update it.
-            sqlConnector.querySQL("UPDATE Invites SET USES=? WHERE GID=? AND UID=? AND CODE=?", inviteUsage, guildId, inviteCreator, inviteCode);
+            updateEntity(getInvite(guildId, inviteCode), new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
         } else {
             saveEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
         }
+    }
+
+    /**
+     * Get the Invite from our Database.
+     * @param guildId the ID of the Guild.
+     * @param inviteCode the Code of the Invite.
+     * @return {@link Invite} as result if true, then it's saved in our Database | may be null.
+     */
+    public Invite getInvite(String guildId, String inviteCode) {
+        return (Invite) getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND CODE=?", guildId, inviteCode).getEntity();
+    }
+
+    /**
+     * Get the Invite from our Database.
+     * @param guildId the ID of the Guild.
+     * @param inviteCreator the ID of the Invite Creator.
+     * @param inviteCode the Code of the Invite.
+     * @return {@link Invite} as result if true, then it's saved in our Database | may be null.
+     */
+    public Invite getInvite(String guildId, String inviteCreator, String inviteCode) {
+        return (Invite) getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode).getEntity();
     }
 
     /**
@@ -1068,7 +1088,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param inviteCode    the Code of the Invite.
      */
     public void removeInvite(String guildId, String inviteCreator, String inviteCode) {
-        sqlConnector.querySQL("DELETE FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode);
+        deleteEntity(getInvite(guildId, inviteCreator, inviteCode));
     }
 
     /**
@@ -1616,7 +1636,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass,false);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity,false, false);
 
         if (sqlParameters.isEmpty()) {
             return;
@@ -1649,7 +1669,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         query.append(")");
         try {
-            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, true).toArray());
+            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, true, false).toArray());
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Error while saving Entity: " + entity, exception);
         }
@@ -1673,7 +1693,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass, true);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(newEntity, false, true);
 
         if (sqlParameters.isEmpty()) {
             return;
@@ -1682,6 +1702,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (tableName == null) {
             return;
         }
+
         StringBuilder query = new StringBuilder();
         query.append("UPDATE ");
         query.append(tableName);
@@ -1697,7 +1718,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
 
         query.append(" WHERE ");
-        SQLUtil.getAllSQLParameter(entityClass, false).forEach(parameter -> {
+        SQLUtil.getAllSQLParameter(oldEntity, false, true).forEach(parameter -> {
             query.append(parameter.getName());
             query.append(" = ? AND ");
         });
@@ -1709,8 +1730,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
         try {
             ArrayList<Object> parameter = new ArrayList<>();
 
-            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, newEntity, true));
-            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, oldEntity, false));
+            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, newEntity, false, true));
+            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, oldEntity, false, true));
 
             sqlConnector.querySQL(query.toString(), parameter.toArray());
         } catch (Exception exception) {
@@ -1731,7 +1752,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entityClass,false);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity,false, true);
 
         if (sqlParameters.isEmpty()) {
             return;
@@ -1755,7 +1776,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         try {
-            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, true).toArray());
+            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, true, true).toArray());
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Error while deleting Entity: " + ((Class) entity).getSimpleName(), exception);
         }

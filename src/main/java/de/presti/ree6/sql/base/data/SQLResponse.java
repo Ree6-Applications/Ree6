@@ -1,6 +1,7 @@
 package de.presti.ree6.sql.base.data;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -11,7 +12,7 @@ public class SQLResponse {
     /**
      * The data of the response.
      */
-    ArrayList<Object> entities = new ArrayList<>();
+    List<Object> entities = new ArrayList<>();
 
     /**
      * The data of the response.
@@ -65,7 +66,7 @@ public class SQLResponse {
      *
      * @return The data of the response.
      */
-    public ArrayList<Object> getEntities() {
+    public List<Object> getEntities() {
         return entities;
     }
 

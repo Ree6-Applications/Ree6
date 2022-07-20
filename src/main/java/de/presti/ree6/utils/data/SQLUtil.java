@@ -141,13 +141,74 @@ public class SQLUtil {
     }
 
     /**
-     * Get all SQLParameters values from a class Entity.
-     * @param entityClass the Entity.
-     * @param entityInstance the Entity instance.
+     * Get all SQLParameters from an instance Entity.
+     *
+     * @param entity          the Entity.
      * @param onlyUpdateField if fields with the updateQuery value set to false should still be included.
+     * @param ignoreNull      if null values should be ignored.
+     * @return {@link List} of {@link SQLParameter} as the SQLParameters.
+     */
+    public static List<SQLParameter> getAllSQLParameter(Object entity, boolean onlyUpdateField, boolean ignoreNull) {
+        List<SQLParameter> parameters = new ArrayList<>();
+
+        Class<?> classEntity = entity.getClass();
+
+        if (classEntity.getSuperclass() != null && !classEntity.getSuperclass().isInstance(SQLEntity.class)) {
+            for (Field field : classEntity.getSuperclass().getDeclaredFields()) {
+                if (field.isAnnotationPresent(Property.class)) {
+                    Property property = field.getAnnotation(Property.class);
+                    if (onlyUpdateField && !property.updateQuery())
+                        continue;
+
+                    if (ignoreNull) {
+                        try {
+                            if (!field.canAccess(entity))
+                                field.setAccessible(true);
+
+                            if (field.get(entity) == null)
+                                continue;
+                        } catch (Exception ignore) {}
+                    }
+
+                    parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
+                }
+            }
+        }
+
+        for (Field field : classEntity.getDeclaredFields()) {
+            if (field.isAnnotationPresent(Property.class)) {
+                Property property = field.getAnnotation(Property.class);
+
+                if (onlyUpdateField && !property.updateQuery())
+                    continue;
+
+                if (ignoreNull) {
+                    try {
+                        if (!field.canAccess(entity))
+                            field.setAccessible(true);
+
+                        if (field.get(entity) == null)
+                            continue;
+                    } catch (Exception ignore) {}
+                }
+
+                parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
+            }
+        }
+
+        return parameters;
+    }
+
+    /**
+     * Get all SQLParameters values from a class Entity.
+     *
+     * @param entityClass     the Entity.
+     * @param entityInstance  the Entity instance.
+     * @param onlyUpdateField if fields with the updateQuery value set to false should still be included.
+     * @param ignoreNull     if null values should be ignored.
      * @return {@link List} of {@link Object} as the {@link SQLParameter} value.
      */
-    public static List<Object> getValuesFromSQLEntity(Class<?> entityClass, Object entityInstance, boolean onlyUpdateField) {
+    public static List<Object> getValuesFromSQLEntity(Class<?> entityClass, Object entityInstance, boolean onlyUpdateField, boolean ignoreNull) {
         List<Object> args = new ArrayList<>();
 
         if (entityClass.getSuperclass() != null && !entityClass.isInstance(SQLEntity.class)) {
@@ -165,6 +226,12 @@ public class SQLUtil {
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
+            }).filter(object -> {
+                if (ignoreNull) {
+                    return object != null;
+                }
+
+                return true;
             }).forEach(args::add);
         }
 
@@ -182,6 +249,12 @@ public class SQLUtil {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
+        }).filter(object -> {
+            if (ignoreNull) {
+                return object != null;
+            }
+
+            return true;
         }).forEach(args::add);
 
         return args;

@@ -25,7 +25,7 @@ public class Invite extends SQLEntity {
     /**
      * The Usages of the Invite.
      */
-    @Property(name = "uses")
+    @Property(name = "uses", updateQuery = true)
     long uses;
 
     /**
