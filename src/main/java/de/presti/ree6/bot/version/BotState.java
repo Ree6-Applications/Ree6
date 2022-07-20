@@ -5,6 +5,19 @@ package de.presti.ree6.bot.version;
  */
 public enum BotState {
 
-    INIT, STARTED, STOPPED
+    /**
+     * State when the Bot starts.
+     */
+    INIT,
+
+    /**
+     * State when the Bot has started.
+     */
+    STARTED,
+
+    /**
+     * State when the Bot is shutting down.
+     */
+    STOPPED
 
 }

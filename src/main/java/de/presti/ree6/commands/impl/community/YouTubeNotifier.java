@@ -9,9 +9,15 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
+/**
+ * A Command to activate YouTube Notifications.
+ */
 @Command(name = "youtubenotifier", description = "Manage your YouTube-Notifier!", category = Category.COMMUNITY)
 public class YouTubeNotifier implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
@@ -47,7 +53,7 @@ public class YouTubeNotifier implements ICommand {
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-YouTubeNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addYouTubeWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
+                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-YouTubeNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addYouTubeWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name));
                 Main.getInstance().getCommandManager().sendMessage("A YouTube Notifier has been created for the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
                 if (!Main.getInstance().getNotifier().isYouTubeRegistered(name)) {
@@ -78,11 +84,17 @@ public class YouTubeNotifier implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[] { "yt", "ytnotifier" };

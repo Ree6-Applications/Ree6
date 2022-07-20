@@ -1,15 +1,22 @@
 package de.presti.ree6.utils.data;
 
-import org.simpleyaml.configuration.file.FileConfiguration;
-import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
 
+/**
+ * Config.
+ */
 public class Config {
 
+    /**
+     * The Configuration.
+     */
     private YamlFile yamlFile;
 
+    /**
+     * Initialize the Configuration.
+     */
     public void init() {
 
         yamlFile = createConfiguration();
@@ -57,6 +64,10 @@ public class Config {
         }
     }
 
+    /**
+     * Create a new Configuration.
+     * @return The Configuration as {@link YamlFile}.
+     */
     public YamlFile createConfiguration() {
         try {
             return new YamlFile(getFile());
@@ -65,10 +76,22 @@ public class Config {
         }
     }
 
+    /**
+     * Get the Configuration.
+     * @return The Configuration as {@link YamlFile}.
+     */
     public YamlFile getConfiguration() {
+        if (yamlFile == null) {
+            init();
+        }
+
         return yamlFile;
     }
 
+    /**
+     * Get the Configuration File.
+     * @return The Configuration File as {@link File}.
+     */
     public File getFile() {
         return new File("config.yml");
     }

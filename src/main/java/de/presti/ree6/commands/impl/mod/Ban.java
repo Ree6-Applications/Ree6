@@ -14,9 +14,15 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+/**
+ * A command to ban a user from the server.
+ */
 @Command(name = "ban", description = "Ban an specific user from the Server.", category = Category.MOD)
 public class Ban implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
@@ -68,6 +74,9 @@ public class Ban implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("ban", "Ban the User from the Server!")
@@ -78,11 +87,21 @@ public class Ban implements ICommand {
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
     }
 
+    /**
+     * Ban a specific user from the server.
+     *
+     * @param member The user to ban.
+     * @param reason The reason why the user should be banned.
+     * @param commandEvent The command event.
+     */
     public void banMember(Member member, String reason, CommandEvent commandEvent) {
         if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
             Main.getInstance().getCommandManager().sendMessage("User " + member.getAsMention() + " has been banned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());

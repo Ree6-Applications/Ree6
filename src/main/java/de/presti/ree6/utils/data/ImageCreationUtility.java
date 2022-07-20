@@ -1,7 +1,7 @@
 package de.presti.ree6.utils.data;
 
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.entities.UserLevel;
+import de.presti.ree6.sql.entities.level.UserLevel;
 import net.dv8tion.jda.api.entities.User;
 
 import javax.imageio.ImageIO;
@@ -38,7 +38,31 @@ public class ImageCreationUtility {
         long actionPerformance = System.currentTimeMillis();
 
         Main.getInstance().getAnalyticsLogger().debug("Started User Rank Image creation.");
-        if (userLevel == null || userLevel.getUser() == null)
+        Main.getInstance().getAnalyticsLogger().debug("Getting User. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
+        User user = userLevel.getUser();
+
+        Main.getInstance().getAnalyticsLogger().debug("Getting default needed Data. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
+        String formattedExperience,
+                formattedMaxExperience,
+                level,
+                rank;
+
+        double progress;
+
+            formattedExperience = userLevel.getFormattedExperience();
+            formattedMaxExperience = userLevel.getFormattedExperience(userLevel.getTotalExperienceForNextLevel());
+            level = userLevel.getLevel() + "";
+            rank = userLevel.getRank() + "";
+            progress = userLevel.getProgress();
+
+        Main.getInstance().getAnalyticsLogger().debug("Starting actual creation. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
+        if (user == null)
             return new byte[128];
 
         Main.getInstance().getAnalyticsLogger().debug("Loading and creating Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
@@ -49,7 +73,6 @@ public class ImageCreationUtility {
         Main.getInstance().getAnalyticsLogger().debug("Loaded and created Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        User user = userLevel.getUser();
         BufferedImage userImage;
 
         Main.getInstance().getAnalyticsLogger().debug("Getting User avatar. ({}ms)", System.currentTimeMillis() - actionPerformance);
@@ -125,9 +148,9 @@ public class ImageCreationUtility {
         // Draw The current Experience and needed Experience for the next Level.
         graphics2D.setColor(Color.LIGHT_GRAY);
         graphics2D.setFont(verdana40);
-        graphics2D.drawString(userLevel.getFormattedExperience() + "", (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + userLevel.getFormattedExperience(userLevel.getExperienceForNextLevel()))) - 5 - graphics2D.getFontMetrics().stringWidth(userLevel.getFormattedExperience() + ""), 675);
+        graphics2D.drawString(formattedExperience + "", (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + formattedMaxExperience)) - 5 - graphics2D.getFontMetrics().stringWidth(formattedExperience + ""), 675);
         graphics2D.setColor(Color.GRAY);
-        graphics2D.drawString("/" + userLevel.getFormattedExperience(userLevel.getTotalExperienceForNextLevel()), (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + userLevel.getFormattedExperience(userLevel.getExperienceForNextLevel()))), 675);
+        graphics2D.drawString("/" + formattedMaxExperience, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + formattedMaxExperience)), 675);
 
         Main.getInstance().getAnalyticsLogger().debug("Finished drawing User-Experience on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -138,11 +161,11 @@ public class ImageCreationUtility {
         // Draw the current Ranking.
         graphics2D.setColor(Color.WHITE);
         graphics2D.setFont(verdana40);
-        graphics2D.drawString("Rank", (base.getWidth() - 800) - (graphics2D.getFontMetrics(verdana50).stringWidth("" + userLevel.getRank())) - (graphics2D.getFontMetrics().stringWidth("Rank")) - 10, 675 - graphics2D.getFontMetrics().getHeight() - graphics2D.getFontMetrics().getHeight());
+        graphics2D.drawString("Rank", (base.getWidth() - 800) - (graphics2D.getFontMetrics(verdana50).stringWidth(rank)) - (graphics2D.getFontMetrics().stringWidth("Rank")) - 10, 675 - graphics2D.getFontMetrics().getHeight() - graphics2D.getFontMetrics().getHeight());
 
         graphics2D.setColor(Color.MAGENTA.brighter());
         graphics2D.setFont(verdana50);
-        graphics2D.drawString("" + userLevel.getRank(), (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("" + userLevel.getRank())), 675 - graphics2D.getFontMetrics(verdana40).getHeight() - graphics2D.getFontMetrics(verdana40).getHeight());
+        graphics2D.drawString(rank, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth(rank)), 675 - graphics2D.getFontMetrics(verdana40).getHeight() - graphics2D.getFontMetrics(verdana40).getHeight());
 
         Main.getInstance().getAnalyticsLogger().debug("Finished drawing User-Rank on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -153,11 +176,11 @@ public class ImageCreationUtility {
         // Draw the current Level.
         graphics2D.setColor(Color.WHITE);
         graphics2D.setFont(verdana40);
-        graphics2D.drawString("Level", (base.getWidth() - 800) - (graphics2D.getFontMetrics(verdana50).stringWidth("" + userLevel.getLevel())) - (graphics2D.getFontMetrics().stringWidth("Level")) - 10, 675 - graphics2D.getFontMetrics().getHeight());
+        graphics2D.drawString("Level", (base.getWidth() - 800) - (graphics2D.getFontMetrics(verdana50).stringWidth(level)) - (graphics2D.getFontMetrics().stringWidth("Level")) - 10, 675 - graphics2D.getFontMetrics().getHeight());
 
         graphics2D.setColor(Color.magenta.brighter());
         graphics2D.setFont(verdana50);
-        graphics2D.drawString("" + userLevel.getLevel(), (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("" + userLevel.getLevel())), 675 - graphics2D.getFontMetrics(verdana40).getHeight());
+        graphics2D.drawString(level, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth(level)), 675 - graphics2D.getFontMetrics(verdana40).getHeight());
 
         Main.getInstance().getAnalyticsLogger().debug("Finished drawing User-Level on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -166,7 +189,7 @@ public class ImageCreationUtility {
 
         // Draw the Progressbar.
         graphics2D.setColor(Color.magenta);
-        graphics2D.fillRoundRect(175, 705, (base.getWidth() - 950) * (int) userLevel.getProgress() / 100, 50, 50, 50);
+        graphics2D.fillRoundRect(175, 705, (base.getWidth() - 950) * (int) progress / 100, 50, 50, 50);
 
         Main.getInstance().getAnalyticsLogger().debug("Finished drawing Progressbar on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -182,7 +205,9 @@ public class ImageCreationUtility {
         ImageIO.write(base, "PNG", outputStream);
         Main.getInstance().getAnalyticsLogger().debug("Finished writing Image into ByteArrayOutputStream. ({}ms)", System.currentTimeMillis() - actionPerformance);
         Main.getInstance().getAnalyticsLogger().debug("Finished creation in {}ms", System.currentTimeMillis() - start);
-        return outputStream.toByteArray();
+        byte[] bytes = outputStream.toByteArray();
+        outputStream.close();
+        return bytes;
     }
 
     /**
@@ -234,7 +259,9 @@ public class ImageCreationUtility {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         ImageIO.write(base, "PNG", outputStream);
-        return outputStream.toByteArray();
+        byte[] bytes = outputStream.toByteArray();
+        outputStream.close();
+        return bytes;
     }
 
     /**

@@ -16,9 +16,15 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.time.Duration;
 
+/**
+ * A command to mute a user.
+ */
 @Command(name = "mute", description = "Mute a specific user on the Server.", category = Category.MOD)
 public class Mute implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS)) {
@@ -76,6 +82,9 @@ public class Mute implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("mute", "Mute a User on the Server!")
@@ -85,11 +94,22 @@ public class Mute implements ICommand {
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MODERATE_MEMBERS));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
     }
 
+    /**
+     * Mutes a Member.
+     * @param executor The Executor.
+     * @param member The Member to mute.
+     * @param duration The duration of the mute.
+     * @param reason The reason of the mute.
+     * @param commandEvent The CommandEvent.
+     */
     public void muteMember(Member executor, Member member, Duration duration, String reason, CommandEvent commandEvent) {
 
         if (executor.canInteract(member) && commandEvent.getGuild().getSelfMember().canInteract(member)) {

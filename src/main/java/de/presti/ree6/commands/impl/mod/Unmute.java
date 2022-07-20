@@ -14,9 +14,15 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+/**
+ * A command to unmute a user.
+ */
 @Command(name = "unmute", description = "Unmute a specific user on the Server.", category = Category.MOD)
 public class Unmute implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -57,6 +63,9 @@ public class Unmute implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("unmute", "Unmute a User on the Server!")
@@ -64,11 +73,20 @@ public class Unmute implements ICommand {
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MODERATE_MEMBERS));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
     }
 
+    /**
+     * Unmutes a Member.
+     * @param executor The Executor.
+     * @param member The Member to unmute.
+     * @param commandEvent The CommandEvent.
+     */
     public void unmuteMember(Member executor, Member member, CommandEvent commandEvent) {
 
         if (executor.canInteract(member) && commandEvent.getGuild().getSelfMember().canInteract(member)) {

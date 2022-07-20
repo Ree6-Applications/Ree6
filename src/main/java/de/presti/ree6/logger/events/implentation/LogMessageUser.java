@@ -11,7 +11,9 @@ import net.dv8tion.jda.api.entities.User;
  */
 public class LogMessageUser extends LogMessage {
 
-    // The User related to this Log-Message.
+    /**
+     * The User Entity.
+     */
     private final User user;
 
     /**

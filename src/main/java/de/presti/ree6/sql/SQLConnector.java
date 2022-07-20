@@ -1,13 +1,17 @@
 package de.presti.ree6.sql;
 
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.base.data.SQLEntity;
+import de.presti.ree6.sql.mapper.EntityMapper;
+import de.presti.ree6.sql.seed.SeedManager;
+import de.presti.ree6.utils.data.MigrationUtil;
+import de.presti.ree6.utils.data.StoredResultSet;
+import org.reflections.Reflections;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A "Connector" Class which connect with the used Database Server.
@@ -31,18 +35,22 @@ public class SQLConnector {
     // An Instance of the SQL-Worker which works with the Data in the Database.
     private final SQLWorker sqlWorker;
 
+    // An Instance of the EntityMapper which is used to map the Data into classes.
+    private final EntityMapper entityMapper;
+
     // A boolean to keep track if there was at least one valid connection.
     private boolean connectedOnce = false;
 
     // A HashMap with every Table Name as key and the values as value.
-    private final HashMap<String, String> tables = new HashMap<>();
+    private final Map<String, String> tables = new HashMap<>();
 
     /**
      * Constructor with the needed data to open an SQL connection.
-     * @param databaseUser the Database Username
-     * @param databaseName the Database name
-     * @param databasePassword the Database User password
-     * @param databaseServerIP the Address of the Database Server.
+     *
+     * @param databaseUser       the Database Username
+     * @param databaseName       the Database name
+     * @param databasePassword   the Database User password
+     * @param databaseServerIP   the Address of the Database Server.
      * @param databaseServerPort the Port of the Database Server.
      */
     public SQLConnector(String databaseUser, String databaseName, String databasePassword, String databaseServerIP, int databaseServerPort) {
@@ -51,10 +59,19 @@ public class SQLConnector {
         this.databasePassword = databasePassword;
         this.databaseServerIP = databaseServerIP;
         this.databaseServerPort = databaseServerPort;
-        connectToSQLServer();
-        createTables();
 
         sqlWorker = new SQLWorker(this);
+        entityMapper = new EntityMapper();
+
+        connectToSQLServer();
+        createTables();
+        try {
+            MigrationUtil.runAllMigrations(this);
+        } catch (Exception exception) {
+            Main.getInstance().getLogger().error("Error while running Migrations!", exception);
+        }
+
+        SeedManager.runAllSeeds(this);
     }
 
     /**
@@ -94,25 +111,9 @@ public class SQLConnector {
         if (!isConnected()) return;
 
         // Registering the tables and values.
-        tables.put("Settings", "(GID VARCHAR(40), NAME VARCHAR(40), VALUE VARCHAR(50))");
-        tables.put("CommandStats", "(COMMAND VARCHAR(40), USES VARCHAR(50))");
-        tables.put("GuildStats", "(GID VARCHAR(40), COMMAND VARCHAR(40), USES VARCHAR(50))");
-        tables.put("TwitchNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        tables.put("TwitterNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        tables.put("YouTubeNotify", "(GID VARCHAR(40), NAME VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        tables.put("LogWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        tables.put("WelcomeWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        tables.put("NewsWebhooks", "(GID VARCHAR(40), CID VARCHAR(40), TOKEN VARCHAR(68))");
-        tables.put("JoinMessage", "(GID VARCHAR(40), MSG VARCHAR(250))");
-        tables.put("MuteRoles", "(GID VARCHAR(40), RID VARCHAR(40))");
-        tables.put("ChatProtector", "(GID VARCHAR(40), WORD VARCHAR(40))");
-        tables.put("AutoRoles", "(GID VARCHAR(40), RID VARCHAR(40))");
-        tables.put("Invites", "(GID VARCHAR(40), UID VARCHAR(40), USES VARCHAR(40), CODE VARCHAR(40))");
-        tables.put("Level", "(GID VARCHAR(40), UID VARCHAR(40), XP VARCHAR(500))");
-        tables.put("VCLevel", "(GID VARCHAR(40), UID VARCHAR(40), XP VARCHAR(500))");
-        tables.put("VCLevelAutoRoles", "(GID VARCHAR(40), RID VARCHAR(40), LVL VARCHAR(500))");
-        tables.put("ChatLevelAutoRoles", "(GID VARCHAR(40), RID VARCHAR(40), LVL VARCHAR(500))");
-        tables.put("Opt_out", "(GID VARCHAR(40), UID VARCHAR(40))");
+        tables.putIfAbsent("Opt_out", "(GID VARCHAR(40), UID VARCHAR(40))");
+        tables.putIfAbsent("Migrations", "(NAME VARCHAR(100), DATE VARCHAR(100))");
+        tables.putIfAbsent("Seeds", "(VERSION VARCHAR(100), DATE VARCHAR(100))");
 
         // Iterating through all table presets.
         for (Map.Entry<String, String> entry : tables.entrySet()) {
@@ -126,16 +127,127 @@ public class SQLConnector {
                 Main.getInstance().getLogger().error("Couldn't create " + entry.getKey() + " Table.", exception);
             }
         }
+
+        Reflections reflections = new Reflections("de.presti.ree6");
+        Set<Class<? extends SQLEntity>> classes = reflections.getSubTypesOf(SQLEntity.class);
+        for (Class<? extends SQLEntity> aClass : classes) {
+            Main.getInstance().getAnalyticsLogger().info("Creating Table " + aClass.getSimpleName());
+            // Create a Table based on the key.
+            try {
+                if (!sqlWorker.createTable(aClass)) {
+                    Main.getInstance().getLogger().warn("Couldn't create " + aClass.getSimpleName() + " Table.");
+                }
+            } catch (Exception exception) {
+
+                // Notify if there was an error.
+                Main.getInstance().getLogger().error("Couldn't create " + aClass.getSimpleName() + " Table.", exception);
+            }
+        }
     }
+
+    //region Utility
+
+    /**
+     * Send an SQL-Query to SQL-Server and get the response.
+     *
+     * @param sqlQuery    the SQL-Query.
+     * @param objcObjects the Object in the Query.
+     * @return The Result from the SQL-Server.
+     */
+    public StoredResultSet querySQL(String sqlQuery, Object... objcObjects) {
+        if (!isConnected()) {
+            if (connectedOnce()) {
+                connectToSQLServer();
+                return querySQL(sqlQuery, objcObjects);
+            } else {
+                return null;
+            }
+        }
+
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = getConnection().prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            int index = 1;
+
+            for (Object obj : objcObjects) {
+                if (obj instanceof String) {
+                    preparedStatement.setObject(index++, obj, Types.VARCHAR);
+                } else if (obj instanceof Blob) {
+                    preparedStatement.setObject(index++, obj, Types.BLOB);
+                } else if (obj instanceof Integer) {
+                    preparedStatement.setObject(index++, obj, Types.INTEGER);
+                } else if (obj instanceof Long) {
+                    preparedStatement.setObject(index++, obj, Types.BIGINT);
+                } else if (obj instanceof Float) {
+                    preparedStatement.setObject(index++, obj, Types.FLOAT);
+                } else if (obj instanceof Double) {
+                    preparedStatement.setObject(index++, obj, Types.DOUBLE);
+                } else if (obj instanceof Boolean) {
+                    preparedStatement.setObject(index++, obj, Types.BOOLEAN);
+                }
+            }
+
+            if (sqlQuery.toUpperCase().startsWith("SELECT")) {
+                resultSet = preparedStatement.executeQuery();
+                StoredResultSet storedResultSet = new StoredResultSet();
+
+                storedResultSet.setColumns(resultSet.getMetaData().getColumnCount());
+                resultSet.last();
+                storedResultSet.setRows(resultSet.getRow());
+                resultSet.beforeFirst();
+
+                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                    storedResultSet.addColumn(i, resultSet.getMetaData().getColumnName(i));
+                }
+
+                if (storedResultSet.hasResults()) {
+                    while (resultSet.next()) {
+                        for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                            storedResultSet.setValue(resultSet.getRow() - 1, i, resultSet.getObject(i));
+                        }
+                    }
+                }
+                resultSet.close();
+                return storedResultSet;
+            } else {
+                preparedStatement.executeUpdate();
+                return null;
+            }
+        } catch (SQLNonTransientConnectionException exception) {
+            if (connectedOnce()) {
+                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
+                connectToSQLServer();
+                return querySQL(sqlQuery, objcObjects);
+            }
+        } catch (Exception exception) {
+            Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
+        } finally {
+            try {
+                if (preparedStatement != null)
+                    preparedStatement.close();
+
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (Exception ignore) {
+            }
+        }
+
+        return null;
+    }
+
+    //endregion
 
     /**
      * Check if there is an open connection to the Database Server.
+     *
      * @return boolean If the connection is opened.
      */
     public boolean isConnected() {
         try {
             return connection != null && !connection.isClosed();
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
 
         return false;
     }
@@ -159,6 +271,7 @@ public class SQLConnector {
 
     /**
      * Retrieve an Instance of the SQL-Connection.
+     *
      * @return Connection Instance of te SQL-Connection.
      */
     public Connection getConnection() {
@@ -167,6 +280,7 @@ public class SQLConnector {
 
     /**
      * Retrieve an Instance of the SQL-Worker to work with the Data.
+     *
      * @return {@link SQLWorker} the Instance saved in this SQL-Connector.
      */
     public SQLWorker getSqlWorker() {
@@ -174,13 +288,17 @@ public class SQLConnector {
     }
 
     /**
-     * Retrieve a list with all Tables and it values.
-     * @return {@link HashMap} with all Tables as Key and all values as value.
+     * Retrieve an Instance of the entity-Mapper to work with the Data.
+     *
+     * @return {@link EntityMapper} the Instance saved in this SQL-Connector.
      */
-    public HashMap<String, String> getTables() { return tables; }
+    public EntityMapper getEntityMapper() {
+        return entityMapper;
+    }
 
     /**
      * Check if there was at least one successful Connection to the Database Server.
+     *
      * @return boolean If there was at least one successful Connection.
      */
     public boolean connectedOnce() {

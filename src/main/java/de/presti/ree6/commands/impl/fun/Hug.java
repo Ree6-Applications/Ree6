@@ -15,9 +15,15 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
 
+/**
+ * A command to send someone a hug.
+ */
 @Command(name = "hug", description = "Hug someone you like!", category = Category.FUN)
 public class Hug implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
@@ -43,16 +49,27 @@ public class Hug implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("hug", "Hug someone you like!").addOptions(new OptionData(OptionType.USER, "target", "The User that should be hugged!").setRequired(true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
     }
 
+    /**
+     * Sends a Hug to the given User.
+     * @param member The User that should be hugged.
+     * @param commandEvent The CommandEvent.
+     */
     public void sendHug(Member member, CommandEvent commandEvent) {
         Main.getInstance().getCommandManager().sendMessage(commandEvent.getMember().getAsMention() + " hugged " + member.getAsMention(), commandEvent.getChannel(), null);
 

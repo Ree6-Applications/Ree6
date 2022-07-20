@@ -13,10 +13,10 @@ import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemContentDetails;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.bot.util.Webhook;
+import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotVersion;
-import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
@@ -51,19 +51,24 @@ public class Notifier {
      * Constructor used to created instance of the API Clients.
      */
     public Notifier() {
+        Main.getInstance().getAnalyticsLogger().info("Initializing Twitch Client...");
         twitchClient = TwitchClientBuilder.builder().withEnableHelix(true).withClientId(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"))
                 .withClientSecret(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret")).build();
 
+        Main.getInstance().getAnalyticsLogger().info("Initializing Twitter Client...");
+
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 
-        if (BotWorker.getVersion() == BotVersion.DEV) configurationBuilder.setDebugEnabled(true);
-
-        configurationBuilder.setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key"));
-        configurationBuilder.setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret"));
-        configurationBuilder.setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"));
-        configurationBuilder.setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"));
+        configurationBuilder
+                .setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key"))
+                .setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret"))
+                .setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token"))
+                .setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token.secret"))
+                .setDebugEnabled(BotWorker.getVersion() == BotVersion.DEVELOPMENT_BUILD);
 
         twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
+
+        Main.getInstance().getAnalyticsLogger().info("Initializing YouTube Streams...");
         createUploadStream();
     }
 
@@ -105,9 +110,8 @@ public class Notifier {
             wmb.addEmbeds(webhookEmbedBuilder.build());
 
             // Go through every Webhook that is registered for the Twitch Channel
-            for (String[] credits : Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getStream().getUserName().toLowerCase())) {
-                Webhook.sendWebhook(null, wmb.build(), Long.parseLong(credits[0]), credits[1], false);
-            }
+            Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getStream().getUserName().toLowerCase()).forEach(webhook ->
+                    WebhookUtil.sendWebhook(null, wmb.build(), webhook, false));
         });
     }
 
@@ -243,9 +247,8 @@ public class Notifier {
 
                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName()).forEach(strings ->
-                        Webhook.sendWebhook(null, webhookMessageBuilder.build(), Long.parseLong(strings[0]),
-                                strings[1], false));
+                Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName()).forEach(webhook ->
+                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
             }
 
             /**
@@ -373,9 +376,8 @@ public class Notifier {
 
                                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                                Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel).forEach(strings ->
-                                        Webhook.sendWebhook(null, webhookMessageBuilder.build(), Long.parseLong(strings[0]),
-                                                strings[1], false));
+                                Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel).forEach(webhook ->
+                                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
                             }
                         }
                     }
@@ -394,7 +396,7 @@ public class Notifier {
      * @param youtubeChannel the Name of the YouTube Channel.
      */
     public void registerYouTubeChannel(String youtubeChannel) {
-        if (getTwitchClient() == null) return;
+        if (YouTubeAPIHandler.getInstance() == null) return;
 
         if (!isYouTubeRegistered(youtubeChannel)) registeredYouTubeChannels.add(youtubeChannel);
     }
@@ -438,10 +440,18 @@ public class Notifier {
 
     //endregion
 
+    /**
+     * Get an instance of the TwitchClient.
+     * @return instance of the TwitchClient.
+     */
     public TwitchClient getTwitchClient() {
         return twitchClient;
     }
 
+    /**
+     * Get an instance of the TwitterClient.
+     * @return instance of the TwitterClient.
+     */
     public Twitter getTwitterClient() {
         return twitterClient;
     }

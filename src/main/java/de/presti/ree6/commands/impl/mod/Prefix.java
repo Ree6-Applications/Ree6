@@ -13,9 +13,15 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+/**
+ * A command to change the prefix.
+ */
 @Command(name = "prefix", description = "Change Ree6's Command prefix for the current Server.", category = Category.MOD)
 public class Prefix implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -44,6 +50,9 @@ public class Prefix implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("prefix", "Change Ree6's Bot-Prefix!")
@@ -51,6 +60,9 @@ public class Prefix implements ICommand {
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR, Permission.MANAGE_SERVER));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[]{"setprefix", "changeprefix"};

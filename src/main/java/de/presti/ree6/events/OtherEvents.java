@@ -2,10 +2,11 @@ package de.presti.ree6.events;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.bot.util.Webhook;
+import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.entities.UserLevel;
+import de.presti.ree6.sql.entities.level.ChatUserLevel;
+import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.others.*;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -37,6 +38,9 @@ import java.util.Objects;
 
 public class OtherEvents extends ListenerAdapter {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         BotWorker.setState(BotState.STARTED);
@@ -47,16 +51,25 @@ public class OtherEvents extends ListenerAdapter {
         BotWorker.setActivity(event.getJDA(),"ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
         Main.getInstance().getSqlConnector().getSqlWorker().createSettings(event.getGuild().getId());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildLeave(@Nonnull GuildLeaveEvent event) {
         Main.getInstance().getSqlConnector().getSqlWorker().deleteAllData(event.getGuild().getId());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
 
@@ -70,11 +83,12 @@ public class OtherEvents extends ListenerAdapter {
         wmb.setUsername("Welcome!");
         wmb.setContent((Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())).replace("%user_name%", event.getMember().getUser().getName()).replace("%user_mention%", event.getMember().getUser().getAsMention()).replace("%guild_name%", event.getGuild().getName()));
 
-        String[] info = Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId());
-
-        Webhook.sendWebhook(null, wmb.build(), Long.parseLong(info[0]), info[1], false);
+        WebhookUtil.sendWebhook(null, wmb.build(), Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()), false);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
         if (!ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
@@ -83,6 +97,9 @@ public class OtherEvents extends ListenerAdapter {
         super.onGuildVoiceJoin(event);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
         if (ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
@@ -94,11 +111,12 @@ public class OtherEvents extends ListenerAdapter {
                 addxp += RandomUtils.random.nextInt(5, 11);
             }
 
-            UserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(event.getGuild().getId(), event.getMember().getId());
-            userLevel.setUser(event.getMember().getUser());
-            userLevel.addExperience(addxp);
+            VoiceUserLevel oldUserLevel = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(event.getGuild().getId(), event.getMember().getId());
+            VoiceUserLevel newUserLevel = oldUserLevel;
+            newUserLevel.setUser(event.getMember().getUser());
+            newUserLevel.addExperience(addxp);
 
-            Main.getInstance().getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), userLevel);
+            Main.getInstance().getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), oldUserLevel, newUserLevel);
 
             AutoRoleHandler.handleVoiceLevelReward(event.getGuild(), event.getMember());
 
@@ -106,6 +124,9 @@ public class OtherEvents extends ListenerAdapter {
         super.onGuildVoiceLeave(event);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildVoiceGuildDeafen(@NotNull GuildVoiceGuildDeafenEvent event) {
         if (event.getMember() != event.getGuild().getSelfMember()) return;
@@ -115,6 +136,9 @@ public class OtherEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         super.onMessageReceived(event);
@@ -168,14 +192,15 @@ public class OtherEvents extends ListenerAdapter {
 
                 if (!ArrayUtil.timeout.contains(event.getMember())) {
 
-                    UserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
+                    ChatUserLevel olduserLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
+                    ChatUserLevel userLevel = olduserLevel;
                     userLevel.setUser(event.getMember().getUser());
 
                     if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) {
                         Main.getInstance().getCommandManager().sendMessage("You just leveled up to Chat Level " + userLevel.getLevel() + " " + event.getMember().getAsMention() + " !", event.getChannel());
                     }
 
-                    Main.getInstance().getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), userLevel);
+                    Main.getInstance().getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), olduserLevel, userLevel);
 
                     ArrayUtil.timeout.add(event.getMember());
 
@@ -187,6 +212,9 @@ public class OtherEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         // Only accept commands from guilds
@@ -198,6 +226,9 @@ public class OtherEvents extends ListenerAdapter {
         Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getChannel(), event);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
         super.onSelectMenuInteraction(event);
@@ -265,12 +296,6 @@ public class OtherEvents extends ListenerAdapter {
                         event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupNewsMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
 
-                    case "mute" -> {
-                        embedBuilder.setDescription("You can set up our own Mute-System! " + "You can select the Role that Ree6 should give an Mute User!");
-
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(Button.link("https://cp.ree6.de", "Webinterface"))).queue();
-                    }
-
                     case "autorole" -> {
                         embedBuilder.setDescription("You can set up our own Autorole-System! " + "You can select Roles that Users should get upon joining the Server!");
 
@@ -300,7 +325,6 @@ public class OtherEvents extends ListenerAdapter {
                         optionList.add(SelectOption.of("Audit-Logging", "log"));
                         optionList.add(SelectOption.of("Welcome-channel", "welcome"));
                         optionList.add(SelectOption.of("News-channel", "news"));
-                        optionList.add(SelectOption.of("Mute role", "mute"));
                         optionList.add(SelectOption.of("Autorole", "autorole"));
 
                         embedBuilder.setDescription("Which configuration do you want to check out?");
@@ -368,7 +392,6 @@ public class OtherEvents extends ListenerAdapter {
                         optionList.add(SelectOption.of("Audit-Logging", "log"));
                         optionList.add(SelectOption.of("Welcome-channel", "welcome"));
                         optionList.add(SelectOption.of("News-channel", "news"));
-                        optionList.add(SelectOption.of("Mute role", "mute"));
                         optionList.add(SelectOption.of("Autorole", "autorole"));
 
                         embedBuilder.setDescription("Which configuration do you want to check out?");
@@ -436,7 +459,6 @@ public class OtherEvents extends ListenerAdapter {
                         optionList.add(SelectOption.of("Audit-Logging", "log"));
                         optionList.add(SelectOption.of("Welcome-channel", "welcome"));
                         optionList.add(SelectOption.of("News-channel", "news"));
-                        optionList.add(SelectOption.of("Mute role", "mute"));
                         optionList.add(SelectOption.of("Autorole", "autorole"));
 
                         embedBuilder.setDescription("Which configuration do you want to check out?");
@@ -497,6 +519,12 @@ public class OtherEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * Checks if the user has the required Permissions to use the Command.
+     * @param member The Member who should be checked.
+     * @param channel The Channel used.
+     * @return True if the user has the required Permissions, false if not.
+     */
     private boolean checkPerms(Member member, MessageChannel channel) {
         if (member == null || !member.hasPermission(Permission.ADMINISTRATOR)) {
             channel.sendMessage("You do not have enough Permissions").queue();

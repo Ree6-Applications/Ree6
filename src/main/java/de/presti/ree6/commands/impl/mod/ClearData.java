@@ -12,11 +12,20 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import java.time.Duration;
 import java.util.ArrayList;
 
+/**
+ * A command to clear the Invite-Data stored.
+ */
 @Command(name = "cleardata", category = Category.MOD, description = "Clear currently stored Invite logs.")
 public class ClearData implements ICommand {
 
+    /**
+     * A list of all timeout Ids, since it is not good to allow them to clear the Invite data every second.
+     */
     ArrayList<String> timeout = new ArrayList<>();
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
@@ -34,11 +43,17 @@ public class ClearData implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

@@ -8,9 +8,15 @@ import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
+/**
+ * Sends a link to the Webinterface.
+ */
 @Command(name = "webinterface", description = "Shows the url to the Webinterface, which needs Discord OAuth2 access.", category = Category.MOD)
 public class Webinterface implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -22,11 +28,17 @@ public class Webinterface implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[] { "web", "interface" };

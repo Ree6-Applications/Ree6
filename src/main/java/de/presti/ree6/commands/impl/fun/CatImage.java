@@ -6,15 +6,21 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.main.Data;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
+/**
+ * A command to get a random cat images.
+ */
 @Command(name = "randomcat", description = "Shows random Cat Images, from thecatapi.com .", category = Category.FUN)
 public class CatImage implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -30,11 +36,17 @@ public class CatImage implements ICommand {
         Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[] { "cat", "catimage" };

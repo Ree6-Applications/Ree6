@@ -15,9 +15,15 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
 
+/**
+ * A command to slap someone.
+ */
 @Command(name = "slap", description = "Slap someone in the face!", category = Category.FUN)
 public class Slap implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
@@ -43,17 +49,28 @@ public class Slap implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("slap", "Slap someone in the face!")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should be slapped!").setRequired(true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
     }
 
+    /**
+     * Sends a Slap to the given Member.
+     * @param member The Member that should be slapped.
+     * @param commandEvent The CommandEvent.
+     */
     public void sendSlap(Member member, CommandEvent commandEvent) {
         Main.getInstance().getCommandManager().sendMessage(commandEvent.getMember().getAsMention() + " slapped " + member.getAsMention(), commandEvent.getChannel(), null);
 

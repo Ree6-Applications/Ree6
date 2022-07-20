@@ -1,58 +1,82 @@
-package de.presti.ree6.sql.entities;
+package de.presti.ree6.sql.entities.level;
 
+import de.presti.ree6.sql.base.annotations.Property;
+import de.presti.ree6.sql.base.data.SQLEntity;
 import net.dv8tion.jda.api.entities.User;
 
-/**
- * Utility class to store information about a Users
- * Experience and their Level.
- */
-public class UserLevel {
+public class UserLevel extends SQLEntity {
 
-    // The ID of the User.
+    /**
+     * The ID of the Guild.
+     */
+    @Property(name = "gid")
+    String guildId;
+
+    /**
+     * The ID of the User.
+     */
+    @Property(name = "uid")
     String userId;
 
-    // The User.
+    /**
+     * The User.
+     */
     User user;
 
-    // His XP and Level.
-    long experience, level;
+    /**
+     * The experience of the User.
+     */
+    @Property(name = "xp", updateQuery = true)
+    long experience;
 
-    // The Rank of the User.
+    /**
+     * The level of the User.
+     */
+    long level;
+
+    /**
+     * The Rank of the User.
+     */
     int rank;
 
-    // Is this a Voice related Level?
-    boolean isVoice;
+    /**
+     * Constructor.
+     */
+    public UserLevel() {
+    }
 
     /**
      * Constructor to create a UserLevel with the needed Data.
      *
+     * @param guildId    the ID of the Guild.
      * @param userId     the ID of the User.
-     * @param rank       the current Rank in the leaderboard.
      * @param experience his XP count.
-     * @param voice      is this related to VoiceXP?
+     * @param rank       the Rank of the User.
      */
-    public UserLevel(String userId, int rank, long experience, boolean voice) {
+    public UserLevel(String guildId, String userId, long experience, int rank) {
+        this.guildId = guildId;
         this.userId = userId;
         this.experience = experience;
-        this.rank = rank;
-        this.isVoice = voice;
         level = calculateLevel(experience);
+        this.rank = rank;
     }
 
 
     /**
      * Constructor to create a UserLevel with the needed Data.
      *
+     * @param guildId    the ID of the Guild.
      * @param userId     the ID of the User.
-     * @param rank       the current Rank of the User.
      * @param experience his XP count.
      * @param level      his Level.
+     * @param rank       the Rank of the User.
      */
-    public UserLevel(String userId, int rank, long experience, long level) {
+    public UserLevel(String guildId, String userId, long experience, long level, int rank) {
+        this.guildId = guildId;
         this.userId = userId;
-        this.rank = rank;
         this.experience = experience;
         this.level = level;
+        this.rank = rank;
     }
 
     /**
@@ -197,7 +221,7 @@ public class UserLevel {
      * @return the needed Experience.
      */
     public long getExperienceForLevel(long level) {
-        return (long) (1000 + (1000 * Math.pow(level, isVoice ? 1.05 : 0.55)));
+        return level / 100;
     }
 
     /**
@@ -206,7 +230,7 @@ public class UserLevel {
      * @return the Progress.
      */
     public double getProgress() {
-        return (int)((getExperience() * 100) / getTotalExperienceForNextLevel());
+        return (int) ((getExperience() * 100) / getTotalExperienceForNextLevel());
     }
 
     /**
@@ -252,7 +276,7 @@ public class UserLevel {
         int i = 0;
         while (true) {
             long requiredXP = getTotalExperienceForLevel(i);
-            if (experience <= requiredXP) return (i == 0 ? 1 : i -1);
+            if (experience <= requiredXP) return (i == 0 ? 1 : i - 1);
             i++;
         }
     }

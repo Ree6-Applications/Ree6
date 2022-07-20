@@ -9,9 +9,15 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
+/**
+ * A Command to activate Twitter Notifications.
+ */
 @Command(name = "twitternotifier", description = "Manage your Twitter-Notifier!", category = Category.COMMUNITY)
 public class TwitterNotifier implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
@@ -78,11 +84,17 @@ public class TwitterNotifier implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

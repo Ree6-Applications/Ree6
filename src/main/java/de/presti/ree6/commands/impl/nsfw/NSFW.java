@@ -7,7 +7,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.main.Data;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
@@ -21,9 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * A command to show NSFW-Image from r/hentai.
+ */
 @Command(name = "nsfw", description = "Get NSFW Image from reddit", category = Category.NSFW)
 public class NSFW implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.getChannel().getType() == ChannelType.TEXT && commandEvent.getChannel().asTextChannel().isNSFW()) {
@@ -98,11 +104,17 @@ public class NSFW implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[]{"givensfw", "hentai"};

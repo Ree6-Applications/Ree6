@@ -9,9 +9,15 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
+/**
+ * A Command to activate Twitch Notifications.
+ */
 @Command(name = "twitch", description = "Manage your Twitch-Notifier!", category = Category.COMMUNITY)
 public class TwitchNotifier implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
@@ -78,11 +84,17 @@ public class TwitchNotifier implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[]{"twitchnotifier", "streamnotifier"};
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;

@@ -16,29 +16,40 @@ import java.util.Set;
  */
 public class LogMessageRole extends LogMessage {
 
-    // The ID of the Role.
+    /**
+     * The ID of the Role.
+     */
     private long roleId;
 
-    // If it is a Name change Event, two variables to store the previous and current Name.
+    /**
+     * If it is a Name change Event, two variables to store the previous and current Name.
+     */
     private String previousName, currentName;
 
-    // If it is a Color change Event, two variables to store the previous and current Color.
+    /**
+     * If it is a Color change Event, two variables to store the previous and current Color.
+     */
     private Color previousColor, currentColor;
 
-    // If it is a Permission change Event, two variables to store the previous and current Permissions.
+    /**
+     * If it is a Permission change Event, two variables to store the previous and current Permissions.
+     */
     private Set<Permission> previousPermission, currentPermission;
 
-    // Other information about the Role,
+    /**
+     * Other information about the Role.
+     */
     private boolean isCreated, isDeleted, isHoisted, isMentioned, changedMentioned, changedHoisted;
 
     /**
      * A Constructor for a {@link Role} based Event.
+     *
      * @param webhookId       The ID of the Webhook.
      * @param webhookAuthCode The Auth-Token for the Webhook.
      * @param webhookMessage  WebhookMessage itself.
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
-     * @param role the {@link Role} of the Event.
+     * @param role            the {@link Role} of the Event.
      */
     public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, Role role) {
         super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
@@ -58,9 +69,9 @@ public class LogMessageRole extends LogMessage {
      * @param webhookMessage  WebhookMessage itself.
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
-     * @param roleId       the ID of the {@link Role}.
-     * @param previousName the previous Name of the {@link Role}.
-     * @param currentName  the current Name of the {@link Role}.
+     * @param roleId          the ID of the {@link Role}.
+     * @param previousName    the previous Name of the {@link Role}.
+     * @param currentName     the current Name of the {@link Role}.
      */
     public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, String previousName, String currentName) {
         super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
@@ -77,10 +88,10 @@ public class LogMessageRole extends LogMessage {
      * @param webhookMessage  WebhookMessage itself.
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
-     * @param roleId       the ID of the {@link Role}.
-     * @param previousName the previous Name of the {@link Role}.
-     * @param currentName  the current Name of the {@link Role}.
-     * @param isCreated    the creation State of the {@link Role}.
+     * @param roleId          the ID of the {@link Role}.
+     * @param previousName    the previous Name of the {@link Role}.
+     * @param currentName     the current Name of the {@link Role}.
+     * @param isCreated       the creation State of the {@link Role}.
      */
     public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, String previousName, String currentName, boolean isCreated) {
         super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
@@ -98,9 +109,9 @@ public class LogMessageRole extends LogMessage {
      * @param webhookMessage  WebhookMessage itself.
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
-     * @param roleId      the ID of the {@link Role}.
-     * @param currentName the current Name of the {@link Role}.
-     * @param isCreated   the creation State of the {@link Role}.
+     * @param roleId          the ID of the {@link Role}.
+     * @param currentName     the current Name of the {@link Role}.
+     * @param isCreated       the creation State of the {@link Role}.
      */
     public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, String currentName, boolean isCreated) {
         super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
@@ -118,9 +129,9 @@ public class LogMessageRole extends LogMessage {
      * @param webhookMessage  WebhookMessage itself.
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
-     * @param roleId        the ID of the {@link Role}.
-     * @param previousColor the previous Color of the {@link Role}.
-     * @param currentColor  the current Color of the {@link Role}.
+     * @param roleId          the ID of the {@link Role}.
+     * @param previousColor   the previous Color of the {@link Role}.
+     * @param currentColor    the current Color of the {@link Role}.
      */
     public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, Color previousColor, Color currentColor) {
         super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
@@ -137,10 +148,10 @@ public class LogMessageRole extends LogMessage {
      * @param webhookMessage  WebhookMessage itself.
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
-     * @param roleId        the ID of the {@link Role}.
-     * @param previousColor the previous Color of the {@link Role}.
-     * @param currentColor  the current Color of the {@link Role}.
-     * @param isCreated     the creation State of the {@link Role}.
+     * @param roleId          the ID of the {@link Role}.
+     * @param previousColor   the previous Color of the {@link Role}.
+     * @param currentColor    the current Color of the {@link Role}.
+     * @param isCreated       the creation State of the {@link Role}.
      */
     public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, Color previousColor, Color currentColor, boolean isCreated) {
         super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
@@ -153,11 +164,11 @@ public class LogMessageRole extends LogMessage {
     /**
      * A Constructor for a Permission change Event.
      *
-     * @param webhookId       The ID of the Webhook.
-     * @param webhookAuthCode The Auth-Token for the Webhook.
-     * @param webhookMessage  WebhookMessage itself.
-     * @param guild           The Guild related to the Log-Message
-     * @param logTyp          The Typ of the current Log.
+     * @param webhookId          The ID of the Webhook.
+     * @param webhookAuthCode    The Auth-Token for the Webhook.
+     * @param webhookMessage     WebhookMessage itself.
+     * @param guild              The Guild related to the Log-Message
+     * @param logTyp             The Typ of the current Log.
      * @param roleId             the ID of the {@link Role}.
      * @param previousPermission the previous Permissions of the {@link Set<Permission>}.
      * @param currentPermission  the current Permissions of the {@link Set<Permission>}.
@@ -172,11 +183,11 @@ public class LogMessageRole extends LogMessage {
     /**
      * A Constructor for a Permission change Event.
      *
-     * @param webhookId       The ID of the Webhook.
-     * @param webhookAuthCode The Auth-Token for the Webhook.
-     * @param webhookMessage  WebhookMessage itself.
-     * @param guild           The Guild related to the Log-Message
-     * @param logTyp          The Typ of the current Log.
+     * @param webhookId          The ID of the Webhook.
+     * @param webhookAuthCode    The Auth-Token for the Webhook.
+     * @param webhookMessage     WebhookMessage itself.
+     * @param guild              The Guild related to the Log-Message
+     * @param logTyp             The Typ of the current Log.
      * @param roleId             the ID of the {@link Role}.
      * @param previousPermission the previous Permissions of the {@link Set<Permission>}.
      * @param currentPermission  the current Permissions of the {@link Set<Permission>}.
@@ -198,12 +209,12 @@ public class LogMessageRole extends LogMessage {
      * @param webhookMessage  WebhookMessage itself.
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
-     * @param roleId      the ID of the {@link Role}.
-     * @param currentName the current Name of the {@link Role}.
-     * @param isCreated   the creation State of the {@link Role}.
-     * @param isDeleted   the deletion State of the {@link Role}.
-     * @param isHoisted   the hoisted State of the {@link Role}.
-     * @param isMentioned the mentioned State of the {@link Role}.
+     * @param roleId          the ID of the {@link Role}.
+     * @param currentName     the current Name of the {@link Role}.
+     * @param isCreated       the creation State of the {@link Role}.
+     * @param isDeleted       the deletion State of the {@link Role}.
+     * @param isHoisted       the hoisted State of the {@link Role}.
+     * @param isMentioned     the mentioned State of the {@link Role}.
      */
     public LogMessageRole(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, long roleId, String currentName, boolean isCreated, boolean isDeleted, boolean isHoisted, boolean isMentioned) {
         super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
@@ -217,6 +228,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Get ID of the {@link Role}.
+     *
      * @return the ID of the {@link Role} as {@link Long}.
      */
     public long getRoleId() {
@@ -225,6 +237,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Change the {@link Role} ID that is associated with the Event.
+     *
      * @param roleId the ID of the {@link Role}
      */
     public void setRoleId(long roleId) {
@@ -341,6 +354,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Get the current creation State of the {@link Role}.
+     *
      * @return the current State as {@link Boolean}.
      */
     public boolean isCreated() {
@@ -349,6 +363,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Change the current creation state of the {@link Role}.
+     *
      * @param created the new state of creation.
      */
     public void setCreated(boolean created) {
@@ -357,6 +372,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Get the current deletion State of the Role.
+     *
      * @return the current State as {@link Boolean}.
      */
     public boolean isDeleted() {
@@ -365,6 +381,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Change the current deleted state of the {@link Role}.
+     *
      * @param deleted the new state of deletion.
      */
     public void setDeleted(boolean deleted) {
@@ -373,6 +390,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Get the current hoisted State of the Role.
+     *
      * @return the current State as {@link Boolean}.
      */
     public boolean isHoisted() {
@@ -381,6 +399,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Change the current hoisted state of the {@link Role}.
+     *
      * @param hoisted the new state of hoisted.
      */
     public void setHoisted(boolean hoisted) {
@@ -390,6 +409,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Get the current mentioned State of the Role.
+     *
      * @return the current State as {@link Boolean}.
      */
     public boolean isMentioned() {
@@ -398,6 +418,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Change the current mentioned state of the {@link Role}.
+     *
      * @param mentioned the new state of mentioned.
      */
     public void setMentioned(boolean mentioned) {
@@ -407,6 +428,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Get the current mentioned changed State of the Role.
+     *
      * @return the current State as {@link Boolean}.
      */
     public boolean isChangedMentioned() {
@@ -415,6 +437,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Change the current mentioned change state of the {@link Role}.
+     *
      * @param changedMentioned the new state of mentioned change.
      */
     public void setChangedMentioned(boolean changedMentioned) {
@@ -423,6 +446,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Get the current hoisted changed State of the Role.
+     *
      * @return the current State as {@link Boolean}.
      */
     public boolean isChangedHoisted() {
@@ -431,6 +455,7 @@ public class LogMessageRole extends LogMessage {
 
     /**
      * Change the current hoisted change state of the {@link Role}.
+     *
      * @param changedHoisted the new state of hoisted change.
      */
     public void setChangedHoisted(boolean changedHoisted) {

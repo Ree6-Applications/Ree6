@@ -5,32 +5,44 @@ import net.dv8tion.jda.api.entities.Guild;
 
 public class LogMessage {
 
-    // Webhook ID, used to tell Discord which Webhook should be used.
+    /**
+     * Webhook ID, used to tell Discord which Webhook should be used.
+     */
     private final long id;
 
-    // Webhook AuthCode, used to authenticate.
+    /**
+     * Webhook AuthCode, used to authenticate.
+     */
     private final String authCode;
 
-    //  Webhook State, this is used to cancel Webhooks that have been merged with others.
+    /**
+     * Webhook State, this is used to cancel Webhooks that have been merged with others.
+     */
     private boolean cancel = false;
 
-    // The WebhookMessage.
+    /**
+     * The WebhookMessage.
+     */
     private WebhookMessage webhookMessage;
 
-    // LoggerTyp, to know what kind of Log this Message is.
+    /**
+     * LoggerTyp, to know what kind of Log this Message is.
+     */
     private LogTyp type;
 
-    // Webhook Guild, the Guild which fired the Log.
+    /**
+     * Webhook Guild, the Guild which fired the Log.
+     */
     private final Guild guild;
 
     /**
      * Constructor for a Log-Message which shouldn't be handled.
      *
-     * @param webhookId The ID of the Webhook.
+     * @param webhookId       The ID of the Webhook.
      * @param webhookAuthCode The Auth-Token for the Webhook.
-     * @param webhookMessage WebhookMessage itself.
-     * @param guild The Guild related to the Log-Message
-     * @param logTyp The Typ of the current Log.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
      */
     public LogMessage(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp) {
         this.id = webhookId;

@@ -11,12 +11,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * YouTubeAPIHandler.
+ */
 public class YouTubeAPIHandler {
 
+    /**
+     * The YouTube API.
+     */
     private YouTube youTube;
+
+    /**
+     * The YouTube API-Handler.
+     */
     public static YouTubeAPIHandler instance;
+
+    /**
+     * Instance of the JsonFactory.
+     */
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
+    /**
+     * Constructor.
+     */
     public YouTubeAPIHandler() {
         try {
             createYouTube();
@@ -26,6 +43,13 @@ public class YouTubeAPIHandler {
         instance = this;
     }
 
+    /**
+     * Search on YouTube a specific query.
+     *
+     * @param search The query.
+     * @return A link to the first Video result.
+     * @throws Exception if there was a search problem.
+     */
     public String searchYoutube(String search) throws Exception {
         if (youTube == null) {
             createYouTube();
@@ -53,6 +77,13 @@ public class YouTubeAPIHandler {
         return null;
     }
 
+    /**
+     * Get the YouTube uploads of a specific user.
+     *
+     * @param channelId The channel id.
+     * @return A list of all Video ids.
+     * @throws Exception if something went wrong.
+     */
     public List<PlaylistItem> getYouTubeUploads(String channelId) throws Exception {
         List<PlaylistItem> playlistItemList = new ArrayList<>();
 
@@ -85,6 +116,9 @@ public class YouTubeAPIHandler {
         return playlistItemList;
     }
 
+    /**
+     * Create a YouTube instance.
+     */
     public void createYouTube() {
         try {
             youTube = new YouTube.Builder(
@@ -98,6 +132,10 @@ public class YouTubeAPIHandler {
         }
     }
 
+    /**
+     * Method used to return an instance of the handler.
+     * @return instance of the handler.
+     */
     public static YouTubeAPIHandler getInstance() {
         if (instance == null) {
             return instance = new YouTubeAPIHandler();

@@ -16,13 +16,19 @@ import java.util.List;
  */
 public class LogMessageMember extends LogMessage {
 
-    // An instance of the Member Entity.
+    /**
+     * The Member Entity.
+     */
     private Member member;
 
-    // If it is a Name change Event, two variables to store the previous and current Name.
+    /**
+     * If it is a Name change Event, two variables to store the previous and current Name.
+     */
     private String previousName, currentName;
 
-    // If it is a Role change Event, two variables to store the removed and added Roles.
+    /**
+     * If it is a Role change Event, two variables to store the removed and added Roles.
+     */
     private List<Role> removedRoles = new ArrayList<>(), addedRoles = new ArrayList<>();
 
     /**
@@ -46,9 +52,9 @@ public class LogMessageMember extends LogMessage {
      * @param webhookMessage  WebhookMessage itself.
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
-     * @param member       the Guild {@link Member}.
-     * @param previousName the previous Name of the Member.
-     * @param currentName  the current Name of the Member.
+     * @param member          the Guild {@link Member}.
+     * @param previousName    the previous Name of the Member.
+     * @param currentName     the current Name of the Member.
      */
     public LogMessageMember(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, Member member,
                             String previousName, String currentName) {
@@ -66,9 +72,9 @@ public class LogMessageMember extends LogMessage {
      * @param webhookMessage  WebhookMessage itself.
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
-     * @param member       the Guild {@link Member}.
-     * @param removedRoles the Removed {@link Role} of the {@link Member}.
-     * @param addedRoles   the Added {@link Role} of the {@link Member}.
+     * @param member          the Guild {@link Member}.
+     * @param removedRoles    the Removed {@link Role} of the {@link Member}.
+     * @param addedRoles      the Added {@link Role} of the {@link Member}.
      */
     public LogMessageMember(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, Member member,
                             ArrayList<Role> removedRoles, ArrayList<Role> addedRoles) {
@@ -86,11 +92,11 @@ public class LogMessageMember extends LogMessage {
      * @param webhookMessage  WebhookMessage itself.
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
-     * @param member       the Guild {@link Member}.
-     * @param previousName the previous Name of the Member.
-     * @param currentName  the current Name of the Member.
-     * @param removedRoles the Removed {@link Role} of the {@link Member}.
-     * @param addedRoles   the Added {@link Role} of the {@link Member}.
+     * @param member          the Guild {@link Member}.
+     * @param previousName    the previous Name of the Member.
+     * @param currentName     the current Name of the Member.
+     * @param removedRoles    the Removed {@link Role} of the {@link Member}.
+     * @param addedRoles      the Added {@link Role} of the {@link Member}.
      */
     public LogMessageMember(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp,
                             Member member, String previousName, String currentName, List<Role> removedRoles, List<Role> addedRoles) {

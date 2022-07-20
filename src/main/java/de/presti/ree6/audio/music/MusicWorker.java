@@ -12,8 +12,8 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.presti.ree6.commands.CommandEvent;
-import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -323,6 +323,11 @@ public class MusicWorker {
         return member != null && member.getVoiceState() != null && member.getVoiceState().inAudioChannel();
     }
 
+    /**
+     * Check if the user has enough permission to control the bot.
+     * @param commandEvent the CommandEvent.
+     * @return true, if the user has enough permission | false, if not.
+     */
     public boolean checkInteractPermission(CommandEvent commandEvent) {
         if (commandEvent.getMember().getVoiceState() == null || !commandEvent.getMember().getVoiceState().inAudioChannel()) {
             Main.getInstance().getCommandManager().sendMessage("Please join a Channel!", commandEvent.getChannel(), commandEvent.getInteractionHook());

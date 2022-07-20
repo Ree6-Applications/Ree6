@@ -7,9 +7,15 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
+/**
+ * A command to get the Leaderboard.
+ */
 @Command(name = "leaderboard", description = "Shows you the Rank Leaderboard of the current Server", category = Category.LEVEL)
 public class Leaderboards implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         Main.getInstance().getCommandManager().sendMessage("For the leaderboards of this Server visit:\n" +
@@ -20,11 +26,17 @@ public class Leaderboards implements ICommand {
                 commandEvent.getChannel(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[]{ "lb" };
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;

@@ -5,12 +5,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <name>Ree6</name>
+    <description>Ree6 is an open-Source Discord Bot.</description>
+
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
     <version>1.7.20</version>
     <packaging>jar</packaging>
-    <name>Ree6</name>
-    <description>Ree6 is an open-Source Discord Bot.</description>
 
     <properties>
         <java.version>17</java.version>
@@ -92,6 +93,11 @@
             <groupId>club.minnced</groupId>
             <artifactId>discord-webhooks</artifactId>
             <version>0.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>
@@ -213,7 +219,7 @@
         <dependency>
             <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>62ec3b0d378fade393a52c8cde6a0c3c1b906659</version>
+            <version>bef374a45e11630c890334045075be85337022cf</version>
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>

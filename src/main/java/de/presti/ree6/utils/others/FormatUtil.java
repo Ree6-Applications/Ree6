@@ -23,14 +23,25 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
 /**
- * From <a href="https://github.com/jagrosh/MusicBot">...</a>
+ * From <a href="https://github.com/jagrosh/MusicBot">J MusicBot</a>
  * @author John Grosh <john.a.grosh@gmail.com>
  */
 public class FormatUtil {
 
-    public static final String PLAY_EMOJI  = "\u25B6"; // ▶
-    public static final String PAUSE_EMOJI = "\u23F8"; // ⏸
-    public static final String STOP_EMOJI  = "\u23F9"; // ⏹
+    /**
+     * A String containing the UTF-8 character for a play button.
+     */
+    public static final String PLAY_EMOJI  = "\u25B6";
+
+    /**
+     * A String containing the UTF-8 character for a pause button.
+     */
+    public static final String PAUSE_EMOJI = "\u23F8";
+
+    /**
+     * A String containing the UTF-8 character for a stop button.
+     */
+    public static final String STOP_EMOJI  = "\u23F9";
 
     /**
      * Constructor should not be called, since it is a utility class that doesn't need an instance.
@@ -40,6 +51,11 @@ public class FormatUtil {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Formats the given duration into a String with the given Time.
+     * @param duration The duration to format.
+     * @return A String containing the formatted duration.
+     */
     public static String formatTime(long duration)
     {
         if(duration == Long.MAX_VALUE)
@@ -52,10 +68,20 @@ public class FormatUtil {
         return (hours>0 ? hours+":" : "") + (minutes<10 ? "0"+minutes : minutes) + ":" + (seconds<10 ? "0"+seconds : seconds);
     }
 
+    /**
+     * Get the current Status of the {@link AudioPlayer} as Emoji.
+     * @param audioPlayer The {@link AudioPlayer} to get the Status from.
+     * @return A String containing the current Status of the {@link AudioPlayer} as Emoji.
+     */
     public static String getStatusEmoji(AudioPlayer audioPlayer) {
         return audioPlayer.isPaused() ? PAUSE_EMOJI : PLAY_EMOJI;
     }
 
+    /**
+     * Build a progressbar by the percentage.
+     * @param percent The percentage of the progressbar.
+     * @return A String containing the progressbar.
+     */
     public static String progressBar(double percent)
     {
         StringBuilder str = new StringBuilder();
@@ -66,7 +92,12 @@ public class FormatUtil {
                 str.append("▬");
         return str.toString();
     }
-    
+
+    /**
+     * Get the Volume Emoji by the volume
+     * @param volume The volume to get the Emoji from.
+     * @return A String containing the Volume Emoji.
+     */
     public static String volumeIcon(int volume)
     {
         if(volume == 0)
@@ -77,7 +108,13 @@ public class FormatUtil {
             return "\uD83D\uDD09"; // 🔉
         return "\uD83D\uDD0A";     // 🔊
     }
-    
+
+    /**
+     * Get a String of the TextChannels that match the query
+     * @param list The list of the TextChannels.
+     * @param query The query to match.
+     * @return A String of the TextChannels that match the query.
+     */
     public static String listOfTChannels(List<TextChannel> list, String query)
     {
         StringBuilder out = new StringBuilder(" Multiple text channels found matching \"" + query + "\":");
@@ -87,7 +124,13 @@ public class FormatUtil {
             out.append("\n**And ").append(list.size() - 6).append(" more...**");
         return out.toString();
     }
-    
+
+    /**
+     * Get a String of the VoiceChannels that match the query
+     * @param list The list of the VoiceChannels.
+     * @param query The query to match.
+     * @return A String of the VoiceChannels that match the query.
+     */
     public static String listOfVChannels(List<VoiceChannel> list, String query)
     {
         StringBuilder out = new StringBuilder(" Multiple voice channels found matching \"" + query + "\":");
@@ -97,7 +140,13 @@ public class FormatUtil {
             out.append("\n**And ").append(list.size() - 6).append(" more...**");
         return out.toString();
     }
-    
+
+    /**
+     * Get a String of the Roles that match the query
+     * @param list The list of the Roles.
+     * @param query The query to match.
+     * @return A String of the Roles that match the query.
+     */
     public static String listOfRoles(List<Role> list, String query)
     {
         StringBuilder out = new StringBuilder(" Multiple text roles found matching \"" + query + "\":");
@@ -107,7 +156,12 @@ public class FormatUtil {
             out.append("\n**And ").append(list.size() - 6).append(" more...**");
         return out.toString();
     }
-    
+
+    /**
+     * Filter out @everyone and @here mentions from the given String.
+     * @param input The String to filter.
+     * @return A String without @everyone and @here mentions.
+     */
     public static String filter(String input)
     {
         return input.replace("\u202E","")

@@ -4,8 +4,8 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -25,9 +25,24 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 @SuppressWarnings("ALL")
 public class TrackScheduler extends AudioEventAdapter {
+    /**
+     * The {@link AudioPlayer} from the current Channel.
+     */
     private final AudioPlayer player;
+
+    /**
+     * The Song-Queue.
+     */
     private final BlockingQueue<AudioTrack> queue;
+
+    /**
+     * The Channel where the command had been executed.
+     */
     MessageChannelUnion channel;
+
+    /**
+     * If the bot should loop the current track.
+     */
     boolean loop = false;
 
     /**

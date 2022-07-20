@@ -5,6 +5,17 @@ package de.presti.ree6.bot.version;
  */
 public enum BotVersion {
 
-    DEV, PRERELASE, PUBLIC
+    /**
+     * Version for Development tests.
+     */
+    DEVELOPMENT_BUILD,
+    /**
+     * Version for a not yet fully stable release.
+     */
+    PRE_RELEASE,
+    /**
+     * Version for a stable release.
+     */
+    RELEASE
 
 }

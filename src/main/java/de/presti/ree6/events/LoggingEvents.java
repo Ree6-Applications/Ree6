@@ -11,9 +11,10 @@ import de.presti.ree6.logger.events.implentation.LogMessageUser;
 import de.presti.ree6.logger.events.implentation.LogMessageVoice;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.logger.invite.InviteContainerManager;
-import de.presti.ree6.main.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.utils.data.ArrayUtil;
+import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
@@ -52,13 +53,16 @@ import java.util.ArrayList;
 
 public class LoggingEvents extends ListenerAdapter {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
 
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()))
             return;
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
 
         if (Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_memberjoin").getBooleanValue()) {
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -75,7 +79,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setDescription(event.getUser().getAsMention() + " **joined the Server.**\n:timer: Age of the Account:\n**" + TimeFormat.DATE_TIME_SHORT.format(event.getUser().getTimeCreated()) + "**\n**" + TimeFormat.RELATIVE.format(event.getUser().getTimeCreated()) + "**");
 
             wm.addEmbeds(we.build());
-            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.SERVER_JOIN, event.getUser()));
+            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.SERVER_JOIN, event.getUser()));
         }
 
         if (event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER) && Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_invite").getBooleanValue()) {
@@ -84,8 +88,6 @@ public class LoggingEvents extends ListenerAdapter {
 
             wm2.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
             wm2.setUsername("Ree6-InviteLogs");
-
-            InviteContainer inviteContainer = InviteContainerManager.getRightInvite(event.getGuild());
 
             if (event.getUser().isBot()) {
                 event.getGuild().retrieveAuditLogs().type(ActionType.BOT_ADD).limit(1).queue(auditLogEntries -> {
@@ -105,6 +107,7 @@ public class LoggingEvents extends ListenerAdapter {
                     }
                 });
             } else {
+                InviteContainer inviteContainer = InviteContainerManager.getRightInvite(event.getGuild());
                 if (inviteContainer != null) {
                     inviteContainer.setUses(inviteContainer.getUses() + 1);
                     wm2.append(event.getUser().getAsMention() + " **has been invited by** <@" + inviteContainer.getCreatorId() + "> (Code: " + inviteContainer.getCode() + ", Uses: " + inviteContainer.getUses() + ")");
@@ -114,10 +117,13 @@ public class LoggingEvents extends ListenerAdapter {
                 }
             }
 
-            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(infos[0]), infos[1], wm2.build(), event.getGuild(), LogTyp.SERVER_INVITE, event.getUser()));
+            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm2.build(), event.getGuild(), LogTyp.SERVER_INVITE, event.getUser()));
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberRemove(@Nonnull GuildMemberRemoveEvent event) {
 
@@ -138,17 +144,20 @@ public class LoggingEvents extends ListenerAdapter {
         we.setTimestamp(Instant.now());
 
         if (event.getMember() != null) {
-            we.setDescription(event.getUser().getAsMention() + " **left the Server.**\n:timer: **Joined:**\n" + TimeFormat.DATE_TIME_SHORT.format(event.getMember().getTimeJoined()));
+            we.setDescription(event.getUser().getAsMention() + " **left the Server.**\n:timer: Joined:\n**" + TimeFormat.DATE_TIME_SHORT.format(event.getMember().getTimeJoined()) + "**");
         } else {
             we.setDescription(event.getUser().getAsMention() + " **left the Server.**");
         }
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.SERVER_LEAVE, event.getUser()));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.SERVER_LEAVE, event.getUser()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildBan(@Nonnull GuildBanEvent event) {
 
@@ -171,10 +180,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildUnban(@Nonnull GuildUnbanEvent event) {
 
@@ -197,11 +209,14 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.USER_UNBAN, event.getUser()));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_UNBAN, event.getUser()));
     }
 
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberUpdateNickname(@Nonnull GuildMemberUpdateNicknameEvent event) {
 
@@ -230,10 +245,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.NICKNAME_CHANGE, event.getEntity(), event.getOldNickname(), event.getNewNickname()));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.NICKNAME_CHANGE, event.getEntity(), event.getOldNickname(), event.getNewNickname()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
 
@@ -256,10 +274,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.VC_JOIN, event.getEntity(), event.getChannelJoined()));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_JOIN, event.getEntity(), event.getChannelJoined()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
 
@@ -281,10 +302,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] info = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(info[0]), info[1], wm.build(), event.getGuild(), LogTyp.VC_MOVE, event.getEntity(), event.getChannelLeft(), event.getChannelJoined()));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_MOVE, event.getEntity(), event.getChannelLeft(), event.getChannelJoined()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
 
@@ -306,10 +330,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.VC_LEAVE, event.getEntity(), event.getChannelLeft()));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_LEAVE, event.getEntity(), event.getChannelLeft()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {
 
@@ -339,10 +366,13 @@ public class LoggingEvents extends ListenerAdapter {
         we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString.toString()));
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), null, new ArrayList<>(event.getRoles())));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), null, new ArrayList<>(event.getRoles())));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
 
@@ -371,10 +401,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), new ArrayList<>(event.getRoles()), null));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), new ArrayList<>(event.getRoles()), null));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGenericChannel(@Nonnull GenericChannelEvent event) {
 
@@ -410,8 +443,8 @@ public class LoggingEvents extends ListenerAdapter {
 
             wm.addEmbeds(we.build());
 
-            String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-            Main.getInstance().getLoggerQueue().add(new LogMessage(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.CHANNELDATA_CHANGE));
+            Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+            Main.getInstance().getLoggerQueue().add(new LogMessage(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.CHANNELDATA_CHANGE));
         } else if (event.getChannelType().isMessage()) {
             if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
                     !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_textchannel").getBooleanValue())
@@ -447,12 +480,15 @@ public class LoggingEvents extends ListenerAdapter {
 
             wm.addEmbeds(we.build());
 
-            String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-            Main.getInstance().getLoggerQueue().add(new LogMessage(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.CHANNELDATA_CHANGE));
+            Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+            Main.getInstance().getLoggerQueue().add(new LogMessage(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.CHANNELDATA_CHANGE));
 
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleCreate(@Nonnull RoleCreateEvent event) {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
@@ -474,10 +510,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), true, false, false, false));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), true, false, false, false));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleDelete(@Nonnull RoleDeleteEvent event) {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
@@ -498,10 +537,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, true, false, false));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, true, false, false));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleUpdateName(@Nonnull RoleUpdateNameEvent event) {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
@@ -524,10 +566,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getOldName(), event.getNewName()));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getOldName(), event.getNewName()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleUpdateMentionable(@Nonnull RoleUpdateMentionableEvent event) {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
@@ -550,10 +595,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, false, false, true));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, false, false, true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) &&
@@ -576,10 +624,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, false, true, false));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, false, true, false));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) &&
@@ -627,10 +678,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getOldPermissions(), event.getNewPermissions()));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getOldPermissions(), event.getNewPermissions()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onRoleUpdateColor(@Nonnull RoleUpdateColorEvent event) {
 
@@ -654,10 +708,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         wm.addEmbeds(we.build());
 
-        String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), (event.getOldColor() != null ? event.getOldColor() : Color.gray), (event.getNewColor() != null ? event.getNewColor() : Color.gray)));
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), (event.getOldColor() != null ? event.getOldColor() : Color.gray), (event.getNewColor() != null ? event.getNewColor() : Color.gray)));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onMessageDelete(@Nonnull MessageDeleteEvent event) {
 
@@ -708,11 +765,14 @@ public class LoggingEvents extends ListenerAdapter {
 
             wm.addEmbeds(we.build());
 
-            String[] infos = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(infos[0]), infos[1], wm.build(), event.getGuild(), LogTyp.MESSAGE_DELETE, (message != null ? message.getAuthor() :  null)));
+            Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MESSAGE_DELETE, (message != null ? message.getAuthor() :  null)));
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {
 
@@ -726,6 +786,9 @@ public class LoggingEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildInviteDelete(@Nonnull GuildInviteDeleteEvent event) {
 

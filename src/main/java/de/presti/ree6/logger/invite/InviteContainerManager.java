@@ -21,7 +21,9 @@ public class InviteContainerManager {
         throw new IllegalStateException("Utility class");
     }
 
-    // List of every Invite that has been deleted in the current Session.
+    /**
+     * List of every Invite that has been deleted in the current Session.
+     */
     private static final ArrayList<InviteContainer> deletedInvites = new ArrayList<>();
 
     /**

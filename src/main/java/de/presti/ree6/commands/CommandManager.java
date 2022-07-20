@@ -3,20 +3,6 @@ package de.presti.ree6.commands;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.exceptions.CommandInitializerException;
-import de.presti.ree6.commands.impl.community.TwitchNotifier;
-import de.presti.ree6.commands.impl.community.TwitterNotifier;
-import de.presti.ree6.commands.impl.community.YouTubeNotifier;
-import de.presti.ree6.commands.impl.fun.Record;
-import de.presti.ree6.commands.impl.fun.*;
-import de.presti.ree6.commands.impl.hidden.Addon;
-import de.presti.ree6.commands.impl.info.Invite;
-import de.presti.ree6.commands.impl.info.*;
-import de.presti.ree6.commands.impl.level.Leaderboards;
-import de.presti.ree6.commands.impl.level.Level;
-import de.presti.ree6.commands.impl.mod.*;
-import de.presti.ree6.commands.impl.music.*;
-import de.presti.ree6.commands.impl.nsfw.NSFW;
-import de.presti.ree6.commands.impl.nsfw.Rule34;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
@@ -33,10 +19,13 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import org.reflections.Reflections;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,85 +40,21 @@ public class CommandManager {
      * Constructor for the Command-Manager used to register every Command.
      *
      * @throws CommandInitializerException if an error occurs while initializing the Commands.
+     * @throws IllegalStateException if an Invalid Command was used to initialize.
+     * @throws IllegalAccessException when an Instance of a Command is not accessible.
+     * @throws InstantiationException when an Instance of a Command is not instantiable.
+     * @throws NoSuchMethodException when a Constructor Instance of a Command is not found.
      */
-    public CommandManager() throws CommandInitializerException {
+    public CommandManager() throws CommandInitializerException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Main.getInstance().getLogger().info("Initializing Commands!");
 
-        //Informative
-        addCommand(new Help());
-        addCommand(new Support());
-        addCommand(new Info());
-        addCommand(new Optout());
-        addCommand(new Stats());
-        addCommand(new Invite());
-        addCommand(new Server());
-        addCommand(new Credits());
+        Reflections reflections = new Reflections("de.presti.ree6.commands");
+        Set<Class<? extends ICommand>> classes = reflections.getSubTypesOf(ICommand.class);
 
-        //Moderate
-        addCommand(new ClearData());
-        addCommand(new Prefix());
-        addCommand(new Webinterface());
-        addCommand(new Clear());
-        addCommand(new Setup());
-        addCommand(new Mute());
-        addCommand(new Unmute());
-        addCommand(new Kick());
-        addCommand(new Ban());
-        addCommand(new Unban());
-        addCommand(new Blacklist());
-
-        //Music
-        addCommand(new SongInfo());
-        addCommand(new Lyrics());
-        addCommand(new Play());
-        addCommand(new Pause());
-        addCommand(new Resume());
-        addCommand(new Stop());
-        addCommand(new Disconnect());
-        addCommand(new Skip());
-        addCommand(new Loop());
-        addCommand(new Shuffle());
-        addCommand(new Volume());
-        addCommand(new Clearqueue());
-        addCommand(new SongList());
-
-        //Fun
-        addCommand(new Record());
-        addCommand(new RandomAnswer());
-        addCommand(new Anime());
-        addCommand(new Manga());
-        addCommand(new FunFact());
-        addCommand(new CatImage());
-        addCommand(new DogImage());
-        addCommand(new MemeImage());
-        addCommand(new Ping());
-        addCommand(new Slap());
-        addCommand(new Twitter());
-        addCommand(new HornyJail());
-        addCommand(new Waifu());
-        addCommand(new Kiss());
-        addCommand(new Hug());
-        addCommand(new Cringe());
-        addCommand(new FunnyCryptocurrencies());
-        addCommand(new ShibaImage());
-
-        //Level
-        addCommand(new Level());
-        addCommand(new Leaderboards());
-
-        //Community
-        addCommand(new TwitchNotifier());
-        addCommand(new TwitterNotifier());
-        addCommand(new YouTubeNotifier());
-
-        //NSFW
-        addCommand(new NSFW());
-        addCommand(new Rule34());
-
-        //Hidden
-        addCommand(new Addon());
-        //// addCommand(new Gamer());
-        //// addCommand(new Test());
+        for (Class<? extends ICommand> aClass : classes) {
+            Main.getInstance().getAnalyticsLogger().info("Loading Command " + aClass.getSimpleName());
+            addCommand(aClass.getDeclaredConstructor().newInstance());
+        }
     }
 
     /**
@@ -254,12 +179,12 @@ public class CommandManager {
         }
 
         // Check if this is a Developer build, if not then cooldown the User.
-        if (BotWorker.getVersion() != BotVersion.DEV) {
+        if (BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD) {
             ThreadUtil.createNewThread(x -> ArrayUtil.commandCooldown.remove(member.getUser().getId()), null, Duration.ofSeconds(5), false, false);
         }
 
         // Add them to the Cooldown.
-        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && BotWorker.getVersion() != BotVersion.DEV) {
+        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD) {
             ArrayUtil.commandCooldown.add(member.getUser().getId());
         }
 
@@ -267,6 +192,15 @@ public class CommandManager {
         return true;
     }
 
+    /**
+     * Perform a Message based Command.
+     * @param member the Member that performed the command.
+     * @param guild the Guild the Member is from.
+     * @param messageContent the Message content (including the prefix + command name).
+     * @param message the Message Entity.
+     * @param textChannel the TextChannel where the command has been performed.
+     * @return true, if a command has been performed.
+     */
     private boolean performMessageCommand(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel) {
         // Check if the Message is null.
         if (message == null) {
@@ -294,7 +228,8 @@ public class CommandManager {
         }
 
         // Check if the Command is blacklisted.
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() &&
+                command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
             sendMessage("This Command is blocked!", 5, textChannel, null);
             return false;
         }
@@ -336,8 +271,13 @@ public class CommandManager {
         return true;
     }
 
+    /**
+     * Check if an User is time-outed.
+     * @param user the User.
+     * @return true, if yes | false, if not.
+     */
     public boolean isTimeout(User user) {
-        return ArrayUtil.commandCooldown.contains(user.getId()) && BotWorker.getVersion() != BotVersion.DEV;
+        return ArrayUtil.commandCooldown.contains(user.getId()) && BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD;
     }
 
     /**
@@ -470,7 +410,7 @@ public class CommandManager {
                 !message.isEphemeral() &&
                 interactionHook == null) {
             message.delete().onErrorMap(throwable -> {
-                Main.getInstance().getLogger().error("[CommandManager] Couldn't delete a Message!", throwable);
+                Main.getInstance().getAnalyticsLogger().error("[CommandManager] Couldn't delete a Message!", throwable);
                 return null;
             }).queue();
         }

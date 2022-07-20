@@ -17,27 +17,39 @@ import javax.annotation.Nullable;
  */
 public class CommandEvent {
 
-    // The Member associated with the Command execution.
+    /**
+     * The Member associated with the Command execution.
+     */
     @Nonnull
     Member member;
 
-    // The Guild associated with the Command execution.
+    /**
+     * The Guild associated with the Command execution.
+     */
     @Nonnull
     Guild guild;
 
-    // The Message that has been parsed.
+    /**
+     * The message associated with the Command execution.
+     */
     @Nullable
     Message message;
 
-    // The Text channel which has been used, to fire the Event.
+    /**
+     * The MessageChannel associated with the Command execution.
+     */
     @Nonnull
     MessageChannelUnion channel;
 
-    // Argument that have been given.
+    /**
+     * The Arguments parsed with the Command execution.
+     */
     @Nullable
     String[] arguments;
 
-    // The Slash Command Event that is associated with the Command execution.
+    /**
+     * The SlashCommandEvent associated with the Command execution.
+     */
     @Nullable
     SlashCommandInteractionEvent slashCommandInteractionEvent;
 

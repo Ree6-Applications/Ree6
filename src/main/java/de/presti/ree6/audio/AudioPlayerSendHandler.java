@@ -13,8 +13,19 @@ import java.nio.ByteBuffer;
  * provide20MsAudio().
  */
 public class AudioPlayerSendHandler implements AudioSendHandler {
+    /**
+     * {@link AudioPlayer} that sends the Music Data.
+     */
     private final AudioPlayer audioPlayer;
+
+    /**
+     * Audio ByteBuffer.
+     */
     private final ByteBuffer buffer;
+
+    /**
+     * Current Audio Frame.
+     */
     private final MutableAudioFrame frame;
 
     /**

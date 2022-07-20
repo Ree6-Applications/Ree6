@@ -3,12 +3,12 @@ package de.presti.ree6.logger.events;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
-import de.presti.ree6.bot.util.Webhook;
+import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.logger.events.implentation.LogMessageMember;
 import de.presti.ree6.logger.events.implentation.LogMessageRole;
 import de.presti.ree6.logger.events.implentation.LogMessageUser;
 import de.presti.ree6.logger.events.implentation.LogMessageVoice;
-import de.presti.ree6.main.Data;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.Permission;
 
@@ -24,7 +24,9 @@ import java.util.EnumSet;
  */
 public class LoggerQueue {
 
-    // A List of every Log-Message.
+    /**
+     * A List of every Log-Message.
+     */
     final ArrayList<LogMessage> logs = new ArrayList<>();
 
     /**
@@ -479,7 +481,7 @@ public class LoggerQueue {
             ThreadUtil.createNewThread(x -> {
                 // If not canceled send it.
                 if (!loggerMessage.isCanceled()) {
-                    Webhook.sendWebhook(loggerMessage, loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode(), true);
+                    WebhookUtil.sendWebhook(loggerMessage, loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode(), true);
                 }
 
                 // Remove it from the list.

@@ -18,10 +18,14 @@ import java.util.List;
  */
 public class RequestUtility {
 
-    // HTTP Client used to send the Requests.
+    /**
+     * HTTP Client used to send the Requests.
+     */
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
-    // User-Agent for all the Requests.
+    /**
+     * User-Agent for all the Requests.
+     */
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/" + BotWorker.getBuild();
 
     /**
@@ -90,20 +94,35 @@ public class RequestUtility {
      * Utility class for Requests.
      */
     public static class Request {
-        // The URL and Auth Token for the Request.
-        String url, bearerAuth;
 
-        // The Request Method.
+        /**
+         * The URL for the Request.
+         */
+        String url;
+
+        /**
+         * The Bearer Auth Token for the Request.
+         */
+        String bearerAuth;
+
+        /**
+         * The Request Method.
+         */
         Method method = Method.GET;
 
-        // The Body Publisher used for PUT and POST Requests.
+        /**
+         * The Body Publisher used for PUT and POST Requests.
+         */
         HttpRequest.BodyPublisher bodyPublisher;
 
-        // Custom Headers.
+        /**
+         * Custom Headers.
+         */
         List<String[]> headers = new ArrayList<>();
 
         /**
          * Create a new Request builder.
+         *
          * @return a new Request builder.
          */
         public static RequestBuilder builder() {
@@ -157,6 +176,7 @@ public class RequestUtility {
 
         /**
          * Get the Headers.
+         *
          * @return the Headers.
          */
         public List<String[]> getHeaders() {
@@ -167,20 +187,35 @@ public class RequestUtility {
          * Builder class for a Request class.
          */
         public static class RequestBuilder {
-            // The URL and Auth Token for the Request.
-            String url, bearerAuth;
 
-            // The Request Method.
+            /**
+             * The URL for the Request.
+             */
+            String url;
+
+            /**
+             * The Bearer Auth Token for the Request.
+             */
+            String bearerAuth;
+
+            /**
+             * The Request Method.
+             */
             Method method = Method.GET;
 
-            // The Body Publisher used for PUT and POST Requests.
+            /**
+             * The Body Publisher used for PUT and POST Requests.
+             */
             HttpRequest.BodyPublisher bodyPublisher;
 
-            // Custom Headers.
+            /**
+             * Custom Headers.
+             */
             List<String[]> headers = new ArrayList<>();
 
             /**
              * Change the Url of the Request.
+             *
              * @param url the new Url.
              * @return the Request.
              */
@@ -191,6 +226,7 @@ public class RequestUtility {
 
             /**
              * Change the Bearer Auth Token.
+             *
              * @param bearerAuth the new Auth Token.
              * @return the Request.
              */
@@ -201,6 +237,7 @@ public class RequestUtility {
 
             /**
              * Change the Request method.
+             *
              * @param method the new Method.
              * @return the Request.
              */
@@ -211,6 +248,7 @@ public class RequestUtility {
 
             /**
              * Change the Body publisher used.
+             *
              * @param bodyPublisher the Body Publisher used for PUT and POST Requests.
              * @return the Request.
              */
@@ -221,6 +259,7 @@ public class RequestUtility {
 
             /**
              * Change the Headers.
+             *
              * @param header the new Header.
              * @return the Request.
              */
@@ -229,6 +268,10 @@ public class RequestUtility {
                 return this;
             }
 
+            /**
+             * Build the Request.
+             * @return the Request.
+             */
             public Request build() {
                 Request request = new Request();
                 request.url = this.url;

@@ -14,9 +14,15 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+/**
+ * A command to unban someone.
+ */
 @Command(name = "unban", description = "Unban a specific user from the Server, with his User ID.", category = Category.MOD)
 public class Unban implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -58,6 +64,9 @@ public class Unban implements ICommand {
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("unban", "Unban a User from the Server!")
@@ -65,6 +74,9 @@ public class Unban implements ICommand {
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

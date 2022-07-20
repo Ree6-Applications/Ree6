@@ -1,4 +1,4 @@
-package de.presti.ree6.main;
+package de.presti.ree6.utils.data;
 
 /**
  * Utility class to save long term used Data.

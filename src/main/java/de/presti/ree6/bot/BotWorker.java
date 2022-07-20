@@ -30,22 +30,34 @@ public class BotWorker {
         throw new IllegalStateException("Utility class");
     }
 
-    // Current state of the Bot.
+    /**
+     * Current Bot state.
+     */
     private static BotState state;
 
-    // Current Bot Version-Typ.
+    /**
+     * Current Bot version.
+     */
     private static BotVersion version;
 
-    // Instance of the JDA ShardManager.
+    /**
+     * Current {@link ShardManager}.
+     */
     private static ShardManager shardManager;
 
-    // The used Bot-Token.
+    /**
+     * Current Bot-Token.
+     */
     private static String token;
 
-    // The current build / version.
+    /**
+     * Current Bot build.
+     */
     private static String build;
 
-    // Start time of the Bot.
+    /**
+     * Bot start time.
+     */
     private static long startTime;
 
     /**
@@ -57,11 +69,13 @@ public class BotWorker {
      */
     public static void createBot(BotVersion version1, String build1) throws LoginException {
         version = version1;
-        token = BotWorker.version == BotVersion.DEV ? Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.dev") : Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.rel");
+        token = BotWorker.version == BotVersion.DEVELOPMENT_BUILD ? Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.dev") : Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.rel");
         state = BotState.INIT;
         build = build1;
 
-        shardManager = DefaultShardManagerBuilder.createDefault(token).setShardsTotal(getVersion() == BotVersion.DEV ? 1 : 10).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOJI, CacheFlag.ACTIVITY).build();
+        shardManager = DefaultShardManagerBuilder.createDefault(token).setShardsTotal(getVersion() == BotVersion.DEVELOPMENT_BUILD ? 1 : 10).enableIntents(GatewayIntent.GUILD_MESSAGES,
+                GatewayIntent.GUILD_INVITES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_INVITES, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_WEBHOOKS,
+                GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_BANS).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOJI, CacheFlag.ACTIVITY).build();
     }
 
     /**

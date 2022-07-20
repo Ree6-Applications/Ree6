@@ -13,9 +13,15 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+/**
+ * A command to clear messages.
+ */
 @Command(name = "clear", description = "Clear the current Chat.", category = Category.MOD)
 public class Clear implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -56,6 +62,9 @@ public class Clear implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("clear", "Clear the Chat!")
@@ -66,11 +75,19 @@ public class Clear implements ICommand {
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_MANAGE));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[]{"cc", "clearchat", "chatclear"};
     }
 
+    /**
+     * Delete Messages.
+     * @param commandEvent CommandEvent.
+     * @param amount Amount of Messages.
+     */
     public void deleteMessages(CommandEvent commandEvent, int amount) {
 
         if (amount <= 200 && amount >= 2) {

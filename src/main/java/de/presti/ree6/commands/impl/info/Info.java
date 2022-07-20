@@ -4,7 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.main.Data;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -16,9 +16,15 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.time.format.DateTimeFormatter;
 
+/**
+ * A command to show the user's information.
+ */
 @Command(name = "info", description = "Shows user specific information.", category = Category.INFO)
 public class Info implements ICommand {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -46,17 +52,28 @@ public class Info implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("info", "Shows you Information about a User.")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User whose profile Information you want.").setRequired(true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
     }
 
+    /**
+     * Sends the Information about a User.
+     * @param member The User to get the Information from.
+     * @param commandEvent The CommandEvent.
+     */
     public void sendInfo(Member member, CommandEvent commandEvent) {
         EmbedBuilder em = new EmbedBuilder();
 

@@ -7,7 +7,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.main.Data;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -15,11 +15,21 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 
+/**
+ * Get the Lyrics of a Song.
+ */
 @Command(name = "lyrics", description = "Wanna see the Lyrics of the current Song?", category = Category.MUSIC)
 public class Lyrics implements ICommand {
 
+    /**
+     * Lyrics Client.
+     * Used to get the Lyrics of the current Song.
+     */
     private final LyricsClient client = new LyricsClient();
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
@@ -76,11 +86,17 @@ public class Lyrics implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
