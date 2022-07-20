@@ -89,8 +89,6 @@ public class LoggingEvents extends ListenerAdapter {
             wm2.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
             wm2.setUsername("Ree6-InviteLogs");
 
-            InviteContainer inviteContainer = InviteContainerManager.getRightInvite(event.getGuild());
-
             if (event.getUser().isBot()) {
                 event.getGuild().retrieveAuditLogs().type(ActionType.BOT_ADD).limit(1).queue(auditLogEntries -> {
                     if (auditLogEntries.isEmpty()) {
@@ -109,6 +107,7 @@ public class LoggingEvents extends ListenerAdapter {
                     }
                 });
             } else {
+                InviteContainer inviteContainer = InviteContainerManager.getRightInvite(event.getGuild());
                 if (inviteContainer != null) {
                     inviteContainer.setUses(inviteContainer.getUses() + 1);
                     wm2.append(event.getUser().getAsMention() + " **has been invited by** <@" + inviteContainer.getCreatorId() + "> (Code: " + inviteContainer.getCode() + ", Uses: " + inviteContainer.getUses() + ")");

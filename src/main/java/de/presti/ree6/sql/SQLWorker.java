@@ -87,7 +87,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (existsInChatLevel(guildId, userLevel.getUserId()) && oldChatuserLevel != null) {
 
             // If so change the current XP to the new.
-            updateEntity(oldChatuserLevel, userLevel);
+            updateEntity(oldChatuserLevel, userLevel, true);
         } else {
             saveEntity(userLevel);
         }
@@ -172,7 +172,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (existsInVoiceLevel(guildId, voiceUserLevel.getUserId()) && oldVoiceUserLevel != null) {
 
             // If so change the current XP to the new.
-            updateEntity(oldVoiceUserLevel, voiceUserLevel);
+            updateEntity(oldVoiceUserLevel, voiceUserLevel, true);
         } else {
             saveEntity(voiceUserLevel);
         }
@@ -1053,7 +1053,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is an entry with the same data.
         if (existsInvite(guildId, inviteCreator, inviteCode)) {
             // Update entry.
-            updateEntity(getInvite(guildId, inviteCode), new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
+            updateEntity(getInvite(guildId, inviteCode), new Invite(guildId, inviteCreator, inviteUsage, inviteCode), true);
         } else {
             saveEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
         }
@@ -1137,7 +1137,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         if (isMessageSetup(guildId)) {
             // If there is already an entry just replace it.
-            updateEntity(getSetting(guildId, "message_join"), new Setting(guildId, "message_join", content));
+            updateEntity(getSetting(guildId, "message_join"), new Setting(guildId, "message_join", content), true);
         } else {
             // Create a new entry, if there was none.
             saveEntity(new Setting(guildId, "message_join", content));
@@ -1483,7 +1483,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isStatsSaved(guildId, command)) {
             GuildStats newGuildStats = getStatsCommand(guildId, command);
             newGuildStats.setUses(newGuildStats.getUses() + 1);
-            updateEntity(getStatsCommand(guildId, command), newGuildStats);
+            updateEntity(getStatsCommand(guildId, command), newGuildStats, true);
         } else {
             saveEntity(new GuildStats(guildId, command, 1));
         }
@@ -1492,7 +1492,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isStatsSavedGlobal(command)) {
             Stats stats = getStatsCommandGlobal(command);
             stats.setUses(stats.getUses() + 1);
-            updateEntity(getStatsCommandGlobal(command), stats);
+            updateEntity(getStatsCommandGlobal(command), stats, true);
         } else {
             saveEntity(new Stats(command, 1));
         }
@@ -1680,8 +1680,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
      *
      * @param oldEntity the old Entity.
      * @param newEntity the new Entity.
+     * @param onlyUpdateField the only update the given Field.
      */
-    public void updateEntity(Object oldEntity, Object newEntity) {
+    public void updateEntity(Object oldEntity, Object newEntity, boolean onlyUpdateField) {
         Class<?> entityClass = oldEntity.getClass();
 
         if (!entityClass.isAnnotationPresent(Table.class)) {
@@ -1693,7 +1694,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(newEntity, false, true);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(newEntity, onlyUpdateField, true);
 
         if (sqlParameters.isEmpty()) {
             return;
@@ -1730,7 +1731,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         try {
             ArrayList<Object> parameter = new ArrayList<>();
 
-            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, newEntity, false, true));
+            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, newEntity, onlyUpdateField, true));
             parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, oldEntity, false, true));
 
             sqlConnector.querySQL(query.toString(), parameter.toArray());

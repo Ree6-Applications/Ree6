@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.data;
 
+import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
 import de.presti.ree6.sql.base.data.SQLEntity;
@@ -167,7 +168,9 @@ public class SQLUtil {
 
                             if (field.get(entity) == null)
                                 continue;
-                        } catch (Exception ignore) {}
+                        } catch (Exception exception) {
+                            Main.getInstance().getAnalyticsLogger().error("Could not get value of field: " + field.getName(), exception);
+                        }
                     }
 
                     parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
@@ -189,7 +192,9 @@ public class SQLUtil {
 
                         if (field.get(entity) == null)
                             continue;
-                    } catch (Exception ignore) {}
+                    } catch (Exception exception) {
+                        Main.getInstance().getAnalyticsLogger().error("Could not get value of field: " + field.getName(), exception);
+                    }
                 }
 
                 parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));

@@ -7,6 +7,7 @@ import de.presti.ree6.utils.data.StoredResultSet;
 import org.reflections.Reflections;
 
 import java.sql.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -152,6 +153,9 @@ public class SQLConnector {
                 return null;
             }
         }
+
+        System.out.println(sqlQuery);
+        System.out.println(Arrays.toString(Arrays.stream(objcObjects).toArray()));
 
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
