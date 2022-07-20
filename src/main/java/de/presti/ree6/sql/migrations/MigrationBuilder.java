@@ -73,10 +73,16 @@ public class MigrationBuilder {
                                 }
                             }
 
+                            String currentTyp = SQLUtil.mapJavaToSQL(resultSet.getValue(field.getAnnotation(Property.class).name()).getClass());
+                            String classValueTyp = SQLUtil.mapJavaToSQL(field.getType());
                             if (!found) {
                                 Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getSimpleName() + ": " + field.getAnnotation(Property.class).name());
-                                upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD COLUMN ").append(field.getAnnotation(Property.class).name()).append(" ").append(SQLUtil.mapJavaToSQL(field.getType())).append(";\n");
+                                upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD ").append(field.getAnnotation(Property.class).name()).append(" ").append(classValueTyp).append(";\n");
                                 downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" DROP COLUMN ").append(field.getAnnotation(Property.class).name()).append(";\n");
+                            } else if (!currentTyp.equals(classValueTyp)) {
+                                Main.getInstance().getLogger().info("Found a not matching column in " + aClass.getSimpleName() + ": " + field.getAnnotation(Property.class).name());
+                                upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(field.getAnnotation(Property.class).name()).append(" ").append(classValueTyp).append(";\n");
+                                downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(field.getAnnotation(Property.class).name()).append(" ").append(currentTyp).append(";\n");
                             }
                         }
                     }
@@ -90,10 +96,16 @@ public class MigrationBuilder {
                             }
                         }
 
+                        String currentTyp = SQLUtil.mapJavaToSQL(resultSet.getValue(field.getAnnotation(Property.class).name()).getClass());
+                        String classValueTyp = SQLUtil.mapJavaToSQL(field.getType());
                         if (!found) {
                             Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getSimpleName() + ": " + field.getAnnotation(Property.class).name());
-                            upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD COLUMN ").append(field.getAnnotation(Property.class).name()).append(" ").append(SQLUtil.mapJavaToSQL(field.getType())).append(";\n");
+                            upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD ").append(field.getAnnotation(Property.class).name()).append(" ").append(classValueTyp).append(";\n");
                             downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" DROP COLUMN ").append(field.getAnnotation(Property.class).name()).append(";\n");
+                        } else if (!currentTyp.equals(classValueTyp)) {
+                            Main.getInstance().getLogger().info("Found a not matching column in " + aClass.getSimpleName() + ": " + field.getAnnotation(Property.class).name());
+                            upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(field.getAnnotation(Property.class).name()).append(" ").append(classValueTyp).append(";\n");
+                            downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(field.getAnnotation(Property.class).name()).append(" ").append(currentTyp).append(";\n");
                         }
                     }
                 } else {
