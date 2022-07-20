@@ -35,6 +35,7 @@ public class MigrationBuilder {
 
     /**
      * Change the name of the migration.
+     *
      * @param name The name of the migration.
      * @return The MigrationBuilder.
      */
@@ -45,6 +46,7 @@ public class MigrationBuilder {
 
     /**
      * Build and Migration.
+     *
      * @param sqlConnector The SQLConnector.
      * @return The Migration.
      */
@@ -59,7 +61,12 @@ public class MigrationBuilder {
             Main.getInstance().getLogger().info("Checking " + aClass.getSimpleName());
 
             try {
-                StoredResultSet resultSet = sqlConnector.querySQL("SELECT * FROM " + aClass.getAnnotation(Table.class).name() + " LIMIT 1");
+                String tabelName = SQLUtil.getTable(aClass);
+
+                if (tabelName == null)
+                    continue;
+
+                StoredResultSet resultSet = sqlConnector.querySQL("SELECT * FROM " + tabelName + " LIMIT 1");
                 if (resultSet != null && resultSet.hasResults()) {
                     int columns = resultSet.getColumnCount();
 
@@ -67,22 +74,24 @@ public class MigrationBuilder {
                         for (Field field : Arrays.stream(aClass.getSuperclass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class)).toList()) {
                             boolean found = false;
 
-                            for (int i = 1; i <= columns; i++) {
-                                if (resultSet.getColumnName(i).equals(field.getAnnotation(Property.class).name())) {
+                            String currentPropertyName = field.getAnnotation(Property.class).name().toUpperCase();
+
+                            for (int i = 0; i <= columns; i++) {
+                                if (resultSet.getColumnName(i).equals(currentPropertyName)) {
                                     found = true;
                                 }
                             }
 
-                            String currentTyp = SQLUtil.mapJavaToSQL(resultSet.getValue(field.getAnnotation(Property.class).name()).getClass());
+                            String currentTyp = SQLUtil.mapJavaToSQL(resultSet.getValue(currentPropertyName).getClass());
                             String classValueTyp = SQLUtil.mapJavaToSQL(field.getType());
                             if (!found) {
-                                Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getSimpleName() + ": " + field.getAnnotation(Property.class).name());
-                                upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD ").append(field.getAnnotation(Property.class).name()).append(" ").append(classValueTyp).append(";\n");
-                                downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" DROP COLUMN ").append(field.getAnnotation(Property.class).name()).append(";\n");
+                                Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getSimpleName() + ": " + currentPropertyName);
+                                upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD ").append(currentPropertyName).append(" ").append(classValueTyp).append(";\n");
+                                downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" DROP COLUMN ").append(currentPropertyName).append(";\n");
                             } else if (!currentTyp.equals(classValueTyp)) {
-                                Main.getInstance().getLogger().info("Found a not matching column in " + aClass.getSimpleName() + ": " + field.getAnnotation(Property.class).name());
-                                upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(field.getAnnotation(Property.class).name()).append(" ").append(classValueTyp).append(";\n");
-                                downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(field.getAnnotation(Property.class).name()).append(" ").append(currentTyp).append(";\n");
+                                Main.getInstance().getLogger().info("Found a not matching column in " + aClass.getSimpleName() + ": " + currentPropertyName);
+                                upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(currentPropertyName).append(" ").append(classValueTyp).append(";\n");
+                                downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(currentPropertyName).append(" ").append(currentTyp).append(";\n");
                             }
                         }
                     }
@@ -90,22 +99,24 @@ public class MigrationBuilder {
                     for (Field field : Arrays.stream(aClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class)).toList()) {
                         boolean found = false;
 
-                        for (int i = 1; i <= columns; i++) {
-                            if (resultSet.getColumnName(i).equals(field.getAnnotation(Property.class).name())) {
+                        String currentPropertyName = field.getAnnotation(Property.class).name().toUpperCase();
+
+                        for (int i = 0; i <= columns; i++) {
+                            if (resultSet.getColumnName(i).equals(currentPropertyName)) {
                                 found = true;
                             }
                         }
 
-                        String currentTyp = SQLUtil.mapJavaToSQL(resultSet.getValue(field.getAnnotation(Property.class).name()).getClass());
+                        String currentTyp = SQLUtil.mapJavaToSQL(resultSet.getValue(currentPropertyName).getClass());
                         String classValueTyp = SQLUtil.mapJavaToSQL(field.getType());
                         if (!found) {
-                            Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getSimpleName() + ": " + field.getAnnotation(Property.class).name());
-                            upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD ").append(field.getAnnotation(Property.class).name()).append(" ").append(classValueTyp).append(";\n");
-                            downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" DROP COLUMN ").append(field.getAnnotation(Property.class).name()).append(";\n");
+                            Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getSimpleName() + ": " + currentPropertyName);
+                            upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD ").append(currentPropertyName).append(" ").append(classValueTyp).append(";\n");
+                            downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" DROP COLUMN ").append(currentPropertyName).append(";\n");
                         } else if (!currentTyp.equals(classValueTyp)) {
-                            Main.getInstance().getLogger().info("Found a not matching column in " + aClass.getSimpleName() + ": " + field.getAnnotation(Property.class).name());
-                            upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(field.getAnnotation(Property.class).name()).append(" ").append(classValueTyp).append(";\n");
-                            downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(field.getAnnotation(Property.class).name()).append(" ").append(currentTyp).append(";\n");
+                            Main.getInstance().getLogger().info("Found a not matching column in " + aClass.getSimpleName() + ": " + currentPropertyName);
+                            upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(currentPropertyName).append(" ").append(classValueTyp).append(";\n");
+                            downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(currentPropertyName).append(" ").append(currentTyp).append(";\n");
                         }
                     }
                 } else {
@@ -137,7 +148,9 @@ public class MigrationBuilder {
 
                     downQuery.append("DROP TABLE ").append(tableName).append(";\n");
                 }
-            } catch (Exception ignore) {}
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
         }
 
         migration = new Migration() {
@@ -148,13 +161,13 @@ public class MigrationBuilder {
             }
 
             @Override
-            public String getUpQuery() {
-                return upQuery.toString();
+            public String[] getUpQuery() {
+                return Arrays.stream(upQuery.toString().split("\n")).filter(s -> !s.isEmpty() && !s.isBlank()).toArray(String[]::new);
             }
 
             @Override
-            public String getDownQuery() {
-                return downQuery.toString();
+            public String[] getDownQuery() {
+                return Arrays.stream(downQuery.toString().split("\n")).filter(s -> !s.isEmpty() && !s.isBlank()).toArray(String[]::new);
             }
         };
 

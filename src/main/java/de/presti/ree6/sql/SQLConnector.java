@@ -64,15 +64,14 @@ public class SQLConnector {
         entityMapper = new EntityMapper();
 
         connectToSQLServer();
+        createTables();
         try {
-            MigrationUtil.runAllMigrations();
+            MigrationUtil.runAllMigrations(this);
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Error while running Migrations!", exception);
         }
 
         SeedManager.runAllSeeds();
-
-        createTables();
     }
 
     /**
@@ -112,7 +111,8 @@ public class SQLConnector {
         if (!isConnected()) return;
 
         // Registering the tables and values.
-        tables.put("Opt_out", "(GID VARCHAR(40), UID VARCHAR(40))");
+        tables.putIfAbsent("Opt_out", "(GID VARCHAR(40), UID VARCHAR(40))");
+        tables.putIfAbsent("Migrations", "(NAME VARCHAR(100), DATE VARCHAR(100))");
 
         // Iterating through all table presets.
         for (Map.Entry<String, String> entry : tables.entrySet()) {
@@ -294,15 +294,6 @@ public class SQLConnector {
      */
     public EntityMapper getEntityMapper() {
         return entityMapper;
-    }
-
-    /**
-     * Retrieve a list with all Tables and it values.
-     *
-     * @return {@link Map} with all Tables as Key and all values as value.
-     */
-    public Map<String, String> getTables() {
-        return tables;
     }
 
     /**

@@ -93,11 +93,11 @@ public class StoredResultSet {
      * @return the value of the Column.
      */
     public String getColumnName(int index) {
-        if (columnMappings.containsValue(index)) {
+        if (!columnMappings.containsValue(index)) {
             return "";
         }
 
-        return columnMappings.entrySet().stream().filter(e -> e.getValue() == index).findFirst().map(Map.Entry::getKey).orElse(null);
+        return columnMappings.entrySet().stream().filter(e -> e.getValue() == index).findFirst().map(Map.Entry::getKey).orElse("");
     }
 
     /**
@@ -112,7 +112,7 @@ public class StoredResultSet {
             return new Object();
         }
 
-        return data.get(0).get((columnIndex - 1));
+        return data.get(0).get(columnIndex);
     }
 
     /**

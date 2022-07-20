@@ -1,12 +1,14 @@
 package de.presti.ree6.utils.data;
 
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.migrations.Migration;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 /**
  * MigrationUtil is used to manage migrations.
@@ -23,9 +25,10 @@ public class MigrationUtil {
     /**
      * Runs all stored migrations.
      *
+     * @param sqlConnector The SQLConnector.
      * @throws IOException if there was an error while running the migrations.
      */
-    public static void runAllMigrations() throws IOException {
+    public static void runAllMigrations(SQLConnector sqlConnector) throws IOException {
         File migrationsFolder = new File("migrations/");
         if (!migrationsFolder.exists()) {
             migrationsFolder.mkdir();
@@ -34,7 +37,7 @@ public class MigrationUtil {
         if (files != null) {
             for (File file : files) {
                 if (file.getName().endsWith(".migration")) {
-                    runMigration(file);
+                    runMigration(file, sqlConnector);
                 }
             }
         }
@@ -42,17 +45,26 @@ public class MigrationUtil {
 
     /**
      * Runs a migration.
-     * @param file The migration file.
+     *
+     * @param file         The migration file.
+     * @param sqlConnector The SQLConnector.
      * @throws IOException if there was an error while running the migration.
      */
-    public static void runMigration(File file) throws IOException {
+    public static void runMigration(File file, SQLConnector sqlConnector) throws IOException {
+
         Migration migration = loadMigration(file);
 
-        migration.up(Main.getInstance().getSqlConnector());
+        if (sqlConnector.querySQL("SELECT * FROM Migrations WHERE NAME=?", migration.getName()).hasResults()) {
+            System.out.println("Migration " + migration.getName() + " already ran.");
+            return;
+        }
+
+        migration.up(sqlConnector);
     }
 
     /**
      * Loads a migration.
+     *
      * @param file The migration file.
      * @return The loaded migration.
      * @throws IOException if there was an error while loading the migration.
@@ -61,8 +73,8 @@ public class MigrationUtil {
         String migrationFileContent = Files.readString(file.toPath());
 
         String migrationName = migrationFileContent.split("name: ")[1].split("\n")[0];
-        String upQuery = migrationFileContent.split("up: ")[1].split("down:")[0].replace("\n", " ");
-        String downQuery = migrationFileContent.split("down: ")[1].replace("\n", " ");
+        String[] upQuery = migrationFileContent.split("up: ")[1].split("down:")[0].split("\n");
+        String[] downQuery = migrationFileContent.split("down: ")[1].split("\n");
 
         return new Migration() {
             @Override
@@ -71,12 +83,12 @@ public class MigrationUtil {
             }
 
             @Override
-            public String getUpQuery() {
+            public String[] getUpQuery() {
                 return upQuery;
             }
 
             @Override
-            public String getDownQuery() {
+            public String[] getDownQuery() {
                 return downQuery;
             }
         };
@@ -84,6 +96,7 @@ public class MigrationUtil {
 
     /**
      * Save a migration to a file.
+     *
      * @param migration The Migration.
      */
     public static void saveMigration(Migration migration) {
@@ -99,7 +112,7 @@ public class MigrationUtil {
             throw new IllegalArgumentException("Migrations is not a directory");
         }
 
-        File file = new File(path,migration.getName() + ".migration");
+        File file = new File(path, migration.getName() + ".migration");
 
         if (file.exists()) {
             throw new IllegalArgumentException("Migration already exists");
@@ -107,8 +120,8 @@ public class MigrationUtil {
 
         try (PrintWriter printWriter = new PrintWriter(file)) {
             printWriter.println("name: " + migration.getName());
-            printWriter.println("up: " + migration.getUpQuery());
-            printWriter.println("down: " + migration.getDownQuery());
+            printWriter.println("up: " + String.join("\n", Arrays.stream(migration.getUpQuery()).filter(s -> !s.isEmpty() && !s.isBlank()).toArray(String[]::new)));
+            printWriter.println("down: " + String.join("\n", Arrays.stream(migration.getDownQuery()).filter(s -> !s.isEmpty() && !s.isBlank()).toArray(String[]::new)));
         } catch (Exception exception) {
             Main.getInstance().getLogger().info("Could not save migration, reason: " + exception.getMessage(), exception);
         }
