@@ -73,7 +73,9 @@ public class BotWorker {
         state = BotState.INIT;
         build = build1;
 
-        shardManager = DefaultShardManagerBuilder.createDefault(token).setShardsTotal(getVersion() == BotVersion.DEVELOPMENT_BUILD ? 1 : 10).enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)).disableIntents(GatewayIntent.GUILD_PRESENCES).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOJI, CacheFlag.ACTIVITY).build();
+        shardManager = DefaultShardManagerBuilder.createDefault(token).setShardsTotal(getVersion() == BotVersion.DEVELOPMENT_BUILD ? 1 : 10).enableIntents(GatewayIntent.GUILD_MESSAGES,
+                GatewayIntent.GUILD_INVITES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_INVITES, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_WEBHOOKS,
+                GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_BANS).setMemberCachePolicy(MemberCachePolicy.ALL).disableCache(CacheFlag.EMOJI, CacheFlag.ACTIVITY).build();
     }
 
     /**
