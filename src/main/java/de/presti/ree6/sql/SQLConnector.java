@@ -71,7 +71,7 @@ public class SQLConnector {
             Main.getInstance().getLogger().error("Error while running Migrations!", exception);
         }
 
-        SeedManager.runAllSeeds();
+        SeedManager.runAllSeeds(this);
     }
 
     /**
@@ -113,6 +113,7 @@ public class SQLConnector {
         // Registering the tables and values.
         tables.putIfAbsent("Opt_out", "(GID VARCHAR(40), UID VARCHAR(40))");
         tables.putIfAbsent("Migrations", "(NAME VARCHAR(100), DATE VARCHAR(100))");
+        tables.putIfAbsent("Seeds", "(VERSION VARCHAR(100), DATE VARCHAR(100))");
 
         // Iterating through all table presets.
         for (Map.Entry<String, String> entry : tables.entrySet()) {

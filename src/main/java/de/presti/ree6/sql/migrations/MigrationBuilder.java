@@ -149,7 +149,7 @@ public class MigrationBuilder {
                     downQuery.append("DROP TABLE ").append(tableName).append(";\n");
                 }
             } catch (Exception exception) {
-                exception.printStackTrace();
+                Main.getInstance().getLogger().error("Could not check table " + aClass.getAnnotation(Table.class).name() + ": " + exception.getMessage());
             }
         }
 
