@@ -127,7 +127,7 @@ public class StoredResultSet {
             return new ArrayList<>();
         }
 
-        return data.stream().map(l -> l.get((columnIndex - 1))).toList();
+        return data.stream().map(l -> l.get(columnIndex)).toList();
     }
 
     /**
@@ -214,7 +214,7 @@ public class StoredResultSet {
                 return new Object();
             }
 
-            return rowData.get((columnIndex));
+            return rowData.get(columnIndex);
         }
 
         /**
