@@ -1668,7 +1668,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         query.append(")");
         try {
-            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, true, false).toArray());
+            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, false, false).toArray());
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Error while saving Entity: " + entity, exception);
         }

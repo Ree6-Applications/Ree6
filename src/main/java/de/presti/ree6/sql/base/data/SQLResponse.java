@@ -20,9 +20,9 @@ public class SQLResponse {
     Object entity = new SQLEntity();
 
     /**
-     * boolean to inform if the request was successful.
+     * Used for a successful check.
      */
-    boolean isSuccess = false;
+    private final SQLEntity emptyEntity = new SQLEntity();
 
     /**
      * Constructor.
@@ -30,9 +30,6 @@ public class SQLResponse {
      * @param entity The data of the response.
      */
     public SQLResponse(Object entity) {
-        if (entity != null)
-            isSuccess = true;
-
         this.entity = Objects.requireNonNullElseGet(entity, SQLEntity::new);
     }
 
@@ -42,9 +39,6 @@ public class SQLResponse {
      * @param entities The data of the response.
      */
     public SQLResponse(List<Object> entities) {
-        if (entities != null)
-            isSuccess = true;
-
         this.entities = Objects.requireNonNullElseGet(entities, ArrayList::new);
 
         if (entities != null && !entities.isEmpty()) {
@@ -75,7 +69,6 @@ public class SQLResponse {
      * @return True if no result was found.
      */
     public boolean isSuccess() {
-        return isSuccess;
+        return !entity.getClass().isInstance(emptyEntity);
     }
-
 }
