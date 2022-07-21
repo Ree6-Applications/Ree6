@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Queue;
@@ -106,14 +107,27 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
         try {
             int queueSize = queue.stream().mapToInt(data -> data.length).sum();
-            ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[queueSize]);
-            for (byte[] data : queue) {
-                byteBuffer.put(data);
-            }
 
-            if (voiceChannel.canTalk()) {
-                voiceChannel.sendMessage("Here is your audio!")
-                        .addFile(AudioUtil.convertPCMtoWAV(byteBuffer), new SimpleDateFormat("dd.MM.yyyy HH/mm").format(System.currentTimeMillis()) + "-" + voiceChannel.getId() + ".wav").queue();
+            if (queueSize > 8000000) {
+                int splittableAmount = queueSize / 8000000;
+                int remaining = queueSize % 8000000;
+                int splitSize = queueSize / splittableAmount;
+                int splitRemaining = remaining / splittableAmount;
+
+                for (int i = 1; i < splittableAmount; i++) {
+                    int maxSize = (splitSize * i) + splitRemaining;
+                    sendSplitAudio(maxSize);
+                }
+            } else {
+                ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[queueSize]);
+                for (byte[] data : queue) {
+                    byteBuffer.put(data);
+                }
+
+                if (voiceChannel.canTalk()) {
+                    voiceChannel.sendMessage("Here is your audio!")
+                            .addFile(AudioUtil.convertPCMtoWAV(byteBuffer), new SimpleDateFormat("dd.MM.yyyy HH/mm").format(System.currentTimeMillis()) + "-" + voiceChannel.getId() + ".wav").queue();
+                }
             }
             // Find a way to still notify that the bot couldn't send the audio.
         } catch (Exception ex) {
@@ -126,5 +140,25 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
         voiceChannel.getGuild().getAudioManager().closeAudioConnection();
         queue.clear();
+    }
+
+    /**
+     * Method used to send a split audio.
+     * @param maxSize The max size of the split.
+     * @throws IOException If something went wrong.
+     */
+    private void sendSplitAudio(int maxSize) throws IOException {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[maxSize]);
+
+        for (byte[] data : queue) {
+            if (byteBuffer.remaining() == 0)
+                return;
+            queue.remove(data);
+        }
+
+        if (voiceChannel.canTalk()) {
+            voiceChannel.sendMessage("Here is your audio!")
+                    .addFile(AudioUtil.convertPCMtoWAV(byteBuffer), new SimpleDateFormat("dd.MM.yyyy HH/mm").format(System.currentTimeMillis()) + "-" + voiceChannel.getId() + ".wav").queue();
+        }
     }
 }

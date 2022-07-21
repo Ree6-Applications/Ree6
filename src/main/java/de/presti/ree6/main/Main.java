@@ -167,7 +167,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.DEVELOPMENT_BUILD, "1.7.20");
+            BotWorker.createBot(BotVersion.DEVELOPMENT_BUILD, "1.8.0");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -247,7 +247,7 @@ public class Main {
         instance.logger.info("[Main] JDA Instance has been shut down!");
 
         // Inform of how long it took.
-        instance.logger.info("[Main] Everything has been shut down in " + (System.currentTimeMillis() - start) + "ms!");
+        instance.logger.info("[Main] Everything has been shut down in {}ms!", System.currentTimeMillis() - start);
         instance.logger.info("[Main] Good bye!");
     }
 
@@ -274,8 +274,8 @@ public class Main {
 
                     instance.logger.info("[Stats] ");
                     instance.logger.info("[Stats] Today's Stats:");
-                    instance.logger.info("[Stats] Guilds: " + BotWorker.getShardManager().getGuilds().size());
-                    instance.logger.info("[Stats] Overall Users: " + BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
+                    instance.logger.info("[Stats] Guilds: {}", BotWorker.getShardManager().getGuilds().size());
+                    instance.logger.info("[Stats] Overall Users: {}", BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
                     instance.logger.info("[Stats] ");
                     lastDay = new SimpleDateFormat("dd").format(new Date());
                 }
@@ -295,7 +295,7 @@ public class Main {
 
                     } catch (Exception ex) {
                         guildMusicManager.scheduler.stopAll(guild, null);
-                        getLogger().error("Error", ex);
+                        getLogger().error("Error accessing the AudioPlayer.", ex);
                     }
                 }
 

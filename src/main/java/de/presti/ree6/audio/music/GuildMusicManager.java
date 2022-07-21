@@ -17,6 +17,10 @@ public class GuildMusicManager {
      * Track scheduler for the player.
      */
     public final TrackScheduler scheduler;
+
+    /**
+     * The Guild of the Music-Manager.
+     */
     public final Guild guild;
 
     /**

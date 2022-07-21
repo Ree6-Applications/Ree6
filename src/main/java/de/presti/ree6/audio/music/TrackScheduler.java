@@ -166,10 +166,12 @@ public class TrackScheduler extends AudioEventAdapter {
 
         setChannel(textChannel);
 
+        if (getChannel() == null)
+            return;
+
         AudioTrack track = queue.poll();
 
         if (track != null) {
-            if (getChannel() != null) {
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl())
                         .setTitle("Music Player!")
@@ -177,8 +179,15 @@ public class TrackScheduler extends AudioEventAdapter {
                         .setColor(Color.GREEN)
                         .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
                         .setFooter(getChannel().asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getChannel().asGuildMessageChannel().getGuild().getIconUrl()), 5, getChannel());
-            }
             player.startTrack(track, false);
+        } else {
+            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                    .setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl())
+                    .setTitle("Music Player!")
+                    .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
+                    .setColor(Color.RED)
+                    .setDescription("There is no new Song!")
+                    .setFooter(getChannel().asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getChannel().asGuildMessageChannel().getGuild().getIconUrl()), 5, getChannel());
         }
     }
 
