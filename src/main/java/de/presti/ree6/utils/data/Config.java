@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.data;
 
+import de.presti.ree6.main.Main;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
@@ -54,12 +55,14 @@ public class Config {
 
             try {
                 yamlFile.save(getFile());
-            } catch (Exception ignored) {
+            } catch (Exception exception) {
+                Main.getInstance().getLogger().error("Could not save config file!", exception);
             }
         } else {
             try {
                 yamlFile.load();
-            } catch (Exception ignored) {
+            } catch (Exception exception) {
+                Main.getInstance().getLogger().error("Could not load config!",exception);
             }
         }
     }

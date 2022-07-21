@@ -77,7 +77,7 @@ public class LogMessageMember extends LogMessage {
      * @param addedRoles      the Added {@link Role} of the {@link Member}.
      */
     public LogMessageMember(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, Member member,
-                            ArrayList<Role> removedRoles, ArrayList<Role> addedRoles) {
+                            List<Role> removedRoles, List<Role> addedRoles) {
         super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
         this.member = member;
         this.removedRoles = removedRoles;

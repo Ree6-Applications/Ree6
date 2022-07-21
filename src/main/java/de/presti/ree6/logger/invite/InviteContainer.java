@@ -6,9 +6,19 @@ package de.presti.ree6.logger.invite;
 public class InviteContainer {
 
     /**
-     * information about the Invite.
+     * The ID of the Guild.
      */
-    String creatorId, guildId, code;
+    String guildId;
+
+    /**
+     * The ID of the creator.
+     */
+    String creatorId;
+
+    /**
+     * The Code of the Invite.
+     */
+    String code;
 
     /**
      * The use count from our Database.

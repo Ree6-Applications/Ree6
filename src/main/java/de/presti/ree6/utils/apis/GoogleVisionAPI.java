@@ -48,7 +48,7 @@ public class GoogleVisionAPI {
 
             for (AnnotateImageResponse res : responses) {
                 if (res.hasError()) {
-                    Main.getInstance().getAnalyticsLogger().error("Could not retrieve text from image: " + res.getError().getMessage());
+                    Main.getInstance().getAnalyticsLogger().error("Could not retrieve text from image: {}", res.getError().getMessage());
                     return new String[0];
                 }
 
@@ -85,7 +85,7 @@ public class GoogleVisionAPI {
 
             for (AnnotateImageResponse res : responses) {
                 if (res.hasError()) {
-                    Main.getInstance().getAnalyticsLogger().error("Could not retrieve text from image: " + res.getError().getMessage());
+                    Main.getInstance().getAnalyticsLogger().error("Could not retrieve text from image: {}", res.getError().getMessage());
                     return new String[0];
                 }
 

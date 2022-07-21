@@ -75,17 +75,6 @@ public class LogMessageVoice extends LogMessage {
     }
 
     /**
-     * Change the associated Member of the Log.
-     *
-     * @deprecated Will be removed.
-     * @param member the new {@link Member}.
-     */
-    @Deprecated(since = "1.7.7", forRemoval = true)
-    public void setMember(Member member) {
-        this.member = member;
-    }
-
-    /**
      * Get the previous {@link AudioChannel} of the {@link Member}
      *
      * @return the previous {@link AudioChannel}.
@@ -95,33 +84,11 @@ public class LogMessageVoice extends LogMessage {
     }
 
     /**
-     * Change the previous {@link AudioChannel} of the {@link Member}
-     *
-     * @deprecated Will be removed.
-     * @param previousVoiceChannel the new previous {@link AudioChannel}.
-     */
-    @Deprecated(since = "1.7.7", forRemoval = true)
-    public void setPreviousVoiceChannel(AudioChannel previousVoiceChannel) {
-        this.previousVoiceChannel = previousVoiceChannel;
-    }
-
-    /**
      * Get the current {@link AudioChannel} of the {@link Member}
      *
      * @return the current {@link AudioChannel}.
      */
     public AudioChannel getCurrentVoiceChannel() {
         return currentVoiceChannel;
-    }
-
-    /**
-     * Change the current {@link AudioChannel} of the {@link Member}
-     *
-     * @deprecated Will be removed.
-     * @param currentVoiceChannel the new current {@link AudioChannel}.
-     */
-    @Deprecated(since = "1.7.7", forRemoval = true)
-    public void setCurrentVoiceChannel(AudioChannel currentVoiceChannel) {
-        this.currentVoiceChannel = currentVoiceChannel;
     }
 }

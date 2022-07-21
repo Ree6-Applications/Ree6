@@ -52,7 +52,7 @@ public class CommandManager {
         Set<Class<? extends ICommand>> classes = reflections.getSubTypesOf(ICommand.class);
 
         for (Class<? extends ICommand> aClass : classes) {
-            Main.getInstance().getAnalyticsLogger().info("Loading Command " + aClass.getSimpleName());
+            Main.getInstance().getAnalyticsLogger().info("Loading Command {}", aClass.getSimpleName());
             addCommand(aClass.getDeclaredConstructor().newInstance());
         }
     }

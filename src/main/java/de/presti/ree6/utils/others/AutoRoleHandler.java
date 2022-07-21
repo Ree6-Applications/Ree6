@@ -13,6 +13,15 @@ import java.util.Map;
 public class AutoRoleHandler {
 
     /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     *
+     * @throws IllegalStateException it is a utility class.
+     */
+    private AutoRoleHandler() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
      * Check if a Member should get a rule, when joining the Guild, and if Ree6 has enough permissions.
      *
      * @param guild  the {@link Guild} Entity.

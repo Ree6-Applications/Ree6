@@ -82,7 +82,7 @@ public class Unmute implements ICommand {
     }
 
     /**
-     * Unmutes a Member.
+     * Unmute a Member.
      * @param executor The Executor.
      * @param member The Member to unmute.
      * @param commandEvent The CommandEvent.
@@ -93,9 +93,8 @@ public class Unmute implements ICommand {
             member.removeTimeout().onErrorFlatMap(throwable -> {
                 Main.getInstance().getCommandManager().sendMessage("Could not unmute " + member.getUser().getAsTag() + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 return null;
-            }).queue(unused -> {
-                Main.getInstance().getCommandManager().sendMessage("User " + member.getAsMention() + " was unmuted!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-            });
+            }).queue(unused ->
+                    Main.getInstance().getCommandManager().sendMessage("User " + member.getAsMention() + " was unmuted!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook()));
             Main.getInstance().getCommandManager().sendMessage("User " + member.getAsMention() + " has been unmuted!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         } else {
             if (!executor.canInteract(member)) {
