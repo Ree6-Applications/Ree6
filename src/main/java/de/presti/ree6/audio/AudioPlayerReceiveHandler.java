@@ -4,6 +4,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.AudioUtil;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.jetbrains.annotations.NotNull;
@@ -114,9 +115,23 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 int splitSize = queueSize / splittableAmount;
                 int splitRemaining = remaining / splittableAmount;
 
-                for (int i = 1; i < splittableAmount; i++) {
-                    int maxSize = (splitSize * i) + splitRemaining;
-                    sendSplitAudio(maxSize);
+                Message message = null;
+
+                if (voiceChannel.canTalk()) {
+                    message = voiceChannel.sendMessage("Converting Audio.... (0/" + splittableAmount + ")").complete();
+                }
+
+                if (message == null)
+                    return;
+
+                try {
+                    for (int i = 1; i < splittableAmount; i++) {
+                        int maxSize = (splitSize * i) + splitRemaining;
+                        sendSplitAudio(i, splittableAmount, maxSize, message);
+                    }
+                    message.editMessage("Here is your audio!").retainFiles(message.getAttachments()).queue();
+                } catch (Exception exception) {
+                    message.editMessage("Something went wrong while converting your audio!\nReason: " + exception.getMessage()).queue();
                 }
             } else {
                 ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[queueSize]);
@@ -144,10 +159,13 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
     /**
      * Method used to send a split audio.
+     * @param index The index of the split.
+     * @param maxIndex The max index of the split.
      * @param maxSize The max size of the split.
+     * @param message The message to edit.
      * @throws IOException If something went wrong.
      */
-    private void sendSplitAudio(int maxSize) throws IOException {
+    private void sendSplitAudio(int index, int maxIndex, int maxSize, Message message) throws IOException {
         ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[maxSize]);
 
         for (byte[] data : queue) {
@@ -156,9 +174,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
             queue.remove(data);
         }
 
-        if (voiceChannel.canTalk()) {
-            voiceChannel.sendMessage("Here is your audio!")
-                    .addFile(AudioUtil.convertPCMtoWAV(byteBuffer), new SimpleDateFormat("dd.MM.yyyy HH/mm").format(System.currentTimeMillis()) + "-" + voiceChannel.getId() + ".wav").queue();
-        }
+        message.editMessage("Converting Audio.... (" + index + "/" + maxIndex + ")").retainFiles(message.getAttachments())
+                .addFile(AudioUtil.convertPCMtoWAV(byteBuffer), new SimpleDateFormat("dd.MM.yyyy HH/mm").format(System.currentTimeMillis()) + "-" + voiceChannel.getId() + "(" + index + ").wav").queue();
     }
 }
