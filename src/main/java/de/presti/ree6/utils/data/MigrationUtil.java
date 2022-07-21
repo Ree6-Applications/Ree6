@@ -55,12 +55,12 @@ public class MigrationUtil {
         Migration migration = loadMigration(file);
 
         if (sqlConnector.querySQL("SELECT * FROM Migrations WHERE NAME=?", migration.getName()).hasResults()) {
-            Main.getInstance().getLogger().info("Migration " + migration.getName() + " already ran.");
+            Main.getInstance().getLogger().info("Migration {} already ran.", migration.getName());
             return;
         }
 
         migration.up(sqlConnector);
-        Main.getInstance().getLogger().info("Migration " + migration.getName() + " ran.");
+        Main.getInstance().getLogger().info("Migration {} ran.", migration.getName());
     }
 
     /**
@@ -101,7 +101,7 @@ public class MigrationUtil {
      * @param migration The Migration.
      */
     public static void saveMigration(Migration migration) {
-        Main.getInstance().getLogger().info("Saving Migration: " + migration.getName());
+        Main.getInstance().getLogger().info("Saving Migration: {}", migration.getName());
         String path = new File("migrations/").getAbsolutePath();
         File folder = new File(path);
 

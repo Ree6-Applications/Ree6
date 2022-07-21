@@ -131,11 +131,11 @@ public class SQLConnector {
         Reflections reflections = new Reflections("de.presti.ree6");
         Set<Class<? extends SQLEntity>> classes = reflections.getSubTypesOf(SQLEntity.class);
         for (Class<? extends SQLEntity> aClass : classes) {
-            Main.getInstance().getAnalyticsLogger().info("Creating Table " + aClass.getSimpleName());
+            Main.getInstance().getAnalyticsLogger().info("Creating Table {}", aClass.getSimpleName());
             // Create a Table based on the key.
             try {
                 if (!sqlWorker.createTable(aClass)) {
-                    Main.getInstance().getLogger().warn("Couldn't create " + aClass.getSimpleName() + " Table.");
+                    Main.getInstance().getLogger().warn("Couldn't create {} Table.", aClass.getSimpleName());
                 }
             } catch (Exception exception) {
 

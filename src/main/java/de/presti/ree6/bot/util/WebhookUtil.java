@@ -63,20 +63,20 @@ public class WebhookUtil {
                     // Inform and delete invalid webhook.
                     if (isLog) {
                         Main.getInstance().getSqlConnector().getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
-                        Main.getInstance().getLogger().error("[Webhook] Deleted invalid Webhook: " + webhookId + " - " + webhookToken);
+                        Main.getInstance().getLogger().error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                     } else {
-                        Main.getInstance().getLogger().error("[Webhook] Invalid Webhook: " + webhookId + " - " + webhookToken + ", has not been deleted since it is not a Log-Webhook.");
+                        Main.getInstance().getLogger().error("[Webhook] Invalid Webhook: {} - {}, has not been deleted since it is not a Log-Webhook.", webhookId, webhookToken);
                     }
                 } else if (throwable.getMessage().contains("failure 400")) {
                     // If 404 inform that the Message had an invalid Body.
-                    Main.getInstance().getLogger().error("[Webhook] Invalid Body with LogTyp: " + loggerMessage.getType().name());
+                    Main.getInstance().getLogger().error("[Webhook] Invalid Body with LogTyp: {}", loggerMessage.getType().name());
                 }
                 return null;
             });
         } catch (Exception ex) {
             // Inform that this is an Invalid Webhook.
-            Main.getInstance().getLogger().error("[Webhook] Invalid Webhook: " + webhookId + " - " + webhookToken);
-            Main.getInstance().getLogger().error("[Webhook] " +ex.getMessage());
+            Main.getInstance().getLogger().error("[Webhook] Invalid Webhook: {} - {}", webhookId, webhookToken);
+            Main.getInstance().getLogger().error("[Webhook] Exception: ", ex);
         }
     }
 }

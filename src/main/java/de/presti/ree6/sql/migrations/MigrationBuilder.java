@@ -58,7 +58,7 @@ public class MigrationBuilder {
         Reflections reflections = new Reflections("de.presti.ree6");
         Set<Class<? extends SQLEntity>> classes = reflections.getSubTypesOf(SQLEntity.class);
         for (Class<? extends SQLEntity> aClass : classes) {
-            Main.getInstance().getLogger().info("Checking " + aClass.getSimpleName());
+            Main.getInstance().getLogger().info("Checking {}", aClass.getSimpleName());
 
             try {
                 String tabelName = SQLUtil.getTable(aClass);
@@ -85,11 +85,11 @@ public class MigrationBuilder {
                             String currentTyp = SQLUtil.mapJavaToSQL(resultSet.getValue(currentPropertyName).getClass());
                             String classValueTyp = SQLUtil.mapJavaToSQL(field.getType());
                             if (!found) {
-                                Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getSimpleName() + ": " + currentPropertyName);
+                                Main.getInstance().getLogger().info("Found a not existing column in {}: {}", aClass.getSimpleName() , currentPropertyName);
                                 upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD ").append(currentPropertyName).append(" ").append(classValueTyp).append(";\n");
                                 downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" DROP COLUMN ").append(currentPropertyName).append(";\n");
                             } else if (!currentTyp.equals(classValueTyp)) {
-                                Main.getInstance().getLogger().info("Found a not matching column in " + aClass.getSimpleName() + ": " + currentPropertyName);
+                                Main.getInstance().getLogger().info("Found a not matching column in {}: {}", aClass.getSimpleName() , currentPropertyName);
                                 upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(currentPropertyName).append(" ").append(classValueTyp).append(";\n");
                                 downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(currentPropertyName).append(" ").append(currentTyp).append(";\n");
                             }
@@ -110,17 +110,17 @@ public class MigrationBuilder {
                         String currentTyp = SQLUtil.mapJavaToSQL(resultSet.getValue(currentPropertyName).getClass());
                         String classValueTyp = SQLUtil.mapJavaToSQL(field.getType());
                         if (!found) {
-                            Main.getInstance().getLogger().info("Found a not existing column in " + aClass.getSimpleName() + ": " + currentPropertyName);
+                            Main.getInstance().getLogger().info("Found a not existing column in {}: {}", aClass.getSimpleName() , currentPropertyName);
                             upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" ADD ").append(currentPropertyName).append(" ").append(classValueTyp).append(";\n");
                             downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" DROP COLUMN ").append(currentPropertyName).append(";\n");
                         } else if (!currentTyp.equals(classValueTyp)) {
-                            Main.getInstance().getLogger().info("Found a not matching column in " + aClass.getSimpleName() + ": " + currentPropertyName);
+                            Main.getInstance().getLogger().info("Found a not matching column in {}: {}", aClass.getSimpleName() , currentPropertyName);
                             upQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(currentPropertyName).append(" ").append(classValueTyp).append(";\n");
                             downQuery.append("ALTER TABLE ").append(aClass.getAnnotation(Table.class).name()).append(" MODIFY ").append(currentPropertyName).append(" ").append(currentTyp).append(";\n");
                         }
                     }
                 } else {
-                    Main.getInstance().getLogger().info("Could not get any data from table " + aClass.getAnnotation(Table.class).name() + ", trying to create it.");
+                    Main.getInstance().getLogger().info("Could not get any data from table {}, trying to create it.", tabelName);
                     Table table = aClass.getAnnotation(Table.class);
                     String tableName = table.name();
                     List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(aClass, false);
@@ -149,7 +149,7 @@ public class MigrationBuilder {
                     downQuery.append("DROP TABLE ").append(tableName).append(";\n");
                 }
             } catch (Exception exception) {
-                Main.getInstance().getLogger().error("Could not check table " + aClass.getAnnotation(Table.class).name() + ": " + exception.getMessage());
+                Main.getInstance().getLogger().error("Could not check table {}: {}", aClass.getAnnotation(Table.class).name(), exception.getMessage());
             }
         }
 

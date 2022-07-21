@@ -5,7 +5,10 @@ import de.presti.ree6.utils.data.ArrayUtil;
 import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -59,13 +62,13 @@ public class AddonLoader {
                     Addon addon = loadAddon(file.getName());
 
                     if (addon == null) {
-                        Main.getInstance().getLogger().error("Couldn't pre-load the addon " + file.getName());
+                        Main.getInstance().getLogger().error("Couldn't pre-load the addon {}", file.getName());
                     }
 
                     Main.getInstance().getAddonManager().loadAddon(addon);
                 } catch (Exception ex) {
                     // If the Methode loadAddon fails notify.
-                    Main.getInstance().getLogger().error("[AddonManager] Couldn't load the Addon " + file.getName() + "\nException: " + ex.getCause().getMessage());
+                    Main.getInstance().getLogger().error("[AddonManager] Couldn't load the Addon {}\nException: {}", file.getName(), ex.getMessage());
                 }
             }
         }
@@ -121,7 +124,7 @@ public class AddonLoader {
                         classPath = conf.getString("main");
                     }
                 } catch (Exception e) {
-                    Main.getInstance().getLogger().error("Error while trying to pre-load the Addon " + fileName, e);
+                    Main.getInstance().getLogger().error("Error while trying to pre-load the Addon {}\nException: {}", fileName, e.getMessage());
                     zipInputStream.closeEntry();
                 } finally {
                     zipInputStream.closeEntry();
@@ -136,7 +139,7 @@ public class AddonLoader {
 
         // Check if there is any data core data if not throw this error.
         if (name == null && classPath == null) {
-            Main.getInstance().getLogger().error("Error while trying to pre-load the Addon " + fileName + ", no addon.yml given.");
+            Main.getInstance().getLogger().error("Error while trying to pre-load the Addon {}, no addon.yml given.", fileName);
         } else {
             return new Addon(name, author, version, apiVersion, classPath, new File("addons/" + fileName));
         }
