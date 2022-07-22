@@ -3,6 +3,8 @@ package de.presti.ree6.utils.apis;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import com.github.instagram4j.instagram4j.IGClient;
+import com.github.instagram4j.instagram4j.utils.IGChallengeUtils;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
@@ -26,25 +28,46 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 /**
  * Utility class used for Event Notifiers. Such as Twitch Livestream, YouTube Upload or Twitter Tweet.
  */
 public class Notifier {
 
-    // Instance of the Twitch API Client.
+    /**
+     * Instance of the Twitch API Client.
+     */
     private final TwitchClient twitchClient;
 
-    // Instance of the Twitter API Client.
+    /**
+     * Instance of the Twitter API Client.
+     */
     private final Twitter twitterClient;
 
-    // Local list of registered Twitch Channels.
+    /**
+     * Instance of the Instagram API Client.
+     */
+    private final IGClient instagramClient;
+
+    /**
+     * Local list of registered Twitch Channels.
+     */
     private final ArrayList<String> registeredTwitchChannels = new ArrayList<>();
 
-    // Local list of registered YouTube Channels.
+    /**
+     * Local list of registered YouTube Channels.
+     */
     private final ArrayList<String> registeredYouTubeChannels = new ArrayList<>();
 
-    // Local list of registered Twitter Users.
+    /**
+     * Local list of registered Instagram Users.
+     */
+    private final ArrayList<String> registeredInstagramUsers = new ArrayList<>();
+
+    /**
+     * Local list of registered Twitter Users.
+     */
     private final Map<String, TwitterStream> registeredTwitterUsers = new HashMap<>();
 
     /**
@@ -67,6 +90,30 @@ public class Notifier {
                 .setDebugEnabled(BotWorker.getVersion() == BotVersion.DEVELOPMENT_BUILD);
 
         twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
+
+        Main.getInstance().getAnalyticsLogger().info("Initializing Instagram Client...");
+
+        // Callable that returns inputted code from System.in
+        Callable<String> inputCode = () -> {
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Please input code: ");
+            String code = scanner.nextLine();
+            scanner.close();
+            return code;
+        };
+
+        // handler for challenge login
+        IGClient.Builder.LoginHandler challengeHandler = (client, response) -> {
+            // included utility to resolve challenges
+            // may specify retries. default is 3
+            return IGChallengeUtils.resolveChallenge(client, response, inputCode);
+        };
+
+        instagramClient = IGClient.builder()
+                .username(Main.getInstance().getConfig().getConfiguration().getString("instagram.username"))
+                .password(Main.getInstance().getConfig().getConfiguration().getString("instagram.password"))
+                .onChallenge(challengeHandler)
+                .build();
 
         Main.getInstance().getAnalyticsLogger().info("Initializing YouTube Streams...");
         createUploadStream();
@@ -442,6 +489,7 @@ public class Notifier {
 
     /**
      * Get an instance of the TwitchClient.
+     *
      * @return instance of the TwitchClient.
      */
     public TwitchClient getTwitchClient() {
@@ -450,6 +498,7 @@ public class Notifier {
 
     /**
      * Get an instance of the TwitterClient.
+     *
      * @return instance of the TwitterClient.
      */
     public Twitter getTwitterClient() {
