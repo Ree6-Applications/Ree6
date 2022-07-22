@@ -4,12 +4,19 @@ import com.google.gson.JsonArray;
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
 import de.presti.ree6.sql.base.data.SQLEntity;
+import de.presti.ree6.utils.others.RandomUtils;
 
 /**
  * This class is used to represent a Ree6-Voice-Recording, in our Database.
  */
 @Table(name = "Recording")
 public class Recording extends SQLEntity {
+
+    /**
+     * The Identifier for the recording.
+     */
+    @Property(name = "id", primary = true)
+    String identifier;
 
     /**
      * The ID of the Guild.
@@ -42,6 +49,12 @@ public class Recording extends SQLEntity {
     JsonArray jsonArray;
 
     /**
+     * Value used to tell us when this entry was made.
+     */
+    @Property(name = "created")
+    long creation;
+
+    /**
      * Constructor
      */
     public Recording() {
@@ -56,11 +69,21 @@ public class Recording extends SQLEntity {
      * @param jsonArray an JsonArray containing the IDs of the Users who have participated in the Recording.
      */
     public Recording(String guildId, String voiceId, String creatorId, byte[] recording, JsonArray jsonArray) {
+        this.identifier = RandomUtils.getRandomBase64String();
         this.guildId = guildId;
         this.voiceId = voiceId;
         this.creatorId = creatorId;
         this.recording = recording;
         this.jsonArray = jsonArray;
+        this.creation = System.currentTimeMillis();
+    }
+
+    /**
+     * Get the Identifier for the recording.
+     * @return the Identifier for the recording.
+     */
+    public String getIdentifier() {
+        return identifier;
     }
 
     /**
@@ -101,5 +124,13 @@ public class Recording extends SQLEntity {
      */
     public JsonArray getJsonArray() {
         return jsonArray;
+    }
+
+    /**
+     * Get the creation time of this entry.
+     * @return the creation time of this entry.
+     */
+    public long getCreation() {
+        return creation;
     }
 }

@@ -2,12 +2,12 @@ package de.presti.ree6.sql;
 
 import com.google.gson.JsonElement;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.base.data.MigrationUtil;
 import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.base.data.SQLUtil;
 import de.presti.ree6.sql.base.data.StoredResultSet;
 import de.presti.ree6.sql.mapper.EntityMapper;
 import de.presti.ree6.sql.seed.SeedManager;
-import de.presti.ree6.utils.data.MigrationUtil;
 import org.reflections.Reflections;
 
 import java.sql.*;

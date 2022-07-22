@@ -6,8 +6,9 @@ import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.base.data.SQLResponse;
 import de.presti.ree6.sql.base.data.StoredResultSet;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Base64;
 
 /**
  * This class is used to map an SQL Result into the right Class-Entity.
@@ -60,30 +61,10 @@ public class EntityMapper {
             Object entity = clazz.getDeclaredConstructor().newInstance();
 
             if (clazz.getSuperclass() != null && !clazz.getSuperclass().isInstance(SQLEntity.class)) {
-                Arrays.stream(clazz.getSuperclass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
-                        .forEach(field -> {
-                            Property property = field.getAnnotation(Property.class);
-                            String columnName = property.name().toUpperCase();
-                            try {
-                                if (!field.canAccess(entity)) field.trySetAccessible();
-                                field.set(entity, resultSet.getValue(columnName));
-                            } catch (Exception e) {
-                                Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
-                            }
-                        });
+                setAllFields(resultSet, entity, clazz.getSuperclass().getDeclaredFields(), clazz);
             }
 
-            Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Property.class))
-                    .forEach(field -> {
-                        Property property = field.getAnnotation(Property.class);
-                        String columnName = property.name().toUpperCase();
-                        try {
-                            if (!field.canAccess(entity)) field.trySetAccessible();
-                            field.set(entity, resultSet.getValue(columnName));
-                        } catch (Exception e) {
-                            Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
-                        }
-                    });
+            setAllFields(resultSet, entity, clazz.getDeclaredFields(), clazz);
 
             return entity;
         } catch (Exception exception) {
@@ -93,4 +74,32 @@ public class EntityMapper {
         return null;
     }
 
+    /**
+     * Set all fields of the given entity to the given values.
+     *
+     * @param resultSet For the column mappings.
+     * @param entity    The entity instance for the value setting.
+     * @param fields    The fields to set.
+     * @param clazz     The class of the entity.
+     */
+    public void setAllFields(StoredResultSet.StoredData resultSet, Object entity, Field[] fields, Class<?> clazz) {
+        for (Field field : fields) {
+            Property property = field.getAnnotation(Property.class);
+            String columnName = property.name().toUpperCase();
+            try {
+                if (!field.canAccess(entity)) field.trySetAccessible();
+
+                Object value = resultSet.getValue(columnName);
+
+                if (value instanceof String &&
+                        field.getType().isAssignableFrom(byte[].class)) {
+                    value = Base64.getDecoder().decode((String) value);
+                }
+
+                field.set(entity, value);
+            } catch (Exception e) {
+                Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
+            }
+        }
+    }
 }

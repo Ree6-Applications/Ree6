@@ -152,7 +152,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
             Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(recording);
 
             if (voiceChannel.canTalk()) {
-                voiceChannel.sendMessage("Your Audio has been converted and is now available for download!").queue();
+                voiceChannel.sendMessage("Your Audio has been converted and is now available for download!\nYou can download it here: <https://cp.ree6.de/recording?recordId=" + recording.getIdentifier() + ">").queue();
             }
             // Find a way to still notify that the bot couldn't send the audio.
         } catch (Exception ex) {
