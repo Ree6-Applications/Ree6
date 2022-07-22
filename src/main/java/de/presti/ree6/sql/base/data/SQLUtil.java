@@ -136,7 +136,7 @@ public class SQLUtil {
                     if (onlyUpdateField && !property.updateQuery())
                         continue;
 
-                    parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
+                    parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType(), property.primary()));
                 }
             }
         }
@@ -148,7 +148,7 @@ public class SQLUtil {
                 if (onlyUpdateField && !property.updateQuery())
                     continue;
 
-                parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
+                parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType(), property.primary()));
             }
         }
 
@@ -187,7 +187,7 @@ public class SQLUtil {
                         }
                     }
 
-                    parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
+                    parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType(), property.primary()));
                 }
             }
         }
@@ -211,7 +211,7 @@ public class SQLUtil {
                     }
                 }
 
-                parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType()));
+                parameters.add(new SQLParameter(property.name().toUpperCase(), field.getType(), property.primary()));
             }
         }
 

@@ -39,13 +39,13 @@ public class Recording extends SQLEntity {
     /**
      * The WAV-File bytes.
      */
-    @Property(name = "recording", updateQuery = true)
+    @Property(name = "recording", updateQuery = true, keepOriginalValue = false)
     byte[] recording;
 
     /**
      * An JsonArray containing the IDs of the Users who have participated in the Recording.
      */
-    @Property(name = "participants")
+    @Property(name = "participants", keepOriginalValue = false)
     JsonArray jsonArray;
 
     /**

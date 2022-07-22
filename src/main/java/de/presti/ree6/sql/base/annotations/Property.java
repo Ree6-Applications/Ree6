@@ -31,4 +31,10 @@ public @interface Property {
      * @return if it should be used or not.
      */
     boolean updateQuery() default false;
+
+    /**
+     * Check if the property shouldn't be converted on a value set.
+     * @return if it shouldn't be converted.
+     */
+    boolean keepOriginalValue() default true;
 }

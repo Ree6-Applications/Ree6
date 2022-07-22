@@ -4,9 +4,11 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.base.data.SQLResponse;
+import de.presti.ree6.sql.base.data.SQLUtil;
 import de.presti.ree6.sql.base.data.StoredResultSet;
 
 import java.lang.reflect.Field;
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.Base64;
 
@@ -91,9 +93,13 @@ public class EntityMapper {
 
                 Object value = resultSet.getValue(columnName);
 
-                if (value instanceof String &&
-                        field.getType().isAssignableFrom(byte[].class)) {
-                    value = Base64.getDecoder().decode((String) value);
+                if (!property.keepOriginalValue()) {
+                    if (value instanceof String valueString &&
+                            field.getType().isAssignableFrom(byte[].class)) {
+                        value = Base64.getDecoder().decode(valueString);
+                    } else if (value instanceof Blob blob) {
+                        value = SQLUtil.convertBlobToJSON(blob);
+                    }
                 }
 
                 field.set(entity, value);

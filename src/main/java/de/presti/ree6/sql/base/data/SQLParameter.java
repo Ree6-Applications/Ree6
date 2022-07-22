@@ -18,18 +18,7 @@ public class SQLParameter {
     /**
      * If the parameter is a primary key or not.
      */
-    private boolean primaryKey = false;
-
-    /**
-     * Constructor.
-     *
-     * @param name The name of the parameter.
-     * @param value The dataType of the parameter.
-     */
-    public SQLParameter(String name, Class<?> value) {
-        this.name = name;
-        this.value = value;
-    }
+    private boolean primaryKey;
 
     /**
      * Constructor.

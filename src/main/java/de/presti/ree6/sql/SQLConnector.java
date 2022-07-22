@@ -211,13 +211,7 @@ public class SQLConnector {
                 if (storedResultSet.hasResults()) {
                     while (resultSet.next()) {
                         for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                            Object rowObject = resultSet.getObject(i);
-
-                            if (rowObject instanceof Blob) {
-                                rowObject = SQLUtil.convertBlobToJSON((Blob) rowObject);
-                            }
-
-                            storedResultSet.setValue(resultSet.getRow() - 1, i, rowObject);
+                            storedResultSet.setValue(resultSet.getRow() - 1, i, resultSet.getObject(i));
                         }
                     }
                 }
