@@ -90,4 +90,12 @@ public class Invite extends SQLEntity {
     public String getCode() {
         return code;
     }
+
+    /**
+     * Set the Code of the Invite.
+     * @param code the Code of the Invite.
+     */
+    public void setCode(String code) {
+        this.code = code;
+    }
 }

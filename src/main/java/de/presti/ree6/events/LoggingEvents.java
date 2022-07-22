@@ -12,6 +12,8 @@ import de.presti.ree6.logger.events.implentation.LogMessageVoice;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.logger.invite.InviteContainerManager;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.base.data.SQLResponse;
+import de.presti.ree6.sql.entities.Invite;
 import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
@@ -35,6 +37,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateVanityCodeEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
@@ -44,6 +47,7 @@ import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.role.update.*;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.TimeFormat;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -122,6 +126,25 @@ public class LoggingEvents extends ListenerAdapter {
             }
 
             Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm2.build(), event.getGuild(), LogTyp.SERVER_INVITE, event.getUser()));
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onGuildUpdateVanityCode(@NotNull GuildUpdateVanityCodeEvent event) {
+        super.onGuildUpdateVanityCode(event);
+        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Invite.class, "SELECT * FROM Invite WHERE GID = ? AND CODE = ?", event.getGuild().getId(), event.getOldVanityCode());
+
+        if (sqlResponse.isSuccess()) {
+            Invite invite = (Invite) sqlResponse.getEntity();
+            Invite newInvite = invite;
+            newInvite.setCode(event.getNewVanityCode());
+            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(invite, newInvite, false);
+        } else {
+            event.getGuild().retrieveVanityInvite().onErrorMap(throwable -> null).queue(vanityInvite ->
+                    Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(new Invite(event.getGuild().getId(), event.getGuild().getOwnerId(), vanityInvite.getUses(), event.getNewVanityCode())));
         }
     }
 
