@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -241,7 +242,21 @@ public class SQLUtil {
             }).map(field -> {
                 try {
                     if (!field.canAccess(entityInstance)) field.trySetAccessible();
-                    return field.get(entityInstance);
+
+                    Property property = field.getAnnotation(Property.class);
+
+                    Object value = field.get(entityInstance);
+
+                    if (!property.keepOriginalValue()) {
+                        if (value instanceof String valueString &&
+                                field.getType().isAssignableFrom(byte[].class)) {
+                            value = Base64.getDecoder().decode(valueString);
+                        } else if (value instanceof Blob blob) {
+                            value = SQLUtil.convertBlobToJSON(blob);
+                        }
+                    }
+
+                    return value;
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -264,7 +279,21 @@ public class SQLUtil {
         }).map(field -> {
             try {
                 if (!field.canAccess(entityInstance)) field.trySetAccessible();
-                return field.get(entityInstance);
+
+                Property property = field.getAnnotation(Property.class);
+
+                Object value = field.get(entityInstance);
+
+                if (!property.keepOriginalValue()) {
+                    if (value instanceof String valueString &&
+                            field.getType().isAssignableFrom(byte[].class)) {
+                        value = Base64.getDecoder().decode(valueString);
+                    } else if (value instanceof Blob blob) {
+                        value = SQLUtil.convertBlobToJSON(blob);
+                    }
+                }
+
+                return value;
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
