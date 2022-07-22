@@ -25,11 +25,11 @@ public final class RandomUtils {
     public static final SecureRandom secureRandom = new SecureRandom();
 
     /**
-     * Create a new 126 Byte Base64 String.
-     * @return {@link String} A 126 Byte Base64 String.
+     * Create a new Base64 String.
+     * @return {@link String} A Base64 String.
      */
-    public static String getRandomBase64String() {
-        byte[] randomBytes = new byte[128];
+    public static String getRandomBase64String(int length) {
+        byte[] randomBytes = new byte[length];
         secureRandom.nextBytes(randomBytes);
         return Base64.getUrlEncoder().encodeToString(randomBytes);
     }
