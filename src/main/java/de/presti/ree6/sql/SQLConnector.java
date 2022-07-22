@@ -1,10 +1,12 @@
 package de.presti.ree6.sql;
 
+import com.google.gson.JsonElement;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.data.SQLEntity;
 import de.presti.ree6.sql.mapper.EntityMapper;
 import de.presti.ree6.sql.seed.SeedManager;
 import de.presti.ree6.utils.data.MigrationUtil;
+import de.presti.ree6.utils.data.SQLUtil;
 import de.presti.ree6.utils.data.StoredResultSet;
 import org.reflections.Reflections;
 
@@ -185,6 +187,8 @@ public class SQLConnector {
                     preparedStatement.setObject(index++, obj, Types.DOUBLE);
                 } else if (obj instanceof Boolean) {
                     preparedStatement.setObject(index++, obj, Types.BOOLEAN);
+                } else if (obj instanceof JsonElement jsonElement) {
+                    preparedStatement.setObject(index++, SQLUtil.convertJSONToBlob(jsonElement), Types.BLOB);
                 }
             }
 
@@ -204,7 +208,13 @@ public class SQLConnector {
                 if (storedResultSet.hasResults()) {
                     while (resultSet.next()) {
                         for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                            storedResultSet.setValue(resultSet.getRow() - 1, i, resultSet.getObject(i));
+                            Object rowObject = resultSet.getObject(i);
+
+                            if (rowObject instanceof Blob) {
+                                rowObject = SQLUtil.convertBlobToJSON((Blob) rowObject);
+                            }
+
+                            storedResultSet.setValue(resultSet.getRow() - 1, i, rowObject);
                         }
                     }
                 }
