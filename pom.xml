@@ -217,9 +217,9 @@
             <version>3.0.5</version>
         </dependency>
         <dependency>
-            <groupId>com.github.DV8FromTheWorld</groupId>
+            <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>bef374a45e11630c890334045075be85337022cf</version>
+            <version>5.0.0-alpha.17</version>
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
