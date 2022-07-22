@@ -1014,7 +1014,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<InviteContainer> invites = new ArrayList<>();
         getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=?", guildId).getEntities().stream().map(o -> {
             Invite invite = (Invite) o;
-            return new InviteContainer(invite.getUserId(), invite.getGuild(), invite.getCode(), invite.getUses());
+            return new InviteContainer(invite.getUserId(), invite.getGuild(), invite.getCode(), invite.getUses(), false);
         }).forEach(invites::add);
         return invites;
     }
