@@ -1,11 +1,16 @@
 package de.presti.ree6.logger.invite;
 
 import de.presti.ree6.main.Main;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.VanityInvite;
+import net.dv8tion.jda.internal.entities.InviteImpl;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Utility class to contain every Invite and manage the Invites in our Database.
@@ -72,6 +77,16 @@ public class InviteContainerManager {
 
         // Every Invite from the Guild.
         List<Invite> guildInvites = guild.retrieveInvites().complete();
+        if (guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER) &&
+                guild.getVanityCode() != null) {
+            try {
+                VanityInvite vanityInvite = guild.retrieveVanityInvite().complete();
+                guildInvites.add(new InviteImpl(null, vanityInvite.getCode(), false, Objects.requireNonNull(guild.getOwner()).getUser(), 0, -1242525,
+                        true, OffsetDateTime.now(), vanityInvite.getUses(), null,  null, null, null, Invite.InviteType.UNKNOWN));
+            } catch (Exception ex) {
+                Main.getInstance().getAnalyticsLogger().error("[InviteManager] Error while retrieving Vanity Invite: " + ex.getMessage());
+            }
+        }
 
         // Go through every Invite of the Guild.
         for (Invite inv : guildInvites) {
@@ -88,12 +103,19 @@ public class InviteContainerManager {
                         !inv.getInviter().getId().equalsIgnoreCase(inv2.getCreatorId())) continue;
 
                 if (inv.getUses() > inv2.getUses()) {
+                    inv2.setVanity(inv.getMaxAge() == -1242525);
+                    if (inv2.isVanity()) {
+                        inv2.setGuildId(guild.getId());
+                        if (inv2.getCreatorId() == null) {
+                            inv2.setCreatorId(guild.getOwnerId());
+                        }
+                    }
                     return inv2;
                 }
             }
 
             if (!foundOne && inv != null && inv.getInviter() != null) {
-                InviteContainerManager.addInvite(new InviteContainer(inv.getInviter().getId(), guild.getId(), inv.getCode(), inv.getUses()));
+                InviteContainerManager.addInvite(new InviteContainer(inv.getInviter().getId(), guild.getId(), inv.getCode(), inv.getUses(), inv.getMaxUses() == -1242525));
             }
         }
 

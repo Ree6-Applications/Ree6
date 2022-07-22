@@ -110,7 +110,11 @@ public class LoggingEvents extends ListenerAdapter {
                 InviteContainer inviteContainer = InviteContainerManager.getRightInvite(event.getGuild());
                 if (inviteContainer != null) {
                     inviteContainer.setUses(inviteContainer.getUses() + 1);
-                    wm2.append(event.getUser().getAsMention() + " **has been invited by** <@" + inviteContainer.getCreatorId() + "> (Code: " + inviteContainer.getCode() + ", Uses: " + inviteContainer.getUses() + ")");
+                    if (inviteContainer.isVanity()) {
+                        wm2.append(event.getUser().getAsMention() + " **has been invited via Vanity URL**");
+                    } else {
+                        wm2.append(event.getUser().getAsMention() + " **has been invited by** <@" + inviteContainer.getCreatorId() + "> (Code: " + inviteContainer.getCode() + ", Uses: " + inviteContainer.getUses() + ")");
+                    }
                     InviteContainerManager.addInvite(inviteContainer);
                 } else {
                     wm2.append("There was an Issue while trying to find out who Invited " + event.getMember().getAsMention() + ", please use the clear Data command!");
@@ -781,7 +785,7 @@ public class LoggingEvents extends ListenerAdapter {
         }
 
         if (event.getInvite().getInviter() != null) {
-            InviteContainer inv = new InviteContainer(event.getInvite().getInviter().getId(), event.getGuild().getId(), event.getInvite().getCode(), event.getInvite().getUses());
+            InviteContainer inv = new InviteContainer(event.getInvite().getInviter().getId(), event.getGuild().getId(), event.getInvite().getCode(), event.getInvite().getUses(), false);
             InviteContainerManager.addInvite(inv);
         }
     }
