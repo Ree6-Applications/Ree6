@@ -54,12 +54,13 @@ public class Record implements ICommand {
         GuildVoiceState voiceState = commandEvent.getMember().getVoiceState();
         if (voiceState != null &&
                 voiceState.inAudioChannel() &&
+                voiceState.getChannel() != null &&
                 voiceState.getChannel().getType() == ChannelType.VOICE &&
                 voiceState.getChannel() instanceof VoiceChannel voiceChannel) {
             AudioManager audioManager = commandEvent.getGuild().getAudioManager();
             audioManager.openAudioConnection(voiceChannel);
 
-            AudioPlayerReceiveHandler handler = new AudioPlayerReceiveHandler(voiceChannel);
+            AudioPlayerReceiveHandler handler = new AudioPlayerReceiveHandler(commandEvent.getMember(), voiceChannel);
 
             audioManager.setReceivingHandler(handler);
 

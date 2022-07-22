@@ -1,11 +1,9 @@
-package de.presti.ree6.utils.data;
+package de.presti.ree6.sql.base.data;
 
 import com.google.gson.*;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.data.SQLEntity;
-import de.presti.ree6.sql.base.data.SQLParameter;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.BufferedReader;
@@ -64,6 +62,9 @@ public class SQLUtil {
         } else if (javaObjectClass.isAssignableFrom(Byte.class) ||
                 javaObjectClass.isAssignableFrom(byte.class)) {
             return "TINYINT";
+        } else if (javaObjectClass.isAssignableFrom(byte[].class) ||
+                javaObjectClass.isAssignableFrom(Byte[].class)) {
+            return "MEDIUMTEXT";
         } else if (javaObjectClass.isAssignableFrom(Character.class) ||
                 javaObjectClass.isAssignableFrom(char.class)) {
             return "CHAR(1)";
@@ -91,7 +92,8 @@ public class SQLUtil {
             return "NCLOB";
         } else if (javaObjectClass.isAssignableFrom(java.sql.RowId.class)) {
             return "ROWID";
-        } else if (javaObjectClass.isAssignableFrom(JsonElement.class)) {
+        } else if (javaObjectClass.getSuperclass() != null &&
+                javaObjectClass.getSuperclass().isAssignableFrom(JsonElement.class)) {
             return "MEDIUMBLOB";
         }
 
@@ -285,6 +287,7 @@ public class SQLUtil {
     public static JsonElement convertBlobToJSON(Blob blob) {
         if (blob == null)
             return JsonNull.INSTANCE;
+
         StringBuilder content = new StringBuilder();
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(blob.getBinaryStream()));

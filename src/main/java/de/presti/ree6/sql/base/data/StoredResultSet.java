@@ -1,4 +1,4 @@
-package de.presti.ree6.utils.data;
+package de.presti.ree6.sql.base.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;

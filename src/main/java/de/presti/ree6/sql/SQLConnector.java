@@ -3,14 +3,15 @@ package de.presti.ree6.sql;
 import com.google.gson.JsonElement;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.data.SQLEntity;
+import de.presti.ree6.sql.base.data.SQLUtil;
+import de.presti.ree6.sql.base.data.StoredResultSet;
 import de.presti.ree6.sql.mapper.EntityMapper;
 import de.presti.ree6.sql.seed.SeedManager;
 import de.presti.ree6.utils.data.MigrationUtil;
-import de.presti.ree6.utils.data.SQLUtil;
-import de.presti.ree6.utils.data.StoredResultSet;
 import org.reflections.Reflections;
 
 import java.sql.*;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -189,6 +190,8 @@ public class SQLConnector {
                     preparedStatement.setObject(index++, obj, Types.BOOLEAN);
                 } else if (obj instanceof JsonElement jsonElement) {
                     preparedStatement.setObject(index++, SQLUtil.convertJSONToBlob(jsonElement), Types.BLOB);
+                } else if (obj instanceof byte[] byteArray) {
+                    preparedStatement.setObject(index++, Base64.getEncoder().encodeToString(byteArray), Types.VARCHAR);
                 }
             }
 

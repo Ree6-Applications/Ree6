@@ -1,17 +1,22 @@
 package de.presti.ree6.audio;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.entities.Recording;
 import de.presti.ree6.utils.data.AudioUtil;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
-import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -33,17 +38,35 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     private boolean finished = false;
 
     /**
+     * The ID of the User who wanted to start the recording.
+     */
+    String creatorId;
+
+    /**
      * The voice channel this handler is currently handling.
      */
     private final VoiceChannel voiceChannel;
+
+    /**
+     * A list with all IDs of users who where in the talk while recording.
+     */
+    List<String> participants = new ArrayList<>();
 
     /**
      * Constructor.
      *
      * @param voiceChannel The voice channel this handler should handle.
      */
-    public AudioPlayerReceiveHandler(VoiceChannel voiceChannel) {
+    public AudioPlayerReceiveHandler(Member member, VoiceChannel voiceChannel) {
+        this.creatorId = member.getId();
         this.voiceChannel = voiceChannel;
+        if (voiceChannel.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_CHANGE)) {
+            voiceChannel.getGuild().getSelfMember().modifyNickname("[\uD83D\uDD34] Recording!").reason("Recording started.").onErrorMap(throwable -> {
+                voiceChannel.sendMessage("Could not change nickname.").queue();
+                return null;
+            }).queue();
+        }
+        voiceChannel.sendMessage("I am now recording this Voice-channel as requested by an participant!").queue();
     }
 
     /**
@@ -88,6 +111,9 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
             return;
         }
 
+        HashSet<String> hashSet = new HashSet<>(participants);
+        combinedAudio.getUsers().stream().map(User::getId).filter(s -> !hashSet.contains(s)).forEach(s -> participants.add(s));
+
         byte[] data = combinedAudio.getAudioData(1.0f);
         queue.add(data);
 
@@ -106,43 +132,27 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
         finished = true;
 
+        if (voiceChannel.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_CHANGE)) {
+            voiceChannel.getGuild().getSelfMember().modifyNickname(voiceChannel.getGuild().getSelfMember().getUser().getName()).reason("Recording finished.").onErrorMap(throwable -> {
+                voiceChannel.sendMessage("Could not change nickname.").queue();
+                return null;
+            }).queue();
+        }
+
         try {
             int queueSize = queue.stream().mapToInt(data -> data.length).sum();
+            ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[queueSize]);
+            for (byte[] data : queue) {
+                byteBuffer.put(data);
+            }
 
-            if (queueSize > 8000000) {
-                int splittableAmount = queueSize / 8000000;
-                int remaining = queueSize % 8000000;
-                int splitSize = queueSize / splittableAmount;
-                int splitRemaining = remaining / splittableAmount;
+            Recording recording = new Recording(voiceChannel.getGuild().getId(), voiceChannel.getId(), creatorId, AudioUtil.convertPCMtoWAV(byteBuffer),
+                    JsonParser.parseString(new Gson().toJson(participants)).getAsJsonArray());
 
-                Message message = null;
+            Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(recording);
 
-                if (voiceChannel.canTalk()) {
-                    message = voiceChannel.sendMessage("Converting Audio.... (0/" + splittableAmount + ")").complete();
-                }
-
-                if (message == null)
-                    return;
-
-                try {
-                    for (int i = 1; i < splittableAmount; i++) {
-                        int maxSize = (splitSize * i) + splitRemaining;
-                        sendSplitAudio(i, splittableAmount, maxSize, message);
-                    }
-                    message.editMessage("Here is your audio!").retainFiles(message.getAttachments()).queue();
-                } catch (Exception exception) {
-                    message.editMessage("Something went wrong while converting your audio!\nReason: " + exception.getMessage()).queue();
-                }
-            } else {
-                ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[queueSize]);
-                for (byte[] data : queue) {
-                    byteBuffer.put(data);
-                }
-
-                if (voiceChannel.canTalk()) {
-                    voiceChannel.sendMessage("Here is your audio!")
-                            .addFile(AudioUtil.convertPCMtoWAV(byteBuffer), new SimpleDateFormat("dd.MM.yyyy HH/mm").format(System.currentTimeMillis()) + "-" + voiceChannel.getId() + ".wav").queue();
-                }
+            if (voiceChannel.canTalk()) {
+                voiceChannel.sendMessage("Your Audio has been converted and is now available for download!").queue();
             }
             // Find a way to still notify that the bot couldn't send the audio.
         } catch (Exception ex) {
@@ -155,26 +165,5 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
         voiceChannel.getGuild().getAudioManager().closeAudioConnection();
         queue.clear();
-    }
-
-    /**
-     * Method used to send a split audio.
-     * @param index The index of the split.
-     * @param maxIndex The max index of the split.
-     * @param maxSize The max size of the split.
-     * @param message The message to edit.
-     * @throws IOException If something went wrong.
-     */
-    private void sendSplitAudio(int index, int maxIndex, int maxSize, Message message) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[maxSize]);
-
-        for (byte[] data : queue) {
-            if (byteBuffer.remaining() == 0)
-                return;
-            queue.remove(data);
-        }
-
-        message.editMessage("Converting Audio.... (" + index + "/" + maxIndex + ")").retainFiles(message.getAttachments())
-                .addFile(AudioUtil.convertPCMtoWAV(byteBuffer), new SimpleDateFormat("dd.MM.yyyy HH/mm").format(System.currentTimeMillis()) + "-" + voiceChannel.getId() + "(" + index + ").wav").queue();
     }
 }
