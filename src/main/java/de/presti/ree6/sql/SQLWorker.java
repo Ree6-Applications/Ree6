@@ -1776,7 +1776,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         try {
-            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, true, true).toArray());
+            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, false, true).toArray());
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Error while deleting Entity: " + ((Class) entity).getSimpleName(), exception);
         }
