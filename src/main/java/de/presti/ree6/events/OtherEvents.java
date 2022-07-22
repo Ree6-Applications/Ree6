@@ -5,6 +5,8 @@ import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.base.data.SQLResponse;
+import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.utils.data.ArrayUtil;
@@ -94,6 +96,24 @@ public class OtherEvents extends ListenerAdapter {
         if (!ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
             ArrayUtil.voiceJoined.put(event.getMember().getUser(), System.currentTimeMillis());
         }
+
+        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID = ? AND VID = ?", event.getGuild().getId(), event.getChannelJoined().getId());
+
+        if (sqlResponse.isSuccess()) {
+            VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
+
+            if (voiceChannel == null)
+                return;
+
+            if (voiceChannel.getParentCategory() != null) {
+                voiceChannel.getParentCategory().createVoiceChannel("Temporal VC #" +
+                        event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith("Temporal VC")).toList().size() + 1).queue(channel -> {
+                    event.getGuild().moveVoiceMember(event.getMember(), voiceChannel).queue();
+                    ArrayUtil.temporalVoicechannel.add(voiceChannel.getId());
+                });
+            }
+        }
+
         super.onGuildVoiceJoin(event);
     }
 
@@ -120,6 +140,13 @@ public class OtherEvents extends ListenerAdapter {
 
             AutoRoleHandler.handleVoiceLevelReward(event.getGuild(), event.getMember());
 
+        }
+
+        if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())) {
+            if (event.getChannelLeft().getMembers().size() == 0) {
+                event.getChannelLeft().delete().queue();
+                ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId());
+            }
         }
         super.onGuildVoiceLeave(event);
     }
