@@ -56,7 +56,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             // Return a new UserLevel if there was an error OR if the user isn't in the database.
             return (ChatUserLevel) Objects.requireNonNull(getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)).getEntity();
         }
-        return new ChatUserLevel(guildId, userId,0);
+        return new ChatUserLevel(guildId, userId, 0);
     }
 
     /**
@@ -141,7 +141,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             return (VoiceUserLevel) Objects.requireNonNull(getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)).getEntity();
         }
 
-        return new VoiceUserLevel(guildId, userId,0);
+        return new VoiceUserLevel(guildId, userId, 0);
     }
 
     /**
@@ -517,6 +517,248 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isTwitchSetup(String guildId, String twitchName) {
         return getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName).isSuccess();
+    }
+
+    //endregion
+
+    //region Instagram Notifier
+
+    /**
+     * Get the InstagramNotify data.
+     *
+     * @param guildId the ID of the Guild.
+     * @param name    the Name of the Instagram User.
+     * @return {@link WebhookInstagram} with all the needed data.
+     */
+    public WebhookInstagram getInstagramWebhook(String guildId, String name) {
+        return (WebhookInstagram) getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=? AND NAME=?", guildId, name).getEntity();
+    }
+
+    /**
+     * Get the InstagramNotify data.
+     *
+     * @param name the Name of the Instagram User.
+     * @return {@link List<WebhookInstagram>} with all the needed data.
+     */
+    public List<WebhookInstagram> getInstagramWebhookByName(String name) {
+        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE NAME=?", name).getEntities().stream().map(WebhookInstagram.class::cast).toList();
+    }
+
+    /**
+     * Get the all Instagram-Notifier.
+     *
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     */
+    public List<String> getAllInstagramUsers() {
+
+        ArrayList<String> usernames = new ArrayList<>();
+
+        // Creating a SQL Statement to get the Entry from the InstagramNotify Table by the GuildID.
+        sqlConnector.querySQL("SELECT * FROM InstagramNotify").getValues("NAME")
+                .stream().map(String.class::cast).forEach(usernames::add);
+
+        return usernames;
+    }
+
+    /**
+     * Get every Instagram-Notifier that has been set up for the given Guild.
+     *
+     * @param guildId the ID of the Guild.
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     */
+    public List<String> getAllInstagramUsers(String guildId) {
+
+        ArrayList<String> usernames = new ArrayList<>();
+
+        // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
+        sqlConnector.querySQL("SELECT * FROM InstagramNotify WHERE GID=?", guildId).getValues("NAME")
+                .stream().map(String.class::cast).forEach(usernames::add);
+
+        return usernames;
+    }
+
+    /**
+     * Set the InstagramNotify in our Database.
+     *
+     * @param guildId   the ID of the Guild.
+     * @param webhookId the ID of the Webhook.
+     * @param authToken the Auth-token to verify the access.
+     * @param name      the Name of the Instagram User.
+     */
+    public void addInstagramWebhook(String guildId, String webhookId, String authToken, String name) {
+
+        // Check if there is already a Webhook set.
+        removeInstagramWebhook(guildId, name);
+
+        // Add a new entry into the Database.
+        saveEntity(new WebhookInstagram(guildId, name, webhookId, authToken));
+    }
+
+    /**
+     * Remove an Instagram Notifier entry from our Database.
+     *
+     * @param guildId the ID of the Guild.
+     * @param name    the Name of the Instagram User.
+     */
+    public void removeInstagramWebhook(String guildId, String name) {
+
+        // Check if there is a Webhook set.
+        if (isInstagramSetup(guildId, name)) {
+
+            // Get the Guild from the ID.
+            Guild guild = BotWorker.getShardManager().getGuildById(guildId);
+
+            if (guild != null) {
+                Webhook webhookEntity = getInstagramWebhook(guildId, name);
+                // Delete the existing Webhook.
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) && webhook.getToken().equalsIgnoreCase(webhookEntity.getToken())).forEach(webhook -> webhook.delete().queue()));
+            }
+
+            // Delete the entry.
+            sqlConnector.querySQL("DELETE FROM InstagramNotify WHERE GID=? AND NAME=?", guildId, name);
+        }
+    }
+
+    /**
+     * Check if the Instagram Webhook has been set in our Database for this Server.
+     *
+     * @param guildId the ID of the Guild.
+     * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
+     */
+    public boolean isInstagramSetup(String guildId) {
+        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=?", guildId).isSuccess();
+    }
+
+    /**
+     * Check if the Instagram Webhook has been set for the given User in our Database for this Server.
+     *
+     * @param guildId the ID of the Guild.
+     * @param name    the Name of the Instagram User.
+     * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
+     */
+    public boolean isInstagramSetup(String guildId, String name) {
+        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=? AND NAME=?", guildId, name).isSuccess();
+    }
+
+    //endregion
+
+    //region Reddit Notifier
+
+    /**
+     * Get the RedditNotify data.
+     *
+     * @param guildId   the ID of the Guild.
+     * @param subreddit the Name of the Subreddit.
+     * @return {@link WebhookReddit} with all the needed data.
+     */
+    public WebhookReddit getRedditWebhook(String guildId, String subreddit) {
+        return (WebhookReddit) getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=? AND SUBREDDIT=?", guildId, subreddit).getEntity();
+    }
+
+    /**
+     * Get the RedditNotify data.
+     *
+     * @param subreddit the Name of the Subreddit.
+     * @return {@link List<WebhookReddit>} with all the needed data.
+     */
+    public List<WebhookReddit> getRedditWebhookBySub(String subreddit) {
+        return getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE SUBREDDIT=?", subreddit).getEntities().stream().map(WebhookReddit.class::cast).toList();
+    }
+
+    /**
+     * Get the all Reddit-Notifier.
+     *
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     */
+    public List<String> getAllSubreddits() {
+
+        ArrayList<String> subreddits = new ArrayList<>();
+
+        // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
+        sqlConnector.querySQL("SELECT * FROM RedditNotify").getValues("SUBREDDIT")
+                .stream().map(String.class::cast).forEach(subreddits::add);
+
+        return subreddits;
+    }
+
+    /**
+     * Get every Reddit-Notifier that has been set up for the given Guild.
+     *
+     * @param guildId the ID of the Guild.
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     */
+    public List<String> getAllSubreddits(String guildId) {
+
+        ArrayList<String> subreddits = new ArrayList<>();
+
+        // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
+        sqlConnector.querySQL("SELECT * FROM RedditNotify WHERE GID=?", guildId).getValues("SUBREDDIT")
+                .stream().map(String.class::cast).forEach(subreddits::add);
+
+        return subreddits;
+    }
+
+    /**
+     * Set the RedditNotify in our Database.
+     *
+     * @param guildId   the ID of the Guild.
+     * @param webhookId the ID of the Webhook.
+     * @param authToken the Auth-token to verify the access.
+     * @param subreddit the Name of the Subreddit.
+     */
+    public void addRedditWebhook(String guildId, String webhookId, String authToken, String subreddit) {
+
+        // Check if there is already a Webhook set.
+        removeRedditWebhook(guildId, subreddit);
+
+        // Add a new entry into the Database.
+        saveEntity(new WebhookReddit(guildId, subreddit, webhookId, authToken));
+    }
+
+    /**
+     * Remove a Reddit Notifier entry from our Database.
+     *
+     * @param guildId   the ID of the Guild.
+     * @param subreddit the Name of the Subreddit.
+     */
+    public void removeRedditWebhook(String guildId, String subreddit) {
+
+        // Check if there is a Webhook set.
+        if (isRedditSetup(guildId, subreddit)) {
+
+            // Get the Guild from the ID.
+            Guild guild = BotWorker.getShardManager().getGuildById(guildId);
+
+            if (guild != null) {
+                Webhook webhookEntity = getRedditWebhook(guildId, subreddit);
+                // Delete the existing Webhook.
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) && webhook.getToken().equalsIgnoreCase(webhookEntity.getToken())).forEach(webhook -> webhook.delete().queue()));
+            }
+
+            // Delete the entry.
+            sqlConnector.querySQL("DELETE FROM RedditNotify WHERE GID=? AND SUBREDDIT=?", guildId, subreddit);
+        }
+    }
+
+    /**
+     * Check if the Reddit Webhook has been set in our Database for this Server.
+     *
+     * @param guildId the ID of the Guild.
+     * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
+     */
+    public boolean isRedditSetup(String guildId) {
+        return getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=?", guildId).isSuccess();
+    }
+
+    /**
+     * Check if the Reddit Webhook has been set for the given User in our Database for this Server.
+     *
+     * @param guildId   the ID of the Guild.
+     * @param subreddit the Name of the Subreddit.
+     * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
+     */
+    public boolean isRedditSetup(String guildId, String subreddit) {
+        return getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=? AND SUBREDDIT=?", guildId, subreddit).isSuccess();
     }
 
     //endregion
@@ -1061,7 +1303,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Get the Invite from our Database.
-     * @param guildId the ID of the Guild.
+     *
+     * @param guildId    the ID of the Guild.
      * @param inviteCode the Code of the Invite.
      * @return {@link Invite} as result if true, then it's saved in our Database | may be null.
      */
@@ -1071,9 +1314,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Get the Invite from our Database.
-     * @param guildId the ID of the Guild.
+     *
+     * @param guildId       the ID of the Guild.
      * @param inviteCreator the ID of the Invite Creator.
-     * @param inviteCode the Code of the Invite.
+     * @param inviteCode    the Code of the Invite.
      * @return {@link Invite} as result if true, then it's saved in our Database | may be null.
      */
     public Invite getInvite(String guildId, String inviteCreator, String inviteCode) {
@@ -1358,7 +1602,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (!hasSetting(guildId, "level_message")) setSetting(new Setting(guildId, "level_message", false));
 
         // Create the Join Message Setting
-        if (!hasSetting(guildId, "message_join")) setSetting(new Setting(guildId, "message_join", "Welcome %user_mention%!\nWe wish you a great stay on %guild_name%"));
+        if (!hasSetting(guildId, "message_join"))
+            setSetting(new Setting(guildId, "message_join", "Welcome %user_mention%!\nWe wish you a great stay on %guild_name%"));
 
         // Create Command Settings.
         for (ICommand command : Main.getInstance().getCommandManager().getCommands()) {
@@ -1553,10 +1798,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
         for (Class<? extends SQLEntity> aClass : classes) {
 
             String tableName = SQLUtil.getTable(aClass);
-            List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(aClass,false);
+
+            if (tableName == null) continue;
+
+            List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(aClass, false);
 
             if (sqlParameters.isEmpty()) {
-                return;
+                continue;
             }
 
             if (sqlParameters.stream().anyMatch(sqlParameter -> sqlParameter.getName().equalsIgnoreCase("GID"))) {
@@ -1581,7 +1829,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entity);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity,false);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity, false);
 
         if (sqlParameters.isEmpty()) {
             return false;
@@ -1635,7 +1883,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity,false, false);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity, false, false);
 
         if (sqlParameters.isEmpty()) {
             return;
@@ -1677,8 +1925,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Update an Entity in the Database.
      *
-     * @param oldEntity the old Entity.
-     * @param newEntity the new Entity.
+     * @param oldEntity       the old Entity.
+     * @param newEntity       the new Entity.
      * @param onlyUpdateField the only update the given Field.
      */
     public void updateEntity(Object oldEntity, Object newEntity, boolean onlyUpdateField) {
@@ -1752,7 +2000,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity,false, true);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity, false, true);
 
         if (sqlParameters.isEmpty()) {
             return;
@@ -1776,7 +2024,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         try {
-            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, true, true).toArray());
+            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, false, true).toArray());
         } catch (Exception exception) {
             Main.getInstance().getLogger().error("Error while deleting Entity: " + ((Class) entity).getSimpleName(), exception);
         }
