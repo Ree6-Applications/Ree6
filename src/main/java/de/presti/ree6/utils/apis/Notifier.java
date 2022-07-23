@@ -492,8 +492,8 @@ public class Notifier {
                                 WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
                     });
                 }
-            } catch (IOException | AuthenticationException | InterruptedException e) {
-                Main.getInstance().getAnalyticsLogger().error("Could not get Reddit Posts!", e);
+            } catch (Exception exception) {
+                Main.getInstance().getAnalyticsLogger().error("Could not get Reddit Posts!", exception);
             }
         }, x -> Main.getInstance().getLogger().error("Couldn't start Reddit Stream!"), Duration.ofMinutes(5), true, true);
     }
