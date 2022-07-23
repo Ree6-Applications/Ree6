@@ -163,11 +163,14 @@ public class Main {
         // Register all YouTube channels.
         instance.notifier.registerYouTubeChannel(instance.sqlConnector.getSqlWorker().getAllYouTubeChannels());
 
+        // Register all Reddit Subreddits.
+        instance.notifier.registerSubreddit(instance.sqlConnector.getSqlWorker().getAllSubreddits());
+
         instance.logger.info("Creating JDA Instance.");
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.DEVELOPMENT_BUILD, "1.8.0");
+            BotWorker.createBot(BotVersion.RELEASE, "1.8.0");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
