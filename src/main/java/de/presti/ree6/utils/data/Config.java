@@ -49,6 +49,8 @@ public class Config {
             yamlFile.addDefault("twitter.consumer.secret", "yourTwitterConsumerSecret");
             yamlFile.addDefault("twitter.access.key", "yourTwitterAccessKey");
             yamlFile.addDefault("twitter.access.secret", "yourTwitterAccessSecret");
+            yamlFile.addDefault("reddit.client.id", "yourredditclientid");
+            yamlFile.addDefault("reddit.client.secret", "yourredditclientsecret");
             yamlFile.addDefault("youtube.api.key", "youryoutubeapikey");
             yamlFile.addDefault("bot.tokens.rel", "ReleaseTokenhere");
             yamlFile.addDefault("bot.tokens.dev", "DevTokenhere");
