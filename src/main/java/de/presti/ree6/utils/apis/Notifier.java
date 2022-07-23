@@ -19,6 +19,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import masecla.reddit4j.client.Reddit4J;
+import masecla.reddit4j.client.UserAgentBuilder;
 import masecla.reddit4j.exceptions.AuthenticationException;
 import masecla.reddit4j.objects.Sorting;
 import twitter4j.*;
@@ -26,6 +27,8 @@ import twitter4j.conf.ConfigurationBuilder;
 
 import java.awt.*;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -80,8 +83,17 @@ public class Notifier {
 
         Main.getInstance().getAnalyticsLogger().info("Initializing Reddit Client...");
 
-        redditClient = Reddit4J.rateLimited();
-        createRedditPostStream();
+        redditClient = Reddit4J.rateLimited()
+                .setClientId(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.id"))
+                .setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.secret"))
+                .setUserAgent("Ree6Bot/" + BotWorker.getBuild() + " (by /u/PrestiSchmesti)");
+
+        try {
+            redditClient.userlessConnect();
+            createRedditPostStream();
+        } catch (Exception exception) {
+            Main.getInstance().getLogger().error("Failed to connect to Reddit API.", exception);
+        }
 
         Main.getInstance().getAnalyticsLogger().info("Initializing YouTube Streams...");
         createUploadStream();
@@ -464,7 +476,7 @@ public class Notifier {
         ThreadUtil.createNewThread(x -> {
             try {
                 for (String subreddit : registeredSubreddits) {
-                    redditClient.getSubredditPosts(subreddit, Sorting.NEW).submit().stream().filter(redditPost -> redditPost.getCreated() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()).forEach(redditPost -> {
+                    redditClient.getSubredditPosts(subreddit, Sorting.NEW).submit().stream().filter(redditPost -> redditPost.getCreated() > (Duration.ofMillis(System.currentTimeMillis()).toSeconds() - Duration.ofMinutes(5).toSeconds())).forEach(redditPost -> {
                         // Create Webhook Message.
                         WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
@@ -476,10 +488,12 @@ public class Notifier {
                         webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(redditPost.getTitle(), redditPost.getUrl()));
                         webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Reddit Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
 
-                        webhookEmbedBuilder.setImageUrl(redditPost.getThumbnail());
+
+                        if (!redditPost.getThumbnail().equalsIgnoreCase("self"))
+                            webhookEmbedBuilder.setImageUrl(redditPost.getThumbnail());
 
                         // Set rest of the Information.
-                        webhookEmbedBuilder.setDescription(redditPost.getSelftext());
+                        webhookEmbedBuilder.setDescription(URLDecoder.decode(redditPost.getSelftext(), StandardCharsets.UTF_8));
                         webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Author**", redditPost.getAuthor()));
                         webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Subreddit**", redditPost.getSubreddit()));
                         webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));

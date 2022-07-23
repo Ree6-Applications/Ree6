@@ -54,7 +54,7 @@ public class RedditNotifier implements ICommand {
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
                 commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-RedditNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name));
-                Main.getInstance().getCommandManager().sendMessage("A Reddit Notifier has been created for the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("A Reddit Notifier has been created for the Subreddit " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
                 if (!Main.getInstance().getNotifier().isSubredditRegistered(name)) {
                     Main.getInstance().getNotifier().registerSubreddit(name);
@@ -68,7 +68,7 @@ public class RedditNotifier implements ICommand {
             String name = commandEvent.getArguments()[1];
             if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
                 Main.getInstance().getSqlConnector().getSqlWorker().removeRedditWebhook(commandEvent.getGuild().getId(), name);
-                Main.getInstance().getCommandManager().sendMessage("A Reddit Notifier has been removed from the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("A Reddit Notifier has been removed from the Subreddit " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
                 if (Main.getInstance().getNotifier().isSubredditRegistered(name)) {
                     Main.getInstance().getNotifier().unregisterSubreddit(name);
