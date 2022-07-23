@@ -521,6 +521,127 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     //endregion
 
+    //region Instagram Notifier
+
+    /**
+     * Get the InstagramNotify data.
+     *
+     * @param guildId the ID of the Guild.
+     * @param name    the Name of the Instagram User.
+     * @return {@link WebhookInstagram} with all the needed data.
+     */
+    public WebhookInstagram getInstagramWebhook(String guildId, String name) {
+        return (WebhookInstagram) getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=? AND NAME=?", guildId, name).getEntity();
+    }
+
+    /**
+     * Get the InstagramNotify data.
+     *
+     * @param name the Name of the Instagram User.
+     * @return {@link List<WebhookInstagram>} with all the needed data.
+     */
+    public List<WebhookInstagram> getInstagramWebhookByName(String name) {
+        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE NAME=?", name).getEntities().stream().map(WebhookInstagram.class::cast).toList();
+    }
+
+    /**
+     * Get the all Instagram-Notifier.
+     *
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     */
+    public List<String> getAllInstagramUsers() {
+
+        ArrayList<String> usernames = new ArrayList<>();
+
+        // Creating a SQL Statement to get the Entry from the InstagramNotify Table by the GuildID.
+        sqlConnector.querySQL("SELECT * FROM InstagramNotify").getValues("NAME")
+                .stream().map(String.class::cast).forEach(usernames::add);
+
+        return usernames;
+    }
+
+    /**
+     * Get every Instagram-Notifier that has been set up for the given Guild.
+     *
+     * @param guildId the ID of the Guild.
+     * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
+     */
+    public List<String> getAllInstagramUsers(String guildId) {
+
+        ArrayList<String> usernames = new ArrayList<>();
+
+        // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
+        sqlConnector.querySQL("SELECT * FROM InstagramNotify WHERE GID=?", guildId).getValues("NAME")
+                .stream().map(String.class::cast).forEach(usernames::add);
+
+        return usernames;
+    }
+
+    /**
+     * Set the InstagramNotify in our Database.
+     *
+     * @param guildId   the ID of the Guild.
+     * @param webhookId the ID of the Webhook.
+     * @param authToken the Auth-token to verify the access.
+     * @param name      the Name of the Instagram User.
+     */
+    public void addInstagramWebhook(String guildId, String webhookId, String authToken, String name) {
+
+        // Check if there is already a Webhook set.
+        removeInstagramWebhook(guildId, name);
+
+        // Add a new entry into the Database.
+        saveEntity(new WebhookInstagram(guildId, name, webhookId, authToken));
+    }
+
+    /**
+     * Remove an Instagram Notifier entry from our Database.
+     *
+     * @param guildId the ID of the Guild.
+     * @param name    the Name of the Instagram User.
+     */
+    public void removeInstagramWebhook(String guildId, String name) {
+
+        // Check if there is a Webhook set.
+        if (isInstagramSetup(guildId, name)) {
+
+            // Get the Guild from the ID.
+            Guild guild = BotWorker.getShardManager().getGuildById(guildId);
+
+            if (guild != null) {
+                Webhook webhookEntity = getInstagramWebhook(guildId, name);
+                // Delete the existing Webhook.
+                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) && webhook.getToken().equalsIgnoreCase(webhookEntity.getToken())).forEach(webhook -> webhook.delete().queue()));
+            }
+
+            // Delete the entry.
+            sqlConnector.querySQL("DELETE FROM InstagramNotify WHERE GID=? AND NAME=?", guildId, name);
+        }
+    }
+
+    /**
+     * Check if the Instagram Webhook has been set in our Database for this Server.
+     *
+     * @param guildId the ID of the Guild.
+     * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
+     */
+    public boolean isInstagramSetup(String guildId) {
+        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=?", guildId).isSuccess();
+    }
+
+    /**
+     * Check if the Instagram Webhook has been set for the given User in our Database for this Server.
+     *
+     * @param guildId the ID of the Guild.
+     * @param name    the Name of the Instagram User.
+     * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
+     */
+    public boolean isInstagramSetup(String guildId, String name) {
+        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=? AND NAME=?", guildId, name).isSuccess();
+    }
+
+    //endregion
+
     //region Reddit Notifier
 
     /**
@@ -580,9 +701,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Set the RedditNotify in our Database.
      *
-     * @param guildId        the ID of the Guild.
-     * @param webhookId      the ID of the Webhook.
-     * @param authToken      the Auth-token to verify the access.
+     * @param guildId   the ID of the Guild.
+     * @param webhookId the ID of the Webhook.
+     * @param authToken the Auth-token to verify the access.
      * @param subreddit the Name of the Subreddit.
      */
     public void addRedditWebhook(String guildId, String webhookId, String authToken, String subreddit) {
@@ -597,7 +718,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Remove a Reddit Notifier entry from our Database.
      *
-     * @param guildId        the ID of the Guild.
+     * @param guildId   the ID of the Guild.
      * @param subreddit the Name of the Subreddit.
      */
     public void removeRedditWebhook(String guildId, String subreddit) {
@@ -632,7 +753,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Check if the Reddit Webhook has been set for the given User in our Database for this Server.
      *
-     * @param guildId        the ID of the Guild.
+     * @param guildId   the ID of the Guild.
      * @param subreddit the Name of the Subreddit.
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
