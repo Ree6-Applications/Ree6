@@ -19,14 +19,11 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import masecla.reddit4j.client.Reddit4J;
-import masecla.reddit4j.client.UserAgentBuilder;
-import masecla.reddit4j.exceptions.AuthenticationException;
 import masecla.reddit4j.objects.Sorting;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.awt.*;
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
