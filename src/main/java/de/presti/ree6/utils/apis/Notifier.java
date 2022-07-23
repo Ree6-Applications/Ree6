@@ -4,6 +4,11 @@ import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.instagram4j.instagram4j.IGClient;
+import com.github.instagram4j.instagram4j.actions.feed.FeedIterator;
+import com.github.instagram4j.instagram4j.models.media.timeline.TimelineImageMedia;
+import com.github.instagram4j.instagram4j.models.media.timeline.TimelineVideoMedia;
+import com.github.instagram4j.instagram4j.requests.feed.FeedUserRequest;
+import com.github.instagram4j.instagram4j.responses.feed.FeedUserResponse;
 import com.github.instagram4j.instagram4j.utils.IGChallengeUtils;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
@@ -123,7 +128,7 @@ public class Notifier {
         // Callable that returns inputted code from System.in
         Callable<String> inputCode = () -> {
             Scanner scanner = new Scanner(System.in);
-            System.out.print("Please input code: ");
+            Main.getInstance().getLogger().error("Please input code: ");
             String code = scanner.nextLine();
             scanner.close();
             return code;
@@ -609,6 +614,113 @@ public class Notifier {
 
     //endregion
 
+    //region Instagram
+
+    /**
+     * Used to register an Instagram-Post Event for all Insta-Users.
+     */
+    public void createInstagramPostStream() {
+        ThreadUtil.createNewThread(x -> {
+            try {
+                for (String username : registeredInstagramUsers) {
+                    instagramClient.actions().users().findByUsername(username).thenAccept(userAction -> {
+                        com.github.instagram4j.instagram4j.models.user.User user = userAction.getUser();
+                        if (!user.is_private()) {
+                            FeedIterator<FeedUserRequest, FeedUserResponse> iterable = new FeedIterator<>(instagramClient, new FeedUserRequest(user.getPk()));
+
+                            iterable.forEachRemaining(feedUserResponse -> feedUserResponse
+                                    .getItems().stream().filter(instagramPost -> instagramPost.getTaken_at() >
+                                            (Duration.ofMillis(System.currentTimeMillis()).toSeconds() - Duration.ofMinutes(5).toSeconds()))
+                                    .forEach(instagramPost -> {
+
+                                        WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+
+                                        webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+                                        webhookMessageBuilder.setUsername("Ree6");
+
+                                        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(user.getUsername(), "https://www.instagram.com/" + user.getUsername()));
+                                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Instagram Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+
+                                        // Set rest of the Information.
+                                        if (instagramPost instanceof TimelineImageMedia timelineImageMedia) {
+                                            webhookEmbedBuilder.setThumbnailUrl(timelineImageMedia.getImage_versions2().getCandidates().get(0).getUrl());
+                                        } else if (instagramPost instanceof TimelineVideoMedia timelineVideoMedia) {
+                                            webhookEmbedBuilder.setDescription("[Click here to watch the video](" + timelineVideoMedia.getVideo_versions().get(0).getUrl() + ")");
+                                        }
+                                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+
+                                        webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
+
+                                        webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+                                        Main.getInstance().getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).forEach(webhook ->
+                                                WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+
+                                    }));
+                        }
+                    }).exceptionally(exception -> {
+                        Main.getInstance().getAnalyticsLogger().error("Could not get Instagram User!", exception);
+                        return null;
+                    }).join();
+                }
+            } catch (Exception exception) {
+                Main.getInstance().getAnalyticsLogger().error("Could not get Reddit Posts!", exception);
+            }
+        }, x -> Main.getInstance().getLogger().error("Couldn't start Reddit Stream!"), Duration.ofMinutes(5), true, true);
+    }
+
+    /**
+     * Used to register an Instagram-Post Event for all Insta-Users.
+     *
+     * @param username the Names of the User.
+     */
+    public void registerInstagramUser(String username) {
+        if (getInstagramClient() == null) return;
+
+        if (!isInstagramUserRegistered(username)) registeredInstagramUsers.add(username);
+    }
+
+    /**
+     * Used to register an Instagram-Post Event for all Insta-Users.
+     *
+     * @param usernames the Names of the Users.
+     */
+    public void registerInstagramUser(List<String> usernames) {
+        if (getInstagramClient() == null) return;
+
+        usernames.forEach(s -> {
+            if (!isInstagramUserRegistered(s)) registeredInstagramUsers.add(s);
+        });
+    }
+
+    /**
+     * Used to unregister an Instagram-Post Event for all Insta-Users.
+     *
+     * @param username the Names of the User.
+     */
+    public void unregisterInstagramUser(String username) {
+        if (getInstagramClient() == null) return;
+
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).isEmpty())
+            return;
+
+        if (isInstagramUserRegistered(username)) registeredInstagramUsers.remove(username);
+    }
+
+    /**
+     * Check if a User is already being checked.
+     *
+     * @param username the Names of the User.
+     * @return true, if there is an Event for the Channel | false, if there isn't an Event for the Channel.
+     */
+    public boolean isInstagramUserRegistered(String username) {
+        return registeredInstagramUsers.contains(username);
+    }
+
+    //endregion
+
     /**
      * Get an instance of the TwitchClient.
      *
@@ -634,5 +746,14 @@ public class Notifier {
      */
     public Reddit4J getRedditClient() {
         return redditClient;
+    }
+
+    /**
+     * Get an instance of the InstagramClient.
+     *
+     * @return instance of the InstagramClient.
+     */
+    public IGClient getInstagramClient() {
+        return instagramClient;
     }
 }

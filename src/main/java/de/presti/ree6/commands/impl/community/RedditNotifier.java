@@ -97,6 +97,6 @@ public class RedditNotifier implements ICommand {
      */
     @Override
     public String[] getAlias() {
-        return new String[] { "yt", "ytnotifier" };
+        return new String[] { "reddit", "reditnotifier" };
     }
 }

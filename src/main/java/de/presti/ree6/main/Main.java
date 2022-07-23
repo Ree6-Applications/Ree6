@@ -166,6 +166,9 @@ public class Main {
         // Register all Reddit Subreddits.
         instance.notifier.registerSubreddit(instance.sqlConnector.getSqlWorker().getAllSubreddits());
 
+        // Register all Instagram Users.
+        instance.notifier.registerInstagramUser(instance.sqlConnector.getSqlWorker().getAllInstagramUsers());
+
         instance.logger.info("Creating JDA Instance.");
 
         // Create a new Instance of the Bot, as well as add the Events.
