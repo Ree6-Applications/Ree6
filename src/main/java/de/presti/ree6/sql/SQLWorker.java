@@ -1553,10 +1553,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
         for (Class<? extends SQLEntity> aClass : classes) {
 
             String tableName = SQLUtil.getTable(aClass);
+
+            if (tableName == null) continue;
+
             List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(aClass,false);
 
             if (sqlParameters.isEmpty()) {
-                return;
+                continue;
             }
 
             if (sqlParameters.stream().anyMatch(sqlParameter -> sqlParameter.getName().equalsIgnoreCase("GID"))) {
