@@ -2,12 +2,13 @@ package de.presti.ree6.sql.entities;
 
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
+import de.presti.ree6.sql.base.data.SQLEntity;
 
 /**
  * Class used to store information about the temporal Voice-Channel.
  */
 @Table(name = "TemporalVoicechannel")
-public class TemporalVoicechannel {
+public class TemporalVoicechannel extends SQLEntity {
 
     /**
      * The ID of the Guild.

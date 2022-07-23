@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -93,6 +94,7 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
+        super.onGuildVoiceJoin(event);
         if (!ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
             ArrayUtil.voiceJoined.put(event.getMember().getUser(), System.currentTimeMillis());
         }
@@ -105,16 +107,47 @@ public class OtherEvents extends ListenerAdapter {
             if (voiceChannel == null)
                 return;
 
+            if (!((TemporalVoicechannel)sqlResponse.getEntity()).getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
+                return;
+            }
+
             if (voiceChannel.getParentCategory() != null) {
                 voiceChannel.getParentCategory().createVoiceChannel("Temporal VC #" +
                         event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith("Temporal VC")).toList().size() + 1).queue(channel -> {
-                    event.getGuild().moveVoiceMember(event.getMember(), voiceChannel).queue();
-                    ArrayUtil.temporalVoicechannel.add(voiceChannel.getId());
+                    event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
+                    ArrayUtil.temporalVoicechannel.add(channel.getId());
                 });
             }
         }
+    }
 
-        super.onGuildVoiceJoin(event);
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event) {
+        super.onGuildVoiceMove(event);
+
+        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID = ? AND VID = ?", event.getGuild().getId(), event.getChannelJoined().getId());
+
+        if (sqlResponse.isSuccess()) {
+            VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
+
+            if (voiceChannel == null)
+                return;
+
+            if (!((TemporalVoicechannel)sqlResponse.getEntity()).getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
+                return;
+            }
+
+            if (voiceChannel.getParentCategory() != null) {
+                voiceChannel.getParentCategory().createVoiceChannel("Temporal VC #" +
+                        event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith("Temporal VC")).toList().size() + 1).queue(channel -> {
+                    event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
+                    ArrayUtil.temporalVoicechannel.add(channel.getId());
+                });
+            }
+        }
     }
 
     /**
@@ -249,7 +282,6 @@ public class OtherEvents extends ListenerAdapter {
 
         event.deferReply(true).queue();
 
-        event.getChannel();
         Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getChannel(), event);
     }
 
@@ -318,7 +350,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
 
-                        embedBuilder.setDescription("You can set up our own Ree6-News! " + "By setting up Ree6-News on a specific channel your will get a Message in the given Channel, when ever Ree6 gets an update!");
+                        embedBuilder.setDescription("You can set up our own Ree6-News! " + "By setting up Ree6-News on a specific channel you will get a Message in the given Channel, when ever Ree6 gets an update!");
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupNewsMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
@@ -329,10 +361,79 @@ public class OtherEvents extends ListenerAdapter {
                         event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(Button.link("https://cp.ree6.de", "Webinterface"))).queue();
                     }
 
+                    case "tempvoice" -> {
+                        optionList.add(SelectOption.of("Setup", "tempVoiceSetup"));
+
+                        if (Main.getInstance().getSqlConnector().getSqlWorker().isNewsSetup(event.getGuild().getId()))
+                            optionList.add(SelectOption.of("Delete", "tempVoiceDelete"));
+
+                        optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
+
+                        embedBuilder.setDescription("You can set up your own Temporal Voicechannel! " + "By setting up Temporal Voicechannel on a specific channel which will be used to create a new Voicechannel when ever someones joins into it!");
+
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupTempVoiceMenu", "Select your Action", 1, 1, false, optionList))).queue();
+                    }
+
                     default -> {
                         embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
                         event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
+                }
+            }
+
+            case "setupTempVoiceMenu" -> {
+
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                List<SelectOption> optionList = new ArrayList<>();
+
+                switch (event.getInteraction().getValues().get(0)) {
+
+                    case "backToSetupMenu" -> {
+                        sendDefaultChoice(event);
+                    }
+
+                    case "tempVoiceSetup" -> {
+                        for (VoiceChannel channel : event.getGuild().getVoiceChannels()) {
+                            optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                        }
+
+                        embedBuilder.setDescription("Which Channel do you want to use as Temporal-Voicechannel?");
+
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupTempVoicechannel", "Select a Channel!", 1, 1, false, optionList))).queue();
+                    }
+
+                    default -> {
+                        if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
+                            return;
+
+                        embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
+                        event.editMessageEmbeds(embedBuilder.build()).queue();
+                    }
+                }
+            }
+
+            case "setupTempVoicechannel" -> {
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getInteraction().getValues().get(0));
+
+                if (voiceChannel != null) {
+                    Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(new TemporalVoicechannel(event.getGuild().getId(), voiceChannel.getId()));
+                    embedBuilder.setDescription("Successfully changed the Temporal Voicechannel, nice work!");
+                    embedBuilder.setColor(Color.GREEN);
+                    event.editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                } else {
+                    embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
+                    event.editMessageEmbeds(embedBuilder.build()).queue();
                 }
             }
 
@@ -349,14 +450,7 @@ public class OtherEvents extends ListenerAdapter {
                 switch (event.getInteraction().getValues().get(0)) {
 
                     case "backToSetupMenu" -> {
-                        optionList.add(SelectOption.of("Audit-Logging", "log"));
-                        optionList.add(SelectOption.of("Welcome-channel", "welcome"));
-                        optionList.add(SelectOption.of("News-channel", "news"));
-                        optionList.add(SelectOption.of("Autorole", "autorole"));
-
-                        embedBuilder.setDescription("Which configuration do you want to check out?");
-
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
+                        sendDefaultChoice(event);
                     }
 
                     case "logSetup" -> {
@@ -416,14 +510,7 @@ public class OtherEvents extends ListenerAdapter {
                 switch (event.getInteraction().getValues().get(0)) {
 
                     case "backToSetupMenu" -> {
-                        optionList.add(SelectOption.of("Audit-Logging", "log"));
-                        optionList.add(SelectOption.of("Welcome-channel", "welcome"));
-                        optionList.add(SelectOption.of("News-channel", "news"));
-                        optionList.add(SelectOption.of("Autorole", "autorole"));
-
-                        embedBuilder.setDescription("Which configuration do you want to check out?");
-
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
+                        sendDefaultChoice(event);
                     }
 
                     case "welcomeSetup" -> {
@@ -483,14 +570,7 @@ public class OtherEvents extends ListenerAdapter {
                 switch (event.getInteraction().getValues().get(0)) {
 
                     case "backToSetupMenu" -> {
-                        optionList.add(SelectOption.of("Audit-Logging", "log"));
-                        optionList.add(SelectOption.of("Welcome-channel", "welcome"));
-                        optionList.add(SelectOption.of("News-channel", "news"));
-                        optionList.add(SelectOption.of("Autorole", "autorole"));
-
-                        embedBuilder.setDescription("Which configuration do you want to check out?");
-
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
+                        sendDefaultChoice(event);
                     }
 
                     case "newsSetup" -> {
@@ -544,6 +624,25 @@ public class OtherEvents extends ListenerAdapter {
                 event.editMessageEmbeds(embedBuilder.build()).queue();
             }
         }
+    }
+
+    /**
+     * Called when the default choices should be sent.
+     * @param event The InteractionEvent of the SelectMenu.
+     */
+    public void sendDefaultChoice(SelectMenuInteractionEvent event) {
+        EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+        List<SelectOption> optionList = new ArrayList<>();
+        optionList.add(SelectOption.of("Audit-Logging", "log"));
+        optionList.add(SelectOption.of("Welcome-channel", "welcome"));
+        optionList.add(SelectOption.of("News-channel", "news"));
+        optionList.add(SelectOption.of("Autorole", "autorole"));
+        optionList.add(SelectOption.of("Temporal-Voice", "tempvoice"));
+
+        embedBuilder.setDescription("Which configuration do you want to check out?");
+
+        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList))).queue();
     }
 
     /**
