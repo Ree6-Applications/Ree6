@@ -54,7 +54,7 @@ public class InstagramNotifier implements ICommand {
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
                 commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-InstagramNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addInstagramWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
-                Main.getInstance().getCommandManager().sendMessage("A InstagramTweet Notifier has been created for the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("A Instagram Notifier has been created for the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
                 if (!Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
                     Main.getInstance().getNotifier().registerInstagramUser(name);
@@ -68,7 +68,7 @@ public class InstagramNotifier implements ICommand {
             String name = commandEvent.getArguments()[1];
             if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
                 Main.getInstance().getSqlConnector().getSqlWorker().removeInstagramWebhook(commandEvent.getGuild().getId(), name);
-                Main.getInstance().getCommandManager().sendMessage("A InstagramTweet Notifier has been removed from the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("A Instagram Notifier has been removed from the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
                 if (Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
                     Main.getInstance().getNotifier().unregisterInstagramUser(name);
