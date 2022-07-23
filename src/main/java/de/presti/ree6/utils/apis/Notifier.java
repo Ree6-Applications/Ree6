@@ -18,10 +18,14 @@ import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
+import masecla.reddit4j.client.Reddit4J;
+import masecla.reddit4j.exceptions.AuthenticationException;
+import masecla.reddit4j.objects.Sorting;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.awt.*;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -38,6 +42,9 @@ public class Notifier {
     // Instance of the Twitter API Client.
     private final Twitter twitterClient;
 
+    // Instance of the Reddit API Client.
+    private final Reddit4J redditClient;
+
     // Local list of registered Twitch Channels.
     private final ArrayList<String> registeredTwitchChannels = new ArrayList<>();
 
@@ -46,6 +53,9 @@ public class Notifier {
 
     // Local list of registered Twitter Users.
     private final Map<String, TwitterStream> registeredTwitterUsers = new HashMap<>();
+
+    // Local list of registered Subreddits.
+    private final ArrayList<String> registeredSubreddits = new ArrayList<>();
 
     /**
      * Constructor used to created instance of the API Clients.
@@ -67,6 +77,11 @@ public class Notifier {
                 .setDebugEnabled(BotWorker.getVersion() == BotVersion.DEVELOPMENT_BUILD);
 
         twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
+
+        Main.getInstance().getAnalyticsLogger().info("Initializing Reddit Client...");
+
+        redditClient = Reddit4J.rateLimited();
+        createRedditPostStream();
 
         Main.getInstance().getAnalyticsLogger().info("Initializing YouTube Streams...");
         createUploadStream();
@@ -440,8 +455,102 @@ public class Notifier {
 
     //endregion
 
+    //region Reddit
+
+    /**
+     * Used to register a Reddit-Post Event for all Subreddits.
+     */
+    public void createRedditPostStream() {
+        ThreadUtil.createNewThread(x -> {
+            try {
+                for (String subreddit : registeredSubreddits) {
+                    redditClient.getSubredditPosts(subreddit, Sorting.NEW).submit().stream().filter(redditPost -> redditPost.getCreated() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()).forEach(redditPost -> {
+                        // Create Webhook Message.
+                        WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+
+                        webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+                        webhookMessageBuilder.setUsername("Ree6");
+
+                        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(redditPost.getTitle(), redditPost.getUrl()));
+                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Reddit Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+
+                        webhookEmbedBuilder.setImageUrl(redditPost.getThumbnail());
+
+                        // Set rest of the Information.
+                        webhookEmbedBuilder.setDescription(redditPost.getSelftext());
+                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Author**", redditPost.getAuthor()));
+                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Subreddit**", redditPost.getSubreddit()));
+                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+
+                        webhookEmbedBuilder.setColor(Color.ORANGE.getRGB());
+
+                        webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+                        Main.getInstance().getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit).forEach(webhook ->
+                                WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+                    });
+                }
+            } catch (IOException | AuthenticationException | InterruptedException e) {
+                Main.getInstance().getAnalyticsLogger().error("Could not get Reddit Posts!", e);
+            }
+        }, x -> Main.getInstance().getLogger().error("Couldn't start Reddit Stream!"), Duration.ofMinutes(5), true, true);
+    }
+
+    /**
+     * Used to register a Reddit-Post Event for the given Subreddit
+     *
+     * @param subreddit the Names of the Subreddit.
+     */
+    public void registerSubreddit(String subreddit) {
+        if (getRedditClient() == null) return;
+
+        if (!isSubredditRegistered(subreddit)) registeredSubreddits.add(subreddit);
+    }
+
+    /**
+     * Used to register a Reddit-Post Event for the Subreddit.
+     *
+     * @param subreddits the Names of the Subreddits.
+     */
+    public void registerSubreddit(List<String> subreddits) {
+        if (getRedditClient() == null) return;
+
+        subreddits.forEach(s -> {
+            if (!isSubredditRegistered(s)) registeredSubreddits.add(s);
+        });
+    }
+
+    /**
+     * Used to unregister a Reddit-Post Event for the given Subreddit.
+     *
+     * @param subreddit the Names of the Subreddit.
+     */
+    public void unregisterSubreddit(String subreddit) {
+        if (getRedditClient() == null) return;
+
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit).isEmpty())
+            return;
+
+        if (isSubredditRegistered(subreddit)) registeredSubreddits.remove(subreddit);
+    }
+
+    /**
+     * Check if a Subreddit is already being checked.
+     *
+     * @param subreddit the Names of the Subreddit.
+     * @return true, if there is an Event for the Channel | false, if there isn't an Event for the Channel.
+     */
+    public boolean isSubredditRegistered(String subreddit) {
+        return registeredSubreddits.contains(subreddit);
+    }
+
+    //endregion
+
     /**
      * Get an instance of the TwitchClient.
+     *
      * @return instance of the TwitchClient.
      */
     public TwitchClient getTwitchClient() {
@@ -450,9 +559,19 @@ public class Notifier {
 
     /**
      * Get an instance of the TwitterClient.
+     *
      * @return instance of the TwitterClient.
      */
     public Twitter getTwitterClient() {
         return twitterClient;
+    }
+
+    /**
+     * Get an instance of the RedditClient.
+     *
+     * @return instance of the RedditClient.
+     */
+    public Reddit4J getRedditClient() {
+        return redditClient;
     }
 }
