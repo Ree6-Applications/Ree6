@@ -135,17 +135,14 @@ public class Notifier {
         };
 
         // handler for challenge login
-        IGClient.Builder.LoginHandler challengeHandler = (client, response) -> {
-            // included utility to resolve challenges
-            // may specify retries. default is 3
-            return IGChallengeUtils.resolveChallenge(client, response, inputCode);
-        };
+        IGClient.Builder.LoginHandler challengeHandler = (client, response) -> IGChallengeUtils.resolveChallenge(client, response, inputCode);
 
         instagramClient = IGClient.builder()
                 .username(Main.getInstance().getConfig().getConfiguration().getString("instagram.username"))
                 .password(Main.getInstance().getConfig().getConfiguration().getString("instagram.password"))
                 .onChallenge(challengeHandler)
                 .build();
+        createInstagramPostStream();
 
         Main.getInstance().getAnalyticsLogger().info("Initializing YouTube Streams...");
         createUploadStream();
@@ -621,54 +618,50 @@ public class Notifier {
      */
     public void createInstagramPostStream() {
         ThreadUtil.createNewThread(x -> {
-            try {
-                for (String username : registeredInstagramUsers) {
-                    instagramClient.actions().users().findByUsername(username).thenAccept(userAction -> {
-                        com.github.instagram4j.instagram4j.models.user.User user = userAction.getUser();
-                        if (!user.is_private()) {
-                            FeedIterator<FeedUserRequest, FeedUserResponse> iterable = new FeedIterator<>(instagramClient, new FeedUserRequest(user.getPk()));
+            for (String username : registeredInstagramUsers) {
+                instagramClient.actions().users().findByUsername(username).thenAccept(userAction -> {
+                    com.github.instagram4j.instagram4j.models.user.User user = userAction.getUser();
+                    if (!user.is_private()) {
+                        FeedIterator<FeedUserRequest, FeedUserResponse> iterable = new FeedIterator<>(instagramClient, new FeedUserRequest(user.getPk()));
 
-                            iterable.forEachRemaining(feedUserResponse -> feedUserResponse
-                                    .getItems().stream().filter(instagramPost -> instagramPost.getTaken_at() >
-                                            (Duration.ofMillis(System.currentTimeMillis()).toSeconds() - Duration.ofMinutes(5).toSeconds()))
-                                    .forEach(instagramPost -> {
+                        iterable.forEachRemaining(feedUserResponse -> feedUserResponse
+                                .getItems().stream().filter(instagramPost -> instagramPost.getTaken_at() >
+                                        (Duration.ofMillis(System.currentTimeMillis()).toSeconds() - Duration.ofMinutes(5).toSeconds()))
+                                .forEach(instagramPost -> {
 
-                                        WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+                                    WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
-                                        webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
-                                        webhookMessageBuilder.setUsername("Ree6");
+                                    webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+                                    webhookMessageBuilder.setUsername("Ree6");
 
-                                        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+                                    WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
-                                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(user.getUsername(), "https://www.instagram.com/" + user.getUsername()));
-                                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Instagram Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+                                    webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(user.getUsername(), "https://www.instagram.com/" + user.getUsername()));
+                                    webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Instagram Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
 
-                                        // Set rest of the Information.
-                                        if (instagramPost instanceof TimelineImageMedia timelineImageMedia) {
-                                            webhookEmbedBuilder.setThumbnailUrl(timelineImageMedia.getImage_versions2().getCandidates().get(0).getUrl());
-                                        } else if (instagramPost instanceof TimelineVideoMedia timelineVideoMedia) {
-                                            webhookEmbedBuilder.setDescription("[Click here to watch the video](" + timelineVideoMedia.getVideo_versions().get(0).getUrl() + ")");
-                                        }
-                                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                                    // Set rest of the Information.
+                                    if (instagramPost instanceof TimelineImageMedia timelineImageMedia) {
+                                        webhookEmbedBuilder.setThumbnailUrl(timelineImageMedia.getImage_versions2().getCandidates().get(0).getUrl());
+                                    } else if (instagramPost instanceof TimelineVideoMedia timelineVideoMedia) {
+                                        webhookEmbedBuilder.setDescription("[Click here to watch the video](" + timelineVideoMedia.getVideo_versions().get(0).getUrl() + ")");
+                                    }
+                                    webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
 
-                                        webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
+                                    webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
 
-                                        webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+                                    webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                                        Main.getInstance().getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).forEach(webhook ->
-                                                WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+                                    Main.getInstance().getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).forEach(webhook ->
+                                            WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
 
-                                    }));
-                        }
-                    }).exceptionally(exception -> {
-                        Main.getInstance().getAnalyticsLogger().error("Could not get Instagram User!", exception);
-                        return null;
-                    }).join();
-                }
-            } catch (Exception exception) {
-                Main.getInstance().getAnalyticsLogger().error("Could not get Reddit Posts!", exception);
+                                }));
+                    }
+                }).exceptionally(exception -> {
+                    Main.getInstance().getAnalyticsLogger().error("Could not get Instagram User!", exception);
+                    return null;
+                }).join();
             }
-        }, x -> Main.getInstance().getLogger().error("Couldn't start Reddit Stream!"), Duration.ofMinutes(5), true, true);
+        }, x -> Main.getInstance().getLogger().error("Couldn't start Instagram Stream!"), Duration.ofMinutes(5), true, true);
     }
 
     /**
