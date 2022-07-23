@@ -69,6 +69,6 @@ public class SQLResponse {
      * @return True if no result was found.
      */
     public boolean isSuccess() {
-        return !entity.getClass().isInstance(emptyEntity);
+        return entity != null && !entity.getClass().isInstance(emptyEntity);
     }
 }

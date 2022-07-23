@@ -5,14 +5,22 @@ import com.google.gson.JsonParser;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.Recording;
 import de.presti.ree6.utils.data.AudioUtil;
+import de.presti.ree6.utils.data.Data;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -53,6 +61,11 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     List<String> participants = new ArrayList<>();
 
     /**
+     * The first send message which should be edited.
+     */
+    Message message;
+
+    /**
      * Constructor.
      *
      * @param voiceChannel The voice channel this handler should handle.
@@ -62,11 +75,16 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
         this.voiceChannel = voiceChannel;
         if (voiceChannel.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_CHANGE)) {
             voiceChannel.getGuild().getSelfMember().modifyNickname("[\uD83D\uDD34] Recording!").reason("Recording started.").onErrorMap(throwable -> {
-                voiceChannel.sendMessage("Could not change nickname.").queue();
+                if (voiceChannel.canTalk()) voiceChannel.sendMessage("Could not change nickname.").queue();
                 return null;
             }).queue();
         }
-        voiceChannel.sendMessage("I am now recording this Voice-channel as requested by an participant!").queue();
+        message = voiceChannel.sendMessageEmbeds(new EmbedBuilder()
+                .setDescription("I am now recording this Voice-channel as requested by an participant!")
+                .setColor(Color.YELLOW)
+                .setFooter("Requested by " + member.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, member.getUser().getAvatarUrl())
+                .setTitle("Recording started!")
+                .build()).complete();
     }
 
     /**
@@ -134,7 +152,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
         if (voiceChannel.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_CHANGE)) {
             voiceChannel.getGuild().getSelfMember().modifyNickname(voiceChannel.getGuild().getSelfMember().getUser().getName()).reason("Recording finished.").onErrorMap(throwable -> {
-                voiceChannel.sendMessage("Could not change nickname.").queue();
+                if (voiceChannel.canTalk()) voiceChannel.sendMessage("Could not change nickname.").queue();
                 return null;
             }).queue();
         }
@@ -152,12 +170,23 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
             Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(recording);
 
             if (voiceChannel.canTalk()) {
-                voiceChannel.sendMessage("Your Audio has been converted and is now available for download!\nYou can download it here: <https://cp.ree6.de/recording?recordId=" + recording.getIdentifier() + ">").queue();
+                message.editMessageEmbeds(new EmbedBuilder()
+                        .setDescription("Your Audio has been converted and is now available for download!")
+                        .setColor(Color.GREEN)
+                        .setFooter(Data.ADVERTISEMENT, voiceChannel.getGuild().getIconUrl())
+                        .setTitle("Recording finished!")
+                        .build()).setActionRow(new ButtonImpl("ree6RedirctButton","Download here", ButtonStyle.LINK,
+                        "https://cp.ree6.de/recording?recordId=" + recording.getIdentifier(), false, Emoji.fromCustom("shiba", 941219375535509504L, true))).complete();
             }
             // Find a way to still notify that the bot couldn't send the audio.
         } catch (Exception ex) {
             if (voiceChannel.canTalk()) {
-                voiceChannel.sendMessage("Something went wrong while converting your audio!\nReason: " + ex.getMessage()).queue();
+                message.editMessageEmbeds(new EmbedBuilder()
+                        .setDescription("Something went wrong while converting your audio!\nReason: " + ex.getMessage())
+                        .setColor(Color.RED)
+                        .setFooter(Data.ADVERTISEMENT, voiceChannel.getGuild().getIconUrl())
+                        .setTitle("Recording error!")
+                        .build()).complete();
             }
 
             Main.getInstance().getLogger().error("Something went wrong while converting a recording!", ex);
