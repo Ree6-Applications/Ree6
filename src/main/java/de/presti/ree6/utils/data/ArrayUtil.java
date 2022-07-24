@@ -1,12 +1,14 @@
 package de.presti.ree6.utils.data;
 
 import de.presti.ree6.utils.others.RandomUtils;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,12 +44,17 @@ public class ArrayUtil {
     /**
      * HashMap used to store a users Ids, to keep them from spamming commands.
      */
-    public static final ArrayList<String> commandCooldown = new ArrayList<>();
+    public static final List<String> commandCooldown = new ArrayList<>();
 
     /**
      * HashMap used to store a users Ids, to keep them from earning XP with every message.
      */
-    public static final ArrayList<Member> timeout = new ArrayList<>();
+    public static final List<Member> timeout = new ArrayList<>();
+
+    /**
+     * an Arraylist containing every temporal Voice-channel Id.
+     */
+    public static final List<String> temporalVoicechannel = new ArrayList<>();
 
     /**
      * String Array used to store answer options, for later use by the 8Ball command.
@@ -112,5 +119,14 @@ public class ArrayUtil {
         } else {
             return messageIDwithMessage.remove(id);
         }
+    }
+
+    /**
+     * Check if the channel is a temporal Voice-channel.
+     *
+     * @param channel the Voice-channel to check.
+     */
+    public static boolean isTemporalVoicechannel(AudioChannel channel) {
+        return temporalVoicechannel.contains(channel.getId());
     }
 }

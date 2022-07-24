@@ -20,6 +20,7 @@ import de.presti.ree6.utils.data.Config;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,7 +174,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.RELEASE, "1.8.0");
+            BotWorker.createBot(BotVersion.DEVELOPMENT_BUILD, "1.8.0");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -222,6 +223,15 @@ public class Main {
         long start = System.currentTimeMillis();
         instance.logger.info("[Main] Shutdown init. !");
         BotWorker.setState(BotState.STOPPED);
+
+        // Deleting every temporal voicechannel.
+        for (String voiceIds : ArrayUtil.temporalVoicechannel) {
+            VoiceChannel voiceChannel = BotWorker.getShardManager().getVoiceChannelById(voiceIds);
+
+            if (voiceChannel != null) {
+                voiceChannel.delete().complete();
+            }
+        }
 
         // Check if there is an SQL-connection if so, shutdown.
         if (sqlConnector != null && (sqlConnector.isConnected())) {
