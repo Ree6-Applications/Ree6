@@ -2,6 +2,7 @@ package de.presti.ree6.sql.entities;
 
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
+import de.presti.ree6.sql.base.data.SQLEntity;
 
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  * This class is used to represent a Birthday-Wish, in our Database.
  */
 @Table(name = "BirthdayWish")
-public class BirthdayWish {
+public class BirthdayWish extends SQLEntity {
 
     /**
      * The Guild ID.
