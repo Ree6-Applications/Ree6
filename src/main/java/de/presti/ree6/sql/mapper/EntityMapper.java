@@ -86,6 +86,8 @@ public class EntityMapper {
      */
     public void setAllFields(StoredResultSet.StoredData resultSet, Object entity, Field[] fields, Class<?> clazz) {
         for (Field field : fields) {
+            if (!field.isAnnotationPresent(Property.class))
+                continue;
             Property property = field.getAnnotation(Property.class);
             String columnName = property.name().toUpperCase();
             try {

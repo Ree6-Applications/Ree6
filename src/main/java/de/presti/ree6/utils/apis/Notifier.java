@@ -3,6 +3,13 @@ package de.presti.ree6.utils.apis;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import com.github.instagram4j.instagram4j.IGClient;
+import com.github.instagram4j.instagram4j.actions.feed.FeedIterator;
+import com.github.instagram4j.instagram4j.models.media.timeline.TimelineImageMedia;
+import com.github.instagram4j.instagram4j.models.media.timeline.TimelineVideoMedia;
+import com.github.instagram4j.instagram4j.requests.feed.FeedUserRequest;
+import com.github.instagram4j.instagram4j.responses.feed.FeedUserResponse;
+import com.github.instagram4j.instagram4j.utils.IGChallengeUtils;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
@@ -18,55 +25,115 @@ import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
+import masecla.reddit4j.client.Reddit4J;
+import masecla.reddit4j.objects.Sorting;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.awt.*;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 /**
  * Utility class used for Event Notifiers. Such as Twitch Livestream, YouTube Upload or Twitter Tweet.
  */
 public class Notifier {
 
-    // Instance of the Twitch API Client.
+    /**
+     * Instance of the Twitch API Client.
+     */
     private final TwitchClient twitchClient;
 
-    // Instance of the Twitter API Client.
+    /**
+     * Instance of the Twitter API Client.
+     */
     private final Twitter twitterClient;
 
-    // Local list of registered Twitch Channels.
+    /**
+     * Instance of the Reddit API Client.
+     */
+    private final Reddit4J redditClient;
+
+    /**
+     * Instance of the Instagram API Client.
+     */
+    private final IGClient instagramClient;
+
+    /**
+     * Local list of registered Twitch Channels.
+     */
     private final ArrayList<String> registeredTwitchChannels = new ArrayList<>();
 
-    // Local list of registered YouTube Channels.
+    /**
+     * Local list of registered YouTube Channels.
+     */
     private final ArrayList<String> registeredYouTubeChannels = new ArrayList<>();
-
-    // Local list of registered Twitter Users.
+    /**
+     * Local list of registered Twitter Users.
+     */
     private final Map<String, TwitterStream> registeredTwitterUsers = new HashMap<>();
+
+    /**
+     * Local list of registered Subreddits.
+     */
+    private final ArrayList<String> registeredSubreddits = new ArrayList<>();
+
+    /**
+     * Local list of registered Instagram Users.
+     */
+    private final ArrayList<String> registeredInstagramUsers = new ArrayList<>();
 
     /**
      * Constructor used to created instance of the API Clients.
      */
     public Notifier() {
         Main.getInstance().getAnalyticsLogger().info("Initializing Twitch Client...");
-        twitchClient = TwitchClientBuilder.builder().withEnableHelix(true).withClientId(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"))
-                .withClientSecret(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret")).build();
+        twitchClient = TwitchClientBuilder.builder().withEnableHelix(true).withClientId(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id")).withClientSecret(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret")).build();
 
         Main.getInstance().getAnalyticsLogger().info("Initializing Twitter Client...");
 
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 
-        configurationBuilder
-                .setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key"))
-                .setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret"))
-                .setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token"))
-                .setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token.secret"))
-                .setDebugEnabled(BotWorker.getVersion() == BotVersion.DEVELOPMENT_BUILD);
+        configurationBuilder.setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key")).setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret")).setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token")).setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token.secret")).setDebugEnabled(BotWorker.getVersion() == BotVersion.DEVELOPMENT_BUILD);
 
         twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
+
+        Main.getInstance().getAnalyticsLogger().info("Initializing Reddit Client...");
+
+        redditClient = Reddit4J.rateLimited().setClientId(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.id")).setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.secret")).setUserAgent("Ree6Bot/" + BotWorker.getBuild() + " (by /u/PrestiSchmesti)");
+
+        try {
+            redditClient.userlessConnect();
+            createRedditPostStream();
+        } catch (Exception exception) {
+            Main.getInstance().getLogger().error("Failed to connect to Reddit API.", exception);
+        }
+
+        Main.getInstance().getAnalyticsLogger().info("Initializing Instagram Client...");
+
+        // Callable that returns inputted code from System.in
+        Callable<String> inputCode = () -> {
+            Scanner scanner = new Scanner(System.in);
+            Main.getInstance().getLogger().error("Please input code: ");
+            String code = scanner.nextLine();
+            scanner.close();
+            return code;
+        };
+
+        // handler for challenge login
+        IGClient.Builder.LoginHandler challengeHandler = (client, response) -> IGChallengeUtils.resolveChallenge(client, response, inputCode);
+
+        instagramClient = IGClient.builder().username(Main.getInstance().getConfig().getConfiguration().getString("instagram.username")).password(Main.getInstance().getConfig().getConfiguration().getString("instagram.password")).onChallenge(challengeHandler).build();
+        instagramClient.sendLoginRequest().exceptionally(throwable -> {
+            Main.getInstance().getLogger().error("Failed to login to Instagram API.", throwable);
+            return null;
+        });
+        createInstagramPostStream();
 
         Main.getInstance().getAnalyticsLogger().info("Initializing YouTube Streams...");
         createUploadStream();
@@ -110,8 +177,7 @@ public class Notifier {
             wmb.addEmbeds(webhookEmbedBuilder.build());
 
             // Go through every Webhook that is registered for the Twitch Channel
-            Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getStream().getUserName().toLowerCase()).forEach(webhook ->
-                    WebhookUtil.sendWebhook(null, wmb.build(), webhook, false));
+            Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getStream().getUserName().toLowerCase()).forEach(webhook -> WebhookUtil.sendWebhook(null, wmb.build(), webhook, false));
         });
     }
 
@@ -232,10 +298,7 @@ public class Notifier {
 
                 webhookEmbedBuilder.setThumbnailUrl(status.getUser().getBiggerProfileImageURLHttps());
 
-                webhookEmbedBuilder.setDescription(status.getQuotedStatus() != null && !status.isRetweet() ? "**Quoted  " + status.getQuotedStatus().getUser().getScreenName() + "**: " + status.getText() + "\n" :
-                        status.getInReplyToScreenName() != null ? "**Reply to " + status.getInReplyToScreenName() + "**: " + status.getText() + "\n" :
-                                status.isRetweet() ? "**Retweeted from " + status.getRetweetedStatus().getUser().getScreenName() + "**: " + status.getText().split(": ")[1] + "\n" :
-                                        "**" + status.getText() + "**\n");
+                webhookEmbedBuilder.setDescription(status.getQuotedStatus() != null && !status.isRetweet() ? "**Quoted  " + status.getQuotedStatus().getUser().getScreenName() + "**: " + status.getText() + "\n" : status.getInReplyToScreenName() != null ? "**Reply to " + status.getInReplyToScreenName() + "**: " + status.getText() + "\n" : status.isRetweet() ? "**Retweeted from " + status.getRetweetedStatus().getUser().getScreenName() + "**: " + status.getText().split(": ")[1] + "\n" : "**" + status.getText() + "**\n");
 
                 if (status.getMediaEntities().length > 0 && status.getMediaEntities()[0].getType().equalsIgnoreCase("photo")) {
                     webhookEmbedBuilder.setImageUrl(status.getMediaEntities()[0].getMediaURLHttps());
@@ -247,8 +310,7 @@ public class Notifier {
 
                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName()).forEach(webhook ->
-                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+                Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName()).forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
             }
 
             /**
@@ -350,8 +412,7 @@ public class Notifier {
                         for (PlaylistItem playlistItem : playlistItemList) {
                             PlaylistItemSnippet snippet = playlistItem.getSnippet();
                             DateTime dateTime = snippet.getPublishedAt();
-                            if (dateTime != null &&
-                                    dateTime.getValue() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) {
+                            if (dateTime != null && dateTime.getValue() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) {
                                 PlaylistItemContentDetails contentDetails = playlistItem.getContentDetails();
                                 // Create Webhook Message.
                                 WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
@@ -376,8 +437,7 @@ public class Notifier {
 
                                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                                Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel).forEach(webhook ->
-                                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+                                Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel).forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
                             }
                         }
                     }
@@ -440,8 +500,208 @@ public class Notifier {
 
     //endregion
 
+    //region Reddit
+
+    /**
+     * Used to register a Reddit-Post Event for all Subreddits.
+     */
+    public void createRedditPostStream() {
+        ThreadUtil.createNewThread(x -> {
+            try {
+                for (String subreddit : registeredSubreddits) {
+                    redditClient.getSubredditPosts(subreddit, Sorting.NEW).submit().stream().filter(redditPost -> redditPost.getCreated() > (Duration.ofMillis(System.currentTimeMillis()).toSeconds() - Duration.ofMinutes(5).toSeconds())).forEach(redditPost -> {
+                        // Create Webhook Message.
+                        WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+
+                        webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+                        webhookMessageBuilder.setUsername("Ree6");
+
+                        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(redditPost.getTitle(), redditPost.getUrl()));
+                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Reddit Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+
+
+                        if (!redditPost.getThumbnail().equalsIgnoreCase("self"))
+                            webhookEmbedBuilder.setImageUrl(redditPost.getThumbnail());
+
+                        // Set rest of the Information.
+                        webhookEmbedBuilder.setDescription(URLDecoder.decode(redditPost.getSelftext(), StandardCharsets.UTF_8));
+                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Author**", redditPost.getAuthor()));
+                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Subreddit**", redditPost.getSubreddit()));
+                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+
+                        webhookEmbedBuilder.setColor(Color.ORANGE.getRGB());
+
+                        webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+                        Main.getInstance().getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit).forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+                    });
+                }
+            } catch (Exception exception) {
+                Main.getInstance().getAnalyticsLogger().error("Could not get Reddit Posts!", exception);
+            }
+        }, x -> Main.getInstance().getLogger().error("Couldn't start Reddit Stream!"), Duration.ofMinutes(5), true, true);
+    }
+
+    /**
+     * Used to register a Reddit-Post Event for the given Subreddit
+     *
+     * @param subreddit the Names of the Subreddit.
+     */
+    public void registerSubreddit(String subreddit) {
+        if (getRedditClient() == null) return;
+
+        if (!isSubredditRegistered(subreddit)) registeredSubreddits.add(subreddit);
+    }
+
+    /**
+     * Used to register a Reddit-Post Event for the Subreddit.
+     *
+     * @param subreddits the Names of the Subreddits.
+     */
+    public void registerSubreddit(List<String> subreddits) {
+        if (getRedditClient() == null) return;
+
+        subreddits.forEach(s -> {
+            if (!isSubredditRegistered(s)) registeredSubreddits.add(s);
+        });
+    }
+
+    /**
+     * Used to unregister a Reddit-Post Event for the given Subreddit.
+     *
+     * @param subreddit the Names of the Subreddit.
+     */
+    public void unregisterSubreddit(String subreddit) {
+        if (getRedditClient() == null) return;
+
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit).isEmpty()) return;
+
+        if (isSubredditRegistered(subreddit)) registeredSubreddits.remove(subreddit);
+    }
+
+    /**
+     * Check if a Subreddit is already being checked.
+     *
+     * @param subreddit the Names of the Subreddit.
+     * @return true, if there is an Event for the Channel | false, if there isn't an Event for the Channel.
+     */
+    public boolean isSubredditRegistered(String subreddit) {
+        return registeredSubreddits.contains(subreddit);
+    }
+
+    //endregion
+
+    //region Instagram
+
+    /**
+     * Used to register an Instagram-Post Event for all Insta-Users.
+     */
+    public void createInstagramPostStream() {
+        ThreadUtil.createNewThread(x -> {
+            for (String username : registeredInstagramUsers) {
+                instagramClient.actions().users().findByUsername(username).thenAccept(userAction -> {
+                    com.github.instagram4j.instagram4j.models.user.User user = userAction.getUser();
+                    if (!user.is_private()) {
+                        FeedIterator<FeedUserRequest, FeedUserResponse> iterable = new FeedIterator<>(instagramClient, new FeedUserRequest(user.getPk()));
+
+                        int limit = 1;
+                        while (iterable.hasNext() && limit-- > 0) {
+                            FeedUserResponse response = iterable.next();
+                            // Actions here
+                            response.getItems().stream().filter(post -> post.getTaken_at() > (Duration.ofMillis(System.currentTimeMillis()).toSeconds() - Duration.ofMinutes(5).toSeconds())).forEach(instagramPost -> {
+                                WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+
+                                webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+                                webhookMessageBuilder.setUsername("Ree6");
+
+                                WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(user.getUsername(), "https://www.instagram.com/" + user.getUsername()));
+                                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Instagram Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+
+                                // Set rest of the Information.
+                                if (instagramPost instanceof TimelineImageMedia timelineImageMedia) {
+                                    webhookEmbedBuilder.setImageUrl(timelineImageMedia.getImage_versions2().getCandidates().get(0).getUrl());
+                                    webhookEmbedBuilder.setDescription(timelineImageMedia.getCaption().getText());
+                                } else if (instagramPost instanceof TimelineVideoMedia timelineVideoMedia) {
+                                    webhookEmbedBuilder.setDescription("[Click here to watch the video](" + timelineVideoMedia.getVideo_versions().get(0).getUrl() + ")");
+                                } else {
+                                    webhookEmbedBuilder.setDescription(user.getUsername() + " just posted something new on Instagram!");
+                                }
+
+                                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+
+                                webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
+
+                                webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+                                Main.getInstance().getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+
+                            });
+                        }
+                    }
+                }).exceptionally(exception -> {
+                    Main.getInstance().getAnalyticsLogger().error("Could not get Instagram User!", exception);
+                    return null;
+                }).join();
+            }
+        }, x -> Main.getInstance().getLogger().error("Couldn't start Instagram Stream!"), Duration.ofMinutes(5), true, true);
+    }
+
+    /**
+     * Used to register an Instagram-Post Event for all Insta-Users.
+     *
+     * @param username the Names of the User.
+     */
+    public void registerInstagramUser(String username) {
+        if (getInstagramClient() == null) return;
+
+        if (!isInstagramUserRegistered(username)) registeredInstagramUsers.add(username);
+    }
+
+    /**
+     * Used to register an Instagram-Post Event for all Insta-Users.
+     *
+     * @param usernames the Names of the Users.
+     */
+    public void registerInstagramUser(List<String> usernames) {
+        if (getInstagramClient() == null) return;
+
+        usernames.forEach(s -> {
+            if (!isInstagramUserRegistered(s)) registeredInstagramUsers.add(s);
+        });
+    }
+
+    /**
+     * Used to unregister an Instagram-Post Event for all Insta-Users.
+     *
+     * @param username the Names of the User.
+     */
+    public void unregisterInstagramUser(String username) {
+        if (getInstagramClient() == null) return;
+
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).isEmpty()) return;
+
+        if (isInstagramUserRegistered(username)) registeredInstagramUsers.remove(username);
+    }
+
+    /**
+     * Check if a User is already being checked.
+     *
+     * @param username the Names of the User.
+     * @return true, if there is an Event for the Channel | false, if there isn't an Event for the Channel.
+     */
+    public boolean isInstagramUserRegistered(String username) {
+        return registeredInstagramUsers.contains(username);
+    }
+
+    //endregion
+
     /**
      * Get an instance of the TwitchClient.
+     *
      * @return instance of the TwitchClient.
      */
     public TwitchClient getTwitchClient() {
@@ -450,9 +710,28 @@ public class Notifier {
 
     /**
      * Get an instance of the TwitterClient.
+     *
      * @return instance of the TwitterClient.
      */
     public Twitter getTwitterClient() {
         return twitterClient;
+    }
+
+    /**
+     * Get an instance of the RedditClient.
+     *
+     * @return instance of the RedditClient.
+     */
+    public Reddit4J getRedditClient() {
+        return redditClient;
+    }
+
+    /**
+     * Get an instance of the InstagramClient.
+     *
+     * @return instance of the InstagramClient.
+     */
+    public IGClient getInstagramClient() {
+        return instagramClient;
     }
 }
