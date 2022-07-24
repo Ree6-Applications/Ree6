@@ -51,7 +51,7 @@ public class OtherEvents extends ListenerAdapter {
 
         Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
 
-        BotWorker.setActivity(event.getJDA(),"ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
+        BotWorker.setActivity(event.getJDA(), "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
     }
 
     /**
@@ -107,7 +107,7 @@ public class OtherEvents extends ListenerAdapter {
             if (voiceChannel == null)
                 return;
 
-            if (!((TemporalVoicechannel)sqlResponse.getEntity()).getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
+            if (!((TemporalVoicechannel) sqlResponse.getEntity()).getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
                 return;
             }
 
@@ -136,7 +136,7 @@ public class OtherEvents extends ListenerAdapter {
             if (voiceChannel == null)
                 return;
 
-            if (!((TemporalVoicechannel)sqlResponse.getEntity()).getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
+            if (!((TemporalVoicechannel) sqlResponse.getEntity()).getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
                 return;
             }
 
@@ -175,11 +175,10 @@ public class OtherEvents extends ListenerAdapter {
 
         }
 
-        if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())) {
-            if (event.getChannelLeft().getMembers().size() == 0) {
-                event.getChannelLeft().delete().queue();
-                ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId());
-            }
+        if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())
+                && event.getChannelLeft().getMembers().isEmpty()) {
+            event.getChannelLeft().delete().queue();
+            ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId());
         }
         super.onGuildVoiceLeave(event);
     }
@@ -338,7 +337,7 @@ public class OtherEvents extends ListenerAdapter {
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
 
                         embedBuilder.setDescription("You can set up our own Welcome-Messages! " + "You can choice the Welcome-Channel by your own and even configure the Message!");
-                        
+
                         event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupWelcomeMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
 
@@ -393,9 +392,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 switch (event.getInteraction().getValues().get(0)) {
 
-                    case "backToSetupMenu" -> {
-                        sendDefaultChoice(event);
-                    }
+                    case "backToSetupMenu" -> sendDefaultChoice(event);
 
                     case "tempVoiceSetup" -> {
                         for (VoiceChannel channel : event.getGuild().getVoiceChannels()) {
@@ -449,9 +446,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 switch (event.getInteraction().getValues().get(0)) {
 
-                    case "backToSetupMenu" -> {
-                        sendDefaultChoice(event);
-                    }
+                    case "backToSetupMenu" -> sendDefaultChoice(event);
 
                     case "logSetup" -> {
                         for (TextChannel channel : event.getGuild().getTextChannels()) {
@@ -509,9 +504,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 switch (event.getInteraction().getValues().get(0)) {
 
-                    case "backToSetupMenu" -> {
-                        sendDefaultChoice(event);
-                    }
+                    case "backToSetupMenu" -> sendDefaultChoice(event);
 
                     case "welcomeSetup" -> {
                         for (TextChannel channel : event.getGuild().getTextChannels()) {
@@ -569,9 +562,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 switch (event.getInteraction().getValues().get(0)) {
 
-                    case "backToSetupMenu" -> {
-                        sendDefaultChoice(event);
-                    }
+                    case "backToSetupMenu" -> sendDefaultChoice(event);
 
                     case "newsSetup" -> {
                         for (TextChannel channel : event.getGuild().getTextChannels()) {
@@ -628,6 +619,7 @@ public class OtherEvents extends ListenerAdapter {
 
     /**
      * Called when the default choices should be sent.
+     *
      * @param event The InteractionEvent of the SelectMenu.
      */
     public void sendDefaultChoice(SelectMenuInteractionEvent event) {
@@ -647,7 +639,8 @@ public class OtherEvents extends ListenerAdapter {
 
     /**
      * Checks if the user has the required Permissions to use the Command.
-     * @param member The Member who should be checked.
+     *
+     * @param member  The Member who should be checked.
      * @param channel The Channel used.
      * @return True if the user has the required Permissions, false if not.
      */
