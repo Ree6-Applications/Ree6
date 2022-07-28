@@ -14,7 +14,6 @@ import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.sql.SQLConnector;
-import de.presti.ree6.sql.entities.BirthdayWish;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
@@ -31,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Main Application class, used to store Instances of System Relevant classes.

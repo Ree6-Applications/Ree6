@@ -1804,9 +1804,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             } else {
                 saveEntity(new BirthdayWish(guildId, channelId, userId, new SimpleDateFormat("dd.MM.yyyy").parse(birthday)));
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        } catch (ParseException ignore) {}
     }
 
     /**
