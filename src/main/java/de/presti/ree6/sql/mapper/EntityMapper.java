@@ -8,11 +8,7 @@ import de.presti.ree6.sql.base.data.SQLUtil;
 import de.presti.ree6.sql.base.data.StoredResultSet;
 
 import java.lang.reflect.Field;
-import java.sql.Blob;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
 
 /**
  * This class is used to map an SQL Result into the right Class-Entity.
