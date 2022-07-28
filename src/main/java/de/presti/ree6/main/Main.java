@@ -14,17 +14,21 @@ import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.sql.SQLConnector;
+import de.presti.ree6.sql.entities.BirthdayWish;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Main Application class, used to store Instances of System Relevant classes.
@@ -283,6 +287,22 @@ public class Main {
                     instance.logger.info("[Stats] Guilds: {}", BotWorker.getShardManager().getGuilds().size());
                     instance.logger.info("[Stats] Overall Users: {}", BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
                     instance.logger.info("[Stats] ");
+
+                    Calendar currentCalendar = Calendar.getInstance();
+
+                    getSqlConnector().getSqlWorker()
+                            .getBirthdays().stream().filter(birthday -> {
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTime(birthday.getBirthdate());
+                                return calendar.get(Calendar.MONTH) == currentCalendar.get(Calendar.MONTH) &&
+                                        calendar.get(Calendar.DAY_OF_MONTH) == currentCalendar.get(Calendar.DAY_OF_MONTH);
+                            }).forEach(birthday -> {
+                                TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
+
+                                if (textChannel != null && textChannel.canTalk())
+                                    textChannel.sendMessage("Happy birthday to <@" + birthday.getUserId() + ">!").queue();
+                            });
+
                     lastDay = new SimpleDateFormat("dd").format(new Date());
                 }
 
