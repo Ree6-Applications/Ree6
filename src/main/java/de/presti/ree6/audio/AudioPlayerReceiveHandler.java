@@ -175,7 +175,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                         .setColor(Color.GREEN)
                         .setFooter(Data.ADVERTISEMENT, voiceChannel.getGuild().getIconUrl())
                         .setTitle("Recording finished!")
-                        .build()).setActionRow(new ButtonImpl("ree6RedirctButton","Download here", ButtonStyle.LINK,
+                        .build()).setActionRow(new ButtonImpl("ree6RedirectButton","Download here", ButtonStyle.LINK,
                         "https://cp.ree6.de/recording?recordId=" + recording.getIdentifier(), false, Emoji.fromCustom("shiba", 941219375535509504L, true))).complete();
             }
             // Find a way to still notify that the bot couldn't send the audio.
