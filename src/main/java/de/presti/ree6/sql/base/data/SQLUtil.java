@@ -10,10 +10,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.sql.Blob;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 /**
  * SQLUtil class to help with SQL-Queries.
@@ -70,7 +67,7 @@ public class SQLUtil {
                 javaObjectClass.isAssignableFrom(char.class)) {
             return "CHAR(1)";
         } else if (javaObjectClass.isAssignableFrom(java.util.Date.class)) {
-            return "DATETIME";
+            return "BIGINT";
         } else if (javaObjectClass.isAssignableFrom(java.sql.Date.class)) {
             return "DATE";
         } else if (javaObjectClass.isAssignableFrom(java.sql.Time.class)) {
@@ -225,7 +222,7 @@ public class SQLUtil {
      * @param entityClass     the Entity.
      * @param entityInstance  the Entity instance.
      * @param onlyUpdateField if fields with the updateQuery value set to false should still be included.
-     * @param ignoreNull     if null values should be ignored.
+     * @param ignoreNull      if null values should be ignored.
      * @return {@link List} of {@link Object} as the {@link SQLParameter} value.
      */
     public static List<Object> getValuesFromSQLEntity(Class<?> entityClass, Object entityInstance, boolean onlyUpdateField, boolean ignoreNull) {
@@ -241,22 +238,7 @@ public class SQLUtil {
                 return !onlyUpdateField || property.updateQuery();
             }).map(field -> {
                 try {
-                    if (!field.canAccess(entityInstance)) field.trySetAccessible();
-
-                    Property property = field.getAnnotation(Property.class);
-
-                    Object value = field.get(entityInstance);
-
-                    if (!property.keepOriginalValue()) {
-                        if (value instanceof String valueString &&
-                                field.getType().isAssignableFrom(byte[].class)) {
-                            value = Base64.getDecoder().decode(valueString);
-                        } else if (value instanceof Blob blob) {
-                            value = SQLUtil.convertBlobToJSON(blob);
-                        }
-                    }
-
-                    return value;
+                    return getValueFromField(field, entityInstance);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -278,22 +260,7 @@ public class SQLUtil {
             return !onlyUpdateField || property.updateQuery();
         }).map(field -> {
             try {
-                if (!field.canAccess(entityInstance)) field.trySetAccessible();
-
-                Property property = field.getAnnotation(Property.class);
-
-                Object value = field.get(entityInstance);
-
-                if (!property.keepOriginalValue()) {
-                    if (value instanceof String valueString &&
-                            field.getType().isAssignableFrom(byte[].class)) {
-                        value = Base64.getDecoder().decode(valueString);
-                    } else if (value instanceof Blob blob) {
-                        value = SQLUtil.convertBlobToJSON(blob);
-                    }
-                }
-
-                return value;
+                return getValueFromField(field, entityInstance);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -309,7 +276,49 @@ public class SQLUtil {
     }
 
     /**
+     * Get the value of the Field.
+     *
+     * @param field          the Field.
+     * @param objectInstance the object instance.
+     * @return the value of the Field.
+     * @throws IllegalAccessException if the Field is not accessible.
+     */
+    public static Object getValueFromField(Field field, Object objectInstance) throws IllegalAccessException {
+        if (!field.canAccess(objectInstance)) field.trySetAccessible();
+
+        Object value = field.get(objectInstance);
+
+        value = mapCustomField(field, value);
+
+        return value;
+    }
+
+
+    /**
+     * @param field        the Field.
+     * @param currentValue the current value of the Field.
+     * @return the value of the Field.
+     */
+    public static Object mapCustomField(Field field, Object currentValue) {
+        Property property = field.getAnnotation(Property.class);
+        if (property.keepOriginalValue()) return currentValue;
+
+        if (currentValue instanceof String valueString &&
+                field.getType().isAssignableFrom(byte[].class)) {
+            currentValue = Base64.getDecoder().decode(valueString);
+        } else if (currentValue instanceof Blob blob) {
+            currentValue = SQLUtil.convertBlobToJSON(blob);
+        } else if (currentValue instanceof Long longValue &&
+                field.getType().isAssignableFrom(Date.class)) {
+            currentValue = new Date(longValue);
+        }
+
+        return currentValue;
+    }
+
+    /**
      * Convert a Blob to a {@link JsonElement}
+     *
      * @param blob the Blob to convert.
      * @return the {@link JsonElement} or {@link JsonNull} if the Blob is null.
      */
@@ -335,6 +344,7 @@ public class SQLUtil {
 
     /**
      * Convert a {@link JsonElement} to a Blob.
+     *
      * @param jsonElement the {@link JsonElement} to convert.
      * @return the Blob or null if the {@link JsonElement} is null.
      */

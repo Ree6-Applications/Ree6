@@ -8,9 +8,7 @@ import de.presti.ree6.sql.base.data.SQLUtil;
 import de.presti.ree6.sql.base.data.StoredResultSet;
 
 import java.lang.reflect.Field;
-import java.sql.Blob;
 import java.util.ArrayList;
-import java.util.Base64;
 
 /**
  * This class is used to map an SQL Result into the right Class-Entity.
@@ -93,16 +91,7 @@ public class EntityMapper {
             try {
                 if (!field.canAccess(entity)) field.trySetAccessible();
 
-                Object value = resultSet.getValue(columnName);
-
-                if (!property.keepOriginalValue()) {
-                    if (value instanceof String valueString &&
-                            field.getType().isAssignableFrom(byte[].class)) {
-                        value = Base64.getDecoder().decode(valueString);
-                    } else if (value instanceof Blob blob) {
-                        value = SQLUtil.convertBlobToJSON(blob);
-                    }
-                }
+                Object value = SQLUtil.mapCustomField(field, resultSet.getValue(columnName));
 
                 field.set(entity, value);
             } catch (Exception e) {
