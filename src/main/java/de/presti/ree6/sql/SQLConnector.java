@@ -12,6 +12,7 @@ import org.reflections.Reflections;
 
 import java.sql.*;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -192,6 +193,8 @@ public class SQLConnector {
                     preparedStatement.setObject(index++, SQLUtil.convertJSONToBlob(jsonElement), Types.BLOB);
                 } else if (obj instanceof byte[] byteArray) {
                     preparedStatement.setObject(index++, Base64.getEncoder().encodeToString(byteArray), Types.VARCHAR);
+                } else if (obj instanceof Date date) {
+                    preparedStatement.setObject(index++, date.getTime(), Types.BIGINT);
                 }
             }
 

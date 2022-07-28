@@ -67,7 +67,7 @@ public class SQLUtil {
                 javaObjectClass.isAssignableFrom(char.class)) {
             return "CHAR(1)";
         } else if (javaObjectClass.isAssignableFrom(java.util.Date.class)) {
-            return "DATETIME";
+            return "BIGINT";
         } else if (javaObjectClass.isAssignableFrom(java.sql.Date.class)) {
             return "DATE";
         } else if (javaObjectClass.isAssignableFrom(java.sql.Time.class)) {
@@ -309,7 +309,7 @@ public class SQLUtil {
         } else if (currentValue instanceof Blob blob) {
             currentValue = SQLUtil.convertBlobToJSON(blob);
         } else if (currentValue instanceof Long longValue &&
-                field.getType().isInstance(Date.class)) {
+                field.getType().isAssignableFrom(Date.class)) {
             currentValue = new Date(longValue);
         }
 

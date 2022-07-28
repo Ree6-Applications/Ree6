@@ -18,6 +18,7 @@ import de.presti.ree6.sql.entities.BirthdayWish;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
+import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -85,11 +87,6 @@ public class Main {
      * Instance of the Config System.
      */
     Config config;
-
-    /**
-     * A Thread used to check if a day has passed, and if so to clean the cache.
-     */
-    Thread checker;
 
     /**
      * String used to identify the last day.
@@ -254,13 +251,6 @@ public class Main {
         getNotifier().getTwitchClient().close();
         instance.logger.info("[Main] Twitch API Instance closed!");
 
-        if (checker != null && !checker.isInterrupted()) {
-            // Shutdown Checker Thread.
-            instance.logger.info("[Main] Interrupting the Checker thread!");
-            checker.interrupt();
-            instance.logger.info("[Main] Interrupted the Checker thread!");
-        }
-
         // Shutdown the Bot instance.
         instance.logger.info("[Main] JDA Instance shutdown init. !");
         BotWorker.shutdown();
@@ -275,7 +265,7 @@ public class Main {
      * Method creates a Thread used to create a Checker Thread.
      */
     public void createCheckerThread() {
-        checker = new Thread(() -> {
+        ThreadUtil.createNewThread(x -> {
             while (BotWorker.getState() != BotState.STOPPED) {
 
                 if (!lastDay.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
@@ -334,15 +324,8 @@ public class Main {
                         getLogger().error("Error accessing the AudioPlayer.", ex);
                     }
                 }
-
-                try {
-                    Thread.sleep((10 * (60000L)));
-                } catch (InterruptedException exception) {
-                    getInstance().getLogger().error("Checker Thread interrupted", exception);
-                }
             }
-        });
-        checker.start();
+        }, null, Duration.ofMinutes(1), true, false);
     }
 
     /**
@@ -434,15 +417,6 @@ public class Main {
             return analyticsLogger = LoggerFactory.getLogger("analytics");
         }
         return analyticsLogger;
-    }
-
-    /**
-     * Retrieve the Instance of the Checker-Thread.
-     *
-     * @return {@link Thread} Instance of the Checker-Thread.
-     */
-    public Thread getChecker() {
-        return checker;
     }
 
     /**

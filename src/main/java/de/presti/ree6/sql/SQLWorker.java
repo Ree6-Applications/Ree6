@@ -1816,7 +1816,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void removeBirthday(String guildId, String userId) {
         if (isBirthdaySaved(guildId, userId)) {
-            sqlConnector.querySQL("DELETE FROM Birthday WHERE GID=? AND UID=?", guildId, userId);
+            sqlConnector.querySQL("DELETE FROM BirthdayWish WHERE GID=? AND UID=?", guildId, userId);
         }
     }
 
@@ -1827,7 +1827,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isBirthdaySaved(String guildId, String userId) {
-        return sqlConnector.querySQL("SELECT * FROM Birthday WHERE GID=? AND UID=?", guildId, userId).hasResults();
+        return sqlConnector.querySQL("SELECT * FROM BirthdayWish WHERE GID=? AND UID=?", guildId, userId).hasResults();
     }
 
     /**
@@ -1837,7 +1837,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public BirthdayWish getBirthday(String guildId, String userId) {
-        return (BirthdayWish) getEntity(BirthdayWish.class, "SELECT * FROM Birthday WHERE GID=? AND UID=?", guildId, userId).getEntity();
+        return (BirthdayWish) getEntity(BirthdayWish.class, "SELECT * FROM BirthdayWish WHERE GID=? AND UID=?", guildId, userId).getEntity();
     }
 
     /**
@@ -1846,7 +1846,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List} of {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public List<BirthdayWish> getBirthdays(String guildId) {
-        return getEntity(BirthdayWish.class, "SELECT * FROM Birthday WHERE GID=?", guildId).getEntities().stream().map(BirthdayWish.class::cast).toList();
+        return getEntity(BirthdayWish.class, "SELECT * FROM BirthdayWish WHERE GID=?", guildId).getEntities().stream().map(BirthdayWish.class::cast).toList();
     }
 
     /**
@@ -1854,7 +1854,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List} of {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public List<BirthdayWish> getBirthdays() {
-        return getEntity(BirthdayWish.class, "SELECT * FROM Birthday").getEntities().stream().map(BirthdayWish.class::cast).toList();
+        return getEntity(BirthdayWish.class, "SELECT * FROM BirthdayWish").getEntities().stream().map(BirthdayWish.class::cast).toList();
     }
 
     //endregion

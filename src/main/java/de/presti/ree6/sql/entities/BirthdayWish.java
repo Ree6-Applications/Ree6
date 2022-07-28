@@ -33,7 +33,7 @@ public class BirthdayWish extends SQLEntity {
     /**
      * The Birthday.
      */
-    @Property(name = "birthday")
+    @Property(name = "birthday", keepOriginalValue = false)
     Date birthdate;
 
     /**
