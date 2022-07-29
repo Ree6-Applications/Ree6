@@ -420,8 +420,9 @@ public class OtherEvents extends ListenerAdapter {
                     case "statisticsSetupTwitch" -> {
                         embedBuilder.setDescription("What is the Name of the Twitch channel you want to use?");
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new TextInputImpl("setupStatisticsTwitch", TextInputStyle.SHORT,
-                                "Enter the Twitch channel name!", 1, 50, true, null, "The Twitch channel name"))).queue();
+                        /* event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new TextInputImpl("setupStatisticsTwitch", TextInputStyle.SHORT,
+                                "Enter the Twitch channel name!", 1, 50, true, null, "The Twitch channel name"))).queue(); */
+                        // This wont work since you can not use TextInputs on Message. Only on Models!
                     }
 
                     default -> {
