@@ -93,19 +93,34 @@ public class Notifier {
      */
     public Notifier() {
         Main.getInstance().getAnalyticsLogger().info("Initializing Twitch Client...");
-        twitchClient = TwitchClientBuilder.builder().withEnableHelix(true).withClientId(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id")).withClientSecret(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret")).build();
+        twitchClient = TwitchClientBuilder
+                .builder()
+                .withEnableHelix(true)
+                .withClientId(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"))
+                .withClientSecret(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"))
+                .withEnablePubSub(true)
+                .build();
 
         Main.getInstance().getAnalyticsLogger().info("Initializing Twitter Client...");
 
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 
-        configurationBuilder.setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key")).setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret")).setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token")).setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token.secret")).setDebugEnabled(BotWorker.getVersion() == BotVersion.DEVELOPMENT_BUILD);
+        configurationBuilder
+                .setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key"))
+                .setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret"))
+                .setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token"))
+                .setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token.secret"))
+                .setDebugEnabled(BotWorker.getVersion() == BotVersion.DEVELOPMENT_BUILD);
 
         twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
 
         Main.getInstance().getAnalyticsLogger().info("Initializing Reddit Client...");
 
-        redditClient = Reddit4J.rateLimited().setClientId(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.id")).setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.secret")).setUserAgent("Ree6Bot/" + BotWorker.getBuild() + " (by /u/PrestiSchmesti)");
+        redditClient = Reddit4J
+                .rateLimited()
+                .setClientId(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.id"))
+                .setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.secret"))
+                .setUserAgent("Ree6Bot/" + BotWorker.getBuild() + " (by /u/PrestiSchmesti)");
 
         try {
             redditClient.userlessConnect();
