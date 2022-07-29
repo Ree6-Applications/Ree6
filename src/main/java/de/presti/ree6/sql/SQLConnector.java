@@ -164,7 +164,7 @@ public class SQLConnector {
                 connectToSQLServer();
                 return querySQL(sqlQuery, objcObjects);
             } else {
-                return null;
+                return new StoredResultSet();
             }
         }
 

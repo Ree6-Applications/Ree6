@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl.mod;
 
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
@@ -44,6 +45,7 @@ public class Setup implements ICommand {
             optionList.add(SelectOption.of("News-channel", "news"));
             optionList.add(SelectOption.of("Autorole", "autorole"));
             optionList.add(SelectOption.of("Temporal-Voice", "tempvoice"));
+            optionList.add(SelectOption.of("Statistics", "statistics"));
 
             SelectMenu selectMenu = new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList);
 

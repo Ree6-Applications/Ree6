@@ -7,7 +7,7 @@ import de.presti.ree6.sql.base.annotations.Table;
  * SQL Entity for the Guild-Stats.
  */
 @Table(name = "GuildStats")
-public class GuildStats extends Stats {
+public class GuildCommandStats extends CommandStats {
 
     /**
      * The Guild ID.
@@ -18,7 +18,7 @@ public class GuildStats extends Stats {
     /**
      * Constructor.
      */
-    public GuildStats() {
+    public GuildCommandStats() {
     }
 
     /**
@@ -27,7 +27,7 @@ public class GuildStats extends Stats {
      * @param command Name of the Command.
      * @param uses    Number of times the Command was used.
      */
-    public GuildStats(String guildId, String command, int uses) {
+    public GuildCommandStats(String guildId, String command, int uses) {
         super(command, uses);
         this.guildId = guildId;
     }

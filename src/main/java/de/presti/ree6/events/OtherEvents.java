@@ -29,7 +29,9 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.TextInputImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -336,7 +338,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
 
-                        embedBuilder.setDescription("You can set up our own Welcome-Messages! " + "You can choice the Welcome-Channel by your own and even configure the Message!");
+                        embedBuilder.setDescription("You can set up our own Welcome-Messages!\nYou can choice the Welcome-Channel by your own and even configure the Message!");
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupWelcomeMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
@@ -349,13 +351,13 @@ public class OtherEvents extends ListenerAdapter {
 
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
 
-                        embedBuilder.setDescription("You can set up our own Ree6-News! " + "By setting up Ree6-News on a specific channel you will get a Message in the given Channel, when ever Ree6 gets an update!");
+                        embedBuilder.setDescription("You can set up our own Ree6-News!\nBy setting up Ree6-News on a specific channel you will get a Message in the given Channel, when ever Ree6 gets an update!");
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupNewsMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
 
                     case "autorole" -> {
-                        embedBuilder.setDescription("You can set up our own Autorole-System! " + "You can select Roles that Users should get upon joining the Server!");
+                        embedBuilder.setDescription("You can set up our own Autorole-System!\nYou can select Roles that Users should get upon joining the Server!");
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(Button.link("https://cp.ree6.de", "Webinterface"))).queue();
                     }
@@ -368,15 +370,87 @@ public class OtherEvents extends ListenerAdapter {
 
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
 
-                        embedBuilder.setDescription("You can set up your own Temporal Voicechannel! " + "By setting up Temporal Voicechannel on a specific channel which will be used to create a new Voicechannel when ever someones joins into it!");
+                        embedBuilder.setDescription("You can set up your own Temporal Voicechannel!\nBy setting up Temporal Voicechannel on a specific channel which will be used to create a new Voicechannel when ever someones joins into it!");
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupTempVoiceMenu", "Select your Action", 1, 1, false, optionList))).queue();
+                    }
+
+                    case "statistics" -> {
+                        optionList.add(SelectOption.of("Setup Member Statistics", "statisticsSetupMember"));
+                        optionList.add(SelectOption.of("Setup Twitch Statistics", "statisticsSetupTwitch"));
+                        optionList.add(SelectOption.of("Setup YouTube Statistics", "statisticsSetupYouTube"));
+                        optionList.add(SelectOption.of("Setup Reddit Statistics", "statisticsSetupReddit"));
+                        optionList.add(SelectOption.of("Setup Twitter Statistics", "statisticsSetupTwitter"));
+                        optionList.add(SelectOption.of("Setup Instagram Statistics", "statisticsSetupInstagram"));
+
+                        optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
+
+                        embedBuilder.setDescription("You can set up your own Statistic-channels!\nBy setting up Statistic-channels Ree6 will create new channels for each Statistic-Type that you setup!\nIf you want to get rid of a Statistic-Channel, just delete it!");
+
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupStatisticsMenu", "Select your Action", 1, 1, false, optionList))).queue();
                     }
 
                     default -> {
                         embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
                         event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
+                }
+            }
+
+            case "setupStatisticsMenu" -> {
+
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                List<SelectOption> optionList = new ArrayList<>();
+
+                switch (event.getInteraction().getValues().get(0)) {
+
+                    case "backToSetupMenu" -> sendDefaultChoice(event);
+
+                    case "statisticsSetupMember" -> {
+                        embedBuilder.setDescription("Successfully setup the statistics channels for Member statistics!");
+                        embedBuilder.setColor(Color.GREEN);
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                    }
+
+                    case "statisticsSetupTwitch" -> {
+                        embedBuilder.setDescription("What is the Name of the Twitch channel you want to use?");
+
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new TextInputImpl("setupStatisticsTwitch", TextInputStyle.SHORT,
+                                "Enter the Twitch channel name!", 1, 50, true, null, "The Twitch channel name"))).queue();
+                    }
+
+                    default -> {
+                        if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
+                            return;
+
+                        embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
+                        event.editMessageEmbeds(embedBuilder.build()).queue();
+                    }
+                }
+            }
+
+            case "setupTempVoicechannel" -> {
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getInteraction().getValues().get(0));
+
+                if (voiceChannel != null) {
+                    Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(new TemporalVoicechannel(event.getGuild().getId(), voiceChannel.getId()));
+                    embedBuilder.setDescription("Successfully changed the Temporal Voicechannel, nice work!");
+                    embedBuilder.setColor(Color.GREEN);
+                    event.editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                } else {
+                    embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
+                    event.editMessageEmbeds(embedBuilder.build()).queue();
                 }
             }
 
@@ -411,26 +485,6 @@ public class OtherEvents extends ListenerAdapter {
                         embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
                         event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
-                }
-            }
-
-            case "setupTempVoicechannel" -> {
-                if (checkPerms(event.getMember(), event.getChannel())) {
-                    return;
-                }
-
-                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
-
-                VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getInteraction().getValues().get(0));
-
-                if (voiceChannel != null) {
-                    Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(new TemporalVoicechannel(event.getGuild().getId(), voiceChannel.getId()));
-                    embedBuilder.setDescription("Successfully changed the Temporal Voicechannel, nice work!");
-                    embedBuilder.setColor(Color.GREEN);
-                    event.editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
-                } else {
-                    embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
-                    event.editMessageEmbeds(embedBuilder.build()).queue();
                 }
             }
 
@@ -631,6 +685,7 @@ public class OtherEvents extends ListenerAdapter {
         optionList.add(SelectOption.of("News-channel", "news"));
         optionList.add(SelectOption.of("Autorole", "autorole"));
         optionList.add(SelectOption.of("Temporal-Voice", "tempvoice"));
+        optionList.add(SelectOption.of("Statistics", "statistics"));
 
         embedBuilder.setDescription("Which configuration do you want to check out?");
 
