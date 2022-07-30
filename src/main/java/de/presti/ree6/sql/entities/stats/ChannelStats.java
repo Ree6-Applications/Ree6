@@ -141,4 +141,56 @@ public class ChannelStats extends SQLEntity {
     public String getSubredditMemberChannelSubredditName() {
         return subredditMemberChannelSubredditName;
     }
+
+    public void setMemberStatsChannelId(String memberStatsChannelId) {
+        this.memberStatsChannelId = memberStatsChannelId;
+    }
+
+    public void setRealMemberStatsChannelId(String realMemberStatsChannelId) {
+        this.realMemberStatsChannelId = realMemberStatsChannelId;
+    }
+
+    public void setBotMemberStatsChannelId(String botMemberStatsChannelId) {
+        this.botMemberStatsChannelId = botMemberStatsChannelId;
+    }
+
+    public void setTwitterFollowerChannelId(String twitterFollowerChannelId) {
+        this.twitterFollowerChannelId = twitterFollowerChannelId;
+    }
+
+    public void setTwitterFollowerChannelUsername(String twitterFollowerChannelUsername) {
+        this.twitterFollowerChannelUsername = twitterFollowerChannelUsername;
+    }
+
+    public void setInstagramFollowerChannelId(String instagramFollowerChannelId) {
+        this.instagramFollowerChannelId = instagramFollowerChannelId;
+    }
+
+    public void setInstagramFollowerChannelUsername(String instagramFollowerChannelUsername) {
+        this.instagramFollowerChannelUsername = instagramFollowerChannelUsername;
+    }
+
+    public void setTwitchFollowerChannelId(String twitchFollowerChannelId) {
+        this.twitchFollowerChannelId = twitchFollowerChannelId;
+    }
+
+    public void setTwitchFollowerChannelUsername(String twitchFollowerChannelUsername) {
+        this.twitchFollowerChannelUsername = twitchFollowerChannelUsername;
+    }
+
+    public void setYoutubeSubscribersChannelId(String youtubeSubscribersChannelId) {
+        this.youtubeSubscribersChannelId = youtubeSubscribersChannelId;
+    }
+
+    public void setYoutubeSubscribersChannelUsername(String youtubeSubscribersChannelUsername) {
+        this.youtubeSubscribersChannelUsername = youtubeSubscribersChannelUsername;
+    }
+
+    public void setSubredditMemberChannelId(String subredditMemberChannelId) {
+        this.subredditMemberChannelId = subredditMemberChannelId;
+    }
+
+    public void setSubredditMemberChannelSubredditName(String subredditMemberChannelSubredditName) {
+        this.subredditMemberChannelSubredditName = subredditMemberChannelSubredditName;
+    }
 }
