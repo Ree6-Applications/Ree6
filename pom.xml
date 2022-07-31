@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>1.9.0</version>
+    <version>1.9.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -314,9 +314,9 @@
             <version>1.2.11</version>
         </dependency>
         <dependency>
-            <groupId>com.github.Ree6-Applications</groupId>
-            <artifactId>lavaplayer</artifactId>
-            <version>1.3.83</version>
+            <groupId>com.github.walkyst</groupId>
+            <artifactId>lavaplayer-fork</artifactId>
+            <version>1.3.98.2</version>
         </dependency>
         <dependency>
             <groupId>com.jagrosh</groupId>
