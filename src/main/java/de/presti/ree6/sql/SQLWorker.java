@@ -104,8 +104,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<ChatUserLevel>} as container of the User IDs.
      */
     public List<ChatUserLevel> getTopChat(String guildId, int limit) {
-        return Objects.requireNonNull(getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities()
-                .stream().map(ChatUserLevel.class::cast).toList();
+        return Objects.requireNonNull(getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities().stream().map(ChatUserLevel.class::cast).toList();
     }
 
     /**
@@ -120,8 +119,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userIds = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId).getValues("UID")
-                .stream().map(String.class::cast).forEach(userIds::add);
+        sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId).getValues("UID").stream().map(String.class::cast).forEach(userIds::add);
 
         // Return the list.
         return userIds;
@@ -190,8 +188,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public List<VoiceUserLevel> getTopVoice(String guildId, int limit) {
         // Return the list.
-        return Objects.requireNonNull(getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities()
-                .stream().map(VoiceUserLevel.class::cast).toList();
+        return Objects.requireNonNull(getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities().stream().map(VoiceUserLevel.class::cast).toList();
     }
 
     /**
@@ -206,8 +203,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userIds = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId).getValues("UID")
-                .stream().map(String.class::cast).forEach(userIds::add);
+        sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId).getValues("UID").stream().map(String.class::cast).forEach(userIds::add);
 
         // Return the list.
         return userIds;
@@ -436,8 +432,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitchNotify").getValues("NAME")
-                .stream().map(String.class::cast).forEach(userNames::add);
+        sqlConnector.querySQL("SELECT * FROM TwitchNotify").getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -453,8 +448,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId).getValues("NAME")
-                .stream().map(String.class::cast).forEach(userNames::add);
+        sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -557,8 +551,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> usernames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the InstagramNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM InstagramNotify").getValues("NAME")
-                .stream().map(String.class::cast).forEach(usernames::add);
+        sqlConnector.querySQL("SELECT * FROM InstagramNotify").getValues("NAME").stream().map(String.class::cast).forEach(usernames::add);
 
         return usernames;
     }
@@ -574,8 +567,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> usernames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM InstagramNotify WHERE GID=?", guildId).getValues("NAME")
-                .stream().map(String.class::cast).forEach(usernames::add);
+        sqlConnector.querySQL("SELECT * FROM InstagramNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(usernames::add);
 
         return usernames;
     }
@@ -678,8 +670,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> subreddits = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM RedditNotify").getValues("SUBREDDIT")
-                .stream().map(String.class::cast).forEach(subreddits::add);
+        sqlConnector.querySQL("SELECT * FROM RedditNotify").getValues("SUBREDDIT").stream().map(String.class::cast).forEach(subreddits::add);
 
         return subreddits;
     }
@@ -695,8 +686,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> subreddits = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM RedditNotify WHERE GID=?", guildId).getValues("SUBREDDIT")
-                .stream().map(String.class::cast).forEach(subreddits::add);
+        sqlConnector.querySQL("SELECT * FROM RedditNotify WHERE GID=?", guildId).getValues("SUBREDDIT").stream().map(String.class::cast).forEach(subreddits::add);
 
         return subreddits;
     }
@@ -799,8 +789,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM YouTubeNotify").getValues("NAME")
-                .stream().map(String.class::cast).forEach(userNames::add);
+        sqlConnector.querySQL("SELECT * FROM YouTubeNotify").getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -816,8 +805,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId).getValues("NAME")
-                .stream().map(String.class::cast).forEach(userNames::add);
+        sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -920,8 +908,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitterNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitterNotify").getValues("NAME")
-                .stream().map(String.class::cast).forEach(userNames::add);
+        sqlConnector.querySQL("SELECT * FROM TwitterNotify").getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -937,8 +924,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId).getValues("NAME")
-                .stream().map(String.class::cast).forEach(userNames::add);
+        sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -1791,10 +1777,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Store the birthday of the user in the database
-     * @param guildId the ID of the Guild.
+     *
+     * @param guildId   the ID of the Guild.
      * @param channelId the ID of the Channel.
-     * @param userId the ID of the User.
-     * @param birthday the birthday of the user.
+     * @param userId    the ID of the User.
+     * @param birthday  the birthday of the user.
      */
     public void addBirthday(String guildId, String channelId, String userId, String birthday) {
         try {
@@ -1804,13 +1791,15 @@ public record SQLWorker(SQLConnector sqlConnector) {
             } else {
                 saveEntity(new BirthdayWish(guildId, channelId, userId, new SimpleDateFormat("dd.MM.yyyy").parse(birthday)));
             }
-        } catch (ParseException ignore) {}
+        } catch (ParseException ignore) {
+        }
     }
 
     /**
      * Check if there is any saved birthday for the given User.
+     *
      * @param guildId the ID of the Guild.
-     * @param userId the ID of the User.
+     * @param userId  the ID of the User.
      */
     public void removeBirthday(String guildId, String userId) {
         if (isBirthdaySaved(guildId, userId)) {
@@ -1820,8 +1809,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Check if a birthday is saved for the given User.
+     *
      * @param guildId the ID of the Guild.
-     * @param userId the ID of the User.
+     * @param userId  the ID of the User.
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isBirthdaySaved(String guildId, String userId) {
@@ -1830,8 +1820,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Get the birthday of the given User.
+     *
      * @param guildId the ID of the Guild.
-     * @param userId the ID of the User.
+     * @param userId  the ID of the User.
      * @return {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public BirthdayWish getBirthday(String guildId, String userId) {
@@ -1840,6 +1831,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Get all saved birthdays.
+     *
      * @param guildId the ID of the Guild.
      * @return {@link List} of {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
@@ -1849,6 +1841,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Get all saved birthdays.
+     *
      * @return {@link List} of {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public List<BirthdayWish> getBirthdays() {

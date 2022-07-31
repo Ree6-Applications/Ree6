@@ -39,13 +39,4 @@ public class ChatUserLevel extends UserLevel {
     public ChatUserLevel(String guildId, String userId, long experience, long level) {
         super(guildId, userId, experience, level, Main.getInstance().getSqlConnector().getSqlWorker().getAllChatLevelSorted(guildId).indexOf(userId));
     }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public long getExperienceForLevel(long level) {
-        return (long) (1000 + (1000 * Math.pow(level, 0.55)));
-    }
-
 }

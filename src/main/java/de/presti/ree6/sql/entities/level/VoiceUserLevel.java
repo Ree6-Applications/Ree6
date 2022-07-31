@@ -39,12 +39,4 @@ public class VoiceUserLevel extends UserLevel {
     public VoiceUserLevel(String guildId, String userId, long experience, long level) {
         super(guildId, userId, experience, level, Main.getInstance().getSqlConnector().getSqlWorker().getAllVoiceLevelSorted(guildId).indexOf(userId));
     }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public long getExperienceForLevel(long level) {
-        return (long) (1000 + (1000 * Math.pow(level, 1.05)));
-    }
 }
