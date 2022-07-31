@@ -153,7 +153,7 @@ public class AddonManager {
 
             // If it has the AddonInterface mark it as valid.
             if (anIf.getName().equalsIgnoreCase("de.presti.ree6.addons.AddonInterface")) {
-                return anIf;
+                return urlCl;
             }
         }
 
