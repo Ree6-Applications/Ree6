@@ -57,7 +57,6 @@ public class Play implements ICommand {
             }
 
         } else {
-
             if (commandEvent.getArguments().length < 1) {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,

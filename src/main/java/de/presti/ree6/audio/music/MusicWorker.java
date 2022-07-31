@@ -191,7 +191,6 @@ public class MusicWorker {
                     firstTrack = playlist.getTracks().get(0);
                 }
 
-
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
                         .setTitle("Music Player!")
