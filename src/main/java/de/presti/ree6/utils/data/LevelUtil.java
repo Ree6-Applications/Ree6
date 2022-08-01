@@ -89,9 +89,9 @@ public class LevelUtil {
      */
     public static int getCurrentRank(UserLevel userLevel) {
         if (userLevel instanceof ChatUserLevel) {
-            return Main.getInstance().getSqlConnector().getSqlWorker().getAllChatLevelSorted(userLevel.getGuildId()).indexOf(userLevel.getUserId());
+            return Main.getInstance().getSqlConnector().getSqlWorker().getAllChatLevelSorted(userLevel.getGuildId()).indexOf(userLevel.getUserId()) + 1;
         } else if (userLevel instanceof VoiceUserLevel) {
-            return Main.getInstance().getSqlConnector().getSqlWorker().getAllVoiceLevelSorted(userLevel.getGuildId()).indexOf(userLevel.getUserId());
+            return Main.getInstance().getSqlConnector().getSqlWorker().getAllVoiceLevelSorted(userLevel.getGuildId()).indexOf(userLevel.getUserId()) + 1;
         }
 
         return 0;
