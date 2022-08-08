@@ -108,6 +108,8 @@ public class LoggingEvents extends ListenerAdapter {
 
                     if (entry.getTargetId().equals(event.getUser().getId())) {
                         wm2.append("**The Bot** " + event.getUser().getAsMention() + " **has been invited by** <@" + entry.getUser().getId() + ">");
+                    } else {
+                        wm2.append("**We could not find out who Invite the Bot** " + event.getUser().getAsMention());
                     }
                 });
             } else {
