@@ -308,12 +308,9 @@ public class Notifier {
 
                 WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
-                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(status.getUser().getName() + " (@" + status.getUser().getScreenName() + ")", null));
-                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitter Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(status.getUser().getName() + " (@" + status.getUser().getScreenName() + ")", status.getUser().getBiggerProfileImageURLHttps(), null));
 
-                webhookEmbedBuilder.setThumbnailUrl(status.getUser().getBiggerProfileImageURLHttps());
-
-                webhookEmbedBuilder.setDescription(status.getQuotedStatus() != null && !status.isRetweet() ? "**Quoted  " + status.getQuotedStatus().getUser().getScreenName() + "**: " + status.getText() + "\n" : status.getInReplyToScreenName() != null ? "**Reply to " + status.getInReplyToScreenName() + "**: " + status.getText() + "\n" : status.isRetweet() ? "**Retweeted from " + status.getRetweetedStatus().getUser().getScreenName() + "**: " + status.getText().split(": ")[1] + "\n" : "**" + status.getText() + "**\n");
+                webhookEmbedBuilder.setDescription(status.getQuotedStatus() != null && !status.isRetweet() ? "**Quoted  " + status.getQuotedStatus().getUser().getScreenName() + "**: " + status.getText() + "\n" : status.getInReplyToScreenName() != null ? "**Reply to " + status.getInReplyToScreenName() + "**: " + status.getText() + "\n" : status.isRetweet() ? "**Retweeted from " + status.getRetweetedStatus().getUser().getScreenName() + "**: " + status.getText().split(": ")[1] + "\n" : status.getText() + "\n");
 
                 if (status.getMediaEntities().length > 0 && status.getMediaEntities()[0].getType().equalsIgnoreCase("photo")) {
                     webhookEmbedBuilder.setImageUrl(status.getMediaEntities()[0].getMediaURLHttps());
