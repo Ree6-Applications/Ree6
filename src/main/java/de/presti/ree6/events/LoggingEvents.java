@@ -633,7 +633,7 @@ public class LoggingEvents extends ListenerAdapter {
      */
     @Override
     public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) &&
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
                 !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_rolehoisted").getBooleanValue())
             return;
 
@@ -662,7 +662,7 @@ public class LoggingEvents extends ListenerAdapter {
      */
     @Override
     public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) &&
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
                 !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_rolepermission").getBooleanValue())
             return;
 
