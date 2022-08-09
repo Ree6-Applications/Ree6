@@ -54,7 +54,7 @@ public class Config {
             yamlFile.addDefault("instagram.username", "yourInstagramUsername");
             yamlFile.addDefault("instagram.password", "yourInstagramPassword");
             yamlFile.addDefault("youtube.api.key", "youryoutubeapikey");
-            yamlFile.addDefault("bot.tokens.rel", "ReleaseTokenhere");
+            yamlFile.addDefault("bot.tokens.release", "ReleaseTokenhere");
             yamlFile.addDefault("bot.tokens.beta", "BetaTokenhere");
             yamlFile.addDefault("bot.tokens.dev", "DevTokenhere");
 
