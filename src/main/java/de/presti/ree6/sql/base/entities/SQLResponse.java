@@ -1,4 +1,4 @@
-package de.presti.ree6.sql.base.entitis;
+package de.presti.ree6.sql.base.entities;
 
 import java.util.ArrayList;
 import java.util.List;

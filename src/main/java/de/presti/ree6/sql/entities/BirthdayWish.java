@@ -2,7 +2,7 @@ package de.presti.ree6.sql.entities;
 
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entitis.SQLEntity;
+import de.presti.ree6.sql.base.entities.SQLEntity;
 
 import java.util.Date;
 
