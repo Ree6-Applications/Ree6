@@ -1257,7 +1257,12 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public List<InviteContainer> getInvites(String guildId) {
         ArrayList<InviteContainer> invites = new ArrayList<>();
-        getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=?", guildId).getEntities().stream().map(o -> {
+
+        SQLResponse sqlResponse = getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=?", guildId);
+
+        if (!sqlResponse.isSuccess()) return invites;
+
+        sqlResponse.getEntities().stream().map(o -> {
             Invite invite = (Invite) o;
             return new InviteContainer(invite.getUserId(), invite.getGuild(), invite.getCode(), invite.getUses(), false);
         }).forEach(invites::add);
@@ -1312,7 +1317,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Invite} as result if true, then it's saved in our Database | may be null.
      */
     public Invite getInvite(String guildId, String inviteCode) {
-        return (Invite) getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND CODE=?", guildId, inviteCode).getEntity();
+        SQLResponse sqlResponse = getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND CODE=?", guildId, inviteCode);
+        return sqlResponse.isSuccess() ? (Invite) sqlResponse.getEntity() : null;
     }
 
     /**
@@ -1324,7 +1330,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Invite} as result if true, then it's saved in our Database | may be null.
      */
     public Invite getInvite(String guildId, String inviteCreator, String inviteCode) {
-        return (Invite) getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode).getEntity();
+        SQLResponse sqlResponse = getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode);
+        return sqlResponse.isSuccess() ? (Invite) sqlResponse.getEntity() : null;
     }
 
     /**
@@ -1371,7 +1378,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Message as {@link String}
      */
     public String getMessage(String guildId) {
-        return ((Setting) getEntity(Setting.class, "SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, "message_join").getEntity()).getStringValue();
+        SQLResponse sqlResponse = getEntity(Setting.class, "SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, "message_join");
+        return sqlResponse.isSuccess() ? ((Setting) sqlResponse.getEntity()).getStringValue() : "Welcome %user_mention%!\nWe wish you a great stay on %guild_name%";
     }
 
     /**
@@ -1504,7 +1512,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         ArrayList<Setting> settings = new ArrayList<>();
 
-        getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ?", guildId).getEntities().stream().map(Setting.class::cast).forEach(settings::add);
+        SQLResponse sqlResponse = getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ?", guildId);
+
+        if (!sqlResponse.isSuccess()) {
+            return settings;
+        }
+
+        sqlResponse.getEntities().stream().map(Setting.class::cast).forEach(settings::add);
 
         // If there is no setting to be found, create every setting.
         if (settings.isEmpty()) {
