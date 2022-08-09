@@ -1,7 +1,7 @@
 package de.presti.ree6.sql.entities.webhook;
 
 import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.data.SQLEntity;
+import de.presti.ree6.sql.base.entitis.SQLEntity;
 
 /**
  * SQL Entity for the Webhooks.

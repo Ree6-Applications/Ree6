@@ -1,7 +1,7 @@
 package de.presti.ree6.sql.entities.level;
 
 import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.data.SQLEntity;
+import de.presti.ree6.sql.base.entitis.SQLEntity;
 import de.presti.ree6.utils.data.LevelUtil;
 import net.dv8tion.jda.api.entities.User;
 

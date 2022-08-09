@@ -12,7 +12,7 @@ import de.presti.ree6.logger.events.implentation.LogMessageVoice;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.logger.invite.InviteContainerManager;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.data.SQLResponse;
+import de.presti.ree6.sql.base.entitis.SQLResponse;
 import de.presti.ree6.sql.entities.Invite;
 import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.utils.data.ArrayUtil;

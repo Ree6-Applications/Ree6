@@ -1,4 +1,4 @@
-package de.presti.ree6.sql.base.data;
+package de.presti.ree6.sql.base.utils;
 
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLConnector;

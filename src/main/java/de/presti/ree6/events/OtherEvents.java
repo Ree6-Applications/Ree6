@@ -5,7 +5,7 @@ import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.data.SQLResponse;
+import de.presti.ree6.sql.base.entitis.SQLResponse;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;

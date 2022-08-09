@@ -3,7 +3,7 @@ package de.presti.ree6.sql.entities;
 import com.google.gson.JsonArray;
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.data.SQLEntity;
+import de.presti.ree6.sql.base.entitis.SQLEntity;
 import de.presti.ree6.utils.others.RandomUtils;
 
 /**

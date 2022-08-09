@@ -23,7 +23,9 @@ public class ImageCreationUtility {
         throw new IllegalStateException("Utility class");
     }
 
-    // Cached Background Image, for performance.
+    /**
+     * Cached Background Image, for performance.
+     */
     private static BufferedImage rankBackgroundBase;
 
     /**
