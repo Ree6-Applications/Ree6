@@ -2,10 +2,10 @@ package de.presti.ree6.sql.mapper;
 
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.data.SQLEntity;
-import de.presti.ree6.sql.base.data.SQLResponse;
-import de.presti.ree6.sql.base.data.SQLUtil;
-import de.presti.ree6.sql.base.data.StoredResultSet;
+import de.presti.ree6.sql.base.entities.SQLEntity;
+import de.presti.ree6.sql.base.entities.SQLResponse;
+import de.presti.ree6.sql.base.entities.StoredResultSet;
+import de.presti.ree6.sql.base.utils.SQLUtil;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

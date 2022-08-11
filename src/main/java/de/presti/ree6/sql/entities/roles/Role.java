@@ -1,7 +1,7 @@
 package de.presti.ree6.sql.entities.roles;
 
 import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.data.SQLEntity;
+import de.presti.ree6.sql.base.entities.SQLEntity;
 
 /**
  * Role class to store data about roles.

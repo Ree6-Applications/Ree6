@@ -1,4 +1,4 @@
-package de.presti.ree6.sql.base.data;
+package de.presti.ree6.sql.base.entities;
 
 /**
  * This class is used to represent a SQL Parameter.

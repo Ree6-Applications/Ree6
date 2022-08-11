@@ -7,10 +7,10 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.data.SQLEntity;
-import de.presti.ree6.sql.base.data.SQLParameter;
-import de.presti.ree6.sql.base.data.SQLResponse;
-import de.presti.ree6.sql.base.data.SQLUtil;
+import de.presti.ree6.sql.base.entities.SQLEntity;
+import de.presti.ree6.sql.base.entities.SQLParameter;
+import de.presti.ree6.sql.base.entities.SQLResponse;
+import de.presti.ree6.sql.base.utils.SQLUtil;
 import de.presti.ree6.sql.entities.BirthdayWish;
 import de.presti.ree6.sql.entities.Blacklist;
 import de.presti.ree6.sql.entities.Invite;
@@ -104,8 +104,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<ChatUserLevel>} as container of the User IDs.
      */
     public List<ChatUserLevel> getTopChat(String guildId, int limit) {
-        return Objects.requireNonNull(getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities()
-                .stream().map(ChatUserLevel.class::cast).toList();
+        return Objects.requireNonNull(getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities().stream().map(ChatUserLevel.class::cast).toList();
     }
 
     /**
@@ -120,8 +119,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userIds = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId).getValues("UID")
-                .stream().map(String.class::cast).forEach(userIds::add);
+        sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId).getValues("UID").stream().map(String.class::cast).forEach(userIds::add);
 
         // Return the list.
         return userIds;
@@ -190,8 +188,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public List<VoiceUserLevel> getTopVoice(String guildId, int limit) {
         // Return the list.
-        return Objects.requireNonNull(getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities()
-                .stream().map(VoiceUserLevel.class::cast).toList();
+        return Objects.requireNonNull(getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities().stream().map(VoiceUserLevel.class::cast).toList();
     }
 
     /**
@@ -206,8 +203,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userIds = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId).getValues("UID")
-                .stream().map(String.class::cast).forEach(userIds::add);
+        sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId).getValues("UID").stream().map(String.class::cast).forEach(userIds::add);
 
         // Return the list.
         return userIds;
@@ -228,7 +224,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Webhook} with all the needed data.
      */
     public Webhook getLogWebhook(String guildId) {
-        return (Webhook) getEntity(Webhook.class, "SELECT * FROM LogWebhooks WHERE GID=?", guildId).getEntity();
+        SQLResponse sqlResponse = getEntity(Webhook.class, "SELECT * FROM LogWebhooks WHERE GID=?", guildId);
+        return sqlResponse.isSuccess() ? (Webhook) sqlResponse.getEntity() : null;
     }
 
     /**
@@ -307,7 +304,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookWelcome} with all the needed data.
      */
     public WebhookWelcome getWelcomeWebhook(String guildId) {
-        return (WebhookWelcome) getEntity(WebhookWelcome.class, "SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId).getEntity();
+        SQLResponse sqlResponse = getEntity(WebhookWelcome.class, "SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId);
+        return sqlResponse.isSuccess() ? (WebhookWelcome) sqlResponse.getEntity() : null;
     }
 
     /**
@@ -360,7 +358,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookNews} with all the needed data.
      */
     public WebhookNews getNewsWebhook(String guildId) {
-        return (WebhookNews) getEntity(WebhookNews.class, "SELECT * FROM NewsWebhooks WHERE GID=?", guildId).getEntity();
+        SQLResponse sqlResponse = getEntity(WebhookNews.class, "SELECT * FROM NewsWebhooks WHERE GID=?", guildId);
+        return sqlResponse.isSuccess() ? (WebhookNews) sqlResponse.getEntity() : null;
     }
 
     /**
@@ -413,7 +412,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookTwitch} with all the needed data.
      */
     public WebhookTwitch getTwitchWebhook(String guildId, String twitchName) {
-        return (WebhookTwitch) getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName).getEntity();
+        SQLResponse sqlResponse = getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName);
+        return sqlResponse.isSuccess() ? (WebhookTwitch) sqlResponse.getEntity() : null;
     }
 
     /**
@@ -423,7 +423,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookTwitch>} with all the needed data.
      */
     public List<WebhookTwitch> getTwitchWebhooksByName(String twitchName) {
-        return getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE NAME=?", twitchName).getEntities().stream().map(WebhookTwitch.class::cast).toList();
+        SQLResponse sqlResponse = getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE NAME=?", twitchName);
+        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookTwitch.class::cast).toList() : new ArrayList<>();
     }
 
     /**
@@ -436,8 +437,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitchNotify").getValues("NAME")
-                .stream().map(String.class::cast).forEach(userNames::add);
+        sqlConnector.querySQL("SELECT * FROM TwitchNotify").getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -453,8 +453,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId).getValues("NAME")
-                .stream().map(String.class::cast).forEach(userNames::add);
+        sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -534,7 +533,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookInstagram} with all the needed data.
      */
     public WebhookInstagram getInstagramWebhook(String guildId, String name) {
-        return (WebhookInstagram) getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=? AND NAME=?", guildId, name).getEntity();
+        SQLResponse sqlResponse = getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=? AND NAME=?", guildId, name);
+        return sqlResponse.isSuccess() ? (WebhookInstagram) sqlResponse.getEntity() : null;
     }
 
     /**
@@ -544,7 +544,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookInstagram>} with all the needed data.
      */
     public List<WebhookInstagram> getInstagramWebhookByName(String name) {
-        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE NAME=?", name).getEntities().stream().map(WebhookInstagram.class::cast).toList();
+        SQLResponse sqlResponse = getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE NAME=?", name);
+        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookInstagram.class::cast).toList() : new ArrayList<>();
     }
 
     /**
@@ -557,8 +558,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> usernames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the InstagramNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM InstagramNotify").getValues("NAME")
-                .stream().map(String.class::cast).forEach(usernames::add);
+        sqlConnector.querySQL("SELECT * FROM InstagramNotify").getValues("NAME").stream().map(String.class::cast).forEach(usernames::add);
 
         return usernames;
     }
@@ -574,8 +574,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> usernames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM InstagramNotify WHERE GID=?", guildId).getValues("NAME")
-                .stream().map(String.class::cast).forEach(usernames::add);
+        sqlConnector.querySQL("SELECT * FROM InstagramNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(usernames::add);
 
         return usernames;
     }
@@ -655,7 +654,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookReddit} with all the needed data.
      */
     public WebhookReddit getRedditWebhook(String guildId, String subreddit) {
-        return (WebhookReddit) getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=? AND SUBREDDIT=?", guildId, subreddit).getEntity();
+        SQLResponse sqlResponse = getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=? AND SUBREDDIT=?", guildId, subreddit);
+        return sqlResponse.isSuccess() ? (WebhookReddit) sqlResponse.getEntity() : null;
     }
 
     /**
@@ -665,7 +665,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookReddit>} with all the needed data.
      */
     public List<WebhookReddit> getRedditWebhookBySub(String subreddit) {
-        return getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE SUBREDDIT=?", subreddit).getEntities().stream().map(WebhookReddit.class::cast).toList();
+        SQLResponse sqlResponse = getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE SUBREDDIT=?", subreddit);
+        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookReddit.class::cast).toList() : new ArrayList<>();
     }
 
     /**
@@ -678,8 +679,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> subreddits = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM RedditNotify").getValues("SUBREDDIT")
-                .stream().map(String.class::cast).forEach(subreddits::add);
+        sqlConnector.querySQL("SELECT * FROM RedditNotify").getValues("SUBREDDIT").stream().map(String.class::cast).forEach(subreddits::add);
 
         return subreddits;
     }
@@ -695,8 +695,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> subreddits = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM RedditNotify WHERE GID=?", guildId).getValues("SUBREDDIT")
-                .stream().map(String.class::cast).forEach(subreddits::add);
+        sqlConnector.querySQL("SELECT * FROM RedditNotify WHERE GID=?", guildId).getValues("SUBREDDIT").stream().map(String.class::cast).forEach(subreddits::add);
 
         return subreddits;
     }
@@ -776,7 +775,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookYouTube} with all the needed data.
      */
     public WebhookYouTube getYouTubeWebhook(String guildId, String youtubeChannel) {
-        return (WebhookYouTube) getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel).getEntity();
+        SQLResponse sqlResponse = getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel);
+        return sqlResponse.isSuccess() ? (WebhookYouTube) sqlResponse.getEntity() : null;
     }
 
     /**
@@ -786,7 +786,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookYouTube>} with all the needed data.
      */
     public List<WebhookYouTube> getYouTubeWebhooksByName(String youtubeChannel) {
-        return getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE NAME=?", youtubeChannel).getEntities().stream().map(WebhookYouTube.class::cast).toList();
+        SQLResponse sqlResponse = getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE NAME=?", youtubeChannel);
+        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookYouTube.class::cast).toList() : new ArrayList<>();
     }
 
     /**
@@ -799,8 +800,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM YouTubeNotify").getValues("NAME")
-                .stream().map(String.class::cast).forEach(userNames::add);
+        sqlConnector.querySQL("SELECT * FROM YouTubeNotify").getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -816,8 +816,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId).getValues("NAME")
-                .stream().map(String.class::cast).forEach(userNames::add);
+        sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -897,7 +896,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookTwitter} with all the needed data.
      */
     public WebhookTwitter getTwitterWebhook(String guildId, String twitterName) {
-        return (WebhookTwitter) getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName).getEntity();
+        SQLResponse sqlResponse = getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName);
+        return sqlResponse.isSuccess() ? (WebhookTwitter) sqlResponse.getEntity() : null;
     }
 
     /**
@@ -907,7 +907,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookTwitter>} with all the needed data.
      */
     public List<WebhookTwitter> getTwitterWebhooksByName(String twitterName) {
-        return getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE NAME=?", twitterName).getEntities().stream().map(WebhookTwitter.class::cast).toList();
+        SQLResponse sqlResponse = getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE NAME=?", twitterName);
+        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookTwitter.class::cast).toList() : new ArrayList<>();
     }
 
     /**
@@ -920,8 +921,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         ArrayList<String> userNames = new ArrayList<>();
 
         // Creating a SQL Statement to get the Entry from the TwitterNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitterNotify").getValues("NAME")
-                .stream().map(String.class::cast).forEach(userNames::add);
+        sqlConnector.querySQL("SELECT * FROM TwitterNotify").getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -936,9 +936,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         ArrayList<String> userNames = new ArrayList<>();
 
-        // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId).getValues("NAME")
-                .stream().map(String.class::cast).forEach(userNames::add);
+        // Creating a SQL Statement to get the Entry from the TwitterNotify Table by the GuildID.
+        sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
 
         return userNames;
     }
@@ -1020,7 +1019,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<AutoRole>} as List with all Roles.
      */
     public List<AutoRole> getAutoRoles(String guildId) {
-        return getEntity(AutoRole.class, "SELECT * FROM AutoRoles WHERE GID=?", guildId).getEntities().stream().map(AutoRole.class::cast).toList();
+        SQLResponse sqlResponse = getEntity(AutoRole.class, "SELECT * FROM AutoRoles WHERE GID=?", guildId);
+        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(AutoRole.class::cast).toList() : new ArrayList<>();
     }
 
     /**
@@ -1257,7 +1257,12 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public List<InviteContainer> getInvites(String guildId) {
         ArrayList<InviteContainer> invites = new ArrayList<>();
-        getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=?", guildId).getEntities().stream().map(o -> {
+
+        SQLResponse sqlResponse = getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=?", guildId);
+
+        if (!sqlResponse.isSuccess()) return invites;
+
+        sqlResponse.getEntities().stream().map(o -> {
             Invite invite = (Invite) o;
             return new InviteContainer(invite.getUserId(), invite.getGuild(), invite.getCode(), invite.getUses(), false);
         }).forEach(invites::add);
@@ -1312,7 +1317,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Invite} as result if true, then it's saved in our Database | may be null.
      */
     public Invite getInvite(String guildId, String inviteCode) {
-        return (Invite) getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND CODE=?", guildId, inviteCode).getEntity();
+        SQLResponse sqlResponse = getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND CODE=?", guildId, inviteCode);
+        return sqlResponse.isSuccess() ? (Invite) sqlResponse.getEntity() : null;
     }
 
     /**
@@ -1324,7 +1330,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Invite} as result if true, then it's saved in our Database | may be null.
      */
     public Invite getInvite(String guildId, String inviteCreator, String inviteCode) {
-        return (Invite) getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode).getEntity();
+        SQLResponse sqlResponse = getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode);
+        return sqlResponse.isSuccess() ? (Invite) sqlResponse.getEntity() : null;
     }
 
     /**
@@ -1371,7 +1378,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Message as {@link String}
      */
     public String getMessage(String guildId) {
-        return ((Setting) getEntity(Setting.class, "SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, "message_join").getEntity()).getStringValue();
+        SQLResponse sqlResponse = getEntity(Setting.class, "SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, "message_join");
+        return sqlResponse.isSuccess() ? ((Setting) sqlResponse.getEntity()).getStringValue() : "Welcome %user_mention%!\nWe wish you a great stay on %guild_name%";
     }
 
     /**
@@ -1504,7 +1512,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         ArrayList<Setting> settings = new ArrayList<>();
 
-        getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ?", guildId).getEntities().stream().map(Setting.class::cast).forEach(settings::add);
+        SQLResponse sqlResponse = getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ?", guildId);
+
+        if (!sqlResponse.isSuccess()) {
+            return settings;
+        }
+
+        sqlResponse.getEntities().stream().map(Setting.class::cast).forEach(settings::add);
 
         // If there is no setting to be found, create every setting.
         if (settings.isEmpty()) {
@@ -1791,10 +1805,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Store the birthday of the user in the database
-     * @param guildId the ID of the Guild.
+     *
+     * @param guildId   the ID of the Guild.
      * @param channelId the ID of the Channel.
-     * @param userId the ID of the User.
-     * @param birthday the birthday of the user.
+     * @param userId    the ID of the User.
+     * @param birthday  the birthday of the user.
      */
     public void addBirthday(String guildId, String channelId, String userId, String birthday) {
         try {
@@ -1804,13 +1819,15 @@ public record SQLWorker(SQLConnector sqlConnector) {
             } else {
                 saveEntity(new BirthdayWish(guildId, channelId, userId, new SimpleDateFormat("dd.MM.yyyy").parse(birthday)));
             }
-        } catch (ParseException ignore) {}
+        } catch (ParseException ignore) {
+        }
     }
 
     /**
      * Check if there is any saved birthday for the given User.
+     *
      * @param guildId the ID of the Guild.
-     * @param userId the ID of the User.
+     * @param userId  the ID of the User.
      */
     public void removeBirthday(String guildId, String userId) {
         if (isBirthdaySaved(guildId, userId)) {
@@ -1820,8 +1837,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Check if a birthday is saved for the given User.
+     *
      * @param guildId the ID of the Guild.
-     * @param userId the ID of the User.
+     * @param userId  the ID of the User.
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isBirthdaySaved(String guildId, String userId) {
@@ -1830,8 +1848,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Get the birthday of the given User.
+     *
      * @param guildId the ID of the Guild.
-     * @param userId the ID of the User.
+     * @param userId  the ID of the User.
      * @return {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public BirthdayWish getBirthday(String guildId, String userId) {
@@ -1840,6 +1859,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Get all saved birthdays.
+     *
      * @param guildId the ID of the Guild.
      * @return {@link List} of {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
@@ -1849,6 +1869,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     /**
      * Get all saved birthdays.
+     *
      * @return {@link List} of {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public List<BirthdayWish> getBirthdays() {

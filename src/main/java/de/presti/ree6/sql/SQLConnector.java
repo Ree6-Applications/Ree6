@@ -2,20 +2,17 @@ package de.presti.ree6.sql;
 
 import com.google.gson.JsonElement;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.data.MigrationUtil;
-import de.presti.ree6.sql.base.data.SQLEntity;
-import de.presti.ree6.sql.base.data.SQLUtil;
-import de.presti.ree6.sql.base.data.StoredResultSet;
+import de.presti.ree6.sql.base.entities.SQLEntity;
+import de.presti.ree6.sql.base.entities.StoredResultSet;
+import de.presti.ree6.sql.base.utils.MigrationUtil;
+import de.presti.ree6.sql.base.utils.SQLUtil;
 import de.presti.ree6.sql.mapper.EntityMapper;
 import de.presti.ree6.sql.seed.SeedManager;
 import org.reflections.Reflections;
 
 import java.sql.*;
-import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A "Connector" Class which connect with the used Database Server.

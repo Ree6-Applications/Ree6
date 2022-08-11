@@ -1,4 +1,7 @@
 HELP.md
+*.creds
+*.jar
+*.mp3
 target/
 logs/
 !.mvn/wrapper/maven-wrapper.jar

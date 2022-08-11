@@ -130,7 +130,7 @@ public class Main {
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             RaygunClient raygunClient = new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken"));
-            raygunClient.setVersion("1.8.0");
+            raygunClient.setVersion("1.9.3");
         });
 
         // Create a new connection between the Application and the SQL-Server.
@@ -143,6 +143,7 @@ public class Main {
             instance.commandManager = new CommandManager();
         } catch (Exception exception) {
             instance.logger.error("Shutting down, because of an critical error!", exception);
+            System.exit(0);
             return;
         }
 
@@ -173,11 +174,13 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.DEVELOPMENT_BUILD, "1.8.0");
+            BotWorker.createBot(BotVersion.RELEASE, "1.9.3");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
             instance.logger.error("[Main] Error while init: " + ex.getMessage());
+            System.exit(0);
+            return;
         }
 
         // Add the Runtime-hooks.
@@ -264,63 +267,61 @@ public class Main {
      */
     public void createCheckerThread() {
         ThreadUtil.createNewThread(x -> {
-            while (BotWorker.getState() != BotState.STOPPED) {
 
-                if (!lastDay.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
+            if (!lastDay.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 
-                    if (BotWorker.getStartTime() > System.currentTimeMillis() + 10000) {
-                        getSqlConnector().close();
-                        sqlConnector = new SQLConnector(config.getConfiguration().getString("mysql.user"), config.getConfiguration().getString("mysql.db"), config.getConfiguration().getString("mysql.pw"), config.getConfiguration().getString("mysql.host"), config.getConfiguration().getInt("mysql.port"));
-                    }
-
-                    ArrayUtil.messageIDwithMessage.clear();
-                    ArrayUtil.messageIDwithUser.clear();
-
-                    for (JDA jda : BotWorker.getShardManager().getShards()) {
-                        BotWorker.setActivity(jda, "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
-                    }
-
-                    instance.logger.info("[Stats] ");
-                    instance.logger.info("[Stats] Today's Stats:");
-                    instance.logger.info("[Stats] Guilds: {}", BotWorker.getShardManager().getGuilds().size());
-                    instance.logger.info("[Stats] Overall Users: {}", BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
-                    instance.logger.info("[Stats] ");
-
-                    Calendar currentCalendar = Calendar.getInstance();
-
-                    getSqlConnector().getSqlWorker()
-                            .getBirthdays().stream().filter(birthday -> {
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.setTime(birthday.getBirthdate());
-                                return calendar.get(Calendar.MONTH) == currentCalendar.get(Calendar.MONTH) &&
-                                        calendar.get(Calendar.DAY_OF_MONTH) == currentCalendar.get(Calendar.DAY_OF_MONTH);
-                            }).forEach(birthday -> {
-                                TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
-
-                                if (textChannel != null && textChannel.canTalk())
-                                    textChannel.sendMessage("Happy birthday to <@" + birthday.getUserId() + ">!").queue();
-                            });
-
-                    lastDay = new SimpleDateFormat("dd").format(new Date());
+                if (BotWorker.getStartTime() > System.currentTimeMillis() + 10000) {
+                    getSqlConnector().close();
+                    sqlConnector = new SQLConnector(config.getConfiguration().getString("mysql.user"), config.getConfiguration().getString("mysql.db"), config.getConfiguration().getString("mysql.pw"), config.getConfiguration().getString("mysql.host"), config.getConfiguration().getInt("mysql.port"));
                 }
 
-                for (Guild guild : BotWorker.getShardManager().getGuilds().stream().filter(guild -> guild.getAudioManager().getSendingHandler() != null
-                        && guild.getSelfMember().getVoiceState() != null &&
-                        guild.getSelfMember().getVoiceState().inAudioChannel()).toList()) {
-                    GuildMusicManager guildMusicManager = musicWorker.getGuildAudioPlayer(guild);
+                ArrayUtil.messageIDwithMessage.clear();
+                ArrayUtil.messageIDwithUser.clear();
 
-                    try {
-                        AudioPlayerSendHandler playerSendHandler = (AudioPlayerSendHandler) guild.getAudioManager().getSendingHandler();
+                for (JDA jda : BotWorker.getShardManager().getShards()) {
+                    BotWorker.setActivity(jda, "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
+                }
 
-                        if (guild.getSelfMember().getVoiceState() != null && guild.getSelfMember().getVoiceState().inAudioChannel() && (playerSendHandler == null ||
-                                !playerSendHandler.isMusicPlaying(guild))) {
-                            guildMusicManager.scheduler.stopAll(guild, null);
-                        }
+                instance.logger.info("[Stats] ");
+                instance.logger.info("[Stats] Today's Stats:");
+                instance.logger.info("[Stats] Guilds: {}", BotWorker.getShardManager().getGuilds().size());
+                instance.logger.info("[Stats] Overall Users: {}", BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
+                instance.logger.info("[Stats] ");
 
-                    } catch (Exception ex) {
+                Calendar currentCalendar = Calendar.getInstance();
+
+                getSqlConnector().getSqlWorker()
+                        .getBirthdays().stream().filter(birthday -> {
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(birthday.getBirthdate());
+                            return calendar.get(Calendar.MONTH) == currentCalendar.get(Calendar.MONTH) &&
+                                    calendar.get(Calendar.DAY_OF_MONTH) == currentCalendar.get(Calendar.DAY_OF_MONTH);
+                        }).forEach(birthday -> {
+                            TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
+
+                            if (textChannel != null && textChannel.canTalk())
+                                textChannel.sendMessage("Happy birthday to <@" + birthday.getUserId() + ">!").queue();
+                        });
+
+                lastDay = new SimpleDateFormat("dd").format(new Date());
+            }
+
+            for (Guild guild : BotWorker.getShardManager().getGuilds().stream().filter(guild -> guild.getAudioManager().getSendingHandler() != null
+                    && guild.getSelfMember().getVoiceState() != null &&
+                    guild.getSelfMember().getVoiceState().inAudioChannel()).toList()) {
+                GuildMusicManager guildMusicManager = musicWorker.getGuildAudioPlayer(guild);
+
+                try {
+                    AudioPlayerSendHandler playerSendHandler = (AudioPlayerSendHandler) guild.getAudioManager().getSendingHandler();
+
+                    if (guild.getSelfMember().getVoiceState() != null && guild.getSelfMember().getVoiceState().inAudioChannel() &&
+                            (playerSendHandler == null || !playerSendHandler.isMusicPlaying(guild))) {
                         guildMusicManager.scheduler.stopAll(guild, null);
-                        getLogger().error("Error accessing the AudioPlayer.", ex);
                     }
+
+                } catch (Exception ex) {
+                    guildMusicManager.scheduler.stopAll(guild, null);
+                    getLogger().error("Error accessing the AudioPlayer.", ex);
                 }
             }
         }, null, Duration.ofMinutes(1), true, false);

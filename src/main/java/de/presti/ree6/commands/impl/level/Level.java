@@ -18,7 +18,8 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
  * A command to see your current Level.
  */
 @Command(name = "level", description = "Show your own Level or the Level of another User in the Guild.", category = Category.LEVEL)
-public class Level implements ICommand {
+public class
+Level implements ICommand {
 
     /**
      * @inheritDoc
@@ -80,7 +81,7 @@ public class Level implements ICommand {
                 Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getId(), member.getId()) :
                 Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getId());
 
-        userLevel.setUser(commandEvent.getMember().getUser());
+        userLevel.setUser(member.getUser());
 
         if (commandEvent.isSlashCommand()) {
             try {

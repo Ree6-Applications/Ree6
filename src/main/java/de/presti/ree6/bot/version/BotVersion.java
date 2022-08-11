@@ -12,7 +12,7 @@ public enum BotVersion {
     /**
      * Version for a not yet fully stable release.
      */
-    PRE_RELEASE,
+    BETA_BUILD,
     /**
      * Version for a stable release.
      */

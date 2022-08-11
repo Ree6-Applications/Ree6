@@ -4,7 +4,11 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.data.*;
+import de.presti.ree6.sql.base.entities.SQLEntity;
+import de.presti.ree6.sql.base.entities.SQLParameter;
+import de.presti.ree6.sql.base.entities.StoredResultSet;
+import de.presti.ree6.sql.base.utils.MigrationUtil;
+import de.presti.ree6.sql.base.utils.SQLUtil;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Field;

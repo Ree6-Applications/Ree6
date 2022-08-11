@@ -12,7 +12,7 @@ import de.presti.ree6.logger.events.implentation.LogMessageVoice;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.logger.invite.InviteContainerManager;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.data.SQLResponse;
+import de.presti.ree6.sql.base.entities.SQLResponse;
 import de.presti.ree6.sql.entities.Invite;
 import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.utils.data.ArrayUtil;
@@ -108,6 +108,8 @@ public class LoggingEvents extends ListenerAdapter {
 
                     if (entry.getTargetId().equals(event.getUser().getId())) {
                         wm2.append("**The Bot** " + event.getUser().getAsMention() + " **has been invited by** <@" + entry.getUser().getId() + ">");
+                    } else {
+                        wm2.append("**We could not find out who Invite the Bot** " + event.getUser().getAsMention());
                     }
                 });
             } else {
@@ -631,7 +633,7 @@ public class LoggingEvents extends ListenerAdapter {
      */
     @Override
     public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) &&
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
                 !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_rolehoisted").getBooleanValue())
             return;
 
@@ -660,7 +662,7 @@ public class LoggingEvents extends ListenerAdapter {
      */
     @Override
     public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) &&
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
                 !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_rolepermission").getBooleanValue())
             return;
 

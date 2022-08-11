@@ -120,6 +120,16 @@ public class CommandManager {
     }
 
     /**
+     * Get a Command by its slash command name.
+     *
+     * @param name the Name of the Command.
+     * @return the {@link ICommand} with the same Name.
+     */
+    public ICommand getCommandBySlashName(String name) {
+        return getCommands().stream().filter(command -> command.getCommandData() != null && command.getCommandData().getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+    }
+
+    /**
      * Remove a Command from the List.
      *
      * @param command the Command you want to remove.
@@ -251,7 +261,7 @@ public class CommandManager {
      */
     private boolean performSlashCommand(MessageChannelUnion textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
         //Get the Command by the Slash Command Name.
-        ICommand command = getCommandByName(slashCommandInteractionEvent.getName());
+        ICommand command = getCommandBySlashName(slashCommandInteractionEvent.getName());
 
         // Check if there is a command with that Name.
         if (command == null || slashCommandInteractionEvent.getGuild() == null || slashCommandInteractionEvent.getMember() == null) {

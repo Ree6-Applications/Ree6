@@ -1,7 +1,8 @@
 package de.presti.ree6.sql.entities.level;
 
 import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.data.SQLEntity;
+import de.presti.ree6.sql.base.entities.SQLEntity;
+import de.presti.ree6.utils.data.LevelUtil;
 import net.dv8tion.jda.api.entities.User;
 
 public class UserLevel extends SQLEntity {
@@ -32,12 +33,12 @@ public class UserLevel extends SQLEntity {
     /**
      * The level of the User.
      */
-    long level;
+    long level = -1;
 
     /**
      * The Rank of the User.
      */
-    int rank;
+    int rank = -1;
 
     /**
      * Constructor.
@@ -57,7 +58,7 @@ public class UserLevel extends SQLEntity {
         this.guildId = guildId;
         this.userId = userId;
         this.experience = experience;
-        level = calculateLevel(experience);
+        level = LevelUtil.calculateLevel(this, experience);
         this.rank = rank;
     }
 
@@ -139,6 +140,9 @@ public class UserLevel extends SQLEntity {
      * @return the level.
      */
     public long getLevel() {
+        if (level == -1) {
+            level = LevelUtil.calculateLevel(this);
+        }
         return level;
     }
 
@@ -157,7 +161,19 @@ public class UserLevel extends SQLEntity {
      * @return the current rank.
      */
     public int getRank() {
+        if (rank == -1) {
+            rank = LevelUtil.getCurrentRank(this);
+        }
+
         return rank;
+    }
+
+    /**
+     * Get the GuildId.
+     * @return
+     */
+    public String getGuildId() {
+        return guildId;
     }
 
     /**
@@ -167,13 +183,15 @@ public class UserLevel extends SQLEntity {
      * @return true, if you leveled up | false, if not.
      */
     public boolean addExperience(long experience) {
+        long currentLevel = getLevel();
+
         long newExperience = getExperience() + experience;
 
-        long calculatedLevel = calculateLevel(newExperience);
+        long calculatedLevel = LevelUtil.calculateLevel(this, newExperience);
 
         setExperience(newExperience);
 
-        if (calculatedLevel > level) {
+        if (calculatedLevel > currentLevel) {
             level = calculatedLevel;
             return true;
         } else {
@@ -186,17 +204,8 @@ public class UserLevel extends SQLEntity {
      *
      * @return the needed Experience.
      */
-    public long getExperienceForNextLevel() {
-        return getExperienceForLevel(level + 1);
-    }
-
-    /**
-     * Get the needed Experience for the next Level.
-     *
-     * @return the needed Experience.
-     */
     public long getTotalExperienceForNextLevel() {
-        return getTotalExperienceForLevel(level + 1);
+        return getTotalExperienceForLevel(getLevel() + 1);
     }
 
 
@@ -207,21 +216,7 @@ public class UserLevel extends SQLEntity {
      * @return the needed Experience.
      */
     public long getTotalExperienceForLevel(long level) {
-        long requiredXP = 0;
-        for (int i = 0; i <= level; i++) {
-            requiredXP += getExperienceForLevel(i);
-        }
-        return requiredXP;
-    }
-
-    /**
-     * Get the needed Experience for the next Level.
-     *
-     * @param level The level.
-     * @return the needed Experience.
-     */
-    public long getExperienceForLevel(long level) {
-        return level / 100;
+        return LevelUtil.getTotalExperienceForLevel(level, this);
     }
 
     /**
@@ -230,7 +225,7 @@ public class UserLevel extends SQLEntity {
      * @return the Progress.
      */
     public double getProgress() {
-        return (int) ((getExperience() * 100) / getTotalExperienceForNextLevel());
+        return LevelUtil.getProgress(this);
     }
 
     /**
@@ -264,20 +259,5 @@ public class UserLevel extends SQLEntity {
         }
 
         return end;
-    }
-
-    /**
-     * Calculate on which Level you would be by your experience.
-     *
-     * @param experience the experience.
-     * @return which Level.
-     */
-    public long calculateLevel(long experience) {
-        int i = 0;
-        while (true) {
-            long requiredXP = getTotalExperienceForLevel(i);
-            if (experience <= requiredXP) return (i == 0 ? 1 : i - 1);
-            i++;
-        }
     }
 }

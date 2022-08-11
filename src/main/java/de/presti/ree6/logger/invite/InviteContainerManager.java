@@ -66,6 +66,26 @@ public class InviteContainerManager {
     }
 
     /**
+     * Convert a {@link VanityInvite} to an {@link Invite}
+     * @param guild the {@link Guild} the {@link VanityInvite} is from.
+     * @return the {@link Invite}
+     */
+    public static Invite convertVanityInvite(Guild guild) {
+        if (guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER) &&
+                guild.getVanityCode() != null) {
+            try {
+                VanityInvite vanityInvite = guild.retrieveVanityInvite().complete();
+                return new InviteImpl(null, vanityInvite.getCode(), false, Objects.requireNonNull(guild.getOwner()).getUser(), 0, -1242525,
+                        true, OffsetDateTime.now(), vanityInvite.getUses(), null,  null, null, null, Invite.InviteType.UNKNOWN);
+            } catch (Exception ex) {
+                Main.getInstance().getAnalyticsLogger().error("[InviteManager] Error while retrieving Vanity Invite: " + ex.getMessage());
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Get the right {@link InviteContainer}.
      *
      * @param guild the {@link Guild} Entity.
@@ -77,16 +97,9 @@ public class InviteContainerManager {
 
         // Every Invite from the Guild.
         List<Invite> guildInvites = guild.retrieveInvites().complete();
-        if (guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER) &&
-                guild.getVanityCode() != null) {
-            try {
-                VanityInvite vanityInvite = guild.retrieveVanityInvite().complete();
-                guildInvites.add(new InviteImpl(null, vanityInvite.getCode(), false, Objects.requireNonNull(guild.getOwner()).getUser(), 0, -1242525,
-                        true, OffsetDateTime.now(), vanityInvite.getUses(), null,  null, null, null, Invite.InviteType.UNKNOWN));
-            } catch (Exception ex) {
-                Main.getInstance().getAnalyticsLogger().error("[InviteManager] Error while retrieving Vanity Invite: " + ex.getMessage());
-            }
-        }
+
+        Invite vanityInvite = convertVanityInvite(guild);
+        if (vanityInvite != null) guildInvites.add(vanityInvite);
 
         // Go through every Invite of the Guild.
         for (Invite inv : guildInvites) {

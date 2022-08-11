@@ -1,9 +1,11 @@
-package de.presti.ree6.sql.base.data;
+package de.presti.ree6.sql.base.utils;
 
 import com.google.gson.*;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
+import de.presti.ree6.sql.base.entities.SQLEntity;
+import de.presti.ree6.sql.base.entities.SQLParameter;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.BufferedReader;
