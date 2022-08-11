@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
@@ -80,6 +81,33 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
 
+        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
+        if (sqlResponse.isSuccess()) {
+            ChannelStats channelStats = (ChannelStats) sqlResponse.getEntity();
+            if (channelStats.getMemberStatsChannelId() != null) {
+                GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
+                if (guildChannel != null) {
+                    guildChannel.getManager().setName("Overall Members: " + event.getGuild().getMemberCount()).queue();
+                }
+            }
+
+            event.getGuild().loadMembers().onSuccess(members -> {
+                if (channelStats.getRealMemberStatsChannelId() != null) {
+                    GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getRealMemberStatsChannelId());
+                    if (guildChannel != null) {
+                        guildChannel.getManager().setName("Real Members: " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
+                    }
+                }
+
+                if (channelStats.getBotMemberStatsChannelId() != null) {
+                    GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getBotMemberStatsChannelId());
+                    if (guildChannel != null) {
+                        guildChannel.getManager().setName("Bot Members: " + members.stream().filter(member -> member.getUser().isBot()).count()).queue();
+                    }
+                }
+            });
+        }
+
         AutoRoleHandler.handleMemberJoin(event.getGuild(), event.getMember());
 
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId())) return;
@@ -91,6 +119,41 @@ public class OtherEvents extends ListenerAdapter {
         wmb.setContent((Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())).replace("%user_name%", event.getMember().getUser().getName()).replace("%user_mention%", event.getMember().getUser().getAsMention()).replace("%guild_name%", event.getGuild().getName()));
 
         WebhookUtil.sendWebhook(null, wmb.build(), Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()), false);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
+        super.onGuildMemberRemove(event);
+
+        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
+        if (sqlResponse.isSuccess()) {
+            ChannelStats channelStats = (ChannelStats) sqlResponse.getEntity();
+            if (channelStats.getMemberStatsChannelId() != null) {
+                GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
+                if (guildChannel != null) {
+                    guildChannel.getManager().setName("Overall Members: " + event.getGuild().getMemberCount()).queue();
+                }
+            }
+
+            event.getGuild().loadMembers().onSuccess(members -> {
+                if (channelStats.getRealMemberStatsChannelId() != null) {
+                    GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getRealMemberStatsChannelId());
+                    if (guildChannel != null) {
+                        guildChannel.getManager().setName("Real Members: " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
+                    }
+                }
+
+                if (channelStats.getBotMemberStatsChannelId() != null) {
+                    GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getBotMemberStatsChannelId());
+                    if (guildChannel != null) {
+                        guildChannel.getManager().setName("Bot Members: " + members.stream().filter(member -> member.getUser().isBot()).count()).queue();
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -425,62 +488,60 @@ public class OtherEvents extends ListenerAdapter {
                             category = categories.get(0);
                         }
 
-                        event.getGuild().loadMembers().onSuccess(members -> {
-                            event.getGuild().createVoiceChannel("Overall Members: " + event.getGuild().getMemberCount(), category).queue(voiceChannel -> {
-                                voiceChannel.getManager().setUserLimit(0).queue();
-                                event.getGuild().createVoiceChannel("Real Member: " + members.stream().filter(member -> !member.getUser().isBot()).count(), category).queue(voiceChannel1 -> {
-                                    voiceChannel1.getManager().setUserLimit(0).queue();
-                                    event.getGuild().createVoiceChannel("Bot Members: " + members.stream().filter(member -> member.getUser().isBot()).count(), category).queue(voiceChannel2 -> {
-                                        voiceChannel2.getManager().setUserLimit(0).queue();
-                                        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
-                                        ChannelStats channelStats;
+                        event.getGuild().loadMembers().onSuccess(members -> event.getGuild().createVoiceChannel("Overall Members: " + event.getGuild().getMemberCount(), category).queue(voiceChannel -> {
+                            voiceChannel.getManager().setUserLimit(0).queue();
+                            event.getGuild().createVoiceChannel("Real Members: " + members.stream().filter(member -> !member.getUser().isBot()).count(), category).queue(voiceChannel1 -> {
+                                voiceChannel1.getManager().setUserLimit(0).queue();
+                                event.getGuild().createVoiceChannel("Bot Members: " + members.stream().filter(member -> member.getUser().isBot()).count(), category).queue(voiceChannel2 -> {
+                                    voiceChannel2.getManager().setUserLimit(0).queue();
+                                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
+                                    ChannelStats channelStats;
 
-                                        if (sqlResponse.isSuccess()) {
-                                            channelStats = (ChannelStats) sqlResponse.getEntity();
-                                            ChannelStats oldChannelStats = channelStats;
-                                            if (channelStats.getMemberStatsChannelId() != null) {
-                                                VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getMemberStatsChannelId());
+                                    if (sqlResponse.isSuccess()) {
+                                        channelStats = (ChannelStats) sqlResponse.getEntity();
+                                        ChannelStats oldChannelStats = channelStats;
+                                        if (channelStats.getMemberStatsChannelId() != null) {
+                                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getMemberStatsChannelId());
 
-                                                if (voiceChannel3 != null)
-                                                    voiceChannel3.delete().queue();
-                                            }
-                                            if (channelStats.getRealMemberStatsChannelId() != null) {
-                                                VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getRealMemberStatsChannelId());
-
-                                                if (voiceChannel3 != null)
-                                                    voiceChannel3.delete().queue();
-                                            }
-                                            if (channelStats.getBotMemberStatsChannelId() != null) {
-                                                VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getBotMemberStatsChannelId());
-
-                                                if (voiceChannel3 != null)
-                                                    voiceChannel3.delete().queue();
-                                            }
-                                            channelStats.setMemberStatsChannelId(voiceChannel.getId());
-                                            channelStats.setRealMemberStatsChannelId(voiceChannel1.getId());
-                                            channelStats.setBotMemberStatsChannelId(voiceChannel2.getId());
-                                            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
-                                        } else {
-                                            channelStats = new ChannelStats(event.getGuild().getId(),
-                                                    voiceChannel.getId(),
-                                                    voiceChannel1.getId(),
-                                                    voiceChannel2.getId(),
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    null);
-                                            Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                                            if (voiceChannel3 != null)
+                                                voiceChannel3.delete().queue();
                                         }
-                                    });
+                                        if (channelStats.getRealMemberStatsChannelId() != null) {
+                                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getRealMemberStatsChannelId());
+
+                                            if (voiceChannel3 != null)
+                                                voiceChannel3.delete().queue();
+                                        }
+                                        if (channelStats.getBotMemberStatsChannelId() != null) {
+                                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getBotMemberStatsChannelId());
+
+                                            if (voiceChannel3 != null)
+                                                voiceChannel3.delete().queue();
+                                        }
+                                        channelStats.setMemberStatsChannelId(voiceChannel.getId());
+                                        channelStats.setRealMemberStatsChannelId(voiceChannel1.getId());
+                                        channelStats.setBotMemberStatsChannelId(voiceChannel2.getId());
+                                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                                    } else {
+                                        channelStats = new ChannelStats(event.getGuild().getId(),
+                                                voiceChannel.getId(),
+                                                voiceChannel1.getId(),
+                                                voiceChannel2.getId(),
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null);
+                                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                                    }
                                 });
                             });
-                        });
+                        }));
                     }
 
                     case "statisticsSetupTwitch" -> {
