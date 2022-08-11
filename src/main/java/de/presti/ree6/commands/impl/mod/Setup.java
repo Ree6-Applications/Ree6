@@ -1,6 +1,5 @@
 package de.presti.ree6.commands.impl.mod;
 
-import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
