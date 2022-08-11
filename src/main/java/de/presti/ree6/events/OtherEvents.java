@@ -28,11 +28,12 @@ import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
-import net.dv8tion.jda.internal.interactions.component.TextInputImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -424,68 +425,78 @@ public class OtherEvents extends ListenerAdapter {
                             category = categories.get(0);
                         }
 
-                        event.getGuild().createVoiceChannel("Overall Members", category).queue(voiceChannel -> {
-                            voiceChannel.getManager().setUserLimit(0).queue();
-                            event.getGuild().createVoiceChannel("Real Member", category).queue(voiceChannel1 -> {
-                                voiceChannel1.getManager().setUserLimit(0).queue();
-                                event.getGuild().createVoiceChannel("Bot Members", category).queue(voiceChannel2 -> {
-                                    voiceChannel2.getManager().setUserLimit(0).queue();
-                                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
-                                    ChannelStats channelStats;
+                        event.getGuild().loadMembers().onSuccess(members -> {
+                            event.getGuild().createVoiceChannel("Overall Members: " + event.getGuild().getMemberCount(), category).queue(voiceChannel -> {
+                                voiceChannel.getManager().setUserLimit(0).queue();
+                                event.getGuild().createVoiceChannel("Real Member: " + members.stream().filter(member -> !member.getUser().isBot()).count(), category).queue(voiceChannel1 -> {
+                                    voiceChannel1.getManager().setUserLimit(0).queue();
+                                    event.getGuild().createVoiceChannel("Bot Members: " + members.stream().filter(member -> member.getUser().isBot()).count(), category).queue(voiceChannel2 -> {
+                                        voiceChannel2.getManager().setUserLimit(0).queue();
+                                        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
+                                        ChannelStats channelStats;
 
-                                    if (sqlResponse.isSuccess()) {
-                                        channelStats = (ChannelStats) sqlResponse.getEntity();
-                                        ChannelStats oldChannelStats = channelStats;
-                                        if (channelStats.getMemberStatsChannelId() != null) {
-                                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getMemberStatsChannelId());
+                                        if (sqlResponse.isSuccess()) {
+                                            channelStats = (ChannelStats) sqlResponse.getEntity();
+                                            ChannelStats oldChannelStats = channelStats;
+                                            if (channelStats.getMemberStatsChannelId() != null) {
+                                                VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getMemberStatsChannelId());
 
-                                            if (voiceChannel3 != null)
-                                                voiceChannel3.delete().queue();
+                                                if (voiceChannel3 != null)
+                                                    voiceChannel3.delete().queue();
+                                            }
+                                            if (channelStats.getRealMemberStatsChannelId() != null) {
+                                                VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getRealMemberStatsChannelId());
+
+                                                if (voiceChannel3 != null)
+                                                    voiceChannel3.delete().queue();
+                                            }
+                                            if (channelStats.getBotMemberStatsChannelId() != null) {
+                                                VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getBotMemberStatsChannelId());
+
+                                                if (voiceChannel3 != null)
+                                                    voiceChannel3.delete().queue();
+                                            }
+                                            channelStats.setMemberStatsChannelId(voiceChannel.getId());
+                                            channelStats.setRealMemberStatsChannelId(voiceChannel1.getId());
+                                            channelStats.setBotMemberStatsChannelId(voiceChannel2.getId());
+                                            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                                        } else {
+                                            channelStats = new ChannelStats(event.getGuild().getId(),
+                                                    voiceChannel.getId(),
+                                                    voiceChannel1.getId(),
+                                                    voiceChannel2.getId(),
+                                                    null,
+                                                    null,
+                                                    null,
+                                                    null,
+                                                    null,
+                                                    null,
+                                                    null,
+                                                    null,
+                                                    null,
+                                                    null);
+                                            Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
                                         }
-                                        if (channelStats.getRealMemberStatsChannelId() != null) {
-                                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getRealMemberStatsChannelId());
-
-                                            if (voiceChannel3 != null)
-                                                voiceChannel3.delete().queue();
-                                        }
-                                        if (channelStats.getBotMemberStatsChannelId() != null) {
-                                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getBotMemberStatsChannelId());
-
-                                            if (voiceChannel3 != null)
-                                                voiceChannel3.delete().queue();
-                                        }
-                                        channelStats.setMemberStatsChannelId(voiceChannel.getId());
-                                        channelStats.setRealMemberStatsChannelId(voiceChannel1.getId());
-                                        channelStats.setBotMemberStatsChannelId(voiceChannel2.getId());
-                                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
-                                    } else {
-                                        channelStats = new ChannelStats(event.getGuild().getId(),
-                                                voiceChannel.getId(),
-                                                voiceChannel1.getId(),
-                                                voiceChannel2.getId(),
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null);
-                                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
-                                    }
+                                    });
                                 });
                             });
                         });
                     }
 
                     case "statisticsSetupTwitch" -> {
-                        embedBuilder.setDescription("What is the Name of the Twitch channel you want to use?");
+                        TextInput input = TextInput.create("twitchChannelName", "Twitch Channel Name", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Twitch Channel name here!").build();
 
-                        /* event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new TextInputImpl("setupStatisticsTwitch", TextInputStyle.SHORT,
-                                "Enter the Twitch channel name!", 1, 50, true, null, "The Twitch channel name"))).queue(); */
-                        // This wont work since you can not use TextInputs on Message. Only on Models!
+                        Modal modal = Modal.create("statisticsSetupTwitchModal", "Twitch Statistic Channel").addActionRow(input).build();
+
+                        event.replyModal(modal).queue();
+                    }
+
+                    case "statisticsSetupYouTube" -> {
+                        TextInput input = TextInput.create("youtubeChannelName", "YouTube Channel Name", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the YouTube Channel name here!").build();
+
+                        Modal modal = Modal.create("statisticsSetupYouTubeModal", "YouTube Statistic Channel").addActionRow(input).build();
+
+                        event.replyModal(modal).queue();
                     }
 
                     default -> {
