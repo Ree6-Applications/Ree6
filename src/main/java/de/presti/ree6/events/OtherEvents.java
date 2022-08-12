@@ -44,6 +44,7 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -367,7 +368,59 @@ public class OtherEvents extends ListenerAdapter {
 
                 if (modalMapping == null) return;
 
+                if (event.getGuild() == null) return;
+
                 String twitchUsername = modalMapping.getAsString();
+
+                List<Category> categories = event.getGuild().getCategoriesByName("Statistics", true);
+
+                Category category;
+
+                if (categories.isEmpty()) {
+                    category = event.getGuild().createCategory("Statistics").complete();
+                } else {
+                    category = categories.get(0);
+                }
+
+                String channelId = Main.getInstance().getNotifier().getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(twitchUsername)).execute().getUsers().get(0).getId();
+                event.getGuild().createVoiceChannel("Twitch Follower: " + Main.getInstance().getNotifier().getTwitchClient().getHelix().getFollowers(channelId, null, null, null, 20).execute().getTotal(), category).queue(voiceChannel -> {
+                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
+                    ChannelStats channelStats;
+
+                    if (sqlResponse.isSuccess()) {
+                        channelStats = (ChannelStats) sqlResponse.getEntity();
+                        ChannelStats oldChannelStats = channelStats;
+
+                        if (channelStats.getTwitchFollowerChannelId() != null) {
+                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getTwitchFollowerChannelId());
+
+                            if (voiceChannel3 != null)
+                                voiceChannel3.delete().queue();
+                        }
+
+                        channelStats.setTwitchFollowerChannelId(voiceChannel.getId());
+                        channelStats.setTwitchFollowerChannelUsername(twitchUsername);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                        Main.getInstance().getNotifier().getTwitchClient().getClientHelper().enableFollowEventListener(twitchUsername);
+                    } else {
+                        channelStats = new ChannelStats(event.getGuild().getId(),
+                                null,
+                                null,
+                                null,
+                                voiceChannel.getId(),
+                                twitchUsername,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null);
+                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                    }
+                });
+
                 EmbedBuilder embedBuilder = new EmbedBuilder()
                         .setTitle("Setup Menu")
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())

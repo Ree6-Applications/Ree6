@@ -12,6 +12,7 @@ import com.github.instagram4j.instagram4j.responses.feed.FeedUserResponse;
 import com.github.instagram4j.instagram4j.utils.IGChallengeUtils;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
+import com.github.twitch4j.events.ChannelFollowCountUpdateEvent;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.helix.domain.User;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -23,10 +24,14 @@ import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.base.entities.SQLResponse;
+import de.presti.ree6.sql.entities.stats.ChannelStats;
+import de.presti.ree6.sql.entities.webhook.WebhookTwitch;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import masecla.reddit4j.client.Reddit4J;
 import masecla.reddit4j.objects.Sorting;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -162,6 +167,11 @@ public class Notifier {
     public void registerTwitchEventHandler() {
         getTwitchClient().getEventManager().onEvent(ChannelGoLiveEvent.class, channelGoLiveEvent -> {
 
+            List<WebhookTwitch> webhooks = Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getChannel().getName());
+            if (webhooks.isEmpty()) {
+                return;
+            }
+
             // Create Webhook Message.
             WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
@@ -192,7 +202,20 @@ public class Notifier {
             wmb.addEmbeds(webhookEmbedBuilder.build());
 
             // Go through every Webhook that is registered for the Twitch Channel
-            Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getStream().getUserName().toLowerCase()).forEach(webhook -> WebhookUtil.sendWebhook(null, wmb.build(), webhook, false));
+            webhooks.forEach(webhook -> WebhookUtil.sendWebhook(null, wmb.build(), webhook, false));
+        });
+
+        getTwitchClient().getEventManager().onEvent(ChannelFollowCountUpdateEvent.class, channelFollowCountUpdateEvent -> {
+            SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE twitchFollowerChannelUsername=?", channelFollowCountUpdateEvent.getChannel().getName());
+            if (sqlResponse.isSuccess()) {
+                ChannelStats channelStats = (ChannelStats) sqlResponse.getEntity();
+                if (channelStats.getTwitchFollowerChannelId() != null) {
+                    GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStats.getTwitchFollowerChannelId());
+                    if (guildChannel != null) {
+                        guildChannel.getManager().setName("Twitch Follower: " + channelFollowCountUpdateEvent.getFollowCount()).queue();
+                    }
+                }
+            }
         });
     }
 
