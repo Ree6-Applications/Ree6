@@ -11,6 +11,7 @@ import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.utils.data.ArrayUtil;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -24,6 +25,7 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -34,6 +36,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -355,6 +358,86 @@ public class OtherEvents extends ListenerAdapter {
      * @inheritDoc
      */
     @Override
+    public void onModalInteraction(@NotNull ModalInteractionEvent event) {
+        super.onModalInteraction(event);
+
+        switch(event.getModalId()) {
+            case "statisticsSetupTwitchModal" -> {
+                ModalMapping modalMapping = event.getValue("twitchChannelName");
+
+                if (modalMapping == null) return;
+
+                String twitchUsername = modalMapping.getAsString();
+                EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .setTitle("Setup Menu")
+                        .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Successfully setup the statics channels for Twitch statistics!");
+                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+            }
+
+            case "statisticsSetupYouTubeModal" -> {
+                ModalMapping modalMapping = event.getValue("youtubeChannelName");
+
+                if (modalMapping == null) return;
+
+                String youtubeChannelName = modalMapping.getAsString();
+                EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .setTitle("Setup Menu")
+                        .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Successfully setup the statics channels for YouTube statistics!");
+                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+            }
+
+            case "statisticsSetupRedditModal" -> {
+                ModalMapping modalMapping = event.getValue("subredditName");
+
+                if (modalMapping == null) return;
+
+                String subredditName = modalMapping.getAsString();
+                EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .setTitle("Setup Menu")
+                        .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Successfully setup the statics channels for Subreddit statistics!");
+                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+            }
+
+            case "statisticsSetupTwitterModal" -> {
+                ModalMapping modalMapping = event.getValue("twitterName");
+
+                if (modalMapping == null) return;
+
+                String twitterName = modalMapping.getAsString();
+                EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .setTitle("Setup Menu")
+                        .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Successfully setup the statics channels for Twitter statistics!");
+                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+            }
+
+            case "statisticsSetupInstagramModal" -> {
+                ModalMapping modalMapping = event.getValue("instagramName");
+
+                if (modalMapping == null) return;
+
+                String instagramName = modalMapping.getAsString();
+                EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .setTitle("Setup Menu")
+                        .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Successfully setup the statics channels for Instagram statistics!");
+                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+            }
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
     public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
         super.onSelectMenuInteraction(event);
 
@@ -556,6 +639,30 @@ public class OtherEvents extends ListenerAdapter {
                         TextInput input = TextInput.create("youtubeChannelName", "YouTube Channel Name", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the YouTube Channel name here!").build();
 
                         Modal modal = Modal.create("statisticsSetupYouTubeModal", "YouTube Statistic Channel").addActionRow(input).build();
+
+                        event.replyModal(modal).queue();
+                    }
+
+                    case "statisticsSetupReddit" -> {
+                        TextInput input = TextInput.create("subredditName", "Subreddit Name", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Subreddit name here!").build();
+
+                        Modal modal = Modal.create("statisticsSetupRedditModal", "Reddit Statistic Channel").addActionRow(input).build();
+
+                        event.replyModal(modal).queue();
+                    }
+
+                    case "statisticsSetupTwitter" -> {
+                        TextInput input = TextInput.create("twitterName", "Twitter Name", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Twitter name here!").build();
+
+                        Modal modal = Modal.create("statisticsSetupTwitterModal", "Twitter Statistic Channel").addActionRow(input).build();
+
+                        event.replyModal(modal).queue();
+                    }
+
+                    case "statisticsSetupInstagram" -> {
+                        TextInput input = TextInput.create("instagramName", "Instagram Name", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Instagram name here!").build();
+
+                        Modal modal = Modal.create("statisticsSetupInstagramModal", "Instagram Statistic Channel").addActionRow(input).build();
 
                         event.replyModal(modal).queue();
                     }
