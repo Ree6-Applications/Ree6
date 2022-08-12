@@ -126,7 +126,8 @@ public class CommandManager {
      * @return the {@link ICommand} with the same Name.
      */
     public ICommand getCommandBySlashName(String name) {
-        return getCommands().stream().filter(command -> command.getCommandData() != null && command.getCommandData().getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+        return getCommands().stream().filter(command -> (command.getCommandData() != null && command.getCommandData().getName().equalsIgnoreCase(name))
+                || (command.getClass().isAnnotationPresent(Command.class) && command.getClass().getAnnotation(Command.class).name().equalsIgnoreCase(name))).findFirst().orElse(null);
     }
 
     /**
