@@ -425,7 +425,7 @@ public class OtherEvents extends ListenerAdapter {
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Successfully setup the statics channels for Twitch statistics!");
-                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
             }
 
             case "statisticsSetupYouTubeModal" -> {
@@ -439,7 +439,7 @@ public class OtherEvents extends ListenerAdapter {
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Successfully setup the statics channels for YouTube statistics!");
-                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
             }
 
             case "statisticsSetupRedditModal" -> {
@@ -453,7 +453,7 @@ public class OtherEvents extends ListenerAdapter {
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Successfully setup the statics channels for Subreddit statistics!");
-                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
             }
 
             case "statisticsSetupTwitterModal" -> {
@@ -467,7 +467,7 @@ public class OtherEvents extends ListenerAdapter {
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Successfully setup the statics channels for Twitter statistics!");
-                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
             }
 
             case "statisticsSetupInstagramModal" -> {
@@ -481,7 +481,7 @@ public class OtherEvents extends ListenerAdapter {
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Successfully setup the statics channels for Instagram statistics!");
-                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
             }
         }
     }
@@ -587,7 +587,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("You can set up your own Statistic-channels!\nBy setting up Statistic-channels Ree6 will create new channels for each Statistic-Type that you setup!\nIf you want to get rid of a Statistic-Channel, just delete it!");
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupStatisticsMenu", "Select your Action", 1, 1, false, optionList))).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupStatisticsMenu", "Select your Action", 1, 1, false, optionList)).queue();
                     }
 
                     default -> {
@@ -612,7 +612,7 @@ public class OtherEvents extends ListenerAdapter {
                     case "statisticsSetupMember" -> {
                         embedBuilder.setDescription("Successfully setup the statistics channels for Member statistics!");
                         embedBuilder.setColor(Color.GREEN);
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(new ArrayList<>()).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
                         List<Category> categories = event.getGuild().getCategoriesByName("Statistics", true);
 
                         Category category;
@@ -650,7 +650,6 @@ public class OtherEvents extends ListenerAdapter {
                                         if (channelStats.getBotMemberStatsChannelId() != null) {
                                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getBotMemberStatsChannelId());
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupTempVoicechannel", "Select a Channel!", 1, 1, false, optionList)).queue();
                                             if (voiceChannel3 != null)
                                                 voiceChannel3.delete().queue();
                                         }
@@ -771,7 +770,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("Which Channel do you want to use as Temporal-Voicechannel?");
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRows(ActionRow.of(new SelectMenuImpl("setupTempVoicechannel", "Select a Channel!", 1, 1, false, optionList))).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupTempVoicechannel", "Select a Channel!", 1, 1, false, optionList)).queue();
                     }
 
                     default -> {
