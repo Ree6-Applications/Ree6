@@ -9,7 +9,6 @@ import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
@@ -52,7 +51,7 @@ public class Setup implements ICommand {
                         .addActionRow(selectMenu).queue();
             } else {
                 commandEvent.getChannel().sendMessageEmbeds(embedBuilder.build())
-                        .setActionRows(ActionRow.of(selectMenu)).queue();
+                        .addActionRow(selectMenu).queue();
             }
         } else {
             Main.getInstance().getCommandManager().sendMessage("You dont have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());

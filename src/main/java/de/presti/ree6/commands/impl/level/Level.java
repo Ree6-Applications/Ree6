@@ -12,6 +12,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 /**
@@ -85,13 +87,20 @@ Level implements ICommand {
 
         if (commandEvent.isSlashCommand()) {
             try {
-                commandEvent.getInteractionHook().sendFile(ImageCreationUtility.createRankImage(userLevel), "rank.png").queue();
+                MessageCreateBuilder createBuilder = new MessageCreateBuilder();
+                createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createRankImage(userLevel), "rank.png"));
+
+                commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
+                commandEvent.getInteractionHook().sendMessage(createBuilder.build()).queue();
             } catch (Exception ignore) {
                 Main.getInstance().getCommandManager().sendMessage("Couldn't generated Rank Image!", commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else {
             try {
-                commandEvent.getChannel().sendFile(ImageCreationUtility.createRankImage(userLevel), "rank.png").queue();
+                MessageCreateBuilder createBuilder = new MessageCreateBuilder();
+                createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createRankImage(userLevel), "rank.png"));
+
+                commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
             } catch (Exception ignore) {
                 Main.getInstance().getCommandManager().sendMessage("Couldn't generated Rank Image!", commandEvent.getChannel(), commandEvent.getInteractionHook());
             }

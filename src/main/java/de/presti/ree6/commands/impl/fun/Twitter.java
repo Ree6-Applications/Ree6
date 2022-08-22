@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -96,7 +98,10 @@ public class Twitter implements ICommand {
             request.setHeader("Authorization", Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"));
             HttpResponse response = httpClient.execute(request);
 
-            commandEvent.getChannel().sendFile(response.getEntity().getContent(), "twitter.png").queue();
+            MessageCreateBuilder createBuilder = new MessageCreateBuilder();
+            createBuilder.addFiles(FileUpload.fromData(response.getEntity().getContent(), "twitter.png"));
+
+            commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
 
             if (commandEvent.isSlashCommand())
                 commandEvent.getInteractionHook().sendMessage("Check below!").queue();
