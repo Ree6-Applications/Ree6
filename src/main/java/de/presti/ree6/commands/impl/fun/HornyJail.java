@@ -11,6 +11,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 /**
@@ -68,8 +70,10 @@ public class HornyJail implements ICommand {
      */
     public void sendHornyJail(Member member, CommandEvent commandEvent) {
         try {
+            MessageCreateBuilder createBuilder = new MessageCreateBuilder();
+            createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createHornyJailImage(member.getUser()), "hornyjail.png"));
             Main.getInstance().getCommandManager().sendMessage(member.getAsMention() + " is now in the Hornyjail!", commandEvent.getChannel(), commandEvent.getInteractionHook());
-            commandEvent.getChannel().sendFile(ImageCreationUtility.createHornyJailImage(member.getUser()), "hornyjail.png").queue();
+            commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
             if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
         } catch (Exception ex) {
             Main.getInstance().getCommandManager().sendMessage("Error while putting someone in the Hornyjail!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getChannel(), commandEvent.getInteractionHook());
