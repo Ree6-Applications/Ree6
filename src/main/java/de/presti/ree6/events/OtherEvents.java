@@ -10,9 +10,11 @@ import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
+import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.*;
+import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -41,6 +43,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -433,8 +436,76 @@ public class OtherEvents extends ListenerAdapter {
 
                 if (modalMapping == null) return;
 
+                if (event.getGuild() == null) return;
+
                 String youtubeChannelName = modalMapping.getAsString();
+
+                List<Category> categories = event.getGuild().getCategoriesByName("Statistics", true);
+
+                Category category;
+
                 EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .setTitle("Setup Menu")
+                        .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Successfully setup the statics channels for YouTube statistics!");
+
+                if (categories.isEmpty()) {
+                    category = event.getGuild().createCategory("Statistics").complete();
+                } else {
+                    category = categories.get(0);
+                }
+
+                com.google.api.services.youtube.model.Channel youTubeChannel;
+                try {
+                    youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannel(youtubeChannelName, "statistics");
+                } catch (IOException e) {
+                    embedBuilder = embedBuilder
+                            .setTitle("Setup Menu")
+                            .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                            .setColor(Color.RED)
+                            .setDescription("There was an error while trying to access the Channel data!");
+                    event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                    return;
+                }
+                event.getGuild().createVoiceChannel("YouTube Subscribers: " + (youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount()), category).queue(voiceChannel -> {
+                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
+                    ChannelStats channelStats;
+
+                    if (sqlResponse.isSuccess()) {
+                        channelStats = (ChannelStats) sqlResponse.getEntity();
+                        ChannelStats oldChannelStats = channelStats;
+
+                        if (channelStats.getYoutubeSubscribersChannelId() != null) {
+                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getYoutubeSubscribersChannelId());
+
+                            if (voiceChannel3 != null)
+                                voiceChannel3.delete().queue();
+                        }
+
+                        channelStats.setYoutubeSubscribersChannelId(voiceChannel.getId());
+                        channelStats.setYoutubeSubscribersChannelUsername(youtubeChannelName);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                    } else {
+                        channelStats = new ChannelStats(event.getGuild().getId(),
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                voiceChannel.getId(),
+                                youtubeChannelName,
+                                null,
+                                null);
+                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                    }
+                });
+
+                embedBuilder = embedBuilder
                         .setTitle("Setup Menu")
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
@@ -447,12 +518,80 @@ public class OtherEvents extends ListenerAdapter {
 
                 if (modalMapping == null) return;
 
+                if (event.getGuild() == null) return;
+
                 String subredditName = modalMapping.getAsString();
+
+                List<Category> categories = event.getGuild().getCategoriesByName("Statistics", true);
+
+                Category category;
+
                 EmbedBuilder embedBuilder = new EmbedBuilder()
                         .setTitle("Setup Menu")
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
-                        .setDescription("Successfully setup the statics channels for Subreddit statistics!");
+                        .setDescription("Successfully setup the statics channels for Reddit statistics!");
+
+                if (categories.isEmpty()) {
+                    category = event.getGuild().createCategory("Statistics").complete();
+                } else {
+                    category = categories.get(0);
+                }
+
+                RedditSubreddit subreddit;
+                try {
+                    subreddit = Main.getInstance().getNotifier().getSubreddit(subredditName);
+                } catch (IOException | InterruptedException e) {
+                    embedBuilder = embedBuilder
+                            .setTitle("Setup Menu")
+                            .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                            .setColor(Color.RED)
+                            .setDescription("There was an error while trying to access the Subreddit data!");
+                    event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                    return;
+                }
+                event.getGuild().createVoiceChannel("Subreddit Members: " + subreddit.getActiveUserCount(), category).queue(voiceChannel -> {
+                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
+                    ChannelStats channelStats;
+
+                    if (sqlResponse.isSuccess()) {
+                        channelStats = (ChannelStats) sqlResponse.getEntity();
+                        ChannelStats oldChannelStats = channelStats;
+
+                        if (channelStats.getSubredditMemberChannelId() != null) {
+                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getSubredditMemberChannelId());
+
+                            if (voiceChannel3 != null)
+                                voiceChannel3.delete().queue();
+                        }
+
+                        channelStats.setSubredditMemberChannelId(voiceChannel.getId());
+                        channelStats.setSubredditMemberChannelSubredditName(subredditName);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                    } else {
+                        channelStats = new ChannelStats(event.getGuild().getId(),
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                voiceChannel.getId(),
+                                subredditName);
+                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                    }
+                });
+
+                embedBuilder = embedBuilder
+                        .setTitle("Setup Menu")
+                        .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Successfully setup the statics channels for Reddit statistics!");
                 event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
             }
 

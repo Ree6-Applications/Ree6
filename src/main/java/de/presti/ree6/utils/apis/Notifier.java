@@ -31,11 +31,13 @@ import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import masecla.reddit4j.client.Reddit4J;
 import masecla.reddit4j.objects.Sorting;
+import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.awt.*;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -577,6 +579,17 @@ public class Notifier {
                 Main.getInstance().getAnalyticsLogger().error("Could not get Reddit Posts!", exception);
             }
         }, x -> Main.getInstance().getLogger().error("Couldn't start Reddit Stream!"), Duration.ofMinutes(5), true, true);
+    }
+
+    /**
+     * Used to get a Subreddit.
+     * @param subreddit the Name of the Subreddit.
+     * @return the Subreddit.
+     * @throws IOException if the Subreddit couldn't be found.
+     * @throws InterruptedException if the Thread was interrupted.
+     */
+    public RedditSubreddit getSubreddit(String subreddit) throws IOException, InterruptedException {
+        return redditClient.getSubreddit(subreddit);
     }
 
     /**
