@@ -40,6 +40,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
 import org.jetbrains.annotations.NotNull;
+import twitter4j.TwitterException;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -49,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public class OtherEvents extends ListenerAdapter {
 
@@ -468,6 +470,7 @@ public class OtherEvents extends ListenerAdapter {
                     event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
                     return;
                 }
+
                 event.getGuild().createVoiceChannel("YouTube Subscribers: " + (youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount()), category).queue(voiceChannel -> {
                     SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
                     ChannelStats channelStats;
@@ -550,6 +553,7 @@ public class OtherEvents extends ListenerAdapter {
                     event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
                     return;
                 }
+
                 event.getGuild().createVoiceChannel("Subreddit Members: " + subreddit.getActiveUserCount(), category).queue(voiceChannel -> {
                     SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
                     ChannelStats channelStats;
@@ -600,8 +604,77 @@ public class OtherEvents extends ListenerAdapter {
 
                 if (modalMapping == null) return;
 
+                if (event.getGuild() == null) return;
+
                 String twitterName = modalMapping.getAsString();
+
+                List<Category> categories = event.getGuild().getCategoriesByName("Statistics", true);
+
+                Category category;
+
                 EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .setTitle("Setup Menu")
+                        .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Successfully setup the statics channels for Twitter statistics!");
+
+                if (categories.isEmpty()) {
+                    category = event.getGuild().createCategory("Statistics").complete();
+                } else {
+                    category = categories.get(0);
+                }
+
+                twitter4j.User twitterUser;
+                try {
+                    twitterUser = Main.getInstance().getNotifier().getTwitterClient().showUser(twitterName);
+                } catch (TwitterException e) {
+                    embedBuilder = embedBuilder
+                            .setTitle("Setup Menu")
+                            .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                            .setColor(Color.RED)
+                            .setDescription("There was an error while trying to access the Twitter User data!");
+                    event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                    return;
+                }
+
+                event.getGuild().createVoiceChannel("Twitter Follower: " + twitterUser.getFollowersCount(), category).queue(voiceChannel -> {
+                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
+                    ChannelStats channelStats;
+
+                    if (sqlResponse.isSuccess()) {
+                        channelStats = (ChannelStats) sqlResponse.getEntity();
+                        ChannelStats oldChannelStats = channelStats;
+
+                        if (channelStats.getTwitterFollowerChannelId() != null) {
+                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getTwitterFollowerChannelId());
+
+                            if (voiceChannel3 != null)
+                                voiceChannel3.delete().queue();
+                        }
+
+                        channelStats.setTwitterFollowerChannelId(voiceChannel.getId());
+                        channelStats.setTwitterFollowerChannelUsername(twitterName);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                    } else {
+                        channelStats = new ChannelStats(event.getGuild().getId(),
+                                null,
+                                null,
+                                null,
+                                voiceChannel.getId(),
+                                twitterName,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null);
+                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                    }
+                });
+
+                embedBuilder = embedBuilder
                         .setTitle("Setup Menu")
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
@@ -614,8 +687,77 @@ public class OtherEvents extends ListenerAdapter {
 
                 if (modalMapping == null) return;
 
+                if (event.getGuild() == null) return;
+
                 String instagramName = modalMapping.getAsString();
+
+                List<Category> categories = event.getGuild().getCategoriesByName("Statistics", true);
+
+                Category category;
+
                 EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .setTitle("Setup Menu")
+                        .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Successfully setup the statics channels for Instagram statistics!");
+
+                if (categories.isEmpty()) {
+                    category = event.getGuild().createCategory("Statistics").complete();
+                } else {
+                    category = categories.get(0);
+                }
+
+                com.github.instagram4j.instagram4j.models.user.User instagramUser;
+                try {
+                    instagramUser = Main.getInstance().getNotifier().getInstagramClient().getActions().users().findByUsername(instagramName).get().getUser();
+                } catch (ExecutionException | InterruptedException e) {
+                    embedBuilder = embedBuilder
+                            .setTitle("Setup Menu")
+                            .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                            .setColor(Color.RED)
+                            .setDescription("There was an error while trying to access the Instagram User data!");
+                    event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                    return;
+                }
+
+                event.getGuild().createVoiceChannel("Instagram Follower: " + instagramUser.getFollower_count(), category).queue(voiceChannel -> {
+                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
+                    ChannelStats channelStats;
+
+                    if (sqlResponse.isSuccess()) {
+                        channelStats = (ChannelStats) sqlResponse.getEntity();
+                        ChannelStats oldChannelStats = channelStats;
+
+                        if (channelStats.getInstagramFollowerChannelId() != null) {
+                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getInstagramFollowerChannelId());
+
+                            if (voiceChannel3 != null)
+                                voiceChannel3.delete().queue();
+                        }
+
+                        channelStats.setInstagramFollowerChannelId(voiceChannel.getId());
+                        channelStats.setInstagramFollowerChannelUsername(instagramName);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                    } else {
+                        channelStats = new ChannelStats(event.getGuild().getId(),
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                voiceChannel.getId(),
+                                instagramName,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null);
+                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                    }
+                });
+
+                embedBuilder = embedBuilder
                         .setTitle("Setup Menu")
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
