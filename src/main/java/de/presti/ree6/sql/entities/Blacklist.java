@@ -56,4 +56,13 @@ public class Blacklist extends SQLEntity {
     public String getWord() {
         return word;
     }
+
+    /**
+     * Override to just return the Word.
+     * @return {@link String} as Word.
+     */
+    @Override
+    public String toString() {
+        return getWord();
+    }
 }
