@@ -26,10 +26,7 @@ import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.entities.SQLResponse;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
-import de.presti.ree6.sql.entities.webhook.WebhookInstagram;
-import de.presti.ree6.sql.entities.webhook.WebhookReddit;
-import de.presti.ree6.sql.entities.webhook.WebhookTwitch;
-import de.presti.ree6.sql.entities.webhook.WebhookTwitter;
+import de.presti.ree6.sql.entities.webhook.*;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import masecla.reddit4j.client.Reddit4J;
@@ -173,12 +170,16 @@ public class Notifier {
                     } catch (TwitterException e) {
                         continue;
                     }
-                    ChannelStats channelStats = (ChannelStats) sqlResponse.getEntity();
-                    if (channelStats.getTwitterFollowerChannelUsername() != null) {
-                        GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStats.getTwitchFollowerChannelId());
+
+                    List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(obj -> (ChannelStats) obj).toList();
+
+                    for (ChannelStats channelStat : channelStats) {
+                    if (channelStat.getTwitterFollowerChannelUsername() != null) {
+                        GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
                         if (guildChannel != null) {
                             guildChannel.getManager().setName("Twitter Follower: " + twitterUser.getFollowersCount()).queue();
                         }
+                    }
                     }
                 }
             }
@@ -234,11 +235,14 @@ public class Notifier {
         getTwitchClient().getEventManager().onEvent(ChannelFollowCountUpdateEvent.class, channelFollowCountUpdateEvent -> {
             SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE twitchFollowerChannelUsername=?", channelFollowCountUpdateEvent.getChannel().getName());
             if (sqlResponse.isSuccess()) {
-                ChannelStats channelStats = (ChannelStats) sqlResponse.getEntity();
-                if (channelStats.getTwitchFollowerChannelId() != null) {
-                    GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStats.getTwitchFollowerChannelId());
-                    if (guildChannel != null) {
-                        guildChannel.getManager().setName("Twitch Follower: " + channelFollowCountUpdateEvent.getFollowCount()).queue();
+                List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(obj -> (ChannelStats) obj).toList();
+
+                for (ChannelStats channelStat : channelStats) {
+                    if (channelStat.getTwitchFollowerChannelId() != null) {
+                        GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
+                        if (guildChannel != null) {
+                            guildChannel.getManager().setName("Twitch Follower: " + channelFollowCountUpdateEvent.getFollowCount()).queue();
+                        }
                     }
                 }
             }
@@ -322,10 +326,9 @@ public class Notifier {
      * Used to Register a Tweet Event for the given Twitter User
      *
      * @param twitterUser the Name of the Twitter User.
-     * @return true, if everything worked out.
      */
-    public boolean registerTwitterUser(String twitterUser) {
-        if (getTwitterClient() == null) return false;
+    public void registerTwitterUser(String twitterUser) {
+        if (getTwitterClient() == null) return;
 
         twitterUser = twitterUser.toLowerCase();
 
@@ -333,9 +336,9 @@ public class Notifier {
 
         try {
             user = getTwitterClient().showUser(twitterUser);
-            if (user.isProtected()) return false;
+            if (user.isProtected()) return;
         } catch (Exception ignore) {
-            return false;
+            return;
         }
 
         FilterQuery filterQuery = new FilterQuery();
@@ -354,7 +357,7 @@ public class Notifier {
                     public void onStatus(Status status) {
                         List<WebhookTwitter> webhooks = Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName());
 
-                        if (!webhooks.isEmpty()) return;
+                        if (webhooks.isEmpty()) return;
 
                         WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
@@ -429,8 +432,6 @@ public class Notifier {
                 .filter(filterQuery);
 
         if (!isTwitterRegistered(twitterUser)) registeredTwitterUsers.put(twitterUser, twitterStream);
-
-        return true;
     }
 
     /**
@@ -476,6 +477,32 @@ public class Notifier {
         ThreadUtil.createNewThread(x -> {
             try {
                 for (String channel : registeredYouTubeChannels) {
+
+                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE youtubeSubscribersChannelUsername=?", channel);
+                    if (sqlResponse.isSuccess()) {
+                        List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(obj -> (ChannelStats) obj).toList();
+
+                        com.google.api.services.youtube.model.Channel youTubeChannel;
+                        try {
+                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannel(channel, "statistics");
+                        } catch (IOException e) {
+                            return;
+                        }
+
+                        for (ChannelStats channelStat : channelStats) {
+                            if (channelStat.getYoutubeSubscribersChannelId() != null) {
+                                GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getYoutubeSubscribersChannelId());
+                                if (guildChannel != null) {
+                                    guildChannel.getManager().setName("YouTube Subscribers: " + (youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount())).queue();
+                                }
+                            }
+                        }
+                    }
+
+                    List<WebhookYouTube> webhooks = Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel);
+
+                    if (webhooks.isEmpty()) return;
+
                     List<PlaylistItem> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
                     if (!playlistItemList.isEmpty()) {
                         for (PlaylistItem playlistItem : playlistItemList) {
@@ -506,7 +533,7 @@ public class Notifier {
 
                                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                                Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel).forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+                                webhooks.forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
                             }
                         }
                     }
@@ -582,17 +609,21 @@ public class Notifier {
                     SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE subredditMemberChannelSubredditName=?", subreddit);
 
                     if (sqlResponse.isSuccess()) {
-                        ChannelStats channelStats = (ChannelStats) sqlResponse.getEntity();
-                        if (channelStats.getSubredditMemberChannelId() != null) {
-                            RedditSubreddit subredditEntity;
-                            try {
-                                subredditEntity = Main.getInstance().getNotifier().getSubreddit(subreddit);
-                            } catch (IOException | InterruptedException e) {
-                                return;
-                            }
-                            GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStats.getSubredditMemberChannelId());
-                            if (guildChannel != null) {
-                                guildChannel.getManager().setName("Subreddit Members: " + subredditEntity.getActiveUserCount()).queue();
+                        List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(obj -> (ChannelStats) obj).toList();
+
+                        RedditSubreddit subredditEntity;
+                        try {
+                            subredditEntity = Main.getInstance().getNotifier().getSubreddit(subreddit);
+                        } catch (IOException | InterruptedException e) {
+                            return;
+                        }
+
+                        for (ChannelStats channelStat : channelStats) {
+                            if (channelStat.getSubredditMemberChannelId() != null) {
+                                GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getSubredditMemberChannelId());
+                                if (guildChannel != null) {
+                                    guildChannel.getManager().setName("Subreddit Members: " + subredditEntity.getActiveUserCount()).queue();
+                                }
                             }
                         }
                     }
@@ -713,11 +744,15 @@ public class Notifier {
                     SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE instagramFollowerChannelUsername=?", username);
 
                     if (sqlResponse.isSuccess()) {
-                        ChannelStats channelStats = (ChannelStats) sqlResponse.getEntity();
-                        if (channelStats.getInstagramFollowerChannelId() != null) {
-                            GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStats.getInstagramFollowerChannelId());
-                            if (guildChannel != null) {
-                                guildChannel.getManager().setName("Instagram Follower: " + user.getFollower_count()).queue();
+                        List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(obj -> (ChannelStats) obj).toList();
+
+
+                        for (ChannelStats channelStat : channelStats) {
+                            if (channelStat.getInstagramFollowerChannelId() != null) {
+                                GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getInstagramFollowerChannelId());
+                                if (guildChannel != null) {
+                                    guildChannel.getManager().setName("Instagram Follower: " + user.getFollower_count()).queue();
+                                }
                             }
                         }
                     }
