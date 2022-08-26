@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>1.9.4</version>
+    <version>1.9.5</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -325,9 +325,9 @@
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>com.github.Ree6-Applications</groupId>
+            <groupId>de.ree6</groupId>
             <artifactId>JLyrics</artifactId>
-            <version>master-SNAPSHOT</version>
+            <version>765f7e0b88</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
