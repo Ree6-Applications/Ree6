@@ -26,7 +26,10 @@ import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.entities.SQLResponse;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
+import de.presti.ree6.sql.entities.webhook.WebhookInstagram;
+import de.presti.ree6.sql.entities.webhook.WebhookReddit;
 import de.presti.ree6.sql.entities.webhook.WebhookTwitch;
+import de.presti.ree6.sql.entities.webhook.WebhookTwitter;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import masecla.reddit4j.client.Reddit4J;
@@ -159,6 +162,27 @@ public class Notifier {
 
         Main.getInstance().getAnalyticsLogger().info("Initializing YouTube Streams...");
         createUploadStream();
+
+        ThreadUtil.createNewThread(x -> {
+            for (String twitterName : registeredTwitterUsers.keySet()) {
+                SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE twitterFollowerChannelUsername=?", twitterName);
+                if (sqlResponse.isSuccess()) {
+                    twitter4j.User twitterUser;
+                    try {
+                        twitterUser = Main.getInstance().getNotifier().getTwitterClient().showUser(twitterName);
+                    } catch (TwitterException e) {
+                        continue;
+                    }
+                    ChannelStats channelStats = (ChannelStats) sqlResponse.getEntity();
+                    if (channelStats.getTwitterFollowerChannelUsername() != null) {
+                        GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStats.getTwitchFollowerChannelId());
+                        if (guildChannel != null) {
+                            guildChannel.getManager().setName("Twitter Follower: " + twitterUser.getFollowersCount()).queue();
+                        }
+                    }
+                }
+            }
+        }, x -> Main.getInstance().getLogger().error("Failed to run Follower count checker!", x.getCause()), Duration.ofMinutes(5), true, true);
     }
 
     //region Twitch
@@ -262,7 +286,8 @@ public class Notifier {
 
         twitchChannel = twitchChannel.toLowerCase();
 
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(twitchChannel).isEmpty())
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getTwitchWebhooksByName(twitchChannel).isEmpty() ||
+                Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE twitchFollowerChannelUsername=?", twitchChannel).isSuccess())
             return;
 
         if (isTwitchRegistered(twitchChannel)) registeredTwitchChannels.remove(twitchChannel);
@@ -317,85 +342,91 @@ public class Notifier {
         filterQuery.follow(user.getId());
 
         twitter4j.User finalUser = user;
-        TwitterStream twitterStream = new TwitterStreamFactory(getTwitterClient().getConfiguration()).getInstance().addListener(new StatusListener() {
+        TwitterStream twitterStream = new TwitterStreamFactory(getTwitterClient().getConfiguration())
+                .getInstance()
+                .addListener(new StatusListener() {
 
-            /**
-             * Override the onStatus method to inform about a new status.
-             * @param status the new Status.
-             */
-            @Override
-            public void onStatus(Status status) {
+                    /**
+                     * Override the onStatus method to inform about a new status.
+                     * @param status the new Status.
+                     */
+                    @Override
+                    public void onStatus(Status status) {
+                        List<WebhookTwitter> webhooks = Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName());
 
-                WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+                        if (!webhooks.isEmpty()) return;
 
-                webhookMessageBuilder.setUsername("Ree6");
-                webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+                        WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
-                WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+                        webhookMessageBuilder.setUsername("Ree6");
+                        webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
 
-                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(status.getUser().getName() + " (@" + status.getUser().getScreenName() + ")", status.getUser().getBiggerProfileImageURLHttps(), null));
+                        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
-                webhookEmbedBuilder.setDescription(status.getQuotedStatus() != null && !status.isRetweet() ? "**Quoted  " + status.getQuotedStatus().getUser().getScreenName() + "**: " + status.getText() + "\n" : status.getInReplyToScreenName() != null ? "**Reply to " + status.getInReplyToScreenName() + "**: " + status.getText() + "\n" : status.isRetweet() ? "**Retweeted from " + status.getRetweetedStatus().getUser().getScreenName() + "**: " + status.getText().split(": ")[1] + "\n" : status.getText() + "\n");
+                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(status.getUser().getName() + " (@" + status.getUser().getScreenName() + ")", status.getUser().getBiggerProfileImageURLHttps(), null));
 
-                if (status.getMediaEntities().length > 0 && status.getMediaEntities()[0].getType().equalsIgnoreCase("photo")) {
-                    webhookEmbedBuilder.setImageUrl(status.getMediaEntities()[0].getMediaURLHttps());
-                }
+                        webhookEmbedBuilder.setDescription(status.getQuotedStatus() != null && !status.isRetweet() ? "**Quoted  " + status.getQuotedStatus().getUser().getScreenName() + "**: " + status.getText() + "\n" : status.getInReplyToScreenName() != null ? "**Reply to " + status.getInReplyToScreenName() + "**: " + status.getText() + "\n" : status.isRetweet() ? "**Retweeted from " + status.getRetweetedStatus().getUser().getScreenName() + "**: " + status.getText().split(": ")[1] + "\n" : status.getText() + "\n");
 
-                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
-                webhookEmbedBuilder.setTimestamp(Instant.now());
-                webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
+                        if (status.getMediaEntities().length > 0 && status.getMediaEntities()[0].getType().equalsIgnoreCase("photo")) {
+                            webhookEmbedBuilder.setImageUrl(status.getMediaEntities()[0].getMediaURLHttps());
+                        }
 
-                webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                        webhookEmbedBuilder.setTimestamp(Instant.now());
+                        webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
 
-                Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName()).forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
-            }
+                        webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-            /**
-             * No need for this, so just ignore it.
-             * @param statusDeletionNotice Data Object.
-             */
-            @Override
-            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-                // Unused
-            }
+                        webhooks.forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+                    }
 
-            /**
-             * No need for this, so just ignore it.
-             * @param numberOfLimitedStatuses Data Object.
-             */
-            @Override
-            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-                // Unused
-            }
+                    /**
+                     * No need for this, so just ignore it.
+                     * @param statusDeletionNotice Data Object.
+                     */
+                    @Override
+                    public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+                        // Unused
+                    }
 
-            /**
-             * No need for this, so just ignore it.
-             * @param userId Data Object.
-             * @param upToStatusId Data Object.
-             */
-            @Override
-            public void onScrubGeo(long userId, long upToStatusId) {
-                // Unused
-            }
+                    /**
+                     * No need for this, so just ignore it.
+                     * @param numberOfLimitedStatuses Data Object.
+                     */
+                    @Override
+                    public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+                        // Unused
+                    }
 
-            /**
-             * No need for this, so just ignore it.
-             * @param warning Data Object.
-             */
-            @Override
-            public void onStallWarning(StallWarning warning) {
-                // Unused
-            }
+                    /**
+                     * No need for this, so just ignore it.
+                     * @param userId Data Object.
+                     * @param upToStatusId Data Object.
+                     */
+                    @Override
+                    public void onScrubGeo(long userId, long upToStatusId) {
+                        // Unused
+                    }
 
-            /**
-             * Inform about an exception.
-             * @param ex the Exception
-             */
-            @Override
-            public void onException(Exception ex) {
-                Main.getInstance().getLogger().error("[Notifier] Encountered an error, while trying to get the Status update!", ex);
-            }
-        }).filter(filterQuery);
+                    /**
+                     * No need for this, so just ignore it.
+                     * @param warning Data Object.
+                     */
+                    @Override
+                    public void onStallWarning(StallWarning warning) {
+                        // Unused
+                    }
+
+                    /**
+                     * Inform about an exception.
+                     * @param ex the Exception
+                     */
+                    @Override
+                    public void onException(Exception ex) {
+                        Main.getInstance().getLogger().error("[Notifier] Encountered an error, while trying to get the Status update!", ex);
+                    }
+                })
+                .filter(filterQuery);
 
         if (!isTwitterRegistered(twitterUser)) registeredTwitterUsers.put(twitterUser, twitterStream);
 
@@ -412,7 +443,8 @@ public class Notifier {
 
         twitterUser = twitterUser.toLowerCase();
 
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(twitterUser).isEmpty())
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getTwitterWebhooksByName(twitterUser).isEmpty() ||
+                Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE twitterFollowerChannelUsername=?", twitterUser).isSuccess())
             return;
 
         if (isTwitterRegistered(twitterUser)) {
@@ -519,7 +551,8 @@ public class Notifier {
     public void unregisterYouTubeChannel(String youtubeChannel) {
         if (YouTubeAPIHandler.getInstance() == null) return;
 
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(youtubeChannel).isEmpty())
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(youtubeChannel).isEmpty() ||
+                Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE youtubeSubscribersChannelUsername=?", youtubeChannel).isSuccess())
             return;
 
         if (isYouTubeRegistered(youtubeChannel)) registeredYouTubeChannels.remove(youtubeChannel);
@@ -546,7 +579,29 @@ public class Notifier {
         ThreadUtil.createNewThread(x -> {
             try {
                 for (String subreddit : registeredSubreddits) {
+                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE subredditMemberChannelSubredditName=?", subreddit);
+
+                    if (sqlResponse.isSuccess()) {
+                        ChannelStats channelStats = (ChannelStats) sqlResponse.getEntity();
+                        if (channelStats.getSubredditMemberChannelId() != null) {
+                            RedditSubreddit subredditEntity;
+                            try {
+                                subredditEntity = Main.getInstance().getNotifier().getSubreddit(subreddit);
+                            } catch (IOException | InterruptedException e) {
+                                return;
+                            }
+                            GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStats.getSubredditMemberChannelId());
+                            if (guildChannel != null) {
+                                guildChannel.getManager().setName("Subreddit Members: " + subredditEntity.getActiveUserCount()).queue();
+                            }
+                        }
+                    }
+
                     redditClient.getSubredditPosts(subreddit, Sorting.NEW).submit().stream().filter(redditPost -> redditPost.getCreated() > (Duration.ofMillis(System.currentTimeMillis()).toSeconds() - Duration.ofMinutes(5).toSeconds())).forEach(redditPost -> {
+                        List<WebhookReddit> webhooks = Main.getInstance().getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit);
+
+                        if (webhooks.isEmpty()) return;
+
                         // Create Webhook Message.
                         WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
@@ -572,7 +627,7 @@ public class Notifier {
 
                         webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                        Main.getInstance().getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit).forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+                        webhooks.forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
                     });
                 }
             } catch (Exception exception) {
@@ -583,9 +638,10 @@ public class Notifier {
 
     /**
      * Used to get a Subreddit.
+     *
      * @param subreddit the Name of the Subreddit.
      * @return the Subreddit.
-     * @throws IOException if the Subreddit couldn't be found.
+     * @throws IOException          if the Subreddit couldn't be found.
      * @throws InterruptedException if the Thread was interrupted.
      */
     public RedditSubreddit getSubreddit(String subreddit) throws IOException, InterruptedException {
@@ -624,7 +680,8 @@ public class Notifier {
     public void unregisterSubreddit(String subreddit) {
         if (getRedditClient() == null) return;
 
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit).isEmpty()) return;
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit).isEmpty() ||
+                Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE subredditMemberChannelSubredditName=?", subreddit).isSuccess()) return;
 
         if (isSubredditRegistered(subreddit)) registeredSubreddits.remove(subreddit);
     }
@@ -649,8 +706,26 @@ public class Notifier {
     public void createInstagramPostStream() {
         ThreadUtil.createNewThread(x -> {
             for (String username : registeredInstagramUsers) {
+
                 instagramClient.actions().users().findByUsername(username).thenAccept(userAction -> {
                     com.github.instagram4j.instagram4j.models.user.User user = userAction.getUser();
+
+                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE instagramFollowerChannelUsername=?", username);
+
+                    if (sqlResponse.isSuccess()) {
+                        ChannelStats channelStats = (ChannelStats) sqlResponse.getEntity();
+                        if (channelStats.getInstagramFollowerChannelId() != null) {
+                            GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStats.getInstagramFollowerChannelId());
+                            if (guildChannel != null) {
+                                guildChannel.getManager().setName("Instagram Follower: " + user.getFollower_count()).queue();
+                            }
+                        }
+                    }
+
+                    List<WebhookInstagram> webhooks = Main.getInstance().getSqlConnector().getSqlWorker().getInstagramWebhookByName(username);
+
+                    if (webhooks.isEmpty()) return;
+
                     if (!user.is_private()) {
                         FeedIterator<FeedUserRequest, FeedUserResponse> iterable = new FeedIterator<>(instagramClient, new FeedUserRequest(user.getPk()));
 
@@ -685,8 +760,7 @@ public class Notifier {
 
                                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                                Main.getInstance().getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
-
+                                webhooks.forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
                             });
                         }
                     }
@@ -730,7 +804,8 @@ public class Notifier {
     public void unregisterInstagramUser(String username) {
         if (getInstagramClient() == null) return;
 
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).isEmpty()) return;
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).isEmpty() ||
+                Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE instagramFollowerChannelUsername=?", instagramClient).isSuccess()) return;
 
         if (isInstagramUserRegistered(username)) registeredInstagramUsers.remove(username);
     }
