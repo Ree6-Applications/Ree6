@@ -6,7 +6,10 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 /**
  * Seek to a specific Time in the current Song.
@@ -49,7 +52,7 @@ public class Seek implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return null;
+        return new CommandDataImpl("seek", "Seek to a specific point of a song.").addOptions(new OptionData(OptionType.INTEGER, "seconds", "The seconds that should be seeked (negativ numbers work)").setRequired(true));
     }
 
     /**

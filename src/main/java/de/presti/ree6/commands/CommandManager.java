@@ -80,10 +80,10 @@ public class CommandManager {
 
             if (commandData != null) {
 
-                if (commandAnnotation.category() == Category.MOD &&
-                        commandData.getDefaultPermissions().equals(DefaultMemberPermissions.ENABLED)) {
+                if (commandAnnotation.category() == Category.MOD) {
                     commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
                 }
+
                 commandData.setGuildOnly(true);
 
                 //noinspection ResultOfMethodCallIgnored
