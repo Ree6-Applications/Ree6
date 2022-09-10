@@ -257,8 +257,9 @@ public class MusicWorker {
      *
      * @param channel         the TextChannel, used to inform the user about the skip.
      * @param interactionHook the Interaction-Hook, used to replace the channel if it is a SlashCommand.
+     * @param skipAmount      the amount of Tracks that should be skipped.
      */
-    public void skipTrack(MessageChannelUnion channel, InteractionHook interactionHook) {
+    public void skipTrack(MessageChannelUnion channel, InteractionHook interactionHook, int skipAmount) {
         Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
                 .setTitle("Music Player!")
                 .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
@@ -266,7 +267,18 @@ public class MusicWorker {
                 .setDescription("Skipping to the next Song!")
                 .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
 
-        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).scheduler.nextTrack(channel);
+        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).scheduler.nextTrack(channel, skipAmount);
+    }
+
+    /**
+     * A method used to seek to a specific position in the current AudioTrack.
+     *
+     * @param channel             the TextChannel, used to inform the user about the seek.
+     * @param interactionHook     the Interaction-Hook, used to replace the channel if it is a SlashCommand.
+     * @param seekAmountInSeconds the amount of seconds that should be seeked.
+     */
+    public void seekInTrack(MessageChannelUnion channel, InteractionHook interactionHook, int seekAmountInSeconds) {
+        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).scheduler.seekPosition(channel, seekAmountInSeconds);
     }
 
     /**
@@ -326,6 +338,7 @@ public class MusicWorker {
 
     /**
      * Check if the user has enough permission to control the bot.
+     *
      * @param commandEvent the CommandEvent.
      * @return true, if the user has enough permission | false, if not.
      */

@@ -172,13 +172,13 @@ public class TrackScheduler extends AudioEventAdapter {
         AudioTrack track = queue.poll();
 
         if (track != null) {
-                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle("Music Player!")
-                        .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
-                        .setColor(Color.GREEN)
-                        .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
-                        .setFooter(getChannel().asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getChannel().asGuildMessageChannel().getGuild().getIconUrl()), 5, getChannel());
+            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                    .setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl())
+                    .setTitle("Music Player!")
+                    .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
+                    .setColor(Color.GREEN)
+                    .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
+                    .setFooter(getChannel().asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getChannel().asGuildMessageChannel().getGuild().getIconUrl()), 5, getChannel());
             player.startTrack(track, false);
         } else {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
@@ -189,6 +189,89 @@ public class TrackScheduler extends AudioEventAdapter {
                     .setDescription("There is no new Song!")
                     .setFooter(getChannel().asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getChannel().asGuildMessageChannel().getGuild().getIconUrl()), 5, getChannel());
         }
+    }
+
+    /**
+     * Get the next Track from the Queue.
+     *
+     * @param textChannel the Text-Channel where the command have been performed from.
+     * @param index       the position of the track it should skip to. (relative to the current track)
+     */
+    public void nextTrack(MessageChannelUnion textChannel, int position) {
+        // Start the next track, regardless of if something is already playing or not.
+        // In case queue was empty, we are
+        // giving null to startTrack, which is a valid argument and will simply stop the
+        // player.
+
+        setChannel(textChannel);
+
+        if (getChannel() == null)
+            return;
+
+        AudioTrack track = null;
+
+        //TODO:: find a better way to this, since this way really is just stupidity at its best.
+
+        for (int currentPosition = 0; currentPosition < position; currentPosition++) {
+            track = queue.poll();
+        }
+
+        if (track != null) {
+            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                    .setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl())
+                    .setTitle("Music Player!")
+                    .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
+                    .setColor(Color.GREEN)
+                    .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
+                    .setFooter(getChannel().asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getChannel().asGuildMessageChannel().getGuild().getIconUrl()), 5, getChannel());
+            player.startTrack(track, false);
+        } else {
+            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                    .setAuthor(textChannel.getJDA().getSelfUser().getName(), Data.WEBSITE, textChannel.getJDA().getSelfUser().getAvatarUrl())
+                    .setTitle("Music Player!")
+                    .setThumbnail(textChannel.getJDA().getSelfUser().getAvatarUrl())
+                    .setColor(Color.RED)
+                    .setDescription("There is no new Song!")
+                    .setFooter(getChannel().asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, getChannel().asGuildMessageChannel().getGuild().getIconUrl()), 5, getChannel());
+        }
+    }
+
+    public void seekPosition(MessageChannelUnion channel, int seekAmountInSeconds) {
+        if (player.getPlayingTrack() == null) {
+            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                    .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                    .setTitle("Music Player!")
+                    .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                    .setColor(Color.RED)
+                    .setDescription("There is no Song playing!")
+                    .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel);
+            return;
+        }
+
+        if (player.getPlayingTrack().getPosition() / 1000 + seekAmountInSeconds > player.getPlayingTrack().getDuration() / 1000) {
+            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                    .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                    .setTitle("Music Player!")
+                    .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                    .setColor(Color.RED)
+                    .setDescription("You can't seek to a position that is longer than the song!")
+                    .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel);
+            return;
+        }
+
+        if (player.getPlayingTrack().getPosition() / 1000 + seekAmountInSeconds < 0) {
+            player.getPlayingTrack().setPosition(0L);
+        } else {
+            player.getPlayingTrack().setPosition((long)seekAmountInSeconds * 1000);
+        }
+
+        Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                .setTitle("Music Player!")
+                .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                .setColor(Color.GREEN)
+                .setDescription("Seeked to ``" + FormatUtil.formatTime(player.getPlayingTrack().getPosition()) + "``!")
+                .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel);
     }
 
     /**

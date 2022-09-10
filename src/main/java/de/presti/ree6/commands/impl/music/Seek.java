@@ -12,26 +12,26 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 /**
- * Skip the current Song.
+ * Seek to a specific Time in the current Song.
  */
-@Command(name = "skip", description = "Skip the current Song.", category = Category.MUSIC)
-public class Skip implements ICommand {
+@Command(name = "seek", description = "Seek to a specific point of a song.", category = Category.MUSIC)
+public class Seek implements ICommand {
 
     /**
      * @inheritDoc
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        int skipAmount = 1;
+        int seekAmountInSeconds = 1;
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping optionMapping = commandEvent.getSlashCommandInteractionEvent().getOption("amount");
+            OptionMapping optionMapping = commandEvent.getSlashCommandInteractionEvent().getOption("seconds");
             if (optionMapping != null) {
-                skipAmount = optionMapping.getAsInt();
+                seekAmountInSeconds = optionMapping.getAsInt();
             }
         } else if (commandEvent.getArguments().length >= 1) {
             try {
-                skipAmount = Integer.parseInt(commandEvent.getArguments()[0]);
+                seekAmountInSeconds = Integer.parseInt(commandEvent.getArguments()[0]);
             } catch (NumberFormatException ignored) {
             }
         }
@@ -44,7 +44,7 @@ public class Skip implements ICommand {
             return;
         }
 
-        Main.getInstance().getMusicWorker().skipTrack(commandEvent.getChannel(), commandEvent.getInteractionHook(), skipAmount);
+        Main.getInstance().getMusicWorker().seekInTrack(commandEvent.getChannel(), commandEvent.getInteractionHook(), seekAmountInSeconds);
     }
 
     /**
@@ -52,7 +52,7 @@ public class Skip implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("skip", "Skip the current Song.").addOptions(new OptionData(OptionType.INTEGER, "amount", "The amount of songs that should be skipped!").setRequired(false));
+        return new CommandDataImpl("seek", "Seek to a specific point of a song.").addOptions(new OptionData(OptionType.INTEGER, "seconds", "The seconds that should be seeked (negativ numbers work)").setRequired(true));
     }
 
     /**
@@ -60,6 +60,6 @@ public class Skip implements ICommand {
      */
     @Override
     public String[] getAlias() {
-        return new String[] { "sk", "next" };
+        return new String[0];
     }
 }
