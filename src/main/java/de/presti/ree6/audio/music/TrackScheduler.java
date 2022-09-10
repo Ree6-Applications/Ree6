@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
-import de.presti.ree6.utils.others.TimeUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -261,9 +260,9 @@ public class TrackScheduler extends AudioEventAdapter {
         }
 
         if (player.getPlayingTrack().getPosition() / 1000 + seekAmountInSeconds < 0) {
-            player.getPlayingTrack().setPosition(0);
+            player.getPlayingTrack().setPosition(0L);
         } else {
-            player.getPlayingTrack().setPosition(seekAmountInSeconds * 1000);
+            player.getPlayingTrack().setPosition((long)seekAmountInSeconds * 1000);
         }
 
         Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
