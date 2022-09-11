@@ -430,7 +430,7 @@ public class OtherEvents extends ListenerAdapter {
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Successfully setup the statics channels for Twitch statistics!");
-                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
             }
 
             case "statisticsSetupYouTubeModal" -> {
@@ -460,14 +460,15 @@ public class OtherEvents extends ListenerAdapter {
 
                 com.google.api.services.youtube.model.Channel youTubeChannel;
                 try {
-                    youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannel(youtubeChannelName, "statistics");
+                    youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannel(youtubeChannelName, "snippet, statistics");
                 } catch (IOException e) {
                     embedBuilder = embedBuilder
                             .setTitle("Setup Menu")
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
                             .setDescription("There was an error while trying to access the Channel data!");
-                    event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                    event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                    e.printStackTrace();
                     return;
                 }
 
@@ -513,7 +514,7 @@ public class OtherEvents extends ListenerAdapter {
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Successfully setup the statics channels for YouTube statistics!");
-                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
             }
 
             case "statisticsSetupRedditModal" -> {
@@ -550,7 +551,7 @@ public class OtherEvents extends ListenerAdapter {
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
                             .setDescription("There was an error while trying to access the Subreddit data!");
-                    event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                    event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     return;
                 }
 
@@ -596,7 +597,7 @@ public class OtherEvents extends ListenerAdapter {
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Successfully setup the statics channels for Reddit statistics!");
-                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
             }
 
             case "statisticsSetupTwitterModal" -> {
@@ -633,7 +634,7 @@ public class OtherEvents extends ListenerAdapter {
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
                             .setDescription("There was an error while trying to access the Twitter User data!");
-                    event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                    event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     return;
                 }
 
@@ -679,7 +680,7 @@ public class OtherEvents extends ListenerAdapter {
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Successfully setup the statics channels for Twitter statistics!");
-                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
             }
 
             case "statisticsSetupInstagramModal" -> {
@@ -716,7 +717,7 @@ public class OtherEvents extends ListenerAdapter {
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
                             .setDescription("There was an error while trying to access the Instagram User data!");
-                    event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                    event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     return;
                 }
 
@@ -762,7 +763,7 @@ public class OtherEvents extends ListenerAdapter {
                         .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Successfully setup the statics channels for Instagram statistics!");
-                event.deferEdit().setEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
             }
         }
     }
@@ -893,7 +894,7 @@ public class OtherEvents extends ListenerAdapter {
                     case "statisticsSetupMember" -> {
                         embedBuilder.setDescription("Successfully setup the statistics channels for Member statistics!");
                         embedBuilder.setColor(Color.GREEN);
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                         List<Category> categories = event.getGuild().getCategoriesByName("Statistics", true);
 
                         Category category;
@@ -1023,7 +1024,7 @@ public class OtherEvents extends ListenerAdapter {
                     Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(new TemporalVoicechannel(event.getGuild().getId(), voiceChannel.getId()));
                     embedBuilder.setDescription("Successfully changed the Temporal Voicechannel, nice work!");
                     embedBuilder.setColor(Color.GREEN);
-                    event.editMessageEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                    event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                 } else {
                     embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
                     event.editMessageEmbeds(embedBuilder.build()).queue();
@@ -1113,7 +1114,7 @@ public class OtherEvents extends ListenerAdapter {
                         Main.getInstance().getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription("Successfully changed the Logging Channel, nice work!");
                         embedBuilder.setColor(Color.GREEN);
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     });
                 } else {
                     embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
@@ -1171,7 +1172,7 @@ public class OtherEvents extends ListenerAdapter {
                         Main.getInstance().getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription("Successfully changed the Welcome-Channel, nice work!");
                         embedBuilder.setColor(Color.GREEN);
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     });
                 } else {
                     embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
@@ -1228,7 +1229,7 @@ public class OtherEvents extends ListenerAdapter {
                         Main.getInstance().getSqlConnector().getSqlWorker().setNewsWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription("Successfully changed the News-Channel, nice work!");
                         embedBuilder.setColor(Color.GREEN);
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     });
                 } else {
                     embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
