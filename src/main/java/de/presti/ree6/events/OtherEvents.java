@@ -469,7 +469,6 @@ public class OtherEvents extends ListenerAdapter {
                             .setColor(Color.RED)
                             .setDescription("There was an error while trying to access the Channel data!");
                     event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
-                    e.printStackTrace();
                     return;
                 }
 
