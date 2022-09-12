@@ -387,7 +387,7 @@ public class OtherEvents extends ListenerAdapter {
                 }
 
                 String channelId = Main.getInstance().getNotifier().getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(twitchUsername)).execute().getUsers().get(0).getId();
-                event.getGuild().createVoiceChannel("Twitch Follower: " + Main.getInstance().getNotifier().getTwitchClient().getHelix().getFollowers(channelId, null, null, null, 20).execute().getTotal(), category).queue(voiceChannel -> {
+                event.getGuild().createVoiceChannel("Twitch Follower: " + Main.getInstance().getNotifier().getTwitchClient().getHelix().getFollowers(null, null, channelId, null, 20).execute().getTotal(), category).queue(voiceChannel -> {
                     SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
                     ChannelStats channelStats;
 
