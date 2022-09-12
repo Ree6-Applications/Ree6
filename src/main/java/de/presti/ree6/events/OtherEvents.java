@@ -406,7 +406,7 @@ public class OtherEvents extends ListenerAdapter {
                         channelStats.setTwitchFollowerChannelId(voiceChannel.getId());
                         channelStats.setTwitchFollowerChannelUsername(twitchUsername);
                         Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
-                        Main.getInstance().getNotifier().getTwitchClient().getClientHelper().enableFollowEventListener(twitchUsername);
+                        Main.getInstance().getNotifier().registerTwitchChannel(twitchUsername);
                     } else {
                         channelStats = new ChannelStats(event.getGuild().getId(),
                                 null,
@@ -423,6 +423,7 @@ public class OtherEvents extends ListenerAdapter {
                                 null,
                                 null);
                         Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                        Main.getInstance().getNotifier().registerTwitchChannel(twitchUsername);
                     }
                 });
 
@@ -552,6 +553,7 @@ public class OtherEvents extends ListenerAdapter {
                             .setColor(Color.RED)
                             .setDescription("There was an error while trying to access the Subreddit data!");
                     event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                    e.printStackTrace();
                     return;
                 }
 
