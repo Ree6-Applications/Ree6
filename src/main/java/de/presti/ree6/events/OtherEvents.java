@@ -491,6 +491,7 @@ public class OtherEvents extends ListenerAdapter {
                         channelStats.setYoutubeSubscribersChannelId(voiceChannel.getId());
                         channelStats.setYoutubeSubscribersChannelUsername(youtubeChannelName);
                         Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                        Main.getInstance().getNotifier().registerYouTubeChannel(youtubeChannelName);
                     } else {
                         channelStats = new ChannelStats(event.getGuild().getId(),
                                 null,
@@ -507,6 +508,7 @@ public class OtherEvents extends ListenerAdapter {
                                 null,
                                 null);
                         Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                        Main.getInstance().getNotifier().registerYouTubeChannel(youtubeChannelName);
                     }
                 });
 
@@ -553,7 +555,6 @@ public class OtherEvents extends ListenerAdapter {
                             .setColor(Color.RED)
                             .setDescription("There was an error while trying to access the Subreddit data!");
                     event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
-                    e.printStackTrace();
                     return;
                 }
 
@@ -575,6 +576,7 @@ public class OtherEvents extends ListenerAdapter {
                         channelStats.setSubredditMemberChannelId(voiceChannel.getId());
                         channelStats.setSubredditMemberChannelSubredditName(subredditName);
                         Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                        Main.getInstance().getNotifier().registerSubreddit(subredditName);
                     } else {
                         channelStats = new ChannelStats(event.getGuild().getId(),
                                 null,
@@ -591,6 +593,7 @@ public class OtherEvents extends ListenerAdapter {
                                 voiceChannel.getId(),
                                 subredditName);
                         Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                        Main.getInstance().getNotifier().registerSubreddit(subredditName);
                     }
                 });
 
@@ -658,6 +661,7 @@ public class OtherEvents extends ListenerAdapter {
                         channelStats.setTwitterFollowerChannelId(voiceChannel.getId());
                         channelStats.setTwitterFollowerChannelUsername(twitterName);
                         Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                        Main.getInstance().getNotifier().registerTwitterUser(twitterName);
                     } else {
                         channelStats = new ChannelStats(event.getGuild().getId(),
                                 null,
@@ -674,6 +678,7 @@ public class OtherEvents extends ListenerAdapter {
                                 null,
                                 null);
                         Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                        Main.getInstance().getNotifier().registerTwitterUser(twitterName);
                     }
                 });
 
@@ -741,6 +746,7 @@ public class OtherEvents extends ListenerAdapter {
                         channelStats.setInstagramFollowerChannelId(voiceChannel.getId());
                         channelStats.setInstagramFollowerChannelUsername(instagramName);
                         Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                        Main.getInstance().getNotifier().registerInstagramUser(instagramName);
                     } else {
                         channelStats = new ChannelStats(event.getGuild().getId(),
                                 null,
@@ -757,6 +763,7 @@ public class OtherEvents extends ListenerAdapter {
                                 null,
                                 null);
                         Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                        Main.getInstance().getNotifier().registerInstagramUser(instagramName);
                     }
                 });
 

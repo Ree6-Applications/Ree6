@@ -79,7 +79,7 @@ public class StoredResultSet {
      * @return the value of the Column.
      */
     public int getColumnByName(String name) {
-        return columnMappings.getOrDefault(name, -1);
+        return columnMappings.getOrDefault(name, columnMappings.getOrDefault(name.toUpperCase(), columnMappings.getOrDefault(name.toLowerCase(), -1)));
     }
 
     /**
