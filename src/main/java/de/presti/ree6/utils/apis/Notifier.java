@@ -233,7 +233,7 @@ public class Notifier {
         });
 
         getTwitchClient().getEventManager().onEvent(ChannelFollowCountUpdateEvent.class, channelFollowCountUpdateEvent -> {
-            SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE twitchFollowerChannelUsername=?", channelFollowCountUpdateEvent.getChannel().getName());
+            SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE LOWER(twitchFollowerChannelUsername) = ?", channelFollowCountUpdateEvent.getChannel().getName());
             if (sqlResponse.isSuccess()) {
                 List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(obj -> (ChannelStats) obj).toList();
 
@@ -262,6 +262,7 @@ public class Notifier {
         if (!isTwitchRegistered(twitchChannel)) registeredTwitchChannels.add(twitchChannel);
 
         getTwitchClient().getClientHelper().enableStreamEventListener(twitchChannel);
+        getTwitchClient().getClientHelper().enableFollowEventListener(twitchChannel);
     }
 
     /**
@@ -278,6 +279,7 @@ public class Notifier {
         });
 
         getTwitchClient().getClientHelper().enableStreamEventListener(twitchChannels);
+        getTwitchClient().getClientHelper().enableFollowEventListener(twitchChannels);
     }
 
     /**

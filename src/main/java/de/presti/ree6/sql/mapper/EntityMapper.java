@@ -1,13 +1,11 @@
 package de.presti.ree6.sql.mapper;
 
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.entities.SQLEntity;
 import de.presti.ree6.sql.base.entities.SQLResponse;
 import de.presti.ree6.sql.base.entities.StoredResultSet;
 import de.presti.ree6.sql.base.utils.SQLUtil;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 /**
@@ -61,10 +59,10 @@ public class EntityMapper {
             Object entity = clazz.getDeclaredConstructor().newInstance();
 
             if (clazz.getSuperclass() != null && !clazz.getSuperclass().isInstance(SQLEntity.class)) {
-                setAllFields(resultSet, entity, clazz.getSuperclass().getDeclaredFields(), clazz);
+                SQLUtil.setAllFields(resultSet, entity, clazz.getSuperclass().getDeclaredFields(), clazz);
             }
 
-            setAllFields(resultSet, entity, clazz.getDeclaredFields(), clazz);
+            SQLUtil.setAllFields(resultSet, entity, clazz.getDeclaredFields(), clazz);
 
             return entity;
         } catch (Exception exception) {
@@ -72,31 +70,5 @@ public class EntityMapper {
         }
 
         return null;
-    }
-
-    /**
-     * Set all fields of the given entity to the given values.
-     *
-     * @param resultSet For the column mappings.
-     * @param entity    The entity instance for the value setting.
-     * @param fields    The fields to set.
-     * @param clazz     The class of the entity.
-     */
-    public void setAllFields(StoredResultSet.StoredData resultSet, Object entity, Field[] fields, Class<?> clazz) {
-        for (Field field : fields) {
-            if (!field.isAnnotationPresent(Property.class))
-                continue;
-            Property property = field.getAnnotation(Property.class);
-            String columnName = property.name().toUpperCase();
-            try {
-                if (!field.canAccess(entity)) field.trySetAccessible();
-
-                Object value = SQLUtil.mapCustomField(field, resultSet.getValue(columnName));
-
-                field.set(entity, value);
-            } catch (Exception e) {
-                Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
-            }
-        }
     }
 }

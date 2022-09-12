@@ -6,6 +6,7 @@ import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.entities.SQLResponse;
+import de.presti.ree6.sql.base.utils.SQLUtil;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
@@ -393,7 +394,7 @@ public class OtherEvents extends ListenerAdapter {
 
                     if (sqlResponse.isSuccess()) {
                         channelStats = (ChannelStats) sqlResponse.getEntity();
-                        ChannelStats oldChannelStats = channelStats;
+                        ChannelStats oldChannelStats = (ChannelStats) SQLUtil.cloneEntity(ChannelStats.class, channelStats);
 
                         if (channelStats.getTwitchFollowerChannelId() != null) {
                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getTwitchFollowerChannelId());
@@ -478,7 +479,7 @@ public class OtherEvents extends ListenerAdapter {
 
                     if (sqlResponse.isSuccess()) {
                         channelStats = (ChannelStats) sqlResponse.getEntity();
-                        ChannelStats oldChannelStats = channelStats;
+                        ChannelStats oldChannelStats = (ChannelStats) SQLUtil.cloneEntity(ChannelStats.class, channelStats);
 
                         if (channelStats.getYoutubeSubscribersChannelId() != null) {
                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getYoutubeSubscribersChannelId());
@@ -561,7 +562,7 @@ public class OtherEvents extends ListenerAdapter {
 
                     if (sqlResponse.isSuccess()) {
                         channelStats = (ChannelStats) sqlResponse.getEntity();
-                        ChannelStats oldChannelStats = channelStats;
+                        ChannelStats oldChannelStats = (ChannelStats) SQLUtil.cloneEntity(ChannelStats.class, channelStats);
 
                         if (channelStats.getSubredditMemberChannelId() != null) {
                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getSubredditMemberChannelId());
@@ -644,7 +645,7 @@ public class OtherEvents extends ListenerAdapter {
 
                     if (sqlResponse.isSuccess()) {
                         channelStats = (ChannelStats) sqlResponse.getEntity();
-                        ChannelStats oldChannelStats = channelStats;
+                        ChannelStats oldChannelStats = (ChannelStats) SQLUtil.cloneEntity(ChannelStats.class, channelStats);
 
                         if (channelStats.getTwitterFollowerChannelId() != null) {
                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getTwitterFollowerChannelId());
@@ -727,7 +728,7 @@ public class OtherEvents extends ListenerAdapter {
 
                     if (sqlResponse.isSuccess()) {
                         channelStats = (ChannelStats) sqlResponse.getEntity();
-                        ChannelStats oldChannelStats = channelStats;
+                        ChannelStats oldChannelStats = (ChannelStats) SQLUtil.cloneEntity(ChannelStats.class, channelStats);
 
                         if (channelStats.getInstagramFollowerChannelId() != null) {
                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getInstagramFollowerChannelId());
@@ -916,7 +917,7 @@ public class OtherEvents extends ListenerAdapter {
 
                                     if (sqlResponse.isSuccess()) {
                                         channelStats = (ChannelStats) sqlResponse.getEntity();
-                                        ChannelStats oldChannelStats = channelStats;
+                                        ChannelStats oldChannelStats = (ChannelStats) SQLUtil.cloneEntity(ChannelStats.class, channelStats);
                                         if (channelStats.getMemberStatsChannelId() != null) {
                                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getMemberStatsChannelId());
 

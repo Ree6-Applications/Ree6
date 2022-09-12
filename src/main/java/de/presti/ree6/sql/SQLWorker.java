@@ -20,8 +20,8 @@ import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.roles.AutoRole;
 import de.presti.ree6.sql.entities.roles.ChatAutoRole;
 import de.presti.ree6.sql.entities.roles.VoiceAutoRole;
-import de.presti.ree6.sql.entities.stats.GuildCommandStats;
 import de.presti.ree6.sql.entities.stats.CommandStats;
+import de.presti.ree6.sql.entities.stats.GuildCommandStats;
 import de.presti.ree6.sql.entities.webhook.*;
 import net.dv8tion.jda.api.entities.Guild;
 import org.reflections.Reflections;
@@ -2035,7 +2035,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(newEntity, onlyUpdateField, true);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(newEntity, onlyUpdateField, false);
 
         if (sqlParameters.isEmpty()) {
             return;
@@ -2072,7 +2072,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         try {
             ArrayList<Object> parameter = new ArrayList<>();
 
-            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, newEntity, onlyUpdateField, true));
+            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, newEntity, onlyUpdateField, false));
             parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, oldEntity, false, true));
 
             sqlConnector.querySQL(query.toString(), parameter.toArray());
