@@ -171,13 +171,15 @@ public class Notifier {
                         continue;
                     }
 
-                    List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(obj -> (ChannelStats) obj).toList();
+                    List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(ChannelStats.class::cast).toList();
 
                     for (ChannelStats channelStat : channelStats) {
                     if (channelStat.getTwitterFollowerChannelUsername() != null) {
                         GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
-                        if (guildChannel != null) {
-                            guildChannel.getManager().setName("Twitter Follower: " + twitterUser.getFollowersCount()).queue();
+                        String newName = "Twitter Follower: " + twitterUser.getFollowersCount();
+                        if (guildChannel != null &&
+                                !guildChannel.getName().equalsIgnoreCase(newName)) {
+                            guildChannel.getManager().setName(newName).queue();
                         }
                     }
                     }
@@ -235,7 +237,7 @@ public class Notifier {
         getTwitchClient().getEventManager().onEvent(ChannelFollowCountUpdateEvent.class, channelFollowCountUpdateEvent -> {
             SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE LOWER(twitchFollowerChannelUsername) = ?", channelFollowCountUpdateEvent.getChannel().getName());
             if (sqlResponse.isSuccess()) {
-                List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(obj -> (ChannelStats) obj).toList();
+                List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(ChannelStats.class::cast).toList();
 
                 for (ChannelStats channelStat : channelStats) {
                     if (channelStat.getTwitchFollowerChannelId() != null) {
@@ -482,7 +484,7 @@ public class Notifier {
 
                     SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE youtubeSubscribersChannelUsername=?", channel);
                     if (sqlResponse.isSuccess()) {
-                        List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(obj -> (ChannelStats) obj).toList();
+                        List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(ChannelStats.class::cast).toList();
 
                         com.google.api.services.youtube.model.Channel youTubeChannel;
                         try {
@@ -494,8 +496,10 @@ public class Notifier {
                         for (ChannelStats channelStat : channelStats) {
                             if (channelStat.getYoutubeSubscribersChannelId() != null) {
                                 GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getYoutubeSubscribersChannelId());
-                                if (guildChannel != null) {
-                                    guildChannel.getManager().setName("YouTube Subscribers: " + (youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount())).queue();
+                                String newName = "YouTube Subscribers: " + (youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount());
+                                if (guildChannel != null &&
+                                        !guildChannel.getName().equalsIgnoreCase(newName)) {
+                                    guildChannel.getManager().setName(newName).queue();
                                 }
                             }
                         }
@@ -611,7 +615,7 @@ public class Notifier {
                     SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE subredditMemberChannelSubredditName=?", subreddit);
 
                     if (sqlResponse.isSuccess()) {
-                        List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(obj -> (ChannelStats) obj).toList();
+                        List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(ChannelStats.class::cast).toList();
 
                         RedditSubreddit subredditEntity;
                         try {
@@ -623,8 +627,10 @@ public class Notifier {
                         for (ChannelStats channelStat : channelStats) {
                             if (channelStat.getSubredditMemberChannelId() != null) {
                                 GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getSubredditMemberChannelId());
-                                if (guildChannel != null) {
-                                    guildChannel.getManager().setName("Subreddit Members: " + subredditEntity.getActiveUserCount()).queue();
+                                String newName = "Subreddit Members: " + subredditEntity.getActiveUserCount();
+                                if (guildChannel != null &&
+                                        !guildChannel.getName().equalsIgnoreCase(newName)) {
+                                    guildChannel.getManager().setName(newName).queue();
                                 }
                             }
                         }
@@ -746,14 +752,16 @@ public class Notifier {
                     SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE instagramFollowerChannelUsername=?", username);
 
                     if (sqlResponse.isSuccess()) {
-                        List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(obj -> (ChannelStats) obj).toList();
+                        List<ChannelStats> channelStats = sqlResponse.getEntities().stream().map(ChannelStats.class::cast).toList();
 
 
                         for (ChannelStats channelStat : channelStats) {
                             if (channelStat.getInstagramFollowerChannelId() != null) {
                                 GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getInstagramFollowerChannelId());
-                                if (guildChannel != null) {
-                                    guildChannel.getManager().setName("Instagram Follower: " + user.getFollower_count()).queue();
+                                String newName = "Instagram Follower: " + user.getFollower_count();
+                                if (guildChannel != null &&
+                                        !guildChannel.getName().equalsIgnoreCase(newName)) {
+                                    guildChannel.getManager().setName(newName).queue();
                                 }
                             }
                         }

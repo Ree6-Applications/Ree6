@@ -157,26 +157,26 @@ public class Main {
 
         // Register all Twitch Channels.
         instance.notifier.registerTwitchChannel(instance.sqlConnector.getSqlWorker().getAllTwitchNames());
-        instance.notifier.registerTwitchChannel(storedResultSet.getValues("twitchFollowerChannelUsername").stream().map(String.class::cast).toList());
+        instance.notifier.registerTwitchChannel(storedResultSet.getValues("twitchFollowerChannelUsername", true).stream().map(String.class::cast).toList());
 
         // Register the Event-handler.
         instance.notifier.registerTwitchEventHandler();
 
         // Register all Twitter Users.
         instance.notifier.registerTwitterUser(instance.sqlConnector.getSqlWorker().getAllTwitterNames());
-        instance.notifier.registerTwitterUser(storedResultSet.getValues("twitterFollowerChannelUsername").stream().map(String.class::cast).toList());
+        instance.notifier.registerTwitterUser(storedResultSet.getValues("twitterFollowerChannelUsername", true).stream().map(String.class::cast).toList());
 
         // Register all YouTube channels.
         instance.notifier.registerYouTubeChannel(instance.sqlConnector.getSqlWorker().getAllYouTubeChannels());
-        instance.notifier.registerYouTubeChannel(storedResultSet.getValues("youtubeSubscribersChannelUsername").stream().map(String.class::cast).toList());
+        instance.notifier.registerYouTubeChannel(storedResultSet.getValues("youtubeSubscribersChannelUsername", true).stream().map(String.class::cast).toList());
 
         // Register all Reddit Subreddits.
         instance.notifier.registerSubreddit(instance.sqlConnector.getSqlWorker().getAllSubreddits());
-        instance.notifier.registerSubreddit(storedResultSet.getValues("subredditMemberChannelSubredditName").stream().map(String.class::cast).toList());
+        instance.notifier.registerSubreddit(storedResultSet.getValues("subredditMemberChannelSubredditName", true).stream().map(String.class::cast).toList());
 
         // Register all Instagram Users.
         instance.notifier.registerInstagramUser(instance.sqlConnector.getSqlWorker().getAllInstagramUsers());
-        instance.notifier.registerInstagramUser(storedResultSet.getValues("instagramFollowerChannelUsername").stream().map(String.class::cast).toList());
+        instance.notifier.registerInstagramUser(storedResultSet.getValues("instagramFollowerChannelUsername", true).stream().map(String.class::cast).toList());
 
         instance.logger.info("Creating JDA Instance.");
 
