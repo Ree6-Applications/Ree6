@@ -14,6 +14,7 @@ import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.sql.SQLConnector;
+import de.presti.ree6.sql.base.entities.StoredResultSet;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
@@ -152,29 +153,36 @@ public class Main {
         // Create the Notifier-Manager instance.
         instance.notifier = new Notifier();
 
+        StoredResultSet storedResultSet = instance.sqlConnector.querySQL("SELECT * FROM ChannelStats");
+
         // Register all Twitch Channels.
         instance.notifier.registerTwitchChannel(instance.sqlConnector.getSqlWorker().getAllTwitchNames());
+        instance.notifier.registerTwitchChannel(storedResultSet.getValues("twitchFollowerChannelUsername", true).stream().map(String.class::cast).toList());
 
         // Register the Event-handler.
         instance.notifier.registerTwitchEventHandler();
 
         // Register all Twitter Users.
         instance.notifier.registerTwitterUser(instance.sqlConnector.getSqlWorker().getAllTwitterNames());
+        instance.notifier.registerTwitterUser(storedResultSet.getValues("twitterFollowerChannelUsername", true).stream().map(String.class::cast).toList());
 
         // Register all YouTube channels.
         instance.notifier.registerYouTubeChannel(instance.sqlConnector.getSqlWorker().getAllYouTubeChannels());
+        instance.notifier.registerYouTubeChannel(storedResultSet.getValues("youtubeSubscribersChannelUsername", true).stream().map(String.class::cast).toList());
 
         // Register all Reddit Subreddits.
         instance.notifier.registerSubreddit(instance.sqlConnector.getSqlWorker().getAllSubreddits());
+        instance.notifier.registerSubreddit(storedResultSet.getValues("subredditMemberChannelSubredditName", true).stream().map(String.class::cast).toList());
 
         // Register all Instagram Users.
         instance.notifier.registerInstagramUser(instance.sqlConnector.getSqlWorker().getAllInstagramUsers());
+        instance.notifier.registerInstagramUser(storedResultSet.getValues("instagramFollowerChannelUsername", true).stream().map(String.class::cast).toList());
 
         instance.logger.info("Creating JDA Instance.");
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.RELEASE, "1.9.5");
+            BotWorker.createBot(BotVersion.DEVELOPMENT_BUILD, "1.9.5");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {

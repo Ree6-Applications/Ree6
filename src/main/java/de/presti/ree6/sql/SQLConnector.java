@@ -161,7 +161,7 @@ public class SQLConnector {
                 connectToSQLServer();
                 return querySQL(sqlQuery, objcObjects);
             } else {
-                return null;
+                return new StoredResultSet();
             }
         }
 
@@ -192,6 +192,8 @@ public class SQLConnector {
                     preparedStatement.setObject(index++, Base64.getEncoder().encodeToString(byteArray), Types.VARCHAR);
                 } else if (obj instanceof Date date) {
                     preparedStatement.setObject(index++, date.getTime(), Types.BIGINT);
+                } else if (obj == null) {
+                    preparedStatement.setNull(index++, Types.NULL);
                 }
             }
 

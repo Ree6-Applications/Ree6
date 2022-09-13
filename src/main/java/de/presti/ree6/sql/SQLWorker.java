@@ -20,8 +20,8 @@ import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.roles.AutoRole;
 import de.presti.ree6.sql.entities.roles.ChatAutoRole;
 import de.presti.ree6.sql.entities.roles.VoiceAutoRole;
-import de.presti.ree6.sql.entities.stats.GuildStats;
-import de.presti.ree6.sql.entities.stats.Stats;
+import de.presti.ree6.sql.entities.stats.CommandStats;
+import de.presti.ree6.sql.entities.stats.GuildCommandStats;
 import de.presti.ree6.sql.entities.webhook.*;
 import net.dv8tion.jda.api.entities.Guild;
 import org.reflections.Reflections;
@@ -1668,8 +1668,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param command the Command.
      * @return the Stats of the Command.
      */
-    public Stats getStatsCommandGlobal(String command) {
-        return (Stats) getEntity(Stats.class, "SELECT * FROM CommandStats WHERE COMMAND = ?", command).getEntity();
+    public CommandStats getStatsCommandGlobal(String command) {
+        return (CommandStats) getEntity(CommandStats.class, "SELECT * FROM CommandStats WHERE COMMAND = ?", command).getEntity();
     }
 
     /**
@@ -1679,8 +1679,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param command the Command.
      * @return the Stats of the Command.
      */
-    public GuildStats getStatsCommand(String guildId, String command) {
-        return (GuildStats) getEntity(GuildStats.class, "SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command).getEntity();
+    public GuildCommandStats getStatsCommand(String guildId, String command) {
+        return (GuildCommandStats) getEntity(GuildCommandStats.class, "SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command).getEntity();
     }
 
     /**
@@ -1689,8 +1689,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param guildId the ID of the Guild.
      * @return all the Command-Stats related to the given Guild.
      */
-    public List<GuildStats> getStats(String guildId) {
-        return getEntity(GuildStats.class, "SELECT * FROM GuildStats WHERE GID=? ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", guildId).getEntities().stream().map(GuildStats.class::cast).toList();
+    public List<GuildCommandStats> getStats(String guildId) {
+        return getEntity(GuildCommandStats.class, "SELECT * FROM GuildStats WHERE GID=? ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", guildId).getEntities().stream().map(GuildCommandStats.class::cast).toList();
     }
 
     /**
@@ -1698,8 +1698,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      *
      * @return all the Command-Stats globally.
      */
-    public List<Stats> getStatsGlobal() {
-        return getEntity(Stats.class, "SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5").getEntities().stream().map(Stats.class::cast).toList();
+    public List<CommandStats> getStatsGlobal() {
+        return getEntity(CommandStats.class, "SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5").getEntities().stream().map(CommandStats.class::cast).toList();
     }
 
     /**
@@ -1709,7 +1709,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSaved(String guildId) {
-        return getEntity(Stats.class, "SELECT * FROM GuildStats WHERE GID = ?", guildId).isSuccess();
+        return getEntity(CommandStats.class, "SELECT * FROM GuildStats WHERE GID = ?", guildId).isSuccess();
     }
 
     /**
@@ -1720,7 +1720,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSaved(String guildId, String command) {
-        return getEntity(Stats.class, "SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command).isSuccess();
+        return getEntity(CommandStats.class, "SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command).isSuccess();
     }
 
     /**
@@ -1730,7 +1730,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSavedGlobal(String command) {
-        return getEntity(Stats.class, "SELECT * FROM CommandStats WHERE COMMAND = ?", command).isSuccess();
+        return getEntity(CommandStats.class, "SELECT * FROM CommandStats WHERE COMMAND = ?", command).isSuccess();
     }
 
     /**
@@ -1742,20 +1742,20 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public void addStats(String guildId, String command) {
         // Check if there is an entry.
         if (isStatsSaved(guildId, command)) {
-            GuildStats newGuildStats = getStatsCommand(guildId, command);
+            GuildCommandStats newGuildStats = getStatsCommand(guildId, command);
             newGuildStats.setUses(newGuildStats.getUses() + 1);
             updateEntity(getStatsCommand(guildId, command), newGuildStats, true);
         } else {
-            saveEntity(new GuildStats(guildId, command, 1));
+            saveEntity(new GuildCommandStats(guildId, command, 1));
         }
 
         // Check if there is an entry.
         if (isStatsSavedGlobal(command)) {
-            Stats stats = getStatsCommandGlobal(command);
+            CommandStats stats = getStatsCommandGlobal(command);
             stats.setUses(stats.getUses() + 1);
             updateEntity(getStatsCommandGlobal(command), stats, true);
         } else {
-            saveEntity(new Stats(command, 1));
+            saveEntity(new CommandStats(command, 1));
         }
     }
 
@@ -2035,7 +2035,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         }
 
         String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(newEntity, onlyUpdateField, true);
+        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(newEntity, onlyUpdateField, false);
 
         if (sqlParameters.isEmpty()) {
             return;
@@ -2072,7 +2072,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         try {
             ArrayList<Object> parameter = new ArrayList<>();
 
-            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, newEntity, onlyUpdateField, true));
+            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, newEntity, onlyUpdateField, false));
             parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, oldEntity, false, true));
 
             sqlConnector.querySQL(query.toString(), parameter.toArray());

@@ -8,7 +8,7 @@ import de.presti.ree6.sql.base.entities.SQLEntity;
  * SQL Entity for the Stats.
  */
 @Table(name = "CommandStats")
-public class Stats extends SQLEntity {
+public class CommandStats extends SQLEntity {
 
     /**
      * Name of the Command.
@@ -25,7 +25,7 @@ public class Stats extends SQLEntity {
     /**
      * Constructor.
      */
-    public Stats() {
+    public CommandStats() {
     }
 
     /**
@@ -33,7 +33,7 @@ public class Stats extends SQLEntity {
      * @param command Name of the Command.
      * @param uses Number of times the Command was used.
      */
-    public Stats(String command, int uses) {
+    public CommandStats(String command, int uses) {
         this.command = command;
         this.uses = uses;
     }

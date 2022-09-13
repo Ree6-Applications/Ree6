@@ -6,6 +6,7 @@ import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
 import de.presti.ree6.sql.base.entities.SQLEntity;
 import de.presti.ree6.sql.base.entities.SQLParameter;
+import de.presti.ree6.sql.base.entities.StoredResultSet;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.BufferedReader;
@@ -240,7 +241,7 @@ public class SQLUtil {
                 return !onlyUpdateField || property.updateQuery();
             }).map(field -> {
                 try {
-                    return getValueFromField(field, entityInstance);
+                    return getValueFromField(field, entityInstance, true);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -262,7 +263,7 @@ public class SQLUtil {
             return !onlyUpdateField || property.updateQuery();
         }).map(field -> {
             try {
-                return getValueFromField(field, entityInstance);
+                return getValueFromField(field, entityInstance, true);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -285,12 +286,13 @@ public class SQLUtil {
      * @return the value of the Field.
      * @throws IllegalAccessException if the Field is not accessible.
      */
-    public static Object getValueFromField(Field field, Object objectInstance) throws IllegalAccessException {
+    public static Object getValueFromField(Field field, Object objectInstance, boolean customField) throws IllegalAccessException {
         if (!field.canAccess(objectInstance)) field.trySetAccessible();
 
         Object value = field.get(objectInstance);
 
-        value = mapCustomField(field, value);
+        if (customField)
+            value = mapCustomField(field, value);
 
         return value;
     }
@@ -357,5 +359,71 @@ public class SQLUtil {
         }
 
         return null;
+    }
+
+    public static Object cloneEntity(Class<?> clazz, Object original) {
+        Object cloneObject;
+        try {
+            cloneObject = clazz.getDeclaredConstructor().newInstance();
+
+            if (clazz.getSuperclass() != null && !clazz.getSuperclass().isInstance(SQLEntity.class)) {
+                setAllFields(original, cloneObject, clazz.getSuperclass().getDeclaredFields(), clazz);
+            }
+
+            setAllFields(original, cloneObject, clazz.getDeclaredFields(), clazz);
+
+            return cloneObject;
+        } catch (Exception exception) {
+            Main.getInstance().getLogger().error("Couldn't map Class: " + clazz.getSimpleName(), exception);
+            throw new IllegalStateException("Couldn't map Class: " + clazz.getSimpleName());
+        }
+    }
+
+    /**
+     * Set all fields of the given entity to the given values.
+     *
+     * @param resultSet For the column mappings.
+     * @param entity    The entity instance for the value setting.
+     * @param fields    The fields to set.
+     * @param clazz     The class of the entity.
+     */
+    public static void setAllFields(StoredResultSet.StoredData resultSet, Object entity, Field[] fields, Class<?> clazz) {
+        for (Field field : fields) {
+            if (!field.isAnnotationPresent(Property.class))
+                continue;
+            Property property = field.getAnnotation(Property.class);
+            String columnName = property.name().toUpperCase();
+            try {
+                if (!field.canAccess(entity)) field.trySetAccessible();
+
+                Object value = SQLUtil.mapCustomField(field, resultSet.getValue(columnName));
+
+                field.set(entity, value);
+            } catch (Exception e) {
+                Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
+            }
+        }
+    }
+
+    /**
+     * Set all fields of the given entity to the given values.
+     *
+     * @param original The entity instance for the value getting.
+     * @param entity   The entity instance for the value setting.
+     * @param fields   The fields to set.
+     * @param clazz    The class of the entity.
+     */
+    public static void setAllFields(Object original, Object entity, Field[] fields, Class<?> clazz) {
+        for (Field field : fields) {
+            try {
+                if (!field.canAccess(entity)) field.trySetAccessible();
+
+                Object value = SQLUtil.getValueFromField(field, original, false);
+
+                field.set(entity, value);
+            } catch (Exception e) {
+                Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
+            }
+        }
     }
 }

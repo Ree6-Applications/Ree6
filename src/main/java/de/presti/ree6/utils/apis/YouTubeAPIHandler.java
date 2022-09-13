@@ -7,6 +7,7 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
 import de.presti.ree6.main.Main;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -87,15 +88,11 @@ public class YouTubeAPIHandler {
     public List<PlaylistItem> getYouTubeUploads(String channelId) throws Exception {
         List<PlaylistItem> playlistItemList = new ArrayList<>();
 
-        YouTube.Channels.List request = youTube.channels()
-                .list(Collections.singletonList("snippet, contentDetails"))
-                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
-        ChannelListResponse channelListResponse = request.setId(Collections.singletonList(channelId)).execute();
+        Channel channel = isValidChannelId(channelId) ?
+                getYouTubeChannelById(channelId, "snippet, contentDetails") :
+                getYouTubeChannelByName(channelId, "snippet, contentDetails");
 
-        if (channelListResponse != null &&
-                channelListResponse.getItems() != null &&
-                !channelListResponse.getItems().isEmpty()) {
-            Channel channel = channelListResponse.getItems().get(0);
+        if (channel != null) {
             YouTube.PlaylistItems.List playlistItemRequest =
                     youTube.playlistItems().list(Collections.singletonList("id,contentDetails,snippet"));
             playlistItemRequest.setPlaylistId(channel.getContentDetails().getRelatedPlaylists().getUploads());
@@ -114,6 +111,88 @@ public class YouTubeAPIHandler {
         }
 
         return playlistItemList;
+    }
+
+    /**
+     * Get an YouTube channel by id.
+     * @param channelName The channel name.
+     * @param listValues The values to get.
+     * @return The channel.
+     * @throws IOException if something went wrong.
+     */
+    public Channel getYouTubeChannelBySearch(String channelName, String listValues) throws IOException {
+        YouTube.Search.List request = youTube.search().list(Collections.singletonList("snippet"))
+                .setQ(channelName)
+                .setType(Collections.singletonList("channel"))
+                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
+        SearchListResponse channelListResponse = request.execute();
+
+        if (channelListResponse != null &&
+                channelListResponse.getItems() != null &&
+                !channelListResponse.getItems().isEmpty()) {
+            SearchResult searchResult = channelListResponse.getItems().get(0);
+
+            if (searchResult.getId().getKind().equals("youtube#channel")) {
+                return getYouTubeChannelById(searchResult.getId().getChannelId(), listValues);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get an YouTube channel by id.
+     * @param channelName The channel name.
+     * @param listValues The values to get.
+     * @return The channel.
+     * @throws IOException if something went wrong.
+     */
+    public Channel getYouTubeChannelByName(String channelName, String listValues) throws IOException {
+        YouTube.Channels.List request = youTube.channels()
+                .list(Collections.singletonList(listValues))
+                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
+        ChannelListResponse channelListResponse = request.setForUsername(channelName).execute();
+
+        if (channelListResponse != null &&
+                channelListResponse.getItems() != null &&
+                !channelListResponse.getItems().isEmpty()) {
+            return channelListResponse.getItems().get(0);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get an YouTube channel by id.
+     * @param channelId The channel id.
+     * @param listValues The values to get.
+     * @return The channel.
+     * @throws IOException if something went wrong.
+     */
+    public Channel getYouTubeChannelById(String channelId, String listValues) throws IOException {
+        YouTube.Channels.List request = youTube.channels()
+                .list(Collections.singletonList(listValues))
+                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
+        ChannelListResponse channelListResponse = request.setId(Collections.singletonList(channelId)).execute();
+
+        if (channelListResponse != null &&
+                channelListResponse.getItems() != null &&
+                !channelListResponse.getItems().isEmpty()) {
+            return channelListResponse.getItems().get(0);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Check if a given channel ID matches the pattern of a YouTube channel ID.
+     * @param channelId The channel ID.
+     * @return True if it matches, false if not.
+     */
+    public boolean isValidChannelId(String channelId) {
+        return channelId.matches("^UC[\\w-]{21}[AQgw]$");
     }
 
     /**
