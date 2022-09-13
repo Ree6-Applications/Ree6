@@ -116,13 +116,23 @@ public class StoredResultSet {
      * @return all values from the column.
      */
     public List<Object> getValues(String name) {
+        return getValues(name, false);
+    }
+
+    /**
+     * Get the value of a specific Column in all rows.
+     * @param name the name of the column.
+     * @param ignoreNull if null values should be ignored.
+     * @return all values from the column.
+     */
+    public List<Object> getValues(String name, boolean ignoreNull) {
         int columnIndex = getColumnByName(name);
 
         if (data.isEmpty() || columnIndex == -1) {
             return new ArrayList<>();
         }
 
-        return data.stream().map(l -> l.get(columnIndex)).toList();
+        return data.stream().map(l -> l.get(columnIndex)).filter(obj -> !ignoreNull || obj != null).toList();
     }
 
     /**
