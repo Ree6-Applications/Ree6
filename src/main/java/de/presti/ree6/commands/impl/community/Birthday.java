@@ -29,6 +29,7 @@ public class Birthday implements ICommand {
             if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
                 Main.getInstance().getSqlConnector().getSqlWorker().removeBirthday(commandEvent.getGuild().getId(), commandEvent.getMember().getId());
                 Main.getInstance().getCommandManager().sendMessage("Your Birthday has been removed!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+
             } else {
                 Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "birthday add/remove [Birthday(day.month.year)] [@User]", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
