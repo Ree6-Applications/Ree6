@@ -115,8 +115,8 @@ public class Notifier {
         configurationBuilder
                 .setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key"))
                 .setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret"))
-                .setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token"))
-                .setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.token.secret"))
+                .setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
+                .setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
                 .setDebugEnabled(BotWorker.getVersion() == BotVersion.DEVELOPMENT_BUILD);
 
         twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
@@ -488,7 +488,7 @@ public class Notifier {
 
                         com.google.api.services.youtube.model.Channel youTubeChannel;
                         try {
-                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannel(channel, "snippet, statistics");
+                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(channel, "statistics");
                         } catch (IOException e) {
                             return;
                         }
