@@ -774,6 +774,15 @@ public class OtherEvents extends ListenerAdapter {
                         .setDescription("Successfully setup the statics channels for Instagram statistics!");
                 event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
             }
+
+            default -> {
+                event.deferEdit().setEmbeds(new EmbedBuilder()
+                        .setTitle("Unknown Menu")
+                        .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                        .setColor(Color.RED)
+                        .setDescription("There was an error while resolving the modal!")
+                        .build()).setComponents(new ArrayList<>()).queue();
+            }
         }
     }
 
