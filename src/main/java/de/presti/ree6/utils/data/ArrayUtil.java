@@ -1,10 +1,11 @@
 package de.presti.ree6.utils.data;
 
 import de.presti.ree6.utils.others.RandomUtils;
-import net.dv8tion.jda.api.entities.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 import java.util.ArrayList;
 import java.util.HashMap;

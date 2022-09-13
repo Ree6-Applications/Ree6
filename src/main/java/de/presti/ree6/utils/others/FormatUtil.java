@@ -19,8 +19,7 @@ import java.util.List;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
 
 /**
  * From <a href="https://github.com/jagrosh/MusicBot">J MusicBot</a>

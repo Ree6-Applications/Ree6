@@ -14,6 +14,8 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * A command to ban a user from the server.
  */
@@ -105,7 +107,7 @@ public class Ban implements ICommand {
     public void banMember(Member member, String reason, CommandEvent commandEvent) {
         if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
             Main.getInstance().getCommandManager().sendMessage("User " + member.getAsMention() + " has been banned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-            commandEvent.getGuild().ban(member, 7, reason).queue();
+            commandEvent.getGuild().ban(member, 7, TimeUnit.DAYS).reason(reason).queue();
         } else {
             if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
                 Main.getInstance().getCommandManager().sendMessage("Couldn't ban this User because he has the same or a higher Rank then you!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());

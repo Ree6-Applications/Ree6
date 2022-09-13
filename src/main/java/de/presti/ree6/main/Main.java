@@ -22,8 +22,7 @@ import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
