@@ -488,7 +488,7 @@ public class Notifier {
 
                         com.google.api.services.youtube.model.Channel youTubeChannel;
                         try {
-                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannel(channel, "snippet, statistics");
+                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(channel, "statistics");
                         } catch (IOException e) {
                             return;
                         }

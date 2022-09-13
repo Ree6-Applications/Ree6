@@ -462,13 +462,27 @@ public class OtherEvents extends ListenerAdapter {
 
                 com.google.api.services.youtube.model.Channel youTubeChannel;
                 try {
-                    youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannel(youtubeChannelName, "snippet, statistics");
+                    if (YouTubeAPIHandler.getInstance().isValidChannelId(youtubeChannelName)) {
+                        youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelById(youtubeChannelName, "statistics");
+                    } else {
+                        youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(youtubeChannelName, "statistics");
+                    }
                 } catch (IOException e) {
                     embedBuilder = embedBuilder
                             .setTitle("Setup Menu")
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
                             .setDescription("There was an error while trying to access the Channel data!");
+                    event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                    return;
+                }
+
+                if (youTubeChannel == null) {
+                    embedBuilder = embedBuilder
+                            .setTitle("Setup Menu")
+                            .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                            .setColor(Color.RED)
+                            .setDescription("We could not find the given channel! You sure the name/id is correct?");
                     event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     return;
                 }
