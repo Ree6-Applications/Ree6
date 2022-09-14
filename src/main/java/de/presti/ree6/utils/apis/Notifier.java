@@ -32,7 +32,7 @@ import de.presti.ree6.utils.others.ThreadUtil;
 import masecla.reddit4j.client.Reddit4J;
 import masecla.reddit4j.objects.Sorting;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
