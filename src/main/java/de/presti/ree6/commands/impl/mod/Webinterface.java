@@ -5,8 +5,9 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 /**
  * Sends a link to the Webinterface.
@@ -19,13 +20,9 @@ public class Webinterface implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-
-        if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR) && commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
-            Main.getInstance().getCommandManager().sendMessage("Please visit <https://cp.ree6.de>", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-        } else {
-            Main.getInstance().getCommandManager().sendMessage("You can't use this Command you need the following Permissions: Administrator and Manage Server", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-        }
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+        messageCreateBuilder.addActionRow(Button.link("https://webinterface.ree6.de", "Webinterface"));
+        Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), commandEvent);
     }
 
     /**

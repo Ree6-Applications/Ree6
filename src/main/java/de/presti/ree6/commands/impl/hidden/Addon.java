@@ -20,6 +20,7 @@ public class Addon implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         if(commandEvent.getMember().getUser().getId().equalsIgnoreCase("321580743488831490")) {
             if (commandEvent.getArguments().length == 0) {
+
                 StringBuilder stringBuilder = new StringBuilder("```");
                 for (de.presti.ree6.addons.Addon addon : Main.getInstance().getAddonManager().addons) {
                     stringBuilder.append(addon.getName()).append("v").append(addon.getVersion())
