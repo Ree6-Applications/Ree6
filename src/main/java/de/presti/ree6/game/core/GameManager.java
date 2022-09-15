@@ -1,4 +1,4 @@
-package de.presti.ree6.gamecore;
+package de.presti.ree6.game.core;
 
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;

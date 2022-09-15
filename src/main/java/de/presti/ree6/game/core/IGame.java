@@ -1,4 +1,4 @@
-package de.presti.ree6.gamecore;
+package de.presti.ree6.game.core;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;

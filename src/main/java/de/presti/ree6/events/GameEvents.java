@@ -1,7 +1,7 @@
 package de.presti.ree6.events;
 
-import de.presti.ree6.gamecore.GameManager;
-import de.presti.ree6.gamecore.GameSession;
+import de.presti.ree6.game.core.GameManager;
+import de.presti.ree6.game.core.GameSession;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
