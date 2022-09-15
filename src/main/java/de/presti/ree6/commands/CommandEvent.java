@@ -1,12 +1,16 @@
 package de.presti.ree6.commands;
 
+import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -69,6 +73,65 @@ public class CommandEvent {
         this.channel = textChannel;
         this.arguments = arguments;
         this.slashCommandInteractionEvent = slashCommandInteractionEvent;
+    }
+
+    /**
+     * Reply to the Command execution.
+     * @param message the Message to reply with.
+     */
+    public void reply (String message) {
+        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+        messageCreateBuilder.setContent(message);
+        reply(messageCreateBuilder.build());
+    }
+
+    /**
+     * Reply to the Command execution.
+     * @param message the Message to reply with.
+     * @param deleteSecond the Seconds to delete the Message after.
+     */
+    public void reply (String message, int deleteSecond) {
+        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+        messageCreateBuilder.setContent(message);
+        reply(messageCreateBuilder.build(), deleteSecond);
+    }
+
+    /**
+     * Reply to the Command execution.
+     * @param message the Message to reply with.
+     */
+    public void reply (MessageEmbed message) {
+        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+        messageCreateBuilder.setEmbeds(message);
+        reply(messageCreateBuilder.build());
+    }
+
+    /**
+     * Reply to the Command execution.
+     * @param message the Message to reply with.
+     * @param deleteSecond the Seconds to delete the Message after.
+     */
+    public void reply (MessageEmbed message, int deleteSecond) {
+        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+        messageCreateBuilder.setEmbeds(message);
+        reply(messageCreateBuilder.build(), deleteSecond);
+    }
+
+    /**
+     * Reply to the Command execution.
+     * @param message the Message to reply with.
+     */
+    public void reply(MessageCreateData message) {
+        Main.getInstance().getCommandManager().sendMessage(message, getChannel(), getInteractionHook());
+    }
+
+    /**
+     * Reply to the Command execution.
+     * @param message the Message to reply with.
+     * @param deleteSecond the Seconds to delete the Message after.
+     */
+    public void reply(MessageCreateData message, int deleteSecond) {
+        Main.getInstance().getCommandManager().sendMessage(message, deleteSecond, getChannel(), getInteractionHook());
     }
 
     /**

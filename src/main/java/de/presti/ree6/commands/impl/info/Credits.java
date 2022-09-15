@@ -5,7 +5,10 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 /**
  * A command to give credits.
@@ -18,8 +21,10 @@ public class Credits implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage("Lead Developer : Presti | 平和#0240\nSupport Developer : xazed | xazed#5014\ndavid. | david.#3120",
-                commandEvent.getChannel(), commandEvent.getInteractionHook());
+        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+        messageCreateBuilder.addActionRow(Button.link("https://www.ree6.de/#team",
+                "Meet " + (RandomUtils.secureRandom.nextInt(10000) == 1562 ? "the Spy" : "our Team") + "!"));
+        Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), commandEvent);
     }
 
     /**
