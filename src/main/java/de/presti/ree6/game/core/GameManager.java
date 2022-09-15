@@ -25,4 +25,8 @@ public class GameManager {
     public static List<GameSession> getGameSessions() {
         return (List<GameSession>) gameSessions.values();
     }
+
+    public static void removeGameSession(GameSession session) {
+        gameSessions.remove(session.getGameIdentifier());
+    }
 }

@@ -2,6 +2,7 @@ package de.presti.ree6.events;
 
 import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.core.GameSession;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -26,6 +27,17 @@ public class GameEvents extends ListenerAdapter {
             if (gameSession.getChannel().getId().equals(event.getChannel().getId())) {
                 if (gameSession.getParticipants().stream().anyMatch(user -> user.getId().equals(event.getUserId()))) {
                     gameSession.getGame().onReactionReceive(event);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
+        for (GameSession gameSession : GameManager.getGameSessions(event.getChannel())) {
+            if (gameSession.getChannel().getId().equals(event.getChannel().getId())) {
+                if (gameSession.getParticipants().stream().anyMatch(user -> user.getId().equals(event.getUser().getId()))) {
+                    gameSession.getGame().onButtonInteractionReceive(event);
                 }
             }
         }
