@@ -8,11 +8,14 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.HashMap;
 
 public class ImageCreationUtility {
 
@@ -27,6 +30,12 @@ public class ImageCreationUtility {
      * Cached Background Image, for performance.
      */
     private static BufferedImage rankBackgroundBase;
+
+    /**
+     * Cached Background Image, for performance.
+     * Key is the hash of the Image and the value is the already created Image.
+     */
+    private static final HashMap<String, BufferedImage> joinBackgroundBase = new HashMap<>();
 
     /**
      * Generate a Rank Image with Java native Graphics2D.
@@ -212,6 +221,64 @@ public class ImageCreationUtility {
         return bytes;
     }
 
+    public static byte[] createJoinImage(User user, String messageImage, String messageText) throws IOException {
+        long start = System.currentTimeMillis();
+        long actionPerformance = System.currentTimeMillis();
+
+        BufferedImage base = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_ARGB);
+
+        // Load the Background Image.
+        BufferedImage backgroundImage;
+
+        if (joinBackgroundBase.containsKey(messageImage)) {
+            backgroundImage = joinBackgroundBase.get(messageImage);
+        } else {
+            backgroundImage = ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(messageImage)));
+            joinBackgroundBase.put(messageImage, backgroundImage);
+        }
+
+        Main.getInstance().getAnalyticsLogger().debug("Finished loading Base Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
+        // Load the Avatar Image.
+        BufferedImage avatar = convertToCircleShape(new URL(user.getEffectiveAvatarUrl()));
+        Main.getInstance().getAnalyticsLogger().debug("Finished loading Avatar Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
+        // Create a Graphics2D instance to draw on the Base Image.
+        Graphics2D graphics2D = base.createGraphics();
+        Main.getInstance().getAnalyticsLogger().debug("Finished creating Graphics2D instance. ({}ms)", System.currentTimeMillis() - actionPerformance);
+
+        actionPerformance = System.currentTimeMillis();
+        // Make it transparent.
+        graphics2D.setComposite(AlphaComposite.Clear);
+        graphics2D.fillRect(0, 0, base.getWidth(), base.getHeight());
+
+        // Draw Background art.
+        graphics2D.setComposite(AlphaComposite.Src);
+        graphics2D.drawImage(backgroundImage, null, 0, 0);
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Draw the Avatar Image on the Base Image. 125
+        graphics2D.drawImage(avatar, backgroundImage.getWidth() / 2 - 250, backgroundImage.getHeight() / 2 - 375, 500, 500, null);
+        Main.getInstance().getAnalyticsLogger().debug("Finished drawing Avatar Image on Base Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
+        // Close the Graphics2D instance.
+        graphics2D.dispose();
+        Main.getInstance().getAnalyticsLogger().debug("Finished disposing Graphics2D instance. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
+        // Create a ByteArrayOutputStream to convert the BufferedImage to an Array of Bytes.
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        ImageIO.write(base, "PNG", outputStream);
+        Main.getInstance().getAnalyticsLogger().debug("Finished writing Image into ByteArrayOutputStream. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().getAnalyticsLogger().debug("Finished creation in {}ms", System.currentTimeMillis() - start);
+        return outputStream.toByteArray();
+    }
+
     /**
      * Generate a HornyJail Image with Java native Graphics2D.
      *
@@ -344,5 +411,4 @@ public class ImageCreationUtility {
 
         return outputImage;
     }
-
 }

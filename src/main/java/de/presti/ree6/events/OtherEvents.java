@@ -14,6 +14,7 @@ import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.utils.data.ImageCreationUtility;
 import de.presti.ree6.utils.others.*;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -132,7 +133,19 @@ public class OtherEvents extends ListenerAdapter {
 
         wmb.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wmb.setUsername("Welcome!");
-        wmb.setContent((Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())).replace("%user_name%", event.getMember().getUser().getName()).replace("%user_mention%", event.getMember().getUser().getAsMention()).replace("%guild_name%", event.getGuild().getName()));
+
+        String messageContent = (Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())).replace("%user_name%", event.getMember().getUser().getName()).replace("%user_mention%", event.getMember().getUser().getAsMention()).replace("%guild_name%", event.getGuild().getName());
+        if (Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue() != null) {
+            try {
+                wmb.addFile("welcome.png", ImageCreationUtility.createJoinImage(event.getUser(),
+                        Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue(), messageContent));
+            } catch (IOException e) {
+                wmb.setContent(messageContent);
+                Main.getInstance().getLogger().error("Error while creating join image!", e);
+            }
+        } else {
+            wmb.setContent(messageContent);
+        }
 
         WebhookUtil.sendWebhook(null, wmb.build(), Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()), false);
     }
@@ -374,7 +387,7 @@ public class OtherEvents extends ListenerAdapter {
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
         super.onModalInteraction(event);
 
-        switch(event.getModalId()) {
+        switch (event.getModalId()) {
             case "statisticsSetupTwitchModal" -> {
                 ModalMapping modalMapping = event.getValue("twitchChannelName");
 
