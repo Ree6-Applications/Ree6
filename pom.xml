@@ -289,8 +289,19 @@
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
-            <artifactId>Simple-Yaml</artifactId>
+            <artifactId>Simple-YAML</artifactId>
             <version>1.8.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.32</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
