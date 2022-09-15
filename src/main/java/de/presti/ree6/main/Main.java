@@ -10,6 +10,7 @@ import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.CommandManager;
+import de.presti.ree6.events.GameEvents;
 import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.logger.events.LoggerQueue;
@@ -22,7 +23,8 @@ import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -213,8 +215,7 @@ public class Main {
      * Called to add all Events.
      */
     private void addEvents() {
-        BotWorker.addEvent(new OtherEvents());
-        BotWorker.addEvent(new LoggingEvents());
+        BotWorker.addEvent(new GameEvents(), new LoggingEvents(), new OtherEvents());
     }
 
     /**

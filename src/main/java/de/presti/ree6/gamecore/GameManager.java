@@ -8,14 +8,21 @@ import java.util.List;
 
 public class GameManager {
 
-    HashMap<String, GameSession> gameSessions = new HashMap<>();
+    private final static HashMap<String, GameSession> gameSessions = new HashMap<>();
 
-    public void createGameSession(String gameIdentifier, IGame game, MessageChannelUnion channel, List<User> participants) {
+    public static void createGameSession(String gameIdentifier, IGame game, MessageChannelUnion channel, List<User> participants) {
         gameSessions.put(gameIdentifier, new GameSession(gameIdentifier, game, channel, participants));
     }
 
-    public GameSession getGameSession(String gameIdentifier) {
+    public static GameSession getGameSession(String gameIdentifier) {
         return gameSessions.get(gameIdentifier);
     }
 
+    public static List<GameSession> getGameSessions(MessageChannelUnion channel) {
+        return gameSessions.values().stream().filter(gameSession -> gameSession.getChannel().getId().equals(channel.getId())).toList();
+    }
+
+    public static List<GameSession> getGameSessions() {
+        return (List<GameSession>) gameSessions.values();
+    }
 }
