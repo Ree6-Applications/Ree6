@@ -28,6 +28,19 @@ public class Blackjack implements IGame {
             Main.getInstance().getCommandManager().sendMessage("You need to have 2 participants to play this game!", 5, session.getChannel());
             stopGame();
         }
+
+        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("Blackjack");
+        embedBuilder.setColor(BotWorker.randomEmbedColor());
+        embedBuilder.setDescription("Welcome to Blackjack! You can start the game by clicking the button below!" +
+                "\nBefore you can start it thou, you will need someone else to play with you!" +
+                "\nThey will need to use /blackjack join " + session.getGameIdentifier() + " to join the game!");
+
+        messageCreateBuilder.setEmbeds(embedBuilder.build());
+        messageCreateBuilder.setActionRow(Button.secondary("game_start:" + session.getGameIdentifier(), "Start Game").asDisabled());
+        Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), session.getChannel());
     }
 
     @Override
