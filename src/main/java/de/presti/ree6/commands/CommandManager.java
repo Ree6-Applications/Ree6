@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.reflections.Reflections;
 
@@ -41,10 +43,10 @@ public class CommandManager {
      * Constructor for the Command-Manager used to register every Command.
      *
      * @throws CommandInitializerException if an error occurs while initializing the Commands.
-     * @throws IllegalStateException if an Invalid Command was used to initialize.
-     * @throws IllegalAccessException when an Instance of a Command is not accessible.
-     * @throws InstantiationException when an Instance of a Command is not instantiable.
-     * @throws NoSuchMethodException when a Constructor Instance of a Command is not found.
+     * @throws IllegalStateException       if an Invalid Command was used to initialize.
+     * @throws IllegalAccessException      when an Instance of a Command is not accessible.
+     * @throws InstantiationException      when an Instance of a Command is not instantiable.
+     * @throws NoSuchMethodException       when a Constructor Instance of a Command is not found.
      */
     public CommandManager() throws CommandInitializerException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Main.getInstance().getLogger().info("Initializing Commands!");
@@ -206,11 +208,12 @@ public class CommandManager {
 
     /**
      * Perform a Message based Command.
-     * @param member the Member that performed the command.
-     * @param guild the Guild the Member is from.
+     *
+     * @param member         the Member that performed the command.
+     * @param guild          the Guild the Member is from.
      * @param messageContent the Message content (including the prefix + command name).
-     * @param message the Message Entity.
-     * @param textChannel the TextChannel where the command has been performed.
+     * @param message        the Message Entity.
+     * @param textChannel    the TextChannel where the command has been performed.
      * @return true, if a command has been performed.
      */
     private boolean performMessageCommand(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel) {
@@ -258,7 +261,7 @@ public class CommandManager {
     /**
      * Call when a slash command has been performed.
      *
-     * @param textChannel the TextChannel where the command has been performed.
+     * @param textChannel                  the TextChannel where the command has been performed.
      * @param slashCommandInteractionEvent the Slash-Command Event.
      */
     private boolean performSlashCommand(MessageChannelUnion textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
@@ -285,6 +288,7 @@ public class CommandManager {
 
     /**
      * Check if an User is time-outed.
+     *
      * @param user the User.
      * @return true, if yes | false, if not.
      */
@@ -295,11 +299,90 @@ public class CommandManager {
     /**
      * Send a message to a special Message-Channel.
      *
+     * @param messageCreateData the Message content.
+     * @param commandEvent      the Command-Event.
+     */
+    public void sendMessage(MessageCreateData messageCreateData, CommandEvent commandEvent) {
+        sendMessage(messageCreateData, commandEvent.getChannel(), commandEvent.getInteractionHook());
+    }
+
+    /**
+     * Send a message to a special Message-Channel.
+     *
+     * @param messageCreateData the Message content.
+     * @param deleteSecond      the delete delay
+     * @param commandEvent      the Command-Event.
+     */
+    public void sendMessage(MessageCreateData messageCreateData, int deleteSecond, CommandEvent commandEvent) {
+        sendMessage(messageCreateData, deleteSecond, commandEvent.getChannel(), commandEvent.getInteractionHook());
+    }
+
+    /**
+     * Send a message to a special Message-Channel.
+     *
+     * @param messageCreateData the Message content.
+     * @param messageChannel    the Message-Channel.
+     */
+    public void sendMessage(MessageCreateData messageCreateData, MessageChannel messageChannel) {
+        sendMessage(messageCreateData, messageChannel, null);
+    }
+
+    /**
+     * Send a message to a special Message-Channel, with a deletion delay.
+     *
+     * @param messageCreateData the Message content.
+     * @param deleteSecond      the delete delay
+     * @param messageChannel    the Message-Channel.
+     */
+    public void sendMessage(MessageCreateData messageCreateData, int deleteSecond, MessageChannel messageChannel) {
+        sendMessage(messageCreateData, deleteSecond, messageChannel, null);
+    }
+
+    /**
+     * Send a message to a special Message-Channel.
+     *
+     * @param messageCreateData the Message content.
+     * @param messageChannel    the Message-Channel.
+     * @param interactionHook   the Interaction-hook if it is a slash command.
+     */
+    public void sendMessage(MessageCreateData messageCreateData, MessageChannel messageChannel, InteractionHook interactionHook) {
+        if (interactionHook == null) {
+            if (messageChannel.canTalk()) messageChannel.sendMessage(messageCreateData).queue();
+        } else interactionHook.sendMessage(messageCreateData).queue();
+    }
+
+    /**
+     * Send a message to a special Message-Channel, with a deletion delay.
+     *
+     * @param messageCreateData the Message content.
+     * @param messageChannel    the Message-Channel.
+     * @param interactionHook   the Interaction-hook if it is a slash command.
+     * @param deleteSecond      the delete delay
+     */
+    public void sendMessage(MessageCreateData messageCreateData, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
+        if (interactionHook == null) {
+            if (messageChannel == null) return;
+            if (messageChannel.canTalk())
+                messageChannel.sendMessage(messageCreateData).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+                    if (message != null && message.getChannel().retrieveMessageById(message.getId()).complete() != null) {
+                        return message.delete();
+                    }
+
+                    return null;
+                }).queue();
+        } else {
+            interactionHook.sendMessage(messageCreateData).queue();
+        }
+    }
+
+    /**
+     * Send a message to a special Message-Channel.
+     *
      * @param message        the Message content.
      * @param messageChannel the Message-Channel.
      */
     public void sendMessage(String message, MessageChannel messageChannel) {
-        if (messageChannel.canTalk()) sendMessage(message, messageChannel, null);
+        sendMessage(message, messageChannel, null);
     }
 
     /**
@@ -310,7 +393,7 @@ public class CommandManager {
      * @param messageChannel the Message-Channel.
      */
     public void sendMessage(String message, int deleteSecond, MessageChannel messageChannel) {
-        if (messageChannel.canTalk()) sendMessage(message, deleteSecond, messageChannel, null);
+        sendMessage(message, deleteSecond, messageChannel, null);
     }
 
     /**
@@ -321,9 +404,7 @@ public class CommandManager {
      * @param interactionHook the Interaction-hook if it is a slash command.
      */
     public void sendMessage(String message, MessageChannel messageChannel, InteractionHook interactionHook) {
-        if (interactionHook == null) {
-            if (messageChannel.canTalk()) messageChannel.sendMessage(message).queue();
-        } else interactionHook.sendMessage(message).queue();
+        sendMessage(new MessageCreateBuilder().setContent(message).build(), messageChannel, interactionHook);
     }
 
     /**
@@ -335,19 +416,7 @@ public class CommandManager {
      * @param deleteSecond    the delete delay
      */
     public void sendMessage(String messageContent, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
-        if (interactionHook == null) {
-            if (messageChannel == null) return;
-            if (messageChannel.canTalk())
-                messageChannel.sendMessage(messageContent).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                    if (message != null && message.getChannel().retrieveMessageById(message.getId()).complete() != null) {
-                        return message.delete();
-                    }
-
-                    return null;
-                }).queue();
-        } else {
-            interactionHook.sendMessage(messageContent).queue();
-        }
+        sendMessage(new MessageCreateBuilder().setContent(messageContent).build(), deleteSecond, messageChannel, interactionHook);
     }
 
     /**
@@ -357,7 +426,7 @@ public class CommandManager {
      * @param messageChannel the Message-Channel.
      */
     public void sendMessage(EmbedBuilder embedBuilder, MessageChannel messageChannel) {
-        if (messageChannel.canTalk()) sendMessage(embedBuilder, messageChannel, null);
+        sendMessage(embedBuilder, messageChannel, null);
     }
 
     /**
@@ -368,7 +437,7 @@ public class CommandManager {
      * @param messageChannel the Message-Channel.
      */
     public void sendMessage(EmbedBuilder embedBuilder, int deleteSecond, MessageChannel messageChannel) {
-        if (messageChannel.canTalk()) sendMessage(embedBuilder, deleteSecond, messageChannel, null);
+        sendMessage(embedBuilder, deleteSecond, messageChannel, null);
     }
 
     /**
@@ -379,9 +448,7 @@ public class CommandManager {
      * @param interactionHook the Interaction-hook if it is a slash command.
      */
     public void sendMessage(EmbedBuilder embedBuilder, MessageChannel messageChannel, InteractionHook interactionHook) {
-        if (interactionHook == null) {
-            if (messageChannel.canTalk()) messageChannel.sendMessageEmbeds(embedBuilder.build()).queue();
-        } else interactionHook.sendMessageEmbeds(embedBuilder.build()).queue();
+        sendMessage(new MessageCreateBuilder().setEmbeds(embedBuilder.build()).build(), messageChannel, interactionHook);
     }
 
     /**
@@ -393,19 +460,7 @@ public class CommandManager {
      * @param interactionHook the Interaction-hook if it is a slash command.
      */
     public void sendMessage(EmbedBuilder embedBuilder, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
-        if (interactionHook == null) {
-            if (messageChannel == null) return;
-            if (messageChannel.canTalk())
-                messageChannel.sendMessageEmbeds(embedBuilder.build()).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                    if (message != null && message.getChannel().retrieveMessageById(message.getId()).complete() != null) {
-                        return message.delete();
-                    }
-
-                    return null;
-                }).queue();
-        } else {
-            interactionHook.sendMessageEmbeds(embedBuilder.build()).queue();
-        }
+        sendMessage(new MessageCreateBuilder().setEmbeds(embedBuilder.build()).build(), deleteSecond, messageChannel, interactionHook);
     }
 
     /**
