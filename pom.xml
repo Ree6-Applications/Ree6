@@ -289,7 +289,7 @@
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
-            <artifactId>Simple-YAML</artifactId>
+            <artifactId>Simple-Yaml</artifactId>
             <version>1.8.1</version>
             <exclusions>
                 <exclusion>
