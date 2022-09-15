@@ -34,12 +34,12 @@ public class EmbedSender implements ICommand {
         OptionMapping description = commandEvent.getSlashCommandInteractionEvent().getOption("description");
         OptionMapping color = commandEvent.getSlashCommandInteractionEvent().getOption("color");
         OptionMapping footer = commandEvent.getSlashCommandInteractionEvent().getOption("footer");
-        OptionMapping footer_Icon = commandEvent.getSlashCommandInteractionEvent().getOption("footer_icon");
+        OptionMapping footerIcon = commandEvent.getSlashCommandInteractionEvent().getOption("footer_icon");
         OptionMapping image = commandEvent.getSlashCommandInteractionEvent().getOption("image");
         OptionMapping thumbnail = commandEvent.getSlashCommandInteractionEvent().getOption("thumbnail");
         OptionMapping author = commandEvent.getSlashCommandInteractionEvent().getOption("author");
-        OptionMapping author_Url = commandEvent.getSlashCommandInteractionEvent().getOption("author_url");
-        OptionMapping author_Icon = commandEvent.getSlashCommandInteractionEvent().getOption("author_icon");
+        OptionMapping authorUrl = commandEvent.getSlashCommandInteractionEvent().getOption("author_url");
+        OptionMapping authorIcon = commandEvent.getSlashCommandInteractionEvent().getOption("author_icon");
         OptionMapping url = commandEvent.getSlashCommandInteractionEvent().getOption("url");
         OptionMapping timestamp = commandEvent.getSlashCommandInteractionEvent().getOption("timestamp");
 
@@ -53,7 +53,7 @@ public class EmbedSender implements ICommand {
         }
 
         if (footer != null) {
-            embedBuilder.setFooter(footer.getAsString(), footer_Icon != null ? footer_Icon.getAsString() : null);
+            embedBuilder.setFooter(footer.getAsString(), footerIcon != null ? footerIcon.getAsString() : null);
         }
 
         if (image != null) {
@@ -65,7 +65,7 @@ public class EmbedSender implements ICommand {
         }
 
         if (author != null) {
-            embedBuilder.setAuthor(author.getAsString(), author_Url != null ? author_Url.getAsString() : null, author_Icon != null ? author_Icon.getAsString() : null);
+            embedBuilder.setAuthor(author.getAsString(), authorUrl != null ? authorUrl.getAsString() : null, authorIcon != null ? authorIcon.getAsString() : null);
         }
 
         if (timestamp != null) {
