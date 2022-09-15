@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
-import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -65,21 +64,16 @@ public class BotWorker {
      *
      * @param version1 the current Bot Version "typ".
      * @param build1   the current Bot Version.
-     * @throws LoginException when there is a problem with creating the Session.
      */
-    public static void createBot(BotVersion version1, String build1) throws LoginException {
+    public static void createBot(BotVersion version1, String build1) {
         version = version1;
-        token = BotWorker.version == BotVersion.DEVELOPMENT_BUILD ?
-                    Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.dev") :
-                        BotWorker.version == BotVersion.BETA_BUILD ?
-                            Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.beta") :
-                                Main.getInstance().getConfig().getConfiguration().getString("bot.tokens.release");
+        token = Main.getInstance().getConfig().getConfiguration().getString(getVersion().getTokenPath());
         state = BotState.INIT;
         build = build1;
 
         shardManager = DefaultShardManagerBuilder
                 .createDefault(token)
-                .setShardsTotal(getVersion() == BotVersion.DEVELOPMENT_BUILD ? 1 : 10)
+                .setShardsTotal(getVersion().getShards())
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_INVITES, GatewayIntent.DIRECT_MESSAGES,
                         GatewayIntent.GUILD_INVITES, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.MESSAGE_CONTENT,
                         GatewayIntent.GUILD_WEBHOOKS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_BANS)

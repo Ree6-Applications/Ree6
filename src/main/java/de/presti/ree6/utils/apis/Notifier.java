@@ -22,7 +22,6 @@ import com.google.api.services.youtube.model.PlaylistItemContentDetails;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
-import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.entities.SQLResponse;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
@@ -117,7 +116,7 @@ public class Notifier {
                 .setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret"))
                 .setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
                 .setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
-                .setDebugEnabled(BotWorker.getVersion() == BotVersion.DEVELOPMENT_BUILD);
+                .setDebugEnabled(BotWorker.getVersion().isDebug());
 
         twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
 
