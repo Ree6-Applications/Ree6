@@ -6,6 +6,7 @@ import de.presti.ree6.game.core.GameSession;
 import de.presti.ree6.game.core.IGame;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
@@ -66,6 +67,16 @@ public class Blackjack implements IGame {
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
         playerTwo.interactionHook.sendMessage(messageCreateBuilder.build()).queue();
+    }
+
+    @Override
+    public void joinGame(User user) {
+
+    }
+
+    @Override
+    public void leaveGame(User user) {
+
     }
 
     @Override
