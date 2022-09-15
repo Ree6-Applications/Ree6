@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A Command to activate Reddit Notifications.
  */
-@Command(name = "redditnotifier", description = "Manage your Reddit-Notifier!", category = Category.COMMUNITY)
+@Command(name = "redditnotifier", description = "command.description.redditNotifier", category = Category.COMMUNITY)
 public class RedditNotifier implements ICommand {
 
     /**

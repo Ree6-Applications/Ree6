@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A Command to activate Twitch Notifications.
  */
-@Command(name = "twitch", description = "Manage your Twitch-Notifier!", category = Category.COMMUNITY)
+@Command(name = "twitch", description = "command.description.twitch", category = Category.COMMUNITY)
 public class TwitchNotifier implements ICommand {
 
     /**

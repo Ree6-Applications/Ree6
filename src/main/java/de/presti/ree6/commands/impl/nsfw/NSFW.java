@@ -7,13 +7,13 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.time.Duration;
@@ -49,7 +49,7 @@ public class NSFW implements ICommand {
                 commandEvent.getInteractionHook().sendMessage("Searching for Image...").complete() :
                 commandEvent.getChannel().sendMessage("Searching for Image...").complete();
 
-        JsonElement jsonElement = RequestUtility.request(RequestUtility.Request.builder().url("https://www.reddit.com/r/hentai/new.json?sort=hot&limit=50").build());
+        JsonElement jsonElement = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://www.reddit.com/r/hentai/new.json?sort=hot&limit=50").build());
 
         if (jsonElement.isJsonObject() &&
                 jsonElement.getAsJsonObject().has("data") &&

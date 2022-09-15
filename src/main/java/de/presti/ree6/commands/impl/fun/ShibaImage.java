@@ -23,7 +23,7 @@ public class ShibaImage implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        JsonArray js = RequestUtility.request(RequestUtility.Request.builder().url("https://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true").build()).getAsJsonArray();
+        JsonArray js = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true").build()).getAsJsonArray();
 
         EmbedBuilder em = new EmbedBuilder();
 

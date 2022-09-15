@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A Command to activate YouTube Notifications.
  */
-@Command(name = "youtubenotifier", description = "Manage your YouTube-Notifier!", category = Category.COMMUNITY)
+@Command(name = "youtubenotifier", description = "command.description.youtubeNotifier", category = Category.COMMUNITY)
 public class YouTubeNotifier implements ICommand {
 
     /**

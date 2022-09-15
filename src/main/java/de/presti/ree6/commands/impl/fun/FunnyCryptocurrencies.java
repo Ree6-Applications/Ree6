@@ -16,7 +16,7 @@ import java.awt.*;
 /**
  * A command that shows you the price of some cryptocurrencies.
  */
-@Command(name = "funnycrypto", description = "Wanna see at how much the funniest cryptocurrencies are worth?", category = Category.FUN)
+@Command(name = "funnycrypto", description = "command.description.funnyCrypto", category = Category.FUN)
 public class FunnyCryptocurrencies implements ICommand {
 
     /**
@@ -24,15 +24,15 @@ public class FunnyCryptocurrencies implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        JsonObject js =  RequestUtility.request(RequestUtility.Request.builder().url("https://data.messari.io/api/v1/assets/doge/metrics").build()).getAsJsonObject();
+        JsonObject js =  RequestUtility.requestJson(RequestUtility.Request.builder().url("https://data.messari.io/api/v1/assets/doge/metrics").build()).getAsJsonObject();
 
         float dogeCoin = js.get("data").getAsJsonObject().get("market_data").getAsJsonObject().get("price_usd").getAsFloat();
 
-        js =  RequestUtility.request(RequestUtility.Request.builder().url("https://data.messari.io/api/v1/assets/btc/metrics").build()).getAsJsonObject();
+        js =  RequestUtility.requestJson(RequestUtility.Request.builder().url("https://data.messari.io/api/v1/assets/btc/metrics").build()).getAsJsonObject();
 
         float bitcoin = js.get("data").getAsJsonObject().get("market_data").getAsJsonObject().get("price_usd").getAsFloat();
 
-        js =  RequestUtility.request(RequestUtility.Request.builder().url("https://data.messari.io/api/v1/assets/ltc/metrics").build()).getAsJsonObject();
+        js =  RequestUtility.requestJson(RequestUtility.Request.builder().url("https://data.messari.io/api/v1/assets/ltc/metrics").build()).getAsJsonObject();
 
         float liteCoin = js.get("data").getAsJsonObject().get("market_data").getAsJsonObject().get("price_usd").getAsFloat();
 
@@ -62,6 +62,6 @@ public class FunnyCryptocurrencies implements ICommand {
      */
     @Override
     public String[] getAlias() {
-        return new String[] { "doge", "btc", "ltc", "putincoin", "crypto", "funcrypto" };
+        return new String[] { "doge", "btc", "ltc", "crypto", "funcrypto" };
     }
 }

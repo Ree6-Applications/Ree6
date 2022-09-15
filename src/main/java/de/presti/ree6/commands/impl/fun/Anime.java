@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * A command used to search for animes!
  */
-@Command(name = "anime", description = "Search for animes on kitsu.io!", category = Category.FUN)
+@Command(name = "anime", description = "command.description.anime", category = Category.FUN)
 public class Anime implements ICommand {
 
     /**
@@ -68,7 +68,7 @@ public class Anime implements ICommand {
         RequestUtility.Request request = RequestUtility.Request.builder()
                 .url("https://kitsu.io/api/edge/anime?filter[text]=" + URLEncoder.encode(query, StandardCharsets.UTF_8))
                 .build();
-        JsonElement jsonElement = RequestUtility.request(request);
+        JsonElement jsonElement = RequestUtility.requestJson(request);
 
         if (jsonElement != null &&
                 jsonElement.isJsonObject() &&

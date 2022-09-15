@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A Command to activate Twitter Notifications.
  */
-@Command(name = "twitternotifier", description = "Manage your Twitter-Notifier!", category = Category.COMMUNITY)
+@Command(name = "twitternotifier", description = "command.description.twitterNotifier", category = Category.COMMUNITY)
 public class TwitterNotifier implements ICommand {
 
     /**

@@ -1618,6 +1618,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Create the Level Message Setting.
         if (!hasSetting(guildId, "level_message")) setSetting(new Setting(guildId, "level_message", false));
 
+        // Create the Language Setting.
+        if (!hasSetting(guildId, "configuration_language")) setSetting(new Setting(guildId, "configuration_language", "en"));
+
         // Create the Join Message Setting
         if (!hasSetting(guildId, "message_join"))
             setSetting(new Setting(guildId, "message_join", "Welcome %user_mention%!\nWe wish you a great stay on %guild_name%"));

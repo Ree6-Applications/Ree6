@@ -12,7 +12,7 @@ import org.apache.commons.validator.GenericValidator;
 /**
  * This command is used to let the bot remember your Birthday.
  */
-@Command(name = "birthday", description = "Let the bot remember your Birthday.", category = Category.COMMUNITY)
+@Command(name = "birthday", description = "command.description.birthday", category = Category.COMMUNITY)
 public class Birthday implements ICommand {
 
     /**

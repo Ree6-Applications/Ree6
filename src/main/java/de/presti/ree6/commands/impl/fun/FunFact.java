@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A command to get random fun facts.
  */
-@Command(name = "funfact", description = "Just some random facts!", category = Category.FUN)
+@Command(name = "funfact", description = "command.description.funFact", category = Category.FUN)
 public class FunFact implements ICommand {
 
     /**
@@ -20,7 +20,7 @@ public class FunFact implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        JsonObject js = RequestUtility.request(RequestUtility.Request.builder().url("https://useless-facts.sameerkumar.website/api").build()).getAsJsonObject();
+        JsonObject js = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://useless-facts.sameerkumar.website/api").build()).getAsJsonObject();
 
         Main.getInstance().getCommandManager().sendMessage(js.get("data").getAsString(), commandEvent.getChannel(), commandEvent.getInteractionHook());
     }

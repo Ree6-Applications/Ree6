@@ -18,11 +18,13 @@ import de.presti.ree6.sql.base.entities.StoredResultSet;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
+import de.presti.ree6.utils.data.Language;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,6 +125,12 @@ public class Main {
             instance.logger.error("Please update the configuration file and restart the application!");
             System.exit(0);
         }
+
+        instance.logger.info("Starting preparations of the Bot...");
+
+        Language.downloadLanguages();
+
+        instance.logger.info("Finished preparations of the Bot!");
 
         instance.logger.info("Starting Ree6!");
 

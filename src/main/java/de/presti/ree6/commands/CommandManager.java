@@ -7,14 +7,19 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
+import de.presti.ree6.utils.data.Language;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -41,10 +46,10 @@ public class CommandManager {
      * Constructor for the Command-Manager used to register every Command.
      *
      * @throws CommandInitializerException if an error occurs while initializing the Commands.
-     * @throws IllegalStateException if an Invalid Command was used to initialize.
-     * @throws IllegalAccessException when an Instance of a Command is not accessible.
-     * @throws InstantiationException when an Instance of a Command is not instantiable.
-     * @throws NoSuchMethodException when a Constructor Instance of a Command is not found.
+     * @throws IllegalStateException       if an Invalid Command was used to initialize.
+     * @throws IllegalAccessException      when an Instance of a Command is not accessible.
+     * @throws InstantiationException      when an Instance of a Command is not instantiable.
+     * @throws NoSuchMethodException       when a Constructor Instance of a Command is not found.
      */
     public CommandManager() throws CommandInitializerException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Main.getInstance().getLogger().info("Initializing Commands!");
@@ -79,17 +84,22 @@ public class CommandManager {
                 commandData = new CommandDataImpl(command.getClass().getAnnotation(Command.class).name(), command.getClass().getAnnotation(Command.class).description());
             }
 
-            if (commandData != null) {
-
-                if (commandAnnotation.category() == Category.MOD) {
-                    commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+            for (String keys : Language.languagesConfigurations.keySet()) {
+                String description = Language.getResource(keys, command.getClass().getAnnotation(Command.class).description() + "_slash");
+                if (description.equals("Missing language resource!")) {
+                    description = Language.getResource(keys, command.getClass().getAnnotation(Command.class).description());
                 }
-
-                commandData.setGuildOnly(true);
-
-                //noinspection ResultOfMethodCallIgnored
-                listUpdateAction.addCommands(commandData);
+                commandData.setNameLocalization(DiscordLocale.from(keys), description);
             }
+
+            if (commandAnnotation.category() == Category.MOD) {
+                commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+            }
+
+            commandData.setGuildOnly(true);
+
+            //noinspection ResultOfMethodCallIgnored
+            listUpdateAction.addCommands(commandData);
         }
 
         listUpdateAction.queue();
@@ -168,10 +178,10 @@ public class CommandManager {
 
             // Check if it is a Slash Command or not.
             if (slashCommandInteractionEvent != null) {
-                sendMessage("You are on cooldown!", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                sendMessage(Language.getResource(guild, "command.perform.cooldown"), 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 deleteMessage(message, slashCommandInteractionEvent.getHook().setEphemeral(true));
             } else if (messageContent.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase())) {
-                sendMessage("You are on cooldown!", 5, textChannel, null);
+                sendMessage(Language.getResource(guild, "command.perform.cooldown"), 5, textChannel, null);
                 deleteMessage(message, null);
             }
 
@@ -191,12 +201,12 @@ public class CommandManager {
         }
 
         // Check if this is a Developer build, if not then cooldown the User.
-        if (BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD) {
+        if (!BotWorker.getVersion().isDebug()) {
             ThreadUtil.createNewThread(x -> ArrayUtil.commandCooldown.remove(member.getUser().getId()), null, Duration.ofSeconds(5), false, false);
         }
 
         // Add them to the Cooldown.
-        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD) {
+        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && !BotWorker.getVersion().isDebug()) {
             ArrayUtil.commandCooldown.add(member.getUser().getId());
         }
 
@@ -206,17 +216,18 @@ public class CommandManager {
 
     /**
      * Perform a Message based Command.
-     * @param member the Member that performed the command.
-     * @param guild the Guild the Member is from.
+     *
+     * @param member         the Member that performed the command.
+     * @param guild          the Guild the Member is from.
      * @param messageContent the Message content (including the prefix + command name).
-     * @param message the Message Entity.
-     * @param textChannel the TextChannel where the command has been performed.
+     * @param message        the Message Entity.
+     * @param textChannel    the TextChannel where the command has been performed.
      * @return true, if a command has been performed.
      */
     private boolean performMessageCommand(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel) {
         // Check if the Message is null.
         if (message == null) {
-            sendMessage("There was an error while executing the Command!", 5, textChannel, null);
+            sendMessage(Language.getResource(guild, "command.perform.error"), 5, textChannel, null);
             return false;
         }
 
@@ -235,14 +246,14 @@ public class CommandManager {
 
         // Check if there is even a Command with that name.
         if (command == null) {
-            sendMessage("That Command couldn't be found", 5, textChannel, null);
+            sendMessage(Language.getResource(guild, "command.perform.notFound"), 5, textChannel, null);
             return false;
         }
 
         // Check if the Command is blacklisted.
         if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() &&
                 command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-            sendMessage("This Command is blocked!", 5, textChannel, null);
+            sendMessage(Language.getResource(guild, "command.perform.blocked"), 5, textChannel, null);
             return false;
         }
 
@@ -258,7 +269,7 @@ public class CommandManager {
     /**
      * Call when a slash command has been performed.
      *
-     * @param textChannel the TextChannel where the command has been performed.
+     * @param textChannel                  the TextChannel where the command has been performed.
      * @param slashCommandInteractionEvent the Slash-Command Event.
      */
     private boolean performSlashCommand(MessageChannelUnion textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
@@ -267,13 +278,13 @@ public class CommandManager {
 
         // Check if there is a command with that Name.
         if (command == null || slashCommandInteractionEvent.getGuild() == null || slashCommandInteractionEvent.getMember() == null) {
-            sendMessage("That Command couldn't be found", 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+            sendMessage(Language.getResource(slashCommandInteractionEvent.getGuild(), "command.perform.notFound"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
             return false;
         }
 
         // Check if the command is blocked or not.
         if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-            sendMessage("This Command is blocked!", 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+            sendMessage(Language.getResource(slashCommandInteractionEvent.getGuild(), "command.perform.blocked"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
             return false;
         }
 
@@ -285,6 +296,7 @@ public class CommandManager {
 
     /**
      * Check if an User is time-outed.
+     *
      * @param user the User.
      * @return true, if yes | false, if not.
      */

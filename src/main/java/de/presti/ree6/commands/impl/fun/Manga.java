@@ -68,7 +68,7 @@ public class Manga implements ICommand {
         RequestUtility.Request request = RequestUtility.Request.builder()
                 .url("https://kitsu.io/api/edge/manga?filter[text]=" + URLEncoder.encode(query, StandardCharsets.UTF_8))
                 .build();
-        JsonElement jsonElement = RequestUtility.request(request);
+        JsonElement jsonElement = RequestUtility.requestJson(request);
 
         if (jsonElement != null &&
                 jsonElement.isJsonObject() &&
@@ -171,7 +171,7 @@ public class Manga implements ICommand {
                         .url(url)
                         .build();
 
-                JsonElement jsonElement = RequestUtility.request(request);
+                JsonElement jsonElement = RequestUtility.requestJson(request);
 
                 if (jsonElement != null &&
                         jsonElement.isJsonObject() &&

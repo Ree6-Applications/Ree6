@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A Command to activate Instagram Notifications.
  */
-@Command(name = "instagramnotifier", description = "Manage your Instagram-Notifier!", category = Category.COMMUNITY)
+@Command(name = "instagramnotifier", description = "command.description.instagramNotifier", category = Category.COMMUNITY)
 public class InstagramNotifier implements ICommand {
 
     /**

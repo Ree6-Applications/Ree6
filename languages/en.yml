@@ -1,0 +1,23 @@
+command:
+  perform:
+    cooldown: "You are on cooldown!"
+    error: "There was an error while executing the Command!"
+    internalError: "An error occurred while performing the Command!\nIf this continues to happen please contact our support!\n<https://support.ree6.de>"
+    notFound: "That Command couldn't be found"
+    blocked: "This Command is blocked!"
+    slashNotSupported: "This Command doesn't support Slash Commands!"
+  description:
+    birthday: "Let the bot remember your Birthday."
+    instagramNotifier: "Manage your Instagram-Notifier!"
+    redditNotifier: "Manage your Reddit-Notifier!"
+    twitch: "Manage your Twitch-Notifier!"
+    twitterNotifier: "Manage your Twitter-Notifier!"
+    youtubeNotifier: "Manage your Youtube-Notifier!"
+    anime: "Search for animes on kitsu.io!"
+    randomcat: "Shows random Cat Images, from thecatapi.com."
+    cringe: "Let shrek tell them that their message was cringe!"
+    cringe_slash: "Let shrek tell them that their message was not funny!"
+    randomdog: "Shows random Dog Images, from dog.ceo."
+    funFact: "Just some random facts!"
+    funnyCrypto: "Wanna see at how much the funniest cryptocurrencies are worth?"
+    hornyjail: "Put someone into the Horny-Jail"
