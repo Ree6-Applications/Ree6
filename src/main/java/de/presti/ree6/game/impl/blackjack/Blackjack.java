@@ -3,16 +3,18 @@ package de.presti.ree6.game.impl.blackjack;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.core.GameSession;
-import de.presti.ree6.game.core.IGame;
+import de.presti.ree6.game.core.base.GameInfo;
+import de.presti.ree6.game.core.base.GamePlayer;
+import de.presti.ree6.game.core.base.IGame;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
+@GameInfo(name = "Blackjack", description = "Play Blackjack with your friends!", minPlayers = 2, maxPlayers = 2)
 public class Blackjack implements IGame {
 
     private final GameSession session;
@@ -58,7 +60,7 @@ public class Blackjack implements IGame {
         messageCreateBuilder.setEmbeds(embedBuilder.build());
         messageCreateBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"), Button.secondary("game_blackjack_doubledown", "Double Down"));
 
-        player.interactionHook.sendMessage(messageCreateBuilder.build()).queue();
+        player.getInteractionHook().sendMessage(messageCreateBuilder.build()).queue();
 
         embedBuilder.setAuthor("**" + playerTwo.getRelatedUser().getAsTag() + "**", null, playerTwo.getRelatedUser().getAvatarUrl());
         embedBuilder.clearFields();
@@ -66,17 +68,25 @@ public class Blackjack implements IGame {
         embedBuilder.addField("**" + player.getRelatedUser().getAsTag() + "s Cards**", "", true);
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
-        playerTwo.interactionHook.sendMessage(messageCreateBuilder.build()).queue();
+        playerTwo.getInteractionHook().sendMessage(messageCreateBuilder.build()).queue();
     }
 
     @Override
-    public void joinGame(User user) {
-
+    public void joinGame(GamePlayer user) {
+        if (player == null) {
+            player = (BlackJackPlayer) user;
+        } else if (playerTwo == null) {
+            playerTwo = (BlackJackPlayer) user;
+        }
     }
 
     @Override
-    public void leaveGame(User user) {
-
+    public void leaveGame(GamePlayer user) {
+        if (player != null && player.getRelatedUserId() == user.getRelatedUserId()) {
+            player = null;
+        } else if (playerTwo != null && playerTwo.getRelatedUserId() == user.getRelatedUserId()) {
+            playerTwo = null;
+        }
     }
 
     @Override
