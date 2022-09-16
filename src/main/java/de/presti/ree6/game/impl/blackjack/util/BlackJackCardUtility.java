@@ -6,10 +6,19 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 import java.util.ArrayList;
 
+/**
+ * Utility class used to provide methods for the game of blackjack.
+ */
 public class BlackJackCardUtility {
 
+    /**
+     * The list of all cards.
+     */
     private static final ArrayList<BlackJackCard> allCards = new ArrayList<>();
 
+    /**
+     * Method called to add all basic cards to the list.
+     */
     public static void loadAllCards() {
         allCards.add(new BlackJackCard(2, Emoji.fromCustom("spade_2", 0L, false)));
         allCards.add(new BlackJackCard(3, Emoji.fromCustom("spade_3", 0L, false)));
@@ -68,6 +77,10 @@ public class BlackJackCardUtility {
         allCards.add(new BlackJackCard(11, Emoji.fromCustom("diamond_ace", 0L, false)));
     }
 
+    /**
+     * Returns a random card from the default deck.
+     * @return A random card from the default deck.
+     */
     public static BlackJackCard getRandomCard() {
         if (allCards.isEmpty()) {
             loadAllCards();
@@ -75,6 +88,10 @@ public class BlackJackCardUtility {
         return allCards.get(RandomUtils.secureRandom.nextInt(allCards.size()));
     }
 
+    /**
+     * Returns every card of the default deck.
+     * @return Every card of the default deck.
+     */
     public static ArrayList<BlackJackCard> getAllCards() {
         return allCards;
     }

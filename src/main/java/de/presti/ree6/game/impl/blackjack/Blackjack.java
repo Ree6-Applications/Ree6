@@ -21,25 +21,54 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 
 import java.util.ArrayList;
 
+/**
+ * Class used to represent the game of blackjack.
+ */
 @GameInfo(name = "Blackjack", description = "Play Blackjack with your friends!", minPlayers = 2, maxPlayers = 2)
 public class Blackjack implements IGame {
 
+    /**
+     * The game session.
+     */
     private final GameSession session;
+
+    /**
+     * The two Blackjack players.
+     */
     BlackJackPlayer player, playerTwo;
 
+    /**
+     * The cards of the dealer.
+     */
     ArrayList<String> usedCards = new ArrayList<>();
 
+    /**
+     * Value to remember if the last player performed the action of "stand".
+     */
     boolean standUsed;
 
+    /**
+     * The Player which has the turn.
+     */
     BlackJackPlayer currentPlayer;
 
+    /**
+     * Constructor.
+     * @param gameSession The game session.
+     */
     public Blackjack(GameSession gameSession) {
         session = gameSession;
         createGame();
     }
 
+    /**
+     * The message of the game.
+     */
     Message menuMessage;
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void createGame() {
         if (session.getParticipants().isEmpty() || session.getParticipants().size() > 2) {
@@ -62,6 +91,9 @@ public class Blackjack implements IGame {
         session.getChannel().sendMessage(messageCreateBuilder.build()).queue(message -> menuMessage = message);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void startGame() {
         BlackJackCard card = getRandomCard();
@@ -100,6 +132,9 @@ public class Blackjack implements IGame {
         currentPlayer = player;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void joinGame(GamePlayer user) {
         if (player != null && playerTwo != null) {
@@ -139,6 +174,9 @@ public class Blackjack implements IGame {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void leaveGame(GamePlayer user) {
         if (player != null && player.getRelatedUserId() == user.getRelatedUserId()) {
@@ -148,16 +186,25 @@ public class Blackjack implements IGame {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onReactionReceive(GenericMessageReactionEvent messageReactionEvent) {
 
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onMessageReceive(MessageReceivedEvent messageReceivedEvent) {
 
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onButtonInteractionReceive(ButtonInteractionEvent buttonInteractionEvent) {
         if (currentPlayer == null) {
@@ -197,6 +244,10 @@ public class Blackjack implements IGame {
         }
     }
 
+    /**
+     * Get a random card from the basic Deck, but check if the card is already a players hand.
+     * @return The random card.
+     */
     public BlackJackCard getRandomCard() {
         BlackJackCard card = BlackJackCardUtility.getRandomCard();
 
@@ -212,6 +263,11 @@ public class Blackjack implements IGame {
         }
     }
 
+    /**
+     * Hit the player and give him a new card.
+     * @param player The player who hit.
+     * @param playerTwo The other player.
+     */
     public void hit(BlackJackPlayer player, BlackJackPlayer playerTwo) {
         standUsed = false;
 
@@ -252,6 +308,11 @@ public class Blackjack implements IGame {
         }
     }
 
+    /**
+     * Stand the player and let the other player play.
+     * @param player The player who stand.
+     * @param playerTwo The other player.
+     */
     public void stand(BlackJackPlayer player, BlackJackPlayer playerTwo) {
         if (standUsed) {
             stopGame(player, playerTwo);
@@ -261,10 +322,20 @@ public class Blackjack implements IGame {
         currentPlayer = playerTwo;
     }
 
+    /**
+     * Double down the player and give him a new card.
+     * @param player The player who double down.
+     * @param playerTwo The other player.
+     */
     public void doubleDown(BlackJackPlayer player, BlackJackPlayer playerTwo) {
         currentPlayer = playerTwo;
     }
 
+    /**
+     * Stop the game and check who won.
+     * @param player The player who won.
+     * @param playerTwo The other player.
+     */
     public void stopGame(BlackJackPlayer player, BlackJackPlayer playerTwo) {
         MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
         EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -285,6 +356,10 @@ public class Blackjack implements IGame {
         stopGame();
     }
 
+    /**
+     * Determine the winner of the game.
+     * @return The winner of the game.
+     */
     public BlackJackPlayer findWinner() {
         if (player.getHandValue(true) > 21 && playerTwo.getHandValue(true) <= 21) {
             return playerTwo;
@@ -311,6 +386,9 @@ public class Blackjack implements IGame {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void stopGame() {
         GameManager.removeGameSession(session);

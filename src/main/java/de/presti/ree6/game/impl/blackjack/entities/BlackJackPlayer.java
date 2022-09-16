@@ -6,39 +6,65 @@ import net.dv8tion.jda.api.entities.User;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class entity used to represent a player in the game of blackjack.
+ */
 public class BlackJackPlayer extends GamePlayer {
 
+    /**
+     * The cards of the player.
+     */
     private final List<BlackJackCard> hand = new ArrayList<>();
 
+    /**
+     * @inheritDoc
+     */
     public BlackJackPlayer(User relatedUser) {
         super(relatedUser);
     }
 
+    /**
+     * @inheritDoc
+     */
     public BlackJackPlayer(long relatedUserId) {
         super(relatedUserId);
     }
 
+    /**
+     * Constructor.
+     * @param gamePlayer The game player.
+     */
     public BlackJackPlayer(GamePlayer gamePlayer) {
         super(gamePlayer.getRelatedUser());
         setInteractionHook(gamePlayer.getInteractionHook());
     }
 
-    public int getHandValue(boolean showHidden) {
+    /**
+     * Gets the overall value of the Players hand.
+     * @param countHidden Whether to count the value of hidden cards or not.
+     * @return The overall value of the Players hand.
+     */
+    public int getHandValue(boolean countHidden) {
         int value = 0;
         for (BlackJackCard card : hand) {
-            if (card.isHidden() && !showHidden) {
+            if (card.isHidden() && !countHidden) {
                 continue;
             }
             value += card.getValue();
         }
 
         if (value > 21) {
-            aceCheck(value, showHidden);
+            aceCheck(value, countHidden);
         }
 
         return value;
     }
 
+    /**
+     * Gets the hand of the Player as Emojis.
+     * @param showHidden Whether to show hidden cards or not.
+     * @return The hand of the Player as Emojis.
+     */
     public String getHandAsString(boolean showHidden) {
         StringBuilder builder = new StringBuilder();
         for (BlackJackCard card : hand) {
@@ -50,6 +76,12 @@ public class BlackJackPlayer extends GamePlayer {
         return builder.toString();
     }
 
+    /**
+     * Checks whether the player has an ace and if so, whether the value of the hand is over 21.
+     * If so, the value of the ace will be set to 1.
+     * @param currentValue The value of the hand.
+     * @param checkHidden Whether to check the value of hidden cards or not.
+     */
     private int aceCheck(int currentValue, boolean checkHidden) {
         if (currentValue > 21 && hand.stream().anyMatch(blackJackCard -> blackJackCard.getValue() == 11 && (!blackJackCard.isHidden() || checkHidden))) {
             currentValue -= 10;
@@ -59,6 +91,10 @@ public class BlackJackPlayer extends GamePlayer {
         return currentValue;
     }
 
+    /**
+     * Gets the hand of the Player.
+     * @return The hand of the Player.
+     */
     public List<BlackJackCard> getHand() {
         return hand;
     }
