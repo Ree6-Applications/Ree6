@@ -1,6 +1,5 @@
-package de.presti.ree6.game.core;
+package de.presti.ree6.game.core.base;
 
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
@@ -11,9 +10,9 @@ public interface IGame {
 
     void startGame();
 
-    void joinGame(User user);
+    void joinGame(GamePlayer user);
 
-    void leaveGame(User user);
+    void leaveGame(GamePlayer user);
 
     void onReactionReceive(GenericMessageReactionEvent messageReactionEvent);
 
