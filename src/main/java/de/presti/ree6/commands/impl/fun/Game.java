@@ -8,12 +8,13 @@ import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.core.GameSession;
 import de.presti.ree6.game.core.base.GamePlayer;
 import de.presti.ree6.utils.others.RandomUtils;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.util.Collections;
+import java.util.ArrayList;
 
 @Command(name = "game", description = "Access Ree6 internal Games", category = Category.FUN)
 public class Game implements ICommand {
@@ -40,8 +41,11 @@ public class Game implements ICommand {
                     return;
                 }
 
+                ArrayList<User> participants = new ArrayList<>();
+                participants.add(commandEvent.getSlashCommandInteractionEvent().getUser());
+
                 GameManager.createGameSession(RandomUtils.getRandomBase64String(7), game.getAsString(),
-                        commandEvent.getChannel(), Collections.singletonList(commandEvent.getMember().getUser()));
+                        commandEvent.getChannel(), participants);
             }
             case "join" -> {
                 if (invite == null) {
