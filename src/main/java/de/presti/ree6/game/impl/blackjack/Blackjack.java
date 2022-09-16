@@ -83,7 +83,7 @@ public class Blackjack implements IGame {
         embedBuilder.setColor(BotWorker.randomEmbedColor());
         embedBuilder.setDescription("Welcome to Blackjack! You can start the game by clicking the button below!" +
                 "\nBefore you can start it thou, you will need someone else to play with you!" +
-                "\nThey will need to use /game join " + session.getGameIdentifier() + " to join the game!\nOr press the button below!");
+                "\nThey will need to use /game join " + session.getGameIdentifier() + " to join the game!");
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
         messageCreateBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), "Start Game").asDisabled());
@@ -116,7 +116,7 @@ public class Blackjack implements IGame {
         embedBuilder.addField("**Your Cards**", player.getHandAsString(true) + "\n\nYour Value: " + player.getHandValue(true), true);
         embedBuilder.addField(playerTwo.getRelatedUser().getAsTag() + "s **Cards**", playerTwo.getHandAsString(false) + "\n\nTheir Value: " + playerTwo.getHandValue(false), true);
 
-        embedBuilder.setFooter(currentPlayer.getRelatedUserId() == player.getRelatedUserId() ? "It's your turn!" : "Wait for your turn!");
+        embedBuilder.setFooter("It's your turn!");
 
         messageEditBuilder.setEmbeds(embedBuilder.build());
         messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"), Button.secondary("game_blackjack_doubledown", "Double Down"));
@@ -128,7 +128,7 @@ public class Blackjack implements IGame {
         embedBuilder.addField("**Your Cards**", playerTwo.getHandAsString(true) + "\n\nYour Value: " + playerTwo.getHandValue(true), true);
         embedBuilder.addField(player.getRelatedUser().getAsTag() + "s **Cards**", player.getHandAsString(false) + "\n\nTheir Value: " + player.getHandValue(false), true);
 
-        embedBuilder.setFooter(currentPlayer.getRelatedUserId() == playerTwo.getRelatedUserId() ? "It's your turn!" : "Wait for your turn!");
+        embedBuilder.setFooter("Wait for your turn!");
 
         messageEditBuilder.setEmbeds(embedBuilder.build());
         playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
