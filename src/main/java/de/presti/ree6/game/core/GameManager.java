@@ -1,5 +1,6 @@
 package de.presti.ree6.game.core;
 
+import de.presti.ree6.game.core.base.GameInfo;
 import de.presti.ree6.game.core.base.IGame;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.User;
@@ -24,7 +25,7 @@ public class GameManager {
         Set<Class<? extends IGame>> classes = reflections.getSubTypesOf(IGame.class);
 
         for (Class<? extends IGame> aClass : classes) {
-            if (aClass.getSimpleName().equalsIgnoreCase(gameName)) {
+            if (aClass.isAnnotationPresent(GameInfo.class) && aClass.getAnnotation(GameInfo.class).name().equalsIgnoreCase(gameName)) {
                 try {
                     return (IGame) aClass.getConstructors()[0].newInstance();
                 } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
