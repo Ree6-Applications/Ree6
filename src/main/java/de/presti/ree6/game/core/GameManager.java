@@ -7,12 +7,13 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import org.reflections.Reflections;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 public class GameManager {
+
+    private final static HashMap<String, Class<? extends IGame>> gameCache = new HashMap<>();
 
     private final static HashMap<String, GameSession> gameSessions = new HashMap<>();
 
@@ -21,14 +22,26 @@ public class GameManager {
     }
 
     public static IGame getGame(String gameName) {
+
+        if (gameCache.containsKey(gameName.toLowerCase().trim())) {
+            try {
+                return (IGame) gameCache.get(gameName.toLowerCase().trim()).newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                Main.getInstance().getLogger().error("Failed to create instance of " + gameName + "!", e);
+            }
+        }
+
         Reflections reflections = new Reflections("de.presti.ree6.game.impl");
         Set<Class<? extends IGame>> classes = reflections.getSubTypesOf(IGame.class);
 
         for (Class<? extends IGame> aClass : classes) {
-            if (aClass.isAnnotationPresent(GameInfo.class) && aClass.getAnnotation(GameInfo.class).name().equalsIgnoreCase(gameName)) {
+            if (aClass.isAnnotationPresent(GameInfo.class) && aClass.getAnnotation(GameInfo.class).name().trim().equalsIgnoreCase(gameName)) {
                 try {
-                    return (IGame) aClass.getConstructors()[0].newInstance();
-                } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+                    if (!gameCache.containsKey(gameName.toLowerCase().trim())) {
+                        gameCache.put(gameName.toLowerCase().trim(), aClass);
+                    }
+                    return (IGame) aClass.newInstance();
+                } catch (InstantiationException | IllegalAccessException e) {
                     Main.getInstance().getLogger().error("Failed to create instance of " + aClass.getSimpleName() + "!", e);
                 }
             }
