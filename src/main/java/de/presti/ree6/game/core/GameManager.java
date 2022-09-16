@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import org.reflections.Reflections;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -17,16 +18,18 @@ public class GameManager {
 
     private final static HashMap<String, GameSession> gameSessions = new HashMap<>();
 
-    public static void createGameSession(String gameIdentifier, IGame game, MessageChannelUnion channel, List<User> participants) {
-        gameSessions.put(gameIdentifier, new GameSession(gameIdentifier, game, channel, participants));
+    public static void createGameSession(String gameIdentifier, String gameName, MessageChannelUnion channel, List<User> participants) {
+        GameSession gameSession = new GameSession(gameIdentifier, channel, participants);
+        gameSession.setGame(getGame(gameName, gameSession));
+        gameSessions.put(gameIdentifier, gameSession);
     }
 
-    public static IGame getGame(String gameName) {
+    public static IGame getGame(String gameName, GameSession gameSession) {
 
         if (gameCache.containsKey(gameName.toLowerCase().trim())) {
             try {
-                return (IGame) gameCache.get(gameName.toLowerCase().trim()).newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                return gameCache.get(gameName.toLowerCase().trim()).getDeclaredConstructor(GameSession.class).newInstance(gameSession);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e ) {
                 Main.getInstance().getLogger().error("Failed to create instance of " + gameName + "!", e);
             }
         }
@@ -40,8 +43,8 @@ public class GameManager {
                     if (!gameCache.containsKey(gameName.toLowerCase().trim())) {
                         gameCache.put(gameName.toLowerCase().trim(), aClass);
                     }
-                    return (IGame) aClass.newInstance();
-                } catch (InstantiationException | IllegalAccessException e) {
+                    return aClass.getDeclaredConstructor(GameSession.class).newInstance(gameSession);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e ) {
                     Main.getInstance().getLogger().error("Failed to create instance of " + aClass.getSimpleName() + "!", e);
                 }
             }
