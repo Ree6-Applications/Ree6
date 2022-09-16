@@ -21,20 +21,14 @@ public class Monkey implements ICommand {
 	 */
 	@Override
 	public void onPerform(CommandEvent commandEvent) {
-
 		final EmbedBuilder em = new EmbedBuilder();
 
 		em.setTitle("Monke!");
 		em.setColor(BotWorker.randomEmbedColor());
 		em.setImage("https://c.tenor.com/Y89PE1f7exQAAAAd/reject-modernity-return-to-monke.gif");
-		em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT,
-		             commandEvent.getMember().getUser().getAvatarUrl()
-		);
+		em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
-		Main.getInstance().getCommandManager().sendMessage(em,
-		                                                   commandEvent.getChannel(),
-		                                                   commandEvent.getInteractionHook()
-		);
+		Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), commandEvent.getInteractionHook());
 	}
 
 	/**
