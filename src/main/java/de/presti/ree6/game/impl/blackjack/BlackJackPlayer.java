@@ -8,13 +8,20 @@ import java.util.List;
 
 public class BlackJackPlayer extends GamePlayer {
 
-    final List<BlackJackCard> inventory = new ArrayList<>();
+    private final List<BlackJackCard> inventory = new ArrayList<>();
 
     public BlackJackPlayer(User relatedUser) {
         super(relatedUser);
     }
-
     public BlackJackPlayer(long relatedUserId) {
         super(relatedUserId);
+    }
+
+    public BlackJackPlayer(GamePlayer gamePlayer) {
+        super(gamePlayer.getRelatedUser());
+    }
+
+    public List<BlackJackCard> getInventory() {
+        return inventory;
     }
 }
