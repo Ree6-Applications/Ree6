@@ -39,7 +39,7 @@ public class Blackjack implements IGame {
         embedBuilder.setColor(BotWorker.randomEmbedColor());
         embedBuilder.setDescription("Welcome to Blackjack! You can start the game by clicking the button below!" +
                 "\nBefore you can start it thou, you will need someone else to play with you!" +
-                "\nThey will need to use /blackjack join " + session.getGameIdentifier() + " to join the game!");
+                "\nThey will need to use /game join " + session.getGameIdentifier() + " to join the game!");
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
         messageCreateBuilder.setActionRow(Button.secondary("game_start:" + session.getGameIdentifier(), "Start Game").asDisabled());
