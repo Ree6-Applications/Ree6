@@ -14,6 +14,8 @@ import java.util.Set;
 
 public class GameManager {
 
+    private final static HashMap<String, Class<? extends IGame>> gameCache = new HashMap<>();
+
     private final static HashMap<String, GameSession> gameSessions = new HashMap<>();
 
     public static void createGameSession(String gameIdentifier, IGame game, MessageChannelUnion channel, List<User> participants) {
@@ -21,12 +23,24 @@ public class GameManager {
     }
 
     public static IGame getGame(String gameName) {
+
+        if (gameCache.containsKey(gameName.toLowerCase().trim())) {
+            try {
+                return (IGame) gameCache.get(gameName.toLowerCase().trim()).getConstructors()[0].newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                Main.getInstance().getLogger().error("Failed to create instance of " + gameName + "!", e);
+            }
+        }
+
         Reflections reflections = new Reflections("de.presti.ree6.game.impl");
         Set<Class<? extends IGame>> classes = reflections.getSubTypesOf(IGame.class);
 
         for (Class<? extends IGame> aClass : classes) {
             if (aClass.isAnnotationPresent(GameInfo.class) && aClass.getAnnotation(GameInfo.class).name().equalsIgnoreCase(gameName)) {
                 try {
+                    if (!gameCache.containsKey(gameName.toLowerCase().trim())) {
+                        gameCache.put(gameName.toLowerCase().trim(), aClass);
+                    }
                     return (IGame) aClass.getConstructors()[0].newInstance();
                 } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
                     Main.getInstance().getLogger().error("Failed to create instance of " + aClass.getSimpleName() + "!", e);
