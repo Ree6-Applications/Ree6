@@ -57,8 +57,8 @@ public class Blackjack implements IGame {
                 "\nThey will need to use /game join " + session.getGameIdentifier() + " to join the game!\nOr press the button below!");
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
-        messageCreateBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), "Start Game").asDisabled());
-        messageCreateBuilder.setActionRow(Button.secondary("game_join:" + session.getGameIdentifier(), "Join Game").asEnabled());
+        messageCreateBuilder.setActionRow(Button.secondary("game_start:" + session.getGameIdentifier(), "Start Game").asDisabled());
+        //messageCreateBuilder.setActionRow(Button.secondary("game_join:" + session.getGameIdentifier(), "Join Game").asEnabled());
         session.getChannel().sendMessage(messageCreateBuilder.build()).queue(message -> menuMessage = message);
     }
 
@@ -245,8 +245,8 @@ public class Blackjack implements IGame {
             embedBuilder.clearFields();
             embedBuilder.addField("**Your Cards**", playerTwo.getHandAsString(true) + "\n\nYour Value: " + playerTwo.getHandValue(true), true);
             embedBuilder.addField(player.getRelatedUser().getAsTag() + "s **Cards**", player.getHandAsString(false) + "\n\nTheir Value: " + player.getHandValue(false), true);
-
             messageEditBuilder.setEmbeds(embedBuilder.build());
+            messageEditBuilder.setComponents(new ArrayList<>());
             playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
             currentPlayer = playerTwo;
         }

@@ -43,7 +43,7 @@ public class BlackJackPlayer extends GamePlayer {
         StringBuilder builder = new StringBuilder();
         for (BlackJackCard card : hand) {
             if (card.isHidden() && !showHidden)
-                builder.append(card.getEmoji().getAsMention()).append(" ");
+                builder.append("<").append(":").append("card_background").append(":").append("1020328313274781696").append(">").append(" ");
             else
                 builder.append(card.getEmoji().getAsMention()).append(" ");
         }
