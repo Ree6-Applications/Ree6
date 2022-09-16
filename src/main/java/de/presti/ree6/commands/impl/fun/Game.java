@@ -40,7 +40,7 @@ public class Game implements ICommand {
                     return;
                 }
 
-                GameManager.createGameSession(RandomUtils.getRandomBase64String(7), GameManager.getGame(game.getAsString()),
+                GameManager.createGameSession(RandomUtils.getRandomBase64String(7), game.getAsString(),
                         commandEvent.getChannel(), Collections.singletonList(commandEvent.getMember().getUser()));
             }
             case "join" -> {
