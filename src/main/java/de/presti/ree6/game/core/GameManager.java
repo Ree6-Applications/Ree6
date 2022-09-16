@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class GameManager {
 
     private final static HashMap<String, GameSession> gameSessions = new HashMap<>();
 
-    public static void createGameSession(String gameIdentifier, String gameName, MessageChannelUnion channel, List<User> participants) {
+    public static void createGameSession(String gameIdentifier, String gameName, MessageChannelUnion channel, ArrayList<User> participants) {
         GameSession gameSession = new GameSession(gameIdentifier, channel, participants);
         gameSession.setGame(getGame(gameName, gameSession));
         gameSession.getGame().joinGame(new GamePlayer(participants.get(0)));
