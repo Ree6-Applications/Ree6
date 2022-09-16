@@ -1,5 +1,6 @@
 package de.presti.ree6.game.core;
 
+import de.presti.ree6.game.core.base.IGame;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
