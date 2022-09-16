@@ -64,6 +64,11 @@ public class Game implements ICommand {
                 }
 
                 GameSession gameSession = GameManager.getGameSession(invite.getAsString());
+                if (gameSession == null) {
+                    commandEvent.reply("This Invite is invalid!");
+                    return;
+                }
+
                 gameSession.getParticipants().add(commandEvent.getMember().getUser());
                 GamePlayer gamePlayer = new GamePlayer(commandEvent.getMember().getUser());
                 gamePlayer.setInteractionHook(commandEvent.getInteractionHook());
