@@ -19,6 +19,7 @@ public class BlackJackPlayer extends GamePlayer {
 
     public BlackJackPlayer(GamePlayer gamePlayer) {
         super(gamePlayer.getRelatedUser());
+        setInteractionHook(gamePlayer.getInteractionHook());
     }
 
     public List<BlackJackCard> getInventory() {

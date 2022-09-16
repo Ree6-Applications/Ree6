@@ -52,7 +52,7 @@ public class Blackjack implements IGame {
 
     @Override
     public void startGame() {
-        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+        MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Blackjack");
@@ -61,23 +61,23 @@ public class Blackjack implements IGame {
         embedBuilder.addField("**Your Cards**", "", true);
         embedBuilder.addField("**" + playerTwo.getRelatedUser().getAsTag() + "s Cards**", "", true);
 
-        messageCreateBuilder.setEmbeds(embedBuilder.build());
-        messageCreateBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"), Button.secondary("game_blackjack_doubledown", "Double Down"));
+        messageEditBuilder.setEmbeds(embedBuilder.build());
+        messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"), Button.secondary("game_blackjack_doubledown", "Double Down"));
 
-        player.getInteractionHook().sendMessage(messageCreateBuilder.build()).queue();
+        player.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
 
         embedBuilder.setAuthor("**" + playerTwo.getRelatedUser().getAsTag() + "**", null, playerTwo.getRelatedUser().getAvatarUrl());
         embedBuilder.clearFields();
         embedBuilder.addField("**Your Cards**", "", true);
         embedBuilder.addField("**" + player.getRelatedUser().getAsTag() + "s Cards**", "", true);
 
-        messageCreateBuilder.setEmbeds(embedBuilder.build());
-        playerTwo.getInteractionHook().sendMessage(messageCreateBuilder.build()).queue();
+        messageEditBuilder.setEmbeds(embedBuilder.build());
+        playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
     }
 
     @Override
     public void joinGame(GamePlayer user) {
-        if (session.getParticipants().size() == 2 || (player != null && playerTwo != null)) {
+        if (player != null && playerTwo != null) {
             player.getInteractionHook().editOriginal("The game is full!").queue();
             return;
         }
@@ -96,7 +96,16 @@ public class Blackjack implements IGame {
             messageEditBuilder.setEmbeds(embedBuilder.build());
             messageEditBuilder.setActionRow(Button.secondary("game_start:" + session.getGameIdentifier(), "Start Game").asEnabled());
             menuMessage.editMessage(messageEditBuilder.build()).queue();
-            playerTwo.getInteractionHook().editOriginal("You have joined the Game!\nPlease wait for the other player to start the game!").queue();
+
+            messageEditBuilder.clear();
+            embedBuilder.setDescription("You have joined the Game!\nPlease wait for the other player to start the game!");
+            messageEditBuilder.setEmbeds(embedBuilder.build());
+            playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
+
+            messageEditBuilder.clear();
+            embedBuilder.setDescription("The minimal amount of Players have been reached! You can start the game by clicking the button on the Game Message!");
+            messageEditBuilder.setEmbeds(embedBuilder.build());
+            player.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
         }
     }
 
