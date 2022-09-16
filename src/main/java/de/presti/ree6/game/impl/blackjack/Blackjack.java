@@ -284,7 +284,7 @@ public class Blackjack implements IGame {
 
         player.getHand().add(card);
 
-        if (player.getHandValue(true) >= 21) {
+        if (player.getHandValue(true) > 21) {
             stopGame(player, playerTwo);
         } else {
             MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
