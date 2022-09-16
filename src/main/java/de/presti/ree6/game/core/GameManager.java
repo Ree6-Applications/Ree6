@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import org.reflections.Reflections;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -26,8 +25,8 @@ public class GameManager {
 
         if (gameCache.containsKey(gameName.toLowerCase().trim())) {
             try {
-                return (IGame) gameCache.get(gameName.toLowerCase().trim()).getConstructors()[0].newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                return (IGame) gameCache.get(gameName.toLowerCase().trim()).newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
                 Main.getInstance().getLogger().error("Failed to create instance of " + gameName + "!", e);
             }
         }
@@ -36,13 +35,13 @@ public class GameManager {
         Set<Class<? extends IGame>> classes = reflections.getSubTypesOf(IGame.class);
 
         for (Class<? extends IGame> aClass : classes) {
-            if (aClass.isAnnotationPresent(GameInfo.class) && aClass.getAnnotation(GameInfo.class).name().equalsIgnoreCase(gameName)) {
+            if (aClass.isAnnotationPresent(GameInfo.class) && aClass.getAnnotation(GameInfo.class).name().trim().equalsIgnoreCase(gameName)) {
                 try {
                     if (!gameCache.containsKey(gameName.toLowerCase().trim())) {
                         gameCache.put(gameName.toLowerCase().trim(), aClass);
                     }
-                    return (IGame) aClass.getConstructors()[0].newInstance();
-                } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+                    return (IGame) aClass.newInstance();
+                } catch (InstantiationException | IllegalAccessException e) {
                     Main.getInstance().getLogger().error("Failed to create instance of " + aClass.getSimpleName() + "!", e);
                 }
             }
