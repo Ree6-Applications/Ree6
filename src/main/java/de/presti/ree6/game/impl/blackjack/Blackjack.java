@@ -86,7 +86,7 @@ public class Blackjack implements IGame {
                 "\nThey will need to use /game join " + session.getGameIdentifier() + " to join the game!\nOr press the button below!");
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
-        messageCreateBuilder.setActionRow(Button.secondary("game_start:" + session.getGameIdentifier(), "Start Game").asDisabled());
+        messageCreateBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), "Start Game").asDisabled());
         //messageCreateBuilder.setActionRow(Button.secondary("game_join:" + session.getGameIdentifier(), "Join Game").asEnabled());
         session.getChannel().sendMessage(messageCreateBuilder.build()).queue(message -> menuMessage = message);
     }
@@ -116,6 +116,8 @@ public class Blackjack implements IGame {
         embedBuilder.addField("**Your Cards**", player.getHandAsString(true) + "\n\nYour Value: " + player.getHandValue(true), true);
         embedBuilder.addField(playerTwo.getRelatedUser().getAsTag() + "s **Cards**", playerTwo.getHandAsString(false) + "\n\nTheir Value: " + playerTwo.getHandValue(false), true);
 
+        embedBuilder.setFooter(currentPlayer.getRelatedUserId() == player.getRelatedUserId() ? "It's your turn!" : "Wait for your turn!");
+
         messageEditBuilder.setEmbeds(embedBuilder.build());
         messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"), Button.secondary("game_blackjack_doubledown", "Double Down"));
 
@@ -125,6 +127,8 @@ public class Blackjack implements IGame {
         embedBuilder.clearFields();
         embedBuilder.addField("**Your Cards**", playerTwo.getHandAsString(true) + "\n\nYour Value: " + playerTwo.getHandValue(true), true);
         embedBuilder.addField(player.getRelatedUser().getAsTag() + "s **Cards**", player.getHandAsString(false) + "\n\nTheir Value: " + player.getHandValue(false), true);
+
+        embedBuilder.setFooter(currentPlayer.getRelatedUserId() == playerTwo.getRelatedUserId() ? "It's your turn!" : "Wait for your turn!");
 
         messageEditBuilder.setEmbeds(embedBuilder.build());
         playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
@@ -159,7 +163,7 @@ public class Blackjack implements IGame {
             EmbedBuilder embedBuilder = new EmbedBuilder(messageEditBuilder.getEmbeds().get(0));
             embedBuilder.setDescription("The minimal amount of Players have been reached! You can start the game by clicking the button below!");
             messageEditBuilder.setEmbeds(embedBuilder.build());
-            messageEditBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), "Start Game").asEnabled());
+            messageEditBuilder.setActionRow(Button.success("game_start:" + session.getGameIdentifier(), "Start Game").asEnabled());
             menuMessage.editMessage(messageEditBuilder.build()).queue();
 
             messageEditBuilder.clear();
@@ -292,6 +296,8 @@ public class Blackjack implements IGame {
             embedBuilder.addField("**Your Cards**", player.getHandAsString(true) + "\n\nYour Value: " + player.getHandValue(true), true);
             embedBuilder.addField(playerTwo.getRelatedUser().getAsTag() + "s **Cards**", playerTwo.getHandAsString(false) + "\n\nTheir Value: " + playerTwo.getHandValue(false), true);
 
+            embedBuilder.setFooter("Wait for your turn!");
+
             messageEditBuilder.setEmbeds(embedBuilder.build());
             messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"), Button.secondary("game_blackjack_doubledown", "Double Down"));
 
@@ -301,8 +307,8 @@ public class Blackjack implements IGame {
             embedBuilder.clearFields();
             embedBuilder.addField("**Your Cards**", playerTwo.getHandAsString(true) + "\n\nYour Value: " + playerTwo.getHandValue(true), true);
             embedBuilder.addField(player.getRelatedUser().getAsTag() + "s **Cards**", player.getHandAsString(false) + "\n\nTheir Value: " + player.getHandValue(false), true);
+            embedBuilder.setFooter("It's your turn!");
             messageEditBuilder.setEmbeds(embedBuilder.build());
-            messageEditBuilder.setComponents(new ArrayList<>());
             playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
             currentPlayer = playerTwo;
         }
@@ -319,6 +325,30 @@ public class Blackjack implements IGame {
         } else {
             standUsed = true;
         }
+
+        MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
+
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("Blackjack");
+        embedBuilder.setColor(BotWorker.randomEmbedColor());
+        embedBuilder.setAuthor(player.getRelatedUser().getAsTag(), null, player.getRelatedUser().getAvatarUrl());
+        embedBuilder.addField("**Your Cards**", player.getHandAsString(true) + "\n\nYour Value: " + player.getHandValue(true), true);
+        embedBuilder.addField(playerTwo.getRelatedUser().getAsTag() + "s **Cards**", playerTwo.getHandAsString(false) + "\n\nTheir Value: " + playerTwo.getHandValue(false), true);
+
+        embedBuilder.setFooter("Wait for your turn!");
+
+        messageEditBuilder.setEmbeds(embedBuilder.build());
+        messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"), Button.secondary("game_blackjack_doubledown", "Double Down"));
+
+        player.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
+
+        embedBuilder.setAuthor(playerTwo.getRelatedUser().getAsTag(), null, playerTwo.getRelatedUser().getAvatarUrl());
+        embedBuilder.clearFields();
+        embedBuilder.addField("**Your Cards**", playerTwo.getHandAsString(true) + "\n\nYour Value: " + playerTwo.getHandValue(true), true);
+        embedBuilder.addField(player.getRelatedUser().getAsTag() + "s **Cards**", player.getHandAsString(false) + "\n\nTheir Value: " + player.getHandValue(false), true);
+        embedBuilder.setFooter("It's your turn!");
+        messageEditBuilder.setEmbeds(embedBuilder.build());
+        playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
         currentPlayer = playerTwo;
     }
 
@@ -350,7 +380,7 @@ public class Blackjack implements IGame {
         embedBuilder.addField(playerTwo.getRelatedUser().getAsTag() + "s **Cards**", playerTwo.getHandAsString(true) + "\n\nValue: " + playerTwo.getHandValue(true), true);
 
         messageEditBuilder.setEmbeds(embedBuilder.build());
-
+        messageEditBuilder.setComponents(new ArrayList<>());
         player.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
         playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
         stopGame();
