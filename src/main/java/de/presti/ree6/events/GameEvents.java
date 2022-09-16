@@ -9,8 +9,14 @@ import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Listener for Game Events.
+ */
 public class GameEvents extends ListenerAdapter {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         for (GameSession gameSession : GameManager.getGameSessions(event.getChannel())) {
@@ -22,6 +28,9 @@ public class GameEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGenericMessageReaction(@NotNull GenericMessageReactionEvent event) {
         for (GameSession gameSession : GameManager.getGameSessions(event.getChannel())) {
@@ -33,6 +42,9 @@ public class GameEvents extends ListenerAdapter {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         if (event.getComponentId().startsWith("game_start")) {

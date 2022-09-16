@@ -16,8 +16,15 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.util.ArrayList;
 
+/**
+ * Command used to access the Game System.
+ */
 @Command(name = "game", description = "Access Ree6 internal Games", category = Category.FUN)
 public class Game implements ICommand {
+
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.isSlashCommand()) {
@@ -67,6 +74,9 @@ public class Game implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("game", "Access Ree6 internal Games")
@@ -75,6 +85,9 @@ public class Game implements ICommand {
                 .addOption(OptionType.STRING, "invite", "The Game Invite in case you want to join a Session.", false);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
