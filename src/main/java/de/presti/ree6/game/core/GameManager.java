@@ -1,7 +1,6 @@
 package de.presti.ree6.game.core;
 
 import de.presti.ree6.game.core.base.GameInfo;
-import de.presti.ree6.game.core.base.GamePlayer;
 import de.presti.ree6.game.core.base.IGame;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.User;
@@ -20,11 +19,11 @@ public class GameManager {
 
     private final static HashMap<String, GameSession> gameSessions = new HashMap<>();
 
-    public static void createGameSession(String gameIdentifier, String gameName, MessageChannelUnion channel, ArrayList<User> participants) {
+    public static GameSession createGameSession(String gameIdentifier, String gameName, MessageChannelUnion channel, ArrayList<User> participants) {
         GameSession gameSession = new GameSession(gameIdentifier, channel, participants);
         gameSession.setGame(getGame(gameName, gameSession));
-        gameSession.getGame().joinGame(new GamePlayer(participants.get(0)));
         gameSessions.put(gameIdentifier, gameSession);
+        return gameSession;
     }
 
     public static IGame getGame(String gameName, GameSession gameSession) {
