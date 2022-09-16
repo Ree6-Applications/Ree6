@@ -44,8 +44,11 @@ public class Game implements ICommand {
                 ArrayList<User> participants = new ArrayList<>();
                 participants.add(commandEvent.getSlashCommandInteractionEvent().getUser());
 
+                GamePlayer gamePlayer = new GamePlayer(commandEvent.getMember().getUser());
+                gamePlayer.setInteractionHook(commandEvent.getInteractionHook());
+
                 GameManager.createGameSession(RandomUtils.getRandomBase64String(7), game.getAsString(),
-                        commandEvent.getChannel(), participants);
+                        commandEvent.getChannel(), participants).getGame().joinGame(gamePlayer);
             }
             case "join" -> {
                 if (invite == null) {
