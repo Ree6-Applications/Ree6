@@ -2,6 +2,7 @@ package de.presti.ree6.events;
 
 import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.core.GameSession;
+import de.presti.ree6.game.core.base.GamePlayer;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
@@ -47,6 +48,25 @@ public class GameEvents extends ListenerAdapter {
                 }
             }
         }
+
+        if (event.getComponentId().startsWith("game_join")) {
+            if (event.getComponentId().contains(":")) {
+                String gameIdentifier = event.getComponentId().split(":")[1];
+                GameSession gameSession = GameManager.getGameSession(gameIdentifier);
+                if (gameSession != null) {
+                    if (gameSession.getChannel().getId().equals(event.getChannel().getId())) {
+                        if (gameSession.getParticipants().stream().noneMatch(user -> user.getId().equals(event.getUser().getId()))) {
+                            event.deferEdit().queue();
+                            GamePlayer gamePlayer = new GamePlayer(event.getUser());
+                            gamePlayer.setInteractionHook(event.getHook());
+                            gameSession.getParticipants().add(event.getUser());
+                            gameSession.getGame().joinGame(gamePlayer);
+                        }
+                    }
+                }
+            }
+        }
+
         for (GameSession gameSession : GameManager.getGameSessions(event.getChannel())) {
             if (gameSession.getChannel().getId().equals(event.getChannel().getId())) {
                 if (gameSession.getParticipants().stream().anyMatch(user -> user.getId().equals(event.getUser().getId()))) {
