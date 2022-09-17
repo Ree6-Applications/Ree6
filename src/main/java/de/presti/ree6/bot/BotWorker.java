@@ -119,10 +119,12 @@ public class BotWorker {
     /**
      * Called to add a ListenerAdapter to the EventListener.
      *
-     * @param listenerAdapter the Listener Adapter that should be added.
+     * @param listenerAdapters the Listener Adapter(s) that should be added.
      */
-    public static void addEvent(ListenerAdapter listenerAdapter) {
-        shardManager.addEventListener(listenerAdapter);
+    public static void addEvent(ListenerAdapter... listenerAdapters) {
+        for (ListenerAdapter listenerAdapter : listenerAdapters) {
+            shardManager.addEventListener(listenerAdapter);
+        }
     }
 
     /**
