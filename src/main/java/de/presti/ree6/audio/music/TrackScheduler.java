@@ -235,6 +235,11 @@ public class TrackScheduler extends AudioEventAdapter {
         }
     }
 
+    /**
+     * Seek to a specific position in the current track.
+     * @param channel the Text-Channel where the command have been performed from.
+     * @param seekAmountInSeconds the amount of seconds to seek to.
+     */
     public void seekPosition(MessageChannelUnion channel, int seekAmountInSeconds) {
         if (player.getPlayingTrack() == null) {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()

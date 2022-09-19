@@ -3,6 +3,7 @@ package de.presti.ree6.game.core;
 import de.presti.ree6.game.core.base.GameInfo;
 import de.presti.ree6.game.core.base.IGame;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import org.reflections.Reflections;
@@ -43,6 +44,19 @@ public class GameManager {
         gameSession.setGame(getGame(gameName, gameSession));
         gameSessions.put(gameIdentifier, gameSession);
         return gameSession;
+    }
+
+    /**
+     * Generate a valid Invite
+     * @return the newly create Invite.
+     */
+    public static String generateInvite() {
+        String key = RandomUtils.getRandomBase64String(4);
+        if (gameSessions.containsKey(key)) {
+            return generateInvite();
+        }
+
+        return key;
     }
 
     /**

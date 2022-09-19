@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -68,11 +69,12 @@ public class GameEvents extends ListenerAdapter {
                 if (gameSession != null) {
                     if (gameSession.getChannel().getId().equals(event.getChannel().getId())) {
                         if (gameSession.getParticipants().stream().noneMatch(user -> user.getId().equals(event.getUser().getId()))) {
-                            event.deferEdit().queue();
-                            GamePlayer gamePlayer = new GamePlayer(event.getUser());
-                            gamePlayer.setInteractionHook(event.getHook());
-                            gameSession.getParticipants().add(event.getUser());
-                            gameSession.getGame().joinGame(gamePlayer);
+                            event.deferReply(true).queue(interactionHook -> {
+                                GamePlayer gamePlayer = new GamePlayer(event.getUser());
+                                gamePlayer.setInteractionHook(interactionHook);
+                                gameSession.getParticipants().add(event.getUser());
+                                gameSession.getGame().joinGame(gamePlayer);
+                            });
                         }
                     }
                 }

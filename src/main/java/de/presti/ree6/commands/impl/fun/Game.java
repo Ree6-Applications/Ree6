@@ -33,20 +33,20 @@ public class Game implements ICommand {
         }
 
         OptionMapping action = commandEvent.getSlashCommandInteractionEvent().getOption("action");
-        OptionMapping game = commandEvent.getSlashCommandInteractionEvent().getOption("game");
-        OptionMapping invite = commandEvent.getSlashCommandInteractionEvent().getOption("invite");
+        OptionMapping value = commandEvent.getSlashCommandInteractionEvent().getOption("value");
 
         if (action == null) {
             commandEvent.reply("You need to specify an action!");
             return;
         }
 
+        if (value == null) {
+            commandEvent.reply("Please specify a value!");
+            return;
+        }
+
         switch (action.getAsString()) {
             case "create" -> {
-                if (game == null) {
-                    commandEvent.reply("Please specify a Game!");
-                    return;
-                }
 
                 ArrayList<User> participants = new ArrayList<>();
                 participants.add(commandEvent.getSlashCommandInteractionEvent().getUser());
@@ -54,16 +54,12 @@ public class Game implements ICommand {
                 GamePlayer gamePlayer = new GamePlayer(commandEvent.getMember().getUser());
                 gamePlayer.setInteractionHook(commandEvent.getInteractionHook());
 
-                GameManager.createGameSession(RandomUtils.getRandomBase64String(7), game.getAsString(),
+                GameManager.createGameSession(GameManager.generateInvite(), value.getAsString(),
                         commandEvent.getChannel(), participants).getGame().joinGame(gamePlayer);
             }
             case "join" -> {
-                if (invite == null) {
-                    commandEvent.reply("Please specify an Invite!");
-                    return;
-                }
 
-                GameSession gameSession = GameManager.getGameSession(invite.getAsString());
+                GameSession gameSession = GameManager.getGameSession(value.getAsString());
                 if (gameSession == null) {
                     commandEvent.reply("This Invite is invalid!");
                     return;
@@ -86,8 +82,7 @@ public class Game implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("game", "Access Ree6 internal Games")
                 .addOption(OptionType.STRING, "action", "Either use create or join.", true)
-                .addOption(OptionType.STRING, "game", "The Game you want to play.", false)
-                .addOption(OptionType.STRING, "invite", "The Game Invite in case you want to join a Session.", false);
+                .addOption(OptionType.STRING, "value", "Either the Game name or Invite code.", true);
     }
 
     /**
