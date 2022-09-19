@@ -54,7 +54,7 @@ public class BlackJackPlayer extends GamePlayer {
         }
 
         if (value > 21) {
-            aceCheck(value, countHidden);
+            value = aceCheck(value, countHidden);
         }
 
         return value;
