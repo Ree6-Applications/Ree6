@@ -266,7 +266,7 @@ public class TrackScheduler extends AudioEventAdapter {
         if (player.getPlayingTrack().getPosition() / 1000 + seekAmountInSeconds < 0) {
             player.getPlayingTrack().setPosition(0L);
         } else {
-            player.getPlayingTrack().setPosition((long)seekAmountInSeconds * 1000);
+            player.getPlayingTrack().setPosition(player.getPlayingTrack().getPosition() + ((long)seekAmountInSeconds * 1000));
         }
 
         Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
