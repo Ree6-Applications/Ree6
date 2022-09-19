@@ -367,22 +367,23 @@ public class Blackjack implements IGame {
      * @param playerTwo The other player.
      */
     public void stopGame(BlackJackPlayer player, BlackJackPlayer playerTwo) {
-        MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
+        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Blackjack");
         embedBuilder.setColor(BotWorker.randomEmbedColor());
         BlackJackPlayer winner = findWinner();
 
         embedBuilder.setDescription("The Game has ended!\nThe Result is: " + (winner == null ? "No one because its a Draw" : winner.getRelatedUser().getAsTag() + " has won!"));
-        messageEditBuilder.setEmbeds(embedBuilder.build());
 
         embedBuilder.addField(player.getRelatedUser().getAsTag()+ "s **Cards**", player.getHandAsString(true) + "\n\nValue: " + player.getHandValue(true), true);
         embedBuilder.addField(playerTwo.getRelatedUser().getAsTag() + "s **Cards**", playerTwo.getHandAsString(true) + "\n\nValue: " + playerTwo.getHandValue(true), true);
 
-        messageEditBuilder.setEmbeds(embedBuilder.build());
-        messageEditBuilder.setComponents(new ArrayList<>());
-        player.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
-        playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
+        messageCreateBuilder.setEmbeds(embedBuilder.build());
+        messageCreateBuilder.setComponents(new ArrayList<>());
+        player.getInteractionHook().editOriginalComponents(new ArrayList<>()).queue();
+        playerTwo.getInteractionHook().editOriginalComponents(new ArrayList<>()).queue();
+
+        Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), session.getChannel());
         stopGame();
     }
 
