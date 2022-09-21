@@ -69,3 +69,4 @@ command:
         noPerms: "You don't have the permission to remove a Birthday!"
       other:
         dateError: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
+    instagramNotifier:
