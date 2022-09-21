@@ -1,5 +1,6 @@
 package de.presti.ree6.main;
 
+import com.google.gson.JsonObject;
 import com.mindscapehq.raygun4java.core.RaygunClient;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
@@ -16,6 +17,7 @@ import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.base.entities.StoredResultSet;
+import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -292,9 +295,22 @@ public class Main {
 
                 instance.logger.info("[Stats] ");
                 instance.logger.info("[Stats] Today's Stats:");
-                instance.logger.info("[Stats] Guilds: {}", BotWorker.getShardManager().getGuilds().size());
-                instance.logger.info("[Stats] Overall Users: {}", BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum());
+                int guildSize = BotWorker.getShardManager().getGuilds().size(), userSize = BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum();
+                instance.logger.info("[Stats] Guilds: {}", guildSize);
+                instance.logger.info("[Stats] Overall Users: {}", userSize);
                 instance.logger.info("[Stats] ");
+
+                LocalDate yesterday = LocalDate.now().minusDays(1);
+                Statistics statistics = sqlConnector.getSqlWorker().getStatistics(yesterday.getDayOfMonth(), yesterday.getMonthValue(), yesterday.getYear());
+                JsonObject jsonObject = statistics != null ? statistics.getStatsObject() : new JsonObject();
+                JsonObject guildStats = statistics != null && jsonObject.has("guild") ? jsonObject.getAsJsonObject("guild") : new JsonObject();
+
+                guildStats.addProperty("amount", guildSize);
+                guildStats.addProperty("users", userSize);
+
+                jsonObject.add("guild", guildStats);
+
+                sqlConnector.getSqlWorker().updateStatistic(jsonObject);
 
                 Calendar currentCalendar = Calendar.getInstance();
 
