@@ -9,6 +9,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.utils.data.Language;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -26,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * A command to show NSFW-Image from rule34.xxx.
  */
-@Command(name = "r34", description = "Get NSFW Image from rule34.xxx", category = Category.NSFW)
+@Command(name = "r34", description = "command.description.rule34", category = Category.NSFW)
 public class Rule34 implements ICommand {
 
     /**
@@ -39,7 +40,7 @@ public class Rule34 implements ICommand {
 
             sendMessage(commandEvent);
         } else {
-            Main.getInstance().getCommandManager().sendMessage("Only available in NSFW Channels!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(Language.getResource(commandEvent.getGuild(), "command.message.default.onlyNSFW"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 

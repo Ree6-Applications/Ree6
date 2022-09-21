@@ -15,7 +15,7 @@ import java.util.ArrayList;
 /**
  * This command is used to manage the Blacklist.
  */
-@Command(name = "blacklist", description = "Manage your filters.", category = Category.MOD)
+@Command(name = "blacklist", description = "command.description.blacklist", category = Category.MOD)
 public class Blacklist implements ICommand {
 
     /**

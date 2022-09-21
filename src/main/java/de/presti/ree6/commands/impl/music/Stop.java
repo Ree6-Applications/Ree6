@@ -14,7 +14,7 @@ import java.awt.*;
 /**
  * Stop the Ree6 from playing Music.
  */
-@Command(name = "stop", description = "Stop the current playing Song.", category = Category.MUSIC)
+@Command(name = "stop", description = "command.description.stop", category = Category.MUSIC)
 public class Stop implements ICommand {
 
     @Override

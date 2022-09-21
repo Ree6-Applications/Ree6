@@ -9,6 +9,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.utils.data.Language;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -24,7 +25,7 @@ import java.util.Locale;
 /**
  * A command to show NSFW-Image from r/hentai.
  */
-@Command(name = "nsfw", description = "Get NSFW Image from reddit", category = Category.NSFW)
+@Command(name = "nsfw", description = "command.description.nsfw", category = Category.NSFW)
 public class NSFW implements ICommand {
 
     /**
@@ -35,7 +36,7 @@ public class NSFW implements ICommand {
         if (commandEvent.getChannel().getType() == ChannelType.TEXT && commandEvent.getChannel().asTextChannel().isNSFW()) {
             sendImage(commandEvent);
         } else {
-            Main.getInstance().getCommandManager().sendMessage("Only available in NSFW Channels!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(Language.getResource(commandEvent.getGuild(), "command.message.default.onlyNSFW"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 

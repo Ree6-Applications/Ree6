@@ -16,7 +16,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A class used to import data from another Bot.
  */
-@Command(name = "import", description = "Import data from another Bot.", category = Category.MOD)
+@Command(name = "import", description = "command.description.import", category = Category.MOD)
 public class Import implements ICommand {
 
     /**

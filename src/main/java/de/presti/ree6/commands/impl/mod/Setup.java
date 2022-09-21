@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * A command to set Ree6 up.
  */
-@Command(name = "setup", description = "Setup specific default operations for Ree6!", category = Category.MOD)
+@Command(name = "setup", description = "command.description.setup", category = Category.MOD)
 public class Setup implements ICommand {
 
     /**

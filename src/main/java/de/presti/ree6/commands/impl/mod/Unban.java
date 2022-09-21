@@ -17,7 +17,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A command to unban someone.
  */
-@Command(name = "unban", description = "Unban a specific user from the Server, with his User ID.", category = Category.MOD)
+@Command(name = "unban", description = "command.description.unban", category = Category.MOD)
 public class Unban implements ICommand {
 
     /**

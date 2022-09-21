@@ -14,7 +14,7 @@ import java.awt.*;
 /**
  * Disconnects the Bot from the VoiceChannel.
  */
-@Command(name = "disconnect", description = "Disconnect Ree6 from the current Voice-chat!", category = Category.MUSIC)
+@Command(name = "disconnect", description = "command.description.disconnect", category = Category.MUSIC)
 public class Disconnect implements ICommand {
 
     /**

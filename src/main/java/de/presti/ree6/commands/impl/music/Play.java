@@ -25,7 +25,7 @@ import java.util.Objects;
 /**
  * Play a Song.
  */
-@Command(name = "play", description = "Play a new Song or add a Song to the current Queue.", category = Category.MUSIC)
+@Command(name = "play", description = "command.description.play", category = Category.MUSIC)
 public class Play implements ICommand {
 
     /**

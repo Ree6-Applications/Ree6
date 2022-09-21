@@ -14,7 +14,7 @@ import java.awt.*;
 /**
  * Shuffle the current Playlist.
  */
-@Command(name = "shuffle", description = "Shuffle the current playlist.", category = Category.MUSIC)
+@Command(name = "shuffle", description = "command.description.shuffle", category = Category.MUSIC)
 public class Shuffle implements ICommand {
 
     /**
