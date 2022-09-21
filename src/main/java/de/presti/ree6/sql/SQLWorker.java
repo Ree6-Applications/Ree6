@@ -1683,7 +1683,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param year the year the statics has been taken from.
      * @return the Statistics.
      */
-    public Statistics getStatistics(int day, int month, int year) {;
+    public Statistics getStatistics(int day, int month, int year) {
         return (Statistics) getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ?, MONTH = ?, YEAR = ?", day, month, year).getEntity();
     }
 
