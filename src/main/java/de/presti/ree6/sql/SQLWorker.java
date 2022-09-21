@@ -1,5 +1,6 @@
 package de.presti.ree6.sql;
 
+import com.google.gson.JsonObject;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.interfaces.Command;
@@ -22,6 +23,7 @@ import de.presti.ree6.sql.entities.roles.ChatAutoRole;
 import de.presti.ree6.sql.entities.roles.VoiceAutoRole;
 import de.presti.ree6.sql.entities.stats.CommandStats;
 import de.presti.ree6.sql.entities.stats.GuildCommandStats;
+import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.sql.entities.webhook.*;
 import net.dv8tion.jda.api.entities.Guild;
 import org.reflections.Reflections;
@@ -30,6 +32,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -1663,6 +1666,56 @@ public record SQLWorker(SQLConnector sqlConnector) {
     //region Stats
 
     /**
+     * Retrieve the Statistics of this day.
+     *
+     * @return the Statistics.
+     */
+    public Statistics getStatisticsOfToday() {
+        LocalDate today = LocalDate.now();
+        return (Statistics) getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ?, MONTH = ?, YEAR = ?", today.getDayOfMonth(), today.getMonthValue(), today.getYear()).getEntity();
+    }
+
+    /**
+     * Retrieve the Statistics of this day.
+     *
+     * @param day the day the statics has been taken from.
+     * @param month the month the statics has been taken from.
+     * @param year the year the statics has been taken from.
+     * @return the Statistics.
+     */
+    public Statistics getStatistics(int day, int month, int year) {;
+        return (Statistics) getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ?, MONTH = ?, YEAR = ?", day, month, year).getEntity();
+    }
+
+    /**
+     * Retrieve the Statistics of a month.
+     *
+     * @param month the month you want to receive the Statistics from.
+     * @return all {@link Statistics} of the given month.
+     */
+    public List<Statistics> getStatisticsOfMonth(int month) {
+        return getEntity(Statistics.class, "SELECT * FROM Statistics WHERE MONTH=?", month).getEntities().stream().map(Statistics.class::cast).toList();
+    }
+
+    /**
+     * Update or add new/existing Statistics.
+     *
+     * @param statisticObject the {@link JsonObject} for the statistic.
+     */
+    public void updateStatistic(JsonObject statisticObject) {
+        LocalDate today = LocalDate.now();
+        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ?, MONTH = ?, YEAR = ?", today.getDayOfMonth(), today.getMonthValue(), today.getYear());
+        if (sqlResponse.isSuccess()) {
+            Statistics statistics = (Statistics) sqlResponse.getEntity();
+            Statistics newStatistics = (Statistics) SQLUtil.cloneEntity(Statistics.class, statistics);
+            newStatistics.setStatsObject(statisticObject);
+            updateEntity(statistics, newStatistics, true);
+        } else {
+            Statistics statistics = new Statistics(today.getDayOfMonth(), today.getMonthValue(), today.getYear(), statisticObject);
+        }
+    }
+
+    /**
      * Get the Stats of the Command.
      *
      * @param command the Command.
@@ -1740,6 +1793,20 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param command the Command.
      */
     public void addStats(String guildId, String command) {
+        Statistics statistics = getStatisticsOfToday();
+        JsonObject jsonObject = statistics != null ? statistics.getStatsObject() : new JsonObject();
+        JsonObject commandStats = statistics != null && jsonObject.has("command") ? jsonObject.getAsJsonObject("command") : new JsonObject();
+
+        if (commandStats.has(command) && commandStats.get(command).isJsonPrimitive()) {
+            commandStats.addProperty(command, commandStats.getAsJsonPrimitive(command).getAsInt());
+        } else {
+            commandStats.addProperty(command, 1);
+        }
+
+        jsonObject.add("command", commandStats);
+
+        sqlConnector.getSqlWorker().updateStatistic(jsonObject);
+
         // Check if there is an entry.
         if (isStatsSaved(guildId, command)) {
             GuildCommandStats newGuildStats = getStatsCommand(guildId, command);

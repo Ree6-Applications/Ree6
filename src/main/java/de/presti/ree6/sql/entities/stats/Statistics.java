@@ -30,13 +30,27 @@ public class Statistics extends SQLEntity {
     /**
      * The {@link JsonObject} with statistics.
      */
-    @Property(name = "stats", keepOriginalValue = false)
+    @Property(name = "stats", keepOriginalValue = false, updateQuery = true)
     JsonObject statsObject;
 
     /**
      * Constructor.
      */
     public Statistics() {
+    }
+
+    /**
+     * Constructor.
+     * @param day the day of the Statistic.
+     * @param month the month of the Statistic.
+     * @param year the year of the Statistic.
+     * @param statsObject the Object of the Statistic.
+     */
+    public Statistics(int day, int month, int year, JsonObject statsObject) {
+        this.day = day;
+        this.month = month;
+        this.year = year;
+        this.statsObject = statsObject;
     }
 
     /**
@@ -69,5 +83,13 @@ public class Statistics extends SQLEntity {
      */
     public JsonObject getStatsObject() {
         return statsObject;
+    }
+
+    /**
+     * Setter for the {@link JsonObject} with new statistics.
+     * @param statsObject the n ew statistics Object.
+     */
+    public void setStatsObject(JsonObject statsObject) {
+        this.statsObject = statsObject;
     }
 }
