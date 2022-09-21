@@ -28,7 +28,9 @@ public class Language {
         RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.github.com/repos/Ree6-Applications/Ree6/contents/languages").build()).getAsJsonArray().forEach(jsonElement -> {
             String language = jsonElement.getAsJsonObject().get("name").getAsString().replace(".yml", "");
             String download = jsonElement.getAsJsonObject().get("download_url").getAsString();
+
             Path languageFile = Path.of("languages/", language + ".yml");
+
             if (Files.exists(languageFile)) {
                 Main.getInstance().getLogger().info("Ignoring Language download: " + language);
                 return;
@@ -53,7 +55,7 @@ public class Language {
      * @return The String.
      */
     public static String getResource(String key, Object... parameter) {
-        return getResource("en", key, parameter);
+        return getResource("en_EN", key, parameter);
     }
 
     /**
@@ -72,8 +74,9 @@ public class Language {
                 try {
                     yamlConfiguration = YamlConfiguration.loadConfiguration(languageFile.toFile());
                     languagesConfigurations.put(locale, yamlConfiguration);
-                    resource = yamlConfiguration.getString(key);
-                    return resource != null ? resource : "Missing language resource!";
+                    resource = yamlConfiguration.getString(key) != null ?
+                            yamlConfiguration.getString(key) :
+                            "Missing language resource!";
                 } catch (Exception exception) {
                     Main.getInstance().getLogger().error("Error while getting Resource!", exception);
                     return "Missing language resource!";
@@ -82,7 +85,9 @@ public class Language {
                 return "Missing language resource!";
             }
         } else {
-            resource = yamlConfiguration.getString(key) != null ? yamlConfiguration.getString(key) : "Missing language resource!";
+            resource = yamlConfiguration.getString(key) != null ?
+                    yamlConfiguration.getString(key) :
+                    "Missing language resource!";
         }
 
         return resource.formatted(parameter);
@@ -97,7 +102,7 @@ public class Language {
      */
     public static String getResource(long guildId, String key, Object... parameter) {
         if (guildId == -1) {
-            return getResource("en", key, parameter);
+            return getResource("en_EN", key, parameter);
         } else {
             return getResource(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "configuration_language").getStringValue(), key, parameter);
         }
