@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.managers.AudioManager;
 /**
  * A command used to record the conversation of a voice channel.
  */
-@Command(name = "record", description = "Record the voice channel!", category = Category.FUN)
+@Command(name = "record", description = "command.description.record", category = Category.FUN)
 public class Record implements ICommand {
 
     /**

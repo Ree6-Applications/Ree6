@@ -19,7 +19,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A command to see your current Level.
  */
-@Command(name = "level", description = "Show your own Level or the Level of another User in the Guild.", category = Category.LEVEL)
+@Command(name = "level", description = "command.description.level", category = Category.LEVEL)
 public class
 Level implements ICommand {
 

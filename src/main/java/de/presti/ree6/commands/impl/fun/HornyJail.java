@@ -19,7 +19,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A command to send someone to the horny-jail.
  */
-@Command(name = "hornyjail", description = "message.description.hornyjail", category = Category.FUN)
+@Command(name = "hornyjail", description = "command.description.hornyjail", category = Category.FUN)
 public class HornyJail implements ICommand {
 
     /**

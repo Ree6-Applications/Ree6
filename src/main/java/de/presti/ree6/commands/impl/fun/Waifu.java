@@ -16,7 +16,7 @@ import java.awt.*;
 /**
  * A command to show you are random WaiFu or Husbando.
  */
-@Command(name = "waifu", description = "Wanna see some Waifus or Husbandos?", category = Category.FUN)
+@Command(name = "waifu", description = "command.description.waifu", category = Category.FUN)
 public class Waifu implements ICommand {
 
     /**

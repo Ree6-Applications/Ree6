@@ -50,7 +50,7 @@ public class Import implements ICommand {
                 .builder()
                 .url("https://mee6.xyz/api/plugins/levels/leaderboard/" + commandEvent.getGuild().getId()).build();
 
-        JsonElement jsonElement = RequestUtility.request(request);
+        JsonElement jsonElement = RequestUtility.requestJson(request);
         if (jsonElement.isJsonObject() && jsonElement.getAsJsonObject().has("players")) {
             JsonElement players = jsonElement.getAsJsonObject().get("players");
 

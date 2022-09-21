@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * A command used to search for mangas!
  */
-@Command(name = "manga", description = "Search for mangas on kitsu.io!", category = Category.FUN)
+@Command(name = "manga", description = "command.description.manga", category = Category.FUN)
 public class Manga implements ICommand {
 
     /**

@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A command to get random memes.
  */
-@Command(name = "randommeme", description = "Wanna see a Meme?", category = Category.FUN)
+@Command(name = "randommeme", description = "command.description.meme", category = Category.FUN)
 public class MemeImage implements ICommand {
 
     /**

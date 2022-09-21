@@ -1,3 +1,7 @@
+language:
+  name: "English"
+  locale: "en_EN"
+  version: "1.9.7"
 command:
   perform:
     cooldown: "You are on cooldown!"
@@ -5,7 +9,8 @@ command:
     internalError: "An error occurred while performing the Command!\nIf this continues to happen please contact our support!\n<https://support.ree6.de>"
     notFound: "That Command couldn't be found"
     blocked: "This Command is blocked!"
-    slashNotSupported: "This Command doesn't support Slash Commands!"
+    slashNotSupported: "This Command doesn't support Slash Commands yet!"
+    onlySlashSupported: "This Command only supports Slash-Commands!"
   description:
     birthday: "Let the bot remember your Birthday."
     instagramNotifier: "Manage your Instagram-Notifier!"
@@ -21,3 +26,46 @@ command:
     funFact: "Just some random facts!"
     funnyCrypto: "Wanna see at how much the funniest cryptocurrencies are worth?"
     hornyjail: "Put someone into the Horny-Jail"
+    hug: "Hug someone you like!"
+    kiss: "Kiss someone!"
+    manga: "Search for mangas on kitsu.io!"
+    meme: "Wanna see some Memes?"
+    monke: "Shows an Image of a Monke."
+    ping: "Pong!"
+    8ball: "Let the Magic 8Ball decide the faith of your Question."
+    record: "Record the voice channel!"
+    shiba: "Shows a random shiba image, from shiba.online."
+    slap: "Slap someone in the face!"
+    twitter: "Create a \"realistic\" looking Tweet!"
+    waifu: "Wanna see some Waifus or Husbandos?"
+    addon: "Only meant for Developers, used to reload or load new Addons."
+    test: "Just a test command."
+    credits: "See the beautiful and lovely team working behind Ree6!"
+    help: "Shows a list of every Command!"
+    info: "Shows user specific information."
+    invite: "Retrieve an Invite link for Ree6!"
+    optout: "Opts you out of any data collection on this Guild."
+    server: "See server specific information."
+    stats: "See Stats of Ree6!"
+    support: "Get an Invite to the Support Server of Ree6!"
+    leaderboard: "Shows you the Rank Leaderboard of the current Server"
+    level: "Show your own Level or the Level of another User in the Guild."
+  message:
+    default:
+      usage: "Please use {0}{1}."
+      needPermission: "Looks like I do not have the Permission `{0}`!"
+      noMention:
+        user: "Please mention a user!"
+        role: "Please mention a role!"
+        channel: "Please mention a channel!"
+    birthday:
+      added:
+        self: "Your Birthday has been added!"
+        other: "The Birthday of {0} has been added!"
+        noPerms: "You don't have the permission to add a Birthday!"
+      removed:
+        self: "Your Birthday has been removed!"
+        other: "The Birthday of {0} has been removed!"
+        noPerms: "You don't have the permission to remove a Birthday!"
+      other:
+        dateError: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"

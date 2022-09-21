@@ -18,7 +18,7 @@ import pw.aru.api.nekos4j.image.ImageProvider;
 /**
  * A command to slap someone.
  */
-@Command(name = "slap", description = "Slap someone in the face!", category = Category.FUN)
+@Command(name = "slap", description = "command.description.slap", category = Category.FUN)
 public class Slap implements ICommand {
 
     /**

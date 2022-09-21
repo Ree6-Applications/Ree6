@@ -7,6 +7,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.utils.data.Language;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -21,7 +22,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A command to help the user navigate.
  */
-@Command(name = "help", description = "Shows a list of every Command!", category = Category.INFO)
+@Command(name = "help", description = "command.description.help", category = Category.INFO)
 public class Help implements ICommand {
 
     /**
@@ -79,7 +80,7 @@ public class Help implements ICommand {
                             .append(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue())
                             .append(cmd.getClass().getAnnotation(Command.class).name())
                             .append("``\n")
-                            .append(cmd.getClass().getAnnotation(Command.class).description())
+                            .append(Language.getResource(commandEvent.getGuild(), cmd.getClass().getAnnotation(Command.class).description()))
                             .append("\n\n");
                 }
 
