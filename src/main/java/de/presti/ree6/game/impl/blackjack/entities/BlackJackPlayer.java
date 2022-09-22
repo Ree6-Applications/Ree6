@@ -85,6 +85,7 @@ public class BlackJackPlayer extends GamePlayer {
     private int aceCheck(int currentValue, boolean checkHidden) {
         if (currentValue > 21 && hand.stream().anyMatch(blackJackCard -> blackJackCard.getValue() == 11 && (!blackJackCard.isHidden() || checkHidden))) {
             hand.stream().filter(blackJackCard -> blackJackCard.getValue() == 11).findFirst().get().setValue(1);
+            currentValue -= 10;
             return aceCheck(currentValue, checkHidden);
         }
 
