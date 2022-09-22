@@ -10,7 +10,7 @@ public class BlackJackCard {
     /**
      * The value of the card.
      */
-    private final int value;
+    private int value;
 
     /**
      * The emoji of the card.
@@ -38,6 +38,14 @@ public class BlackJackCard {
      */
     public int getValue() {
         return value;
+    }
+
+    /**
+     * Set the value of the card.
+     * @param newValue the new value.
+     */
+    public void setValue(int newValue) {
+        value = newValue;
     }
 
     /**
