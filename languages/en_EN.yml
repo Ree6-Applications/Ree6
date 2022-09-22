@@ -88,6 +88,7 @@ command:
         role: "Please mention a role!"
         channel: "Please mention a channel!"
       onlyNSFW: "This Command can only be used in NSFW Channels!"
+      invalidQuery: "Please provide a valid Query!"
     birthday:
       added:
         self: "Your Birthday has been added!"
@@ -100,6 +101,9 @@ command:
       other:
         dateError: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
     instagramNotifier:
+    anime:
+      searching: "Searching for Anime..."
+      found: "Anime found!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
