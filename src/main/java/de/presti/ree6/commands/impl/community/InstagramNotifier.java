@@ -43,12 +43,12 @@ public class InstagramNotifier implements ICommand {
                 Main.getInstance().getCommandManager().sendMessage(end.toString(), 10, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "instagramnotifier list/add/remove", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(Language.getResource(commandEvent,"command.message.default.usage", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue(), "instagramnotifier list/add/remove"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else if(commandEvent.getArguments().length == 3) {
 
             if (commandEvent.getMessage().getMentions().getChannels(TextChannel.class).isEmpty()) {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "instagramnotifier add/remove InstagramName #Channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("command.message.default.noMention.channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 return;
             }
 

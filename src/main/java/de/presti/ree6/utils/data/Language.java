@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.data;
 
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.entities.Guild;
@@ -46,6 +47,17 @@ public class Language {
                 Main.getInstance().getLogger().error("An error occurred while downloading the language file!", exception);
             }
         });
+    }
+
+    /**
+     * Called to get a specific String from the Guild specific Language file.
+     * @param commandEvent the CommandEvent.
+     * @param key the key of the String.
+     * @param parameter the parameter to replace.
+     * @return the String.
+     */
+    public static String getResource(CommandEvent commandEvent, String key, Object... parameter) {
+        return getResource(commandEvent.getGuild(), key, parameter);
     }
 
     /**
