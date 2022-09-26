@@ -1657,6 +1657,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (!hasSetting(guildId, "logging_rolepermission")) setSetting(guildId, "logging_rolepermission", true);
         if (!hasSetting(guildId, "logging_rolecolor")) setSetting(guildId, "logging_rolecolor", true);
         if (!hasSetting(guildId, "logging_messagedelete")) setSetting(guildId, "logging_messagedelete", true);
+        if (!hasSetting(guildId, "logging_timeout")) setSetting(guildId, "logging_timeout", true);
     }
 
     //endregion
