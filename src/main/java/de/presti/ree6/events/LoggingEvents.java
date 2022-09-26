@@ -251,6 +251,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.SERVER_LEAVE, event.getUser()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onGuildMemberUpdateTimeOut(@NotNull GuildMemberUpdateTimeOutEvent event) {
         super.onGuildMemberUpdateTimeOut(event);
