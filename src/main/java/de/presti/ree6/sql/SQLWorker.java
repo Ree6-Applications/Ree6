@@ -1799,7 +1799,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         JsonObject commandStats = statistics != null && jsonObject.has("command") ? jsonObject.getAsJsonObject("command") : new JsonObject();
 
         if (commandStats.has(command) && commandStats.get(command).isJsonPrimitive()) {
-            commandStats.addProperty(command, commandStats.getAsJsonPrimitive(command).getAsInt());
+            commandStats.addProperty(command, commandStats.getAsJsonPrimitive(command).getAsInt() + 1);
         } else {
             commandStats.addProperty(command, 1);
         }
