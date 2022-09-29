@@ -45,6 +45,21 @@ public class LogMessageMember extends LogMessage {
     }
 
     /**
+     * Constructor for a Log-Message which shouldn't be handled.
+     *
+     * @param webhookId       The ID of the Webhook.
+     * @param webhookAuthCode The Auth-Token for the Webhook.
+     * @param webhookMessage  WebhookMessage itself.
+     * @param guild           The Guild related to the Log-Message
+     * @param logTyp          The Typ of the current Log.
+     * @param member          The Member related to the Log-Message.
+     */
+    public LogMessageMember(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, Member member) {
+        super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);
+        this.member = member;
+    }
+
+    /**
      * Constructor for a Name change Event.
      *
      * @param webhookId       The ID of the Webhook.
