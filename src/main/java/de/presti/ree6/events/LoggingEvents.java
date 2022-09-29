@@ -29,7 +29,6 @@ import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
 import net.dv8tion.jda.api.events.channel.update.ChannelUpdateNSFWEvent;
 import net.dv8tion.jda.api.events.channel.update.ChannelUpdateNameEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
-import net.dv8tion.jda.api.events.guild.GuildTimeoutEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent;
@@ -68,7 +67,7 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildUpdateVanityCode(@NotNull GuildUpdateVanityCodeEvent event) {
         super.onGuildUpdateVanityCode(event);
-        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Invite.class, "SELECT * FROM Invite WHERE GID = ? AND CODE = ?", event.getGuild().getId(), event.getOldVanityCode());
+        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Invite.class, "SELECT * FROM Invites WHERE GID = ? AND CODE = ?", event.getGuild().getId(), event.getOldVanityCode());
 
         if (sqlResponse.isSuccess()) {
             Invite invite = (Invite) sqlResponse.getEntity();

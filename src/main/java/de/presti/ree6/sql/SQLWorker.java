@@ -1673,7 +1673,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public Statistics getStatisticsOfToday() {
         LocalDate today = LocalDate.now();
-        return (Statistics) getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ?, MONTH = ?, YEAR = ?", today.getDayOfMonth(), today.getMonthValue(), today.getYear()).getEntity();
+        return (Statistics) getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ? AND MONTH = ? AND YEAR = ?", today.getDayOfMonth(), today.getMonthValue(), today.getYear()).getEntity();
     }
 
     /**
@@ -1685,7 +1685,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Statistics.
      */
     public Statistics getStatistics(int day, int month, int year) {
-        return (Statistics) getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ?, MONTH = ?, YEAR = ?", day, month, year).getEntity();
+        return (Statistics) getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ? AND MONTH = ? AND YEAR = ?", day, month, year).getEntity();
     }
 
     /**
@@ -1705,7 +1705,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void updateStatistic(JsonObject statisticObject) {
         LocalDate today = LocalDate.now();
-        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ?, MONTH = ?, YEAR = ?", today.getDayOfMonth(), today.getMonthValue(), today.getYear());
+        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ? AND MONTH = ? AND YEAR = ?", today.getDayOfMonth(), today.getMonthValue(), today.getYear());
         if (sqlResponse.isSuccess()) {
             Statistics statistics = (Statistics) sqlResponse.getEntity();
             Statistics newStatistics = (Statistics) SQLUtil.cloneEntity(Statistics.class, statistics);
