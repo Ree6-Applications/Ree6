@@ -119,7 +119,7 @@ public class Blackjack implements IGame {
         embedBuilder.setFooter("It's your turn!");
 
         messageEditBuilder.setEmbeds(embedBuilder.build());
-        messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"), Button.secondary("game_blackjack_doubledown", "Double Down"));
+        messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"));
 
         player.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
 
@@ -229,6 +229,7 @@ public class Blackjack implements IGame {
                 }
                 buttonInteractionEvent.deferEdit().queue();
             }
+
             case "game_blackjack_stand" -> {
                 if (player.getRelatedUserId() == buttonInteractionEvent.getUser().getIdLong()) {
                     stand(player, playerTwo);
@@ -237,13 +238,10 @@ public class Blackjack implements IGame {
                 }
                 buttonInteractionEvent.deferEdit().queue();
             }
-            case "game_blackjack_doubledown" -> {
-                if (player.getRelatedUserId() == buttonInteractionEvent.getUser().getIdLong()) {
-                    doubleDown(player, playerTwo);
-                } else if (playerTwo.getRelatedUserId() == buttonInteractionEvent.getUser().getIdLong()) {
-                    doubleDown(playerTwo, player);
-                }
+
+            default -> {
                 buttonInteractionEvent.deferEdit().queue();
+                buttonInteractionEvent.editMessage("Unknown Action").queue();
             }
         }
     }
@@ -299,7 +297,7 @@ public class Blackjack implements IGame {
             embedBuilder.setFooter("Wait for your turn!");
 
             messageEditBuilder.setEmbeds(embedBuilder.build());
-            messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"), Button.secondary("game_blackjack_doubledown", "Double Down"));
+            messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"));
 
             player.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
 
@@ -338,7 +336,7 @@ public class Blackjack implements IGame {
         embedBuilder.setFooter("Wait for your turn!");
 
         messageEditBuilder.setEmbeds(embedBuilder.build());
-        messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"), Button.secondary("game_blackjack_doubledown", "Double Down"));
+        messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"));
 
         player.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
 
@@ -349,15 +347,6 @@ public class Blackjack implements IGame {
         embedBuilder.setFooter("It's your turn!");
         messageEditBuilder.setEmbeds(embedBuilder.build());
         playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
-        currentPlayer = playerTwo;
-    }
-
-    /**
-     * Double down the player and give him a new card.
-     * @param player The player who double down.
-     * @param playerTwo The other player.
-     */
-    public void doubleDown(BlackJackPlayer player, BlackJackPlayer playerTwo) {
         currentPlayer = playerTwo;
     }
 

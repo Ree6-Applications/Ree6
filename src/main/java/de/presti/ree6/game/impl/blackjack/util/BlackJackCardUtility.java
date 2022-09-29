@@ -12,6 +12,13 @@ import java.util.ArrayList;
 public class BlackJackCardUtility {
 
     /**
+     * Constructor should not be called since it is a utility class.
+     */
+    private BlackJackCardUtility() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
      * The list of all cards.
      */
     private static final ArrayList<BlackJackCard> allCards = new ArrayList<>();
