@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>1.9.7</version>
+    <version>1.9.7-HOTFIX</version>
     <packaging>jar</packaging>
 
     <properties>

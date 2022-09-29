@@ -22,7 +22,6 @@ import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
 import de.presti.ree6.utils.others.ThreadUtil;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -135,7 +134,7 @@ public class Main {
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             RaygunClient raygunClient = new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken"));
-            raygunClient.setVersion("1.9.7");
+            raygunClient.setVersion("1.9.7-HOTFIX");
         });
 
         // Create a new connection between the Application and the SQL-Server.
@@ -156,7 +155,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.RELEASE, "1.9.7");
+            BotWorker.createBot(BotVersion.RELEASE, "1.9.7-HOTFIX");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -289,9 +288,7 @@ public class Main {
                 ArrayUtil.messageIDwithMessage.clear();
                 ArrayUtil.messageIDwithUser.clear();
 
-                for (JDA jda : BotWorker.getShardManager().getShards()) {
-                    BotWorker.setActivity(jda, "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
-                }
+                BotWorker.setActivity("ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
 
                 instance.logger.info("[Stats] ");
                 instance.logger.info("[Stats] Today's Stats:");
