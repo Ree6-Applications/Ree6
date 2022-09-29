@@ -131,10 +131,12 @@ public class Main {
         instance.logger.info("Starting Ree6!");
 
         instance.logger.info("Creating RayGun Instance.");
+
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             RaygunClient raygunClient = new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken"));
-            raygunClient.setVersion("1.9.7-HOTFIX");
+            raygunClient.setVersion("1.9.8");
+            raygunClient.send(e);
         });
 
         // Create a new connection between the Application and the SQL-Server.
@@ -155,7 +157,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.RELEASE, "1.9.7-HOTFIX");
+            BotWorker.createBot(BotVersion.RELEASE, "1.9.8");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
