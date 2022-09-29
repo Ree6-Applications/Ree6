@@ -62,19 +62,19 @@ public class BlackJackCardUtility {
         allCards.add(new BlackJackCard(10, Emoji.fromCustom("club_k", 1025016884074139718L, false)));
         allCards.add(new BlackJackCard(11, Emoji.fromCustom("club_ace", 1025016877493268520L, false)));
 
-        allCards.add(new BlackJackCard(2, Emoji.fromCustom("diamond_2", 0L, false)));
-        allCards.add(new BlackJackCard(3, Emoji.fromCustom("diamond_3", 0L, false)));
-        allCards.add(new BlackJackCard(4, Emoji.fromCustom("diamond_4", 0L, false)));
-        allCards.add(new BlackJackCard(5, Emoji.fromCustom("diamond_5", 0L, false)));
-        allCards.add(new BlackJackCard(6, Emoji.fromCustom("diamond_6", 0L, false)));
-        allCards.add(new BlackJackCard(7, Emoji.fromCustom("diamond_7", 0L, false)));
-        allCards.add(new BlackJackCard(8, Emoji.fromCustom("diamond_8", 0L, false)));
-        allCards.add(new BlackJackCard(9, Emoji.fromCustom("diamond_9", 0L, false)));
-        allCards.add(new BlackJackCard(10, Emoji.fromCustom("diamond_10", 0L, false)));
-        allCards.add(new BlackJackCard(10, Emoji.fromCustom("diamond_j", 0L, false)));
-        allCards.add(new BlackJackCard(10, Emoji.fromCustom("diamond_q", 0L, false)));
-        allCards.add(new BlackJackCard(10, Emoji.fromCustom("diamond_k", 0L, false)));
-        allCards.add(new BlackJackCard(11, Emoji.fromCustom("diamond_ace", 0L, false)));
+        allCards.add(new BlackJackCard(2, Emoji.fromCustom("diamond_2", 1025032613167124540L, false)));
+        allCards.add(new BlackJackCard(3, Emoji.fromCustom("diamond_3", 1025032615151009792L, false)));
+        allCards.add(new BlackJackCard(4, Emoji.fromCustom("diamond_4", 1025032616967151680L, false)));
+        allCards.add(new BlackJackCard(5, Emoji.fromCustom("diamond_5", 1025032618942668882L, false)));
+        allCards.add(new BlackJackCard(6, Emoji.fromCustom("diamond_6", 1025032620762992720L, false)));
+        allCards.add(new BlackJackCard(7, Emoji.fromCustom("diamond_7", 1025032622415564800L, false)));
+        allCards.add(new BlackJackCard(8, Emoji.fromCustom("diamond_8", 1025032624152006868L, false)));
+        allCards.add(new BlackJackCard(9, Emoji.fromCustom("diamond_9", 1025032626123317329L, false)));
+        allCards.add(new BlackJackCard(10, Emoji.fromCustom("diamond_10", 1025032628023336971L, false)));
+        allCards.add(new BlackJackCard(10, Emoji.fromCustom("diamond_j", 1025032632171511930L, false)));
+        allCards.add(new BlackJackCard(10, Emoji.fromCustom("diamond_q", 1025032636143509544L, false)));
+        allCards.add(new BlackJackCard(10, Emoji.fromCustom("diamond_k", 1025032620762992720L, false)));
+        allCards.add(new BlackJackCard(11, Emoji.fromCustom("diamond_ace", 1025032629868822540L, false)));
     }
 
     /**
