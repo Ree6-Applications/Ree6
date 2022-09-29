@@ -1673,7 +1673,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public Statistics getStatisticsOfToday() {
         LocalDate today = LocalDate.now();
-        return (Statistics) getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ? AND MONTH = ? AND YEAR = ?", today.getDayOfMonth(), today.getMonthValue(), today.getYear()).getEntity();
+        return getStatistics(today.getDayOfMonth(), today.getMonthValue(), today.getYear());
     }
 
     /**
@@ -1685,7 +1685,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Statistics.
      */
     public Statistics getStatistics(int day, int month, int year) {
-        return (Statistics) getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ? AND MONTH = ? AND YEAR = ?", day, month, year).getEntity();
+        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ? AND MONTH = ? AND YEAR = ?", day, month, year);
+
+        if (!sqlResponse.isSuccess()) {
+            return new Statistics(day, month, year, new JsonObject());
+        }
+
+        return (Statistics) sqlResponse.getEntity();
     }
 
     /**
@@ -1695,7 +1701,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return all {@link Statistics} of the given month.
      */
     public List<Statistics> getStatisticsOfMonth(int month) {
-        return getEntity(Statistics.class, "SELECT * FROM Statistics WHERE MONTH=?", month).getEntities().stream().map(Statistics.class::cast).toList();
+        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE MONTH = ?", month);
+
+        if (sqlResponse.isSuccess()) {
+            return sqlResponse.getEntities().stream().map(Statistics.class::cast).toList();
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -1713,6 +1725,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             updateEntity(statistics, newStatistics, true);
         } else {
             Statistics statistics = new Statistics(today.getDayOfMonth(), today.getMonthValue(), today.getYear(), statisticObject);
+            saveEntity(statistics);
         }
     }
 
