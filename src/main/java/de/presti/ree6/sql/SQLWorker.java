@@ -1657,6 +1657,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (!hasSetting(guildId, "logging_rolepermission")) setSetting(guildId, "logging_rolepermission", true);
         if (!hasSetting(guildId, "logging_rolecolor")) setSetting(guildId, "logging_rolecolor", true);
         if (!hasSetting(guildId, "logging_messagedelete")) setSetting(guildId, "logging_messagedelete", true);
+        if (!hasSetting(guildId, "logging_timeout")) setSetting(guildId, "logging_timeout", true);
     }
 
     //endregion
@@ -1672,7 +1673,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public Statistics getStatisticsOfToday() {
         LocalDate today = LocalDate.now();
-        return (Statistics) getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ?, MONTH = ?, YEAR = ?", today.getDayOfMonth(), today.getMonthValue(), today.getYear()).getEntity();
+        return getStatistics(today.getDayOfMonth(), today.getMonthValue(), today.getYear());
     }
 
     /**
@@ -1684,7 +1685,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Statistics.
      */
     public Statistics getStatistics(int day, int month, int year) {
-        return (Statistics) getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ?, MONTH = ?, YEAR = ?", day, month, year).getEntity();
+        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ? AND MONTH = ? AND YEAR = ?", day, month, year);
+
+        if (!sqlResponse.isSuccess()) {
+            return new Statistics(day, month, year, new JsonObject());
+        }
+
+        return (Statistics) sqlResponse.getEntity();
     }
 
     /**
@@ -1694,7 +1701,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return all {@link Statistics} of the given month.
      */
     public List<Statistics> getStatisticsOfMonth(int month) {
-        return getEntity(Statistics.class, "SELECT * FROM Statistics WHERE MONTH=?", month).getEntities().stream().map(Statistics.class::cast).toList();
+        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE MONTH = ?", month);
+
+        if (sqlResponse.isSuccess()) {
+            return sqlResponse.getEntities().stream().map(Statistics.class::cast).toList();
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -1704,7 +1717,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void updateStatistic(JsonObject statisticObject) {
         LocalDate today = LocalDate.now();
-        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ?, MONTH = ?, YEAR = ?", today.getDayOfMonth(), today.getMonthValue(), today.getYear());
+        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ? AND MONTH = ? AND YEAR = ?", today.getDayOfMonth(), today.getMonthValue(), today.getYear());
         if (sqlResponse.isSuccess()) {
             Statistics statistics = (Statistics) sqlResponse.getEntity();
             Statistics newStatistics = (Statistics) SQLUtil.cloneEntity(Statistics.class, statistics);
@@ -1712,6 +1725,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             updateEntity(statistics, newStatistics, true);
         } else {
             Statistics statistics = new Statistics(today.getDayOfMonth(), today.getMonthValue(), today.getYear(), statisticObject);
+            saveEntity(statistics);
         }
     }
 
@@ -1798,7 +1812,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         JsonObject commandStats = statistics != null && jsonObject.has("command") ? jsonObject.getAsJsonObject("command") : new JsonObject();
 
         if (commandStats.has(command) && commandStats.get(command).isJsonPrimitive()) {
-            commandStats.addProperty(command, commandStats.getAsJsonPrimitive(command).getAsInt());
+            commandStats.addProperty(command, commandStats.getAsJsonPrimitive(command).getAsInt() + 1);
         } else {
             commandStats.addProperty(command, 1);
         }

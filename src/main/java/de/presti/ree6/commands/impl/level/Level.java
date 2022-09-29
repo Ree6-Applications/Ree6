@@ -90,7 +90,6 @@ Level implements ICommand {
                 MessageCreateBuilder createBuilder = new MessageCreateBuilder();
                 createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createRankImage(userLevel), "rank.png"));
 
-                commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
                 commandEvent.getInteractionHook().sendMessage(createBuilder.build()).queue();
             } catch (Exception ignore) {
                 Main.getInstance().getCommandManager().sendMessage("Couldn't generated Rank Image!", commandEvent.getChannel(), commandEvent.getInteractionHook());

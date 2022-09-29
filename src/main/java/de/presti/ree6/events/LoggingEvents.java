@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateTimeOutEvent;
 import net.dv8tion.jda.api.events.guild.update.GuildUpdateVanityCodeEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
@@ -46,6 +47,7 @@ import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.role.update.*;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,6 +58,89 @@ import java.time.Instant;
 import java.util.ArrayList;
 
 public class LoggingEvents extends ListenerAdapter {
+
+    //region Guild
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onGuildUpdateVanityCode(@NotNull GuildUpdateVanityCodeEvent event) {
+        super.onGuildUpdateVanityCode(event);
+        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Invite.class, "SELECT * FROM Invites WHERE GID = ? AND CODE = ?", event.getGuild().getId(), event.getOldVanityCode());
+
+        if (sqlResponse.isSuccess()) {
+            Invite invite = (Invite) sqlResponse.getEntity();
+            Invite newInvite = invite;
+            newInvite.setCode(event.getNewVanityCode());
+            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(invite, newInvite, false);
+        } else {
+            event.getGuild().retrieveVanityInvite().onErrorMap(throwable -> null).queue(vanityInvite ->
+                    Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(new Invite(event.getGuild().getId(), event.getGuild().getOwnerId(), vanityInvite.getUses(), event.getNewVanityCode())));
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onGuildBan(@Nonnull GuildBanEvent event) {
+
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
+                !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_memberban").getBooleanValue())
+            return;
+
+        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setUsername("Ree6-Logs");
+
+        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+        we.setColor(Color.BLACK.getRGB());
+        we.setThumbnailUrl(event.getUser().getAvatarUrl());
+        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
+        we.setDescription(":airplane_departure: " + event.getUser().getAsMention() + " **banned.**");
+
+        wm.addEmbeds(we.build());
+
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onGuildUnban(@Nonnull GuildUnbanEvent event) {
+
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
+                !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_memberunban").getBooleanValue())
+            return;
+
+        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setUsername("Ree6-Logs");
+
+        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+        we.setColor(Color.BLACK.getRGB());
+        we.setThumbnailUrl(event.getUser().getAvatarUrl());
+        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
+        we.setDescription(":airplane_arriving: " + event.getUser().getAsMention() + " **unbanned.**");
+
+        wm.addEmbeds(we.build());
+
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_UNBAN, event.getUser()));
+    }
+
+    //endregion
+
+    //region Member
 
     /**
      * @inheritDoc
@@ -135,25 +220,6 @@ public class LoggingEvents extends ListenerAdapter {
      * @inheritDoc
      */
     @Override
-    public void onGuildUpdateVanityCode(@NotNull GuildUpdateVanityCodeEvent event) {
-        super.onGuildUpdateVanityCode(event);
-        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Invite.class, "SELECT * FROM Invite WHERE GID = ? AND CODE = ?", event.getGuild().getId(), event.getOldVanityCode());
-
-        if (sqlResponse.isSuccess()) {
-            Invite invite = (Invite) sqlResponse.getEntity();
-            Invite newInvite = invite;
-            newInvite.setCode(event.getNewVanityCode());
-            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(invite, newInvite, false);
-        } else {
-            event.getGuild().retrieveVanityInvite().onErrorMap(throwable -> null).queue(vanityInvite ->
-                    Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(new Invite(event.getGuild().getId(), event.getGuild().getOwnerId(), vanityInvite.getUses(), event.getNewVanityCode())));
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
     public void onGuildMemberRemove(@Nonnull GuildMemberRemoveEvent event) {
 
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
@@ -188,10 +254,12 @@ public class LoggingEvents extends ListenerAdapter {
      * @inheritDoc
      */
     @Override
-    public void onGuildBan(@Nonnull GuildBanEvent event) {
+    public void onGuildMemberUpdateTimeOut(@NotNull GuildMemberUpdateTimeOutEvent event) {
+        super.onGuildMemberUpdateTimeOut(event);
+
 
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
-                !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_memberban").getBooleanValue())
+                !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_timeout").getBooleanValue())
             return;
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
@@ -205,43 +273,28 @@ public class LoggingEvents extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
-        we.setDescription(":airplane_departure: " + event.getUser().getAsMention() + " **banned.**");
+        AuditLogPaginationAction paginationAction = event.getGuild().retrieveAuditLogs().user(event.getUser()).type(ActionType.MEMBER_UPDATE).limit(1);
+        if (event.getOldTimeOutEnd() == null) {
+            if (paginationAction.isEmpty()) {
+                we.setDescription("The User " + event.getUser().getAsMention() + " received a timeout." +
+                        "\n**Time:** " + TimeFormat.DATE_TIME_SHORT.format(event.getNewTimeOutEnd().toEpochSecond()));
+            } else {
+                AuditLogEntry auditLogEntry = paginationAction.getFirst();
+                we.setDescription("The User " + event.getUser().getAsMention() + " received a timeout." +
+                        "\n**Reason:** " + (auditLogEntry.getReason() == null ? "Couldn't find reason" : auditLogEntry.getReason()) +
+                        "\n**Moderator:** " + (auditLogEntry.getUser() != null ? auditLogEntry.getUser().getAsMention() : "Unknown") +
+                        "\n**Time:** " + TimeFormat.DATE_TIME_SHORT.format(event.getNewTimeOutEnd().toEpochSecond()));
+            }
+        } else {
+            we.setDescription("The User " + event.getUser().getAsMention() + " finished their timeout." +
+                    "\n**Time:** " + TimeFormat.DATE_TIME_SHORT.format(event.getOldTimeOutEnd().toEpochSecond()));
+        }
 
         wm.addEmbeds(we.build());
 
         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
+        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ELSE, event.getMember()));
     }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onGuildUnban(@Nonnull GuildUnbanEvent event) {
-
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
-                !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_memberunban").getBooleanValue())
-            return;
-
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6-Logs");
-
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setThumbnailUrl(event.getUser().getAvatarUrl());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
-        we.setTimestamp(Instant.now());
-        we.setDescription(":airplane_arriving: " + event.getUser().getAsMention() + " **unbanned.**");
-
-        wm.addEmbeds(we.build());
-
-        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_UNBAN, event.getUser()));
-    }
-
 
     /**
      * @inheritDoc
@@ -277,6 +330,10 @@ public class LoggingEvents extends ListenerAdapter {
         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
         Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.NICKNAME_CHANGE, event.getEntity(), event.getOldNickname(), event.getNewNickname()));
     }
+
+    //endregion
+
+    //region Voice
 
     /**
      * @inheritDoc
@@ -363,76 +420,9 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_LEAVE, event.getEntity(), event.getChannelLeft()));
     }
 
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {
+    //endregion
 
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
-                !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_roleadd").getBooleanValue())
-            return;
-
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6-Logs");
-
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setThumbnailUrl(event.getUser().getAvatarUrl());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
-        we.setTimestamp(Instant.now());
-
-        StringBuilder finalString = new StringBuilder();
-
-        for (Role r : event.getRoles()) {
-            finalString.append(":white_check_mark: ").append(r.getName()).append("\n");
-        }
-
-        we.setDescription(":writing_hand: " + event.getMember().getUser().getAsMention() + " **has been updated.**");
-        we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString.toString()));
-        wm.addEmbeds(we.build());
-
-        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), null, new ArrayList<>(event.getRoles())));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
-
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) || !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_roleremove").getBooleanValue())
-            return;
-
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6-Logs");
-
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setThumbnailUrl(event.getUser().getAvatarUrl());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
-        we.setTimestamp(Instant.now());
-
-        StringBuilder finalString = new StringBuilder();
-        for (Role r : event.getRoles()) {
-            finalString.append(":no_entry: ").append(r.getName()).append("\n");
-        }
-
-        we.setDescription(":writing_hand: " + event.getMember().getUser().getAsMention() + " **has been updated.**");
-        we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString.toString()));
-
-        wm.addEmbeds(we.build());
-
-        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), new ArrayList<>(event.getRoles()), null));
-    }
+    //region Channel
 
     /**
      * @inheritDoc
@@ -513,6 +503,81 @@ public class LoggingEvents extends ListenerAdapter {
             Main.getInstance().getLoggerQueue().add(new LogMessage(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.CHANNELDATA_CHANGE));
 
         }
+    }
+
+    //endregion
+
+    //region Role
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {
+
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
+                !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_roleadd").getBooleanValue())
+            return;
+
+        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setUsername("Ree6-Logs");
+
+        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+        we.setColor(Color.BLACK.getRGB());
+        we.setThumbnailUrl(event.getUser().getAvatarUrl());
+        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
+
+        StringBuilder finalString = new StringBuilder();
+
+        for (Role r : event.getRoles()) {
+            finalString.append(":white_check_mark: ").append(r.getName()).append("\n");
+        }
+
+        we.setDescription(":writing_hand: " + event.getMember().getUser().getAsMention() + " **has been updated.**");
+        we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString.toString()));
+        wm.addEmbeds(we.build());
+
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), null, new ArrayList<>(event.getRoles())));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
+
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) || !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_roleremove").getBooleanValue())
+            return;
+
+        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setUsername("Ree6-Logs");
+
+        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+        we.setColor(Color.BLACK.getRGB());
+        we.setThumbnailUrl(event.getUser().getAvatarUrl());
+        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
+        we.setTimestamp(Instant.now());
+
+        StringBuilder finalString = new StringBuilder();
+        for (Role r : event.getRoles()) {
+            finalString.append(":no_entry: ").append(r.getName()).append("\n");
+        }
+
+        we.setDescription(":writing_hand: " + event.getMember().getUser().getAsMention() + " **has been updated.**");
+        we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString.toString()));
+
+        wm.addEmbeds(we.build());
+
+        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), new ArrayList<>(event.getRoles()), null));
     }
 
     /**
@@ -741,6 +806,10 @@ public class LoggingEvents extends ListenerAdapter {
         Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), (event.getOldColor() != null ? event.getOldColor() : Color.gray), (event.getNewColor() != null ? event.getNewColor() : Color.gray)));
     }
 
+    //endregion
+
+    //region Message
+
     /**
      * @inheritDoc
      */
@@ -790,7 +859,8 @@ public class LoggingEvents extends ListenerAdapter {
             we.setDescription(":wastebasket: **Message of " + user.getAsMention() + " in " + event.getChannel().getAsMention() + " has been deleted.**\n" +
                     (message != null ? message.getContentRaw().length() >= 650 ? "Message is too long to display!" : message.getContentRaw() : ""));
 
-            if (message != null && message.getContentRaw().length() >= 650) wm.addFile("message.txt", message.getContentRaw().getBytes(StandardCharsets.UTF_8));
+            if (message != null && message.getContentRaw().length() >= 650)
+                wm.addFile("message.txt", message.getContentRaw().getBytes(StandardCharsets.UTF_8));
 
             wm.addEmbeds(we.build());
 
@@ -798,6 +868,10 @@ public class LoggingEvents extends ListenerAdapter {
             Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MESSAGE_DELETE, user));
         }
     }
+
+    //endregion
+
+    //region Invite
 
     /**
      * @inheritDoc
@@ -828,4 +902,5 @@ public class LoggingEvents extends ListenerAdapter {
         InviteContainerManager.removeInvite(event.getGuild().getId(), event.getCode());
     }
 
+    //endregion
 }
