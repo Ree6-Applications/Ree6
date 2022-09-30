@@ -290,7 +290,8 @@ public class Main {
                 ArrayUtil.messageIDwithMessage.clear();
                 ArrayUtil.messageIDwithUser.clear();
 
-                BotWorker.setActivity("ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
+                BotWorker.getShardManager().getShards().forEach(jda ->
+                        BotWorker.setActivity(jda, "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING));
 
                 instance.logger.info("[Stats] ");
                 instance.logger.info("[Stats] Today's Stats:");
