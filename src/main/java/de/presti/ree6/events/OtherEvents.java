@@ -864,19 +864,6 @@ public class OtherEvents extends ListenerAdapter {
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupWelcomeMenu", "Select your Action", 1, 1, false, optionList)).queue();
                     }
 
-                    case "news" -> {
-                        optionList.add(SelectOption.of("Setup", "newsSetup"));
-
-                        if (Main.getInstance().getSqlConnector().getSqlWorker().isNewsSetup(event.getGuild().getId()))
-                            optionList.add(SelectOption.of("Delete", "newsDelete"));
-
-                        optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
-
-                        embedBuilder.setDescription("You can set up our own Ree6-News!\nBy setting up Ree6-News on a specific channel you will get a Message in the given Channel, when ever Ree6 gets an update!");
-
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupNewsMenu", "Select your Action", 1, 1, false, optionList)).queue();
-                    }
-
                     case "autorole" -> {
                         embedBuilder.setDescription("You can set up our own Autorole-System!\nYou can select Roles that Users should get upon joining the Server!");
 
@@ -886,7 +873,7 @@ public class OtherEvents extends ListenerAdapter {
                     case "tempvoice" -> {
                         optionList.add(SelectOption.of("Setup", "tempVoiceSetup"));
 
-                        if (Main.getInstance().getSqlConnector().getSqlWorker().isNewsSetup(event.getGuild().getId()))
+                        if (Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID=?", event.getGuild().getId()).isSuccess())
                             optionList.add(SelectOption.of("Delete", "tempVoiceDelete"));
 
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
@@ -1220,62 +1207,6 @@ public class OtherEvents extends ListenerAdapter {
 
             }
 
-            case "setupNewsMenu" -> {
-
-                if (checkPerms(event.getMember(), event.getChannel())) {
-                    return;
-                }
-
-                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
-
-                List<SelectOption> optionList = new ArrayList<>();
-
-                switch (event.getInteraction().getValues().get(0)) {
-
-                    case "backToSetupMenu" -> sendDefaultChoice(event);
-
-                    case "newsSetup" -> {
-                        for (TextChannel channel : event.getGuild().getTextChannels()) {
-                            optionList.add(SelectOption.of(channel.getName(), channel.getId()));
-                        }
-
-                        embedBuilder.setDescription("Which Channel do you want to use as News-Channel?");
-
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupNewsChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
-                    }
-
-                    default -> {
-                        if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
-                            return;
-
-                        embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
-                        event.editMessageEmbeds(embedBuilder.build()).queue();
-                    }
-                }
-            }
-
-            case "setupNewsChannel" -> {
-                if (checkPerms(event.getMember(), event.getChannel())) {
-                    return;
-                }
-
-                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
-
-                TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getValues().get(0));
-
-                if (textChannel != null) {
-                    textChannel.createWebhook("Ree6-News").queue(webhook -> {
-                        Main.getInstance().getSqlConnector().getSqlWorker().setNewsWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
-                        embedBuilder.setDescription("Successfully changed the News-Channel, nice work!");
-                        embedBuilder.setColor(Color.GREEN);
-                        event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
-                    });
-                } else {
-                    embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
-                    event.editMessageEmbeds(embedBuilder.build()).queue();
-                }
-            }
-
             default -> {
                 if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null) return;
 
@@ -1298,7 +1229,6 @@ public class OtherEvents extends ListenerAdapter {
         List<SelectOption> optionList = new ArrayList<>();
         optionList.add(SelectOption.of("Audit-Logging", "log"));
         optionList.add(SelectOption.of("Welcome-channel", "welcome"));
-        optionList.add(SelectOption.of("News-channel", "news"));
         optionList.add(SelectOption.of("Autorole", "autorole"));
         optionList.add(SelectOption.of("Temporal-Voice", "tempvoice"));
         optionList.add(SelectOption.of("Statistics", "statistics"));
