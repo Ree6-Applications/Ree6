@@ -261,10 +261,10 @@ public class Blackjack implements IGame {
 
     /**
      * Hit the player and give him a new card.
-     * @param player The player who hit.
-     * @param playerTwo The other player.
+     * @param currentPlayer The player who hit.
+     * @param nextPlayer The other player.
      */
-    public void hit(BlackJackPlayer player, BlackJackPlayer playerTwo) {
+    public void hit(BlackJackPlayer currentPlayer, BlackJackPlayer nextPlayer) {
         standUsed = false;
 
         BlackJackCard card = getRandomCard();
@@ -274,46 +274,46 @@ public class Blackjack implements IGame {
             return;
         }
 
-        player.getHand().add(card);
+        currentPlayer.getHand().add(card);
 
-        if (player.getHandValue(true) > 21) {
-            stopGame(player, playerTwo);
+        if (currentPlayer.getHandValue(true) > 21) {
+            stopGame(currentPlayer, nextPlayer);
         } else {
             MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
 
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("Blackjack");
             embedBuilder.setColor(BotWorker.randomEmbedColor());
-            embedBuilder.setAuthor(player.getRelatedUser().getAsTag(), null, player.getRelatedUser().getAvatarUrl());
-            embedBuilder.addField("**Your Cards**", player.getHandAsString(true) + "\n\nYour Value: " + player.getHandValue(true), true);
-            embedBuilder.addField(playerTwo.getRelatedUser().getAsTag() + "s **Cards**", playerTwo.getHandAsString(false) + "\n\nTheir Value: " + playerTwo.getHandValue(false), true);
+            embedBuilder.setAuthor(currentPlayer.getRelatedUser().getAsTag(), null, currentPlayer.getRelatedUser().getAvatarUrl());
+            embedBuilder.addField("**Your Cards**", currentPlayer.getHandAsString(true) + "\n\nYour Value: " + currentPlayer.getHandValue(true), true);
+            embedBuilder.addField(nextPlayer.getRelatedUser().getAsTag() + "s **Cards**", nextPlayer.getHandAsString(false) + "\n\nTheir Value: " + nextPlayer.getHandValue(false), true);
 
             embedBuilder.setFooter("Wait for your turn!");
 
             messageEditBuilder.setEmbeds(embedBuilder.build());
             messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"));
 
-            player.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
+            currentPlayer.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
 
-            embedBuilder.setAuthor(playerTwo.getRelatedUser().getAsTag(), null, playerTwo.getRelatedUser().getAvatarUrl());
+            embedBuilder.setAuthor(nextPlayer.getRelatedUser().getAsTag(), null, nextPlayer.getRelatedUser().getAvatarUrl());
             embedBuilder.clearFields();
-            embedBuilder.addField("**Your Cards**", playerTwo.getHandAsString(true) + "\n\nYour Value: " + playerTwo.getHandValue(true), true);
-            embedBuilder.addField(player.getRelatedUser().getAsTag() + "s **Cards**", player.getHandAsString(false) + "\n\nTheir Value: " + player.getHandValue(false), true);
+            embedBuilder.addField("**Your Cards**", nextPlayer.getHandAsString(true) + "\n\nYour Value: " + nextPlayer.getHandValue(true), true);
+            embedBuilder.addField(currentPlayer.getRelatedUser().getAsTag() + "s **Cards**", currentPlayer.getHandAsString(false) + "\n\nTheir Value: " + currentPlayer.getHandValue(false), true);
             embedBuilder.setFooter("It's your turn!");
             messageEditBuilder.setEmbeds(embedBuilder.build());
-            playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
-            currentPlayer = playerTwo;
+            nextPlayer.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
+            this.currentPlayer = nextPlayer;
         }
     }
 
     /**
      * Stand the player and let the other player play.
-     * @param player The player who stand.
-     * @param playerTwo The other player.
+     * @param currentPlayer The player who stand.
+     * @param nextPlayer The other player.
      */
-    public void stand(BlackJackPlayer player, BlackJackPlayer playerTwo) {
+    public void stand(BlackJackPlayer currentPlayer, BlackJackPlayer nextPlayer) {
         if (standUsed) {
-            stopGame(player, playerTwo);
+            stopGame(currentPlayer, nextPlayer);
         } else {
             standUsed = true;
         }
@@ -323,33 +323,33 @@ public class Blackjack implements IGame {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Blackjack");
         embedBuilder.setColor(BotWorker.randomEmbedColor());
-        embedBuilder.setAuthor(player.getRelatedUser().getAsTag(), null, player.getRelatedUser().getAvatarUrl());
-        embedBuilder.addField("**Your Cards**", player.getHandAsString(true) + "\n\nYour Value: " + player.getHandValue(true), true);
-        embedBuilder.addField(playerTwo.getRelatedUser().getAsTag() + "s **Cards**", playerTwo.getHandAsString(false) + "\n\nTheir Value: " + playerTwo.getHandValue(false), true);
+        embedBuilder.setAuthor(currentPlayer.getRelatedUser().getAsTag(), null, currentPlayer.getRelatedUser().getAvatarUrl());
+        embedBuilder.addField("**Your Cards**", currentPlayer.getHandAsString(true) + "\n\nYour Value: " + currentPlayer.getHandValue(true), true);
+        embedBuilder.addField(nextPlayer.getRelatedUser().getAsTag() + "s **Cards**", nextPlayer.getHandAsString(false) + "\n\nTheir Value: " + nextPlayer.getHandValue(false), true);
 
         embedBuilder.setFooter("Wait for your turn!");
 
         messageEditBuilder.setEmbeds(embedBuilder.build());
         messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", "Hit"), Button.success("game_blackjack_stand", "Stand"));
 
-        player.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
+        currentPlayer.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
 
-        embedBuilder.setAuthor(playerTwo.getRelatedUser().getAsTag(), null, playerTwo.getRelatedUser().getAvatarUrl());
+        embedBuilder.setAuthor(nextPlayer.getRelatedUser().getAsTag(), null, nextPlayer.getRelatedUser().getAvatarUrl());
         embedBuilder.clearFields();
-        embedBuilder.addField("**Your Cards**", playerTwo.getHandAsString(true) + "\n\nYour Value: " + playerTwo.getHandValue(true), true);
-        embedBuilder.addField(player.getRelatedUser().getAsTag() + "s **Cards**", player.getHandAsString(false) + "\n\nTheir Value: " + player.getHandValue(false), true);
+        embedBuilder.addField("**Your Cards**", nextPlayer.getHandAsString(true) + "\n\nYour Value: " + nextPlayer.getHandValue(true), true);
+        embedBuilder.addField(currentPlayer.getRelatedUser().getAsTag() + "s **Cards**", currentPlayer.getHandAsString(false) + "\n\nTheir Value: " + currentPlayer.getHandValue(false), true);
         embedBuilder.setFooter("It's your turn!");
         messageEditBuilder.setEmbeds(embedBuilder.build());
-        playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
-        currentPlayer = playerTwo;
+        nextPlayer.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
+        this.currentPlayer = nextPlayer;
     }
 
     /**
      * Stop the game and check who won.
-     * @param player The player who won.
-     * @param playerTwo The other player.
+     * @param currentPlayer The player who won.
+     * @param nextPlayer The other player.
      */
-    public void stopGame(BlackJackPlayer player, BlackJackPlayer playerTwo) {
+    public void stopGame(BlackJackPlayer currentPlayer, BlackJackPlayer nextPlayer) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Blackjack");
@@ -358,13 +358,13 @@ public class Blackjack implements IGame {
 
         embedBuilder.setDescription("The Game has ended!\nThe Result is: " + (winner == null ? "No one because its a Draw" : winner.getRelatedUser().getAsTag() + " has won!"));
 
-        embedBuilder.addField(player.getRelatedUser().getAsTag()+ "s **Cards**", player.getHandAsString(true) + "\n\nValue: " + player.getHandValue(true), true);
-        embedBuilder.addField(playerTwo.getRelatedUser().getAsTag() + "s **Cards**", playerTwo.getHandAsString(true) + "\n\nValue: " + playerTwo.getHandValue(true), true);
+        embedBuilder.addField(currentPlayer.getRelatedUser().getAsTag()+ "s **Cards**", currentPlayer.getHandAsString(true) + "\n\nValue: " + currentPlayer.getHandValue(true), true);
+        embedBuilder.addField(nextPlayer.getRelatedUser().getAsTag() + "s **Cards**", nextPlayer.getHandAsString(true) + "\n\nValue: " + nextPlayer.getHandValue(true), true);
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
         messageCreateBuilder.setComponents(new ArrayList<>());
-        player.getInteractionHook().editOriginalComponents(new ArrayList<>()).queue();
-        playerTwo.getInteractionHook().editOriginalComponents(new ArrayList<>()).queue();
+        currentPlayer.getInteractionHook().editOriginalComponents(new ArrayList<>()).queue();
+        nextPlayer.getInteractionHook().editOriginalComponents(new ArrayList<>()).queue();
 
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), session.getChannel());
         stopGame();
