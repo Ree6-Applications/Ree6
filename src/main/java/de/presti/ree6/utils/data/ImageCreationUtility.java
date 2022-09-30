@@ -64,11 +64,11 @@ public class ImageCreationUtility {
 
         double progress;
 
-            formattedExperience = userLevel.getFormattedExperience();
-            formattedMaxExperience = userLevel.getFormattedExperience(userLevel.getTotalExperienceForNextLevel());
-            level = userLevel.getLevel() + "";
-            rank = userLevel.getRank() + "";
-            progress = userLevel.getProgress();
+        formattedExperience = userLevel.getFormattedExperience();
+        formattedMaxExperience = userLevel.getFormattedExperience(userLevel.getTotalExperienceForNextLevel());
+        level = userLevel.getLevel() + "";
+        rank = userLevel.getRank() + "";
+        progress = userLevel.getProgress();
 
         Main.getInstance().getAnalyticsLogger().debug("Starting actual creation. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -221,6 +221,15 @@ public class ImageCreationUtility {
         return bytes;
     }
 
+    /**
+     * This method is used to create a Join Image.
+     *
+     * @param user         The User who joined the Guild.
+     * @param messageImage The Image of the Message.
+     * @param messageText  The Text of the Message.
+     * @return The Image as an Array of Bytes.
+     * @throws IOException If an error occurs while creating the Image.
+     */
     public static byte[] createJoinImage(User user, String messageImage, String messageText) throws IOException {
         long start = System.currentTimeMillis();
         long actionPerformance = System.currentTimeMillis();
@@ -264,6 +273,25 @@ public class ImageCreationUtility {
         graphics2D.drawImage(avatar, backgroundImage.getWidth() / 2 - 250, backgroundImage.getHeight() / 2 - 375, 500, 500, null);
         Main.getInstance().getAnalyticsLogger().debug("Finished drawing Avatar Image on Base Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
+
+        Font verdana40 = new Font("Verdana", Font.PLAIN, 40);
+
+        Main.getInstance().getAnalyticsLogger().debug("Finished creating Fonts. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
+        String username = new String(user.getName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+
+        if (username.length() > 16) {
+            username = username.substring(0, 15);
+        }
+
+        Main.getInstance().getAnalyticsLogger().debug("Finished substring on Username. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
+        graphics2D.setFont(verdana40);
+        graphics2D.drawString(username,
+                backgroundImage.getWidth() / 2 - (graphics2D.getFontMetrics(verdana40).stringWidth(username) / 2),
+                backgroundImage.getWidth() / 2 - graphics2D.getFontMetrics(verdana40).getHeight());
 
         // Close the Graphics2D instance.
         graphics2D.dispose();
@@ -394,11 +422,12 @@ public class ImageCreationUtility {
     /**
      * Resizes an image to an absolute width and height (the image may not be
      * proportional)
-     * @param inputImage The original image
-     * @param scaledWidth absolute width in pixels
+     *
+     * @param inputImage   The original image
+     * @param scaledWidth  absolute width in pixels
      * @param scaledHeight absolute height in pixels
      */
-    public static BufferedImage resize(BufferedImage inputImage, int scaledWidth, int scaledHeight){
+    public static BufferedImage resize(BufferedImage inputImage, int scaledWidth, int scaledHeight) {
 
         // creates output image
         BufferedImage outputImage = new BufferedImage(scaledWidth,
