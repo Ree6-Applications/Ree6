@@ -4,7 +4,6 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
-import de.presti.ree6.commands.impl.mod.Suggestion;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.entities.SQLResponse;
 import de.presti.ree6.sql.base.utils.SQLUtil;
@@ -376,10 +375,9 @@ public class OtherEvents extends ListenerAdapter {
         super.onButtonInteraction(event);
 
         if (event.getComponentId().equals("re_suggestion")) {
-            event.deferReply(true).queue();
 
             Modal.Builder builder = Modal.create("re_suggestion_modal", "Suggestion");
-            builder.addActionRow(TextInput.create("re_suggestion_text", "Suggestion", TextInputStyle.PARAGRAPH).setRequired(true).build());
+            builder.addActionRow(TextInput.create("re_suggestion_text", "Suggestion", TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
             event.replyModal(builder.build()).queue();
         }
     }
@@ -393,7 +391,7 @@ public class OtherEvents extends ListenerAdapter {
 
         switch(event.getModalId()) {
             case "re_suggestion_modal" -> {
-                SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Suggestion.class, "SELECT * FROM Suggestions WHERE guildId = ?", event.getGuild().getIdLong());
+                SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Suggestions.class, "SELECT * FROM Suggestions WHERE guildId = ?", event.getGuild().getIdLong());
 
                 event.deferReply(true).queue();
 
@@ -407,13 +405,13 @@ public class OtherEvents extends ListenerAdapter {
                     EmbedBuilder embedBuilder = new EmbedBuilder();
                     embedBuilder.setTitle("Suggestion");
                     embedBuilder.setColor(Color.ORANGE);
-                    embedBuilder.setDescription(event.getValue("re_suggestion_text").getAsString());
+                    embedBuilder.setDescription("```" + event.getValue("re_suggestion_text").getAsString() + "```");
                     embedBuilder.setFooter("Suggestion by " + event.getUser().getAsTag(), event.getUser().getAvatarUrl());
                     embedBuilder.setTimestamp(Instant.now());
                     Main.getInstance().getCommandManager().sendMessage(embedBuilder, messageChannel);
-                    event.reply("Suggestion sent!").queue();
+                    Main.getInstance().getCommandManager().sendMessage("Suggestion sent!", null, event.getInteraction().getHook());
                 } else {
-                    event.reply("Looks like the Suggestion-System is not set up right?").queue();
+                    Main.getInstance().getCommandManager().sendMessage("Looks like the Suggestion-System is not set up right?", null,event.getInteraction().getHook());
                 }
             }
 
