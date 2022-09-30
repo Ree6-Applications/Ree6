@@ -6,6 +6,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -27,6 +28,11 @@ public class EmbedSender implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.isSlashCommand()) {
             commandEvent.reply("This command is only available as slash command!");
+            return;
+        }
+
+        if (!commandEvent.getMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+            commandEvent.reply("You do not have the permission to do that!");
             return;
         }
 

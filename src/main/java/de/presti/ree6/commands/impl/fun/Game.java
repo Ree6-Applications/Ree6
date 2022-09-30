@@ -6,7 +6,9 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.core.GameSession;
+import de.presti.ree6.game.core.base.GameInfo;
 import de.presti.ree6.game.core.base.GamePlayer;
+import de.presti.ree6.game.core.base.GameState;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -64,10 +66,23 @@ public class Game implements ICommand {
                     return;
                 }
 
+                if (gameSession.getGameState() != GameState.WAITING) {
+                    commandEvent.reply("This Game is already started!");
+                    return;
+                }
+
                 gameSession.getParticipants().add(commandEvent.getMember().getUser());
                 GamePlayer gamePlayer = new GamePlayer(commandEvent.getMember().getUser());
                 gamePlayer.setInteractionHook(commandEvent.getInteractionHook());
                 gameSession.getGame().joinGame(gamePlayer);
+            }
+
+            case "list" -> {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("Available Games:```");
+                GameManager.getGames().forEach(iGame -> stringBuilder.append("\n").append(iGame.getAnnotation(GameInfo.class).name()));
+                stringBuilder.append("```");
+                commandEvent.reply(stringBuilder.toString());
             }
 
             default -> commandEvent.reply("Unknown Action!");

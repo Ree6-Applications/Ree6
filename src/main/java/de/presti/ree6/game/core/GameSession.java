@@ -1,5 +1,6 @@
 package de.presti.ree6.game.core;
 
+import de.presti.ree6.game.core.base.GameState;
 import de.presti.ree6.game.core.base.IGame;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -20,6 +21,11 @@ public class GameSession {
      * The Game class.
      */
     IGame game;
+
+    /**
+     * The current Game-State.
+     */
+    GameState gameState = GameState.WAITING;
 
     /**
      * The Channel where the Game is played.
@@ -93,5 +99,21 @@ public class GameSession {
      */
     public ArrayList<User> getParticipants() {
         return participants;
+    }
+
+    /**
+     * Method used to get the current Game-State.
+     * @return The current Game-State.
+     */
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    /**
+     * Method used to set the current Game-State.
+     * @param gameState The current Game-State.
+     */
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
     }
 }

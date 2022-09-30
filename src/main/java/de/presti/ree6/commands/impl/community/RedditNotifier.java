@@ -47,7 +47,8 @@ public class RedditNotifier implements ICommand {
             }
         } else if(commandEvent.getArguments().length == 3) {
 
-            if (commandEvent.getMessage().getMentions().getChannels(TextChannel.class).isEmpty()) {
+            if (commandEvent.getMessage().getMentions().getChannels(TextChannel.class).isEmpty() ||
+                    !commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
                 Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "redditnotifier add/remove Subreddit #Channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 return;
             }

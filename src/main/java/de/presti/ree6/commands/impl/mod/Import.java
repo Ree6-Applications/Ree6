@@ -8,6 +8,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.utils.external.RequestUtility;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -24,6 +25,11 @@ public class Import implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
+        if (!commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+            commandEvent.reply("You do not have the permission to do that!");
+            return;
+        }
+
         if (commandEvent.isSlashCommand()) {
             OptionMapping optionMapping = commandEvent.getSlashCommandInteractionEvent().getOption("bot");
             commandEvent.getArguments()[0] = optionMapping.getAsString();
