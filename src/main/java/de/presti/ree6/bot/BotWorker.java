@@ -91,7 +91,9 @@ public class BotWorker {
     public static void setActivity(String message, Activity.ActivityType activityType) {
         // If the Bot Instance is null, if not set.
         if (shardManager != null)
-            shardManager.setActivity(Activity.of(activityType, message.replace("%shards%", shardManager.getShardsTotal() + "").replace("%guilds%", shardManager.getGuilds().size() + "")));
+            shardManager.setActivity(Activity.of(activityType,
+                    message.replace("%shards%", shardManager.getShardsTotal() + "")
+                            .replace("%guilds%", shardManager.getGuilds().size() + "")));
     }
 
     /**
@@ -103,7 +105,11 @@ public class BotWorker {
     public static void setActivity(JDA jda, String message, Activity.ActivityType activityType) {
         // If the Bot Instance is null, if not set.
         if (jda != null)
-            jda.getPresence().setActivity(Activity.of(activityType, message.replace("%shards%", shardManager.getShardsTotal() + "").replace("%shard%", "" + jda.getShardInfo().getShardId()).replace("%guilds%", shardManager.getGuilds().size() + "").replace("%shard_guilds%", jda.getGuilds().size() + "")));
+            jda.getPresence().setActivity(Activity.of(activityType,
+                    message.replace("%shards%", shardManager.getShardsTotal() + "")
+                            .replace("%shard%", "" + jda.getShardInfo().getShardId())
+                            .replace("%guilds%", shardManager.getGuilds().size() + "")
+                            .replace("%shard_guilds%", jda.getGuilds().size() + "")));
     }
 
     /**
