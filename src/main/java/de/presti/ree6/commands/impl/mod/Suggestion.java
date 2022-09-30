@@ -40,7 +40,7 @@ public class Suggestion implements ICommand {
 
         if (commandEvent.isSlashCommand()) {
             OptionMapping channel = commandEvent.getSlashCommandInteractionEvent().getOption("target");
-            OptionMapping messageChannel = commandEvent.getSlashCommandInteractionEvent().getOption("messageTarget");
+            OptionMapping messageChannel = commandEvent.getSlashCommandInteractionEvent().getOption("messagetarget");
 
             if (channel == null || messageChannel == null) {
                 commandEvent.reply("Please provide a channel!");
@@ -97,7 +97,7 @@ public class Suggestion implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("suggestion", "Setup the Suggestion-System!")
                 .addOptions(new OptionData(OptionType.CHANNEL, "target", "The channel the suggestions should be shown in.").setRequired(true))
-                .addOptions(new OptionData(OptionType.CHANNEL, "messageTarget", "The channel the bot should send the suggestion message to.").setRequired(true))
+                .addOptions(new OptionData(OptionType.CHANNEL, "messagetarget", "The channel the bot should send the suggestion message to.").setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
     }
 
