@@ -40,7 +40,6 @@ public class Setup implements ICommand {
             List<SelectOption> optionList = new ArrayList<>();
             optionList.add(SelectOption.of("Audit-Logging", "log"));
             optionList.add(SelectOption.of("Welcome-channel", "welcome"));
-            optionList.add(SelectOption.of("News-channel", "news"));
             optionList.add(SelectOption.of("Autorole", "autorole"));
             optionList.add(SelectOption.of("Temporal-Voice", "tempvoice"));
             optionList.add(SelectOption.of("Statistics", "statistics"));
