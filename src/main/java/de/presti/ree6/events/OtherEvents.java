@@ -4,9 +4,11 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
+import de.presti.ree6.commands.impl.mod.Suggestion;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.entities.SQLResponse;
 import de.presti.ree6.sql.base.utils.SQLUtil;
+import de.presti.ree6.sql.entities.Suggestions;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
@@ -37,6 +39,7 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -54,6 +57,7 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -367,6 +371,19 @@ public class OtherEvents extends ListenerAdapter {
         Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getChannel(), event);
     }
 
+    @Override
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
+        super.onButtonInteraction(event);
+
+        if (event.getComponentId().equals("re_suggestion")) {
+            event.deferReply(true).queue();
+
+            Modal.Builder builder = Modal.create("re_suggestion_modal", "Suggestion");
+            builder.addActionRow(TextInput.create("re_suggestion_text", "Suggestion", TextInputStyle.PARAGRAPH).setRequired(true).build());
+            event.replyModal(builder.build()).queue();
+        }
+    }
+
     /**
      * @inheritDoc
      */
@@ -375,6 +392,31 @@ public class OtherEvents extends ListenerAdapter {
         super.onModalInteraction(event);
 
         switch(event.getModalId()) {
+            case "re_suggestion_modal" -> {
+                SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Suggestion.class, "SELECT * FROM Suggestions WHERE guildId = ?", event.getGuild().getIdLong());
+
+                event.deferReply(true).queue();
+
+                if (sqlResponse.isSuccess()) {
+                    Suggestions suggestions = (Suggestions) sqlResponse.getEntity();
+
+                    MessageChannel messageChannel = (MessageChannel) event.getGuild().getGuildChannelById(suggestions.getChannelId());
+
+                    if (messageChannel == null) return;
+
+                    EmbedBuilder embedBuilder = new EmbedBuilder();
+                    embedBuilder.setTitle("Suggestion");
+                    embedBuilder.setColor(Color.ORANGE);
+                    embedBuilder.setDescription(event.getValue("re_suggestion_text").getAsString());
+                    embedBuilder.setFooter("Suggestion by " + event.getUser().getAsTag(), event.getUser().getAvatarUrl());
+                    embedBuilder.setTimestamp(Instant.now());
+                    Main.getInstance().getCommandManager().sendMessage(embedBuilder, messageChannel);
+                    event.reply("Suggestion sent!").queue();
+                } else {
+                    event.reply("Looks like the Suggestion-System is not set up right?").queue();
+                }
+            }
+
             case "statisticsSetupTwitchModal" -> {
                 ModalMapping modalMapping = event.getValue("twitchChannelName");
 
