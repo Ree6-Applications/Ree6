@@ -352,59 +352,6 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     //endregion
 
-    //region News
-
-    /**
-     * Get the NewsWebhooks data.
-     *
-     * @param guildId the ID of the Guild.
-     * @return {@link WebhookNews} with all the needed data.
-     */
-    public WebhookNews getNewsWebhook(String guildId) {
-        SQLResponse sqlResponse = getEntity(WebhookNews.class, "SELECT * FROM NewsWebhooks WHERE GID=?", guildId);
-        return sqlResponse.isSuccess() ? (WebhookNews) sqlResponse.getEntity() : null;
-    }
-
-    /**
-     * Set the NewsWebhooks in our Database.
-     *
-     * @param guildId   the ID of the Guild.
-     * @param webhookId the ID of the Webhook.
-     * @param authToken the Auth-token to verify the access.
-     */
-    public void setNewsWebhook(String guildId, String webhookId, String authToken) {
-
-        // Check if there is already a Webhook set.
-        if (isNewsSetup(guildId)) {
-            // Get the Guild from the ID.
-            Guild guild = BotWorker.getShardManager().getGuildById(guildId);
-
-            if (guild != null) {
-                Webhook webhookEntity = getNewsWebhook(guildId);
-                // Delete the existing Webhook.
-                guild.retrieveWebhooks().queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null).filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) && webhook.getToken().equalsIgnoreCase(webhookEntity.getToken())).forEach(webhook -> webhook.delete().queue()));
-            }
-
-            // Delete the entry.
-            sqlConnector.querySQL("DELETE FROM NewsWebhooks WHERE GID=?", guildId);
-        }
-
-        saveEntity(new WebhookNews(guildId, webhookId, authToken));
-
-    }
-
-    /**
-     * Check if the News Webhook has been set in our Database for this Server.
-     *
-     * @param guildId the ID of the Guild.
-     * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
-     */
-    public boolean isNewsSetup(String guildId) {
-        return getEntity(WebhookNews.class, "SELECT * FROM NewsWebhooks WHERE GID=?", guildId).isSuccess();
-    }
-
-    //endregion
-
     //region Twitch Notifier
 
     /**

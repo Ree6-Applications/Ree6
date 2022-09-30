@@ -3,6 +3,7 @@ package de.presti.ree6.events;
 import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.core.GameSession;
 import de.presti.ree6.game.core.base.GamePlayer;
+import de.presti.ree6.game.core.base.GameState;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
@@ -51,7 +52,7 @@ public class GameEvents extends ListenerAdapter {
             if (event.getComponentId().contains(":")) {
                 String gameIdentifier = event.getComponentId().split(":")[1];
                 GameSession gameSession = GameManager.getGameSession(gameIdentifier);
-                if (gameSession != null) {
+                if (gameSession != null && gameSession.getGameState() == GameState.WAITING) {
                     if (gameSession.getChannel().getId().equals(event.getChannel().getId())) {
                         if (gameSession.getParticipants().stream().anyMatch(user -> user.getId().equals(event.getUser().getId()))) {
                             gameSession.getGame().startGame();
@@ -65,7 +66,7 @@ public class GameEvents extends ListenerAdapter {
             if (event.getComponentId().contains(":")) {
                 String gameIdentifier = event.getComponentId().split(":")[1];
                 GameSession gameSession = GameManager.getGameSession(gameIdentifier);
-                if (gameSession != null) {
+                if (gameSession != null && gameSession.getGameState() == GameState.WAITING) {
                     if (gameSession.getChannel().getId().equals(event.getChannel().getId())) {
                         if (gameSession.getParticipants().stream().noneMatch(user -> user.getId().equals(event.getUser().getId()))) {
                             event.deferReply(true).queue(interactionHook -> {
