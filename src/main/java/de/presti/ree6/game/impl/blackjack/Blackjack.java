@@ -5,6 +5,7 @@ import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.core.GameSession;
 import de.presti.ree6.game.core.base.GameInfo;
 import de.presti.ree6.game.core.base.GamePlayer;
+import de.presti.ree6.game.core.base.GameState;
 import de.presti.ree6.game.core.base.IGame;
 import de.presti.ree6.game.impl.blackjack.entities.BlackJackCard;
 import de.presti.ree6.game.impl.blackjack.entities.BlackJackPlayer;
@@ -13,8 +14,6 @@ import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
@@ -96,15 +95,21 @@ public class Blackjack implements IGame {
      */
     @Override
     public void startGame() {
+        if (session.getGameState() == GameState.STARTED) {
+            return;
+        }
+
+        session.setGameState(GameState.STARTED);
+
         BlackJackCard card = getRandomCard();
 
         card.setHidden(false);
         player.getHand().add(card);
         player.getHand().add(getRandomCard());
 
-        card = getRandomCard();
-        card.setHidden(false);
-        playerTwo.getHand().add(card);
+        BlackJackCard card2 = getRandomCard();
+        card2.setHidden(false);
+        playerTwo.getHand().add(card2);
         playerTwo.getHand().add(getRandomCard());
 
         MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
@@ -141,8 +146,13 @@ public class Blackjack implements IGame {
      */
     @Override
     public void joinGame(GamePlayer user) {
+        if (session.getGameState() == GameState.STARTED) {
+            user.getInteractionHook().editOriginal("The game has already started!").queue();
+            return;
+        }
+
         if (player != null && playerTwo != null) {
-            player.getInteractionHook().editOriginal("The game is full!").queue();
+            user.getInteractionHook().editOriginal("The game is full!").queue();
             return;
         }
 
@@ -188,22 +198,6 @@ public class Blackjack implements IGame {
         } else if (playerTwo != null && playerTwo.getRelatedUserId() == user.getRelatedUserId()) {
             playerTwo = null;
         }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onReactionReceive(GenericMessageReactionEvent messageReactionEvent) {
-
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onMessageReceive(MessageReceivedEvent messageReceivedEvent) {
-
     }
 
     /**

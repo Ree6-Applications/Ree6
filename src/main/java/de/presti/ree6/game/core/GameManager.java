@@ -9,10 +9,7 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class to manage Games.
@@ -126,5 +123,13 @@ public class GameManager {
      */
     public static void removeGameSession(GameSession session) {
         gameSessions.remove(session.getGameIdentifier());
+    }
+
+    /**
+     * Method that returns every cache Game.
+     * @return A List of Games.
+     */
+    public static Collection<Class<? extends IGame>> getGames() {
+        return gameCache.values();
     }
 }

@@ -33,21 +33,30 @@ public interface IGame {
 
     /**
      * Called when a Message is received.
+     *
      * @param messageReactionEvent The Event.
      */
-    void onReactionReceive(GenericMessageReactionEvent messageReactionEvent);
+    default void onReactionReceive(GenericMessageReactionEvent messageReactionEvent) {
+        throw new UnsupportedOperationException("This Game does not support Reaction Events!");
+    }
 
     /**
      * Called when a Reaction is received.
+     *
      * @param messageReceivedEvent The Event.
      */
-    void onMessageReceive(MessageReceivedEvent messageReceivedEvent);
+    default void onMessageReceive(MessageReceivedEvent messageReceivedEvent) {
+        throw new UnsupportedOperationException("This Game does not support Messages!");
+    }
 
     /**
      * Called when a Button is clicked.
+     *
      * @param buttonInteractionEvent The Event.
      */
-    void onButtonInteractionReceive(ButtonInteractionEvent buttonInteractionEvent);
+    default void onButtonInteractionReceive(ButtonInteractionEvent buttonInteractionEvent) {
+        throw new UnsupportedOperationException("This Game does not support Buttons!");
+    }
 
     /**
      * Called when the Game is stopped.
