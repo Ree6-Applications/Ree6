@@ -5,6 +5,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.localization.LocalizationService;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.apache.commons.validator.GenericValidator;
@@ -21,7 +22,10 @@ public class Birthday implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
-            Main.getInstance().getCommandManager().sendMessage("This Command doesn't support slash commands yet.", commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(
+                    LocalizationService.get(commandEvent).get("COMMAND_SLASH_COMMAND_NOT_SUPPORTED"), commandEvent.getChannel(),
+                    commandEvent.getInteractionHook()
+            );
             return;
         }
 
