@@ -7,10 +7,12 @@ import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.entities.SQLResponse;
 import de.presti.ree6.sql.base.utils.SQLUtil;
+import de.presti.ree6.sql.entities.Suggestions;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
+import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
@@ -37,6 +39,7 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -54,6 +57,7 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -367,6 +371,18 @@ public class OtherEvents extends ListenerAdapter {
         Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getChannel(), event);
     }
 
+    @Override
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
+        super.onButtonInteraction(event);
+
+        if (event.getComponentId().equals("re_suggestion")) {
+
+            Modal.Builder builder = Modal.create("re_suggestion_modal", "Suggestion");
+            builder.addActionRow(TextInput.create("re_suggestion_text", "Suggestion", TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
+            event.replyModal(builder.build()).queue();
+        }
+    }
+
     /**
      * @inheritDoc
      */
@@ -375,6 +391,31 @@ public class OtherEvents extends ListenerAdapter {
         super.onModalInteraction(event);
 
         switch(event.getModalId()) {
+            case "re_suggestion_modal" -> {
+                SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Suggestions.class, "SELECT * FROM Suggestions WHERE guildId = ?", event.getGuild().getIdLong());
+
+                event.deferReply(true).queue();
+
+                if (sqlResponse.isSuccess()) {
+                    Suggestions suggestions = (Suggestions) sqlResponse.getEntity();
+
+                    MessageChannel messageChannel = (MessageChannel) event.getGuild().getGuildChannelById(suggestions.getChannelId());
+
+                    if (messageChannel == null) return;
+
+                    EmbedBuilder embedBuilder = new EmbedBuilder();
+                    embedBuilder.setTitle("Suggestion");
+                    embedBuilder.setColor(Color.ORANGE);
+                    embedBuilder.setDescription("```" + event.getValue("re_suggestion_text").getAsString() + "```");
+                    embedBuilder.setFooter("Suggestion by " + event.getUser().getAsTag(), event.getUser().getAvatarUrl());
+                    embedBuilder.setTimestamp(Instant.now());
+                    Main.getInstance().getCommandManager().sendMessage(embedBuilder, messageChannel);
+                    Main.getInstance().getCommandManager().sendMessage("Suggestion sent!", null, event.getInteraction().getHook());
+                } else {
+                    Main.getInstance().getCommandManager().sendMessage("Looks like the Suggestion-System is not set up right?", null,event.getInteraction().getHook());
+                }
+            }
+
             case "statisticsSetupTwitchModal" -> {
                 ModalMapping modalMapping = event.getValue("twitchChannelName");
 
@@ -1081,6 +1122,19 @@ public class OtherEvents extends ListenerAdapter {
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupTempVoicechannel", "Select a Channel!", 1, 1, false, optionList)).queue();
                     }
 
+                    case "tempVoiceDelete" -> {
+                        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID=?", event.getGuild().getId());
+
+                        if (sqlResponse.isSuccess()) {
+                            TemporalVoicechannel temporalVoicechannel = (TemporalVoicechannel) sqlResponse.getEntity();
+
+                            embedBuilder.setDescription("Successfully deleted the Temporal-Voicechannel, nice work!");
+                            embedBuilder.setColor(Color.GREEN);
+                            event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                            Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel);
+                        }
+                    }
+
                     default -> {
                         if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
                             return;
@@ -1113,6 +1167,20 @@ public class OtherEvents extends ListenerAdapter {
                         embedBuilder.setDescription("Which Channel do you want to use as Logging-Channel?");
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupLogChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
+                    }
+
+                    case "logDelete" -> {
+                        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+
+                        if (webhook != null) {
+                            event.getJDA().retrieveWebhookById(webhook.getChannelId()).queue(webhook1 -> {
+                                webhook1.delete().queue();
+                                embedBuilder.setDescription("Successfully deleted the Log Channel, nice work!");
+                                embedBuilder.setColor(Color.GREEN);
+                                event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                                Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(webhook);
+                            });
+                        }
                     }
 
                     default -> {
@@ -1171,6 +1239,20 @@ public class OtherEvents extends ListenerAdapter {
                         embedBuilder.setDescription("Which Channel do you want to use as Welcome-Channel?");
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupWelcomeChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
+                    }
+
+                    case "welcomeDelete" -> {
+                        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId());
+
+                        if (webhook != null) {
+                            event.getJDA().retrieveWebhookById(webhook.getChannelId()).queue(webhook1 -> {
+                                webhook1.delete().queue();
+                                embedBuilder.setDescription("Successfully deleted the Welcome Channel, nice work!");
+                                embedBuilder.setColor(Color.GREEN);
+                                event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                                Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(webhook);
+                            });
+                        }
                     }
 
                     default -> {
