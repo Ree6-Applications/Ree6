@@ -33,7 +33,6 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.4.3")
     implementation("org.slf4j:slf4j-api:2.0.3")
     implementation("com.github.walkyst:lavaplayer-fork:1.3.98.4")
-    implementation("com.jagrosh:jda-utilities:3.0.5")
     implementation("com.sedmelluq:lava-common:1.1.2")
 
     //Reddit API Wrapper
@@ -50,7 +49,7 @@ dependencies {
 
     //Spotify API Wrapper / Spotify stuff
     implementation("se.michaelthelin.spotify:spotify-web-api-java:7.2.1")
-    implementation("de.ree6:JLyrics:765f7e0b88")
+    implementation("de.ree6:JLyrics:dfb1d50975")
 
     //Twitter API Wrapper
     implementation("com.github.twitch4j:twitch4j:1.12.0")
