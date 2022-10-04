@@ -254,6 +254,11 @@ public class LoggingEvents extends ListenerAdapter {
             we.setDescription(event.getUser().getAsMention() + " **left the Server.**");
         }
 
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.KICK).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
+
         wm.addEmbeds(we.build());
 
         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
@@ -335,6 +340,11 @@ public class LoggingEvents extends ListenerAdapter {
             we.setDescription("The Nickname of " + event.getUser().getAsMention() + " has been changed.\n**New Nickname:**\n" + event.getNewNickname() + "\n**Old Nickname:**\n" + (event.getOldNickname() != null ? event.getOldNickname() : event.getUser().getName()));
         }
 
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_UPDATE).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
+
         wm.addEmbeds(we.build());
 
         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
@@ -396,6 +406,11 @@ public class LoggingEvents extends ListenerAdapter {
         we.setTimestamp(Instant.now());
         we.setDescription(event.getEntity().getUser().getAsMention() + " **switched the Voicechannel from** " + event.getChannelLeft().getAsMention() + " **to** " + event.getChannelJoined().getAsMention() + "**.**");
 
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_VOICE_MOVE).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
+
         wm.addEmbeds(we.build());
 
         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
@@ -423,6 +438,11 @@ public class LoggingEvents extends ListenerAdapter {
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(event.getEntity().getUser().getAsMention() + " **left the Voicechannel ** " + event.getChannelLeft().getAsMention());
+
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_VOICE_KICK).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
 
         wm.addEmbeds(we.build());
 
