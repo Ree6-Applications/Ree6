@@ -25,8 +25,8 @@ repositories {
 
 dependencies {
     //Testing stuff
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
 
     //Discord stuff
     implementation("net.dv8tion:JDA:5.0.0-alpha.20")
