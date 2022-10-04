@@ -103,6 +103,11 @@ public class LoggingEvents extends ListenerAdapter {
         we.setTimestamp(Instant.now());
         we.setDescription(":airplane_departure: " + event.getUser().getAsMention() + " **banned.**");
 
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.BAN).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
+
         wm.addEmbeds(we.build());
 
         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
@@ -131,6 +136,11 @@ public class LoggingEvents extends ListenerAdapter {
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(":airplane_arriving: " + event.getUser().getAsMention() + " **unbanned.**");
+
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.UNBAN).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
 
         wm.addEmbeds(we.build());
 
@@ -447,18 +457,28 @@ public class LoggingEvents extends ListenerAdapter {
 
             we.setDescription(":house: **VoiceChannel updated:** " + event.getChannel().getAsMention());
 
+            AuditLogEntry entry;
+
             if (event instanceof ChannelCreateEvent) {
                 we.setDescription(":house: **VoiceChannel created:** " + event.getChannel().getAsMention());
+                entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_CREATE).limit(5).stream().filter(auditLogEntry ->
+                        auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
             } else if (event instanceof ChannelDeleteEvent) {
                 we.setDescription(":house: **VoiceChannel deleted:** ``" + event.getChannel().getName() + "``");
+                entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_DELETE).limit(5).stream().filter(auditLogEntry ->
+                        auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
             } else if (event instanceof ChannelUpdateNameEvent channelUpdateNameEvent) {
                 we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", channelUpdateNameEvent.getOldValue() != null
                         ? ((ChannelUpdateNameEvent) event).getOldValue() : event.getChannel().getName()));
                 we.addField(new WebhookEmbed.EmbedField(true, "**New name**", channelUpdateNameEvent.getNewValue() != null
                         ? ((ChannelUpdateNameEvent) event).getNewValue() : event.getChannel().getName()));
+                entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_UPDATE).limit(5).stream().filter(auditLogEntry ->
+                        auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
             } else {
                 return;
             }
+
+            if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
 
             wm.addEmbeds(we.build());
 
@@ -482,20 +502,32 @@ public class LoggingEvents extends ListenerAdapter {
 
             we.setDescription(":house: **TextChannel updated:** " + event.getChannel().getAsMention());
 
+            AuditLogEntry entry;
+
             if (event instanceof ChannelCreateEvent) {
                 we.setDescription(":house: **TextChannel created:** " + event.getChannel().getAsMention());
+                entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_CREATE).limit(5).stream().filter(auditLogEntry ->
+                        auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
             } else if (event instanceof ChannelDeleteEvent) {
                 we.setDescription(":house: **TextChannel deleted:** ``" + event.getChannel().getName() + "``");
+                entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_DELETE).limit(5).stream().filter(auditLogEntry ->
+                        auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
             } else if (event instanceof ChannelUpdateNameEvent channelUpdateNameEvent) {
                 we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", channelUpdateNameEvent.getOldValue() != null
                         ? ((ChannelUpdateNameEvent) event).getOldValue() : event.getChannel().getName()));
                 we.addField(new WebhookEmbed.EmbedField(true, "**New name**", channelUpdateNameEvent.getNewValue() != null
                         ? ((ChannelUpdateNameEvent) event).getNewValue() : event.getChannel().getName()));
+                entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_UPDATE).limit(5).stream().filter(auditLogEntry ->
+                        auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
             } else if (event instanceof ChannelUpdateNSFWEvent channelUpdateNSFWEvent) {
                 we.addField(new WebhookEmbed.EmbedField(true, "**NSFW**", channelUpdateNSFWEvent.getNewValue() + ""));
+                entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_UPDATE).limit(5).stream().filter(auditLogEntry ->
+                        auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
             } else {
                 return;
             }
+
+            if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
 
             wm.addEmbeds(we.build());
 
@@ -539,6 +571,12 @@ public class LoggingEvents extends ListenerAdapter {
 
         we.setDescription(":writing_hand: " + event.getMember().getUser().getAsMention() + " **has been updated.**");
         we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString.toString()));
+
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_ROLE_UPDATE).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
+
         wm.addEmbeds(we.build());
 
         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
@@ -574,6 +612,11 @@ public class LoggingEvents extends ListenerAdapter {
         we.setDescription(":writing_hand: " + event.getMember().getUser().getAsMention() + " **has been updated.**");
         we.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", finalString.toString()));
 
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_ROLE_UPDATE).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
+
         wm.addEmbeds(we.build());
 
         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
@@ -589,7 +632,6 @@ public class LoggingEvents extends ListenerAdapter {
                 !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_rolecreate").getBooleanValue())
             return;
 
-
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
@@ -601,6 +643,11 @@ public class LoggingEvents extends ListenerAdapter {
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been created.**");
+
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.ROLE_CREATE).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getRole().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
 
         wm.addEmbeds(we.build());
 
@@ -628,6 +675,11 @@ public class LoggingEvents extends ListenerAdapter {
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been deleted.**");
+
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.ROLE_DELETE).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getRole().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
 
         wm.addEmbeds(we.build());
 
@@ -658,6 +710,11 @@ public class LoggingEvents extends ListenerAdapter {
         we.addField(new WebhookEmbed.EmbedField(true, "**Old name**", event.getOldName()));
         we.addField(new WebhookEmbed.EmbedField(true, "**New name**", event.getNewName()));
 
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.ROLE_UPDATE).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getRole().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
+
         wm.addEmbeds(we.build());
 
         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
@@ -687,6 +744,11 @@ public class LoggingEvents extends ListenerAdapter {
         we.addField(new WebhookEmbed.EmbedField(true, "**Old mentionable**", event.getOldValue() + ""));
         we.addField(new WebhookEmbed.EmbedField(true, "**New mentionable**", event.getNewValue() + ""));
 
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.ROLE_UPDATE).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getRole().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
+
         wm.addEmbeds(we.build());
 
         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
@@ -715,6 +777,11 @@ public class LoggingEvents extends ListenerAdapter {
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
         we.addField(new WebhookEmbed.EmbedField(true, "**Old hoist**", event.getOldValue() + ""));
         we.addField(new WebhookEmbed.EmbedField(true, "**New hoist**", event.getNewValue() + ""));
+
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.ROLE_UPDATE).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getRole().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
 
         wm.addEmbeds(we.build());
 
@@ -770,6 +837,11 @@ public class LoggingEvents extends ListenerAdapter {
 
         we.addField(new WebhookEmbed.EmbedField(true, "**New permissions**", finalString.toString()));
 
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.ROLE_UPDATE).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getRole().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
+
         wm.addEmbeds(we.build());
 
         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
@@ -799,6 +871,11 @@ public class LoggingEvents extends ListenerAdapter {
         we.setDescription(":family_mmb: ``" + event.getRole().getName() + "`` **has been updated.**");
         we.addField(new WebhookEmbed.EmbedField(true, "**Old color**", (event.getOldColor() != null ? event.getOldColor() : Color.gray).getRGB() + ""));
         we.addField(new WebhookEmbed.EmbedField(true, "**New color**", (event.getNewColor() != null ? event.getNewColor() : Color.gray).getRGB() + ""));
+
+        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.ROLE_UPDATE).limit(5).stream().filter(auditLogEntry ->
+                auditLogEntry.getTargetIdLong() == event.getRole().getIdLong()).findFirst().orElse(null);
+
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
 
         wm.addEmbeds(we.build());
 
