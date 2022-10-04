@@ -21,6 +21,7 @@ import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
+import de.presti.ree6.utils.localization.LocalizationService;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -127,6 +128,9 @@ public class Main {
             instance.logger.error("Please update the configuration file and restart the application!");
             System.exit(0);
         }
+
+        //Initializing the localization service.
+        new LocalizationService();
 
         instance.logger.info("Starting Ree6!");
 

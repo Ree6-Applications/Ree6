@@ -57,6 +57,7 @@ public class Config {
             yamlFile.addDefault("bot.tokens.release", "ReleaseTokenhere");
             yamlFile.addDefault("bot.tokens.beta", "BetaTokenhere");
             yamlFile.addDefault("bot.tokens.dev", "DevTokenhere");
+            yamlFile.addDefault("bot.misc.localizationCsvURL", "https://docs.google.com/spreadsheets/d/1Q1xekzNvhmwJ7Ojh2qV0PkdANeyWz_l49DOoOu-IAyQ/edit#gid=0&format=csv");
 
             try {
                 yamlFile.save(getFile());
