@@ -134,9 +134,13 @@ public class OtherEvents extends ListenerAdapter {
         wmb.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wmb.setUsername("Welcome!");
 
-        String messageContent = (Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())).replace("%user_name%", event.getMember().getUser().getName()).replace("%user_mention%", event.getMember().getUser().getAsMention()).replace("%guild_name%", event.getGuild().getName());
+        String messageContent = Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())
+                .replace("%user_name%", event.getMember().getUser().getName())
+                .replace("%guild_name%", event.getGuild().getName())
+                .replace("%guild_member_count%", String.valueOf(event.getGuild().getMemberCount()));
         if (Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue() != null) {
             try {
+                messageContent = messageContent.replace("%user_mention%", event.getMember().getUser().getName());
                 wmb.addFile("welcome.png", ImageCreationUtility.createJoinImage(event.getUser(),
                         Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue(), messageContent));
             } catch (IOException e) {
@@ -144,6 +148,7 @@ public class OtherEvents extends ListenerAdapter {
                 Main.getInstance().getLogger().error("Error while creating join image!", e);
             }
         } else {
+            messageContent = messageContent.replace("%user_mention%", event.getMember().getUser().getAsMention());
             wmb.setContent(messageContent);
         }
 

@@ -242,7 +242,7 @@ public class ImageCreationUtility {
         if (joinBackgroundBase.containsKey(messageImage)) {
             backgroundImage = joinBackgroundBase.get(messageImage);
         } else {
-            backgroundImage = ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(messageImage)));
+            backgroundImage = resize(ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(messageImage))), 1920, 1080);
             joinBackgroundBase.put(messageImage, backgroundImage);
         }
 
@@ -259,6 +259,7 @@ public class ImageCreationUtility {
         Main.getInstance().getAnalyticsLogger().debug("Finished creating Graphics2D instance. ({}ms)", System.currentTimeMillis() - actionPerformance);
 
         actionPerformance = System.currentTimeMillis();
+
         // Make it transparent.
         graphics2D.setComposite(AlphaComposite.Clear);
         graphics2D.fillRect(0, 0, base.getWidth(), base.getHeight());
@@ -269,29 +270,31 @@ public class ImageCreationUtility {
         graphics2D.setColor(Color.WHITE);
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        graphics2D.setComposite(AlphaComposite.SrcOver);
+
         // Draw the Avatar Image on the Base Image. 125
         graphics2D.drawImage(avatar, backgroundImage.getWidth() / 2 - 250, backgroundImage.getHeight() / 2 - 375, 500, 500, null);
         Main.getInstance().getAnalyticsLogger().debug("Finished drawing Avatar Image on Base Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        Font verdana40 = new Font("Verdana", Font.PLAIN, 40);
+        Font verdana30 = new Font("Verdana", Font.PLAIN, 35);
 
         Main.getInstance().getAnalyticsLogger().debug("Finished creating Fonts. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        String username = new String(user.getName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-
-        if (username.length() > 16) {
-            username = username.substring(0, 15);
+        graphics2D.setFont(verdana30);
+        if (messageText.contains("\n")) {
+            String[] lines = messageText.split("\n");
+            for (int i = 0; i < lines.length; i++) {
+                graphics2D.drawString(lines[i],
+                        backgroundImage.getWidth() / 2 - (graphics2D.getFontMetrics(verdana30).stringWidth(lines[i]) / 2),
+                        backgroundImage.getHeight() / 2 + 125 + (graphics2D.getFontMetrics(verdana30).getHeight() * (i + 1)));
+            }
+        } else {
+            graphics2D.drawString(messageText,
+                    backgroundImage.getWidth() / 2 - (graphics2D.getFontMetrics(verdana30).stringWidth(messageText) / 2),
+                    backgroundImage.getHeight() / 2 + 125 + graphics2D.getFontMetrics(verdana30).getHeight());
         }
-
-        Main.getInstance().getAnalyticsLogger().debug("Finished substring on Username. ({}ms)", System.currentTimeMillis() - actionPerformance);
-        actionPerformance = System.currentTimeMillis();
-
-        graphics2D.setFont(verdana40);
-        graphics2D.drawString(username,
-                backgroundImage.getWidth() / 2 - (graphics2D.getFontMetrics(verdana40).stringWidth(username) / 2),
-                backgroundImage.getWidth() / 2 - graphics2D.getFontMetrics(verdana40).getHeight());
 
         // Close the Graphics2D instance.
         graphics2D.dispose();
@@ -428,6 +431,10 @@ public class ImageCreationUtility {
      * @param scaledHeight absolute height in pixels
      */
     public static BufferedImage resize(BufferedImage inputImage, int scaledWidth, int scaledHeight) {
+
+        if (inputImage.getWidth() == scaledWidth && inputImage.getHeight() == scaledHeight) {
+            return inputImage;
+        }
 
         // creates output image
         BufferedImage outputImage = new BufferedImage(scaledWidth,
