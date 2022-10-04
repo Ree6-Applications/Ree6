@@ -2,13 +2,15 @@ HELP.md
 *.creds
 *.jar
 *.mp3
-target/
 logs/
-!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-.mvn/**/**
 out/
+
+### Gradle ###
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
 
 ### STS ###
 .apt_generated
