@@ -1,8 +1,10 @@
 package de.presti.ree6.utils.localization;
 ;
+import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
+import org.checkerframework.checker.units.qual.N;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -99,6 +101,22 @@ public class LocalizationService {
         } catch (IOException e) {
             log.error("Failed to the column: {} for the language: {}.", language.getColumnIndex(), language);
             throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * Gets you access to the {@link Map} containing all values for the given language.
+     *
+     * @param event the {@link CommandEvent} which gives us the {@link Interaction}.
+     * @return a {@link Map} that contains the keys and values of the specific language or the {@link Map}
+     * for the {@link Language#ENGLISH} if the {@link net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent}
+     * was null or the language is not supported by this system.
+     */
+    public static Map<String, String> get(@Nonnull CommandEvent event) {
+        if (event.getSlashCommandInteractionEvent() != null) {
+            return get(event.getSlashCommandInteractionEvent());
+        } else {
+            return get(Language.ENGLISH);
         }
     }
 
