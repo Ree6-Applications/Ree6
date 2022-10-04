@@ -12,6 +12,7 @@ import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
+import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
@@ -1121,6 +1122,19 @@ public class OtherEvents extends ListenerAdapter {
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupTempVoicechannel", "Select a Channel!", 1, 1, false, optionList)).queue();
                     }
 
+                    case "tempVoiceDelete" -> {
+                        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID=?", event.getGuild().getId());
+
+                        if (sqlResponse.isSuccess()) {
+                            TemporalVoicechannel temporalVoicechannel = (TemporalVoicechannel) sqlResponse.getEntity();
+
+                            embedBuilder.setDescription("Successfully deleted the Temporal-Voicechannel, nice work!");
+                            embedBuilder.setColor(Color.GREEN);
+                            event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                            Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel);
+                        }
+                    }
+
                     default -> {
                         if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
                             return;
@@ -1153,6 +1167,20 @@ public class OtherEvents extends ListenerAdapter {
                         embedBuilder.setDescription("Which Channel do you want to use as Logging-Channel?");
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupLogChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
+                    }
+
+                    case "logDelete" -> {
+                        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+
+                        if (webhook != null) {
+                            event.getJDA().retrieveWebhookById(webhook.getChannelId()).queue(webhook1 -> {
+                                webhook1.delete().queue();
+                                embedBuilder.setDescription("Successfully deleted the Log Channel, nice work!");
+                                embedBuilder.setColor(Color.GREEN);
+                                event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                                Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(webhook);
+                            });
+                        }
                     }
 
                     default -> {
@@ -1211,6 +1239,20 @@ public class OtherEvents extends ListenerAdapter {
                         embedBuilder.setDescription("Which Channel do you want to use as Welcome-Channel?");
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupWelcomeChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
+                    }
+
+                    case "welcomeDelete" -> {
+                        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId());
+
+                        if (webhook != null) {
+                            event.getJDA().retrieveWebhookById(webhook.getChannelId()).queue(webhook1 -> {
+                                webhook1.delete().queue();
+                                embedBuilder.setDescription("Successfully deleted the Welcome Channel, nice work!");
+                                embedBuilder.setColor(Color.GREEN);
+                                event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                                Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(webhook);
+                            });
+                        }
                     }
 
                     default -> {
