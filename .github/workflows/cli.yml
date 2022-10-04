@@ -23,10 +23,10 @@ jobs:
       uses: gradle/wrapper-validation-action@v1.0.4
     - name: Gradle Build Action
       uses: gradle/gradle-build-action@v2.3.2
-    - name: Upload a Build Artifact
     - name: Copy Artifacts
       run: mkdir staging && cp target/*.jar staging
-    - uses: actions/upload-artifact@v3
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3
       with:
         name: Package
         path: build/libs
