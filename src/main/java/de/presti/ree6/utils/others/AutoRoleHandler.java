@@ -67,9 +67,7 @@ public class AutoRoleHandler {
                     return;
                 }
 
-                if (!member.getRoles().contains(guild.getRoleById(roles.getRoleId()))) {
-                    guild.addRoleToMember(member, role).queue();
-                }
+                addRole(guild, member, role);
             }
         }, null, null, false, true);
     }
@@ -204,7 +202,7 @@ public class AutoRoleHandler {
                 guild.addRoleToMember(member, role).queue();
             }
         } else {
-            Main.getInstance().getLogger().error("[AutoRole] Failed to give a Role when someone leveled up!");
+            Main.getInstance().getLogger().error("[AutoRole] Failed to give a Role!");
             Main.getInstance().getLogger().error("[AutoRole] Server: {}", guild.getName());
             if (guild.getOwner() != null)
                 guild.getOwner().getUser().openPrivateChannel().queue(privateChannel -> privateChannel.
