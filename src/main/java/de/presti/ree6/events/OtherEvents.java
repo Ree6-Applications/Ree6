@@ -16,6 +16,7 @@ import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.utils.data.ImageCreationUtility;
 import de.presti.ree6.utils.others.*;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -136,7 +137,24 @@ public class OtherEvents extends ListenerAdapter {
 
         wmb.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wmb.setUsername("Welcome!");
-        wmb.setContent((Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())).replace("%user_name%", event.getMember().getUser().getName()).replace("%user_mention%", event.getMember().getUser().getAsMention()).replace("%guild_name%", event.getGuild().getName()));
+
+        String messageContent = Main.getInstance().getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())
+                .replace("%user_name%", event.getMember().getUser().getName())
+                .replace("%guild_name%", event.getGuild().getName())
+                .replace("%guild_member_count%", String.valueOf(event.getGuild().getMemberCount()));
+        if (Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue() != null) {
+            try {
+                messageContent = messageContent.replace("%user_mention%", event.getMember().getUser().getName());
+                wmb.addFile("welcome.png", ImageCreationUtility.createJoinImage(event.getUser(),
+                        Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue(), messageContent));
+            } catch (IOException e) {
+                wmb.setContent(messageContent);
+                Main.getInstance().getLogger().error("Error while creating join image!", e);
+            }
+        } else {
+            messageContent = messageContent.replace("%user_mention%", event.getMember().getUser().getAsMention());
+            wmb.setContent(messageContent);
+        }
 
         WebhookUtil.sendWebhook(null, wmb.build(), Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()), false);
     }
@@ -390,7 +408,8 @@ public class OtherEvents extends ListenerAdapter {
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
         super.onModalInteraction(event);
 
-        switch(event.getModalId()) {
+
+        switch (event.getModalId()) {
             case "re_suggestion_modal" -> {
                 SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Suggestions.class, "SELECT * FROM Suggestions WHERE guildId = ?", event.getGuild().getIdLong());
 
@@ -898,6 +917,8 @@ public class OtherEvents extends ListenerAdapter {
                         if (Main.getInstance().getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId()))
                             optionList.add(SelectOption.of("Delete", "welcomeDelete"));
 
+                        optionList.add(SelectOption.of("Set Image", "welcomeImage"));
+
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
 
                         embedBuilder.setDescription("You can set up our own Welcome-Messages!\nYou can choice the Welcome-Channel by your own and even configure the Message!");
@@ -1241,6 +1262,11 @@ public class OtherEvents extends ListenerAdapter {
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupWelcomeChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
                     }
 
+                    case "welcomeImage" -> {
+                        embedBuilder.setDescription("Use the following Command with a Image as attachment: `" + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "setup joinImage`");
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
+                    }
+                    
                     case "welcomeDelete" -> {
                         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId());
 
