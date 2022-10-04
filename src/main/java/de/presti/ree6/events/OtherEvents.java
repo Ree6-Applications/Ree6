@@ -875,6 +875,8 @@ public class OtherEvents extends ListenerAdapter {
                         if (Main.getInstance().getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId()))
                             optionList.add(SelectOption.of("Delete", "welcomeDelete"));
 
+                        optionList.add(SelectOption.of("Set Image", "welcomeImage"));
+
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
 
                         embedBuilder.setDescription("You can set up our own Welcome-Messages!\nYou can choice the Welcome-Channel by your own and even configure the Message!");
@@ -1189,6 +1191,11 @@ public class OtherEvents extends ListenerAdapter {
                         embedBuilder.setDescription("Which Channel do you want to use as Welcome-Channel?");
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupWelcomeChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
+                    }
+
+                    case "welcomeImage" -> {
+                        embedBuilder.setDescription("Use the following Command with a Image as attachment: `" + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "setup joinImage`");
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
                     }
 
                     default -> {

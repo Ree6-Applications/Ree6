@@ -42,9 +42,7 @@ public class Setup implements ICommand {
 
                 if (commandEvent.getMessage().getAttachments().isEmpty() ||
                         commandEvent.getMessage().getAttachments().stream().noneMatch(Message.Attachment::isImage)) {
-
                     commandEvent.reply("You need to attach an image to this command!");
-                    return;
                 } else {
                     try (Message.Attachment attachment = commandEvent.getMessage().getAttachments().stream().filter(Message.Attachment::isImage).findFirst().orElse(null)) {
                         if (attachment != null) {

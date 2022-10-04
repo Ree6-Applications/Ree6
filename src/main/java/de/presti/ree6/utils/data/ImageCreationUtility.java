@@ -283,6 +283,7 @@ public class ImageCreationUtility {
         actionPerformance = System.currentTimeMillis();
 
         graphics2D.setFont(verdana30);
+
         if (messageText.contains("\n")) {
             String[] lines = messageText.split("\n");
             for (int i = 0; i < lines.length; i++) {
