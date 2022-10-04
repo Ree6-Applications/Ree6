@@ -50,18 +50,17 @@ public class Setup implements ICommand {
                         if (attachment != null) {
                             if (attachment.getSize() > 1024 * 1024 * 20) {
                                 commandEvent.reply("The image is too big! It needs to be smaller than 20MB!");
-                                return;
-                            }
+                            } else {
+                                try (InputStream inputStream = attachment.getProxy().download(1920, 1080).get()) {
+                                    byte[] imageArray = inputStream.readAllBytes();
 
-                            try (InputStream inputStream = attachment.getProxy().download(1920, 1080).get()) {
-                                byte[] imageArray = inputStream.readAllBytes();
-
-                                Main.getInstance().getSqlConnector().getSqlWorker()
-                                        .setSetting(new Setting(commandEvent.getGuild().getId(), "message_join_image", Base64.getEncoder().encodeToString(imageArray)));
-                                commandEvent.reply("Successfully set the join image!");
-                            } catch (Exception e) {
-                                commandEvent.reply("Couldn't convert the Image!");
-                                Main.getInstance().getLogger().error("Couldn't convert the Image!", e);
+                                    Main.getInstance().getSqlConnector().getSqlWorker()
+                                            .setSetting(new Setting(commandEvent.getGuild().getId(), "message_join_image", Base64.getEncoder().encodeToString(imageArray)));
+                                    commandEvent.reply("Successfully set the join image!");
+                                } catch (Exception e) {
+                                    commandEvent.reply("Couldn't convert the Image!");
+                                    Main.getInstance().getLogger().error("Couldn't convert the Image!", e);
+                                }
                             }
                         }
                     }
