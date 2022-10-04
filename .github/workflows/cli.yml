@@ -19,12 +19,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: gradle
-    - name: Validate Gradle wrapper
-      uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-      with:
-        arguments: build
+    - name: Gradle Wrapper Validation
+      uses: gradle/wrapper-validation-action@v1.0.4
+    - name: Gradle Build Action
+      uses: gradle/gradle-build-action@v2.3.2
+    - name: Upload a Build Artifact
     - name: Copy Artifacts
       run: mkdir staging && cp target/*.jar staging
     - uses: actions/upload-artifact@v3
