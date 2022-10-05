@@ -36,5 +36,5 @@ jobs:
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: Package
+        name: Ree6
         path: build/libs
