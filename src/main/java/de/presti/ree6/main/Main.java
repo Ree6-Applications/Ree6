@@ -139,9 +139,9 @@ public class Main {
 
         instance.logger.info("Starting Ree6!");
 
-        instance.logger.info("Creating RayGun Instance.");
+        instance.logger.info("Creating Sentry Instance.");
 
-        // Create a RayGun Client to send Exception to an external Service for Bug fixing.
+        // Create a Sentry Instance to send Exception to an external Service for bug fixing.
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> Sentry.captureException(e));
 
         // Create a new connection between the Application and the SQL-Server.
