@@ -83,7 +83,7 @@ dependencies {
 
     // Internal Analytics/Error Monitoring
     implementation("io.sentry:sentry:6.4.3")
-    implementation("io.sentry:sentry-logback:6.4.32")
+    implementation("io.sentry:sentry-logback:6.4.3")
 
     //File stuff
     implementation("org.json:json:20220924")
