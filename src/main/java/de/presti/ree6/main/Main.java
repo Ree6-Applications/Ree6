@@ -1,7 +1,6 @@
 package de.presti.ree6.main;
 
 import com.google.gson.JsonObject;
-import com.mindscapehq.raygun4java.core.RaygunClient;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
 import de.presti.ree6.audio.AudioPlayerSendHandler;
@@ -22,6 +21,7 @@ import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
 import de.presti.ree6.utils.others.ThreadUtil;
+import io.sentry.Sentry;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -105,6 +105,15 @@ public class Main {
         // To allow Image creation on CPU.
         System.setProperty("java.awt.headless", "true");
 
+        Sentry.init(options -> {
+            options.setDsn("https://ac2d3317f22a41a5a94345ca608a5ca7@o4503927742529536.ingest.sentry.io/4503927744233474");
+            // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+            // We recommend adjusting this value in production.
+            options.setTracesSampleRate(1.0);
+            // When first trying Sentry it's good to see what the SDK is doing:
+            options.setDebug(true);
+        });
+
         // Create the Main instance.
         instance = new Main();
 
@@ -134,9 +143,7 @@ public class Main {
 
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-            RaygunClient raygunClient = new RaygunClient(instance.config.getConfiguration().getString("raygun.apitoken"));
-            raygunClient.setVersion("1.9.9");
-            raygunClient.send(e);
+            Sentry.captureException(e);
         });
 
         // Create a new connection between the Application and the SQL-Server.

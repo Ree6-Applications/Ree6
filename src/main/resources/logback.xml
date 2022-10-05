@@ -38,6 +38,13 @@
         </encoder>
     </appender>
 
+    <appender name="Sentry" class="io.sentry.logback.SentryAppender">
+        <options>
+            <!-- NOTE: Replace the test DSN below with YOUR OWN DSN to see the events from this app in your Sentry project/dashboard -->
+            <dsn>https://ac2d3317f22a41a5a94345ca608a5ca7@o4503927742529536.ingest.sentry.io/4503927744233474</dsn>
+        </options>
+    </appender>
+
     <logger name="analytics" level="DEBUG" additivity="false">
         <appender-ref ref="DEBUG-FILE"/>
     </logger>
@@ -46,5 +53,6 @@
     <root level="info">
         <appender-ref ref="FILE"/>
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="Sentry"/>
     </root>
 </configuration>

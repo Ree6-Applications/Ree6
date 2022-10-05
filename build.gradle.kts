@@ -2,6 +2,7 @@ plugins {
     java
     application
     id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("org.sonarqube") version "3.4.0.2513"
 }
 
 group = "de.presti"
@@ -21,6 +22,14 @@ repositories {
     maven(url = "https://jitpack.io")
     maven(url = "https://repo.maven.apache.org/maven2/")
     maven(url = "https://twitter4j.org/maven2")
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "DxsSucuk_Ree6")
+        property("sonar.organization", "dxssucuk")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
 
 dependencies {
@@ -72,9 +81,9 @@ dependencies {
     implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
 
-    //mind-scape-hq
-    implementation("com.mindscapehq:raygun4java:3.0.0")
-    implementation("com.mindscapehq:core:3.0.0")
+    // Internal Analytics/Error Monitoring
+    implementation("io.sentry:sentry:6.4.3")
+    implementation("io.sentry:sentry-logback:6.4.32")
 
     //File stuff
     implementation("org.json:json:20220924")
