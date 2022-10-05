@@ -1,6 +1,8 @@
 package de.presti.ree6.sql;
 
 import com.google.gson.JsonElement;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.entities.SQLEntity;
 import de.presti.ree6.sql.base.entities.StoredResultSet;
@@ -31,7 +33,7 @@ public class SQLConnector {
     private final int databaseServerPort;
 
     // An Instance of the actual Java SQL Connection.
-    private Connection connection;
+    private HikariDataSource dataSource;
 
     // An Instance of the SQL-Worker which works with the Data in the Database.
     private final SQLWorker sqlWorker;
@@ -84,7 +86,7 @@ public class SQLConnector {
         if (isConnected()) {
             try {
                 // Close if there is and notify.
-                connection.close();
+                getDataSource().close();
                 Main.getInstance().getLogger().info("Service (MariaDB) has been stopped.");
             } catch (Exception ignore) {
                 // Notify if there was an error.
@@ -93,8 +95,16 @@ public class SQLConnector {
         }
 
         try {
-            // Create a new Connection by using the SQL DriverManager and the MariaDB Java Driver and notify if successful.
-            connection = DriverManager.getConnection("jdbc:mariadb://" + databaseServerIP + ":" + databaseServerPort + "/" + databaseName + "?autoReconnect=true", databaseUser, databasePassword);
+            String jdbcUrl = "jdbc:mariadb://%s:%s/%s?user=%s&password=%s";
+            jdbcUrl = jdbcUrl.formatted(databaseServerIP,
+                    databaseServerPort,
+                    databaseName,
+                    databaseUser,
+                    databasePassword);
+            HikariConfig hConfig = new HikariConfig();
+            hConfig.setJdbcUrl(jdbcUrl);
+            hConfig.setMaximumPoolSize(20);
+            dataSource = new HikariDataSource(hConfig);
             Main.getInstance().getLogger().info("Service (MariaDB) has been started. Connection was successful.");
             connectedOnce = true;
         } catch (Exception exception) {
@@ -120,7 +130,7 @@ public class SQLConnector {
         for (Map.Entry<String, String> entry : tables.entrySet()) {
 
             // Create a Table based on the key.
-            try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + entry.getKey() + entry.getValue())) {
+            try (PreparedStatement ps = getDataSource().getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + entry.getKey() + entry.getValue())) {
                 ps.executeQuery();
             } catch (SQLException exception) {
 
@@ -168,7 +178,7 @@ public class SQLConnector {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = getConnection().prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            preparedStatement = getDataSource().getConnection().prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             int index = 1;
 
             for (Object obj : objcObjects) {
@@ -254,7 +264,7 @@ public class SQLConnector {
      */
     public boolean isConnected() {
         try {
-            return connection != null && !connection.isClosed();
+            return getDataSource() != null && !getDataSource().isClosed();
         } catch (Exception ignore) {
         }
 
@@ -269,7 +279,7 @@ public class SQLConnector {
         if (isConnected()) {
             try {
                 // Close if there is and notify.
-                connection.close();
+                getDataSource().close();
                 Main.getInstance().getLogger().info("Service (MariaDB) has been stopped.");
             } catch (Exception ignore) {
                 // Notify if there was an error.
@@ -281,10 +291,10 @@ public class SQLConnector {
     /**
      * Retrieve an Instance of the SQL-Connection.
      *
-     * @return Connection Instance of te SQL-Connection.
+     * @return DataSource Instance of te SQL-Connection.
      */
-    public Connection getConnection() {
-        return connection;
+    public HikariDataSource getDataSource() {
+        return dataSource;
     }
 
     /**

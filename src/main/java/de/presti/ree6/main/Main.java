@@ -165,18 +165,6 @@ public class Main {
             return;
         }
 
-        String jdbcUrl = "jdbc:mariadb://%s:%s/%s?user=%s&password%s";
-        jdbcUrl = jdbcUrl.formatted(instance.config.getConfiguration().getString("mysql.host"),
-                instance.config.getConfiguration().getString("mysql.port"),
-                instance.config.getConfiguration().getString("mysql.db"),
-                instance.config.getConfiguration().getString("mysql.user"),
-                instance.config.getConfiguration().getString("mysql.pw"));
-        HikariConfig hConfig = new HikariConfig();
-        hConfig.setJdbcUrl(jdbcUrl);
-        hConfig.setMaximumPoolSize(20); //TODO add extra config entry
-        instance.dataSource = new HikariDataSource(hConfig);
-        Runtime.getRuntime().addShutdownHook(new Thread(instance.dataSource::close));
-
         instance.logger.info("Creating JDA Instance.");
 
         // Create a new Instance of the Bot, as well as add the Events.
