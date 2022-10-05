@@ -7,7 +7,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
-import de.presti.ree6.utils.data.Language;
+import de.presti.ree6.language.LanguageService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -80,7 +80,7 @@ public class Help implements ICommand {
                             .append(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue())
                             .append(cmd.getClass().getAnnotation(Command.class).name())
                             .append("``\n")
-                            .append(Language.getResource(commandEvent.getGuild(), cmd.getClass().getAnnotation(Command.class).description()))
+                            .append(LanguageService.getResource(commandEvent.getGuild(), cmd.getClass().getAnnotation(Command.class).description()))
                             .append("\n\n");
                 }
 

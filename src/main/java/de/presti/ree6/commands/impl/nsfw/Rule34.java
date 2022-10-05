@@ -9,7 +9,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
-import de.presti.ree6.utils.data.Language;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -40,7 +40,7 @@ public class Rule34 implements ICommand {
 
             sendMessage(commandEvent);
         } else {
-            Main.getInstance().getCommandManager().sendMessage(Language.getResource(commandEvent.getGuild(), "command.message.default.onlyNSFW"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(LanguageService.getResource(commandEvent.getGuild(), "command.message.default.onlyNSFW"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 

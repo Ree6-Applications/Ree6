@@ -1,9 +1,10 @@
-package de.presti.ree6.utils.data;
+package de.presti.ree6.language;
 
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
@@ -15,12 +16,12 @@ import java.util.HashMap;
 /**
  * Utility used to work with Languages.
  */
-public class Language {
+public class LanguageService {
 
     /**
      * A Hashmap containing the locale as key and the YamlConfiguration as value.
      */
-    public static final HashMap<String, YamlConfiguration> languagesConfigurations = new HashMap<>();
+    public static final HashMap<DiscordLocale, Language> languageResources = new HashMap<>();
 
     /**
      * Called to download every Language file from the GitHub Repository.
@@ -61,48 +62,14 @@ public class Language {
     }
 
     /**
-     * Called to get a specific String from the default Language file.
-     * @param key The key of the String.
-     * @param parameter The Parameters to replace placeholders in the String.
-     * @return The String.
-     */
-    public static String getResource(String key, Object... parameter) {
-        return getResource("en_EN", key, parameter);
-    }
-
-    /**
      * Called to get a specific String from the Language file.
-     * @param locale The locale of the Language file.
+     * @param guild The Guild to receive the locale from.
      * @param key The key of the String.
      * @param parameter The Parameters to replace placeholders in the String.
      * @return The String.
      */
-    public static String getResource(String locale, String key, Object... parameter) {
-        YamlConfiguration yamlConfiguration = languagesConfigurations.get(locale);
-        String resource;
-        if (yamlConfiguration == null) {
-            Path languageFile = Path.of("languages/", locale + ".yml");
-            if (Files.exists(languageFile)) {
-                try {
-                    yamlConfiguration = YamlConfiguration.loadConfiguration(languageFile.toFile());
-                    languagesConfigurations.put(locale, yamlConfiguration);
-                    resource = yamlConfiguration.getString(key) != null ?
-                            yamlConfiguration.getString(key) :
-                            "Missing language resource!";
-                } catch (Exception exception) {
-                    Main.getInstance().getLogger().error("Error while getting Resource!", exception);
-                    return "Missing language resource!";
-                }
-            } else {
-                return "Missing language resource!";
-            }
-        } else {
-            resource = yamlConfiguration.getString(key) != null ?
-                    yamlConfiguration.getString(key) :
-                    "Missing language resource!";
-        }
-
-        return resource.formatted(parameter);
+    public static String getResource(Guild guild, String key, Object... parameter) {
+        return getResource(guild != null ? guild.getIdLong() : -1, key, parameter);
     }
 
     /**
@@ -121,13 +88,52 @@ public class Language {
     }
 
     /**
-     * Called to get a specific String from the Language file.
-     * @param guild The Guild to receive the locale from.
+     * Called to get a specific String from the default Language file.
      * @param key The key of the String.
      * @param parameter The Parameters to replace placeholders in the String.
      * @return The String.
      */
-    public static String getResource(Guild guild, String key, Object... parameter) {
-        return getResource(guild != null ? guild.getIdLong() : -1, key, parameter);
+    public static String getResource(String key, Object... parameter) {
+        return getResource("en_EN", key, parameter);
+    }
+
+    /**
+     * Called to get a specific String from the Language file.
+     * @param locale The locale of the Language file.
+     * @param key The key of the String.
+     * @param parameters The Parameters to replace placeholders in the String.
+     * @return The String.
+     */
+    public static String getResource(String locale, String key, Object... parameters) {
+        return getResource(DiscordLocale.from(locale), key, parameters);
+    }
+
+    /**
+     * Called to get a specific String from the Language file.
+     * @param discordLocale The locale of the Language file.
+     * @param key The key of the String.
+     * @param parameters The Parameters to replace placeholders in the String.
+     * @return The String.
+     */
+    public static String getResource(DiscordLocale discordLocale, String key, Object... parameters) {
+        Language language = languageResources.containsKey(discordLocale) ? languageResources.get(discordLocale) : loadLanguageFromFile(discordLocale);
+        return language != null ? language.getResource(key, parameters) : "Missing language resource!";
+    }
+
+    public static Language loadLanguageFromFile(DiscordLocale discordLocale) {
+        Path languageFile = Path.of("languages/", discordLocale.getLocale() + ".yml");
+        if (Files.exists(languageFile)) {
+            try {
+                YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(languageFile.toFile());
+                Language language = new Language(yamlConfiguration);
+                languageResources.put(discordLocale, language);
+                return language;
+            } catch (Exception exception) {
+                Main.getInstance().getLogger().error("Error while getting Language File!", exception);
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 }

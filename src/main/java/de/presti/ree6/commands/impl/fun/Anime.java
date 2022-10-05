@@ -9,10 +9,9 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
-import de.presti.ree6.utils.data.Language;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -34,8 +33,8 @@ public class Anime implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         Message message = commandEvent.isSlashCommand() ?
-                commandEvent.getInteractionHook().sendMessage(Language.getResource(commandEvent.getGuild(), "command.message.anime.searching")).complete() :
-                commandEvent.getChannel().sendMessage(Language.getResource(commandEvent.getGuild(), "command.message.anime.searching")).complete();
+                commandEvent.getInteractionHook().sendMessage(LanguageService.getResource(commandEvent.getGuild(), "command.message.anime.searching")).complete() :
+                commandEvent.getChannel().sendMessage(LanguageService.getResource(commandEvent.getGuild(), "command.message.anime.searching")).complete();
 
         String[] args = commandEvent.getArguments();
 
@@ -56,7 +55,7 @@ public class Anime implements ICommand {
         if (args.length > 0) {
             sendAnime(commandEvent, message, builder.toString());
         } else {
-            message.editMessage(Language.getResource(commandEvent.getGuild(), "command.message.default.invalidQuery")).queue();
+            message.editMessage(LanguageService.getResource(commandEvent.getGuild(), "command.message.default.invalidQuery")).queue();
         }
     }
 
@@ -143,7 +142,7 @@ public class Anime implements ICommand {
             em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
             if (commandEvent.isSlashCommand()) {
-                message.editMessage(Language.getResource("command.message.anime.found")).queue();
+                message.editMessage(LanguageService.getResource("command.message.anime.found")).queue();
                 Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), null);
             } else {
                 message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage("Anime found!").queue());

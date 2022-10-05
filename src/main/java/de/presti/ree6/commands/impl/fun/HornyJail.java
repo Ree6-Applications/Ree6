@@ -6,7 +6,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ImageCreationUtility;
-import de.presti.ree6.utils.data.Language;
+import de.presti.ree6.language.LanguageService;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -53,7 +53,7 @@ public class HornyJail implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("hornyjail", Language.getResource("en", "message.description.hornyjail")).addOptions(new OptionData(OptionType.USER, "target", "The User that should be put into the Hornyjail!").setRequired(true));
+        return new CommandDataImpl("hornyjail", LanguageService.getResource("en", "message.description.hornyjail")).addOptions(new OptionData(OptionType.USER, "target", "The User that should be put into the Hornyjail!").setRequired(true));
     }
 
     /**

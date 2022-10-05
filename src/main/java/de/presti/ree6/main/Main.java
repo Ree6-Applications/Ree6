@@ -20,7 +20,7 @@ import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
-import de.presti.ree6.utils.data.Language;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.entities.Activity;
@@ -140,7 +140,7 @@ public class Main {
 
         instance.logger.info("Starting preparations of the Bot...");
 
-        Language.downloadLanguages();
+        LanguageService.downloadLanguages();
 
         instance.logger.info("Finished preparations of the Bot!");
 

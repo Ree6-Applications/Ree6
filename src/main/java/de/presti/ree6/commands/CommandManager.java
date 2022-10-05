@@ -7,7 +7,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.utils.data.Language;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -86,12 +86,15 @@ public class CommandManager {
                 commandData = new CommandDataImpl(command.getClass().getAnnotation(Command.class).name(), command.getClass().getAnnotation(Command.class).description());
             }
 
-            for (String keys : Language.languagesConfigurations.keySet()) {
-                String description = Language.getResource(keys, command.getClass().getAnnotation(Command.class).description() + "_slash");
+            for (DiscordLocale discordLocale : DiscordLocale.values()) {
+                if (!LanguageService.languageResources.containsKey(discordLocale)) continue;
+
+                String description = LanguageService.getResource(discordLocale, command.getClass().getAnnotation(Command.class).description() + "_slash");
                 if (description.equals("Missing language resource!")) {
-                    description = Language.getResource(keys, command.getClass().getAnnotation(Command.class).description());
+                    description = LanguageService.getResource(discordLocale, command.getClass().getAnnotation(Command.class).description());
                 }
-                commandData.setNameLocalization(DiscordLocale.from(keys), description);
+
+                commandData.setNameLocalization(discordLocale, description);
             }
 
             if (commandAnnotation.category() == Category.MOD) {
@@ -180,10 +183,10 @@ public class CommandManager {
 
             // Check if it is a Slash Command or not.
             if (slashCommandInteractionEvent != null) {
-                sendMessage(Language.getResource(guild, "command.perform.cooldown"), 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                sendMessage(LanguageService.getResource(guild, "command.perform.cooldown"), 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 deleteMessage(message, slashCommandInteractionEvent.getHook().setEphemeral(true));
             } else if (messageContent.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase())) {
-                sendMessage(Language.getResource(guild, "command.perform.cooldown"), 5, textChannel, null);
+                sendMessage(LanguageService.getResource(guild, "command.perform.cooldown"), 5, textChannel, null);
                 deleteMessage(message, null);
             }
 
@@ -229,7 +232,7 @@ public class CommandManager {
     private boolean performMessageCommand(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel) {
         // Check if the Message is null.
         if (message == null) {
-            sendMessage(Language.getResource(guild, "command.perform.error"), 5, textChannel, null);
+            sendMessage(LanguageService.getResource(guild, "command.perform.error"), 5, textChannel, null);
             return false;
         }
 
@@ -248,14 +251,14 @@ public class CommandManager {
 
         // Check if there is even a Command with that name.
         if (command == null) {
-            sendMessage(Language.getResource(guild, "command.perform.notFound"), 5, textChannel, null);
+            sendMessage(LanguageService.getResource(guild, "command.perform.notFound"), 5, textChannel, null);
             return false;
         }
 
         // Check if the Command is blacklisted.
         if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() &&
                 command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-            sendMessage(Language.getResource(guild, "command.perform.blocked"), 5, textChannel, null);
+            sendMessage(LanguageService.getResource(guild, "command.perform.blocked"), 5, textChannel, null);
             return false;
         }
 
@@ -280,13 +283,13 @@ public class CommandManager {
 
         // Check if there is a command with that Name.
         if (command == null || slashCommandInteractionEvent.getGuild() == null || slashCommandInteractionEvent.getMember() == null) {
-            sendMessage(Language.getResource(slashCommandInteractionEvent.getGuild(), "command.perform.notFound"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+            sendMessage(LanguageService.getResource(slashCommandInteractionEvent.getGuild(), "command.perform.notFound"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
             return false;
         }
 
         // Check if the command is blocked or not.
         if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-            sendMessage(Language.getResource(slashCommandInteractionEvent.getGuild(), "command.perform.blocked"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+            sendMessage(LanguageService.getResource(slashCommandInteractionEvent.getGuild(), "command.perform.blocked"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
             return false;
         }
 

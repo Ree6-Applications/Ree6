@@ -5,7 +5,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.data.Language;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.others.ModerationUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -24,7 +24,7 @@ public class Blacklist implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
-            Main.getInstance().getCommandManager().sendMessage(Language.getResource(commandEvent.getGuild(), "command.perform.slashNotSupported"), commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(LanguageService.getResource(commandEvent.getGuild(), "command.perform.slashNotSupported"), commandEvent.getChannel(), commandEvent.getInteractionHook());
             return;
         }
 
