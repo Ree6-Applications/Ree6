@@ -5,6 +5,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.Interaction;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
@@ -85,6 +86,17 @@ public class LanguageService {
         } else {
             return getResource(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "configuration_language").getStringValue(), key, parameter);
         }
+    }
+
+    /**
+     * Called to get a specific String from the default Language file.
+     * @param interaction The Interaction to receive the locale from.
+     * @param key The key of the String.
+     * @param parameter The Parameters to replace placeholders in the String.
+     * @return The String.
+     */
+    public static String getResource(Interaction interaction, String key, Object... parameter) {
+        return getResource(interaction.getUserLocale(), key, parameter);
     }
 
     /**

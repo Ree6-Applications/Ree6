@@ -9,7 +9,6 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -142,7 +141,7 @@ public class Anime implements ICommand {
             em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
             if (commandEvent.isSlashCommand()) {
-                message.editMessage(LanguageService.getResource("command.message.anime.found")).queue();
+                message.editMessage(commandEvent.getResource("command.message.anime.found")).queue();
                 Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), null);
             } else {
                 message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage("Anime found!").queue());
