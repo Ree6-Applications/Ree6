@@ -2,6 +2,8 @@ package de.presti.ree6.main;
 
 import com.google.gson.JsonObject;
 import com.mindscapehq.raygun4java.core.RaygunClient;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
 import de.presti.ree6.audio.AudioPlayerSendHandler;
@@ -96,6 +98,11 @@ public class Main {
     String lastDay = "";
 
     /**
+     * A reference to the Bots' generell data source.
+     */
+    HikariDataSource dataSource;
+
+    /**
      * Main methode called when Application starts.
      *
      * @param args Start Arguments.
@@ -152,6 +159,18 @@ public class Main {
             System.exit(0);
             return;
         }
+
+        String jdbcUrl = "jdbc:mariadb://%s:%s/%s?user=%s&password%s";
+        jdbcUrl = jdbcUrl.formatted(instance.config.getConfiguration().getString("mysql.host"),
+                instance.config.getConfiguration().getString("mysql.port"),
+                instance.config.getConfiguration().getString("mysql.db"),
+                instance.config.getConfiguration().getString("mysql.user"),
+                instance.config.getConfiguration().getString("mysql.pw"));
+        HikariConfig hConfig = new HikariConfig();
+        hConfig.setJdbcUrl(jdbcUrl);
+        hConfig.setMaximumPoolSize(20); //TODO add extra config entry
+        instance.dataSource = new HikariDataSource(hConfig);
+        Runtime.getRuntime().addShutdownHook(new Thread(instance.dataSource::close));
 
         instance.logger.info("Creating JDA Instance.");
 
@@ -440,6 +459,15 @@ public class Main {
             return analyticsLogger = LoggerFactory.getLogger("analytics");
         }
         return analyticsLogger;
+    }
+
+    /**
+     * Retrieve the Instance of the {@link HikariDataSource}.
+     *
+     * @return the {@link HikariDataSource} instance.
+     */
+    public HikariDataSource getDataSource() {
+        return dataSource;
     }
 
     /**
