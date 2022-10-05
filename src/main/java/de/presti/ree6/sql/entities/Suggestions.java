@@ -1,25 +1,21 @@
 package de.presti.ree6.sql.entities;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
+import jakarta.persistence.*;
 
 /**
  * Class used to store information about the Suggestions.
  */
 @Table(name = "Suggestions")
-public class Suggestions extends SQLEntity {
+public class Suggestions {
 
     /**
      * The ID of the Guild.
      */
-    @Property(name = "guildId")
     long guildId;
 
     /**
      * The ID of the Channel.
      */
-    @Property(name = "channelId", updateQuery = true)
     long channelId;
 
     /**
@@ -44,6 +40,8 @@ public class Suggestions extends SQLEntity {
      *
      * @return the ID of the Guild.
      */
+    @Id
+    @Column(name = "guildId")
     public long getGuildId() {
         return guildId;
     }
@@ -53,6 +51,7 @@ public class Suggestions extends SQLEntity {
      *
      * @return the ID of the Channel.
      */
+    @Column(name = "channelId")
     public long getChannelId() {
         return channelId;
     }

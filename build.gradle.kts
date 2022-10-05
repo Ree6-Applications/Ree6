@@ -86,14 +86,14 @@ dependencies {
     implementation("io.sentry:sentry-logback:6.4.3")
 
     //File stuff
-    implementation("org.json:json:20220924")
     implementation("com.fasterxml.jackson.core:jackson-core:2.13.4")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.4")
     implementation("me.carleslc.Simple-YAML:Simple-Yaml:1.8.2")
 
-    //Database stuff
-    implementation("org.mariadb.jdbc:mariadb-java-client:3.0.8")
+    // Database stuff
+    implementation("org.hibernate.orm:hibernate-core:6.1.4.Final")
+    implementation("org.hibernate.orm:hibernate-hikaricp:6.1.4.Final")
     implementation("com.zaxxer:HikariCP:5.0.1")
 
     //commons stuff

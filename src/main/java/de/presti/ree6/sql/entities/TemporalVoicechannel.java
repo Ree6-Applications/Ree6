@@ -1,25 +1,22 @@
 package de.presti.ree6.sql.entities;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
+
+import jakarta.persistence.*;
 
 /**
  * Class used to store information about the temporal Voice-Channel.
  */
 @Table(name = "TemporalVoicechannel")
-public class TemporalVoicechannel extends SQLEntity {
+public class TemporalVoicechannel {
 
     /**
      * The ID of the Guild.
      */
-    @Property(name = "gid")
     String guildId;
 
     /**
      * The ID of the Voice-channel.
      */
-    @Property(name = "vid", updateQuery = true)
     String voiceChannelId;
 
     /**
@@ -44,6 +41,8 @@ public class TemporalVoicechannel extends SQLEntity {
      *
      * @return the ID of the Guild.
      */
+    @Id
+    @Column(name = "gid")
     public String getGuildId() {
         return guildId;
     }
@@ -53,6 +52,7 @@ public class TemporalVoicechannel extends SQLEntity {
      *
      * @return the ID of the Voice-channel.
      */
+    @Column(name = "vid")
     public String getVoiceChannelId() {
         return voiceChannelId;
     }
