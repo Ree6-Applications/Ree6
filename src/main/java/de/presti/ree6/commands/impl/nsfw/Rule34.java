@@ -40,7 +40,7 @@ public class Rule34 implements ICommand {
 
             sendMessage(commandEvent);
         } else {
-            Main.getInstance().getCommandManager().sendMessage(LanguageService.getResource(commandEvent.getGuild(), "command.message.default.onlyNSFW"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.onlyNSFW"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 

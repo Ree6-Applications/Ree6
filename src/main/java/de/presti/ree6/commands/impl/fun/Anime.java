@@ -33,8 +33,8 @@ public class Anime implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         Message message = commandEvent.isSlashCommand() ?
-                commandEvent.getInteractionHook().sendMessage(LanguageService.getResource(commandEvent.getGuild(), "command.message.anime.searching")).complete() :
-                commandEvent.getChannel().sendMessage(LanguageService.getResource(commandEvent.getGuild(), "command.message.anime.searching")).complete();
+                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.anime.searching")).complete() :
+                commandEvent.getChannel().sendMessage(commandEvent.getResource("command.message.anime.searching")).complete();
 
         String[] args = commandEvent.getArguments();
 
@@ -55,7 +55,7 @@ public class Anime implements ICommand {
         if (args.length > 0) {
             sendAnime(commandEvent, message, builder.toString());
         } else {
-            message.editMessage(LanguageService.getResource(commandEvent.getGuild(), "command.message.default.invalidQuery")).queue();
+            message.editMessage(commandEvent.getResource("command.message.default.invalidQuery")).queue();
         }
     }
 

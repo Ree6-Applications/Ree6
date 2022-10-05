@@ -80,7 +80,7 @@ public class Help implements ICommand {
                             .append(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue())
                             .append(cmd.getClass().getAnnotation(Command.class).name())
                             .append("``\n")
-                            .append(LanguageService.getResource(commandEvent.getGuild(), cmd.getClass().getAnnotation(Command.class).description()))
+                            .append(commandEvent.getResource(cmd.getClass().getAnnotation(Command.class).description()))
                             .append("\n\n");
                 }
 

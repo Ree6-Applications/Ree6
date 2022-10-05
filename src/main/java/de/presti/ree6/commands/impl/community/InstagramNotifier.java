@@ -22,11 +22,11 @@ public class InstagramNotifier implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
-            Main.getInstance().getCommandManager().sendMessage(LanguageService.getResource(commandEvent.getGuild(), "command.message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()), commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()), commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
 
         if (commandEvent.isSlashCommand()) {
-            Main.getInstance().getCommandManager().sendMessage(LanguageService.getResource(commandEvent.getGuild(), "command.perform.slashNotSupported"), commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.perform.slashNotSupported"), commandEvent.getChannel(), commandEvent.getInteractionHook());
             return;
         }
 

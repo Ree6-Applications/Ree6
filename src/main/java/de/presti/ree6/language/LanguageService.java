@@ -81,7 +81,7 @@ public class LanguageService {
      */
     public static String getResource(long guildId, String key, Object... parameter) {
         if (guildId == -1) {
-            return getResource("en_EN", key, parameter);
+            return getResource(key, parameter);
         } else {
             return getResource(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "configuration_language").getStringValue(), key, parameter);
         }
@@ -94,7 +94,7 @@ public class LanguageService {
      * @return The String.
      */
     public static String getResource(String key, Object... parameter) {
-        return getResource("en_EN", key, parameter);
+        return getResource(DiscordLocale.ENGLISH_UK, key, parameter);
     }
 
     /**

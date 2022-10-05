@@ -36,7 +36,7 @@ public class NSFW implements ICommand {
         if (commandEvent.getChannel().getType() == ChannelType.TEXT && commandEvent.getChannel().asTextChannel().isNSFW()) {
             sendImage(commandEvent);
         } else {
-            Main.getInstance().getCommandManager().sendMessage(LanguageService.getResource(commandEvent.getGuild(), "command.message.default.onlyNSFW"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.onlyNSFW"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 

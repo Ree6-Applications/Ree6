@@ -1,7 +1,8 @@
 language:
-  name: "English"
-  locale: "en_EN"
+  name: "English (UK)"
+  locale: "en_GB"
   version: "1.9.7"
+  author: "Presti"
 command:
   perform:
     cooldown: "You are on cooldown!"
