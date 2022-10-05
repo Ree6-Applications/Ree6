@@ -142,9 +142,7 @@ public class Main {
         instance.logger.info("Creating RayGun Instance.");
 
         // Create a RayGun Client to send Exception to an external Service for Bug fixing.
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-            Sentry.captureException(e);
-        });
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> Sentry.captureException(e));
 
         // Create a new connection between the Application and the SQL-Server.
         instance.sqlConnector = new SQLConnector(instance.config.getConfiguration().getString("mysql.user"),
