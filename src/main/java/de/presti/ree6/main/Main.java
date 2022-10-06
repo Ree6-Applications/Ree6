@@ -105,15 +105,6 @@ public class Main {
         // To allow Image creation on CPU.
         System.setProperty("java.awt.headless", "true");
 
-        Sentry.init(options -> {
-            options.setDsn("https://ac2d3317f22a41a5a94345ca608a5ca7@o4503927742529536.ingest.sentry.io/4503927744233474");
-            // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-            // We recommend adjusting this value in production.
-            options.setTracesSampleRate(1.0);
-            // When first trying Sentry it's good to see what the SDK is doing:
-            options.setDebug(true);
-        });
-
         // Create the Main instance.
         instance = new Main();
 
@@ -129,6 +120,16 @@ public class Main {
 
         // Initialize the Config.
         instance.config.init();
+
+        Sentry.init(options -> {
+            options.setDsn(instance.config.getConfiguration().getString("sentry.dsn"));
+            // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+            // We recommend adjusting this value in production.
+            options.setTracesSampleRate(1.0);
+            // When first trying Sentry it's good to see what the SDK is doing:
+            options.setDebug(true);
+            options.setRelease("1.9.9");
+        });
 
         // Check if there is a default value, if so close application and inform.
         if (instance.config.getConfiguration().getString("mysql.pw").equalsIgnoreCase("yourpw")) {

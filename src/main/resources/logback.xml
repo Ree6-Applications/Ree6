@@ -41,7 +41,7 @@
     <appender name="Sentry" class="io.sentry.logback.SentryAppender">
         <options>
             <!-- NOTE: Replace the test DSN below with YOUR OWN DSN to see the events from this app in your Sentry project/dashboard -->
-            <dsn>https://ac2d3317f22a41a5a94345ca608a5ca7@o4503927742529536.ingest.sentry.io/4503927744233474</dsn>
+            <dsn>https://84d455a072d941e681cda3d34c31fb7e@o4503927742529536.ingest.sentry.io/4503927744233473</dsn>
         </options>
     </appender>
 

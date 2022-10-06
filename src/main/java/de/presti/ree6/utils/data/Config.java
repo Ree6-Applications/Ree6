@@ -38,9 +38,8 @@ public class Config {
             yamlFile.addDefault("mysql.pw", "yourpw");
             yamlFile.addDefault("mysql.host", "localhost");
             yamlFile.addDefault("mysql.port", 3306);
-            yamlFile.addDefault("giphy.apitoken", "yourgiphytokenherepog");
             yamlFile.addDefault("dagpi.apitoken", "yourdagpixyztokenhere");
-            yamlFile.addDefault("raygun.apitoken", "yourrayguntokenherepog");
+            yamlFile.addDefault("sentry.dsn", "yourSentryDSNHere");
             yamlFile.addDefault("spotify.client.id", "yourspotifyclientid");
             yamlFile.addDefault("spotify.client.secret", "yourspotifyclientsecret");
             yamlFile.addDefault("twitch.client.id", "yourtwitchclientidhere");
