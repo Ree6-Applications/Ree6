@@ -32,6 +32,13 @@ sonarqube {
     }
 }
 
+if (hasProperty("buildScan")) {
+    extensions.findByName("buildScan")?.withGroovyBuilder {
+        setProperty("termsOfServiceUrl", "https://gradle.com/terms-of-service")
+        setProperty("termsOfServiceAgree", "yes")
+    }
+}
+
 dependencies {
     //Testing stuff
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")

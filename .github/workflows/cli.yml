@@ -30,7 +30,7 @@ jobs:
     - name: Gradle Build Action
       uses: gradle/gradle-build-action@v2.3.2
       with:
-        arguments: build
+        arguments: build --scan
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3
       with:
