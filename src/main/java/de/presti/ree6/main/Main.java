@@ -295,11 +295,6 @@ public class Main {
 
             if (!lastDay.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 
-                if (BotWorker.getStartTime() > System.currentTimeMillis() + 10000) {
-                    getSqlConnector().close();
-                    sqlConnector = new SQLConnector(config.getConfiguration().getString("mysql.user"), config.getConfiguration().getString("mysql.db"), config.getConfiguration().getString("mysql.pw"), config.getConfiguration().getString("mysql.host"), config.getConfiguration().getInt("mysql.port"));
-                }
-
                 ArrayUtil.messageIDwithMessage.clear();
                 ArrayUtil.messageIDwithUser.clear();
 

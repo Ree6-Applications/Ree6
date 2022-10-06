@@ -128,15 +128,7 @@ public class SQLConnector {
 
         // Iterating through all table presets.
         for (Map.Entry<String, String> entry : tables.entrySet()) {
-
-            // Create a Table based on the key.
-            try (PreparedStatement ps = getDataSource().getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + entry.getKey() + entry.getValue())) {
-                ps.executeQuery();
-            } catch (SQLException exception) {
-
-                // Notify if there was an error.
-                Main.getInstance().getLogger().error("Couldn't create " + entry.getKey() + " Table.", exception);
-            }
+            querySQL("CREATE TABLE IF NOT EXISTS " + entry.getKey() + entry.getValue());
         }
 
         Reflections reflections = new Reflections("de.presti.ree6");
@@ -177,8 +169,8 @@ public class SQLConnector {
 
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        try {
-            preparedStatement = getDataSource().getConnection().prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        try (Connection connection = getDataSource().getConnection()) {
+            preparedStatement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             int index = 1;
 
             for (Object obj : objcObjects) {
