@@ -22,6 +22,7 @@ import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
+import de.presti.ree6.utils.others.LoggerUtil;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.entities.Activity;
@@ -112,6 +113,9 @@ public class Main {
         // To allow Image creation on CPU.
         System.setProperty("java.awt.headless", "true");
 
+        //Init Logger
+        LoggerUtil.initLogger();
+
         // Create the Main instance.
         instance = new Main();
 
@@ -178,6 +182,8 @@ public class Main {
             System.exit(0);
             return;
         }
+        //Setting debug mode
+        LoggerUtil.setDebugLoggerMode(BotWorker.getVersion().isDebug());
 
         instance.logger.info("Creating Notifier.");
 
