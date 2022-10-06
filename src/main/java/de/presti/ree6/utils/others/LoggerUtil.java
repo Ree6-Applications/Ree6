@@ -6,7 +6,6 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.FileAppender;
-import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +16,7 @@ import java.util.Date;
 /**
  * A utility class that provides usefull methods regarding the {@link org.slf4j.Logger}.
  */
+//TODO replace loggers with the @Slf4j lombok annotation
 public class LoggerUtil {
 
     private LoggerUtil() {}
