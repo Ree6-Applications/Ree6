@@ -5,13 +5,13 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
+import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -25,6 +25,9 @@ public class LoggerUtil {
      * Inits the {@link org.slf4j.Logger}.
      */
     public static void initLogger() {
+        new File("logs/archives").mkdirs();
+        new File("logs/debug/archives").mkdirs();
+
         LoggerContext ctx = (LoggerContext) LoggerFactory.getILoggerFactory();
         PatternLayoutEncoder ple = new PatternLayoutEncoder();
         ple.setPattern("%d{HH:mm:ss.SSS}  %boldCyan[%thread] %highlight(%-6level) %boldGreen(%-15.-15logger{35}) - %msg %n");
@@ -34,20 +37,19 @@ public class LoggerUtil {
         ConsoleAppender<ILoggingEvent> ca = new ConsoleAppender<>();
         ca.setEncoder(ple);
         ca.setContext(ctx);
+        ca.start();
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        RollingFileAppender<ILoggingEvent> fa = new RollingFileAppender<>();
+        FileAppender<ILoggingEvent> fa = new FileAppender<>();
         fa.setEncoder(ple);
         fa.setContext(ctx);
         fa.setFile(String.format("logs/archives/log-%s.log.gz", formatter.format(new Date())));
+        fa.start();
 
-        RollingFileAppender<ILoggingEvent> faDebug = new RollingFileAppender<>();
+        FileAppender<ILoggingEvent> faDebug = new FileAppender<>();
         faDebug.setEncoder(ple);
         faDebug.setContext(ctx);
         faDebug.setFile(String.format("logs/debug/archives/log-%s.log.gz", formatter.format(new Date())));
-
-        ca.start();
-        fa.start();
         faDebug.start();
 
         Logger logger = ctx.getLogger(Logger.ROOT_LOGGER_NAME);
