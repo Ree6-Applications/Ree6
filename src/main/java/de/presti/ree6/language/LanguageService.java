@@ -37,11 +37,11 @@ public class LanguageService {
             Path languageFile = Path.of("languages/", language + ".yml");
 
             if (Files.exists(languageFile)) {
-                Main.getInstance().getLogger().info("Ignoring Language download: " + language);
+                Main.getInstance().getLogger().info("Ignoring Language download: {}", language);
                 return;
             }
 
-            Main.getInstance().getLogger().info("Downloading Language: " + language);
+            Main.getInstance().getLogger().info("Downloading Language: {}", language);
 
             try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(download).build())) {
                 if (inputStream == null) return;

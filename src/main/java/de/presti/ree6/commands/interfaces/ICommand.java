@@ -2,7 +2,6 @@ package de.presti.ree6.commands.interfaces;
 
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.language.LanguageService;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.concurrent.CompletableFuture;
