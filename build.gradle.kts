@@ -47,7 +47,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
 
     //Discord stuff
-    implementation("net.dv8tion:JDA:5.0.0-alpha.20")
+    implementation("net.dv8tion:JDA:5.0.0-alpha.21")
     implementation("ch.qos.logback:logback-classic:1.4.3")
     implementation("com.github.walkyst:lavaplayer-fork:1.3.98.4")
     implementation("com.sedmelluq:lava-common:1.1.2")
