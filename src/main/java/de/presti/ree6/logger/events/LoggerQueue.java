@@ -12,7 +12,7 @@ import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.Permission;
 
-import java.awt.*;
+import java.awt.Color;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;

@@ -1,7 +1,9 @@
 package de.presti.ree6.sql.entities;
 
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * Class used to store information about the temporal Voice-Channel.

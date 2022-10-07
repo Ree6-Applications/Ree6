@@ -1,14 +1,19 @@
 package de.presti.ree6.utils.apis;
 
 import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.ParseException;
-import se.michaelthelin.spotify.*;
-import se.michaelthelin.spotify.exceptions.*;
-import se.michaelthelin.spotify.model_objects.credentials.*;
-import se.michaelthelin.spotify.model_objects.specification.*;
-import se.michaelthelin.spotify.requests.authorization.client_credentials.*;
-import se.michaelthelin.spotify.requests.data.playlists.*;
-import se.michaelthelin.spotify.requests.data.tracks.*;
+import se.michaelthelin.spotify.SpotifyApi;
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
+import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
+import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.Playlist;
+import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
+import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistRequest;
+import se.michaelthelin.spotify.requests.data.tracks.GetTrackRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +23,7 @@ import java.util.ArrayList;
  *
  * @author Kay-Bilger
  */
+@Slf4j
 public class SpotifyAPIHandler {
 
     /**
@@ -37,7 +43,7 @@ public class SpotifyAPIHandler {
         try {
             initSpotify();
         } catch (ParseException | SpotifyWebApiException | IOException e) {
-            Main.getInstance().getLogger().error("Couldn't create a Spotify Instance", e);
+            log.error("Couldn't create a Spotify Instance", e);
         }
         instance = this;
     }

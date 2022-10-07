@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.awt.*;
+import java.awt.Color;
 import java.time.Instant;
 
 /**

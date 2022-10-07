@@ -1,8 +1,14 @@
 package de.presti.ree6.utils.apis;
 
-import com.google.cloud.vision.v1.*;
+import com.google.cloud.vision.v1.AnnotateImageRequest;
+import com.google.cloud.vision.v1.AnnotateImageResponse;
+import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
+import com.google.cloud.vision.v1.Feature;
+import com.google.cloud.vision.v1.Image;
+import com.google.cloud.vision.v1.ImageAnnotatorClient;
+import com.google.cloud.vision.v1.ImageSource;
 import com.google.protobuf.ByteString;
-import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +17,7 @@ import java.util.List;
  * Classed used to handle request related to the Google Vision AI API.
  * If you want to use this feature check out <a href="https://github.com/googleapis/java-vision#prerequisites">this</a>
  */
+@Slf4j
 public class GoogleVisionAPI {
 
     /**
@@ -48,7 +55,7 @@ public class GoogleVisionAPI {
 
             for (AnnotateImageResponse res : responses) {
                 if (res.hasError()) {
-                    Main.getInstance().getAnalyticsLogger().error("Could not retrieve text from image: {}", res.getError().getMessage());
+                    log.error("Could not retrieve text from image: {}", res.getError().getMessage());
                     return new String[0];
                 }
 
@@ -85,7 +92,7 @@ public class GoogleVisionAPI {
 
             for (AnnotateImageResponse res : responses) {
                 if (res.hasError()) {
-                    Main.getInstance().getAnalyticsLogger().error("Could not retrieve text from image: {}", res.getError().getMessage());
+                    log.error("Could not retrieve text from image: {}", res.getError().getMessage());
                     return new String[0];
                 }
 
@@ -93,7 +100,7 @@ public class GoogleVisionAPI {
                 texts = res.getFullTextAnnotation().getText().split("\n");
             }
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while trying to get the data", exception);
+            log.error("Error while trying to get the data", exception);
         }
 
         return texts;

@@ -10,16 +10,26 @@ import de.presti.ree6.sql.base.utils.MigrationUtil;
 import de.presti.ree6.sql.base.utils.SQLUtil;
 import de.presti.ree6.sql.mapper.EntityMapper;
 import de.presti.ree6.sql.seed.SeedManager;
+import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 
-import java.sql.*;
+import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLNonTransientConnectionException;
+import java.sql.Types;
+import java.util.Base64;
 import java.util.Date;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A "Connector" Class which connect with the used Database Server.
  * Used to manage the connection between Server and Client.
  */
+@Slf4j
 @SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve"})
 public class SQLConnector {
 
@@ -71,7 +81,7 @@ public class SQLConnector {
         try {
             MigrationUtil.runAllMigrations(this);
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while running Migrations!", exception);
+            log.error("Error while running Migrations!", exception);
         }
 
         SeedManager.runAllSeeds(this);
@@ -81,16 +91,16 @@ public class SQLConnector {
      * Try to open a connection to the SQL Server with the given data.
      */
     public void connectToSQLServer() {
-        Main.getInstance().getLogger().info("Connecting to SQl-Service (SQL).");
+        log.info("Connecting to SQl-Service (SQL).");
         // Check if there is already an open Connection.
         if (isConnected()) {
             try {
                 // Close if there is and notify.
                 getDataSource().close();
-                Main.getInstance().getLogger().info("Service (SQL) has been stopped.");
+                log.info("Service (SQL) has been stopped.");
             } catch (Exception ignore) {
                 // Notify if there was an error.
-                Main.getInstance().getLogger().error("Service (SQL) couldn't be stopped.");
+                log.error("Service (SQL) couldn't be stopped.");
             }
         }
 
@@ -123,11 +133,11 @@ public class SQLConnector {
             hConfig.setJdbcUrl(jdbcUrl);
             hConfig.setMaximumPoolSize(Main.getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"));
             dataSource = new HikariDataSource(hConfig);
-            Main.getInstance().getLogger().info("Service (SQL) has been started. Connection was successful.");
+            log.info("Service (SQL) has been started. Connection was successful.");
             connectedOnce = true;
         } catch (Exception exception) {
             // Notify if there was an error.
-            Main.getInstance().getLogger().error("Service (SQL) couldn't be started. Connection was unsuccessful.", exception);
+            log.error("Service (SQL) couldn't be started. Connection was unsuccessful.", exception);
         }
     }
 
@@ -152,16 +162,16 @@ public class SQLConnector {
         Reflections reflections = new Reflections("de.presti.ree6");
         Set<Class<? extends SQLEntity>> classes = reflections.getSubTypesOf(SQLEntity.class);
         for (Class<? extends SQLEntity> aClass : classes) {
-            Main.getInstance().getAnalyticsLogger().info("Creating Table {}", aClass.getSimpleName());
+            log.info("Creating Table {}", aClass.getSimpleName());
             // Create a Table based on the key.
             try {
                 if (!sqlWorker.createTable(aClass)) {
-                    Main.getInstance().getLogger().warn("Couldn't create {} Table.", aClass.getSimpleName());
+                    log.warn("Couldn't create {} Table.", aClass.getSimpleName());
                 }
             } catch (Exception exception) {
 
                 // Notify if there was an error.
-                Main.getInstance().getLogger().error("Couldn't create " + aClass.getSimpleName() + " Table.", exception);
+                log.error("Couldn't create " + aClass.getSimpleName() + " Table.", exception);
             }
         }
     }
@@ -245,12 +255,12 @@ public class SQLConnector {
             }
         } catch (SQLNonTransientConnectionException exception) {
             if (connectedOnce()) {
-                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
+                log.error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
                 connectToSQLServer();
                 return querySQL(sqlQuery, objcObjects);
             }
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
+            log.error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
         } finally {
             try {
                 if (preparedStatement != null)
@@ -290,10 +300,10 @@ public class SQLConnector {
             try {
                 // Close if there is and notify.
                 getDataSource().close();
-                Main.getInstance().getLogger().info("Service (SQL) has been stopped.");
+                log.info("Service (SQL) has been stopped.");
             } catch (Exception ignore) {
                 // Notify if there was an error.
-                Main.getInstance().getLogger().error("Service (SQL) couldn't be stopped.");
+                log.error("Service (SQL) couldn't be stopped.");
             }
         }
     }

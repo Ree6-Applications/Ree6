@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * A command used to set up the Suggestion System.

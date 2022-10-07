@@ -1,8 +1,8 @@
 package de.presti.ree6.sql.base.utils;
 
-import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.migrations.Migration;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +13,7 @@ import java.util.Arrays;
 /**
  * MigrationUtil is used to manage migrations.
  */
+@Slf4j
 public class MigrationUtil {
 
     /**
@@ -55,12 +56,12 @@ public class MigrationUtil {
         Migration migration = loadMigration(file);
 
         if (sqlConnector.querySQL("SELECT * FROM Migrations WHERE NAME=?", migration.getName()).hasResults()) {
-            Main.getInstance().getLogger().info("Migration {} already ran.", migration.getName());
+            log.info("Migration {} already ran.", migration.getName());
             return;
         }
 
         migration.up(sqlConnector);
-        Main.getInstance().getLogger().info("Migration {} ran.", migration.getName());
+        log.info("Migration {} ran.", migration.getName());
     }
 
     /**
@@ -101,7 +102,7 @@ public class MigrationUtil {
      * @param migration The Migration.
      */
     public static void saveMigration(Migration migration) {
-        Main.getInstance().getLogger().info("Saving Migration: {}", migration.getName());
+        log.info("Saving Migration: {}", migration.getName());
         String path = new File("migrations/").getAbsolutePath();
         File folder = new File(path);
 
@@ -124,7 +125,7 @@ public class MigrationUtil {
             printWriter.println("up: " + String.join("\n", Arrays.stream(migration.getUpQuery()).filter(s -> !s.isEmpty() && !s.isBlank()).toArray(String[]::new)));
             printWriter.println("down: " + String.join("\n", Arrays.stream(migration.getDownQuery()).filter(s -> !s.isEmpty() && !s.isBlank()).toArray(String[]::new)));
         } catch (Exception exception) {
-            Main.getInstance().getLogger().info("Could not save migration, reason: " + exception.getMessage(), exception);
+            log.info("Could not save migration, reason: " + exception.getMessage(), exception);
         }
     }
 

@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +19,7 @@ import java.util.List;
 /**
  * Utility used to work with HTTP Requests.
  */
+@Slf4j
 public class RequestUtility {
 
     /**
@@ -83,7 +84,7 @@ public class RequestUtility {
             }
 
         } catch (Exception ex) {
-            Main.getInstance().getLogger().error("Couldn't send a Request!", ex);
+            log.error("Couldn't send a Request!", ex);
         }
 
         return null;
@@ -116,10 +117,10 @@ public class RequestUtility {
                 return jsonObject;
 
             } catch (Exception ex) {
-                Main.getInstance().getLogger().error("Couldn't send a Request!", ex);
+                log.error("Couldn't send a Request!", ex);
             }
         } catch (IOException e) {
-            Main.getInstance().getLogger().error("Couldn't send a Request!", e);
+            log.error("Couldn't send a Request!", e);
             jsonObject.getAsJsonObject().addProperty("success", false);
             return jsonObject;
         }

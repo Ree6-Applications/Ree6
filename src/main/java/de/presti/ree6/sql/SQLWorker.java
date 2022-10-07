@@ -24,7 +24,15 @@ import de.presti.ree6.sql.entities.roles.VoiceAutoRole;
 import de.presti.ree6.sql.entities.stats.CommandStats;
 import de.presti.ree6.sql.entities.stats.GuildCommandStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
-import de.presti.ree6.sql.entities.webhook.*;
+import de.presti.ree6.sql.entities.webhook.Webhook;
+import de.presti.ree6.sql.entities.webhook.WebhookInstagram;
+import de.presti.ree6.sql.entities.webhook.WebhookLog;
+import de.presti.ree6.sql.entities.webhook.WebhookReddit;
+import de.presti.ree6.sql.entities.webhook.WebhookTwitch;
+import de.presti.ree6.sql.entities.webhook.WebhookTwitter;
+import de.presti.ree6.sql.entities.webhook.WebhookWelcome;
+import de.presti.ree6.sql.entities.webhook.WebhookYouTube;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import org.reflections.Reflections;
 
@@ -33,7 +41,12 @@ import javax.annotation.Nullable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A Class to actually handle the SQL data.
@@ -43,6 +56,7 @@ import java.util.*;
  *
  * @param sqlConnector an Instance of the SQL-Connector to retrieve the data from.
  */
+@Slf4j
 @SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve", "unused", "SingleStatementInBlock"})
 public record SQLWorker(SQLConnector sqlConnector) {
 
@@ -2043,7 +2057,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         try {
             sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, false, false).toArray());
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while saving Entity: " + entity, exception);
+            log.error("Error while saving Entity: " + entity, exception);
         }
     }
 
@@ -2108,7 +2122,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
             sqlConnector.querySQL(query.toString(), parameter.toArray());
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while updating Entity: " + ((Class) oldEntity).getSimpleName(), exception);
+            log.error("Error while updating Entity: " + ((Class) oldEntity).getSimpleName(), exception);
         }
     }
 
@@ -2151,7 +2165,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         try {
             sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, false, true).toArray());
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while deleting Entity: " + ((Class) entity).getSimpleName(), exception);
+            log.error("Error while deleting Entity: " + ((Class) entity).getSimpleName(), exception);
         }
     }
 

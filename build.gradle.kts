@@ -39,6 +39,8 @@ if (hasProperty("buildScan")) {
     }
 }
 
+val lombokVersion = "1.18.24"
+
 dependencies {
     //Testing stuff
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
@@ -47,7 +49,6 @@ dependencies {
     //Discord stuff
     implementation("net.dv8tion:JDA:5.0.0-alpha.20")
     implementation("ch.qos.logback:logback-classic:1.4.3")
-    implementation("org.slf4j:slf4j-api:2.0.3")
     implementation("com.github.walkyst:lavaplayer-fork:1.3.98.4")
     implementation("com.sedmelluq:lava-common:1.1.2")
 
@@ -90,7 +91,6 @@ dependencies {
 
     // Internal Analytics/Error Monitoring
     implementation("io.sentry:sentry:6.4.3")
-    implementation("io.sentry:sentry-logback:6.4.3")
 
     //File stuff
     implementation("com.fasterxml.jackson.core:jackson-core:2.13.4")
@@ -129,6 +129,12 @@ dependencies {
     //Misc
     implementation("org.jsoup:jsoup:1.15.3")
     implementation("net.iharder:base64:2.3.9")
+
+    //Lombok annotations (Utility annotations)
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 }
 
 application {

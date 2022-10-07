@@ -5,10 +5,11 @@ import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.others.ThreadUtil;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -39,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Manager class used to manage all Commands and command related operation.
  */
+@Slf4j
 public class CommandManager {
 
     // An Arraylist with all registered Commands.
@@ -54,13 +56,13 @@ public class CommandManager {
      * @throws NoSuchMethodException       when a Constructor Instance of a Command is not found.
      */
     public CommandManager() throws CommandInitializerException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        Main.getInstance().getLogger().info("Initializing Commands!");
+        log.info("Initializing Commands!");
 
         Reflections reflections = new Reflections("de.presti.ree6.commands");
         Set<Class<? extends ICommand>> classes = reflections.getSubTypesOf(ICommand.class);
 
         for (Class<? extends ICommand> aClass : classes) {
-            Main.getInstance().getAnalyticsLogger().info("Loading Command {}", aClass.getSimpleName());
+            log.info("Loading Command {}", aClass.getSimpleName());
             addCommand(aClass.getDeclaredConstructor().newInstance());
         }
     }
@@ -490,7 +492,7 @@ public class CommandManager {
                 !message.isEphemeral() &&
                 interactionHook == null) {
             message.delete().onErrorMap(throwable -> {
-                Main.getInstance().getAnalyticsLogger().error("[CommandManager] Couldn't delete a Message!", throwable);
+                log.error("[CommandManager] Couldn't delete a Message!", throwable);
                 return null;
             }).queue();
         }

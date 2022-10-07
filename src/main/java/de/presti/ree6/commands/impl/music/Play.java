@@ -4,10 +4,10 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.awt.*;
+import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -121,7 +121,7 @@ public class Play implements ICommand {
                     try {
                         result = YouTubeAPIHandler.getInstance().searchYoutube(search);
                     } catch (Exception exception) {
-                        Main.getInstance().getLogger().error("Error while searching for " + search + " on YouTube", exception);
+                        log.error("Error while searching for " + search + " on YouTube", exception);
                     }
 
                     if (result == null) {
@@ -171,7 +171,7 @@ public class Play implements ICommand {
                 em.setDescription("We had an Issue searching for the Song, please try again in 15 minutes!");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                 Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-                Main.getInstance().getLogger().error("Error while searching for " + search + " on YouTube", exception);
+                log.error("Error while searching for " + search + " on YouTube", exception);
                 return;
             }
 

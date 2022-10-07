@@ -11,7 +11,7 @@ import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * A command that shows you the price of some cryptocurrencies.

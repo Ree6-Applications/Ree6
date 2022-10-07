@@ -3,6 +3,7 @@ package de.presti.ree6.language;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.external.RequestUtility;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 /**
  * Utility used to work with Languages.
  */
+@Slf4j
 public class LanguageService {
 
     /**
@@ -37,18 +39,18 @@ public class LanguageService {
             Path languageFile = Path.of("languages/", language + ".yml");
 
             if (Files.exists(languageFile)) {
-                Main.getInstance().getLogger().info("Ignoring Language download: {}", language);
+                log.info("Ignoring Language download: {}", language);
                 return;
             }
 
-            Main.getInstance().getLogger().info("Downloading Language: {}", language);
+            log.info("Downloading Language: {}", language);
 
             try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(download).build())) {
                 if (inputStream == null) return;
 
                 Files.copy(inputStream, languageFile);
             } catch (IOException exception) {
-                Main.getInstance().getLogger().error("An error occurred while downloading the language file!", exception);
+                log.error("An error occurred while downloading the language file!", exception);
             }
         });
     }
@@ -67,7 +69,7 @@ public class LanguageService {
                 languageResources.put(discordLocale, language);
                 return language;
             } catch (Exception exception) {
-                Main.getInstance().getLogger().error("Error while getting Language File!", exception);
+                log.error("Error while getting Language File!", exception);
                 return null;
             }
         } else {
