@@ -81,35 +81,53 @@ public class SQLConnector {
      * Try to open a connection to the SQL Server with the given data.
      */
     public void connectToSQLServer() {
-        Main.getInstance().getLogger().info("Connecting to SQl-Service (MariaDB).");
+        Main.getInstance().getLogger().info("Connecting to SQl-Service (SQL).");
         // Check if there is already an open Connection.
         if (isConnected()) {
             try {
                 // Close if there is and notify.
                 getDataSource().close();
-                Main.getInstance().getLogger().info("Service (MariaDB) has been stopped.");
+                Main.getInstance().getLogger().info("Service (SQL) has been stopped.");
             } catch (Exception ignore) {
                 // Notify if there was an error.
-                Main.getInstance().getLogger().error("Service (MariaDB) couldn't be stopped.");
+                Main.getInstance().getLogger().error("Service (SQL) couldn't be stopped.");
             }
         }
 
         try {
-            String jdbcUrl = "jdbc:mariadb://%s:%s/%s?user=%s&password=%s";
-            jdbcUrl = jdbcUrl.formatted(databaseServerIP,
-                    databaseServerPort,
-                    databaseName,
-                    databaseUser,
-                    databasePassword);
             HikariConfig hConfig = new HikariConfig();
+
+            String jdbcUrl;
+
+            switch (Main.getInstance().getConfig().getConfiguration().getString("hikari.misc.storage").toLowerCase()) {
+                case "mariadb" -> {
+                    jdbcUrl = "jdbc:mariadb://%s:%s/%s?user=%s&password=%s";
+                    jdbcUrl = jdbcUrl.formatted(databaseServerIP,
+                            databaseServerPort,
+                            databaseName,
+                            databaseUser,
+                            databasePassword);
+                }
+
+                case "sqlite" -> {
+                    jdbcUrl = "jdbc:sqlite:%s";
+                    jdbcUrl = jdbcUrl.formatted("storage/Ree6.db");
+                }
+
+                default -> {
+                    jdbcUrl = "jdbc:h2:%s";
+                    jdbcUrl = jdbcUrl.formatted("./storage/Ree6.db");
+                }
+            }
+
             hConfig.setJdbcUrl(jdbcUrl);
-            hConfig.setMaximumPoolSize(20);
+            hConfig.setMaximumPoolSize(Main.getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"));
             dataSource = new HikariDataSource(hConfig);
-            Main.getInstance().getLogger().info("Service (MariaDB) has been started. Connection was successful.");
+            Main.getInstance().getLogger().info("Service (SQL) has been started. Connection was successful.");
             connectedOnce = true;
         } catch (Exception exception) {
             // Notify if there was an error.
-            Main.getInstance().getLogger().error("Service (MariaDB) couldn't be started. Connection was unsuccessful.", exception);
+            Main.getInstance().getLogger().error("Service (SQL) couldn't be started. Connection was unsuccessful.", exception);
         }
     }
 
@@ -272,10 +290,10 @@ public class SQLConnector {
             try {
                 // Close if there is and notify.
                 getDataSource().close();
-                Main.getInstance().getLogger().info("Service (MariaDB) has been stopped.");
+                Main.getInstance().getLogger().info("Service (SQL) has been stopped.");
             } catch (Exception ignore) {
                 // Notify if there was an error.
-                Main.getInstance().getLogger().error("Service (MariaDB) couldn't be stopped.");
+                Main.getInstance().getLogger().error("Service (SQL) couldn't be stopped.");
             }
         }
     }
