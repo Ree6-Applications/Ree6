@@ -92,20 +92,19 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * Give the wanted User more XP.
      *
      * @param guildId          the ID of the Guild.
-     * @param oldChatuserLevel the old {@link ChatUserLevel} Entity with all the information.
      * @param userLevel        the {@link ChatUserLevel} Entity with all the information.
      */
-    public void addChatLevelData(String guildId, @Nullable ChatUserLevel oldChatuserLevel, @Nonnull ChatUserLevel userLevel) {
+    public void addChatLevelData(String guildId, @Nonnull ChatUserLevel userLevel) {
 
         if (isOptOut(guildId, userLevel.getUserId())) {
             return;
         }
 
         // Check if the User is already saved in the Database.
-        if (existsInChatLevel(guildId, userLevel.getUserId()) && oldChatuserLevel != null) {
+        if (existsInChatLevel(guildId, userLevel.getUserId())) {
 
             // If so change the current XP to the new.
-            updateEntity(oldChatuserLevel, userLevel, true);
+            updateEntity(userLevel);
         } else {
             saveEntity(userLevel);
         }
@@ -175,20 +174,19 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * Give the wanted User more XP.
      *
      * @param guildId           the ID of the Guild.
-     * @param oldVoiceUserLevel the old {@link VoiceUserLevel} with all the information.
      * @param voiceUserLevel    the {@link VoiceUserLevel} Entity with all the information.
      */
-    public void addVoiceLevelData(String guildId, @Nullable VoiceUserLevel oldVoiceUserLevel, @Nonnull VoiceUserLevel voiceUserLevel) {
+    public void addVoiceLevelData(String guildId, @Nonnull VoiceUserLevel voiceUserLevel) {
 
         if (isOptOut(guildId, voiceUserLevel.getUserId())) {
             return;
         }
 
         // Check if the User is already saved in the Database.
-        if (existsInVoiceLevel(guildId, voiceUserLevel.getUserId()) && oldVoiceUserLevel != null) {
+        if (existsInVoiceLevel(guildId, voiceUserLevel.getUserId())) {
 
             // If so change the current XP to the new.
-            updateEntity(oldVoiceUserLevel, voiceUserLevel, true);
+            updateEntity(voiceUserLevel);
         } else {
             saveEntity(voiceUserLevel);
         }
@@ -203,7 +201,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public List<VoiceUserLevel> getTopVoice(String guildId, int limit) {
         // Return the list.
-        return Objects.requireNonNull(getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities().stream().map(VoiceUserLevel.class::cast).toList();
+        return getEntityList(new VoiceUserLevel(),
+                "SELECT * FROM VCLevel WHERE GID=:gid ORDER BY cast(xp as unsigned) DESC LIMIT :limit", Map.of("gid", guildId, "limit", limit));
     }
 
     /**
@@ -1455,7 +1454,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public Setting getSetting(String guildId, String settingName) {
         // Check if there is an entry in the database.
         if (hasSetting(guildId, settingName)) {
-            return (Setting) getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ? AND NAME = ?", guildId, settingName).getEntity();
+            return getEntity(new Setting(), "SELECT * FROM Settings WHERE GID = :gid AND NAME = :name", Map.of("gid", guildId, "name", settingName));
         } else {
             // Check if everything is alright with the config.
             checkSetting(guildId, settingName);
@@ -1471,24 +1470,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<Setting>} which is a List with every Setting that stores every information needed.
      */
     public List<Setting> getAllSettings(String guildId) {
-
-        ArrayList<Setting> settings = new ArrayList<>();
-
-        SQLResponse sqlResponse = getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ?", guildId);
-
-        if (!sqlResponse.isSuccess()) {
-            return settings;
-        }
-
-        sqlResponse.getEntities().stream().map(Setting.class::cast).forEach(settings::add);
-
-        // If there is no setting to be found, create every setting.
-        if (settings.isEmpty()) {
-            createSettings(guildId);
-        }
-
-        // Return the list.
-        return settings;
+        return getEntityList(new Setting(), "SELECT * FROM Settings WHERE GID = :gid", Map.of("gid", guildId));
     }
 
 
@@ -1516,7 +1498,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is an entry.
         if (hasSetting(guildId, settingName)) {
             // If so update it.
-            updateEntity(getSetting(guildId, settingName), new Setting(null, null, settingValue), true);
+            updateEntity(new Setting(guildId, settingName, settingValue));
         } else {
             saveEntity(new Setting(guildId, settingName, settingValue));
         }
@@ -1541,7 +1523,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is a Setting Entry for the Guild | if false, there is no Entry for it.
      */
     public boolean hasSetting(String guildId, String settingName) {
-        return getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ? AND NAME = ?", guildId, settingName).isSuccess();
+        return getEntity(new Setting(), "SELECT * FROM Settings WHERE GID = :gid AND NAME = :name", Map.of("gid", guildId, "name", settingName)) != null;
     }
 
     /**
@@ -1581,7 +1563,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (!hasSetting(guildId, "level_message")) setSetting(new Setting(guildId, "level_message", false));
 
         // Create the Language Setting.
-        if (!hasSetting(guildId, "configuration_language")) setSetting(new Setting(guildId, "configuration_language", "en"));
+        if (!hasSetting(guildId, "configuration_language")) setSetting(new Setting(guildId, "configuration_language", "en_GB"));
 
         // Create the Join Message Setting
         if (!hasSetting(guildId, "message_join"))
@@ -1647,13 +1629,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Statistics.
      */
     public Statistics getStatistics(int day, int month, int year) {
-        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ? AND MONTH = ? AND YEAR = ?", day, month, year);
-
-        if (!sqlResponse.isSuccess()) {
-            return new Statistics(day, month, year, new JsonObject());
-        }
-
-        return (Statistics) sqlResponse.getEntity();
+        return getEntity(new Statistics(), "SELECT * FROM Statistics WHERE DAY = :day AND MONTH = :month AND YEAR = :year", Map.of("day", day, "month", month, "year", year));
     }
 
     /**
@@ -1663,13 +1639,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return all {@link Statistics} of the given month.
      */
     public List<Statistics> getStatisticsOfMonth(int month) {
-        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE MONTH = ?", month);
-
-        if (sqlResponse.isSuccess()) {
-            return sqlResponse.getEntities().stream().map(Statistics.class::cast).toList();
-        } else {
-            return new ArrayList<>();
-        }
+        return getEntityList(new Statistics(), "SELECT * FROM Statistics WHERE MONTH = :month", Map.of("month", month));
     }
 
     /**
@@ -1679,14 +1649,12 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void updateStatistic(JsonObject statisticObject) {
         LocalDate today = LocalDate.now();
-        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ? AND MONTH = ? AND YEAR = ?", today.getDayOfMonth(), today.getMonthValue(), today.getYear());
-        if (sqlResponse.isSuccess()) {
-            Statistics statistics = (Statistics) sqlResponse.getEntity();
-            Statistics newStatistics = (Statistics) SQLUtil.cloneEntity(Statistics.class, statistics);
-            newStatistics.setStatsObject(statisticObject);
-            updateEntity(statistics, newStatistics, true);
+        Statistics statistics = getEntity(new Statistics(), "SELECT * FROM Statistics WHERE DAY = :day AND MONTH = :month AND YEAR = :year", Map.of("day", today.getDayOfMonth(), "month", today.getMonthValue(), "year", today.getYear()));
+        if (statistics != null) {
+            statistics.setStatsObject(statisticObject);
+            updateEntity(statistics);
         } else {
-            Statistics statistics = new Statistics(today.getDayOfMonth(), today.getMonthValue(), today.getYear(), statisticObject);
+            statistics = new Statistics(today.getDayOfMonth(), today.getMonthValue(), today.getYear(), statisticObject);
             saveEntity(statistics);
         }
     }
@@ -1698,7 +1666,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Stats of the Command.
      */
     public CommandStats getStatsCommandGlobal(String command) {
-        return (CommandStats) getEntity(CommandStats.class, "SELECT * FROM CommandStats WHERE COMMAND = ?", command).getEntity();
+        return getEntity(new CommandStats(), "SELECT * FROM CommandStats WHERE COMMAND = :command", Map.of("command", command));
     }
 
     /**
@@ -1709,7 +1677,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Stats of the Command.
      */
     public GuildCommandStats getStatsCommand(String guildId, String command) {
-        return (GuildCommandStats) getEntity(GuildCommandStats.class, "SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command).getEntity();
+        return getEntity(new GuildCommandStats(), "SELECT * FROM GuildStats WHERE GID = :gid AND COMMAND = :command", Map.of("gid", guildId, "command", command));
     }
 
     /**
@@ -1719,7 +1687,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return all the Command-Stats related to the given Guild.
      */
     public List<GuildCommandStats> getStats(String guildId) {
-        return getEntity(GuildCommandStats.class, "SELECT * FROM GuildStats WHERE GID=? ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", guildId).getEntities().stream().map(GuildCommandStats.class::cast).toList();
+        return getEntityList(new GuildCommandStats(), "SELECT * FROM GuildStats WHERE GID=:gid ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", Map.of("gid", guildId));
     }
 
     /**
@@ -1728,7 +1696,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return all the Command-Stats globally.
      */
     public List<CommandStats> getStatsGlobal() {
-        return getEntity(CommandStats.class, "SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5").getEntities().stream().map(CommandStats.class::cast).toList();
+        return getEntityList(new CommandStats(), "SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", null);
     }
 
     /**
@@ -1738,7 +1706,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSaved(String guildId) {
-        return getEntity(CommandStats.class, "SELECT * FROM GuildStats WHERE GID = ?", guildId).isSuccess();
+        return getEntity(new GuildCommandStats(), "SELECT * FROM GuildStats WHERE GID = :gid ", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -1749,7 +1717,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSaved(String guildId, String command) {
-        return getEntity(CommandStats.class, "SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command).isSuccess();
+        return getEntity(new GuildCommandStats(), "SELECT * FROM GuildStats WHERE GID = :gid AND COMMAND = :command", Map.of("gid", guildId, "command", command)) != null;
     }
 
     /**
@@ -1759,7 +1727,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSavedGlobal(String command) {
-        return getEntity(CommandStats.class, "SELECT * FROM CommandStats WHERE COMMAND = ?", command).isSuccess();
+        return getEntity(new CommandStats(), "SELECT * FROM CommandStats WHERE COMMAND = :command", Map.of("command", command)) != null;
     }
 
     /**
@@ -1787,7 +1755,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isStatsSaved(guildId, command)) {
             GuildCommandStats newGuildStats = getStatsCommand(guildId, command);
             newGuildStats.setUses(newGuildStats.getUses() + 1);
-            updateEntity(getStatsCommand(guildId, command), newGuildStats, true);
+            updateEntity(newGuildStats);
         } else {
             saveEntity(new GuildCommandStats(guildId, command, 1));
         }
@@ -1796,7 +1764,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isStatsSavedGlobal(command)) {
             CommandStats stats = getStatsCommandGlobal(command);
             stats.setUses(stats.getUses() + 1);
-            updateEntity(getStatsCommandGlobal(command), stats, true);
+            updateEntity(stats);
         } else {
             saveEntity(new CommandStats(command, 1));
         }

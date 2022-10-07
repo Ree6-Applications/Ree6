@@ -235,11 +235,10 @@ public class OtherEvents extends ListenerAdapter {
                 }
 
                 VoiceUserLevel newUserLevel = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(event.getGuild().getId(), event.getMember().getId());
-                VoiceUserLevel oldUserLevel = (VoiceUserLevel) SQLUtil.cloneEntity(VoiceUserLevel.class, newUserLevel);
                 newUserLevel.setUser(event.getMember().getUser());
                 newUserLevel.addExperience(addxp);
 
-                Main.getInstance().getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), oldUserLevel, newUserLevel);
+                Main.getInstance().getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), newUserLevel);
 
                 AutoRoleHandler.handleVoiceLevelReward(event.getGuild(), event.getMember());
 
@@ -247,7 +246,7 @@ public class OtherEvents extends ListenerAdapter {
 
             if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())
                     && event.getChannelLeft().getMembers().isEmpty()) {
-                event.getChannelLeft().delete().queue();
+                event.getChannelLeft().delete().queue(c -> ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId()));
                 ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId());
             }
         } else {
@@ -344,14 +343,13 @@ public class OtherEvents extends ListenerAdapter {
                 if (!ArrayUtil.timeout.contains(event.getMember())) {
 
                     ChatUserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
-                    ChatUserLevel oldUserLevel = (ChatUserLevel) SQLUtil.cloneEntity(ChatUserLevel.class, userLevel);
                     userLevel.setUser(event.getMember().getUser());
 
                     if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) {
                         Main.getInstance().getCommandManager().sendMessage("You just leveled up to Chat Level " + userLevel.getLevel() + " " + event.getMember().getAsMention() + " !", event.getChannel());
                     }
 
-                    Main.getInstance().getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), oldUserLevel, userLevel);
+                    Main.getInstance().getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), userLevel);
 
                     ArrayUtil.timeout.add(event.getMember());
 
