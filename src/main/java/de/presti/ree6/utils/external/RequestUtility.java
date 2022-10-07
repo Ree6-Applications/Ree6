@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.main.Main;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;

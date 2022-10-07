@@ -1,7 +1,6 @@
 package de.presti.ree6.addons;
 
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.main.Main;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;

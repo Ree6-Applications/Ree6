@@ -13,9 +13,17 @@ import de.presti.ree6.sql.seed.SeedManager;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 
-import java.sql.*;
+import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLNonTransientConnectionException;
+import java.sql.Types;
+import java.util.Base64;
 import java.util.Date;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A "Connector" Class which connect with the used Database Server.

@@ -1,7 +1,10 @@
 package de.presti.ree6.sql.base.utils;
 
-import com.google.gson.*;
-import de.presti.ree6.main.Main;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonParser;
 import de.presti.ree6.sql.base.annotations.Property;
 import de.presti.ree6.sql.base.annotations.Table;
 import de.presti.ree6.sql.base.entities.SQLEntity;
@@ -14,7 +17,11 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.sql.Blob;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
 
 /**
  * SQLUtil class to help with SQL-Queries.

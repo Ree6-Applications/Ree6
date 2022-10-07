@@ -24,7 +24,14 @@ import de.presti.ree6.sql.entities.roles.VoiceAutoRole;
 import de.presti.ree6.sql.entities.stats.CommandStats;
 import de.presti.ree6.sql.entities.stats.GuildCommandStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
-import de.presti.ree6.sql.entities.webhook.*;
+import de.presti.ree6.sql.entities.webhook.Webhook;
+import de.presti.ree6.sql.entities.webhook.WebhookInstagram;
+import de.presti.ree6.sql.entities.webhook.WebhookLog;
+import de.presti.ree6.sql.entities.webhook.WebhookReddit;
+import de.presti.ree6.sql.entities.webhook.WebhookTwitch;
+import de.presti.ree6.sql.entities.webhook.WebhookTwitter;
+import de.presti.ree6.sql.entities.webhook.WebhookWelcome;
+import de.presti.ree6.sql.entities.webhook.WebhookYouTube;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import org.reflections.Reflections;
@@ -34,7 +41,12 @@ import javax.annotation.Nullable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A Class to actually handle the SQL data.

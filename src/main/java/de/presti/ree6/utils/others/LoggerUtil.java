@@ -1,13 +1,13 @@
 package de.presti.ree6.utils.others;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.filter.LevelFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.FileAppender;
-import ch.qos.logback.classic.Logger;
 import ch.qos.logback.core.spi.FilterReply;
 import org.slf4j.LoggerFactory;
 

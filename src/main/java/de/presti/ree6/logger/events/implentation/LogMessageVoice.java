@@ -3,9 +3,9 @@ package de.presti.ree6.logger.events.implentation;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import de.presti.ree6.logger.events.LogMessage;
 import de.presti.ree6.logger.events.LogTyp;
-import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 /**
  * This is class is used to store VoiceData for Logs which work
