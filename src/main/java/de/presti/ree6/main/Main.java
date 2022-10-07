@@ -25,6 +25,7 @@ import de.presti.ree6.utils.data.Config;
 import de.presti.ree6.utils.others.LoggerUtil;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
+import lombok.extern.java.Log;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -114,7 +115,8 @@ public class Main {
         System.setProperty("java.awt.headless", "true");
 
         //Init Logger
-        LoggerUtil.initLogger();
+        LoggerUtil loggerUtil = new LoggerUtil();
+        loggerUtil.initLogger();
 
         // Create the Main instance.
         instance = new Main();
@@ -183,7 +185,7 @@ public class Main {
             return;
         }
         //Setting debug mode
-        LoggerUtil.setDebugLoggerMode(BotWorker.getVersion().isDebug());
+        LoggerUtil.setDebugLoggerMode(BotWorker.getVersion().isDebug(), loggerUtil);
 
         instance.logger.info("Creating Notifier.");
 
