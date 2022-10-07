@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 /**
  * A command to give credits.
  */
-@Command(name = "credits", description = "See the beautiful and lovely team working behind Ree6!", category = Category.INFO)
+@Command(name = "credits", description = "command.description.credits", category = Category.INFO)
 public class Credits implements ICommand {
 
     /**

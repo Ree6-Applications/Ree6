@@ -19,7 +19,7 @@ public interface ICommand {
     default void onASyncPerform(CommandEvent commandEvent) {
         CompletableFuture.runAsync(() -> onPerform(commandEvent)).exceptionally(throwable -> {
             if (!throwable.getMessage().contains("Unknown Message")) {
-                Main.getInstance().getCommandManager().sendMessage("An error occurred while performing the Command!\nIf this continues to happen please contact our support!\n<https://support.ree6.de>", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.perform.internalError"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 Main.getInstance().getLogger().error("An error occurred while executing the command!", throwable);
             }
             return null;

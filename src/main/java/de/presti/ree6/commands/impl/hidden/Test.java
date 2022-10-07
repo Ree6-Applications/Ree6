@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A command to test stuff.
  */
-@Command(name = "test", description = "test", category = Category.HIDDEN)
+@Command(name = "test", description = "command.description.test", category = Category.HIDDEN)
 public class Test implements ICommand {
 
     /**

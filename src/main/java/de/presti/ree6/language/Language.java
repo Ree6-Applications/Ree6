@@ -1,0 +1,131 @@
+package de.presti.ree6.language;
+
+import net.dv8tion.jda.api.interactions.DiscordLocale;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.simpleyaml.configuration.file.YamlConfiguration;
+
+import java.util.HashMap;
+
+/**
+ * Class used to represent a Language.
+ */
+public class Language {
+
+    /**
+     * The Locale-Tag of the Language.
+     */
+    private final String locale;
+
+    /**
+     * The Name of the Language.
+     */
+    private final String name;
+
+    /**
+     * The Author of the Language-File.
+     */
+    private final String author;
+
+    /**
+     * The corresponding Ree6 Version.
+     */
+    private final String version;
+
+    /**
+     * The DiscordLocale of the Language.
+     */
+    private final DiscordLocale discordLocale;
+
+    /**
+     * All entries of the Language.
+     */
+    final HashMap<String, String> resources = new HashMap<>();
+
+    /**
+     * Constructor used to create a Language.
+     * @param yamlConfiguration The YamlConfiguration of the Language.
+     */
+    public Language(@NotNull YamlConfiguration yamlConfiguration) {
+        this.locale = yamlConfiguration.getString("language.locale");
+        this.name = yamlConfiguration.getString("language.name");
+        this.author = yamlConfiguration.getString("language.author");
+        this.version = yamlConfiguration.getString("language.version");
+
+        yamlConfiguration.getKeys(true).forEach(key -> {
+            if (key.startsWith("language.")) return;
+
+            resources.put(key, yamlConfiguration.getString(key));
+        });
+
+        discordLocale = DiscordLocale.from(locale);
+    }
+
+    /**
+     * Constructor used to create a Language.
+     * @param locale The Locale-Tag of the Language.
+     * @param name The Name of the Language.
+     * @param author The Author of the Language-File.
+     * @param version The corresponding Ree6 Version.
+     * @param resources All entries of the Language.
+     */
+    public Language(@NotNull String locale, @NotNull String name, @NotNull String author, @NotNull String version, @NotNull HashMap<String, String> resources) {
+        this.locale = locale;
+        this.name = name;
+        this.author = author;
+        this.version = version;
+        this.resources.putAll(resources);
+        discordLocale = DiscordLocale.from(locale);
+    }
+
+    /**
+     * Called to get the Locale-Tag of the Language.
+     * @return The Locale-Tag.
+     */
+    public String getLocale() {
+        return locale;
+    }
+
+    /**
+     * Called to get the Name of the Language.
+     * @return The Name.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Called to get the Author of the Language-File.
+     * @return The Author.
+     */
+    public String getAuthor() {
+        return author;
+    }
+
+    /**
+     * Called to get the corresponding Ree6 Version.
+     * @return The Version.
+     */
+    public String getVersion() {
+        return version;
+    }
+
+    /**
+     * Called to get the DiscordLocale of the Language.
+     * @return The DiscordLocale.
+     */
+    public DiscordLocale getDiscordLocale() {
+        return discordLocale;
+    }
+
+    /**
+     * Called to get the entry of the Language.
+     * @param key The key of the entry.
+     * @param parameter The parameter that should be used to replace placeholders.
+     * @return The entry.
+     */
+    public String getResource(@NotNull String key, @Nullable Object... parameter) {
+        if (!resources.containsKey(key)) return "Missing language resource!";
+        return String.format(resources.get(key), parameter);
+    }
+}

@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * A command to create a fake tweet.
  */
-@Command(name = "twitter", description = "Create a \"realistic\" looking Tweet!", category = Category.FUN)
+@Command(name = "twitter", description = "command.description.twitter", category = Category.FUN)
 public class Twitter implements ICommand {
 
     /**

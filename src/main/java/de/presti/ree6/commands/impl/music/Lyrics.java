@@ -18,7 +18,7 @@ import java.awt.*;
 /**
  * Get the Lyrics of a Song.
  */
-@Command(name = "lyrics", description = "Wanna see the Lyrics of the current Song?", category = Category.MUSIC)
+@Command(name = "lyrics", description = "command.description.lyrics", category = Category.MUSIC)
 public class Lyrics implements ICommand {
 
     /**

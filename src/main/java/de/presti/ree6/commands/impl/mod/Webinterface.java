@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 /**
  * Sends a link to the Webinterface.
  */
-@Command(name = "webinterface", description = "Shows the url to the Webinterface, which needs Discord OAuth2 access.", category = Category.MOD)
+@Command(name = "webinterface", description = "command.description.webinterface", category = Category.MOD)
 public class Webinterface implements ICommand {
 
     /**

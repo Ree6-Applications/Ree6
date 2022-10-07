@@ -16,7 +16,7 @@ import java.awt.*;
 /**
  * Get the current list of songs.
  */
-@Command(name = "songlist", description = "Show the current Song-Queue.", category = Category.MUSIC)
+@Command(name = "songlist", description = "command.description.songlist", category = Category.MUSIC)
 public class SongList implements ICommand {
 
     /**

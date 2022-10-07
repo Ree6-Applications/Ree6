@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A command to give you a random response.
  */
-@Command(name = "8ball", description = "Let the Magic 8Ball decide the faith of your Question", category = Category.FUN)
+@Command(name = "8ball", description = "command.description.8ball", category = Category.FUN)
 public class RandomAnswer implements ICommand {
 
     /**

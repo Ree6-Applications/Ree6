@@ -17,7 +17,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A class used to import data from another Bot.
  */
-@Command(name = "import", description = "Import data from another Bot.", category = Category.MOD)
+@Command(name = "import", description = "command.description.import", category = Category.MOD)
 public class Import implements ICommand {
 
     /**
@@ -56,7 +56,7 @@ public class Import implements ICommand {
                 .builder()
                 .url("https://mee6.xyz/api/plugins/levels/leaderboard/" + commandEvent.getGuild().getId()).build();
 
-        JsonElement jsonElement = RequestUtility.request(request);
+        JsonElement jsonElement = RequestUtility.requestJson(request);
         if (jsonElement.isJsonObject() && jsonElement.getAsJsonObject().has("players")) {
             JsonElement players = jsonElement.getAsJsonObject().get("players");
 
