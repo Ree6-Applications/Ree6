@@ -29,20 +29,19 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.session.GenericSessionEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -71,13 +70,15 @@ public class OtherEvents extends ListenerAdapter {
      * @inheritDoc
      */
     @Override
-    public void onReady(@Nonnull ReadyEvent event) {
-        BotWorker.setState(BotState.STARTED);
-        Main.getInstance().getLogger().info("Boot up finished!");
+    public void onGenericSessionEvent(@Nonnull GenericSessionEvent event) {
+        if (event instanceof ReadyEvent) {
+            BotWorker.setState(BotState.STARTED);
+            Main.getInstance().getLogger().info("Boot up finished!");
 
-        Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
+            Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
 
-        BotWorker.setActivity(event.getJDA(), "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
+            BotWorker.setActivity(event.getJDA(), "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
+        }
     }
 
     /**
@@ -198,94 +199,81 @@ public class OtherEvents extends ListenerAdapter {
      * @inheritDoc
      */
     @Override
-    public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
-        super.onGuildVoiceJoin(event);
-        if (!ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
-            ArrayUtil.voiceJoined.put(event.getMember().getUser(), System.currentTimeMillis());
-        }
-
-        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID = ? AND VID = ?", event.getGuild().getId(), event.getChannelJoined().getId());
-
-        if (sqlResponse.isSuccess()) {
-            VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
-
-            if (voiceChannel == null)
-                return;
-
-            if (!((TemporalVoicechannel) sqlResponse.getEntity()).getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
-                return;
+    public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
+        if (event.getChannelLeft() == null) {
+            if (!ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
+                ArrayUtil.voiceJoined.put(event.getMember().getUser(), System.currentTimeMillis());
             }
 
-            if (voiceChannel.getParentCategory() != null) {
-                voiceChannel.getParentCategory().createVoiceChannel("Temporal VC #" +
-                        event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith("Temporal VC")).toList().size() + 1).queue(channel -> {
-                    event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
-                    ArrayUtil.temporalVoicechannel.add(channel.getId());
-                });
+            SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID = ? AND VID = ?", event.getGuild().getId(), event.getChannelJoined().getId());
+
+            if (sqlResponse.isSuccess()) {
+                VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
+
+                if (voiceChannel == null)
+                    return;
+
+                if (!((TemporalVoicechannel) sqlResponse.getEntity()).getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
+                    return;
+                }
+
+                if (voiceChannel.getParentCategory() != null) {
+                    voiceChannel.getParentCategory().createVoiceChannel("Temporal VC #" +
+                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith("Temporal VC")).toList().size() + 1).queue(channel -> {
+                        event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
+                        ArrayUtil.temporalVoicechannel.add(channel.getId());
+                    });
+                }
             }
-        }
-    }
+        } else if (event.getChannelJoined() == null) {
+            if (ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
+                int min = TimeUtil.getTimeinMin(TimeUtil.getTimeinSec(ArrayUtil.voiceJoined.get(event.getMember().getUser())));
 
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event) {
-        super.onGuildVoiceMove(event);
+                int addxp = 0;
 
-        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID = ? AND VID = ?", event.getGuild().getId(), event.getChannelJoined().getId());
+                for (int i = 1; i <= min; i++) {
+                    addxp += RandomUtils.random.nextInt(5, 11);
+                }
 
-        if (sqlResponse.isSuccess()) {
-            VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
+                VoiceUserLevel newUserLevel = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(event.getGuild().getId(), event.getMember().getId());
+                VoiceUserLevel oldUserLevel = (VoiceUserLevel) SQLUtil.cloneEntity(VoiceUserLevel.class, newUserLevel);
+                newUserLevel.setUser(event.getMember().getUser());
+                newUserLevel.addExperience(addxp);
 
-            if (voiceChannel == null)
-                return;
+                Main.getInstance().getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), oldUserLevel, newUserLevel);
 
-            if (!((TemporalVoicechannel) sqlResponse.getEntity()).getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
-                return;
-            }
+                AutoRoleHandler.handleVoiceLevelReward(event.getGuild(), event.getMember());
 
-            if (voiceChannel.getParentCategory() != null) {
-                voiceChannel.getParentCategory().createVoiceChannel("Temporal VC #" +
-                        event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith("Temporal VC")).toList().size() + 1).queue(channel -> {
-                    event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
-                    ArrayUtil.temporalVoicechannel.add(channel.getId());
-                });
-            }
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
-        if (ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
-            int min = TimeUtil.getTimeinMin(TimeUtil.getTimeinSec(ArrayUtil.voiceJoined.get(event.getMember().getUser())));
-
-            int addxp = 0;
-
-            for (int i = 1; i <= min; i++) {
-                addxp += RandomUtils.random.nextInt(5, 11);
             }
 
-            VoiceUserLevel newUserLevel = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(event.getGuild().getId(), event.getMember().getId());
-            VoiceUserLevel oldUserLevel = (VoiceUserLevel) SQLUtil.cloneEntity(VoiceUserLevel.class, newUserLevel);
-            newUserLevel.setUser(event.getMember().getUser());
-            newUserLevel.addExperience(addxp);
+            if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())
+                    && event.getChannelLeft().getMembers().isEmpty()) {
+                event.getChannelLeft().delete().queue();
+                ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId());
+            }
+        } else {
 
-            Main.getInstance().getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), oldUserLevel, newUserLevel);
+            SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID = ? AND VID = ?", event.getGuild().getId(), event.getChannelJoined().getId());
 
-            AutoRoleHandler.handleVoiceLevelReward(event.getGuild(), event.getMember());
+            if (sqlResponse.isSuccess()) {
+                VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
 
+                if (voiceChannel == null)
+                    return;
+
+                if (!((TemporalVoicechannel) sqlResponse.getEntity()).getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
+                    return;
+                }
+
+                if (voiceChannel.getParentCategory() != null) {
+                    voiceChannel.getParentCategory().createVoiceChannel("Temporal VC #" +
+                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith("Temporal VC")).toList().size() + 1).queue(channel -> {
+                        event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
+                        ArrayUtil.temporalVoicechannel.add(channel.getId());
+                    });
+                }
+            }
         }
-
-        if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())
-                && event.getChannelLeft().getMembers().isEmpty()) {
-            event.getChannelLeft().delete().queue();
-            ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId());
-        }
-        super.onGuildVoiceLeave(event);
     }
 
     /**
