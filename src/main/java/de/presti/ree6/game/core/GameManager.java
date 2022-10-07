@@ -2,8 +2,8 @@ package de.presti.ree6.game.core;
 
 import de.presti.ree6.game.core.base.GameInfo;
 import de.presti.ree6.game.core.base.IGame;
-import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.others.RandomUtils;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import org.reflections.Reflections;
@@ -14,6 +14,7 @@ import java.util.*;
 /**
  * Class to manage Games.
  */
+@Slf4j
 public class GameManager {
 
     /**
@@ -68,7 +69,7 @@ public class GameManager {
             try {
                 return gameCache.get(gameName.toLowerCase().trim()).getDeclaredConstructor(GameSession.class).newInstance(gameSession);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e ) {
-                Main.getInstance().getLogger().error("Failed to create instance of " + gameName + "!", e);
+                log.error("Failed to create instance of " + gameName + "!", e);
             }
         }
 
@@ -83,7 +84,7 @@ public class GameManager {
                     }
                     return aClass.getDeclaredConstructor(GameSession.class).newInstance(gameSession);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e ) {
-                    Main.getInstance().getLogger().error("Failed to create instance of " + aClass.getSimpleName() + "!", e);
+                    log.error("Failed to create instance of " + aClass.getSimpleName() + "!", e);
                 }
             }
         }

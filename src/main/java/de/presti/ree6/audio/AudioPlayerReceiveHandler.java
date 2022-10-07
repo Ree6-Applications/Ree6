@@ -6,6 +6,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.Recording;
 import de.presti.ree6.utils.data.AudioUtil;
 import de.presti.ree6.utils.data.Data;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
@@ -32,6 +33,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
     The receiver will be provided with the latest 20ms of PCM stereo audio
     Note you can receive even while setting yourself to deafened
  */
+@Slf4j
 public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
     /**
@@ -188,7 +190,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                         .build()).complete();
             }
 
-            Main.getInstance().getLogger().error("Something went wrong while converting a recording!", ex);
+            log.error("Something went wrong while converting a recording!", ex);
         }
 
         voiceChannel.getGuild().getAudioManager().closeAudioConnection();

@@ -18,6 +18,7 @@ import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.data.ImageCreationUtility;
 import de.presti.ree6.utils.others.*;
+import lombok.extern.slf4j.Slf4j;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -65,6 +66,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+@Slf4j
 public class OtherEvents extends ListenerAdapter {
 
     /**
@@ -73,7 +75,7 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         BotWorker.setState(BotState.STARTED);
-        Main.getInstance().getLogger().info("Boot up finished!");
+        log.info("Boot up finished!");
 
         Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
 
@@ -149,7 +151,7 @@ public class OtherEvents extends ListenerAdapter {
                         Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue(), messageContent));
             } catch (IOException e) {
                 wmb.setContent(messageContent);
-                Main.getInstance().getLogger().error("Error while creating join image!", e);
+                log.error("Error while creating join image!", e);
             }
         } else {
             messageContent = messageContent.replace("%user_mention%", event.getMember().getUser().getAsMention());

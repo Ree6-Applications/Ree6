@@ -57,7 +57,7 @@ public class Setup implements ICommand {
                                     commandEvent.reply("Successfully set the join image!");
                                 } catch (Exception e) {
                                     commandEvent.reply("Couldn't convert the Image!");
-                                    Main.getInstance().getLogger().error("Couldn't convert the Image!", e);
+                                    log.error("Couldn't convert the Image!", e);
                                 }
                             }
                         }

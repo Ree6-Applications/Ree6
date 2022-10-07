@@ -1,6 +1,6 @@
 package de.presti.ree6.utils.data;
 
-import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
@@ -8,6 +8,7 @@ import java.io.File;
 /**
  * Config.
  */
+@Slf4j
 public class Config {
 
     /**
@@ -62,13 +63,13 @@ public class Config {
             try {
                 yamlFile.save(getFile());
             } catch (Exception exception) {
-                Main.getInstance().getLogger().error("Could not save config file!", exception);
+                log.error("Could not save config file!", exception);
             }
         } else {
             try {
                 yamlFile.load();
             } catch (Exception exception) {
-                Main.getInstance().getLogger().error("Could not load config!",exception);
+                log.error("Could not load config!",exception);
             }
         }
     }

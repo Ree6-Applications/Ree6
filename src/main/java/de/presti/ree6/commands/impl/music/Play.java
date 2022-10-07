@@ -121,7 +121,7 @@ public class Play implements ICommand {
                     try {
                         result = YouTubeAPIHandler.getInstance().searchYoutube(search);
                     } catch (Exception exception) {
-                        Main.getInstance().getLogger().error("Error while searching for " + search + " on YouTube", exception);
+                        log.error("Error while searching for " + search + " on YouTube", exception);
                     }
 
                     if (result == null) {
@@ -171,7 +171,7 @@ public class Play implements ICommand {
                 em.setDescription("We had an Issue searching for the Song, please try again in 15 minutes!");
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                 Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-                Main.getInstance().getLogger().error("Error while searching for " + search + " on YouTube", exception);
+                log.error("Error while searching for " + search + " on YouTube", exception);
                 return;
             }
 

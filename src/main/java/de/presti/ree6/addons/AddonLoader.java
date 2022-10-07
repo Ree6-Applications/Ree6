@@ -2,6 +2,7 @@ package de.presti.ree6.addons;
 
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
@@ -16,6 +17,7 @@ import java.util.zip.ZipInputStream;
 /**
  * The actual Addon-Loader which Loads every single Addon from the Addon Folder.
  */
+@Slf4j
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class AddonLoader {
 
@@ -62,13 +64,13 @@ public class AddonLoader {
                     Addon addon = loadAddon(file.getName());
 
                     if (addon == null) {
-                        Main.getInstance().getLogger().error("Couldn't pre-load the addon {}", file.getName());
+                        log.error("Couldn't pre-load the addon {}", file.getName());
                     }
 
                     Main.getInstance().getAddonManager().loadAddon(addon);
                 } catch (Exception ex) {
                     // If the Methode loadAddon fails notify.
-                    Main.getInstance().getLogger().error("[AddonManager] Couldn't load the Addon {}\nException: {}", file.getName(), ex.getMessage());
+                    log.error("[AddonManager] Couldn't load the Addon {}\nException: {}", file.getName(), ex.getMessage());
                 }
             }
         }
@@ -124,7 +126,7 @@ public class AddonLoader {
                         classPath = conf.getString("main");
                     }
                 } catch (Exception e) {
-                    Main.getInstance().getLogger().error("Error while trying to pre-load the Addon {}\nException: {}", fileName, e.getMessage());
+                    log.error("Error while trying to pre-load the Addon {}\nException: {}", fileName, e.getMessage());
                     zipInputStream.closeEntry();
                 } finally {
                     zipInputStream.closeEntry();
@@ -139,7 +141,7 @@ public class AddonLoader {
 
         // Check if there is any data core data if not throw this error.
         if (name == null && classPath == null) {
-            Main.getInstance().getLogger().error("Error while trying to pre-load the Addon {}, no addon.yml given.", fileName);
+            log.error("Error while trying to pre-load the Addon {}, no addon.yml given.", fileName);
         } else {
             return new Addon(name, author, version, apiVersion, classPath, new File("addons/" + fileName));
         }

@@ -1,16 +1,17 @@
 package de.presti.ree6.sql.mapper;
 
-import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.entities.SQLEntity;
 import de.presti.ree6.sql.base.entities.SQLResponse;
 import de.presti.ree6.sql.base.entities.StoredResultSet;
 import de.presti.ree6.sql.base.utils.SQLUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 
 /**
  * This class is used to map an SQL Result into the right Class-Entity.
  */
+@Slf4j
 public class EntityMapper {
 
     /**
@@ -41,7 +42,7 @@ public class EntityMapper {
                 }
             }
         } catch (Exception e) {
-            Main.getInstance().getLogger().error("Couldn't map Entity: " + clazz.getSimpleName(), e);
+            log.error("Couldn't map Entity: " + clazz.getSimpleName(), e);
         }
 
         return new SQLResponse(null);
@@ -66,7 +67,7 @@ public class EntityMapper {
 
             return entity;
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Couldn't map Class: " + clazz.getSimpleName(), exception);
+            log.error("Couldn't map Class: " + clazz.getSimpleName(), exception);
         }
 
         return null;

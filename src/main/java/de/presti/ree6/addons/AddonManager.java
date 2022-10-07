@@ -2,6 +2,7 @@ package de.presti.ree6.addons;
 
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
  * The AddonManager has been created to save every Addon in a List to keep track of them
  * and to unload them if wanted/needed.
  */
+@Slf4j
 public class AddonManager {
 
     // The actual List with the Addons.
@@ -35,12 +37,12 @@ public class AddonManager {
      * @param addon the Local-Addon.
      */
     public void startAddon(Addon addon) {
-        Main.getInstance().getLogger().info("[AddonManager] Loading {} ({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
+        log.info("[AddonManager] Loading {} ({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
 
         // Check if it's made for the current Ree6 Version if not inform.
         if (!addon.getApiVersion().equalsIgnoreCase(BotWorker.getBuild())) {
 
-            Main.getInstance().getLogger().warn("[AddonManager] The Addon {} by {} has been developed for the Version {}, " +
+            log.warn("[AddonManager] The Addon {} by {} has been developed for the Version {}, " +
                     "which is not the same version you are using. This could mean that the addon doesn't function right!", addon.getName(), addon.getAuthor(), addon.getApiVersion());
         }
 
@@ -54,21 +56,21 @@ public class AddonManager {
 
                 // If valid call the onEnable methode.
                 if (addonClass != null) {
-                    Main.getInstance().getLogger().info("[AddonManager] Loaded {} ({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
+                    log.info("[AddonManager] Loaded {} ({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
                     AddonInterface inf = (AddonInterface) addonClass.getDeclaredConstructor().newInstance();
                     inf.onEnable();
                 } else {
                     // If not inform about an invalid Addon.
-                    Main.getInstance().getLogger().error("[AddonManager] Couldn't start the Addon {}({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
-                    Main.getInstance().getLogger().error("[AddonManager] The given Main class doesn't not implement our AddonInterface!");
+                    log.error("[AddonManager] Couldn't start the Addon {}({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
+                    log.error("[AddonManager] The given Main class doesn't not implement our AddonInterface!");
                 }
             }
 
         } catch (Exception ex) {
             // Throw an error if the Addon is invalid or corrupted.
-            Main.getInstance().getLogger().error("[AddonManager] Couldn't start the Addon {}({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
-            Main.getInstance().getLogger().error("[AddonManager] Information: {}, {}, {}", addon.getClassPath(), addon.getVersion(), addon.getApiVersion());
-            Main.getInstance().getLogger().error("[AddonManager] Exception: ", ex);
+            log.error("[AddonManager] Couldn't start the Addon {}({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
+            log.error("[AddonManager] Information: {}, {}, {}", addon.getClassPath(), addon.getVersion(), addon.getApiVersion());
+            log.error("[AddonManager] Exception: ", ex);
         }
     }
 
@@ -87,7 +89,7 @@ public class AddonManager {
      * @param addon The Local-Addon.
      */
     public void stopAddon(Addon addon) {
-        Main.getInstance().getLogger().info("[AddonManager] Unloading {} ({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
+        log.info("[AddonManager] Unloading {} ({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
 
         try {
             // Try loading the Class with a URL Class Loader.
@@ -98,20 +100,20 @@ public class AddonManager {
 
                 // If valid call the onDisable methode.
                 if (addonClass != null) {
-                    Main.getInstance().getLogger().info("[AddonManager] Unloaded {} ({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
+                    log.info("[AddonManager] Unloaded {} ({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
                     AddonInterface inf = (AddonInterface) addonClass.getDeclaredConstructor().newInstance();
                     inf.onDisable();
                 } else {
                     // If not inform about an invalid Addon.
-                    Main.getInstance().getLogger().error("[AddonManager] Couldn't stop the Addon {}({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
-                    Main.getInstance().getLogger().error("[AddonManager] The given Main class doesn't not implement our AddonInterface!");
+                    log.error("[AddonManager] Couldn't stop the Addon {}({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
+                    log.error("[AddonManager] The given Main class doesn't not implement our AddonInterface!");
                 }
             }
         } catch (Exception ex) {
             // Throw an error if the Addon is invalid or corrupted.
-            Main.getInstance().getLogger().error("[AddonManager] Couldn't stop the Addon {}({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
-            Main.getInstance().getLogger().error("[AddonManager] Information: {}, {}, {}", addon.getClassPath(), addon.getVersion(), addon.getApiVersion());
-            Main.getInstance().getLogger().error("[AddonManager] Exception: ", ex);
+            log.error("[AddonManager] Couldn't stop the Addon {}({}) by {}", addon.getName(), addon.getVersion(), addon.getAuthor());
+            log.error("[AddonManager] Information: {}, {}, {}", addon.getClassPath(), addon.getVersion(), addon.getApiVersion());
+            log.error("[AddonManager] Exception: ", ex);
         }
     }
 

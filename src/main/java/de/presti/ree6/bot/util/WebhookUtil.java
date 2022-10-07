@@ -5,10 +5,12 @@ import club.minnced.discord.webhook.send.WebhookMessage;
 import de.presti.ree6.logger.events.LogMessage;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.webhook.Webhook;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Class to handle Webhook sends.
  */
+@Slf4j
 public class WebhookUtil {
 
     /**
@@ -40,7 +42,7 @@ public class WebhookUtil {
      * @param isLog is the Webhook Message a Log-Message?
      */
     public static void sendWebhook(LogMessage loggerMessage, WebhookMessage message, long webhookId, String webhookToken, boolean isLog) {
-        Main.getInstance().getAnalyticsLogger().debug("Received a Webhook to send. (Log-Typ: {})", isLog ? loggerMessage != null ? loggerMessage.getType().name() : "NONE-LOG" : "NONE-LOG");
+        log.debug("Received a Webhook to send. (Log-Typ: {})", isLog ? loggerMessage != null ? loggerMessage.getType().name() : "NONE-LOG" : "NONE-LOG");
         // Check if the given data is valid.
         if (webhookToken.contains("Not setup!") || webhookId == 0) return;
 
@@ -50,7 +52,7 @@ public class WebhookUtil {
         // Check if the LoggerMessage is canceled.
         if (isLog && (loggerMessage == null || loggerMessage.isCanceled())) {
             // If so, inform about invalid send.
-            Main.getInstance().getLogger().error("[Webhook] Got a Invalid or canceled LoggerMessage!");
+            log.error("[Webhook] Got a Invalid or canceled LoggerMessage!");
             return;
         }
 
@@ -63,20 +65,20 @@ public class WebhookUtil {
                     // Inform and delete invalid webhook.
                     if (isLog) {
                         Main.getInstance().getSqlConnector().getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
-                        Main.getInstance().getLogger().error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
+                        log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                     } else {
-                        Main.getInstance().getLogger().error("[Webhook] Invalid Webhook: {} - {}, has not been deleted since it is not a Log-Webhook.", webhookId, webhookToken);
+                        log.error("[Webhook] Invalid Webhook: {} - {}, has not been deleted since it is not a Log-Webhook.", webhookId, webhookToken);
                     }
                 } else if (throwable.getMessage().contains("failure 400")) {
                     // If 404 inform that the Message had an invalid Body.
-                    Main.getInstance().getLogger().error("[Webhook] Invalid Body with LogTyp: {}", loggerMessage.getType().name());
+                    log.error("[Webhook] Invalid Body with LogTyp: {}", loggerMessage.getType().name());
                 }
                 return null;
             });
         } catch (Exception ex) {
             // Inform that this is an Invalid Webhook.
-            Main.getInstance().getLogger().error("[Webhook] Invalid Webhook: {} - {}", webhookId, webhookToken);
-            Main.getInstance().getLogger().error("[Webhook] Exception: ", ex);
+            log.error("[Webhook] Invalid Webhook: {} - {}", webhookId, webhookToken);
+            log.error("[Webhook] Exception: ", ex);
         }
     }
 }

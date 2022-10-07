@@ -7,6 +7,7 @@ import de.presti.ree6.sql.base.annotations.Table;
 import de.presti.ree6.sql.base.entities.SQLEntity;
 import de.presti.ree6.sql.base.entities.SQLParameter;
 import de.presti.ree6.sql.base.entities.StoredResultSet;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.BufferedReader;
@@ -18,6 +19,7 @@ import java.util.*;
 /**
  * SQLUtil class to help with SQL-Queries.
  */
+@Slf4j
 public class SQLUtil {
 
     /**
@@ -184,7 +186,7 @@ public class SQLUtil {
                             if (field.get(entity) == null)
                                 continue;
                         } catch (Exception exception) {
-                            Main.getInstance().getAnalyticsLogger().error("Could not get value of field: " + field.getName(), exception);
+                            log.error("Could not get value of field: " + field.getName(), exception);
                         }
                     }
 
@@ -208,7 +210,7 @@ public class SQLUtil {
                         if (field.get(entity) == null)
                             continue;
                     } catch (Exception exception) {
-                        Main.getInstance().getAnalyticsLogger().error("Could not get value of field: " + field.getName(), exception);
+                        log.error("Could not get value of field: " + field.getName(), exception);
                     }
                 }
 
@@ -374,7 +376,7 @@ public class SQLUtil {
 
             return cloneObject;
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Couldn't map Class: " + clazz.getSimpleName(), exception);
+            log.error("Couldn't map Class: " + clazz.getSimpleName(), exception);
             throw new IllegalStateException("Couldn't map Class: " + clazz.getSimpleName());
         }
     }
@@ -400,7 +402,7 @@ public class SQLUtil {
 
                 field.set(entity, value);
             } catch (Exception e) {
-                Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
+                log.error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
             }
         }
     }
@@ -422,7 +424,7 @@ public class SQLUtil {
 
                 field.set(entity, value);
             } catch (Exception e) {
-                Main.getInstance().getLogger().error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
+                log.error("Could not set field " + field.getName() + " of class " + clazz.getSimpleName(), e);
             }
         }
     }

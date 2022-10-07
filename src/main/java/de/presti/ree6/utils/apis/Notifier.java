@@ -28,6 +28,7 @@ import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.*;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
+import lombok.extern.slf4j.Slf4j;
 import masecla.reddit4j.client.Reddit4J;
 import masecla.reddit4j.objects.Sorting;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
@@ -48,6 +49,7 @@ import java.util.concurrent.Callable;
 /**
  * Utility class used for Event Notifiers. Such as Twitch Livestream, YouTube Upload or Twitter Tweet.
  */
+@Slf4j
 public class Notifier {
 
     /**
@@ -98,7 +100,7 @@ public class Notifier {
      * Constructor used to created instance of the API Clients.
      */
     public Notifier() {
-        Main.getInstance().getAnalyticsLogger().info("Initializing Twitch Client...");
+        log.info("Initializing Twitch Client...");
         twitchClient = TwitchClientBuilder
                 .builder()
                 .withEnableHelix(true)
@@ -107,7 +109,7 @@ public class Notifier {
                 .withEnablePubSub(true)
                 .build();
 
-        Main.getInstance().getAnalyticsLogger().info("Initializing Twitter Client...");
+        log.info("Initializing Twitter Client...");
 
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 
@@ -120,7 +122,7 @@ public class Notifier {
 
         twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
 
-        Main.getInstance().getAnalyticsLogger().info("Initializing Reddit Client...");
+        log.info("Initializing Reddit Client...");
 
         redditClient = Reddit4J
                 .rateLimited()
@@ -132,15 +134,15 @@ public class Notifier {
             redditClient.userlessConnect();
             createRedditPostStream();
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Failed to connect to Reddit API.", exception);
+            log.error("Failed to connect to Reddit API.", exception);
         }
 
-        Main.getInstance().getAnalyticsLogger().info("Initializing Instagram Client...");
+        log.info("Initializing Instagram Client...");
 
         // Callable that returns inputted code from System.in
         Callable<String> inputCode = () -> {
             Scanner scanner = new Scanner(System.in);
-            Main.getInstance().getLogger().error("Please input code: ");
+            log.error("Please input code: ");
             String code = scanner.nextLine();
             scanner.close();
             return code;
@@ -151,12 +153,12 @@ public class Notifier {
 
         instagramClient = IGClient.builder().username(Main.getInstance().getConfig().getConfiguration().getString("instagram.username")).password(Main.getInstance().getConfig().getConfiguration().getString("instagram.password")).onChallenge(challengeHandler).build();
         instagramClient.sendLoginRequest().exceptionally(throwable -> {
-            Main.getInstance().getLogger().error("Failed to login to Instagram API.", throwable);
+            log.error("Failed to login to Instagram API.", throwable);
             return null;
         });
         createInstagramPostStream();
 
-        Main.getInstance().getAnalyticsLogger().info("Initializing YouTube Streams...");
+        log.info("Initializing YouTube Streams...");
         createUploadStream();
 
         ThreadUtil.createNewThread(x -> {
@@ -184,7 +186,7 @@ public class Notifier {
                     }
                 }
             }
-        }, x -> Main.getInstance().getLogger().error("Failed to run Follower count checker!", x.getCause()), Duration.ofMinutes(5), true, true);
+        }, x -> log.error("Failed to run Follower count checker!", x.getCause()), Duration.ofMinutes(5), true, true);
     }
 
     //region Twitch
@@ -429,7 +431,7 @@ public class Notifier {
                      */
                     @Override
                     public void onException(Exception ex) {
-                        Main.getInstance().getLogger().error("[Notifier] Encountered an error, while trying to get the Status update!", ex);
+                        log.error("[Notifier] Encountered an error, while trying to get the Status update!", ex);
                     }
                 })
                 .filter(filterQuery);
@@ -544,11 +546,11 @@ public class Notifier {
                     }
                 }
             } catch (GoogleJsonResponseException googleJsonResponseException) {
-                Main.getInstance().getAnalyticsLogger().error("Encountered an error, while trying to get the YouTube Uploads!", googleJsonResponseException);
+                log.error("Encountered an error, while trying to get the YouTube Uploads!", googleJsonResponseException);
             } catch (Exception e) {
-                Main.getInstance().getLogger().error("Couldn't get upload data!", e);
+                log.error("Couldn't get upload data!", e);
             }
-        }, x -> Main.getInstance().getLogger().error("Couldn't start upload Stream!"), Duration.ofMinutes(5), true, true);
+        }, x -> log.error("Couldn't start upload Stream!"), Duration.ofMinutes(5), true, true);
     }
 
     /**
@@ -669,9 +671,9 @@ public class Notifier {
                     });
                 }
             } catch (Exception exception) {
-                Main.getInstance().getAnalyticsLogger().error("Could not get Reddit Posts!", exception);
+                log.error("Could not get Reddit Posts!", exception);
             }
-        }, x -> Main.getInstance().getLogger().error("Couldn't start Reddit Stream!"), Duration.ofMinutes(5), true, true);
+        }, x -> log.error("Couldn't start Reddit Stream!"), Duration.ofMinutes(5), true, true);
     }
 
     /**
@@ -809,11 +811,11 @@ public class Notifier {
                         }
                     }
                 }).exceptionally(exception -> {
-                    Main.getInstance().getAnalyticsLogger().error("Could not get Instagram User!", exception);
+                    log.error("Could not get Instagram User!", exception);
                     return null;
                 }).join();
             }
-        }, x -> Main.getInstance().getLogger().error("Couldn't start Instagram Stream!"), Duration.ofMinutes(5), true, true);
+        }, x -> log.error("Couldn't start Instagram Stream!"), Duration.ofMinutes(5), true, true);
     }
 
     /**

@@ -1,6 +1,7 @@
 package de.presti.ree6.utils.apis;
 
 import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.ParseException;
 import se.michaelthelin.spotify.*;
 import se.michaelthelin.spotify.exceptions.*;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
  *
  * @author Kay-Bilger
  */
+@Slf4j
 public class SpotifyAPIHandler {
 
     /**
@@ -37,7 +39,7 @@ public class SpotifyAPIHandler {
         try {
             initSpotify();
         } catch (ParseException | SpotifyWebApiException | IOException e) {
-            Main.getInstance().getLogger().error("Couldn't create a Spotify Instance", e);
+            log.error("Couldn't create a Spotify Instance", e);
         }
         instance = this;
     }

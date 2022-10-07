@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -22,6 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * This class schedules tracks for the audio player. It contains the queue of
  * tracks.
  */
+@Slf4j
 @SuppressWarnings("ALL")
 public class TrackScheduler extends AudioEventAdapter {
     /**
@@ -65,7 +67,7 @@ public class TrackScheduler extends AudioEventAdapter {
         // track goes to the queue instead.
         if (!player.startTrack(track, true)) {
             if (!queue.offer(track)) {
-                Main.getInstance().getLogger().error("[TrackScheduler] Couldn't offer a new Track!");
+                log.error("[TrackScheduler] Couldn't offer a new Track!");
             }
         }
     }

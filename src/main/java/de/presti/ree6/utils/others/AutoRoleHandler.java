@@ -1,6 +1,7 @@
 package de.presti.ree6.utils.others;
 
 import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -10,6 +11,7 @@ import java.util.Map;
 /**
  * Utility class used to handle Roles that should be added to Members automatically.
  */
+@Slf4j
 public class AutoRoleHandler {
 
     /**
@@ -33,8 +35,8 @@ public class AutoRoleHandler {
 
         ThreadUtil.createNewThread(x -> {
             if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
-                Main.getInstance().getLogger().error("[AutoRole] Failed to give a role, when someone joined the Guild!");
-                Main.getInstance().getLogger().error("[AutoRole] Server: {}", guild.getName());
+                log.error("[AutoRole] Failed to give a role, when someone joined the Guild!");
+                log.error("[AutoRole] Server: {}", guild.getName());
 
                 if (guild.getOwner() != null)
                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
@@ -87,8 +89,8 @@ public class AutoRoleHandler {
             long level = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(guild.getId(), member.getUser().getId()).getLevel();
 
             if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
-                Main.getInstance().getLogger().error("[AutoRole] Failed to give a role, when someone leveled up in Voice!");
-                Main.getInstance().getLogger().error("[AutoRole] Server: {}", guild.getName());
+                log.error("[AutoRole] Failed to give a role, when someone leveled up in Voice!");
+                log.error("[AutoRole] Server: {}", guild.getName());
 
                 if (guild.getOwner() != null)
                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel -> privateChannel.
@@ -146,8 +148,8 @@ public class AutoRoleHandler {
             long level = (Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(guild.getId(), member.getUser().getId()).getLevel());
 
             if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
-                Main.getInstance().getLogger().error("[AutoRole] Failed to give a Role, when someone leveled up in Chat!");
-                Main.getInstance().getLogger().error("[AutoRole] Server: {}", guild.getName());
+                log.error("[AutoRole] Failed to give a Role, when someone leveled up in Chat!");
+                log.error("[AutoRole] Server: {}", guild.getName());
 
                 if (guild.getOwner() != null)
                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel -> privateChannel.
@@ -202,8 +204,8 @@ public class AutoRoleHandler {
                 guild.addRoleToMember(member, role).queue();
             }
         } else {
-            Main.getInstance().getLogger().error("[AutoRole] Failed to give a Role!");
-            Main.getInstance().getLogger().error("[AutoRole] Server: {}", guild.getName());
+            log.error("[AutoRole] Failed to give a Role!");
+            log.error("[AutoRole] Server: {}", guild.getName());
             if (guild.getOwner() != null)
                 guild.getOwner().getUser().openPrivateChannel().queue(privateChannel -> privateChannel.
                         sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
