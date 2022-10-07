@@ -39,9 +39,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateTimeOutEvent;
 import net.dv8tion.jda.api.events.guild.update.GuildUpdateVanityCodeEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
@@ -359,99 +357,88 @@ public class LoggingEvents extends ListenerAdapter {
 
     //region Voice
 
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
-
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
-                !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_voicejoin").getBooleanValue())
-            return;
-
-
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
-
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6-Logs");
-
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
-        we.setTimestamp(Instant.now());
-        we.setDescription(event.getEntity().getUser().getAsMention() + " **joined the Voicechannel** " + event.getChannelJoined().getAsMention());
-
-        wm.addEmbeds(we.build());
-
-        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_JOIN, event.getEntity(), event.getChannelJoined()));
-    }
 
     /**
      * @inheritDoc
      */
     @Override
-    public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
+    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
+        super.onGuildVoiceUpdate(event);
+        if (event.getChannelLeft() == null) {
+            if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
+                    !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_voicejoin").getBooleanValue())
+                return;
 
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
-                !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_voicemove").getBooleanValue())
-            return;
 
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+            WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6-Logs");
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+            wm.setUsername("Ree6-Logs");
 
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
-        we.setTimestamp(Instant.now());
-        we.setDescription(event.getEntity().getUser().getAsMention() + " **switched the Voicechannel from** " + event.getChannelLeft().getAsMention() + " **to** " + event.getChannelJoined().getAsMention() + "**.**");
+            WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+            we.setColor(Color.BLACK.getRGB());
+            we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
+            we.setTimestamp(Instant.now());
+            we.setDescription(event.getEntity().getUser().getAsMention() + " **joined the Voicechannel** " + event.getChannelJoined().getAsMention());
 
-        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_VOICE_MOVE).limit(5).stream().filter(auditLogEntry ->
-                auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
+            wm.addEmbeds(we.build());
 
-        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
+            Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+            Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_JOIN, event.getEntity(), event.getChannelJoined()));
+        } else if (event.getChannelJoined() == null) {
+            if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
+                    !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_voiceleave").getBooleanValue())
+                return;
 
-        wm.addEmbeds(we.build());
+            WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_MOVE, event.getEntity(), event.getChannelLeft(), event.getChannelJoined()));
-    }
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+            wm.setUsername("Ree6-Logs");
 
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
+            WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+            we.setColor(Color.BLACK.getRGB());
+            we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
+            we.setTimestamp(Instant.now());
+            we.setDescription(event.getEntity().getUser().getAsMention() + " **left the Voicechannel ** " + event.getChannelLeft().getAsMention());
 
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
-                !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_voiceleave").getBooleanValue())
-            return;
+            AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_VOICE_KICK).limit(5).stream().filter(auditLogEntry ->
+                    auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
 
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+            if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername("Ree6-Logs");
+            wm.addEmbeds(we.build());
 
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
-        we.setTimestamp(Instant.now());
-        we.setDescription(event.getEntity().getUser().getAsMention() + " **left the Voicechannel ** " + event.getChannelLeft().getAsMention());
+            Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+            Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_LEAVE, event.getEntity(), event.getChannelLeft()));
+        } else {
+            if (!Main.getInstance().getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
+                    !Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_voicemove").getBooleanValue())
+                return;
 
-        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_VOICE_KICK).limit(5).stream().filter(auditLogEntry ->
-                auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
+            WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+            wm.setUsername("Ree6-Logs");
 
-        wm.addEmbeds(we.build());
+            WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+            we.setColor(Color.BLACK.getRGB());
+            we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
+            we.setTimestamp(Instant.now());
+            we.setDescription(event.getEntity().getUser().getAsMention() + " **switched the Voicechannel from** " + event.getChannelLeft().getAsMention() + " **to** " + event.getChannelJoined().getAsMention() + "**.**");
 
-        Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_LEAVE, event.getEntity(), event.getChannelLeft()));
+            AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_VOICE_MOVE).limit(5).stream().filter(auditLogEntry ->
+                    auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
+
+            if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**Actor**", entry.getUser().getAsMention()));
+
+            wm.addEmbeds(we.build());
+
+            Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+            Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_MOVE, event.getEntity(), event.getChannelLeft(), event.getChannelJoined()));
+        }
     }
 
     //endregion
