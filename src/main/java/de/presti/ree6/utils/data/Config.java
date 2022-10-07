@@ -33,11 +33,13 @@ public class Config {
                     #                              #
                     ################################
                     """);
-            yamlFile.addDefault("mysql.user", "root");
-            yamlFile.addDefault("mysql.db", "root");
-            yamlFile.addDefault("mysql.pw", "yourpw");
-            yamlFile.addDefault("mysql.host", "localhost");
-            yamlFile.addDefault("mysql.port", 3306);
+            yamlFile.addDefault("hikari.sql.user", "root");
+            yamlFile.addDefault("hikari.sql.db", "root");
+            yamlFile.addDefault("hikari.sql.pw", "yourpw");
+            yamlFile.addDefault("hikari.sql.host", "localhost");
+            yamlFile.addDefault("hikari.sql.port", 3306);
+            yamlFile.addDefault("hikari.misc.storage", "sqllite");
+            yamlFile.addDefault("hikari.misc.poolSize", 10);
             yamlFile.addDefault("dagpi.apitoken", "yourdagpixyztokenhere");
             yamlFile.addDefault("sentry.dsn", "yourSentryDSNHere");
             yamlFile.addDefault("spotify.client.id", "yourspotifyclientid");

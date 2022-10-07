@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A command to either reload all Addons or list all of them.
  */
-@Command(name = "addon", description = "Only meant for Developers, used to reload or load new Addons.", category = Category.HIDDEN)
+@Command(name = "addon", description = "command.description.addon", category = Category.HIDDEN)
 public class Addon implements ICommand {
 
     /**

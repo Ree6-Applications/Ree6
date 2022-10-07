@@ -17,7 +17,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A command to kick a user from the server.
  */
-@Command(name = "kick", description = "Kick a specific user from the Server.", category = Category.MOD)
+@Command(name = "kick", description = "command.description.kick", category = Category.MOD)
 public class Kick implements ICommand {
 
     /**

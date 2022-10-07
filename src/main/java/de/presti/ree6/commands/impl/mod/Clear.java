@@ -16,7 +16,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A command to clear messages.
  */
-@Command(name = "clear", description = "Clear the current Chat.", category = Category.MOD)
+@Command(name = "clear", description = "command.description.clear", category = Category.MOD)
 public class Clear implements ICommand {
 
     /**

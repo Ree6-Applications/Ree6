@@ -7,14 +7,19 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -81,17 +86,25 @@ public class CommandManager {
                 commandData = new CommandDataImpl(command.getClass().getAnnotation(Command.class).name(), command.getClass().getAnnotation(Command.class).description());
             }
 
-            if (commandData != null) {
+            for (DiscordLocale discordLocale : DiscordLocale.values()) {
+                if (!LanguageService.languageResources.containsKey(discordLocale)) continue;
 
-                if (commandAnnotation.category() == Category.MOD) {
-                    commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+                String description = LanguageService.getByLocale(discordLocale, command.getClass().getAnnotation(Command.class).description() + "_slash");
+                if (description.equals("Missing language resource!")) {
+                    description = LanguageService.getByLocale(discordLocale, command.getClass().getAnnotation(Command.class).description());
                 }
 
-                commandData.setGuildOnly(true);
-
-                //noinspection ResultOfMethodCallIgnored
-                listUpdateAction.addCommands(commandData);
+                commandData.setNameLocalization(discordLocale, description);
             }
+
+            if (commandAnnotation.category() == Category.MOD) {
+                commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+            }
+
+            commandData.setGuildOnly(true);
+
+            //noinspection ResultOfMethodCallIgnored
+            listUpdateAction.addCommands(commandData);
         }
 
         listUpdateAction.queue();
@@ -170,10 +183,10 @@ public class CommandManager {
 
             // Check if it is a Slash Command or not.
             if (slashCommandInteractionEvent != null) {
-                sendMessage("You are on cooldown!", 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown"), 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 deleteMessage(message, slashCommandInteractionEvent.getHook().setEphemeral(true));
             } else if (messageContent.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase())) {
-                sendMessage("You are on cooldown!", 5, textChannel, null);
+                sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown"), 5, textChannel, null);
                 deleteMessage(message, null);
             }
 
@@ -193,12 +206,12 @@ public class CommandManager {
         }
 
         // Check if this is a Developer build, if not then cooldown the User.
-        if (BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD) {
+        if (!BotWorker.getVersion().isDebug()) {
             ThreadUtil.createNewThread(x -> ArrayUtil.commandCooldown.remove(member.getUser().getId()), null, Duration.ofSeconds(5), false, false);
         }
 
         // Add them to the Cooldown.
-        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD) {
+        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && !BotWorker.getVersion().isDebug()) {
             ArrayUtil.commandCooldown.add(member.getUser().getId());
         }
 
@@ -219,7 +232,7 @@ public class CommandManager {
     private boolean performMessageCommand(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel) {
         // Check if the Message is null.
         if (message == null) {
-            sendMessage("There was an error while executing the Command!", 5, textChannel, null);
+            sendMessage(LanguageService.getByGuild(guild, "command.perform.error"), 5, textChannel, null);
             return false;
         }
 
@@ -238,14 +251,14 @@ public class CommandManager {
 
         // Check if there is even a Command with that name.
         if (command == null) {
-            sendMessage("That Command couldn't be found", 5, textChannel, null);
+            sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound"), 5, textChannel, null);
             return false;
         }
 
         // Check if the Command is blacklisted.
         if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() &&
                 command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-            sendMessage("This Command is blocked!", 5, textChannel, null);
+            sendMessage(LanguageService.getByGuild(guild, "command.perform.blocked"), 5, textChannel, null);
             return false;
         }
 
@@ -270,13 +283,13 @@ public class CommandManager {
 
         // Check if there is a command with that Name.
         if (command == null || slashCommandInteractionEvent.getGuild() == null || slashCommandInteractionEvent.getMember() == null) {
-            sendMessage("That Command couldn't be found", 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+            sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.notFound"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
             return false;
         }
 
         // Check if the command is blocked or not.
         if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-            sendMessage("This Command is blocked!", 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+            sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
             return false;
         }
 

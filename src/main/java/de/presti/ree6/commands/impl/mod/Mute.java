@@ -19,7 +19,7 @@ import java.time.Duration;
 /**
  * A command to mute a user.
  */
-@Command(name = "mute", description = "Mute a specific user on the Server.", category = Category.MOD)
+@Command(name = "mute", description = "command.description.mute", category = Category.MOD)
 public class Mute implements ICommand {
 
     /**

@@ -21,7 +21,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A command to help the user navigate.
  */
-@Command(name = "help", description = "Shows a list of every Command!", category = Category.INFO)
+@Command(name = "help", description = "command.description.help", category = Category.INFO)
 public class Help implements ICommand {
 
     /**
@@ -79,7 +79,7 @@ public class Help implements ICommand {
                             .append(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue())
                             .append(cmd.getClass().getAnnotation(Command.class).name())
                             .append("``\n")
-                            .append(cmd.getClass().getAnnotation(Command.class).description())
+                            .append(commandEvent.getResource(cmd.getClass().getAnnotation(Command.class).description()))
                             .append("\n\n");
                 }
 

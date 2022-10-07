@@ -17,7 +17,7 @@ import java.awt.*;
 /**
  * Get information about the current Song.
  */
-@Command(name = "songinfo", description = "Get the current playing Track!", category = Category.MUSIC)
+@Command(name = "songinfo", description = "command.description.songinfo", category = Category.MUSIC)
 public class SongInfo implements ICommand {
 
     /**

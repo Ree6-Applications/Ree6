@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A command to opt-out of data collection.
  */
-@Command(name = "optout", description = "Opts you out of any data collection on this Guild.", category = Category.INFO)
+@Command(name = "optout", description = "command.description.optout", category = Category.INFO)
 public class Optout implements ICommand {
 
     /**

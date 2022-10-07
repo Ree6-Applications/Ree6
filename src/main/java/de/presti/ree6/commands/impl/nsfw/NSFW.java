@@ -7,13 +7,13 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.time.Duration;
@@ -24,7 +24,7 @@ import java.util.Locale;
 /**
  * A command to show NSFW-Image from r/hentai.
  */
-@Command(name = "nsfw", description = "Get NSFW Image from reddit", category = Category.NSFW)
+@Command(name = "nsfw", description = "command.description.nsfw", category = Category.NSFW)
 public class NSFW implements ICommand {
 
     /**
@@ -35,7 +35,7 @@ public class NSFW implements ICommand {
         if (commandEvent.getChannel().getType() == ChannelType.TEXT && commandEvent.getChannel().asTextChannel().isNSFW()) {
             sendImage(commandEvent);
         } else {
-            Main.getInstance().getCommandManager().sendMessage("Only available in NSFW Channels!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.onlyNSFW"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 
@@ -49,7 +49,7 @@ public class NSFW implements ICommand {
                 commandEvent.getInteractionHook().sendMessage("Searching for Image...").complete() :
                 commandEvent.getChannel().sendMessage("Searching for Image...").complete();
 
-        JsonElement jsonElement = RequestUtility.request(RequestUtility.Request.builder().url("https://www.reddit.com/r/hentai/new.json?sort=hot&limit=50").build());
+        JsonElement jsonElement = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://www.reddit.com/r/hentai/new.json?sort=hot&limit=50").build());
 
         if (jsonElement.isJsonObject() &&
                 jsonElement.getAsJsonObject().has("data") &&

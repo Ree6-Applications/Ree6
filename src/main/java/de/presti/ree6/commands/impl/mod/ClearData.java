@@ -17,7 +17,7 @@ import java.util.ArrayList;
 /**
  * A command to clear the Invite-Data stored.
  */
-@Command(name = "cleardata", category = Category.MOD, description = "Clear currently stored Invite logs.")
+@Command(name = "cleardata", category = Category.MOD, description = "command.description.clearData")
 public class ClearData implements ICommand {
 
     /**

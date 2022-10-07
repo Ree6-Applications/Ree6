@@ -18,7 +18,7 @@ import java.time.Instant;
 /**
  * Command to send an Embed.
  */
-@Command(name = "embed", description = "Send an Embed!", category = Category.MOD)
+@Command(name = "embed", description = "command.description.embedSender", category = Category.MOD)
 public class EmbedSender implements ICommand {
 
     /**
