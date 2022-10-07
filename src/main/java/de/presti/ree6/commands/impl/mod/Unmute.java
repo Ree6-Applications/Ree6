@@ -17,7 +17,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A command to unmute a user.
  */
-@Command(name = "unmute", description = "Unmute a specific user on the Server.", category = Category.MOD)
+@Command(name = "unmute", description = "command.description.unmute", category = Category.MOD)
 public class Unmute implements ICommand {
 
     /**

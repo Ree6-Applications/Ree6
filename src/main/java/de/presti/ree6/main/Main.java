@@ -23,6 +23,7 @@ import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
 import de.presti.ree6.utils.others.LoggerUtil;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.entities.Activity;
@@ -149,6 +150,12 @@ public class Main {
             System.exit(0);
         }
 
+        instance.logger.info("Starting preparations of the Bot...");
+
+        LanguageService.downloadLanguages();
+
+        instance.logger.info("Finished preparations of the Bot!");
+
         instance.logger.info("Starting Ree6!");
 
         instance.logger.info("Creating Sentry Instance.");
@@ -157,9 +164,9 @@ public class Main {
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> Sentry.captureException(e));
 
         // Create a new connection between the Application and the SQL-Server.
-        instance.sqlConnector = new SQLConnector(instance.config.getConfiguration().getString("mysql.user"),
-                instance.config.getConfiguration().getString("mysql.db"), instance.config.getConfiguration().getString("mysql.pw"),
-                instance.config.getConfiguration().getString("mysql.host"), instance.config.getConfiguration().getInt("mysql.port"));
+        instance.sqlConnector = new SQLConnector(instance.config.getConfiguration().getString("hikari.sql.user"),
+                instance.config.getConfiguration().getString("hikari.sql.db"), instance.config.getConfiguration().getString("hikari.sql.pw"),
+                instance.config.getConfiguration().getString("hikari.sql.host"), instance.config.getConfiguration().getInt("hikari.sql.port"));
 
         try {
             // Create the Command-Manager instance.

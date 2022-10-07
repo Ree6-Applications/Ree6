@@ -1,11 +1,14 @@
 package de.presti.ree6.utils.external;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonStreamParser;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.main.Main;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -32,9 +35,9 @@ public class RequestUtility {
      * Send a Request.
      *
      * @param request the Request.
-     * @return an {@link JsonElement}.
+     * @return an {@link InputStream}.
      */
-    public static JsonElement request(Request request) {
+    public static InputStream request(Request request) {
 
         HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder()
                 .uri(request.getUri())
@@ -62,29 +65,63 @@ public class RequestUtility {
             httpRequestBuilder = httpRequestBuilder.PUT(request.bodyPublisher);
         }
 
-        JsonElement jsonObject = new JsonObject();
-
         if (httpRequestBuilder == null) {
-            jsonObject.getAsJsonObject().addProperty("success", false);
-            return jsonObject;
+            return null;
         }
 
         HttpRequest httpRequest = httpRequestBuilder.build();
 
         if (httpRequest == null) {
-            jsonObject.getAsJsonObject().addProperty("success", false);
-            return jsonObject;
+            return null;
         }
 
         try {
-            HttpResponse<String> httpResponse = CLIENT.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<InputStream> httpResponse = CLIENT.send(httpRequest, HttpResponse.BodyHandlers.ofInputStream());
 
             if (httpResponse.statusCode() == 200) {
-                jsonObject = new GsonBuilder().create().fromJson(httpResponse.body(), JsonElement.class);
+                return httpResponse.body();
             }
 
         } catch (Exception ex) {
             Main.getInstance().getLogger().error("Couldn't send a Request!", ex);
+        }
+
+        return null;
+    }
+
+    /**
+     * Send a Request.
+     *
+     * @param request the Request.
+     * @return an {@link JsonElement}.
+     */
+    public static JsonElement requestJson(Request request) {
+        JsonElement jsonObject = new JsonObject();
+        try (InputStream httpResponse = request(request)) {
+
+            if (httpResponse == null) {
+                jsonObject.getAsJsonObject().addProperty("success", false);
+                return jsonObject;
+            }
+
+            try {
+
+                JsonStreamParser jsonStreamParser = new JsonStreamParser(new InputStreamReader(httpResponse));
+                if (jsonStreamParser.hasNext()) {
+                    jsonObject = jsonStreamParser.next();
+                } else {
+                    jsonObject.getAsJsonObject().addProperty("success", false);
+                }
+
+                return jsonObject;
+
+            } catch (Exception ex) {
+                Main.getInstance().getLogger().error("Couldn't send a Request!", ex);
+            }
+        } catch (IOException e) {
+            Main.getInstance().getLogger().error("Couldn't send a Request!", e);
+            jsonObject.getAsJsonObject().addProperty("success", false);
+            return jsonObject;
         }
 
         return jsonObject;
@@ -270,6 +307,7 @@ public class RequestUtility {
 
             /**
              * Build the Request.
+             *
              * @return the Request.
              */
             public Request build() {

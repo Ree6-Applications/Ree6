@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * A command to show the user's information.
  */
-@Command(name = "info", description = "Shows user specific information.", category = Category.INFO)
+@Command(name = "info", description = "command.description.info", category = Category.INFO)
 public class Info implements ICommand {
 
     /**

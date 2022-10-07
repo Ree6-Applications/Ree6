@@ -12,8 +12,8 @@ import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -26,7 +26,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * A command to show NSFW-Image from rule34.xxx.
  */
-@Command(name = "r34", description = "Get NSFW Image from rule34.xxx", category = Category.NSFW)
+@Command(name = "r34", description = "command.description.rule34", category = Category.NSFW)
 public class Rule34 implements ICommand {
 
     /**
@@ -39,7 +39,7 @@ public class Rule34 implements ICommand {
 
             sendMessage(commandEvent);
         } else {
-            Main.getInstance().getCommandManager().sendMessage("Only available in NSFW Channels!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.onlyNSFW"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
     }
 
@@ -91,7 +91,7 @@ public class Rule34 implements ICommand {
      */
     public void sendImage(CommandEvent commandEvent, Message message, String tags) {
         final JsonElement jsonElement =
-                RequestUtility.request(RequestUtility.Request.builder().url("https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=50" + tags).build());
+                RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=50" + tags).build());
 
         if (jsonElement != null && jsonElement.isJsonArray()) {
             final JsonArray array = jsonElement.getAsJsonArray();

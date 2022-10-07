@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 /**
  * A command to show you an invitation link for Ree6.
  */
-@Command(name = "invite", description = "Retrieve an Invite link for Ree6!", category = Category.INFO)
+@Command(name = "invite", description = "command.description.invite", category = Category.INFO)
 public class Invite implements ICommand {
 
     /**

@@ -18,7 +18,7 @@ import java.awt.*;
 /**
  * Set the Volume of the AudioPlayer of Ree6.
  */
-@Command(name = "volume", description = "Change the current Volume.", category = Category.MUSIC)
+@Command(name = "volume", description = "command.description.volume", category = Category.MUSIC)
 public class Volume implements ICommand {
 
     /**

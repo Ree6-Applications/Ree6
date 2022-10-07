@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 /**
  * A command to get information about how to contact the Support of Ree6.
  */
-@Command(name = "support", description = "Get an Invite to the Support Server of Ree6!", category = Category.INFO)
+@Command(name = "support", description = "command.description.support", category = Category.INFO)
 public class Support implements ICommand {
 
     /**

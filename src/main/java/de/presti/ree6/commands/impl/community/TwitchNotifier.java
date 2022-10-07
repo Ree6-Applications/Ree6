@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A Command to activate Twitch Notifications.
  */
-@Command(name = "twitch", description = "Manage your Twitch-Notifier!", category = Category.COMMUNITY)
+@Command(name = "twitch", description = "command.description.twitch", category = Category.COMMUNITY)
 public class TwitchNotifier implements ICommand {
 
     /**
@@ -21,11 +21,11 @@ public class TwitchNotifier implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
-            Main.getInstance().getCommandManager().sendMessage("I need the permission `Manage Webhooks` to use this command!", commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()), commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
 
         if (commandEvent.isSlashCommand()) {
-            Main.getInstance().getCommandManager().sendMessage("This Command doesn't support slash commands yet.", commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.perform.slashNotSupported"), commandEvent.getChannel(), commandEvent.getInteractionHook());
             return;
         }
 

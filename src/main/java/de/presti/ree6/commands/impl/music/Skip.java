@@ -14,7 +14,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * Skip the current Song.
  */
-@Command(name = "skip", description = "Skip the current Song.", category = Category.MUSIC)
+@Command(name = "skip", description = "command.description.skip", category = Category.MUSIC)
 public class Skip implements ICommand {
 
     /**

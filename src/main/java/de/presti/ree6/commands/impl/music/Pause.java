@@ -14,7 +14,7 @@ import java.awt.*;
 /**
  * Pauses the current Song.
  */
-@Command(name = "pause", description = "Pause the current playing Song.", category = Category.MUSIC)
+@Command(name = "pause", description = "command.description.pause", category = Category.MUSIC)
 public class Pause implements ICommand {
 
     /**

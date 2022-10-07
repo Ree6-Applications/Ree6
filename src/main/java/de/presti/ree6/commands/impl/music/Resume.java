@@ -14,7 +14,7 @@ import java.awt.*;
 /**
  * Resume a Song.
  */
-@Command(name = "resume", description = "Resume the current Music Player.", category = Category.MUSIC)
+@Command(name = "resume", description = "command.description.resume", category = Category.MUSIC)
 public class Resume implements ICommand {
 
     /**

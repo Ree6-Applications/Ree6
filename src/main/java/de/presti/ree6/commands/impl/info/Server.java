@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * A command to show you some info about the Server.
  */
-@Command(name = "server", description = "See server specific information.", category = Category.INFO)
+@Command(name = "server", description = "command.description.server", category = Category.INFO)
 public class Server implements ICommand {
 
     /**

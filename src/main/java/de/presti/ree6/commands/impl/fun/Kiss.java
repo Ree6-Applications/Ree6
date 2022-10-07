@@ -18,7 +18,7 @@ import pw.aru.api.nekos4j.image.ImageProvider;
 /**
  * A command to send someone a kiss.
  */
-@Command(name = "kiss", description = "Kiss someone", category = Category.FUN)
+@Command(name = "kiss", description = "command.description.kiss", category = Category.FUN)
 public class Kiss implements ICommand {
 
     /**

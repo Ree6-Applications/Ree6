@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A command to let the bot say Pong.
  */
-@Command(name = "ping", description = "Pong!", category = Category.FUN)
+@Command(name = "ping", description = "command.description.ping", category = Category.FUN)
 public class Ping implements ICommand {
 
     /**

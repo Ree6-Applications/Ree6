@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A Command to activate Instagram Notifications.
  */
-@Command(name = "instagramnotifier", description = "Manage your Instagram-Notifier!", category = Category.COMMUNITY)
+@Command(name = "instagramnotifier", description = "command.description.instagramNotifier", category = Category.COMMUNITY)
 public class InstagramNotifier implements ICommand {
 
     /**
@@ -21,11 +21,11 @@ public class InstagramNotifier implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
-            Main.getInstance().getCommandManager().sendMessage("I need the permission `Manage Webhooks` to use this command!", commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()), commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
 
         if (commandEvent.isSlashCommand()) {
-            Main.getInstance().getCommandManager().sendMessage("This Command doesn't support slash commands yet.", commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.perform.slashNotSupported"), commandEvent.getChannel(), commandEvent.getInteractionHook());
             return;
         }
 
@@ -42,13 +42,13 @@ public class InstagramNotifier implements ICommand {
                 Main.getInstance().getCommandManager().sendMessage(end.toString(), 10, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "instagramnotifier list/add/remove", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue(), "instagramnotifier list/add/remove"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else if(commandEvent.getArguments().length == 3) {
 
             if (commandEvent.getMessage().getMentions().getChannels(TextChannel.class).isEmpty() ||
                     !commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "instagramnotifier add/remove InstagramName #Channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage("command.message.default.noMention.channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 return;
             }
 

@@ -14,7 +14,7 @@ import java.awt.*;
 /**
  * Set the Song onto Loop.
  */
-@Command(name = "loop", description = "Loop the current song!", category = Category.MUSIC)
+@Command(name = "loop", description = "command.description.loop", category = Category.MUSIC)
 public class Loop implements ICommand {
 
     /**

@@ -14,7 +14,7 @@ import java.awt.*;
 /**
  * Clears the Queue.
  */
-@Command(name = "clearqueue", description = "Clear the current Song-Queue of Ree6.", category = Category.MUSIC)
+@Command(name = "clearqueue", description = "command.description.clearQueue", category = Category.MUSIC)
 public class Clearqueue implements ICommand {
 
     /**

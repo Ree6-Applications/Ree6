@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * A command used to search for animes!
  */
-@Command(name = "anime", description = "Search for animes on kitsu.io!", category = Category.FUN)
+@Command(name = "anime", description = "command.description.anime", category = Category.FUN)
 public class Anime implements ICommand {
 
     /**
@@ -32,8 +32,8 @@ public class Anime implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         Message message = commandEvent.isSlashCommand() ?
-                commandEvent.getInteractionHook().sendMessage("Searching for the Anime...").complete() :
-                commandEvent.getChannel().sendMessage("Searching for the Anime...").complete();
+                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.anime.searching")).complete() :
+                commandEvent.getChannel().sendMessage(commandEvent.getResource("command.message.anime.searching")).complete();
 
         String[] args = commandEvent.getArguments();
 
@@ -54,7 +54,7 @@ public class Anime implements ICommand {
         if (args.length > 0) {
             sendAnime(commandEvent, message, builder.toString());
         } else {
-            message.editMessage("Please provide a query!").queue();
+            message.editMessage(commandEvent.getResource("command.message.default.invalidQuery")).queue();
         }
     }
 
@@ -68,7 +68,7 @@ public class Anime implements ICommand {
         RequestUtility.Request request = RequestUtility.Request.builder()
                 .url("https://kitsu.io/api/edge/anime?filter[text]=" + URLEncoder.encode(query, StandardCharsets.UTF_8))
                 .build();
-        JsonElement jsonElement = RequestUtility.request(request);
+        JsonElement jsonElement = RequestUtility.requestJson(request);
 
         if (jsonElement != null &&
                 jsonElement.isJsonObject() &&
@@ -141,7 +141,7 @@ public class Anime implements ICommand {
             em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
             if (commandEvent.isSlashCommand()) {
-                message.editMessage("Anime found!").queue();
+                message.editMessage(commandEvent.getResource("command.message.anime.found")).queue();
                 Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), null);
             } else {
                 message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage("Anime found!").queue());

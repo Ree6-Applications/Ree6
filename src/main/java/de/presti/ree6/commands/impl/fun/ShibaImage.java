@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A command that shows random Shiba inu images, from shibe.online
  */
-@Command(name = "randomshiba", description = "Shows a random shiba image, from shiba.online .", category = Category.FUN)
+@Command(name = "randomshiba", description = "command.description.shiba", category = Category.FUN)
 public class ShibaImage implements ICommand {
 
     /**
@@ -23,7 +23,7 @@ public class ShibaImage implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        JsonArray js = RequestUtility.request(RequestUtility.Request.builder().url("https://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true").build()).getAsJsonArray();
+        JsonArray js = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true").build()).getAsJsonArray();
 
         EmbedBuilder em = new EmbedBuilder();
 

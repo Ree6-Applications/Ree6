@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * Sends a gif of a monkey with a quote.
  */
-@Command(name = "monke", description = "Shows monke.", category = Category.FUN)
+@Command(name = "monke", description = "command.description.monke", category = Category.FUN)
 public class Monkey implements ICommand {
 
 	/**

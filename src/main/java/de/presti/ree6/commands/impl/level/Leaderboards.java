@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 /**
  * A command to get the Leaderboard.
  */
-@Command(name = "leaderboard", description = "Shows you the Rank Leaderboard of the current Server", category = Category.LEVEL)
+@Command(name = "leaderboard", description = "command.description.leaderboard", category = Category.LEVEL)
 public class Leaderboards implements ICommand {
 
     /**
