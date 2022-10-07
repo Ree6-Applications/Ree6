@@ -6,6 +6,8 @@ import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
@@ -52,87 +54,11 @@ public class LanguageService {
     }
 
     /**
-     * Called to get a specific String from the Guild specific Language file.
-     * @param commandEvent the CommandEvent.
-     * @param key the key of the String.
-     * @param parameter the parameter to replace.
-     * @return the String.
+     * Called to load a Language from a YamlConfiguration.
+     * @param discordLocale The DiscordLocale of the Language.
+     * @return The Language.
      */
-    public static String getResource(CommandEvent commandEvent, String key, Object... parameter) {
-        return getResource(commandEvent.getGuild(), key, parameter);
-    }
-
-    /**
-     * Called to get a specific String from the Language file.
-     * @param guild The Guild to receive the locale from.
-     * @param key The key of the String.
-     * @param parameter The Parameters to replace placeholders in the String.
-     * @return The String.
-     */
-    public static String getResource(Guild guild, String key, Object... parameter) {
-        return getResource(guild != null ? guild.getIdLong() : -1, key, parameter);
-    }
-
-    /**
-     * Called to get a specific String from the Language file.
-     * @param guildId The Guild ID to receive the locale from.
-     * @param key The key of the String.
-     * @param parameter The Parameters to replace placeholders in the String.
-     * @return The String.
-     */
-    public static String getResource(long guildId, String key, Object... parameter) {
-        if (guildId == -1) {
-            return getResource(key, parameter);
-        } else {
-            return getResource(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "configuration_language").getStringValue(), key, parameter);
-        }
-    }
-
-    /**
-     * Called to get a specific String from the default Language file.
-     * @param interaction The Interaction to receive the locale from.
-     * @param key The key of the String.
-     * @param parameter The Parameters to replace placeholders in the String.
-     * @return The String.
-     */
-    public static String getResource(Interaction interaction, String key, Object... parameter) {
-        return getResource(interaction.getUserLocale(), key, parameter);
-    }
-
-    /**
-     * Called to get a specific String from the default Language file.
-     * @param key The key of the String.
-     * @param parameter The Parameters to replace placeholders in the String.
-     * @return The String.
-     */
-    public static String getResource(String key, Object... parameter) {
-        return getResource(DiscordLocale.ENGLISH_UK, key, parameter);
-    }
-
-    /**
-     * Called to get a specific String from the Language file.
-     * @param locale The locale of the Language file.
-     * @param key The key of the String.
-     * @param parameters The Parameters to replace placeholders in the String.
-     * @return The String.
-     */
-    public static String getResource(String locale, String key, Object... parameters) {
-        return getResource(DiscordLocale.from(locale), key, parameters);
-    }
-
-    /**
-     * Called to get a specific String from the Language file.
-     * @param discordLocale The locale of the Language file.
-     * @param key The key of the String.
-     * @param parameters The Parameters to replace placeholders in the String.
-     * @return The String.
-     */
-    public static String getResource(DiscordLocale discordLocale, String key, Object... parameters) {
-        Language language = languageResources.containsKey(discordLocale) ? languageResources.get(discordLocale) : loadLanguageFromFile(discordLocale);
-        return language != null ? language.getResource(key, parameters) : "Missing language resource!";
-    }
-
-    public static Language loadLanguageFromFile(DiscordLocale discordLocale) {
+    public static @Nullable Language loadLanguageFromFile(@NotNull DiscordLocale discordLocale) {
         Path languageFile = Path.of("languages/", discordLocale.getLocale() + ".yml");
         if (Files.exists(languageFile)) {
             try {
@@ -147,5 +73,86 @@ public class LanguageService {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Called to get a specific String from the Guild specific Language file.
+     * @param commandEvent the CommandEvent.
+     * @param key the key of the String.
+     * @param parameter the parameter to replace.
+     * @return the String.
+     */
+    public static @NotNull String getByEvent(@NotNull CommandEvent commandEvent, @NotNull String key, @Nullable Object... parameter) {
+        return getByGuild(commandEvent.getGuild(), key, parameter);
+    }
+
+    /**
+     * Called to get a specific String from the Language file.
+     * @param guild The Guild to receive the locale from.
+     * @param key The key of the String.
+     * @param parameter The Parameters to replace placeholders in the String.
+     * @return The String.
+     */
+    public static @NotNull String getByGuild(Guild guild, @NotNull String key, @Nullable Object... parameter) {
+        return getByGuild(guild != null ? guild.getIdLong() : -1, key, parameter);
+    }
+
+    /**
+     * Called to get a specific String from the Language file.
+     * @param guildId The Guild ID to receive the locale from.
+     * @param key The key of the String.
+     * @param parameter The Parameters to replace placeholders in the String.
+     * @return The String.
+     */
+    public static @NotNull String getByGuild(long guildId, @NotNull String key, @Nullable Object... parameter) {
+        if (guildId == -1) {
+            return getDefault(key, parameter);
+        } else {
+            return getByLocale(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "configuration_language").getStringValue(), key, parameter);
+        }
+    }
+
+    /**
+     * Called to get a specific String from the default Language file.
+     * @param interaction The Interaction to receive the locale from.
+     * @param key The key of the String.
+     * @param parameter The Parameters to replace placeholders in the String.
+     * @return The String.
+     */
+    public static @NotNull String getByInteraction(Interaction interaction, @NotNull String key, @Nullable Object... parameter) {
+        return getByLocale(interaction.getUserLocale(), key, parameter);
+    }
+
+    /**
+     * Called to get a specific String from the default Language file.
+     * @param key The key of the String.
+     * @param parameter The Parameters to replace placeholders in the String.
+     * @return The String.
+     */
+    public static @NotNull String getDefault(@NotNull String key, @Nullable Object... parameter) {
+        return getByLocale(DiscordLocale.ENGLISH_UK, key, parameter);
+    }
+
+    /**
+     * Called to get a specific String from the Language file.
+     * @param locale The locale of the Language file.
+     * @param key The key of the String.
+     * @param parameters The Parameters to replace placeholders in the String.
+     * @return The String.
+     */
+    public static @NotNull String getByLocale(@NotNull String locale, @NotNull String key, @Nullable Object... parameters) {
+        return getByLocale(DiscordLocale.from(locale), key, parameters);
+    }
+
+    /**
+     * Called to get a specific String from the Language file.
+     * @param discordLocale The locale of the Language file.
+     * @param key The key of the String.
+     * @param parameters The Parameters to replace placeholders in the String.
+     * @return The String.
+     */
+    public static @NotNull String getByLocale(@NotNull DiscordLocale discordLocale, @NotNull String key, @Nullable Object... parameters) {
+        Language language = languageResources.containsKey(discordLocale) ? languageResources.get(discordLocale) : loadLanguageFromFile(discordLocale);
+        return language != null ? language.getResource(key, parameters) : "Missing language resource!";
     }
 }

@@ -1,6 +1,8 @@
 package de.presti.ree6.language;
 
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.util.HashMap;
@@ -14,21 +16,22 @@ public class Language {
     private final DiscordLocale discordLocale;
     final HashMap<String, String> resources = new HashMap<>();
 
-    public Language(YamlConfiguration yamlConfiguration) {
+    public Language(@NotNull YamlConfiguration yamlConfiguration) {
         this.locale = yamlConfiguration.getString("language.locale");
         this.name = yamlConfiguration.getString("language.name");
         this.author = yamlConfiguration.getString("language.author");
         this.version = yamlConfiguration.getString("language.version");
 
         yamlConfiguration.getKeys(true).forEach(key -> {
-            if (key.equals("language.locale") || key.equals("language.name") || key.equals("language.author") || key.equals("language.version")) return;
+            if (key.startsWith("language.")) return;
 
             resources.put(key, yamlConfiguration.getString(key));
         });
+
         discordLocale = DiscordLocale.from(locale);
     }
 
-    public Language(String locale, String name, String author, String version, HashMap<String, String> resources) {
+    public Language(@NotNull String locale, @NotNull String name, @NotNull String author, @NotNull String version, @NotNull HashMap<String, String> resources) {
         this.locale = locale;
         this.name = name;
         this.author = author;
@@ -57,7 +60,7 @@ public class Language {
         return discordLocale;
     }
 
-    public String getResource(String key, Object... parameter) {
+    public String getResource(@NotNull String key, @Nullable Object... parameter) {
         if (!resources.containsKey(key)) return "Missing language resource!";
         return String.format(resources.get(key), parameter);
     }

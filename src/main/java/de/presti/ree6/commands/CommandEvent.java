@@ -142,7 +142,7 @@ public class CommandEvent {
      * @return the Message.
      */
     public String getResource(String key, Object... parameters) {
-        return LanguageService.getResource(getGuild(), key, parameters);
+        return LanguageService.getByGuild(getGuild(), key, parameters);
     }
 
     /**
