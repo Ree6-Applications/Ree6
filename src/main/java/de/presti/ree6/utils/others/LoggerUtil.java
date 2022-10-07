@@ -18,7 +18,6 @@ import java.util.Date;
 /**
  * A utility class that provides usefull methods regarding the {@link org.slf4j.Logger}.
  */
-//TODO replace loggers with the @Slf4j lombok annotation
 public class LoggerUtil {
 
     private final LevelFilter standardFiler;
