@@ -14,11 +14,14 @@ public class TemporalVoicechannel {
     /**
      * The ID of the Guild.
      */
+    @Id
+    @Column(name = "gid")
     String guildId;
 
     /**
      * The ID of the Voice-channel.
      */
+    @Column(name = "vid")
     String voiceChannelId;
 
     /**
@@ -43,8 +46,6 @@ public class TemporalVoicechannel {
      *
      * @return the ID of the Guild.
      */
-    @Id
-    @Column(name = "gid")
     public String getGuildId() {
         return guildId;
     }
@@ -54,7 +55,6 @@ public class TemporalVoicechannel {
      *
      * @return the ID of the Voice-channel.
      */
-    @Column(name = "vid")
     public String getVoiceChannelId() {
         return voiceChannelId;
     }

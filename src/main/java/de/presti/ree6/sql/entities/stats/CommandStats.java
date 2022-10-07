@@ -1,25 +1,26 @@
 package de.presti.ree6.sql.entities.stats;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Table;
 
 /**
  * SQL Entity for the Stats.
  */
+@MappedSuperclass
 @Table(name = "CommandStats")
-public class CommandStats extends SQLEntity {
+public class CommandStats {
 
     /**
      * Name of the Command.
      */
-    @Property(name = "command")
+    @Column(name = "command")
     private String command;
 
     /**
      * Number of times the Command was used.
      */
-    @Property(name = "uses", updateQuery = true)
+    @Column(name = "uses")
     private int uses;
 
     /**

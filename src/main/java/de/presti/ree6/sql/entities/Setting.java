@@ -1,31 +1,31 @@
 package de.presti.ree6.sql.entities;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
 
 /**
  * File to store Settings information.
  */
 @Table(name = "Settings")
-public class Setting extends SQLEntity {
+public class Setting {
 
     /**
      * The ID of the Guild.
      */
-    @Property(name = "gid")
+    @Column(name = "gid")
     private String guildId;
 
     /**
      * Name / Identifier of the Setting.
      */
-    @Property(name = "name")
+    @Column(name = "name")
     private String name;
 
     /**
      * The value of the Setting.
      */
-    @Property(name = "value", updateQuery = true)
+    @Column(name = "value")
     private Object value;
 
     /**
@@ -53,9 +53,10 @@ public class Setting extends SQLEntity {
      * @return the Value as {@link Boolean}
      */
     public boolean getBooleanValue() {
-        if (value instanceof Boolean booleanValue) {
+        Object currentValue = getValue();
+        if (currentValue instanceof Boolean booleanValue) {
             return booleanValue;
-        } else if (value instanceof String stringValue) {
+        } else if (currentValue instanceof String stringValue) {
             if (stringValue.equals("1")) return true;
             return Boolean.parseBoolean(stringValue);
         }
@@ -68,11 +69,12 @@ public class Setting extends SQLEntity {
      * @return Value as {@link String}
      */
     public String getStringValue() {
-        if (value instanceof String stringValue) {
+        Object currentValue = getValue();
+        if (currentValue instanceof String stringValue) {
             return stringValue;
         } else if (getName().equalsIgnoreCase("chatprefix")) {
             return "ree!";
-        } else if (value instanceof Boolean booleanValue) {
+        } else if (currentValue instanceof Boolean booleanValue) {
             return booleanValue + "";
         }
         return "";

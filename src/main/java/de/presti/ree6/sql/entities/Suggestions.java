@@ -13,11 +13,14 @@ public class Suggestions {
     /**
      * The ID of the Guild.
      */
+    @Id
+    @Column(name = "guildId")
     long guildId;
 
     /**
      * The ID of the Channel.
      */
+    @Column(name = "channelId")
     long channelId;
 
     /**
@@ -42,8 +45,6 @@ public class Suggestions {
      *
      * @return the ID of the Guild.
      */
-    @Id
-    @Column(name = "guildId")
     public long getGuildId() {
         return guildId;
     }
@@ -53,7 +54,6 @@ public class Suggestions {
      *
      * @return the ID of the Channel.
      */
-    @Column(name = "channelId")
     public long getChannelId() {
         return channelId;
     }

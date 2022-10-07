@@ -1,38 +1,37 @@
 package de.presti.ree6.sql.entities.stats;
 
 import com.google.gson.JsonObject;
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
 
 /**
  * SQL Entity for statistics.
  */
 @Table(name = "Statistics")
-public class Statistics extends SQLEntity {
+public class Statistics {
 
     /**
      * The day of the statistic.
      */
-    @Property(name = "day")
+    @Column(name = "day")
     int day;
 
     /**
      * The month of the statistic.
      */
-    @Property(name = "month")
+    @Column(name = "month")
     int month;
 
     /**
      * The year of the statistic.
      */
-    @Property(name = "year")
+    @Column(name = "year")
     int year;
 
     /**
      * The {@link JsonObject} with statistics.
      */
-    @Property(name = "stats", keepOriginalValue = false, updateQuery = true)
+    @Column(name = "stats")
     JsonObject statsObject;
 
     /**

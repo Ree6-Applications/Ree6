@@ -1,7 +1,7 @@
 package de.presti.ree6.sql.entities.roles;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
 
 @Table(name = "VCLevelAutoRoles")
 public class VoiceAutoRole extends Role {
@@ -9,7 +9,7 @@ public class VoiceAutoRole extends Role {
     /**
      * The needed level for this AutoRole.
      */
-    @Property(name = "lvl")
+    @Column(name = "lvl")
     int level;
 
     /**

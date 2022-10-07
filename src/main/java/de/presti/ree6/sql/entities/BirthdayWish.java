@@ -1,8 +1,7 @@
 package de.presti.ree6.sql.entities;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
 
 import java.util.Date;
 
@@ -10,30 +9,30 @@ import java.util.Date;
  * This class is used to represent a Birthday-Wish, in our Database.
  */
 @Table(name = "BirthdayWish")
-public class BirthdayWish extends SQLEntity {
+public class BirthdayWish {
 
     /**
      * The Guild ID.
      */
-    @Property(name = "gid")
+    @Column(name = "gid")
     String guildId;
 
     /**
      * The Channel ID.
      */
-    @Property(name = "cid")
+    @Column(name = "cid")
     String channelId;
 
     /**
      * The User ID.
      */
-    @Property(name = "uid")
+    @Column(name = "uid")
     String userId;
 
     /**
      * The Birthday.
      */
-    @Property(name = "birthday", keepOriginalValue = false)
+    @Column(name = "birthday")
     Date birthdate;
 
     /**

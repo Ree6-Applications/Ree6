@@ -1,7 +1,7 @@
 package de.presti.ree6.sql.entities.level;
 
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.annotations.Table;
+import jakarta.persistence.Table;
 
 /**
  * Utility class to store information about a Users

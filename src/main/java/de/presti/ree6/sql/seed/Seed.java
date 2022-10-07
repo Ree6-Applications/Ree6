@@ -14,12 +14,14 @@ public abstract class Seed {
 
     /**
      * Seed executor.
+     *
      * @param sqlConnector The SQLConnector.
      */
     public abstract void run(SQLConnector sqlConnector);
 
     /**
      * Get the Version of this Seed.
+     *
      * @return The Version of this Seed.
      */
     public SeedVersion getSeedVersion() {
@@ -33,16 +35,16 @@ public abstract class Seed {
      * @param minorVersion The Minor version of the Seed.
      * @param patchVersion The Patch version of the Seed.
      */
-        public record SeedVersion(int majorVersion, int minorVersion, int patchVersion) {
+    public record SeedVersion(int majorVersion, int minorVersion, int patchVersion) {
 
-            /**
-             * Convert the SeedVersion to a String.
-             *
-             * @return The String representation of the SeedVersion.
-             */
-            @Override
-            public String toString() {
-                return majorVersion + "." + minorVersion + "." + patchVersion;
-            }
+        /**
+         * Convert the SeedVersion to a String.
+         *
+         * @return The String representation of the SeedVersion.
+         */
+        @Override
+        public String toString() {
+            return majorVersion + "." + minorVersion + "." + patchVersion;
         }
+    }
 }

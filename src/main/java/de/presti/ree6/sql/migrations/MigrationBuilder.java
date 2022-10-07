@@ -6,8 +6,6 @@ import de.presti.ree6.sql.base.annotations.Table;
 import de.presti.ree6.sql.base.entities.SQLEntity;
 import de.presti.ree6.sql.base.entities.SQLParameter;
 import de.presti.ree6.sql.base.entities.StoredResultSet;
-import de.presti.ree6.sql.base.utils.MigrationUtil;
-import de.presti.ree6.sql.base.utils.SQLUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 

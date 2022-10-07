@@ -1,6 +1,6 @@
 package de.presti.ree6.sql.entities.roles;
 
-import de.presti.ree6.sql.base.annotations.Table;
+import jakarta.persistence.Table;
 
 /**
  * SQL Entity for the Auto-Roles.

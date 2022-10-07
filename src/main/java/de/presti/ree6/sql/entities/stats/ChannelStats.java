@@ -1,97 +1,98 @@
 package de.presti.ree6.sql.entities.stats;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
+
+// TODO:: split all these in separate classes to keep everything more organized.
 
 /**
  * SQL Entity for the Stats.
  */
 @Table(name = "ChannelStats")
-public class ChannelStats extends SQLEntity {
+public class ChannelStats {
 
     /**
      * The Guild ID.
      */
-    @Property(name = "gid")
+    @Column(name = "gid")
     private String guildId;
 
     /**
      * The Channel ID for overall Members of the Guild.
      */
-    @Property(name = "memberChannelId")
+    @Column(name = "memberChannelId")
     private String memberStatsChannelId;
 
     /**
      * The Channel ID for real Members of the Guild.
      */
-    @Property(name = "onlyRealMemberChannelId")
+    @Column(name = "onlyRealMemberChannelId")
     private String realMemberStatsChannelId;
 
     /**
      * The Channel ID for bot Members of the Guild.
      */
-    @Property(name = "botMemberChannelId")
+    @Column(name = "botMemberChannelId")
     private String botMemberStatsChannelId;
 
     /**
      * The Channel ID for Twitter Stats of the Guild.
      */
-    @Property(name = "twitterFollowerChannelId")
+    @Column(name = "twitterFollowerChannelId")
     private String twitterFollowerChannelId;
 
     /**
      * The username for Twitter Stats of the Guild.
      */
-    @Property(name = "twitterFollowerChannelUsername")
+    @Column(name = "twitterFollowerChannelUsername")
     private String twitterFollowerChannelUsername;
 
     /**
      * The Channel ID for Instagram Stats of the Guild.
      */
-    @Property(name = "instagramFollowerChannelId")
+    @Column(name = "instagramFollowerChannelId")
     private String instagramFollowerChannelId;
 
     /**
      * The username for Instagram Stats of the Guild.
      */
-    @Property(name = "instagramFollowerChannelUsername")
+    @Column(name = "instagramFollowerChannelUsername")
     private String instagramFollowerChannelUsername;
 
     /**
      * The Channel ID for Twitch Stats of the Guild.
      */
-    @Property(name = "twitchFollowerChannelId")
+    @Column(name = "twitchFollowerChannelId")
     private String twitchFollowerChannelId;
 
     /**
      * The username for Twitch Stats of the Guild.
      */
-    @Property(name = "twitchFollowerChannelUsername")
+    @Column(name = "twitchFollowerChannelUsername")
     private String twitchFollowerChannelUsername;
 
     /**
      * The Channel ID for YouTube Stats of the Guild.
      */
-    @Property(name = "youtubeSubscribersChannelId")
+    @Column(name = "youtubeSubscribersChannelId")
     private String youtubeSubscribersChannelId;
 
     /**
      * The username for YouTube Stats of the Guild.
      */
-    @Property(name = "youtubeSubscribersChannelUsername")
+    @Column(name = "youtubeSubscribersChannelUsername")
     private String youtubeSubscribersChannelUsername;
 
     /**
      * The Channel ID for Reddit Stats of the Guild.
      */
-    @Property(name = "subredditMemberChannelId")
+    @Column(name = "subredditMemberChannelId")
     private String subredditMemberChannelId;
 
     /**
      * The subreddit name for Reddit Stats of the Guild.
      */
-    @Property(name = "subredditMemberChannelSubredditName")
+    @Column(name = "subredditMemberChannelSubredditName")
     private String subredditMemberChannelSubredditName;
 
     /**

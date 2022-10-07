@@ -6,11 +6,13 @@ import com.zaxxer.hikari.HikariDataSource;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.base.entities.SQLEntity;
 import de.presti.ree6.sql.base.entities.StoredResultSet;
-import de.presti.ree6.sql.base.utils.MigrationUtil;
-import de.presti.ree6.sql.base.utils.SQLUtil;
+import de.presti.ree6.sql.migrations.MigrationUtil;
 import de.presti.ree6.sql.mapper.EntityMapper;
 import de.presti.ree6.sql.seed.SeedManager;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.reflections.Reflections;
 
 import java.sql.Blob;
@@ -182,17 +184,36 @@ public class SQLConnector {
      * Send an SQL-Query to SQL-Server and get the response.
      *
      * @param sqlQuery    the SQL-Query.
-     * @param objcObjects the Object in the Query.
+     * @param parameters a list with all parameters that should be considered.
      * @return The Result from the SQL-Server.
      */
-    public StoredResultSet querySQL(String sqlQuery, Object... objcObjects) {
+    public <R> Query<R> querySQL(R r, String sqlQuery, Map<String, Object> parameters) {
+
         if (!isConnected()) {
             if (connectedOnce()) {
                 connectToSQLServer();
-                return querySQL(sqlQuery, objcObjects);
+                return querySQL(r, sqlQuery, parameters);
             } else {
-                return new StoredResultSet();
+                return null;
             }
+        }
+
+        try (SessionFactory sessionFactory = SQLSession.buildSessionFactory()) {
+            Session session = sessionFactory.getCurrentSession();
+
+            session.beginTransaction();
+
+            Query<R> query = (Query<R>) session.createQuery(sqlQuery);
+
+            if (parameters != null) {
+                for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                    query.setParameter(entry.getKey(), entry.getValue());
+                }
+            }
+
+            session.getTransaction().commit();
+
+            return query;
         }
 
         PreparedStatement preparedStatement = null;

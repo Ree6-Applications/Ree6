@@ -1,6 +1,6 @@
 package de.presti.ree6.sql.entities.webhook;
 
-import de.presti.ree6.sql.base.annotations.Table;
+import jakarta.persistence.Table;
 
 /**
  * SQL Entity for the Welcome-Webhooks.

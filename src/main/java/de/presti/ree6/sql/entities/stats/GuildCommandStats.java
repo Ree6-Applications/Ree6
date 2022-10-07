@@ -1,7 +1,7 @@
 package de.presti.ree6.sql.entities.stats;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
 
 /**
  * SQL Entity for the Guild-Stats.
@@ -12,7 +12,7 @@ public class GuildCommandStats extends CommandStats {
     /**
      * The Guild ID.
      */
-    @Property(name = "gid")
+    @Column(name = "gid")
     private String guildId;
 
     /**

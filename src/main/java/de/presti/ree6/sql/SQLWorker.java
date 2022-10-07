@@ -7,11 +7,6 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
-import de.presti.ree6.sql.base.entities.SQLParameter;
-import de.presti.ree6.sql.base.entities.SQLResponse;
-import de.presti.ree6.sql.base.utils.SQLUtil;
 import de.presti.ree6.sql.entities.BirthdayWish;
 import de.presti.ree6.sql.entities.Blacklist;
 import de.presti.ree6.sql.entities.Invite;
@@ -34,6 +29,9 @@ import de.presti.ree6.sql.entities.webhook.WebhookWelcome;
 import de.presti.ree6.sql.entities.webhook.WebhookYouTube;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.reflections.Reflections;
 
 import javax.annotation.Nonnull;
@@ -1839,8 +1837,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param userId  the ID of the User.
      */
     public void optIn(String guildId, String userId) {
+        // TODO:: make Opt-In a class Entity.
         if (isOptOut(guildId, userId)) {
-            sqlConnector.querySQL("DELETE FROM Opt_out WHERE GID=? AND UID=?", guildId, userId);
+            sqlConnector.querySQL(null,"DELETE FROM Opt_out WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId));
         }
     }
 
@@ -1858,11 +1857,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void addBirthday(String guildId, String channelId, String userId, String birthday) {
         try {
+            BirthdayWish newBirthday = new BirthdayWish(guildId, channelId, userId, new SimpleDateFormat("dd.MM.yyyy").parse(birthday));
             if (isBirthdaySaved(guildId, userId)) {
-                BirthdayWish newBirthday = new BirthdayWish(guildId, channelId, userId, new SimpleDateFormat("dd.MM.yyyy").parse(birthday));
-                updateEntity(getBirthday(guildId, userId), newBirthday, true);
+                updateEntity(newBirthday);
             } else {
-                saveEntity(new BirthdayWish(guildId, channelId, userId, new SimpleDateFormat("dd.MM.yyyy").parse(birthday)));
+                saveEntity(newBirthday);
             }
         } catch (ParseException ignore) {
         }
@@ -1876,7 +1875,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void removeBirthday(String guildId, String userId) {
         if (isBirthdaySaved(guildId, userId)) {
-            sqlConnector.querySQL("DELETE FROM BirthdayWish WHERE GID=? AND UID=?", guildId, userId);
+            sqlConnector.querySQL(new BirthdayWish(), "DELETE FROM BirthdayWish WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId));
         }
     }
 
@@ -1888,7 +1887,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isBirthdaySaved(String guildId, String userId) {
-        return sqlConnector.querySQL("SELECT * FROM BirthdayWish WHERE GID=? AND UID=?", guildId, userId).hasResults();
+        return getEntity(new BirthdayWish(),"SELECT * FROM BirthdayWish WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId)) != null;
     }
 
     /**
@@ -1899,7 +1898,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public BirthdayWish getBirthday(String guildId, String userId) {
-        return (BirthdayWish) getEntity(BirthdayWish.class, "SELECT * FROM BirthdayWish WHERE GID=? AND UID=?", guildId, userId).getEntity();
+        return getEntity(new BirthdayWish(),"SELECT * FROM BirthdayWish WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId));
     }
 
     /**
@@ -1909,7 +1908,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List} of {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public List<BirthdayWish> getBirthdays(String guildId) {
-        return getEntity(BirthdayWish.class, "SELECT * FROM BirthdayWish WHERE GID=?", guildId).getEntities().stream().map(BirthdayWish.class::cast).toList();
+        return getEntityList(new BirthdayWish(), "SELECT * FROM BirthdayWish WHERE GID=:gid", Map.of("gid", guildId));
     }
 
     /**
@@ -1918,7 +1917,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List} of {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public List<BirthdayWish> getBirthdays() {
-        return getEntity(BirthdayWish.class, "SELECT * FROM BirthdayWish").getEntities().stream().map(BirthdayWish.class::cast).toList();
+        return getEntityList(new BirthdayWish(), "SELECT * FROM BirthdayWish", null);
     }
 
     //endregion
@@ -1931,25 +1930,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param guildId the ID of the Guild.
      */
     public void deleteAllData(String guildId) {
-        // Go through every Table. And delete every entry with the Guild ID.
-        Reflections reflections = new Reflections("de.presti.ree6");
-        Set<Class<? extends SQLEntity>> classes = reflections.getSubTypesOf(SQLEntity.class);
-        for (Class<? extends SQLEntity> aClass : classes) {
-
-            String tableName = SQLUtil.getTable(aClass);
-
-            if (tableName == null) continue;
-
-            List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(aClass, false);
-
-            if (sqlParameters.isEmpty()) {
-                continue;
-            }
-
-            if (sqlParameters.stream().anyMatch(sqlParameter -> sqlParameter.getName().equalsIgnoreCase("GID"))) {
-                sqlConnector.querySQL("DELETE FROM " + tableName + " WHERE GID=?", guildId);
-            }
-        }
+        // TODO:: find a way todo this with Hibernate.
     }
 
     //endregion
@@ -1957,246 +1938,114 @@ public record SQLWorker(SQLConnector sqlConnector) {
     //region Entity-System
 
     /**
-     * Create a Table for the Entity.
-     *
-     * @param entity the Entity.
-     * @return {@link Boolean} as result. If true, the Table was created | If false, the Table was not created.
-     */
-    public boolean createTable(Class<? extends SQLEntity> entity) {
-        if (!entity.isAnnotationPresent(Table.class)) {
-            return false;
-        }
-
-        String tableName = SQLUtil.getTable(entity);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity, false);
-
-        if (sqlParameters.isEmpty()) {
-            return false;
-        }
-
-        if (tableName == null) {
-            return false;
-        }
-
-        StringBuilder query = new StringBuilder();
-        query.append("CREATE TABLE IF NOT EXISTS ");
-        query.append(tableName);
-        query.append(" (");
-        sqlParameters.forEach(parameter -> {
-            query.append(parameter.getName());
-            query.append(" ");
-            query.append(SQLUtil.mapJavaToSQL(parameter.getValue()));
-            query.append(", ");
-        });
-
-        sqlParameters.stream().filter(SQLParameter::isPrimaryKey).findFirst().ifPresent(primaryKey -> {
-            query.append("PRIMARY KEY (");
-            query.append(primaryKey.getName());
-            query.append(")");
-        });
-
-        if (query.charAt(query.length() - 2) == ',') {
-            query.delete(query.length() - 2, query.length());
-        }
-
-        query.append(")");
-
-        try {
-            sqlConnector.querySQL(query.toString());
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
      * Save an Entity to the Database.
      *
      * @param entity the Entity to save.
      */
     public void saveEntity(Object entity) {
-        Class<?> entityClass = entity.getClass();
-
-        if (!entityClass.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("Entity must be annotated with @Table! (" + entityClass.getSimpleName() + ")");
+        if (!sqlConnector.isConnected()) {
+            if (sqlConnector.connectedOnce()) {
+                sqlConnector.connectToSQLServer();
+                saveEntity(entity);
+            }
         }
 
-        String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity, false, false);
+        try (SessionFactory sessionFactory = SQLSession.buildSessionFactory()) {
+            Session session = sessionFactory.getCurrentSession();
 
-        if (sqlParameters.isEmpty()) {
-            return;
-        }
+            session.beginTransaction();
 
-        if (tableName == null) {
-            return;
-        }
+            session.persist(entity);
 
-        StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO ");
-        query.append(tableName);
-        query.append(" (");
-        sqlParameters.forEach(parameter -> {
-            query.append(parameter.getName());
-            query.append(", ");
-        });
-
-        if (query.charAt(query.length() - 2) == ',') {
-            query.delete(query.length() - 2, query.length());
-        }
-
-        query.append(") VALUES (");
-
-        query.append("?, ".repeat(sqlParameters.size()));
-
-        if (query.charAt(query.length() - 2) == ',') {
-            query.delete(query.length() - 2, query.length());
-        }
-
-        query.append(")");
-        try {
-            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, false, false).toArray());
-        } catch (Exception exception) {
-            log.error("Error while saving Entity: " + entity, exception);
+            session.getTransaction().commit();
         }
     }
 
     /**
      * Update an Entity in the Database.
      *
-     * @param oldEntity       the old Entity.
-     * @param newEntity       the new Entity.
-     * @param onlyUpdateField the only update the given Field.
+     * @param r       the Entity.
      */
-    public void updateEntity(Object oldEntity, Object newEntity, boolean onlyUpdateField) {
-        Class<?> entityClass = oldEntity.getClass();
-
-        if (!entityClass.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("Entities must be annotated with @Table! (" + ((Class) oldEntity).getSimpleName() + ")");
+    public <R> R updateEntity(R r) {
+        if (!sqlConnector.isConnected()) {
+            if (sqlConnector.connectedOnce()) {
+                sqlConnector.connectToSQLServer();
+                return updateEntity(r);
+            }
         }
 
-        if (!oldEntity.getClass().equals(newEntity.getClass())) {
-            throw new IllegalArgumentException("Entities must be of the same type");
-        }
+        try (SessionFactory sessionFactory = SQLSession.buildSessionFactory()) {
+            Session session = sessionFactory.getCurrentSession();
 
-        String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(newEntity, onlyUpdateField, false);
+            session.beginTransaction();
 
-        if (sqlParameters.isEmpty()) {
-            return;
-        }
+            R newEntity = session.merge(r);
 
-        if (tableName == null) {
-            return;
-        }
+            session.getTransaction().commit();
 
-        StringBuilder query = new StringBuilder();
-        query.append("UPDATE ");
-        query.append(tableName);
-        query.append(" SET ");
-        sqlParameters.forEach(parameter -> {
-            query.append(parameter.getName());
-            query.append(" = ?, ");
-        });
-
-        if (query.indexOf(",", query.length() - 2) != -1) {
-            query.delete(query.length() - 2, query.length());
-        }
-
-
-        query.append(" WHERE ");
-        SQLUtil.getAllSQLParameter(oldEntity, false, true).forEach(parameter -> {
-            query.append(parameter.getName());
-            query.append(" = ? AND ");
-        });
-
-        if (query.indexOf("AND", query.length() - 5) != -1) {
-            query.delete(query.length() - 5, query.length());
-        }
-
-        try {
-            ArrayList<Object> parameter = new ArrayList<>();
-
-            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, newEntity, onlyUpdateField, false));
-            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, oldEntity, false, true));
-
-            sqlConnector.querySQL(query.toString(), parameter.toArray());
-        } catch (Exception exception) {
-            log.error("Error while updating Entity: " + ((Class) oldEntity).getSimpleName(), exception);
+            return newEntity;
         }
     }
 
     /**
      * Delete an entity from the database
      *
-     * @param entity the Entity-class instance that is to be deleted.
+     * @param r the Entity-class instance that is to be deleted.
      */
-    public void deleteEntity(Object entity) {
-        Class<?> entityClass = entity.getClass();
-
-        if (!entityClass.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("Entity must be annotated with @Table! (" + ((Class) entity).getSimpleName() + ")");
+    public <R> void deleteEntity(R r) {
+        if (!sqlConnector.isConnected()) {
+            if (sqlConnector.connectedOnce()) {
+                sqlConnector.connectToSQLServer();
+                deleteEntity(r);
+            }
         }
 
-        String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity, false, true);
+        try (SessionFactory sessionFactory = SQLSession.buildSessionFactory()) {
+            Session session = sessionFactory.getCurrentSession();
 
-        if (sqlParameters.isEmpty()) {
-            return;
-        }
+            session.beginTransaction();
 
-        if (tableName == null) {
-            return;
-        }
+            session.remove(r);
 
-        StringBuilder query = new StringBuilder();
-        query.append("DELETE FROM ");
-        query.append(tableName);
-        query.append(" WHERE ");
-        sqlParameters.forEach(parameter -> {
-            query.append(parameter.getName());
-            query.append("= ? AND ");
-        });
-
-        if (query.indexOf("AND", query.length() - 4) != -1) {
-            query.delete(query.length() - 5, query.length());
-        }
-
-        try {
-            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, false, true).toArray());
-        } catch (Exception exception) {
-            log.error("Error while deleting Entity: " + ((Class) entity).getSimpleName(), exception);
+            session.getTransaction().commit();
         }
     }
 
     /**
      * Constructs a new mapped Version of the Entity-class.
      *
-     * @param entity The entity to get.
+     * @param r The entity to get.
      * @return The mapped entity.
      */
-    public SQLResponse getEntity(Class<?> entity) {
-        return getEntity(entity, "");
+    public <R> List<R> getEntityList(R r, String query, Map<String, Object> parameters) {
+        if (query.isEmpty()) {
+            return sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), null).getResultList();
+        } else {
+            return sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), parameters).getResultList();
+        }
     }
 
     /**
      * Constructs a query for the given Class-Entity, and returns a mapped Version of the given Class-Entity.
      *
-     * @param entity The Class-Entity to get.
+     * @param r The Class-Entity to get.
      * @param query  The query to use.
-     * @param args   The arguments to use.
+     * @param parameters   The arguments to use.
      * @return The mapped Version of the given Class-Entity.
      */
-    public SQLResponse getEntity(Class<?> entity, String query, Object... args) {
+    public <R> R getEntity(R r, String query, Map<String, Object> parameters) {
+        List<R> list;
+
         if (query.isEmpty()) {
-            if (entity.isAnnotationPresent(Table.class)) {
-                String queryBuilder = "SELECT * FROM " + SQLUtil.getTable(entity);
-                return sqlConnector.getEntityMapper().mapEntity(sqlConnector.querySQL(queryBuilder, args), entity);
-            } else {
-                return new SQLResponse(null);
-            }
+            list = sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), null).getResultList();
         } else {
-            return sqlConnector.getEntityMapper().mapEntity(sqlConnector.querySQL(query, args), entity);
+            list = sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), parameters).getResultList();
+        }
+
+        if (list != null && !list.isEmpty()) {
+            return list.get(0);
+        } else {
+            return null;
         }
     }
 
