@@ -4,16 +4,12 @@ import com.google.gson.JsonElement;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.entities.SQLEntity;
-import de.presti.ree6.sql.base.entities.StoredResultSet;
 import de.presti.ree6.sql.migrations.MigrationUtil;
-import de.presti.ree6.sql.mapper.EntityMapper;
 import de.presti.ree6.sql.seed.SeedManager;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.reflections.Reflections;
 
 import java.sql.Blob;
 import java.sql.Connection;
@@ -25,7 +21,6 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * A "Connector" Class which connect with the used Database Server.
@@ -50,9 +45,6 @@ public class SQLConnector {
     // An Instance of the SQL-Worker which works with the Data in the Database.
     private final SQLWorker sqlWorker;
 
-    // An Instance of the EntityMapper which is used to map the Data into classes.
-    private final EntityMapper entityMapper;
-
     // A boolean to keep track if there was at least one valid connection.
     private boolean connectedOnce = false;
 
@@ -76,7 +68,6 @@ public class SQLConnector {
         this.databaseServerPort = databaseServerPort;
 
         sqlWorker = new SQLWorker(this);
-        entityMapper = new EntityMapper();
 
         connectToSQLServer();
         createTables();
@@ -152,29 +143,13 @@ public class SQLConnector {
         if (!isConnected()) return;
 
         // Registering the tables and values.
-        tables.putIfAbsent("Opt_out", "(GID VARCHAR(40), UID VARCHAR(40))");
         tables.putIfAbsent("Migrations", "(NAME VARCHAR(100), DATE VARCHAR(100))");
         tables.putIfAbsent("Seeds", "(VERSION VARCHAR(100), DATE VARCHAR(100))");
 
         // Iterating through all table presets.
         for (Map.Entry<String, String> entry : tables.entrySet()) {
-            querySQL("CREATE TABLE IF NOT EXISTS " + entry.getKey() + entry.getValue());
-        }
-
-        Reflections reflections = new Reflections("de.presti.ree6");
-        Set<Class<? extends SQLEntity>> classes = reflections.getSubTypesOf(SQLEntity.class);
-        for (Class<? extends SQLEntity> aClass : classes) {
-            log.info("Creating Table {}", aClass.getSimpleName());
-            // Create a Table based on the key.
-            try {
-                if (!sqlWorker.createTable(aClass)) {
-                    log.warn("Couldn't create {} Table.", aClass.getSimpleName());
-                }
-            } catch (Exception exception) {
-
-                // Notify if there was an error.
-                log.error("Couldn't create " + aClass.getSimpleName() + " Table.", exception);
-            }
+            //querySQL("CREATE TABLE IF NOT EXISTS " + entry.getKey() + entry.getValue());
+            // TODO:: move all of these into entity classes.
         }
     }
 
@@ -215,85 +190,6 @@ public class SQLConnector {
 
             return query;
         }
-
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try (Connection connection = getDataSource().getConnection()) {
-            preparedStatement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            int index = 1;
-
-            for (Object obj : objcObjects) {
-                if (obj instanceof String) {
-                    preparedStatement.setObject(index++, obj, Types.VARCHAR);
-                } else if (obj instanceof Blob) {
-                    preparedStatement.setObject(index++, obj, Types.BLOB);
-                } else if (obj instanceof Integer) {
-                    preparedStatement.setObject(index++, obj, Types.INTEGER);
-                } else if (obj instanceof Long) {
-                    preparedStatement.setObject(index++, obj, Types.BIGINT);
-                } else if (obj instanceof Float) {
-                    preparedStatement.setObject(index++, obj, Types.FLOAT);
-                } else if (obj instanceof Double) {
-                    preparedStatement.setObject(index++, obj, Types.DOUBLE);
-                } else if (obj instanceof Boolean) {
-                    preparedStatement.setObject(index++, obj, Types.BOOLEAN);
-                } else if (obj instanceof JsonElement jsonElement) {
-                    preparedStatement.setObject(index++, SQLUtil.convertJSONToBlob(jsonElement), Types.BLOB);
-                } else if (obj instanceof byte[] byteArray) {
-                    preparedStatement.setObject(index++, Base64.getEncoder().encodeToString(byteArray), Types.VARCHAR);
-                } else if (obj instanceof Date date) {
-                    preparedStatement.setObject(index++, date.getTime(), Types.BIGINT);
-                } else if (obj == null) {
-                    preparedStatement.setNull(index++, Types.NULL);
-                }
-            }
-
-            if (sqlQuery.toUpperCase().startsWith("SELECT")) {
-                resultSet = preparedStatement.executeQuery();
-                StoredResultSet storedResultSet = new StoredResultSet();
-
-                storedResultSet.setColumns(resultSet.getMetaData().getColumnCount());
-                resultSet.last();
-                storedResultSet.setRows(resultSet.getRow());
-                resultSet.beforeFirst();
-
-                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                    storedResultSet.addColumn(i, resultSet.getMetaData().getColumnName(i));
-                }
-
-                if (storedResultSet.hasResults()) {
-                    while (resultSet.next()) {
-                        for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                            storedResultSet.setValue(resultSet.getRow() - 1, i, resultSet.getObject(i));
-                        }
-                    }
-                }
-                resultSet.close();
-                return storedResultSet;
-            } else {
-                preparedStatement.executeUpdate();
-                return null;
-            }
-        } catch (SQLNonTransientConnectionException exception) {
-            if (connectedOnce()) {
-                log.error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
-                connectToSQLServer();
-                return querySQL(sqlQuery, objcObjects);
-            }
-        } catch (Exception exception) {
-            log.error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
-        } finally {
-            try {
-                if (preparedStatement != null)
-                    preparedStatement.close();
-
-                if (resultSet != null)
-                    resultSet.close();
-            } catch (Exception ignore) {
-            }
-        }
-
-        return null;
     }
 
     //endregion
@@ -345,15 +241,6 @@ public class SQLConnector {
      */
     public SQLWorker getSqlWorker() {
         return sqlWorker;
-    }
-
-    /**
-     * Retrieve an Instance of the entity-Mapper to work with the Data.
-     *
-     * @return {@link EntityMapper} the Instance saved in this SQL-Connector.
-     */
-    public EntityMapper getEntityMapper() {
-        return entityMapper;
     }
 
     /**

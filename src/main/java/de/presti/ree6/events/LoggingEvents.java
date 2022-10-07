@@ -12,7 +12,6 @@ import de.presti.ree6.logger.events.implentation.LogMessageVoice;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.logger.invite.InviteContainerManager;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.entities.SQLResponse;
 import de.presti.ree6.sql.entities.Invite;
 import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.utils.data.ArrayUtil;
@@ -58,6 +57,7 @@ import java.awt.Color;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class LoggingEvents extends ListenerAdapter {
 
@@ -69,13 +69,11 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildUpdateVanityCode(@NotNull GuildUpdateVanityCodeEvent event) {
         super.onGuildUpdateVanityCode(event);
-        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Invite.class, "SELECT * FROM Invites WHERE GID = ? AND CODE = ?", event.getGuild().getId(), event.getOldVanityCode());
+        Invite invite = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new Invite(), "SELECT * FROM Invites WHERE GID = :gid AND CODE = :code", Map.of(event.getGuild().getId(), event.getOldVanityCode()));
 
-        if (sqlResponse.isSuccess()) {
-            Invite invite = (Invite) sqlResponse.getEntity();
-            Invite newInvite = invite;
-            newInvite.setCode(event.getNewVanityCode());
-            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(invite, newInvite, false);
+        if (invite != null) {
+            invite.setCode(event.getNewVanityCode());
+            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(invite);
         } else {
             event.getGuild().retrieveVanityInvite().onErrorMap(throwable -> null).queue(vanityInvite ->
                     Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(new Invite(event.getGuild().getId(), event.getGuild().getOwnerId(), vanityInvite.getUses(), event.getNewVanityCode())));
