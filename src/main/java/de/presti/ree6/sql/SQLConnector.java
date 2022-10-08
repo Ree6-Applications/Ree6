@@ -1,6 +1,5 @@
 package de.presti.ree6.sql;
 
-import com.google.gson.JsonElement;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.presti.ree6.main.Main;
@@ -11,14 +10,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLNonTransientConnectionException;
-import java.sql.Types;
-import java.util.Base64;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 

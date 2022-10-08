@@ -1,10 +1,15 @@
 package de.presti.ree6.sql;
 
+import com.google.gson.JsonElement;
+import de.presti.ree6.utils.data.TypUtil;
+import jakarta.persistence.AttributeConverter;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import java.sql.Blob;
+import java.util.Base64;
 import java.util.Properties;
 
 public class SQLSession {
@@ -15,6 +20,29 @@ public class SQLSession {
             Properties properties = new Properties();
             properties.put("hibernate.connection.provider_class", "org.hibernate.hikaricp.internal.HikariCPConnectionProvider");
             configuration.addProperties(properties);
+            configuration.addAttributeConverter(new AttributeConverter<JsonElement, Blob>() {
+                @Override
+                public Blob convertToDatabaseColumn(JsonElement attribute) {
+                    return TypUtil.convertJSONToBlob(attribute);
+                }
+
+                @Override
+                public JsonElement convertToEntityAttribute(Blob dbData) {
+                    return TypUtil.convertBlobToJSON(dbData);
+                }
+            });
+
+            configuration.addAttributeConverter(new AttributeConverter<byte[], String>() {
+                @Override
+                public byte[] convertToEntityAttribute(String attribute) {
+                    return Base64.getDecoder().decode(attribute);
+                }
+
+                @Override
+                public String convertToDatabaseColumn(byte[] dbData) {
+                    return Base64.getEncoder().encodeToString(dbData);
+                }
+            });
 
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 

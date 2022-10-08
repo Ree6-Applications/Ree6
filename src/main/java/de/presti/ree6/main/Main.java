@@ -17,7 +17,7 @@ import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.sql.SQLConnector;
-import de.presti.ree6.sql.base.entities.StoredResultSet;
+import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
@@ -36,6 +36,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Main Application class, used to store Instances of System Relevant classes.
@@ -182,30 +183,30 @@ public class Main {
         // Create the Notifier-Manager instance.
         instance.notifier = new Notifier();
 
-        StoredResultSet storedResultSet = instance.sqlConnector.querySQL("SELECT * FROM ChannelStats");
+        List<ChannelStats> channelStats = instance.sqlConnector.getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats", null);
 
         // Register all Twitch Channels.
         instance.notifier.registerTwitchChannel(instance.sqlConnector.getSqlWorker().getAllTwitchNames());
-        instance.notifier.registerTwitchChannel(storedResultSet.getValues("twitchFollowerChannelUsername", true).stream().map(String.class::cast).toList());
+        instance.notifier.registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).toList());
 
         // Register the Event-handler.
         instance.notifier.registerTwitchEventHandler();
 
         // Register all Twitter Users.
         instance.notifier.registerTwitterUser(instance.sqlConnector.getSqlWorker().getAllTwitterNames());
-        instance.notifier.registerTwitterUser(storedResultSet.getValues("twitterFollowerChannelUsername", true).stream().map(String.class::cast).toList());
+        instance.notifier.registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).toList());
 
         // Register all YouTube channels.
         instance.notifier.registerYouTubeChannel(instance.sqlConnector.getSqlWorker().getAllYouTubeChannels());
-        instance.notifier.registerYouTubeChannel(storedResultSet.getValues("youtubeSubscribersChannelUsername", true).stream().map(String.class::cast).toList());
+        instance.notifier.registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).toList());
 
         // Register all Reddit Subreddits.
         instance.notifier.registerSubreddit(instance.sqlConnector.getSqlWorker().getAllSubreddits());
-        instance.notifier.registerSubreddit(storedResultSet.getValues("subredditMemberChannelSubredditName", true).stream().map(String.class::cast).toList());
+        instance.notifier.registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).toList());
 
         // Register all Instagram Users.
         instance.notifier.registerInstagramUser(instance.sqlConnector.getSqlWorker().getAllInstagramUsers());
-        instance.notifier.registerInstagramUser(storedResultSet.getValues("instagramFollowerChannelUsername", true).stream().map(String.class::cast).toList());
+        instance.notifier.registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).toList());
 
         // Add the Runtime-hooks.
         instance.addHooks();
