@@ -57,4 +57,13 @@ public class Suggestions {
     public long getChannelId() {
         return channelId;
     }
+
+    /**
+     * Set the ID of the Channel.
+     *
+     * @param channelId the ID of the Channel.
+     */
+    public void setChannelId(long channelId) {
+        this.channelId = channelId;
+    }
 }

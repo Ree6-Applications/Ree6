@@ -10,6 +10,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -145,6 +148,17 @@ public class SQLConnector {
     }
 
     //region Utility
+
+    public void querySQL(String sqlQuery, Object... parameters) {
+        try (Connection connection = getDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            for (int i = 0; i < parameters.length; i++) {
+                preparedStatement.setObject(i + 1, parameters[i]);
+            }
+            preparedStatement.execute();
+        } catch (Exception ignore) {
+        }
+    }
 
     /**
      * Send an SQL-Query to SQL-Server and get the response.

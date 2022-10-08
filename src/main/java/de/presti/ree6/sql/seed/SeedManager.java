@@ -28,10 +28,12 @@ public class SeedManager {
                 log.info("Trying to run Seed {}", aClass.getSimpleName());
                 Seed seed = aClass.getDeclaredConstructor().newInstance();
 
-                if (sqlConnector.querySQL("SELECT * FROM Seeds WHERE VERSION=?", seed.getSeedVersion().toString()).hasResults()) {
+                /* if (sqlConnector.querySQL("SELECT * FROM Seeds WHERE VERSION=?", seed.getSeedVersion().toString()).hasResults()) {
                     log.info("Seed {} already ran.", aClass.getSimpleName());
                     continue;
-                }
+                }*/
+
+                // TODO:: Add Seed to Database
 
                 seed.run(sqlConnector);
                 sqlConnector.querySQL("INSERT INTO Seeds (VERSION, DATE) VALUES (?, ?)", seed.getSeedVersion().toString(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));

@@ -77,15 +77,13 @@ public class Suggestion implements ICommand {
 
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
 
-        Query query = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Suggestions.class, "SELECT * FROM Suggestions WHERE guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()));
+        Suggestions suggestions = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "SELECT * FROM Suggestions WHERE guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()));
 
-        if (sqlResponse.isSuccess()) {
-            Suggestions suggestions = (Suggestions) sqlResponse.getEntity();
-            Suggestions newSuggestions = new Suggestions(suggestions.getGuildId(), channel.getIdLong());
-
-            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(suggestions, newSuggestions, true);
+        if (suggestions != null) {
+            suggestions.setChannelId(channel.getIdLong());
+            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(suggestions);
         } else {
-            Suggestions suggestions = new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong());
+            suggestions = new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong());
             Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(suggestions);
         }
 
