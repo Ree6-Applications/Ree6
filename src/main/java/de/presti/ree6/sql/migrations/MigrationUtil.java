@@ -55,12 +55,12 @@ public class MigrationUtil {
 
         Migration migration = loadMigration(file);
 
-        /*if (sqlConnector.querySQL("SELECT * FROM Migrations WHERE NAME=?", migration.getName()).hasResults()) {
-            log.info("Migration {} already ran.", migration.getName());
-            return;
-        }*/
-
-        // TODO:: find a way to run the migration.
+        if (sqlConnector.querySQL("SELECT * FROM Migrations WHERE NAME=?", migration.getName()) instanceof Boolean result) {
+            if (result) {
+                log.info("Migration {} already ran.", migration.getName());
+                return;
+            }
+        }
 
         migration.up(sqlConnector);
         log.info("Migration {} ran.", migration.getName());

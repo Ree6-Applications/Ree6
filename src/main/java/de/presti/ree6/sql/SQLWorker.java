@@ -30,10 +30,11 @@ import net.dv8tion.jda.api.entities.Guild;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -223,8 +224,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Webhook} with all the needed data.
      */
     public Webhook getLogWebhook(String guildId) {
-        SQLResponse sqlResponse = getEntity(Webhook.class, "SELECT * FROM LogWebhooks WHERE GID=?", guildId);
-        return sqlResponse.isSuccess() ? (Webhook) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookLog(),"SELECT * FROM LogWebhooks WHERE GID=:gid", Map.of("gid", guildId));
     }
 
     /**
@@ -262,7 +262,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isLogSetup(String guildId) {
-        return getEntity(Webhook.class, "SELECT * FROM LogWebhooks WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookLog.class, "SELECT * FROM LogWebhooks WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -273,7 +273,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean existsLogData(long webhookId, String authToken) {
-        return getEntity(Webhook.class, "SELECT * FROM LogWebhooks WHERE CID=? AND TOKEN=?", webhookId, authToken).isSuccess();
+        return getEntity(WebhookLog.class, "SELECT * FROM LogWebhooks WHERE CID=:cid AND TOKEN=:token", Map.of("cid", webhookId,"token", authToken)) != null;
     }
 
     /**
@@ -303,8 +303,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookWelcome} with all the needed data.
      */
     public WebhookWelcome getWelcomeWebhook(String guildId) {
-        SQLResponse sqlResponse = getEntity(WebhookWelcome.class, "SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId);
-        return sqlResponse.isSuccess() ? (WebhookWelcome) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookWelcome(), "SELECT * FROM WelcomeWebhooks WHERE GID=:gid", Map.of("gid", guildId));
     }
 
     /**
@@ -343,7 +342,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isWelcomeSetup(String guildId) {
-        return getEntity(WebhookWelcome.class, "SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookWelcome.class, "SELECT * FROM WelcomeWebhooks WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     //endregion
@@ -358,8 +357,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookTwitch} with all the needed data.
      */
     public WebhookTwitch getTwitchWebhook(String guildId, String twitchName) {
-        SQLResponse sqlResponse = getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName);
-        return sqlResponse.isSuccess() ? (WebhookTwitch) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookTwitch(), "SELECT * FROM TwitchNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", twitchName));
     }
 
     /**
@@ -369,8 +367,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookTwitch>} with all the needed data.
      */
     public List<WebhookTwitch> getTwitchWebhooksByName(String twitchName) {
-        SQLResponse sqlResponse = getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE NAME=?", twitchName);
-        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookTwitch.class::cast).toList() : new ArrayList<>();
+        return getEntityList(new WebhookTwitch(), "SELECT * FROM TwitchNotify WHERE NAME=:name", Map.of("name", twitchName));
     }
 
     /**
@@ -379,13 +376,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllTwitchNames() {
-
-        ArrayList<String> userNames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitchNotify").getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
-
-        return userNames;
+        return getEntityList(new WebhookTwitch(), "SELECT * FROM TwitchNotify", null).stream().map(WebhookTwitch::getName).toList();
     }
 
     /**
@@ -395,13 +386,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllTwitchNames(String guildId) {
-
-        ArrayList<String> userNames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
-
-        return userNames;
+        return getEntityList(new WebhookTwitch(), "SELECT * FROM TwitchNotify WHERE GID=:gid", Map.of("gid", guildId)).stream().map(WebhookTwitch::getName).toList();
     }
 
     /**
@@ -453,7 +438,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitchSetup(String guildId) {
-        return getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=?", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -464,7 +449,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitchSetup(String guildId, String twitchName) {
-        return getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName).isSuccess();
+        return getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", twitchName)) != null;
     }
 
     //endregion
@@ -479,8 +464,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookInstagram} with all the needed data.
      */
     public WebhookInstagram getInstagramWebhook(String guildId, String name) {
-        SQLResponse sqlResponse = getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=? AND NAME=?", guildId, name);
-        return sqlResponse.isSuccess() ? (WebhookInstagram) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookInstagram(),"SELECT * FROM InstagramNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", name));
     }
 
     /**
@@ -490,8 +474,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookInstagram>} with all the needed data.
      */
     public List<WebhookInstagram> getInstagramWebhookByName(String name) {
-        SQLResponse sqlResponse = getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE NAME=?", name);
-        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookInstagram.class::cast).toList() : new ArrayList<>();
+        return getEntityList(new WebhookInstagram(),"SELECT * FROM InstagramNotify WHERE NAME=:name", Map.of("name", name));
     }
 
     /**
@@ -500,13 +483,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllInstagramUsers() {
-
-        ArrayList<String> usernames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the InstagramNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM InstagramNotify").getValues("NAME").stream().map(String.class::cast).forEach(usernames::add);
-
-        return usernames;
+        return getEntityList(new WebhookInstagram(),"SELECT * FROM InstagramNotify", null).stream().map(WebhookInstagram::getName).toList();
     }
 
     /**
@@ -516,13 +493,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllInstagramUsers(String guildId) {
-
-        ArrayList<String> usernames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM InstagramNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(usernames::add);
-
-        return usernames;
+        return getEntityList(new WebhookInstagram(),"SELECT * FROM InstagramNotify WHERE GID=:gid", Map.of("gid", guildId)).stream().map(WebhookInstagram::getName).toList();
     }
 
     /**
@@ -574,7 +545,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isInstagramSetup(String guildId) {
-        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -585,7 +556,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isInstagramSetup(String guildId, String name) {
-        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=? AND NAME=?", guildId, name).isSuccess();
+        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", name)) != null;
     }
 
     //endregion
@@ -600,8 +571,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookReddit} with all the needed data.
      */
     public WebhookReddit getRedditWebhook(String guildId, String subreddit) {
-        SQLResponse sqlResponse = getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=? AND SUBREDDIT=?", guildId, subreddit);
-        return sqlResponse.isSuccess() ? (WebhookReddit) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookReddit(), "SELECT * FROM RedditNotify WHERE GID=:gid AND SUBREDDIT=:name", Map.of("gid", guildId, "name", subreddit));
     }
 
     /**
@@ -611,8 +581,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookReddit>} with all the needed data.
      */
     public List<WebhookReddit> getRedditWebhookBySub(String subreddit) {
-        SQLResponse sqlResponse = getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE SUBREDDIT=?", subreddit);
-        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookReddit.class::cast).toList() : new ArrayList<>();
+        return getEntityList(new WebhookReddit(), "SELECT * FROM RedditNotify WHERE SUBREDDIT=:name", Map.of("name", subreddit));
     }
 
     /**
@@ -621,13 +590,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllSubreddits() {
-
-        ArrayList<String> subreddits = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM RedditNotify").getValues("SUBREDDIT").stream().map(String.class::cast).forEach(subreddits::add);
-
-        return subreddits;
+        return getEntityList(new WebhookReddit(), "SELECT * FROM RedditNotify", null).stream().map(WebhookReddit::getSubreddit).toList();
     }
 
     /**
@@ -637,13 +600,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllSubreddits(String guildId) {
-
-        ArrayList<String> subreddits = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM RedditNotify WHERE GID=?", guildId).getValues("SUBREDDIT").stream().map(String.class::cast).forEach(subreddits::add);
-
-        return subreddits;
+        return getEntityList(new WebhookReddit(), "SELECT * FROM RedditNotify WHERE GID=:gid", Map.of("gid", guildId)).stream().map(WebhookReddit::getSubreddit).toList();
     }
 
     /**
@@ -695,7 +652,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isRedditSetup(String guildId) {
-        return getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -706,7 +663,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isRedditSetup(String guildId, String subreddit) {
-        return getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=? AND SUBREDDIT=?", guildId, subreddit).isSuccess();
+        return getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=:gid AND SUBREDDIT=:name", Map.of("gid", guildId, "name", subreddit)) != null;
     }
 
     //endregion
@@ -721,8 +678,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookYouTube} with all the needed data.
      */
     public WebhookYouTube getYouTubeWebhook(String guildId, String youtubeChannel) {
-        SQLResponse sqlResponse = getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel);
-        return sqlResponse.isSuccess() ? (WebhookYouTube) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookYouTube(), "SELECT * FROM YouTubeNotify WHERE GID=:gid NAME=:name", Map.of("gid", guildId, "name", youtubeChannel));
     }
 
     /**
@@ -732,8 +688,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookYouTube>} with all the needed data.
      */
     public List<WebhookYouTube> getYouTubeWebhooksByName(String youtubeChannel) {
-        SQLResponse sqlResponse = getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE NAME=?", youtubeChannel);
-        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookYouTube.class::cast).toList() : new ArrayList<>();
+        return getEntityList(new WebhookYouTube(), "SELECT * FROM YouTubeNotify WHERE NAME=:name", Map.of("name", youtubeChannel));
     }
 
     /**
@@ -742,13 +697,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllYouTubeChannels() {
-
-        ArrayList<String> userNames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM YouTubeNotify").getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
-
-        return userNames;
+        return getEntityList(new WebhookYouTube(), "SELECT * FROM YouTubeNotify", null).stream().map(WebhookYouTube::getName).toList();
     }
 
     /**
@@ -758,13 +707,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllYouTubeChannels(String guildId) {
-
-        ArrayList<String> userNames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
-
-        return userNames;
+        return getEntityList(new WebhookYouTube(), "SELECT * FROM YouTubeNotify WHERE GID=:gid", Map.of("gid", guildId)).stream().map(WebhookYouTube::getName).toList();
     }
 
     /**
@@ -816,7 +759,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isYouTubeSetup(String guildId) {
-        return getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -827,7 +770,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isYouTubeSetup(String guildId, String youtubeChannel) {
-        return getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel).isSuccess();
+        return getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", youtubeChannel)) != null;
     }
 
     //endregion
@@ -842,8 +785,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookTwitter} with all the needed data.
      */
     public WebhookTwitter getTwitterWebhook(String guildId, String twitterName) {
-        SQLResponse sqlResponse = getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName);
-        return sqlResponse.isSuccess() ? (WebhookTwitter) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookTwitter(), "SELECT * FROM TwitterNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", twitterName));
     }
 
     /**
@@ -853,8 +795,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookTwitter>} with all the needed data.
      */
     public List<WebhookTwitter> getTwitterWebhooksByName(String twitterName) {
-        SQLResponse sqlResponse = getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE NAME=?", twitterName);
-        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookTwitter.class::cast).toList() : new ArrayList<>();
+        return getEntityList(new WebhookTwitter(), "SELECT * FROM TwitterNotify WHERE NAME=:name", Map.of("name", twitterName));
     }
 
     /**
@@ -863,13 +804,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllTwitterNames() {
-
-        ArrayList<String> userNames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the TwitterNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitterNotify").getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
-
-        return userNames;
+        return getEntityList(new WebhookTwitter(), "SELECT * FROM TwitterNotify", null).stream().map(WebhookTwitter::getName).toList();
     }
 
     /**
@@ -879,13 +814,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllTwitterNames(String guildId) {
-
-        ArrayList<String> userNames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the TwitterNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
-
-        return userNames;
+        return getEntityList(new WebhookTwitter(), "SELECT * FROM TwitterNotify WHERE GID=:gid", Map.of("gid", guildId)).stream().map(WebhookTwitter::getName).toList();
     }
 
     /**
@@ -936,7 +865,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitterSetup(String guildId) {
-        return getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -1776,9 +1705,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param userId  the ID of the User.
      */
     public void optIn(String guildId, String userId) {
-        // TODO:: make Opt-In a class Entity.
         if (isOptOut(guildId, userId)) {
-            sqlConnector.querySQL(null,"DELETE FROM Opt_out WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId));
+            sqlConnector.querySQL(OptOut.class,"DELETE FROM Opt_out WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId));
         }
     }
 
@@ -1956,11 +1884,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param r The entity to get.
      * @return The mapped entity.
      */
-    public <R> List<R> getEntityList(R r, String query, Map<String, Object> parameters) {
+    public <R> List<R> getEntityList(@NotNull R r, @NotNull String query, @Nullable Map<String, Object> parameters) {
         if (query.isEmpty()) {
             return sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), null).getResultList();
         } else {
-            return sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), parameters).getResultList();
+            return sqlConnector.querySQL(r, query, parameters).getResultList();
         }
     }
 
@@ -1972,19 +1900,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param parameters   The arguments to use.
      * @return The mapped Version of the given Class-Entity.
      */
-    public <R> R getEntity(R r, String query, Map<String, Object> parameters) {
-        List<R> list;
-
+    public <R> R getEntity(@NotNull R r, @NotNull String query, @Nullable Map<String, Object> parameters) {
         if (query.isEmpty()) {
-            list = sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), null).getResultList();
+            return sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), null).getSingleResultOrNull();
         } else {
-            list = sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), parameters).getResultList();
-        }
-
-        if (list != null && !list.isEmpty()) {
-            return list.get(0);
-        } else {
-            return null;
+            return sqlConnector.querySQL(r, query, parameters).getSingleResultOrNull();
         }
     }
 

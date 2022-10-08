@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -149,15 +151,23 @@ public class SQLConnector {
 
     //region Utility
 
-    public void querySQL(String sqlQuery, Object... parameters) {
+    public Object querySQL(String sqlQuery, Object... parameters) {
         try (Connection connection = getDataSource().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             for (int i = 0; i < parameters.length; i++) {
                 preparedStatement.setObject(i + 1, parameters[i]);
             }
-            preparedStatement.execute();
+            if (sqlQuery.startsWith("SELECT")) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    return resultSet.next();
+                }
+            } else {
+                return preparedStatement.executeUpdate();
+            }
         } catch (Exception ignore) {
         }
+
+        return null;
     }
 
     /**
@@ -167,7 +177,7 @@ public class SQLConnector {
      * @param parameters a list with all parameters that should be considered.
      * @return The Result from the SQL-Server.
      */
-    public <R> Query<R> querySQL(R r, String sqlQuery, Map<String, Object> parameters) {
+    public <R> Query<R> querySQL(@NotNull R r, @NotNull String sqlQuery, @Nullable Map<String, Object> parameters) {
 
         if (!isConnected()) {
             if (connectedOnce()) {
@@ -183,7 +193,7 @@ public class SQLConnector {
 
             session.beginTransaction();
 
-            Query<R> query = (Query<R>) session.createQuery(sqlQuery);
+            Query<R> query = (Query<R>) session.createQuery(sqlQuery, r.getClass());
 
             if (parameters != null) {
                 for (Map.Entry<String, Object> entry : parameters.entrySet()) {
