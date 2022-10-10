@@ -193,7 +193,7 @@ public class CommandManager {
         }
 
         // Check if this is a Developer build, if not then cooldown the User.
-        if (BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD) {
+        if (!BotWorker.getVersion().isDebug()) {
             ThreadUtil.createNewThread(x -> ArrayUtil.commandCooldown.remove(member.getUser().getId()), null, Duration.ofSeconds(5), false, false);
         }
 
@@ -232,6 +232,11 @@ public class CommandManager {
 
         // Split all Arguments.
         String[] arguments = messageContent.split(" ");
+
+        if (arguments.length == 0 || arguments[0].isBlank()) {
+            sendMessage("Please provide a command!", 5, textChannel, null);
+            return false;
+        }
 
         // Get the Command by the name.
         ICommand command = getCommandByName(arguments[0]);
