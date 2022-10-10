@@ -103,7 +103,6 @@ dependencies {
     implementation("org.hibernate.orm:hibernate-hikaricp:6.1.4.Final")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.0.8")
-    implementation("org.postgresql:postgresql:42.5.0")
     implementation("org.xerial:sqlite-jdbc:3.39.3.0")
     implementation("com.h2database:h2:2.1.214")
 
