@@ -14,11 +14,18 @@ import java.util.Properties;
 
 public class SQLSession {
 
+    static String jdbcURL;
+    static int maxPoolSize;
+
     public static SessionFactory buildSessionFactory() {
         try {
             Configuration configuration = new Configuration();
             Properties properties = new Properties();
+            properties.put("hibernate.connection.datasource", "com.zaxxer.hikari.HikariDataSource");
             properties.put("hibernate.connection.provider_class", "org.hibernate.hikaricp.internal.HikariCPConnectionProvider");
+            properties.put("hibernate.connection.url", jdbcURL);
+            properties.put("hibernate.hikari.maximumPoolSize", maxPoolSize);
+            properties.put("hibernate.dialect","org.hibernate.dialect.MariaDBDialect");
             configuration.addProperties(properties);
             configuration.addAttributeConverter(new AttributeConverter<JsonElement, Blob>() {
                 @Override
