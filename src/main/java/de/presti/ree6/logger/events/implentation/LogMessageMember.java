@@ -183,6 +183,9 @@ public class LogMessageMember extends LogMessage {
      * @return a {@link List<Role>} with every removed Role.
      */
     public List<Role> getRemovedRoles() {
+        if (removedRoles == null)
+            return removedRoles = new ArrayList<>();
+
         return removedRoles;
     }
 
@@ -192,7 +195,7 @@ public class LogMessageMember extends LogMessage {
      * @param removedRoles the new {@link List<Role>}.
      */
     public void setRemovedRoles(List<Role> removedRoles) {
-        this.removedRoles = removedRoles;
+        getRemovedRoles().addAll(removedRoles);
     }
 
     /**
@@ -201,6 +204,9 @@ public class LogMessageMember extends LogMessage {
      * @return a {@link List<Role>} with every added Role.
      */
     public List<Role> getAddedRoles() {
+        if (addedRoles == null)
+            return addedRoles = new ArrayList<>();
+
         return addedRoles;
     }
 
@@ -210,6 +216,6 @@ public class LogMessageMember extends LogMessage {
      * @param addedRoles the new {@link List<Role>}.
      */
     public void setAddedRoles(List<Role> addedRoles) {
-        this.addedRoles = addedRoles;
+        getAddedRoles().addAll(addedRoles);
     }
 }

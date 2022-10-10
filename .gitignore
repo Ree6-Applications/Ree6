@@ -6,6 +6,7 @@ logs/
 !**/src/main/**/target/
 !**/src/test/**/target/
 out/
+target/
 
 ### Gradle ###
 .gradle/

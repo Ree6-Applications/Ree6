@@ -48,7 +48,7 @@ dependencies {
 
     //Discord stuff
     implementation("net.dv8tion:JDA:5.0.0-alpha.21")
-    implementation("ch.qos.logback:logback-classic:1.4.3")
+    implementation("ch.qos.logback:logback-classic:1.4.4")
     implementation("com.github.walkyst:lavaplayer-fork:1.3.98.4")
     implementation("com.sedmelluq:lava-common:1.1.2")
 
