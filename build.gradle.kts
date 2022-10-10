@@ -75,7 +75,7 @@ dependencies {
     implementation("com.github.DxsSucuk:Nekos4J:1.0.1")
 
     //google stuff
-    implementation("com.google.cloud:google-cloud-vision:3.1.2")
+    implementation("com.google.cloud:google-cloud-vision:3.1.3")
     implementation("com.google.api-client:google-api-client:2.0.0")
     implementation("com.google.oauth-client:google-oauth-client:1.34.1")
     implementation("com.google.http-client:google-http-client-jackson2:1.42.2")
@@ -90,7 +90,7 @@ dependencies {
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
 
     // Internal Analytics/Error Monitoring
-    implementation("io.sentry:sentry:6.4.3")
+    implementation("io.sentry:sentry:6.5.0")
 
     //File stuff
     implementation("com.fasterxml.jackson.core:jackson-core:2.13.4")

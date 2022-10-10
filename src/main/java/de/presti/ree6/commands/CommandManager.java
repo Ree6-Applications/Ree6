@@ -248,6 +248,11 @@ public class CommandManager {
         // Split all Arguments.
         String[] arguments = messageContent.split(" ");
 
+        if (arguments.length == 0 || arguments[0].isBlank()) {
+            sendMessage("Please provide a command!", 5, textChannel, null);
+            return false;
+        }
+
         // Get the Command by the name.
         ICommand command = getCommandByName(arguments[0]);
 
