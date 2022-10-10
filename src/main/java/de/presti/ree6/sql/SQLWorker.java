@@ -28,11 +28,8 @@ import de.presti.ree6.sql.entities.webhook.WebhookYouTube;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.reflections.Reflections;
 
 import javax.annotation.Nonnull;
 import java.text.ParseException;
@@ -1817,8 +1814,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             }
         }
 
-        try (SessionFactory sessionFactory = SQLSession.buildSessionFactory()) {
-            Session session = sessionFactory.getCurrentSession();
+        try (Session session = SQLSession.getSessionFactory().openSession()) {
 
             session.beginTransaction();
 
@@ -1841,8 +1837,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             }
         }
 
-        try (SessionFactory sessionFactory = SQLSession.buildSessionFactory()) {
-            Session session = sessionFactory.getCurrentSession();
+        try (Session session = SQLSession.getSessionFactory().openSession()) {
 
             session.beginTransaction();
 
@@ -1867,8 +1862,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             }
         }
 
-        try (SessionFactory sessionFactory = SQLSession.buildSessionFactory()) {
-            Session session = sessionFactory.getCurrentSession();
+        try (Session session = SQLSession.getSessionFactory().openSession()) {
 
             session.beginTransaction();
 

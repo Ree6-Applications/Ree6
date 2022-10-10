@@ -7,7 +7,6 @@ import de.presti.ree6.sql.migrations.MigrationUtil;
 import de.presti.ree6.sql.seed.SeedManager;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -184,8 +182,7 @@ public class SQLConnector {
             }
         }
 
-        try (SessionFactory sessionFactory = SQLSession.buildSessionFactory()) {
-            Session session = sessionFactory.getCurrentSession();
+        try (Session session = SQLSession.getSessionFactory().openSession()) {
 
             session.beginTransaction();
 

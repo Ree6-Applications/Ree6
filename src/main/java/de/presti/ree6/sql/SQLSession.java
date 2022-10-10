@@ -19,7 +19,11 @@ public class SQLSession {
     static String jdbcURL;
     static int maxPoolSize;
 
+    static SessionFactory sessionFactory;
+
     public static SessionFactory buildSessionFactory() {
+        if (sessionFactory != null) return sessionFactory;
+
         try {
             Configuration configuration = new Configuration();
             Properties properties = new Properties();
@@ -56,7 +60,7 @@ public class SQLSession {
 
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 
-            return configuration.buildSessionFactory(serviceRegistry);
+            return sessionFactory = configuration.buildSessionFactory(serviceRegistry);
         }
         catch (Throwable ex) {
             // Make sure you log the exception, as it might be swallowed
@@ -79,5 +83,9 @@ public class SQLSession {
 
     public static int getMaxPoolSize() {
         return maxPoolSize;
+    }
+
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
 }
