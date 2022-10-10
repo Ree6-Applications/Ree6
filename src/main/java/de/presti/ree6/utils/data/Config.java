@@ -42,7 +42,7 @@ public class Config {
             yamlFile.addDefault("hikari.sql.pw", "yourpw");
             yamlFile.addDefault("hikari.sql.host", "localhost");
             yamlFile.addDefault("hikari.sql.port", 3306);
-            yamlFile.addDefault("hikari.misc.storage", "sqllite");
+            yamlFile.addDefault("hikari.misc.storage", "sqlite");
             yamlFile.addDefault("hikari.misc.poolSize", 10);
             yamlFile.addDefault("dagpi.apitoken", "yourdagpixyztokenhere");
             yamlFile.addDefault("sentry.dsn", "yourSentryDSNHere");

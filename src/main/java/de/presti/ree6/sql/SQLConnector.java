@@ -148,8 +148,8 @@ public class SQLConnector {
                         databasePassword);
             }
 
-            case "sqllite" -> {
-                jdbcUrl = "jdbc:sqllite:%s";
+            case "sqlite" -> {
+                jdbcUrl = "jdbc:sqlite:%s";
                 jdbcUrl = jdbcUrl.formatted("storage/Ree6.db");
             }
 
