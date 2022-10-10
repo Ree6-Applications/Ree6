@@ -144,8 +144,7 @@ public class CommandManager {
      * @return the {@link ICommand} with the same Name.
      */
     public ICommand getCommandBySlashName(String name) {
-        return getCommands().stream().filter(command -> (command.getCommandData() != null && command.getCommandData().getName().equalsIgnoreCase(name))
-                || (command.getClass().isAnnotationPresent(Command.class) && command.getClass().getAnnotation(Command.class).name().equalsIgnoreCase(name))).findFirst().orElse(null);
+        return getCommands().stream().filter(command -> (command.getCommandData() != null && command.getCommandData().getName().equalsIgnoreCase(name)) || (command.getClass().isAnnotationPresent(Command.class) && command.getClass().getAnnotation(Command.class).name().equalsIgnoreCase(name))).findFirst().orElse(null);
     }
 
     /**
@@ -490,12 +489,7 @@ public class CommandManager {
      * @param interactionHook the Interaction-hook, if it is a slash event.
      */
     public void deleteMessage(Message message, InteractionHook interactionHook) {
-        if (message != null &&
-                message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
-                message.getChannel().retrieveMessageById(message.getIdLong()).complete() != null &&
-                message.getType().canDelete() &&
-                !message.isEphemeral() &&
-                interactionHook == null) {
+        if (message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) && message.getChannel().retrieveMessageById(message.getIdLong()).complete() != null && message.getType().canDelete() && !message.isEphemeral() && interactionHook == null) {
             message.delete().onErrorMap(throwable -> {
                 log.error("[CommandManager] Couldn't delete a Message!", throwable);
                 return null;

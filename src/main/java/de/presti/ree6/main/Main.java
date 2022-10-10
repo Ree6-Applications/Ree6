@@ -126,7 +126,7 @@ public class Main {
             options.setTracesSampleRate(1.0);
             // When first trying Sentry it's good to see what the SDK is doing:
             options.setDebug(true);
-            options.setRelease("1.9.9");
+            options.setRelease("1.10.0");
         });
 
         // Check if there is a default value, if so close application and inform.
@@ -167,7 +167,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.RELEASE, "1.9.9");
+            BotWorker.createBot(BotVersion.RELEASE, "1.10.0");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
