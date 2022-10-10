@@ -129,8 +129,7 @@ public class CommandManager {
      * @return the {@link ICommand} with the same Name.
      */
     public ICommand getCommandBySlashName(String name) {
-        return getCommands().stream().filter(command -> (command.getCommandData() != null && command.getCommandData().getName().equalsIgnoreCase(name))
-                || (command.getClass().isAnnotationPresent(Command.class) && command.getClass().getAnnotation(Command.class).name().equalsIgnoreCase(name))).findFirst().orElse(null);
+        return getCommands().stream().filter(command -> (command.getCommandData() != null && command.getCommandData().getName().equalsIgnoreCase(name)) || (command.getClass().isAnnotationPresent(Command.class) && command.getClass().getAnnotation(Command.class).name().equalsIgnoreCase(name))).findFirst().orElse(null);
     }
 
     /**
@@ -198,7 +197,7 @@ public class CommandManager {
         }
 
         // Add them to the Cooldown.
-        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD) {
+        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && !BotWorker.getVersion().isDebug()) {
             ArrayUtil.commandCooldown.add(member.getUser().getId());
         }
 
@@ -248,8 +247,7 @@ public class CommandManager {
         }
 
         // Check if the Command is blacklisted.
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() &&
-                command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
             sendMessage("This Command is blocked!", 5, textChannel, null);
             return false;
         }
@@ -475,12 +473,7 @@ public class CommandManager {
      * @param interactionHook the Interaction-hook, if it is a slash event.
      */
     public void deleteMessage(Message message, InteractionHook interactionHook) {
-        if (message != null &&
-                message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
-                message.getChannel().retrieveMessageById(message.getIdLong()).complete() != null &&
-                message.getType().canDelete() &&
-                !message.isEphemeral() &&
-                interactionHook == null) {
+        if (message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) && message.getChannel().retrieveMessageById(message.getIdLong()).complete() != null && message.getType().canDelete() && !message.isEphemeral() && interactionHook == null) {
             message.delete().onErrorMap(throwable -> {
                 Main.getInstance().getAnalyticsLogger().error("[CommandManager] Couldn't delete a Message!", throwable);
                 return null;
