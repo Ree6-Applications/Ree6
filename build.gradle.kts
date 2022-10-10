@@ -89,7 +89,7 @@ dependencies {
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
 
     // Internal Analytics/Error Monitoring
-    implementation("io.sentry:sentry:6.4.3")
+    implementation("io.sentry:sentry:6.5.0")
     implementation("io.sentry:sentry-logback:6.4.3")
 
     //File stuff
