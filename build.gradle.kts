@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "de.presti"
-version = "1.10.0"
+version = "2.0.0"
 val artifactId = "Ree6"
 description = "Ree6 is an open-Source Discord Bot."
 

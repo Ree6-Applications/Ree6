@@ -27,6 +27,7 @@ public class SQLSession {
             properties.put("hibernate.hikari.maximumPoolSize", maxPoolSize);
             properties.put("hibernate.dialect","org.hibernate.dialect.MariaDBDialect");
             configuration.addProperties(properties);
+            configuration.addPackage("de.presti.ree6.sql.entities");
             configuration.addAttributeConverter(new AttributeConverter<JsonElement, Blob>() {
                 @Override
                 public Blob convertToDatabaseColumn(JsonElement attribute) {
