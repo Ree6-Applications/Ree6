@@ -121,7 +121,7 @@ public class Main {
             // We recommend adjusting this value in production.
             options.setTracesSampleRate(1.0);
             // When first trying Sentry it's good to see what the SDK is doing:
-            options.setDebug(true);
+            options.setDebug(false);
             options.setRelease("2.0.0");
         });
 
