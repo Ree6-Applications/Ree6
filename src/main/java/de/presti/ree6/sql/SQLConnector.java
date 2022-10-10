@@ -63,6 +63,7 @@ public class SQLConnector {
         sqlWorker = new SQLWorker(this);
 
         SQLSession.setJdbcURL(buildConnectionURL());
+        SQLSession.setMaxPoolSize(Main.getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"));
 
         connectToSQLServer();
         createTables();
@@ -95,8 +96,8 @@ public class SQLConnector {
         try {
             HikariConfig hConfig = new HikariConfig();
 
-            hConfig.setJdbcUrl(buildConnectionURL());
-            hConfig.setMaximumPoolSize(Main.getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"));
+            hConfig.setJdbcUrl(SQLSession.getJdbcURL());
+            hConfig.setMaximumPoolSize(SQLSession.getMaxPoolSize());
             dataSource = new HikariDataSource(hConfig);
             log.info("Service (SQL) has been started. Connection was successful.");
             connectedOnce = true;

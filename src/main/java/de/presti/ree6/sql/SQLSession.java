@@ -3,6 +3,7 @@ package de.presti.ree6.sql;
 import com.google.gson.JsonElement;
 import de.presti.ree6.utils.data.TypUtil;
 import jakarta.persistence.AttributeConverter;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -12,6 +13,7 @@ import java.sql.Blob;
 import java.util.Base64;
 import java.util.Properties;
 
+@Slf4j
 public class SQLSession {
 
     static String jdbcURL;
@@ -58,7 +60,7 @@ public class SQLSession {
         }
         catch (Throwable ex) {
             // Make sure you log the exception, as it might be swallowed
-            System.err.println("Initial SessionFactory creation failed." + ex);
+            log.error("Initial SessionFactory creation failed." + ex);
             throw new ExceptionInInitializerError(ex);
         }
     }
@@ -69,5 +71,13 @@ public class SQLSession {
 
     public static void setMaxPoolSize(int maxPoolSize) {
         SQLSession.maxPoolSize = maxPoolSize;
+    }
+
+    public static String getJdbcURL() {
+        return jdbcURL;
+    }
+
+    public static int getMaxPoolSize() {
+        return maxPoolSize;
     }
 }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
+import java.util.Map;
 
 /**
  * Config.
@@ -34,6 +35,8 @@ public class Config {
                     #                              #
                     ################################
                     """);
+            yamlFile.addDefault("config.version", "2.0.0");
+            yamlFile.addDefault("config.creation", System.currentTimeMillis());
             yamlFile.addDefault("hikari.sql.user", "root");
             yamlFile.addDefault("hikari.sql.db", "root");
             yamlFile.addDefault("hikari.sql.pw", "yourpw");
@@ -68,8 +71,36 @@ public class Config {
         } else {
             try {
                 yamlFile.load();
+                migrateOldConfig();
             } catch (Exception exception) {
                 log.error("Could not load config!",exception);
+            }
+        }
+    }
+
+    /**
+     * Migrate from 1.10.0 config to 2.0.0 config.
+     */
+    public void migrateOldConfig() {
+        if (yamlFile.getString("config.version") == null) {
+            Map<String, Object> resources = yamlFile.getValues(true);
+            if (getFile().delete()) {
+                init();
+
+                for (Map.Entry<String, Object> entry : resources.entrySet()) {
+                    String key = entry.getKey();
+
+                    if (key.startsWith("mysql"))
+                        key = key.replace("mysql", "hikari.sql");
+
+                    yamlFile.set(key, entry.getValue());
+                }
+
+                try {
+                    yamlFile.save(getFile());
+                } catch (Exception exception) {
+                    log.error("Could not save config file!", exception);
+                }
             }
         }
     }
