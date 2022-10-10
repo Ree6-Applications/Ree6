@@ -2,11 +2,21 @@ package de.presti.ree6.sql.entities.level;
 
 import de.presti.ree6.utils.data.LevelUtil;
 import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import net.dv8tion.jda.api.entities.User;
 
 @MappedSuperclass
 public class UserLevel {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The ID of the Guild.

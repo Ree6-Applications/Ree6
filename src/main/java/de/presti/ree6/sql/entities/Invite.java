@@ -1,13 +1,21 @@
 package de.presti.ree6.sql.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 /**
  * Invite class to store information about an Invite.
  */
+@Entity
 @Table(name = "Invites")
 public class Invite {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The GuildID of the Invite.

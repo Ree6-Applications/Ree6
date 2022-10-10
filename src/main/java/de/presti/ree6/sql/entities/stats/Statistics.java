@@ -1,14 +1,22 @@
 package de.presti.ree6.sql.entities.stats;
 
 import com.google.gson.JsonObject;
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 /**
  * SQL Entity for statistics.
  */
+@Entity
 @Table(name = "Statistics")
 public class Statistics {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The day of the statistic.

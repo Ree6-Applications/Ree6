@@ -1,14 +1,22 @@
 package de.presti.ree6.sql.entities;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 /**
  * File to store Settings information.
  */
+@Entity
 @Table(name = "Settings")
 public class Setting {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The ID of the Guild.

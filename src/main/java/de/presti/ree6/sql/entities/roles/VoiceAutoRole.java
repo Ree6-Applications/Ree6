@@ -1,8 +1,10 @@
 package de.presti.ree6.sql.entities.roles;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
+@Entity
 @Table(name = "VCLevelAutoRoles")
 public class VoiceAutoRole extends Role {
 

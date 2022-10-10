@@ -1,15 +1,23 @@
 package de.presti.ree6.sql.entities.stats;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 // TODO:: split all these in separate classes to keep everything more organized.
 
 /**
  * SQL Entity for the Stats.
  */
+@Entity
 @Table(name = "ChannelStats")
 public class ChannelStats {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The Guild ID.

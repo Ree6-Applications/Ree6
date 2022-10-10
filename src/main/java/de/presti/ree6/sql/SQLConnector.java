@@ -44,9 +44,6 @@ public class SQLConnector {
     // A boolean to keep track if there was at least one valid connection.
     private boolean connectedOnce = false;
 
-    // A HashMap with every Table Name as key and the values as value.
-    private final Map<String, String> tables = new HashMap<>();
-
     /**
      * Constructor with the needed data to open an SQL connection.
      *
@@ -64,6 +61,8 @@ public class SQLConnector {
         this.databaseServerPort = databaseServerPort;
 
         sqlWorker = new SQLWorker(this);
+
+        SQLSession.setJdbcURL(buildConnectionURL());
 
         connectToSQLServer();
         createTables();
@@ -96,30 +95,7 @@ public class SQLConnector {
         try {
             HikariConfig hConfig = new HikariConfig();
 
-            String jdbcUrl;
-
-            switch (Main.getInstance().getConfig().getConfiguration().getString("hikari.misc.storage").toLowerCase()) {
-                case "mariadb" -> {
-                    jdbcUrl = "jdbc:mariadb://%s:%s/%s?user=%s&password=%s";
-                    jdbcUrl = jdbcUrl.formatted(databaseServerIP,
-                            databaseServerPort,
-                            databaseName,
-                            databaseUser,
-                            databasePassword);
-                }
-
-                case "sqlite" -> {
-                    jdbcUrl = "jdbc:sqlite:%s";
-                    jdbcUrl = jdbcUrl.formatted("storage/Ree6.db");
-                }
-
-                default -> {
-                    jdbcUrl = "jdbc:h2:%s";
-                    jdbcUrl = jdbcUrl.formatted("./storage/Ree6.db");
-                }
-            }
-
-            hConfig.setJdbcUrl(jdbcUrl);
+            hConfig.setJdbcUrl(buildConnectionURL());
             hConfig.setMaximumPoolSize(Main.getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"));
             dataSource = new HikariDataSource(hConfig);
             log.info("Service (SQL) has been started. Connection was successful.");
@@ -138,18 +114,37 @@ public class SQLConnector {
         // Check if there is an open Connection if not, skip.
         if (!isConnected()) return;
 
-        // Registering the tables and values.
-        tables.putIfAbsent("Migrations", "(NAME VARCHAR(100), DATE VARCHAR(100))");
-        tables.putIfAbsent("Seeds", "(VERSION VARCHAR(100), DATE VARCHAR(100))");
-
-        // Iterating through all table presets.
-        for (Map.Entry<String, String> entry : tables.entrySet()) {
-            //querySQL("CREATE TABLE IF NOT EXISTS " + entry.getKey() + entry.getValue());
-            // TODO:: move all of these into entity classes.
-        }
+        querySQL("CREATE TABLE IF NOT EXISTS Seeds (VERSION VARCHAR(100), DATE VARCHAR(100))");
+        querySQL("CREATE TABLE IF NOT EXISTS Migrations (NAME VARCHAR(100), DATE VARCHAR(100))" );
     }
 
     //region Utility
+
+    public String buildConnectionURL() {
+        String jdbcUrl;
+
+        switch (Main.getInstance().getConfig().getConfiguration().getString("hikari.misc.storage").toLowerCase()) {
+            case "mariadb" -> {
+                jdbcUrl = "jdbc:mariadb://%s:%s/%s?user=%s&password=%s";
+                jdbcUrl = jdbcUrl.formatted(databaseServerIP,
+                        databaseServerPort,
+                        databaseName,
+                        databaseUser,
+                        databasePassword);
+            }
+
+            case "sqlite" -> {
+                jdbcUrl = "jdbc:sqlite:%s";
+                jdbcUrl = jdbcUrl.formatted("storage/Ree6.db");
+            }
+
+            default -> {
+                jdbcUrl = "jdbc:h2:%s";
+                jdbcUrl = jdbcUrl.formatted("./storage/Ree6.db");
+            }
+        }
+        return jdbcUrl;
+    }
 
     public Object querySQL(String sqlQuery, Object... parameters) {
         try (Connection connection = getDataSource().getConnection();

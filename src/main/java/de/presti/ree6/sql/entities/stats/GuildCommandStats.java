@@ -1,11 +1,13 @@
 package de.presti.ree6.sql.entities.stats;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 /**
  * SQL Entity for the Guild-Stats.
  */
+@Entity
 @Table(name = "GuildStats")
 public class GuildCommandStats extends CommandStats {
 

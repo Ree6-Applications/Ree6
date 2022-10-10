@@ -1,12 +1,11 @@
 package de.presti.ree6.sql.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 /**
  * Class used to store information about the Suggestions.
  */
+@Entity
 @Table(name = "Suggestions")
 public class Suggestions {
 

@@ -2,12 +2,14 @@ package de.presti.ree6.sql.entities;
 
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
  * Class used to store information about the temporal Voice-Channel.
  */
+@Entity
 @Table(name = "TemporalVoicechannel")
 public class TemporalVoicechannel {
 

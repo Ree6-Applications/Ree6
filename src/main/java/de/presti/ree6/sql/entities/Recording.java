@@ -3,12 +3,14 @@ package de.presti.ree6.sql.entities;
 import com.google.gson.JsonArray;
 import de.presti.ree6.utils.others.RandomUtils;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
  * This class is used to represent a Ree6-Voice-Recording, in our Database.
  */
+@Entity
 @Table(name = "Recording")
 public class Recording {
 

@@ -1,15 +1,22 @@
 package de.presti.ree6.sql.entities.stats;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 /**
  * SQL Entity for the Stats.
  */
+@Entity
 @MappedSuperclass
 @Table(name = "CommandStats")
 public class CommandStats {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * Name of the Command.

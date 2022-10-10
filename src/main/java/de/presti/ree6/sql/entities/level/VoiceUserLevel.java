@@ -1,12 +1,14 @@
 package de.presti.ree6.sql.entities.level;
 
 import de.presti.ree6.main.Main;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 /**
  * Utility class to store information about a Users
  * Experience and their Level.
  */
+@Entity
 @Table(name = "VCLevel")
 public class VoiceUserLevel extends UserLevel {
 

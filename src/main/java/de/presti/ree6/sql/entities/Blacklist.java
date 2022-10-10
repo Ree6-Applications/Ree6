@@ -1,13 +1,21 @@
 package de.presti.ree6.sql.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 /**
  * SQL Entity for the Blacklist.
  */
+@Entity
 @Table(name = "ChatProtector")
 public class Blacklist {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The ID of the Guild.

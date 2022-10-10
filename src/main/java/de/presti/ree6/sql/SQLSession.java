@@ -62,4 +62,11 @@ public class SQLSession {
         }
     }
 
+    public static void setJdbcURL(String jdbcURL) {
+        SQLSession.jdbcURL = jdbcURL;
+    }
+
+    public static void setMaxPoolSize(int maxPoolSize) {
+        SQLSession.maxPoolSize = maxPoolSize;
+    }
 }

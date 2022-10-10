@@ -1,13 +1,20 @@
 package de.presti.ree6.sql.entities.roles;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 
 /**
  * Role class to store data about roles.
  */
 @MappedSuperclass
 public class Role {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The Name of the Role.

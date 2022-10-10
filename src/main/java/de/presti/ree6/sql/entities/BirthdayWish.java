@@ -1,15 +1,24 @@
 package de.presti.ree6.sql.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.Date;
 
 /**
  * This class is used to represent a Birthday-Wish, in our Database.
  */
+@Entity
 @Table(name = "BirthdayWish")
 public class BirthdayWish {
+
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The Guild ID.
