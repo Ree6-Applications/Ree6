@@ -32,27 +32,31 @@ public class LanguageService {
      * Called to download every Language file from the GitHub Repository.
      */
     public static void downloadLanguages() {
-        RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.github.com/repos/Ree6-Applications/Ree6/contents/languages").build()).getAsJsonArray().forEach(jsonElement -> {
-            String language = jsonElement.getAsJsonObject().get("name").getAsString().replace(".yml", "");
-            String download = jsonElement.getAsJsonObject().get("download_url").getAsString();
+        try {
+            RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.github.com/repos/Ree6-Applications/Ree6/contents/languages").build()).getAsJsonArray().forEach(jsonElement -> {
+                String language = jsonElement.getAsJsonObject().get("name").getAsString().replace(".yml", "");
+                String download = jsonElement.getAsJsonObject().get("download_url").getAsString();
 
-            Path languageFile = Path.of("languages/", language + ".yml");
+                Path languageFile = Path.of("languages/", language + ".yml");
 
-            if (Files.exists(languageFile)) {
-                log.info("Ignoring Language download: {}", language);
-                return;
-            }
+                if (Files.exists(languageFile)) {
+                    log.info("Ignoring Language download: {}", language);
+                    return;
+                }
 
-            log.info("Downloading Language: {}", language);
+                log.info("Downloading Language: {}", language);
 
-            try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(download).build())) {
-                if (inputStream == null) return;
+                try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(download).build())) {
+                    if (inputStream == null) return;
 
-                Files.copy(inputStream, languageFile);
-            } catch (IOException exception) {
-                log.error("An error occurred while downloading the language file!", exception);
-            }
-        });
+                    Files.copy(inputStream, languageFile);
+                } catch (IOException exception) {
+                    log.error("An error occurred while downloading the language file!", exception);
+                }
+            });
+        } catch (Exception exception) {
+            log.error("An error occurred while downloading the language files!", exception);
+        }
     }
 
     /**

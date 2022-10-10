@@ -11,9 +11,12 @@ import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -113,12 +116,25 @@ public class SQLConnector {
         // Check if there is an open Connection if not, skip.
         if (!isConnected()) return;
 
-        querySQL("CREATE TABLE IF NOT EXISTS Seeds (VERSION VARCHAR(100), DATE VARCHAR(100))");
-        querySQL("CREATE TABLE IF NOT EXISTS Migrations (NAME VARCHAR(100), DATE VARCHAR(100))" );
+        try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("sql/schema.sql")) {
+            List<String> queries = Arrays.stream(new String(inputStream.readAllBytes()).split(";")).filter(s -> !s.isEmpty()).toList();
+            for (String query : queries) {
+                log.debug("\t\t[*] Executing query {}/{}", queries.indexOf(query) + 1, queries.size());
+                log.debug("\t\t[*] Executing query: {}", query);
+                querySQL(query);
+            }
+        } catch (Exception exception) {
+            log.error("Couldn't create Tables!", exception);
+        }
     }
 
     //region Utility
 
+    /**
+     * Build the Connection URL with the given data.
+     *
+     * @return the Connection URL.
+     */
     public String buildConnectionURL() {
         String jdbcUrl;
 
@@ -132,8 +148,8 @@ public class SQLConnector {
                         databasePassword);
             }
 
-            case "sqlite" -> {
-                jdbcUrl = "jdbc:sqlite:%s";
+            case "sqllite" -> {
+                jdbcUrl = "jdbc:sqllite:%s";
                 jdbcUrl = jdbcUrl.formatted("storage/Ree6.db");
             }
 
@@ -145,6 +161,13 @@ public class SQLConnector {
         return jdbcUrl;
     }
 
+    /**
+     * Query basic SQL Statements, without using the ORM-System.
+     *
+     * @param sqlQuery   The SQL Query.
+     * @param parameters The Parameters for the Query.
+     * @return Either a {@link Integer} or the result object of the ResultSet.
+     */
     public Object querySQL(String sqlQuery, Object... parameters) {
         try (Connection connection = getDataSource().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
@@ -167,7 +190,7 @@ public class SQLConnector {
     /**
      * Send an SQL-Query to SQL-Server and get the response.
      *
-     * @param sqlQuery    the SQL-Query.
+     * @param sqlQuery   the SQL-Query.
      * @param parameters a list with all parameters that should be considered.
      * @return The Result from the SQL-Server.
      */

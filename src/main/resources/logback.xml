@@ -1,4 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
+    <logger name="com.github.twitch4j" level="info" />
+    <logger name="de.presti.ree6" level="info" />
+    <logger name="n.d" level="info" />
+
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/logs.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/archives/log-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <!--Greater than in one day size Separate them-->
+            <maxFileSize>1 GB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="DEBUG-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/debug/logs.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/debug/archives/log-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <!--Greater than in one day size Separate them-->
+            <maxFileSize>1 GB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender Configuration [Console] -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss} [%thread] %highlight(%-5level %logger{35}) - %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="analytics" level="DEBUG" additivity="false">
+        <appender-ref ref="DEBUG-FILE"/>
+    </logger>
+
+    <!-- Appender Output Configuration -->
+    <root level="info">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
 </configuration>

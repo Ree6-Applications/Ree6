@@ -102,6 +102,7 @@ dependencies {
     implementation("org.hibernate.orm:hibernate-core:6.1.4.Final")
     implementation("org.hibernate.orm:hibernate-hikaricp:6.1.4.Final")
     implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("org.mariadb.jdbc:mariadb-java-client:3.0.8")
 
     //commons stuff
     implementation("commons-validator:commons-validator:1.7") {
@@ -143,6 +144,6 @@ application {
 
 tasks.withType<Test> { useJUnitPlatform() }
 
-tasks.withType<JavaCompile>() {
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }

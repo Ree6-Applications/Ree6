@@ -22,7 +22,6 @@ import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
-import de.presti.ree6.utils.others.LoggerUtil;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +36,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Main Application class, used to store Instances of System Relevant classes.
@@ -103,10 +103,6 @@ public class Main {
         // To allow Image creation on CPU.
         System.setProperty("java.awt.headless", "true");
 
-        //Init Logger
-        LoggerUtil loggerUtil = new LoggerUtil();
-        loggerUtil.initLogger();
-
         // Create the Main instance.
         instance = new Main();
 
@@ -128,13 +124,6 @@ public class Main {
             options.setDebug(true);
             options.setRelease("2.0.0");
         });
-
-        // Check if there is a default value, if so close application and inform.
-        if (instance.config.getConfiguration().getString("mysql.pw").equalsIgnoreCase("yourpw")) {
-            log.error("It looks like the default configuration has not been updated!");
-            log.error("Please update the configuration file and restart the application!");
-            System.exit(0);
-        }
 
         log.info("Starting preparations of the Bot...");
 
@@ -175,8 +164,6 @@ public class Main {
             System.exit(0);
             return;
         }
-        //Setting debug mode
-        LoggerUtil.setDebugLoggerMode(BotWorker.getVersion().isDebug(), loggerUtil);
 
         log.info("Creating Notifier.");
 

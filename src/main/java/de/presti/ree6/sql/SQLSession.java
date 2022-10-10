@@ -13,16 +13,33 @@ import java.sql.Blob;
 import java.util.Base64;
 import java.util.Properties;
 
+/**
+ * Classed used as a Bridge between Hibernate and our SQL-Base.
+ */
 @Slf4j
 public class SQLSession {
 
+    /**
+     * The JDBC URL to connect to the Database.1
+     */
     static String jdbcURL;
+
+    /**
+     * The max amount of connections allowed by Hikari.
+     */
     static int maxPoolSize;
 
+    /**
+     * The SessionFactory used to create Sessions.
+     */
     static SessionFactory sessionFactory;
 
+    /**
+     * Build a new SessionFactory or return the current one.
+     * @return The SessionFactory.
+     */
     public static SessionFactory buildSessionFactory() {
-        if (sessionFactory != null) return sessionFactory;
+        if (sessionFactory != null) return getSessionFactory();
 
         try {
             Configuration configuration = new Configuration();
@@ -69,22 +86,42 @@ public class SQLSession {
         }
     }
 
+    /**
+     * Set the JDBC URL used to connect to the Database.
+     * @param jdbcURL The JDBC URL.
+     */
     public static void setJdbcURL(String jdbcURL) {
         SQLSession.jdbcURL = jdbcURL;
     }
 
+    /**
+     * Set the max amount of connections allowed by Hikari.
+     * @param maxPoolSize The max amount of connections.
+     */
     public static void setMaxPoolSize(int maxPoolSize) {
         SQLSession.maxPoolSize = maxPoolSize;
     }
 
+    /**
+     * Get the JDBC URL used to connect to the Database.
+     * @return The JDBC URL.
+     */
     public static String getJdbcURL() {
         return jdbcURL;
     }
 
+    /**
+     * Get the max amount of connections allowed by Hikari.
+     * @return The max amount of connections.
+     */
     public static int getMaxPoolSize() {
         return maxPoolSize;
     }
 
+    /**
+     * Get the current SessionFactory.
+     * @return The SessionFactory.
+     */
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
     }
