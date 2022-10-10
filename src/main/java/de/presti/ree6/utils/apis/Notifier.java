@@ -849,7 +849,7 @@ public class Notifier {
         if (getInstagramClient() == null) return;
 
         if (!Main.getInstance().getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).isEmpty() ||
-                Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE instagramFollowerChannelUsername=?", instagramClient).isSuccess()) return;
+                Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE instagramFollowerChannelUsername=?", username).isSuccess()) return;
 
         if (isInstagramUserRegistered(username)) registeredInstagramUsers.remove(username);
     }

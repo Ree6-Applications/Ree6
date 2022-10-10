@@ -75,12 +75,12 @@ public class LoggerQueue {
 
                     modified = true;
                 }
-            }
-            // Check if it's a VoiceChannel Move log.
-            else if (loggerMessage.getType() == LogTyp.VC_MOVE && loggerMessage instanceof LogMessageVoice logMessageVoice) {
-                if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                        loggerMessages instanceof LogMessageVoice logMessageVoice1 && logMessageVoice1.getMember() == logMessageVoice.getMember() &&
-                        !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.VC_MOVE)) {
+                }
+                // Check if it's a VoiceChannel Move log.
+                else if (loggerMessage.getType() == LogTyp.VC_MOVE && loggerMessage instanceof LogMessageVoice logMessageVoice) {
+                    if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
+                            loggerMessages instanceof LogMessageVoice logMessageVoice1 && logMessageVoice1.getMember() == logMessageVoice.getMember() &&
+                            !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.VC_MOVE)) {
 
                     // Cancel every Log-Message which indicates that the person moved.
                     logs.stream().filter(loggerMessages -> loggerMessages.getId() == loggerMessage.getId() &&
@@ -173,48 +173,34 @@ public class LoggerQueue {
                                 !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.MEMBERROLE_CHANGE).forEach(LogMessage::cancel);
 
                         // Check if the RemoveRoles is null or empty.
-                        if ((logMessageMember.getRemovedRoles() == null || logMessageMember.getRemovedRoles().isEmpty()) &&
-                                memberData.getRemovedRoles() != null && !memberData.getRemovedRoles().isEmpty()) {
+                        if (memberData.getRemovedRoles() != null && !memberData.getRemovedRoles().isEmpty()) {
 
                             // Set the current removed Roles to the one from the latest.
                             logMessageMember.setRemovedRoles(memberData.getRemovedRoles());
                         }
 
                         // Check if the AddedRoles is null or empty.
-                        if ((logMessageMember.getAddedRoles() == null || logMessageMember.getAddedRoles().isEmpty()) &&
-                                memberData.getAddedRoles() != null && !memberData.getAddedRoles().isEmpty()) {
+                        if (memberData.getAddedRoles() != null && !memberData.getAddedRoles().isEmpty()) {
 
                             // Set the current added Roles to the one from the latest.
                             logMessageMember.setAddedRoles(memberData.getAddedRoles());
                         }
 
-                        // Check if the addedRoles and removeRoles are null if so create new List.
-                        if (logMessageMember.getAddedRoles() == null)
-                            logMessageMember.setAddedRoles(new ArrayList<>());
-
-                        if (logMessageMember.getRemovedRoles() == null)
-                            logMessageMember.setRemovedRoles(new ArrayList<>());
-
-                        // Check if the Lists are Empty if not remove duplicated entries.
-                        if (!logMessageMember.getRemovedRoles().isEmpty() && !logMessageMember.getAddedRoles().isEmpty()) {
-                            logMessageMember.getRemovedRoles().removeIf(role -> role == null || logMessageMember.getAddedRoles().contains(role));
-                        }
-
                         // Merge both lists with the current List.
-                        if (memberData.getRemovedRoles() != null && !memberData.getRemovedRoles().isEmpty() && memberData.getRemovedRoles().stream().anyMatch(role -> role != null && logMessageMember.getAddedRoles().contains(role) && !logMessageMember.getRemovedRoles().contains(role))) {
-                            try {
-                                memberData.getRemovedRoles().stream().filter(role -> role != null && !logMessageMember.getAddedRoles().contains(role) &&
-                                        !logMessageMember.getRemovedRoles().contains(role)).forEach(role -> logMessageMember.getRemovedRoles().add(role));
-                            } catch (Exception ignore) {
-                            }
+                        if (!logMessageMember.getRemovedRoles().isEmpty()  && !memberData.getAddedRoles().isEmpty()) {
+                            memberData.getAddedRoles().forEach(role -> {
+                                if (logMessageMember.getRemovedRoles().contains(role)) {
+                                    logMessageMember.getAddedRoles().remove(role);
+                                }
+                            });
                         }
 
-                        if (memberData.getAddedRoles() != null && !memberData.getAddedRoles().isEmpty() && memberData.getAddedRoles().stream().anyMatch(role -> role != null && !logMessageMember.getAddedRoles().contains(role) && logMessageMember.getRemovedRoles().contains(role))) {
-                            try {
-                                memberData.getAddedRoles().stream().filter(role -> role != null && !logMessageMember.getAddedRoles().contains(role) &&
-                                        !logMessageMember.getRemovedRoles().contains(role)).forEach(role -> logMessageMember.getAddedRoles().add(role));
-                            } catch (Exception ignore) {
-                            }
+                        if (!logMessageMember.getAddedRoles().isEmpty()  && !memberData.getRemovedRoles().isEmpty()) {
+                            memberData.getRemovedRoles().forEach(role -> {
+                                if (logMessageMember.getAddedRoles().contains(role)) {
+                                    logMessageMember.getRemovedRoles().remove(role);
+                                }
+                            });
                         }
                     }
 
