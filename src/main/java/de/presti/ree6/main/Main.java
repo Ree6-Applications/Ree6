@@ -116,12 +116,12 @@ public class Main {
         instance.config.init();
 
         Sentry.init(options -> {
-            options.setDsn(instance.config.getConfiguration().getString("sentry.dsn"));
+            String dsn = instance.config.getConfiguration().getString("sentry.dsn");
+            options.setDsn(dsn == null ? "" : dsn);
             // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
             // We recommend adjusting this value in production.
             options.setTracesSampleRate(1.0);
             // When first trying Sentry it's good to see what the SDK is doing:
-            options.setDebug(false);
             options.setRelease("2.0.0");
         });
 
