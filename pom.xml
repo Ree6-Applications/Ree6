@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>1.10.0</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>com.sedmelluq</groupId>
             <artifactId>lava-common</artifactId>
-            <version>1.1.12</version>
+            <version>1.1.2</version>
         </dependency>
         <dependency>
             <groupId>club.minnced</groupId>
@@ -175,7 +175,7 @@
         </dependency>
         <dependency>
             <groupId>org.xerial</groupId>
-            <artifactId>sqlite</artifactId>
+            <artifactId>sqlite-jdbc</artifactId>
             <version>3.39.3.0</version>
         </dependency>
         <dependency>
