@@ -1,39 +1,47 @@
 package de.presti.ree6.sql.entities;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
+import jakarta.persistence.*;
 
 import java.util.Date;
 
 /**
  * This class is used to represent a Birthday-Wish, in our Database.
  */
+@Entity
 @Table(name = "BirthdayWish")
-public class BirthdayWish extends SQLEntity {
+public class BirthdayWish {
+
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The Guild ID.
      */
-    @Property(name = "gid")
+    @Column(name = "gid")
     String guildId;
 
     /**
      * The Channel ID.
      */
-    @Property(name = "cid")
+    @Column(name = "cid")
     String channelId;
 
     /**
      * The User ID.
      */
-    @Property(name = "uid")
+    @Column(name = "uid")
     String userId;
 
     /**
      * The Birthday.
      */
-    @Property(name = "birthday", keepOriginalValue = false)
+    @Column(name = "birthday")
     Date birthdate;
 
     /**

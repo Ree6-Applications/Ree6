@@ -1,13 +1,15 @@
 package de.presti.ree6.utils.data;
 
-import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
+import java.util.Map;
 
 /**
  * Config.
  */
+@Slf4j
 public class Config {
 
     /**
@@ -33,11 +35,15 @@ public class Config {
                     #                              #
                     ################################
                     """);
-            yamlFile.addDefault("mysql.user", "root");
-            yamlFile.addDefault("mysql.db", "root");
-            yamlFile.addDefault("mysql.pw", "yourpw");
-            yamlFile.addDefault("mysql.host", "localhost");
-            yamlFile.addDefault("mysql.port", 3306);
+            yamlFile.addDefault("config.version", "2.0.0");
+            yamlFile.addDefault("config.creation", System.currentTimeMillis());
+            yamlFile.addDefault("hikari.sql.user", "root");
+            yamlFile.addDefault("hikari.sql.db", "root");
+            yamlFile.addDefault("hikari.sql.pw", "yourpw");
+            yamlFile.addDefault("hikari.sql.host", "localhost");
+            yamlFile.addDefault("hikari.sql.port", 3306);
+            yamlFile.addDefault("hikari.misc.storage", "sqlite");
+            yamlFile.addDefault("hikari.misc.poolSize", 10);
             yamlFile.addDefault("dagpi.apitoken", "yourdagpixyztokenhere");
             yamlFile.addDefault("sentry.dsn", "yourSentryDSNHere");
             yamlFile.addDefault("spotify.client.id", "yourspotifyclientid");
@@ -60,13 +66,41 @@ public class Config {
             try {
                 yamlFile.save(getFile());
             } catch (Exception exception) {
-                Main.getInstance().getLogger().error("Could not save config file!", exception);
+                log.error("Could not save config file!", exception);
             }
         } else {
             try {
                 yamlFile.load();
+                migrateOldConfig();
             } catch (Exception exception) {
-                Main.getInstance().getLogger().error("Could not load config!",exception);
+                log.error("Could not load config!",exception);
+            }
+        }
+    }
+
+    /**
+     * Migrate from 1.10.0 config to 2.0.0 config.
+     */
+    public void migrateOldConfig() {
+        if (yamlFile.getString("config.version") == null) {
+            Map<String, Object> resources = yamlFile.getValues(true);
+            if (getFile().delete()) {
+                init();
+
+                for (Map.Entry<String, Object> entry : resources.entrySet()) {
+                    String key = entry.getKey();
+
+                    if (key.startsWith("mysql"))
+                        key = key.replace("mysql", "hikari.sql");
+
+                    yamlFile.set(key, entry.getValue());
+                }
+
+                try {
+                    yamlFile.save(getFile());
+                } catch (Exception exception) {
+                    log.error("Could not save config file!", exception);
+                }
             }
         }
     }

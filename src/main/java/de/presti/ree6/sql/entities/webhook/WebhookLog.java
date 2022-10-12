@@ -1,10 +1,12 @@
 package de.presti.ree6.sql.entities.webhook;
 
-import de.presti.ree6.sql.base.annotations.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * SQL Entity for the Log-Webhooks.
  */
+@Entity
 @Table(name = "LogWebhooks")
 public class WebhookLog extends Webhook {
 

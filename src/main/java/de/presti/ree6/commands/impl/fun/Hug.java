@@ -18,7 +18,7 @@ import pw.aru.api.nekos4j.image.ImageProvider;
 /**
  * A command to send someone a hug.
  */
-@Command(name = "hug", description = "Hug someone you like!", category = Category.FUN)
+@Command(name = "hug", description = "command.description.hug", category = Category.FUN)
 public class Hug implements ICommand {
 
     /**

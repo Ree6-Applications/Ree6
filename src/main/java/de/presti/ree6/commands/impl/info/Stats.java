@@ -20,7 +20,7 @@ import java.util.Date;
 /**
  * A command to show you the stats of Ree6.
  */
-@Command(name = "stats", description = "See Stats of Ree6!", category = Category.INFO)
+@Command(name = "stats", description = "command.description.stats", category = Category.INFO)
 public class Stats implements ICommand {
 
     /**

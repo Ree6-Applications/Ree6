@@ -1,57 +1,60 @@
 package de.presti.ree6.sql.entities;
 
 import com.google.gson.JsonArray;
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
 import de.presti.ree6.utils.others.RandomUtils;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * This class is used to represent a Ree6-Voice-Recording, in our Database.
  */
+@Entity
 @Table(name = "Recording")
-public class Recording extends SQLEntity {
+public class Recording {
 
     /**
      * The Identifier for the recording.
      */
-    @Property(name = "id", primary = true)
+    @Id
+    @Column(name = "id")
     String identifier;
 
     /**
      * The ID of the Guild.
      */
-    @Property(name = "gid")
+    @Column(name = "gid")
     String guildId;
 
     /**
      * The ID of the Voice-Channel.
      */
-    @Property(name = "vid")
+    @Column(name = "vid")
     String voiceId;
 
     /**
      * The ID of the Creator.
      */
-    @Property(name = "creator")
+    @Column(name = "creator")
     String creatorId;
 
     /**
      * The WAV-File bytes.
      */
-    @Property(name = "recording", updateQuery = true, keepOriginalValue = false)
+    @Column(name = "recording")
     byte[] recording;
 
     /**
      * An JsonArray containing the IDs of the Users who have participated in the Recording.
      */
-    @Property(name = "participants", keepOriginalValue = false)
+    @Column(name = "participants")
     JsonArray jsonArray;
 
     /**
      * Value used to tell us when this entry was made.
      */
-    @Property(name = "created")
+    @Column(name = "created")
     long creation;
 
     /**

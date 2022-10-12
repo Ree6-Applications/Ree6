@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * A command to ban a user from the server.
  */
-@Command(name = "ban", description = "Ban an specific user from the Server.", category = Category.MOD)
+@Command(name = "ban", description = "command.description.ban", category = Category.MOD)
 public class Ban implements ICommand {
 
     /**

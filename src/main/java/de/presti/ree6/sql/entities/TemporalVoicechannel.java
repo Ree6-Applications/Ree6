@@ -1,25 +1,29 @@
 package de.presti.ree6.sql.entities;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * Class used to store information about the temporal Voice-Channel.
  */
+@Entity
 @Table(name = "TemporalVoicechannel")
-public class TemporalVoicechannel extends SQLEntity {
+public class TemporalVoicechannel {
 
     /**
      * The ID of the Guild.
      */
-    @Property(name = "gid")
+    @Id
+    @Column(name = "gid")
     String guildId;
 
     /**
      * The ID of the Voice-channel.
      */
-    @Property(name = "vid", updateQuery = true)
+    @Column(name = "vid")
     String voiceChannelId;
 
     /**

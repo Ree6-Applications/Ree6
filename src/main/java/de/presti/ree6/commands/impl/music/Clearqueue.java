@@ -4,17 +4,17 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Clears the Queue.
  */
-@Command(name = "clearqueue", description = "Clear the current Song-Queue of Ree6.", category = Category.MUSIC)
+@Command(name = "clearqueue", description = "command.description.clearQueue", category = Category.MUSIC)
 public class Clearqueue implements ICommand {
 
     /**

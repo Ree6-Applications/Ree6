@@ -11,12 +11,12 @@ import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * A command to show you are random WaiFu or Husbando.
  */
-@Command(name = "waifu", description = "Wanna see some Waifus or Husbandos?", category = Category.FUN)
+@Command(name = "waifu", description = "command.description.waifu", category = Category.FUN)
 public class Waifu implements ICommand {
 
     /**
@@ -24,7 +24,7 @@ public class Waifu implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        JsonObject jsonObject = RequestUtility.request(RequestUtility.Request.builder().url("https://api.dagpi.xyz/data/waifu").bearerAuth(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken")).build()).getAsJsonObject();
+        JsonObject jsonObject = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.dagpi.xyz/data/waifu").bearerAuth(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken")).build()).getAsJsonObject();
 
         EmbedBuilder em = new EmbedBuilder();
 

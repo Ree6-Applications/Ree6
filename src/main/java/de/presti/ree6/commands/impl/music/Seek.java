@@ -14,7 +14,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * Seek to a specific Time in the current Song.
  */
-@Command(name = "seek", description = "Seek to a specific point of a song.", category = Category.MUSIC)
+@Command(name = "seek", description = "command.description.seek", category = Category.MUSIC)
 public class Seek implements ICommand {
 
     /**

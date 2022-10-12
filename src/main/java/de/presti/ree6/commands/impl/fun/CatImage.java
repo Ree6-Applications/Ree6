@@ -6,8 +6,8 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * A command to get a random cat images.
  */
-@Command(name = "randomcat", description = "Shows random Cat Images, from thecatapi.com .", category = Category.FUN)
+@Command(name = "randomcat", description = "command.description.randomcat", category = Category.FUN)
 public class CatImage implements ICommand {
 
     /**
@@ -24,7 +24,7 @@ public class CatImage implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
-        JsonArray js = RequestUtility.request(RequestUtility.Request.builder().url("https://api.thecatapi.com/v1/images/search").build()).getAsJsonArray();
+        JsonArray js = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.thecatapi.com/v1/images/search").build()).getAsJsonArray();
 
         EmbedBuilder em = new EmbedBuilder();
 

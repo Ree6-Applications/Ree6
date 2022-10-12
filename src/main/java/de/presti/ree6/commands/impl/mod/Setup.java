@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * A command to set Ree6 up.
  */
-@Command(name = "setup", description = "Setup specific default operations for Ree6!", category = Category.MOD)
+@Command(name = "setup", description = "command.description.setup", category = Category.MOD)
 public class Setup implements ICommand {
 
     /**
@@ -57,7 +57,7 @@ public class Setup implements ICommand {
                                     commandEvent.reply("Successfully set the join image!");
                                 } catch (Exception e) {
                                     commandEvent.reply("Couldn't convert the Image!");
-                                    Main.getInstance().getLogger().error("Couldn't convert the Image!", e);
+                                    log.error("Couldn't convert the Image!", e);
                                 }
                             }
                         }

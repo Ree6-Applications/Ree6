@@ -12,13 +12,13 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.awt.*;
+import java.awt.Color;
 import java.time.Instant;
 
 /**
  * Command to send an Embed.
  */
-@Command(name = "embed", description = "Send an Embed!", category = Category.MOD)
+@Command(name = "embed", description = "command.description.embedSender", category = Category.MOD)
 public class EmbedSender implements ICommand {
 
     /**

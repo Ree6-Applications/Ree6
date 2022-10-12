@@ -7,16 +7,9 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
-import de.presti.ree6.sql.base.entities.SQLParameter;
-import de.presti.ree6.sql.base.entities.SQLResponse;
-import de.presti.ree6.sql.base.utils.SQLUtil;
-import de.presti.ree6.sql.entities.BirthdayWish;
-import de.presti.ree6.sql.entities.Blacklist;
-import de.presti.ree6.sql.entities.Invite;
-import de.presti.ree6.sql.entities.Setting;
+import de.presti.ree6.sql.entities.*;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
+import de.presti.ree6.sql.entities.level.UserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.roles.AutoRole;
 import de.presti.ree6.sql.entities.roles.ChatAutoRole;
@@ -24,16 +17,30 @@ import de.presti.ree6.sql.entities.roles.VoiceAutoRole;
 import de.presti.ree6.sql.entities.stats.CommandStats;
 import de.presti.ree6.sql.entities.stats.GuildCommandStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
-import de.presti.ree6.sql.entities.webhook.*;
+import de.presti.ree6.sql.entities.webhook.Webhook;
+import de.presti.ree6.sql.entities.webhook.WebhookInstagram;
+import de.presti.ree6.sql.entities.webhook.WebhookLog;
+import de.presti.ree6.sql.entities.webhook.WebhookReddit;
+import de.presti.ree6.sql.entities.webhook.WebhookTwitch;
+import de.presti.ree6.sql.entities.webhook.WebhookTwitter;
+import de.presti.ree6.sql.entities.webhook.WebhookWelcome;
+import de.presti.ree6.sql.entities.webhook.WebhookYouTube;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
-import org.reflections.Reflections;
+import org.hibernate.Session;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A Class to actually handle the SQL data.
@@ -43,6 +50,7 @@ import java.util.*;
  *
  * @param sqlConnector an Instance of the SQL-Connector to retrieve the data from.
  */
+@Slf4j
 @SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve", "unused", "SingleStatementInBlock"})
 public record SQLWorker(SQLConnector sqlConnector) {
 
@@ -58,11 +66,12 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Long} as XP Count.
      */
     public ChatUserLevel getChatLevelData(String guildId, String userId) {
+        ChatUserLevel chatUserLevel = null;
         if (existsInChatLevel(guildId, userId)) {
             // Return a new UserLevel if there was an error OR if the user isn't in the database.
-            return (ChatUserLevel) Objects.requireNonNull(getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId)).getEntity();
+            chatUserLevel = getEntity(new ChatUserLevel(), "SELECT * FROM Level WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId));
         }
-        return new ChatUserLevel(guildId, userId, 0);
+        return chatUserLevel== null ? new ChatUserLevel(guildId, userId, 0) : chatUserLevel;
     }
 
     /**
@@ -73,27 +82,26 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} true if there was a match | false if there wasn't a match.
      */
     public boolean existsInChatLevel(String guildId, String userId) {
-        return getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? AND UID=?", guildId, userId).isSuccess();
+        return getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId)) != null;
     }
 
     /**
      * Give the wanted User more XP.
      *
      * @param guildId          the ID of the Guild.
-     * @param oldChatuserLevel the old {@link ChatUserLevel} Entity with all the information.
      * @param userLevel        the {@link ChatUserLevel} Entity with all the information.
      */
-    public void addChatLevelData(String guildId, @Nullable ChatUserLevel oldChatuserLevel, @Nonnull ChatUserLevel userLevel) {
+    public void addChatLevelData(String guildId, @Nonnull ChatUserLevel userLevel) {
 
         if (isOptOut(guildId, userLevel.getUserId())) {
             return;
         }
 
         // Check if the User is already saved in the Database.
-        if (existsInChatLevel(guildId, userLevel.getUserId()) && oldChatuserLevel != null) {
+        if (existsInChatLevel(guildId, userLevel.getUserId())) {
 
             // If so change the current XP to the new.
-            updateEntity(oldChatuserLevel, userLevel, true);
+            updateEntity(userLevel);
         } else {
             saveEntity(userLevel);
         }
@@ -107,7 +115,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<ChatUserLevel>} as container of the User IDs.
      */
     public List<ChatUserLevel> getTopChat(String guildId, int limit) {
-        return Objects.requireNonNull(getEntity(ChatUserLevel.class, "SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities().stream().map(ChatUserLevel.class::cast).toList();
+        return getEntityList(new ChatUserLevel(), "SELECT * FROM Level WHERE GID=:gid ORDER BY cast(xp as unsigned) DESC LIMIT :limit", Map.of("gid", guildId, "limit", limit));
     }
 
     /**
@@ -117,15 +125,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<String>} as container of the User IDs.
      */
     public List<String> getAllChatLevelSorted(String guildId) {
-
-        // Create the List.
-        ArrayList<String> userIds = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM Level WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId).getValues("UID").stream().map(String.class::cast).forEach(userIds::add);
-
-        // Return the list.
-        return userIds;
+        return getEntityList(new ChatUserLevel(), "SELECT * FROM Level WHERE GID=:gid ORDER BY cast(xp as unsigned) DESC", Map.of("gid", guildId)).stream().map(UserLevel::getUserId).toList();
     }
 
     //endregion
@@ -140,12 +140,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link VoiceUserLevel} with information about the User Level.
      */
     public VoiceUserLevel getVoiceLevelData(String guildId, String userId) {
+        VoiceUserLevel voiceUserLevel = null;
         if (existsInVoiceLevel(guildId, userId)) {
             // Return 0 if there was an error OR if the user isn't in the database.
-            return (VoiceUserLevel) Objects.requireNonNull(getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId)).getEntity();
+            voiceUserLevel = getEntity(new VoiceUserLevel(), "SELECT * FROM VCLevel WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId,"uid", userId));
         }
 
-        return new VoiceUserLevel(guildId, userId, 0);
+        return voiceUserLevel == null ? new VoiceUserLevel(guildId, userId, 0): voiceUserLevel;
     }
 
     /**
@@ -156,27 +157,26 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} true if there was a match | false if there wasn't a match.
      */
     public boolean existsInVoiceLevel(String guildId, String userId) {
-        return getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? AND UID=?", guildId, userId).isSuccess();
+        return getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId,"uid", userId)) != null;
     }
 
     /**
      * Give the wanted User more XP.
      *
      * @param guildId           the ID of the Guild.
-     * @param oldVoiceUserLevel the old {@link VoiceUserLevel} with all the information.
      * @param voiceUserLevel    the {@link VoiceUserLevel} Entity with all the information.
      */
-    public void addVoiceLevelData(String guildId, @Nullable VoiceUserLevel oldVoiceUserLevel, @Nonnull VoiceUserLevel voiceUserLevel) {
+    public void addVoiceLevelData(String guildId, @Nonnull VoiceUserLevel voiceUserLevel) {
 
         if (isOptOut(guildId, voiceUserLevel.getUserId())) {
             return;
         }
 
         // Check if the User is already saved in the Database.
-        if (existsInVoiceLevel(guildId, voiceUserLevel.getUserId()) && oldVoiceUserLevel != null) {
+        if (existsInVoiceLevel(guildId, voiceUserLevel.getUserId())) {
 
             // If so change the current XP to the new.
-            updateEntity(oldVoiceUserLevel, voiceUserLevel, true);
+            updateEntity(voiceUserLevel);
         } else {
             saveEntity(voiceUserLevel);
         }
@@ -191,7 +191,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public List<VoiceUserLevel> getTopVoice(String guildId, int limit) {
         // Return the list.
-        return Objects.requireNonNull(getEntity(VoiceUserLevel.class, "SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC LIMIT ?", guildId, limit)).getEntities().stream().map(VoiceUserLevel.class::cast).toList();
+        return getEntityList(new VoiceUserLevel(),
+                "SELECT * FROM VCLevel WHERE GID=:gid ORDER BY cast(xp as unsigned) DESC LIMIT :limit", Map.of("gid", guildId, "limit", limit));
     }
 
     /**
@@ -201,15 +202,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<String>} as container of the UserIds.
      */
     public List<String> getAllVoiceLevelSorted(String guildId) {
-
-        // Create the List.
-        ArrayList<String> userIds = new ArrayList<>();
-
         // Creating a SQL Statement to get the Entries from the Level Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM VCLevel WHERE GID=? ORDER BY cast(xp as unsigned) DESC", guildId).getValues("UID").stream().map(String.class::cast).forEach(userIds::add);
-
-        // Return the list.
-        return userIds;
+        return getEntityList(new VoiceUserLevel(),"SELECT * FROM VCLevel WHERE GID=:gid ORDER BY cast(xp as unsigned) DESC", Map.of("gid", guildId)).stream().map(VoiceUserLevel::getUserId).toList();
     }
 
     //endregion
@@ -227,8 +221,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Webhook} with all the needed data.
      */
     public Webhook getLogWebhook(String guildId) {
-        SQLResponse sqlResponse = getEntity(Webhook.class, "SELECT * FROM LogWebhooks WHERE GID=?", guildId);
-        return sqlResponse.isSuccess() ? (Webhook) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookLog(),"SELECT * FROM LogWebhooks WHERE GID=:gid", Map.of("gid", guildId));
     }
 
     /**
@@ -266,7 +259,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isLogSetup(String guildId) {
-        return getEntity(Webhook.class, "SELECT * FROM LogWebhooks WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookLog.class, "SELECT * FROM LogWebhooks WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -277,7 +270,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean existsLogData(long webhookId, String authToken) {
-        return getEntity(Webhook.class, "SELECT * FROM LogWebhooks WHERE CID=? AND TOKEN=?", webhookId, authToken).isSuccess();
+        return getEntity(WebhookLog.class, "SELECT * FROM LogWebhooks WHERE CID=:cid AND TOKEN=:token", Map.of("cid", webhookId,"token", authToken)) != null;
     }
 
     /**
@@ -307,8 +300,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookWelcome} with all the needed data.
      */
     public WebhookWelcome getWelcomeWebhook(String guildId) {
-        SQLResponse sqlResponse = getEntity(WebhookWelcome.class, "SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId);
-        return sqlResponse.isSuccess() ? (WebhookWelcome) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookWelcome(), "SELECT * FROM WelcomeWebhooks WHERE GID=:gid", Map.of("gid", guildId));
     }
 
     /**
@@ -347,7 +339,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isWelcomeSetup(String guildId) {
-        return getEntity(WebhookWelcome.class, "SELECT * FROM WelcomeWebhooks WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookWelcome.class, "SELECT * FROM WelcomeWebhooks WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     //endregion
@@ -362,8 +354,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookTwitch} with all the needed data.
      */
     public WebhookTwitch getTwitchWebhook(String guildId, String twitchName) {
-        SQLResponse sqlResponse = getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName);
-        return sqlResponse.isSuccess() ? (WebhookTwitch) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookTwitch(), "SELECT * FROM TwitchNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", twitchName));
     }
 
     /**
@@ -373,8 +364,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookTwitch>} with all the needed data.
      */
     public List<WebhookTwitch> getTwitchWebhooksByName(String twitchName) {
-        SQLResponse sqlResponse = getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE NAME=?", twitchName);
-        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookTwitch.class::cast).toList() : new ArrayList<>();
+        return getEntityList(new WebhookTwitch(), "SELECT * FROM TwitchNotify WHERE NAME=:name", Map.of("name", twitchName));
     }
 
     /**
@@ -383,13 +373,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllTwitchNames() {
-
-        ArrayList<String> userNames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitchNotify").getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
-
-        return userNames;
+        return getEntityList(new WebhookTwitch(), "SELECT * FROM TwitchNotify", null).stream().map(WebhookTwitch::getName).toList();
     }
 
     /**
@@ -399,13 +383,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllTwitchNames(String guildId) {
-
-        ArrayList<String> userNames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the TwitchNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitchNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
-
-        return userNames;
+        return getEntityList(new WebhookTwitch(), "SELECT * FROM TwitchNotify WHERE GID=:gid", Map.of("gid", guildId)).stream().map(WebhookTwitch::getName).toList();
     }
 
     /**
@@ -457,7 +435,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitchSetup(String guildId) {
-        return getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=?", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -468,7 +446,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitchSetup(String guildId, String twitchName) {
-        return getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=? AND NAME=?", guildId, twitchName).isSuccess();
+        return getEntity(WebhookTwitch.class, "SELECT * FROM TwitchNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", twitchName)) != null;
     }
 
     //endregion
@@ -483,8 +461,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookInstagram} with all the needed data.
      */
     public WebhookInstagram getInstagramWebhook(String guildId, String name) {
-        SQLResponse sqlResponse = getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=? AND NAME=?", guildId, name);
-        return sqlResponse.isSuccess() ? (WebhookInstagram) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookInstagram(),"SELECT * FROM InstagramNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", name));
     }
 
     /**
@@ -494,8 +471,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookInstagram>} with all the needed data.
      */
     public List<WebhookInstagram> getInstagramWebhookByName(String name) {
-        SQLResponse sqlResponse = getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE NAME=?", name);
-        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookInstagram.class::cast).toList() : new ArrayList<>();
+        return getEntityList(new WebhookInstagram(),"SELECT * FROM InstagramNotify WHERE NAME=:name", Map.of("name", name));
     }
 
     /**
@@ -504,13 +480,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllInstagramUsers() {
-
-        ArrayList<String> usernames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the InstagramNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM InstagramNotify").getValues("NAME").stream().map(String.class::cast).forEach(usernames::add);
-
-        return usernames;
+        return getEntityList(new WebhookInstagram(),"SELECT * FROM InstagramNotify", null).stream().map(WebhookInstagram::getName).toList();
     }
 
     /**
@@ -520,13 +490,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllInstagramUsers(String guildId) {
-
-        ArrayList<String> usernames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM InstagramNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(usernames::add);
-
-        return usernames;
+        return getEntityList(new WebhookInstagram(),"SELECT * FROM InstagramNotify WHERE GID=:gid", Map.of("gid", guildId)).stream().map(WebhookInstagram::getName).toList();
     }
 
     /**
@@ -578,7 +542,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isInstagramSetup(String guildId) {
-        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -589,7 +553,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isInstagramSetup(String guildId, String name) {
-        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=? AND NAME=?", guildId, name).isSuccess();
+        return getEntity(WebhookInstagram.class, "SELECT * FROM InstagramNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", name)) != null;
     }
 
     //endregion
@@ -604,8 +568,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookReddit} with all the needed data.
      */
     public WebhookReddit getRedditWebhook(String guildId, String subreddit) {
-        SQLResponse sqlResponse = getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=? AND SUBREDDIT=?", guildId, subreddit);
-        return sqlResponse.isSuccess() ? (WebhookReddit) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookReddit(), "SELECT * FROM RedditNotify WHERE GID=:gid AND SUBREDDIT=:name", Map.of("gid", guildId, "name", subreddit));
     }
 
     /**
@@ -615,8 +578,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookReddit>} with all the needed data.
      */
     public List<WebhookReddit> getRedditWebhookBySub(String subreddit) {
-        SQLResponse sqlResponse = getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE SUBREDDIT=?", subreddit);
-        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookReddit.class::cast).toList() : new ArrayList<>();
+        return getEntityList(new WebhookReddit(), "SELECT * FROM RedditNotify WHERE SUBREDDIT=:name", Map.of("name", subreddit));
     }
 
     /**
@@ -625,13 +587,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllSubreddits() {
-
-        ArrayList<String> subreddits = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM RedditNotify").getValues("SUBREDDIT").stream().map(String.class::cast).forEach(subreddits::add);
-
-        return subreddits;
+        return getEntityList(new WebhookReddit(), "SELECT * FROM RedditNotify", null).stream().map(WebhookReddit::getSubreddit).toList();
     }
 
     /**
@@ -641,13 +597,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllSubreddits(String guildId) {
-
-        ArrayList<String> subreddits = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the RedditNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM RedditNotify WHERE GID=?", guildId).getValues("SUBREDDIT").stream().map(String.class::cast).forEach(subreddits::add);
-
-        return subreddits;
+        return getEntityList(new WebhookReddit(), "SELECT * FROM RedditNotify WHERE GID=:gid", Map.of("gid", guildId)).stream().map(WebhookReddit::getSubreddit).toList();
     }
 
     /**
@@ -699,7 +649,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isRedditSetup(String guildId) {
-        return getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -710,7 +660,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isRedditSetup(String guildId, String subreddit) {
-        return getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=? AND SUBREDDIT=?", guildId, subreddit).isSuccess();
+        return getEntity(WebhookReddit.class, "SELECT * FROM RedditNotify WHERE GID=:gid AND SUBREDDIT=:name", Map.of("gid", guildId, "name", subreddit)) != null;
     }
 
     //endregion
@@ -725,8 +675,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookYouTube} with all the needed data.
      */
     public WebhookYouTube getYouTubeWebhook(String guildId, String youtubeChannel) {
-        SQLResponse sqlResponse = getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel);
-        return sqlResponse.isSuccess() ? (WebhookYouTube) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookYouTube(), "SELECT * FROM YouTubeNotify WHERE GID=:gid NAME=:name", Map.of("gid", guildId, "name", youtubeChannel));
     }
 
     /**
@@ -736,8 +685,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookYouTube>} with all the needed data.
      */
     public List<WebhookYouTube> getYouTubeWebhooksByName(String youtubeChannel) {
-        SQLResponse sqlResponse = getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE NAME=?", youtubeChannel);
-        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookYouTube.class::cast).toList() : new ArrayList<>();
+        return getEntityList(new WebhookYouTube(), "SELECT * FROM YouTubeNotify WHERE NAME=:name", Map.of("name", youtubeChannel));
     }
 
     /**
@@ -746,13 +694,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllYouTubeChannels() {
-
-        ArrayList<String> userNames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM YouTubeNotify").getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
-
-        return userNames;
+        return getEntityList(new WebhookYouTube(), "SELECT * FROM YouTubeNotify", null).stream().map(WebhookYouTube::getName).toList();
     }
 
     /**
@@ -762,13 +704,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllYouTubeChannels(String guildId) {
-
-        ArrayList<String> userNames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the YouTubeNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM YouTubeNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
-
-        return userNames;
+        return getEntityList(new WebhookYouTube(), "SELECT * FROM YouTubeNotify WHERE GID=:gid", Map.of("gid", guildId)).stream().map(WebhookYouTube::getName).toList();
     }
 
     /**
@@ -820,7 +756,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isYouTubeSetup(String guildId) {
-        return getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -831,7 +767,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isYouTubeSetup(String guildId, String youtubeChannel) {
-        return getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=? AND NAME=?", guildId, youtubeChannel).isSuccess();
+        return getEntity(WebhookYouTube.class, "SELECT * FROM YouTubeNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", youtubeChannel)) != null;
     }
 
     //endregion
@@ -846,8 +782,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link WebhookTwitter} with all the needed data.
      */
     public WebhookTwitter getTwitterWebhook(String guildId, String twitterName) {
-        SQLResponse sqlResponse = getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName);
-        return sqlResponse.isSuccess() ? (WebhookTwitter) sqlResponse.getEntity() : null;
+        return getEntity(new WebhookTwitter(), "SELECT * FROM TwitterNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", twitterName));
     }
 
     /**
@@ -857,8 +792,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<WebhookTwitter>} with all the needed data.
      */
     public List<WebhookTwitter> getTwitterWebhooksByName(String twitterName) {
-        SQLResponse sqlResponse = getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE NAME=?", twitterName);
-        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(WebhookTwitter.class::cast).toList() : new ArrayList<>();
+        return getEntityList(new WebhookTwitter(), "SELECT * FROM TwitterNotify WHERE NAME=:name", Map.of("name", twitterName));
     }
 
     /**
@@ -867,13 +801,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllTwitterNames() {
-
-        ArrayList<String> userNames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the TwitterNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitterNotify").getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
-
-        return userNames;
+        return getEntityList(new WebhookTwitter(), "SELECT * FROM TwitterNotify", null).stream().map(WebhookTwitter::getName).toList();
     }
 
     /**
@@ -883,13 +811,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<>} in the first index is the Webhook ID and in the second the Auth-Token.
      */
     public List<String> getAllTwitterNames(String guildId) {
-
-        ArrayList<String> userNames = new ArrayList<>();
-
-        // Creating a SQL Statement to get the Entry from the TwitterNotify Table by the GuildID.
-        sqlConnector.querySQL("SELECT * FROM TwitterNotify WHERE GID=?", guildId).getValues("NAME").stream().map(String.class::cast).forEach(userNames::add);
-
-        return userNames;
+        return getEntityList(new WebhookTwitter(), "SELECT * FROM TwitterNotify WHERE GID=:gid", Map.of("gid", guildId)).stream().map(WebhookTwitter::getName).toList();
     }
 
     /**
@@ -929,7 +851,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             }
 
             // Delete the entry.
-            sqlConnector.querySQL("DELETE FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName);
+            sqlConnector.querySQL(WebhookTwitter.class,"DELETE FROM TwitterNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", twitterName));
         }
     }
 
@@ -940,7 +862,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitterSetup(String guildId) {
-        return getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE GID=?", guildId).isSuccess();
+        return getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -951,7 +873,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} if true, it has been set | if false, it hasn't been set.
      */
     public boolean isTwitterSetup(String guildId, String twitterName) {
-        return getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE GID=? AND NAME=?", guildId, twitterName).isSuccess();
+        return getEntity(WebhookTwitter.class, "SELECT * FROM TwitterNotify WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", twitterName)) != null;
     }
 
     //endregion
@@ -969,8 +891,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<AutoRole>} as List with all Roles.
      */
     public List<AutoRole> getAutoRoles(String guildId) {
-        SQLResponse sqlResponse = getEntity(AutoRole.class, "SELECT * FROM AutoRoles WHERE GID=?", guildId);
-        return sqlResponse.isSuccess() ? sqlResponse.getEntities().stream().map(AutoRole.class::cast).toList() : new ArrayList<>();
+        return getEntityList(new AutoRole(), "SELECT * FROM AutoRoles WHERE GID=:gid", Map.of("gid", guildId));
     }
 
     /**
@@ -1008,7 +929,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isAutoRoleSetup(String guildId) {
-        return getEntity(AutoRole.class, "SELECT * FROM AutoRoles WHERE GID=?", guildId).isSuccess();
+        return getEntity(AutoRole.class, "SELECT * FROM AutoRoles WHERE GID=:gid ", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -1019,7 +940,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isAutoRoleSetup(String guildId, String roleId) {
-        return getEntity(AutoRole.class, "SELECT * FROM AutoRoles WHERE GID=? AND RID=?", guildId, roleId).isSuccess();
+        return getEntity(AutoRole.class, "SELECT * FROM AutoRoles WHERE GID=:gid AND RID=:rid ", Map.of("gid", guildId, "rid", roleId)) != null;
     }
 
     //endregion
@@ -1039,7 +960,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Create a new HashMap to save the Role Ids and their needed level.
         Map<Integer, String> rewards = new HashMap<>();
 
-        getEntity(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId).getEntities().stream().map(ChatAutoRole.class::cast).forEach(chatAutoRole -> rewards.put(chatAutoRole.getLevel(), chatAutoRole.getRoleId()));
+        getEntityList(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=:gid", Map.of("gid", guildId)).stream().map(ChatAutoRole.class::cast).forEach(chatAutoRole -> rewards.put(chatAutoRole.getLevel(), chatAutoRole.getRoleId()));
 
         // Return the HashMap.
         return rewards;
@@ -1070,7 +991,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (isChatLevelRewardSetup(guildId)) {
             // Add a new entry into the Database.
-            sqlConnector.querySQL("DELETE FROM ChatLevelAutoRoles WHERE GID=? AND LVL=?", guildId, level);
+            sqlConnector.querySQL(ChatAutoRole.class, "DELETE FROM ChatLevelAutoRoles WHERE GID=:gid AND LVL=:lvl", Map.of("gid", guildId, "lvl", level));
         }
     }
 
@@ -1081,7 +1002,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isChatLevelRewardSetup(String guildId) {
-        return getEntity(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=?", guildId).isSuccess();
+        return getEntity(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -1092,7 +1013,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isChatLevelRewardSetup(String guildId, String roleId) {
-        return getEntity(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=? AND RID=?", guildId, roleId).isSuccess();
+        return getEntity(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=:gid AND RID=:rid", Map.of("gid", guildId, "rid", roleId)) != null;
     }
 
     /**
@@ -1104,7 +1025,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isChatLevelRewardSetup(String guildId, String roleId, int level) {
-        return getEntity(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=? AND RID=? AND LVL=?", guildId, roleId, level).isSuccess();
+        return getEntity(ChatAutoRole.class, "SELECT * FROM ChatLevelAutoRoles WHERE GID=:gid AND RID=:rid AND LVL=:lvl", Map.of("gid", guildId, "rid", roleId, "lvl", level)) != null;
     }
 
     //endregion
@@ -1122,7 +1043,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Create a new HashMap to save the Role Ids and their needed level.
         Map<Integer, String> rewards = new HashMap<>();
 
-        getEntity(VoiceAutoRole.class, "SELECT * FROM VoiceLevelAutoRoles WHERE GID=?", guildId).getEntities().stream().map(VoiceAutoRole.class::cast).forEach(voiceAutoRole -> rewards.put(voiceAutoRole.getLevel(), voiceAutoRole.getRoleId()));
+        getEntityList(VoiceAutoRole.class, "SELECT * FROM VoiceLevelAutoRoles WHERE GID=:gid", Map.of("gid", guildId)).stream().map(VoiceAutoRole.class::cast).forEach(voiceAutoRole -> rewards.put(voiceAutoRole.getLevel(), voiceAutoRole.getRoleId()));
 
         // Return the HashMap.
         return rewards;
@@ -1154,7 +1075,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (isVoiceLevelRewardSetup(guildId)) {
             // Add a new entry into the Database.
-            sqlConnector.querySQL("DELETE FROM VCLevelAutoRoles WHERE GID=? AND LVL=?", guildId, level);
+            sqlConnector.querySQL(VoiceAutoRole.class,"DELETE FROM VCLevelAutoRoles WHERE GID=:gid AND LVL=:lvl", Map.of("gid", guildId, "lvl", level));
         }
     }
 
@@ -1165,7 +1086,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isVoiceLevelRewardSetup(String guildId) {
-        return getEntity(VoiceAutoRole.class, "SELECT * FROM VCLevelAutoRoles WHERE GID=?", guildId).isSuccess();
+        return getEntity(VoiceAutoRole.class, "SELECT * FROM VCLevelAutoRoles WHERE GID=:gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -1176,7 +1097,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isVoiceLevelRewardSetup(String guildId, String roleId) {
-        return getEntity(VoiceAutoRole.class, "SELECT * FROM VCLevelAutoRoles WHERE GID=? AND RID=?", guildId, roleId).isSuccess();
+        return getEntity(VoiceAutoRole.class, "SELECT * FROM VCLevelAutoRoles WHERE GID=:gid AND RID=:rid", Map.of("gid", guildId, "rid", roleId)) != null;
     }
 
     /**
@@ -1188,7 +1109,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result if true, there is a role in our Database | if false, we couldn't find anything.
      */
     public boolean isVoiceLevelRewardSetup(String guildId, String roleId, int level) {
-        return getEntity(VoiceAutoRole.class, "SELECT * FROM VCLevelAutoRoles WHERE GID=? AND RID=? AND LVL=?", guildId, roleId, level).isSuccess();
+        return getEntity(VoiceAutoRole.class, "SELECT * FROM VCLevelAutoRoles WHERE GID=:gid AND RID=:rid AND LVL=:lvl", Map.of("gid", guildId, "rid", roleId, "lvl", level)) != null;
     }
 
     //endregion
@@ -1208,14 +1129,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public List<InviteContainer> getInvites(String guildId) {
         ArrayList<InviteContainer> invites = new ArrayList<>();
 
-        SQLResponse sqlResponse = getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=?", guildId);
+        List<Invite> inviteList = getEntityList(new Invite(),"SELECT * FROM Invites WHERE GID=:gid", Map.of("gid", guildId));
 
-        if (!sqlResponse.isSuccess()) return invites;
-
-        sqlResponse.getEntities().stream().map(o -> {
-            Invite invite = (Invite) o;
-            return new InviteContainer(invite.getUserId(), invite.getGuild(), invite.getCode(), invite.getUses(), false);
-        }).forEach(invites::add);
+        inviteList.stream().map(invite -> new InviteContainer(invite.getUserId(), invite.getGuild(), invite.getCode(), invite.getUses(), false)).forEach(invites::add);
         return invites;
     }
 
@@ -1228,7 +1144,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as Result if true, then it's saved in our Database | if false, we couldn't find anything.
      */
     public boolean existsInvite(String guildId, String inviteCreator, String inviteCode) {
-        return getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode).isSuccess();
+        return getEntity(Invite.class,"SELECT * FROM Invites WHERE GID=:gid AND UID=:uid AND CODE=:code", Map.of("gid", guildId, "uid", inviteCreator, "code", inviteCode)) != null;
     }
 
     /**
@@ -1238,7 +1154,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param inviteCode the Code of the Invite.
      */
     public void removeInvite(String guildId, String inviteCode) {
-        sqlConnector.querySQL("DELETE FROM Invites WHERE GID=? AND CODE=?", guildId, inviteCode);
+        sqlConnector.querySQL(Invite.class,"DELETE FROM Invites WHERE GID=:gid AND CODE=:code", Map.of("gid", guildId, "code", inviteCode));
     }
 
     /**
@@ -1253,7 +1169,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is an entry with the same data.
         if (existsInvite(guildId, inviteCreator, inviteCode)) {
             // Update entry.
-            updateEntity(getInvite(guildId, inviteCode), new Invite(guildId, inviteCreator, inviteUsage, inviteCode), true);
+            updateEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
         } else {
             saveEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
         }
@@ -1267,8 +1183,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Invite} as result if true, then it's saved in our Database | may be null.
      */
     public Invite getInvite(String guildId, String inviteCode) {
-        SQLResponse sqlResponse = getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND CODE=?", guildId, inviteCode);
-        return sqlResponse.isSuccess() ? (Invite) sqlResponse.getEntity() : null;
+        return getEntity(new Invite(), "SELECT * FROM Invites WHERE GID=:gid AND CODE=:code", Map.of("gid", guildId, "code", inviteCode));
     }
 
     /**
@@ -1280,8 +1195,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Invite} as result if true, then it's saved in our Database | may be null.
      */
     public Invite getInvite(String guildId, String inviteCreator, String inviteCode) {
-        SQLResponse sqlResponse = getEntity(Invite.class, "SELECT * FROM Invites WHERE GID=? AND UID=? AND CODE=?", guildId, inviteCreator, inviteCode);
-        return sqlResponse.isSuccess() ? (Invite) sqlResponse.getEntity() : null;
+        return getEntity(new Invite(), "SELECT * FROM Invites WHERE GID=:gid AND UID=:uid AND CODE=:code", Map.of("gid", guildId, "uid", inviteCreator, "code", inviteCode));
     }
 
     /**
@@ -1312,7 +1226,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param guildId the ID of the Guild.
      */
     public void clearInvites(String guildId) {
-        sqlConnector.querySQL("DELETE FROM Invites WHERE GID=?", guildId);
+        sqlConnector.querySQL(Invite.class, "DELETE FROM Invites WHERE GID=:gid", Map.of("gid", guildId));
     }
 
     //endregion
@@ -1328,8 +1242,8 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Message as {@link String}
      */
     public String getMessage(String guildId) {
-        SQLResponse sqlResponse = getEntity(Setting.class, "SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, "message_join");
-        return sqlResponse.isSuccess() ? ((Setting) sqlResponse.getEntity()).getStringValue() : "Welcome %user_mention%!\nWe wish you a great stay on %guild_name%";
+        Setting setting = getEntity(new Setting(), "SELECT * FROM Settings WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", "message_join"));
+        return setting != null ? setting.getStringValue() : "Welcome %user_mention%!\nWe wish you a great stay on %guild_name%";
     }
 
     /**
@@ -1342,7 +1256,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         if (isMessageSetup(guildId)) {
             // If there is already an entry just replace it.
-            updateEntity(getSetting(guildId, "message_join"), new Setting(guildId, "message_join", content), true);
+            updateEntity(new Setting(guildId, "message_join", content));
         } else {
             // Create a new entry, if there was none.
             saveEntity(new Setting(guildId, "message_join", content));
@@ -1356,7 +1270,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, then there is an entry in our Database | If false, there is no entry in our Database for that Guild.
      */
     public boolean isMessageSetup(String guildId) {
-        return getEntity(Setting.class, "SELECT * FROM Settings WHERE GID=? AND NAME=?", guildId, "message_join").isSuccess();
+        return getEntity(Setting.class, "SELECT * FROM Settings WHERE GID=:gid AND NAME=:name", Map.of("gid", guildId, "name", "message_join")) != null;
     }
 
     //endregion
@@ -1370,13 +1284,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<String>} as list with every Blacklisted Word.
      */
     public List<String> getChatProtectorWords(String guildId) {
-
-        if (isChatProtectorSetup(guildId)) {
-            return getEntity(Blacklist.class, "SELECT * FROM ChatProtector WHERE GID = ?", guildId).getEntities().stream().map(String::valueOf).toList();
-        }
-
-        // return the ArrayList with every blacklisted Word. (Can be empty!)
-        return new ArrayList<>();
+        return getEntityList(new Blacklist(), "SELECT * FROM ChatProtector WHERE GID = :gid", Map.of("gid", guildId)).stream().map(Blacklist::getWord).toList();
     }
 
     /**
@@ -1386,7 +1294,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is an entry in our Database | If false, there is no entry in our Database.
      */
     public boolean isChatProtectorSetup(String guildId) {
-        return getEntity(Blacklist.class, "SELECT * FROM ChatProtector WHERE GID = ?", guildId).isSuccess();
+        return getEntity(new Blacklist(), "SELECT * FROM ChatProtector WHERE GID = :gid", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -1397,7 +1305,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is an entry in our Database | If false, there is no entry in our Database.
      */
     public boolean isChatProtectorSetup(String guildId, String word) {
-        return getEntity(Blacklist.class, "SELECT * FROM ChatProtector WHERE GID = ? AND WORD = ?", guildId, word).isSuccess();
+        return getEntity(new Blacklist(), "SELECT * FROM ChatProtector WHERE GID = :gid AND WORD = :word", Map.of("gid", guildId, "word", word)) != null;
     }
 
     /**
@@ -1443,7 +1351,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public Setting getSetting(String guildId, String settingName) {
         // Check if there is an entry in the database.
         if (hasSetting(guildId, settingName)) {
-            return (Setting) getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ? AND NAME = ?", guildId, settingName).getEntity();
+            return getEntity(new Setting(), "SELECT * FROM Settings WHERE GID = :gid AND NAME = :name", Map.of("gid", guildId, "name", settingName));
         } else {
             // Check if everything is alright with the config.
             checkSetting(guildId, settingName);
@@ -1459,24 +1367,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List<Setting>} which is a List with every Setting that stores every information needed.
      */
     public List<Setting> getAllSettings(String guildId) {
-
-        ArrayList<Setting> settings = new ArrayList<>();
-
-        SQLResponse sqlResponse = getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ?", guildId);
-
-        if (!sqlResponse.isSuccess()) {
-            return settings;
-        }
-
-        sqlResponse.getEntities().stream().map(Setting.class::cast).forEach(settings::add);
-
-        // If there is no setting to be found, create every setting.
-        if (settings.isEmpty()) {
-            createSettings(guildId);
-        }
-
-        // Return the list.
-        return settings;
+        return getEntityList(new Setting(), "SELECT * FROM Settings WHERE GID = :gid", Map.of("gid", guildId));
     }
 
 
@@ -1504,7 +1395,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is an entry.
         if (hasSetting(guildId, settingName)) {
             // If so update it.
-            updateEntity(getSetting(guildId, settingName), new Setting(null, null, settingValue), true);
+            updateEntity(new Setting(guildId, settingName, settingValue));
         } else {
             saveEntity(new Setting(guildId, settingName, settingValue));
         }
@@ -1529,7 +1420,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is a Setting Entry for the Guild | if false, there is no Entry for it.
      */
     public boolean hasSetting(String guildId, String settingName) {
-        return getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = ? AND NAME = ?", guildId, settingName).isSuccess();
+        return getEntity(Setting.class, "SELECT * FROM Settings WHERE GID = :gid AND NAME = :name", Map.of("gid", guildId, "name", settingName)) != null;
     }
 
     /**
@@ -1567,6 +1458,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         // Create the Level Message Setting.
         if (!hasSetting(guildId, "level_message")) setSetting(new Setting(guildId, "level_message", false));
+
+        // Create the Language Setting.
+        if (!hasSetting(guildId, "configuration_language")) setSetting(new Setting(guildId, "configuration_language", "en_GB"));
 
         // Create the Join Message Setting
         if (!hasSetting(guildId, "message_join"))
@@ -1632,13 +1526,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Statistics.
      */
     public Statistics getStatistics(int day, int month, int year) {
-        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ? AND MONTH = ? AND YEAR = ?", day, month, year);
-
-        if (!sqlResponse.isSuccess()) {
-            return new Statistics(day, month, year, new JsonObject());
-        }
-
-        return (Statistics) sqlResponse.getEntity();
+        return getEntity(new Statistics(), "SELECT * FROM Statistics WHERE DAY = :day AND MONTH = :month AND YEAR = :year", Map.of("day", day, "month", month, "year", year));
     }
 
     /**
@@ -1648,13 +1536,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return all {@link Statistics} of the given month.
      */
     public List<Statistics> getStatisticsOfMonth(int month) {
-        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE MONTH = ?", month);
-
-        if (sqlResponse.isSuccess()) {
-            return sqlResponse.getEntities().stream().map(Statistics.class::cast).toList();
-        } else {
-            return new ArrayList<>();
-        }
+        return getEntityList(new Statistics(), "SELECT * FROM Statistics WHERE MONTH = :month", Map.of("month", month));
     }
 
     /**
@@ -1664,14 +1546,12 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void updateStatistic(JsonObject statisticObject) {
         LocalDate today = LocalDate.now();
-        SQLResponse sqlResponse = getEntity(Statistics.class, "SELECT * FROM Statistics WHERE DAY = ? AND MONTH = ? AND YEAR = ?", today.getDayOfMonth(), today.getMonthValue(), today.getYear());
-        if (sqlResponse.isSuccess()) {
-            Statistics statistics = (Statistics) sqlResponse.getEntity();
-            Statistics newStatistics = (Statistics) SQLUtil.cloneEntity(Statistics.class, statistics);
-            newStatistics.setStatsObject(statisticObject);
-            updateEntity(statistics, newStatistics, true);
+        Statistics statistics = getEntity(new Statistics(), "SELECT * FROM Statistics WHERE DAY = :day AND MONTH = :month AND YEAR = :year", Map.of("day", today.getDayOfMonth(), "month", today.getMonthValue(), "year", today.getYear()));
+        if (statistics != null) {
+            statistics.setStatsObject(statisticObject);
+            updateEntity(statistics);
         } else {
-            Statistics statistics = new Statistics(today.getDayOfMonth(), today.getMonthValue(), today.getYear(), statisticObject);
+            statistics = new Statistics(today.getDayOfMonth(), today.getMonthValue(), today.getYear(), statisticObject);
             saveEntity(statistics);
         }
     }
@@ -1683,7 +1563,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Stats of the Command.
      */
     public CommandStats getStatsCommandGlobal(String command) {
-        return (CommandStats) getEntity(CommandStats.class, "SELECT * FROM CommandStats WHERE COMMAND = ?", command).getEntity();
+        return getEntity(new CommandStats(), "SELECT * FROM CommandStats WHERE COMMAND = :command", Map.of("command", command));
     }
 
     /**
@@ -1694,7 +1574,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return the Stats of the Command.
      */
     public GuildCommandStats getStatsCommand(String guildId, String command) {
-        return (GuildCommandStats) getEntity(GuildCommandStats.class, "SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command).getEntity();
+        return getEntity(new GuildCommandStats(), "SELECT * FROM GuildStats WHERE GID = :gid AND COMMAND = :command", Map.of("gid", guildId, "command", command));
     }
 
     /**
@@ -1704,7 +1584,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return all the Command-Stats related to the given Guild.
      */
     public List<GuildCommandStats> getStats(String guildId) {
-        return getEntity(GuildCommandStats.class, "SELECT * FROM GuildStats WHERE GID=? ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", guildId).getEntities().stream().map(GuildCommandStats.class::cast).toList();
+        return getEntityList(new GuildCommandStats(), "SELECT * FROM GuildStats WHERE GID=:gid ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", Map.of("gid", guildId));
     }
 
     /**
@@ -1713,7 +1593,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return all the Command-Stats globally.
      */
     public List<CommandStats> getStatsGlobal() {
-        return getEntity(CommandStats.class, "SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5").getEntities().stream().map(CommandStats.class::cast).toList();
+        return getEntityList(new CommandStats(), "SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", null);
     }
 
     /**
@@ -1723,7 +1603,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSaved(String guildId) {
-        return getEntity(CommandStats.class, "SELECT * FROM GuildStats WHERE GID = ?", guildId).isSuccess();
+        return getEntity(GuildCommandStats.class, "SELECT * FROM GuildStats WHERE GID = :gid ", Map.of("gid", guildId)) != null;
     }
 
     /**
@@ -1734,7 +1614,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSaved(String guildId, String command) {
-        return getEntity(CommandStats.class, "SELECT * FROM GuildStats WHERE GID = ? AND COMMAND = ?", guildId, command).isSuccess();
+        return getEntity(GuildCommandStats.class, "SELECT * FROM GuildStats WHERE GID = :gid AND COMMAND = :command", Map.of("gid", guildId, "command", command)) != null;
     }
 
     /**
@@ -1744,7 +1624,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isStatsSavedGlobal(String command) {
-        return getEntity(CommandStats.class, "SELECT * FROM CommandStats WHERE COMMAND = ?", command).isSuccess();
+        return getEntity(CommandStats.class, "SELECT * FROM CommandStats WHERE COMMAND = :command", Map.of("command", command)) != null;
     }
 
     /**
@@ -1772,7 +1652,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isStatsSaved(guildId, command)) {
             GuildCommandStats newGuildStats = getStatsCommand(guildId, command);
             newGuildStats.setUses(newGuildStats.getUses() + 1);
-            updateEntity(getStatsCommand(guildId, command), newGuildStats, true);
+            updateEntity(newGuildStats);
         } else {
             saveEntity(new GuildCommandStats(guildId, command, 1));
         }
@@ -1781,7 +1661,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isStatsSavedGlobal(command)) {
             CommandStats stats = getStatsCommandGlobal(command);
             stats.setUses(stats.getUses() + 1);
-            updateEntity(getStatsCommandGlobal(command), stats, true);
+            updateEntity(stats);
         } else {
             saveEntity(new CommandStats(command, 1));
         }
@@ -1800,7 +1680,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public boolean isOptOut(String guildId, String userId) {
         // Creating a SQL Statement to check if there is an entry in the Opt-out Table by the Guild Id and User Id
-        return sqlConnector.querySQL("SELECT * FROM Opt_out WHERE GID=? AND UID=?", guildId, userId).hasResults();
+        return getEntity(OptOut.class, "SELECT * FROM Opt_out WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId)) != null;
     }
 
     /**
@@ -1811,7 +1691,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void optOut(String guildId, String userId) {
         if (!isOptOut(guildId, userId)) {
-            sqlConnector.querySQL("INSERT INTO Opt_out (GID, UID) VALUES (?, ?)", guildId, userId);
+            saveEntity(new OptOut(guildId, userId));
         }
     }
 
@@ -1823,7 +1703,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void optIn(String guildId, String userId) {
         if (isOptOut(guildId, userId)) {
-            sqlConnector.querySQL("DELETE FROM Opt_out WHERE GID=? AND UID=?", guildId, userId);
+            sqlConnector.querySQL(OptOut.class,"DELETE FROM Opt_out WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId));
         }
     }
 
@@ -1841,11 +1721,11 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void addBirthday(String guildId, String channelId, String userId, String birthday) {
         try {
+            BirthdayWish newBirthday = new BirthdayWish(guildId, channelId, userId, new SimpleDateFormat("dd.MM.yyyy").parse(birthday));
             if (isBirthdaySaved(guildId, userId)) {
-                BirthdayWish newBirthday = new BirthdayWish(guildId, channelId, userId, new SimpleDateFormat("dd.MM.yyyy").parse(birthday));
-                updateEntity(getBirthday(guildId, userId), newBirthday, true);
+                updateEntity(newBirthday);
             } else {
-                saveEntity(new BirthdayWish(guildId, channelId, userId, new SimpleDateFormat("dd.MM.yyyy").parse(birthday)));
+                saveEntity(newBirthday);
             }
         } catch (ParseException ignore) {
         }
@@ -1859,7 +1739,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void removeBirthday(String guildId, String userId) {
         if (isBirthdaySaved(guildId, userId)) {
-            sqlConnector.querySQL("DELETE FROM BirthdayWish WHERE GID=? AND UID=?", guildId, userId);
+            sqlConnector.querySQL(BirthdayWish.class, "DELETE FROM BirthdayWish WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId));
         }
     }
 
@@ -1871,7 +1751,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link Boolean} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public boolean isBirthdaySaved(String guildId, String userId) {
-        return sqlConnector.querySQL("SELECT * FROM BirthdayWish WHERE GID=? AND UID=?", guildId, userId).hasResults();
+        return getEntity(BirthdayWish.class,"SELECT * FROM BirthdayWish WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId)) != null;
     }
 
     /**
@@ -1882,7 +1762,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public BirthdayWish getBirthday(String guildId, String userId) {
-        return (BirthdayWish) getEntity(BirthdayWish.class, "SELECT * FROM BirthdayWish WHERE GID=? AND UID=?", guildId, userId).getEntity();
+        return getEntity(new BirthdayWish(),"SELECT * FROM BirthdayWish WHERE GID=:gid AND UID=:uid", Map.of("gid", guildId, "uid", userId));
     }
 
     /**
@@ -1892,7 +1772,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List} of {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public List<BirthdayWish> getBirthdays(String guildId) {
-        return getEntity(BirthdayWish.class, "SELECT * FROM BirthdayWish WHERE GID=?", guildId).getEntities().stream().map(BirthdayWish.class::cast).toList();
+        return getEntityList(new BirthdayWish(), "SELECT * FROM BirthdayWish WHERE GID=:gid", Map.of("gid", guildId));
     }
 
     /**
@@ -1901,7 +1781,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return {@link List} of {@link BirthdayWish} as result. If true, there is data saved in the Database | If false, there is no data saved.
      */
     public List<BirthdayWish> getBirthdays() {
-        return getEntity(BirthdayWish.class, "SELECT * FROM BirthdayWish").getEntities().stream().map(BirthdayWish.class::cast).toList();
+        return getEntityList(new BirthdayWish(), "SELECT * FROM BirthdayWish", null);
     }
 
     //endregion
@@ -1914,25 +1794,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param guildId the ID of the Guild.
      */
     public void deleteAllData(String guildId) {
-        // Go through every Table. And delete every entry with the Guild ID.
-        Reflections reflections = new Reflections("de.presti.ree6");
-        Set<Class<? extends SQLEntity>> classes = reflections.getSubTypesOf(SQLEntity.class);
-        for (Class<? extends SQLEntity> aClass : classes) {
-
-            String tableName = SQLUtil.getTable(aClass);
-
-            if (tableName == null) continue;
-
-            List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(aClass, false);
-
-            if (sqlParameters.isEmpty()) {
-                continue;
-            }
-
-            if (sqlParameters.stream().anyMatch(sqlParameter -> sqlParameter.getName().equalsIgnoreCase("GID"))) {
-                sqlConnector.querySQL("DELETE FROM " + tableName + " WHERE GID=?", guildId);
-            }
-        }
+        // TODO:: find a way todo this with Hibernate.
     }
 
     //endregion
@@ -1940,246 +1802,103 @@ public record SQLWorker(SQLConnector sqlConnector) {
     //region Entity-System
 
     /**
-     * Create a Table for the Entity.
-     *
-     * @param entity the Entity.
-     * @return {@link Boolean} as result. If true, the Table was created | If false, the Table was not created.
-     */
-    public boolean createTable(Class<? extends SQLEntity> entity) {
-        if (!entity.isAnnotationPresent(Table.class)) {
-            return false;
-        }
-
-        String tableName = SQLUtil.getTable(entity);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity, false);
-
-        if (sqlParameters.isEmpty()) {
-            return false;
-        }
-
-        if (tableName == null) {
-            return false;
-        }
-
-        StringBuilder query = new StringBuilder();
-        query.append("CREATE TABLE IF NOT EXISTS ");
-        query.append(tableName);
-        query.append(" (");
-        sqlParameters.forEach(parameter -> {
-            query.append(parameter.getName());
-            query.append(" ");
-            query.append(SQLUtil.mapJavaToSQL(parameter.getValue()));
-            query.append(", ");
-        });
-
-        sqlParameters.stream().filter(SQLParameter::isPrimaryKey).findFirst().ifPresent(primaryKey -> {
-            query.append("PRIMARY KEY (");
-            query.append(primaryKey.getName());
-            query.append(")");
-        });
-
-        if (query.charAt(query.length() - 2) == ',') {
-            query.delete(query.length() - 2, query.length());
-        }
-
-        query.append(")");
-
-        try {
-            sqlConnector.querySQL(query.toString());
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
      * Save an Entity to the Database.
      *
      * @param entity the Entity to save.
      */
     public void saveEntity(Object entity) {
-        Class<?> entityClass = entity.getClass();
-
-        if (!entityClass.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("Entity must be annotated with @Table! (" + entityClass.getSimpleName() + ")");
+        if (!sqlConnector.isConnected()) {
+            if (sqlConnector.connectedOnce()) {
+                sqlConnector.connectToSQLServer();
+                saveEntity(entity);
+            }
         }
 
-        String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity, false, false);
+        try (Session session = SQLSession.getSessionFactory().openSession()) {
 
-        if (sqlParameters.isEmpty()) {
-            return;
-        }
+            session.beginTransaction();
 
-        if (tableName == null) {
-            return;
-        }
+            session.persist(entity);
 
-        StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO ");
-        query.append(tableName);
-        query.append(" (");
-        sqlParameters.forEach(parameter -> {
-            query.append(parameter.getName());
-            query.append(", ");
-        });
-
-        if (query.charAt(query.length() - 2) == ',') {
-            query.delete(query.length() - 2, query.length());
-        }
-
-        query.append(") VALUES (");
-
-        query.append("?, ".repeat(sqlParameters.size()));
-
-        if (query.charAt(query.length() - 2) == ',') {
-            query.delete(query.length() - 2, query.length());
-        }
-
-        query.append(")");
-        try {
-            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, false, false).toArray());
-        } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while saving Entity: " + entity, exception);
+            session.getTransaction().commit();
         }
     }
 
     /**
      * Update an Entity in the Database.
      *
-     * @param oldEntity       the old Entity.
-     * @param newEntity       the new Entity.
-     * @param onlyUpdateField the only update the given Field.
+     * @param r       the Entity.
      */
-    public void updateEntity(Object oldEntity, Object newEntity, boolean onlyUpdateField) {
-        Class<?> entityClass = oldEntity.getClass();
-
-        if (!entityClass.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("Entities must be annotated with @Table! (" + ((Class) oldEntity).getSimpleName() + ")");
+    public <R> R updateEntity(R r) {
+        if (!sqlConnector.isConnected()) {
+            if (sqlConnector.connectedOnce()) {
+                sqlConnector.connectToSQLServer();
+                return updateEntity(r);
+            }
         }
 
-        if (!oldEntity.getClass().equals(newEntity.getClass())) {
-            throw new IllegalArgumentException("Entities must be of the same type");
-        }
+        try (Session session = SQLSession.getSessionFactory().openSession()) {
 
-        String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(newEntity, onlyUpdateField, false);
+            session.beginTransaction();
 
-        if (sqlParameters.isEmpty()) {
-            return;
-        }
+            R newEntity = session.merge(r);
 
-        if (tableName == null) {
-            return;
-        }
+            session.getTransaction().commit();
 
-        StringBuilder query = new StringBuilder();
-        query.append("UPDATE ");
-        query.append(tableName);
-        query.append(" SET ");
-        sqlParameters.forEach(parameter -> {
-            query.append(parameter.getName());
-            query.append(" = ?, ");
-        });
-
-        if (query.indexOf(",", query.length() - 2) != -1) {
-            query.delete(query.length() - 2, query.length());
-        }
-
-
-        query.append(" WHERE ");
-        SQLUtil.getAllSQLParameter(oldEntity, false, true).forEach(parameter -> {
-            query.append(parameter.getName());
-            query.append(" = ? AND ");
-        });
-
-        if (query.indexOf("AND", query.length() - 5) != -1) {
-            query.delete(query.length() - 5, query.length());
-        }
-
-        try {
-            ArrayList<Object> parameter = new ArrayList<>();
-
-            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, newEntity, onlyUpdateField, false));
-            parameter.addAll(SQLUtil.getValuesFromSQLEntity(entityClass, oldEntity, false, true));
-
-            sqlConnector.querySQL(query.toString(), parameter.toArray());
-        } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while updating Entity: " + ((Class) oldEntity).getSimpleName(), exception);
+            return newEntity;
         }
     }
 
     /**
      * Delete an entity from the database
      *
-     * @param entity the Entity-class instance that is to be deleted.
+     * @param r the Entity-class instance that is to be deleted.
      */
-    public void deleteEntity(Object entity) {
-        Class<?> entityClass = entity.getClass();
-
-        if (!entityClass.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("Entity must be annotated with @Table! (" + ((Class) entity).getSimpleName() + ")");
+    public <R> void deleteEntity(R r) {
+        if (!sqlConnector.isConnected()) {
+            if (sqlConnector.connectedOnce()) {
+                sqlConnector.connectToSQLServer();
+                deleteEntity(r);
+            }
         }
 
-        String tableName = SQLUtil.getTable(entityClass);
-        List<SQLParameter> sqlParameters = SQLUtil.getAllSQLParameter(entity, false, true);
+        try (Session session = SQLSession.getSessionFactory().openSession()) {
 
-        if (sqlParameters.isEmpty()) {
-            return;
-        }
+            session.beginTransaction();
 
-        if (tableName == null) {
-            return;
-        }
+            session.remove(r);
 
-        StringBuilder query = new StringBuilder();
-        query.append("DELETE FROM ");
-        query.append(tableName);
-        query.append(" WHERE ");
-        sqlParameters.forEach(parameter -> {
-            query.append(parameter.getName());
-            query.append("= ? AND ");
-        });
-
-        if (query.indexOf("AND", query.length() - 4) != -1) {
-            query.delete(query.length() - 5, query.length());
-        }
-
-        try {
-            sqlConnector.querySQL(query.toString(), SQLUtil.getValuesFromSQLEntity(entityClass, entity, false, true).toArray());
-        } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while deleting Entity: " + ((Class) entity).getSimpleName(), exception);
+            session.getTransaction().commit();
         }
     }
 
     /**
      * Constructs a new mapped Version of the Entity-class.
      *
-     * @param entity The entity to get.
+     * @param r The entity to get.
      * @return The mapped entity.
      */
-    public SQLResponse getEntity(Class<?> entity) {
-        return getEntity(entity, "");
+    public <R> List<R> getEntityList(@NotNull R r, @NotNull String query, @Nullable Map<String, Object> parameters) {
+        if (query.isEmpty()) {
+            return sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), null).getResultList();
+        } else {
+            return sqlConnector.querySQL(r, query, parameters).getResultList();
+        }
     }
 
     /**
      * Constructs a query for the given Class-Entity, and returns a mapped Version of the given Class-Entity.
      *
-     * @param entity The Class-Entity to get.
+     * @param r The Class-Entity to get.
      * @param query  The query to use.
-     * @param args   The arguments to use.
+     * @param parameters   The arguments to use.
      * @return The mapped Version of the given Class-Entity.
      */
-    public SQLResponse getEntity(Class<?> entity, String query, Object... args) {
+    public <R> R getEntity(@NotNull R r, @NotNull String query, @Nullable Map<String, Object> parameters) {
         if (query.isEmpty()) {
-            if (entity.isAnnotationPresent(Table.class)) {
-                String queryBuilder = "SELECT * FROM " + SQLUtil.getTable(entity);
-                return sqlConnector.getEntityMapper().mapEntity(sqlConnector.querySQL(queryBuilder, args), entity);
-            } else {
-                return new SQLResponse(null);
-            }
+            return sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), null).getSingleResultOrNull();
         } else {
-            return sqlConnector.getEntityMapper().mapEntity(sqlConnector.querySQL(query, args), entity);
+            return sqlConnector.querySQL(r, query, parameters).getSingleResultOrNull();
         }
     }
 

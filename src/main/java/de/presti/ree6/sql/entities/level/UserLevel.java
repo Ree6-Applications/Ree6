@@ -1,22 +1,33 @@
 package de.presti.ree6.sql.entities.level;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.entities.SQLEntity;
 import de.presti.ree6.utils.data.LevelUtil;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import net.dv8tion.jda.api.entities.User;
 
-public class UserLevel extends SQLEntity {
+@MappedSuperclass
+public class UserLevel {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The ID of the Guild.
      */
-    @Property(name = "gid")
+    @Column(name = "gid")
     String guildId;
 
     /**
      * The ID of the User.
      */
-    @Property(name = "uid")
+    @Column(name = "uid")
     String userId;
 
     /**
@@ -27,7 +38,7 @@ public class UserLevel extends SQLEntity {
     /**
      * The experience of the User.
      */
-    @Property(name = "xp", updateQuery = true)
+    @Column(name = "xp")
     long experience;
 
     /**

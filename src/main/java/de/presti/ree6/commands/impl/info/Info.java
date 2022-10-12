@@ -4,8 +4,8 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * A command to show the user's information.
  */
-@Command(name = "info", description = "Shows user specific information.", category = Category.INFO)
+@Command(name = "info", description = "command.description.info", category = Category.INFO)
 public class Info implements ICommand {
 
     /**

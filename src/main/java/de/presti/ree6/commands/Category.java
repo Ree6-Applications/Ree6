@@ -8,35 +8,35 @@ public enum Category {
     /**
      * Category used for informativ Commands.
      */
-    INFO("re_icon_info",1019221661070917632L, false, "Used to gather information or provide information."),
+    INFO("re_icon_info",1019221661070917632L, false, "category.info"),
     /**
      * Category used for moderativ Commands.
      */
-    MOD("re_icon_mod",1019221710932803624L, false, "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."),
+    MOD("re_icon_mod",1019221710932803624L, false, "category.moderation"),
     /**
      * Category used for music Commands.
      */
-    MUSIC("re_icon_music",1019221781762023575L, false, "Music utilities that allow you to have fun with your friends through the power of music!"),
+    MUSIC("re_icon_music",1019221781762023575L, false, "category.music"),
     /**
      * Category used for fun Commands.
      */
-    FUN("re_icon_fun",1019221814670532628L, false, "Fun utilities that give you the power to do dumb stuff because you can!"),
+    FUN("re_icon_fun",1019221814670532628L, false, "category.fun"),
     /**
      * Category used for level Commands.
      */
-    LEVEL("re_icon_level",1019221845972635809L, false, "Leveling Tools that allow you to keep track of progress on the Server."),
+    LEVEL("re_icon_level",1019221845972635809L, false, "category.level"),
     /**
      * Category used for community Commands.
      */
-    COMMUNITY("re_icon_community",1019221884686057552L, false, "Community Tools that allow you to interact with your community."),
+    COMMUNITY("re_icon_community",1019221884686057552L, false, "category.community"),
     /**
      * Category used for NSFW Commands.
      */
-    NSFW("re_icon_nsfw",1019221923466584166L, false, "NSFW stuff that you can only use in NSFW Channels."),
+    NSFW("re_icon_nsfw",1019221923466584166L, false, "category.nsfw"),
     /**
      * Category used for admin Commands.
      */
-    HIDDEN("re_icon_hidden",1019221957817933865L, false, "Hidden Commands that are only visible to the Owner of the Bot.");
+    HIDDEN("re_icon_hidden",1019221957817933865L, false, "category.hidden");
 
     private final String icon;
     private final long iconId;

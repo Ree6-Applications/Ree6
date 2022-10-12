@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ImageCreationUtility;
 import net.dv8tion.jda.api.entities.Member;
@@ -18,7 +19,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A command to send someone to the horny-jail.
  */
-@Command(name = "hornyjail", description = "Put someone into the Horny-Jail", category = Category.FUN)
+@Command(name = "hornyjail", description = "command.description.hornyjail", category = Category.FUN)
 public class HornyJail implements ICommand {
 
     /**
@@ -52,7 +53,7 @@ public class HornyJail implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("hornyjail", "Put someone in the Hornyjail!").addOptions(new OptionData(OptionType.USER, "target", "The User that should be put into the Hornyjail!").setRequired(true));
+        return new CommandDataImpl("hornyjail", LanguageService.getDefault("message.description.hornyjail")).addOptions(new OptionData(OptionType.USER, "target", "The User that should be put into the Hornyjail!").setRequired(true));
     }
 
     /**

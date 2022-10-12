@@ -5,12 +5,12 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.time.format.DateTimeFormatter;
@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * A command to show you some info about the Server.
  */
-@Command(name = "server", description = "See server specific information.", category = Category.INFO)
+@Command(name = "server", description = "command.description.server", category = Category.INFO)
 public class Server implements ICommand {
 
     /**

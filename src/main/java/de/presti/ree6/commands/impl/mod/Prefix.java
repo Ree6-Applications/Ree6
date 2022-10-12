@@ -16,7 +16,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A command to change the prefix.
  */
-@Command(name = "prefix", description = "Change Ree6's Command prefix for the current Server.", category = Category.MOD)
+@Command(name = "prefix", description = "command.description.prefix", category = Category.MOD)
 public class Prefix implements ICommand {
 
     /**

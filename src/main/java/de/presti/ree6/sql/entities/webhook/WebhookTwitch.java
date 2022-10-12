@@ -1,18 +1,20 @@
 package de.presti.ree6.sql.entities.webhook;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * SQL Entity for the Twitch-Webhooks.
  */
+@Entity
 @Table(name = "TwitchNotify")
 public class WebhookTwitch extends Webhook {
 
     /**
      * Name of the Channel.
      */
-    @Property(name = "name")
+    @Column(name = "name")
     private String name;
 
     /**

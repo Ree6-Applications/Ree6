@@ -1,23 +1,29 @@
 package de.presti.ree6.sql;
 
-import com.google.gson.JsonElement;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.entities.SQLEntity;
-import de.presti.ree6.sql.base.entities.StoredResultSet;
-import de.presti.ree6.sql.base.utils.MigrationUtil;
-import de.presti.ree6.sql.base.utils.SQLUtil;
-import de.presti.ree6.sql.mapper.EntityMapper;
+import de.presti.ree6.sql.migrations.MigrationUtil;
 import de.presti.ree6.sql.seed.SeedManager;
-import org.reflections.Reflections;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.sql.*;
-import java.util.Date;
-import java.util.*;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A "Connector" Class which connect with the used Database Server.
  * Used to manage the connection between Server and Client.
  */
+@Slf4j
 @SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve"})
 public class SQLConnector {
 
@@ -31,19 +37,13 @@ public class SQLConnector {
     private final int databaseServerPort;
 
     // An Instance of the actual Java SQL Connection.
-    private Connection connection;
+    private HikariDataSource dataSource;
 
     // An Instance of the SQL-Worker which works with the Data in the Database.
     private final SQLWorker sqlWorker;
 
-    // An Instance of the EntityMapper which is used to map the Data into classes.
-    private final EntityMapper entityMapper;
-
     // A boolean to keep track if there was at least one valid connection.
     private boolean connectedOnce = false;
-
-    // A HashMap with every Table Name as key and the values as value.
-    private final Map<String, String> tables = new HashMap<>();
 
     /**
      * Constructor with the needed data to open an SQL connection.
@@ -62,14 +62,16 @@ public class SQLConnector {
         this.databaseServerPort = databaseServerPort;
 
         sqlWorker = new SQLWorker(this);
-        entityMapper = new EntityMapper();
+
+        SQLSession.setJdbcURL(buildConnectionURL());
+        SQLSession.setMaxPoolSize(Main.getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"));
 
         connectToSQLServer();
         createTables();
         try {
             MigrationUtil.runAllMigrations(this);
         } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Error while running Migrations!", exception);
+            log.error("Error while running Migrations!", exception);
         }
 
         SeedManager.runAllSeeds(this);
@@ -79,27 +81,30 @@ public class SQLConnector {
      * Try to open a connection to the SQL Server with the given data.
      */
     public void connectToSQLServer() {
-        Main.getInstance().getLogger().info("Connecting to SQl-Service (MariaDB).");
+        log.info("Connecting to SQl-Service (SQL).");
         // Check if there is already an open Connection.
         if (isConnected()) {
             try {
                 // Close if there is and notify.
-                connection.close();
-                Main.getInstance().getLogger().info("Service (MariaDB) has been stopped.");
+                getDataSource().close();
+                log.info("Service (SQL) has been stopped.");
             } catch (Exception ignore) {
                 // Notify if there was an error.
-                Main.getInstance().getLogger().error("Service (MariaDB) couldn't be stopped.");
+                log.error("Service (SQL) couldn't be stopped.");
             }
         }
 
         try {
-            // Create a new Connection by using the SQL DriverManager and the MariaDB Java Driver and notify if successful.
-            connection = DriverManager.getConnection("jdbc:mariadb://" + databaseServerIP + ":" + databaseServerPort + "/" + databaseName + "?autoReconnect=true", databaseUser, databasePassword);
-            Main.getInstance().getLogger().info("Service (MariaDB) has been started. Connection was successful.");
+            HikariConfig hConfig = new HikariConfig();
+
+            hConfig.setJdbcUrl(SQLSession.getJdbcURL());
+            hConfig.setMaximumPoolSize(SQLSession.getMaxPoolSize());
+            dataSource = new HikariDataSource(hConfig);
+            log.info("Service (SQL) has been started. Connection was successful.");
             connectedOnce = true;
         } catch (Exception exception) {
             // Notify if there was an error.
-            Main.getInstance().getLogger().error("Service (MariaDB) couldn't be started. Connection was unsuccessful.", exception);
+            log.error("Service (SQL) couldn't be started. Connection was unsuccessful.", exception);
         }
     }
 
@@ -111,138 +116,111 @@ public class SQLConnector {
         // Check if there is an open Connection if not, skip.
         if (!isConnected()) return;
 
-        // Registering the tables and values.
-        tables.putIfAbsent("Opt_out", "(GID VARCHAR(40), UID VARCHAR(40))");
-        tables.putIfAbsent("Migrations", "(NAME VARCHAR(100), DATE VARCHAR(100))");
-        tables.putIfAbsent("Seeds", "(VERSION VARCHAR(100), DATE VARCHAR(100))");
-
-        // Iterating through all table presets.
-        for (Map.Entry<String, String> entry : tables.entrySet()) {
-
-            // Create a Table based on the key.
-            try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + entry.getKey() + entry.getValue())) {
-                ps.executeQuery();
-            } catch (SQLException exception) {
-
-                // Notify if there was an error.
-                Main.getInstance().getLogger().error("Couldn't create " + entry.getKey() + " Table.", exception);
+        try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("sql/schema.sql")) {
+            List<String> queries = Arrays.stream(new String(inputStream.readAllBytes()).split(";")).filter(s -> !s.isEmpty()).toList();
+            for (String query : queries) {
+                log.debug("\t\t[*] Executing query {}/{}", queries.indexOf(query) + 1, queries.size());
+                log.debug("\t\t[*] Executing query: {}", query);
+                querySQL(query);
             }
-        }
-
-        Reflections reflections = new Reflections("de.presti.ree6");
-        Set<Class<? extends SQLEntity>> classes = reflections.getSubTypesOf(SQLEntity.class);
-        for (Class<? extends SQLEntity> aClass : classes) {
-            Main.getInstance().getAnalyticsLogger().info("Creating Table {}", aClass.getSimpleName());
-            // Create a Table based on the key.
-            try {
-                if (!sqlWorker.createTable(aClass)) {
-                    Main.getInstance().getLogger().warn("Couldn't create {} Table.", aClass.getSimpleName());
-                }
-            } catch (Exception exception) {
-
-                // Notify if there was an error.
-                Main.getInstance().getLogger().error("Couldn't create " + aClass.getSimpleName() + " Table.", exception);
-            }
+        } catch (Exception exception) {
+            log.error("Couldn't create Tables!", exception);
         }
     }
 
     //region Utility
 
     /**
-     * Send an SQL-Query to SQL-Server and get the response.
+     * Build the Connection URL with the given data.
      *
-     * @param sqlQuery    the SQL-Query.
-     * @param objcObjects the Object in the Query.
-     * @return The Result from the SQL-Server.
+     * @return the Connection URL.
      */
-    public StoredResultSet querySQL(String sqlQuery, Object... objcObjects) {
-        if (!isConnected()) {
-            if (connectedOnce()) {
-                connectToSQLServer();
-                return querySQL(sqlQuery, objcObjects);
-            } else {
-                return new StoredResultSet();
+    public String buildConnectionURL() {
+        String jdbcUrl;
+
+        switch (Main.getInstance().getConfig().getConfiguration().getString("hikari.misc.storage").toLowerCase()) {
+            case "mariadb" -> {
+                jdbcUrl = "jdbc:mariadb://%s:%s/%s?user=%s&password=%s";
+                jdbcUrl = jdbcUrl.formatted(databaseServerIP,
+                        databaseServerPort,
+                        databaseName,
+                        databaseUser,
+                        databasePassword);
+            }
+
+            case "sqlite" -> {
+                jdbcUrl = "jdbc:sqlite:%s";
+                jdbcUrl = jdbcUrl.formatted("storage/Ree6.db");
+            }
+
+            default -> {
+                jdbcUrl = "jdbc:h2:%s";
+                jdbcUrl = jdbcUrl.formatted("./storage/Ree6.db");
             }
         }
+        return jdbcUrl;
+    }
 
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            preparedStatement = getConnection().prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            int index = 1;
-
-            for (Object obj : objcObjects) {
-                if (obj instanceof String) {
-                    preparedStatement.setObject(index++, obj, Types.VARCHAR);
-                } else if (obj instanceof Blob) {
-                    preparedStatement.setObject(index++, obj, Types.BLOB);
-                } else if (obj instanceof Integer) {
-                    preparedStatement.setObject(index++, obj, Types.INTEGER);
-                } else if (obj instanceof Long) {
-                    preparedStatement.setObject(index++, obj, Types.BIGINT);
-                } else if (obj instanceof Float) {
-                    preparedStatement.setObject(index++, obj, Types.FLOAT);
-                } else if (obj instanceof Double) {
-                    preparedStatement.setObject(index++, obj, Types.DOUBLE);
-                } else if (obj instanceof Boolean) {
-                    preparedStatement.setObject(index++, obj, Types.BOOLEAN);
-                } else if (obj instanceof JsonElement jsonElement) {
-                    preparedStatement.setObject(index++, SQLUtil.convertJSONToBlob(jsonElement), Types.BLOB);
-                } else if (obj instanceof byte[] byteArray) {
-                    preparedStatement.setObject(index++, Base64.getEncoder().encodeToString(byteArray), Types.VARCHAR);
-                } else if (obj instanceof Date date) {
-                    preparedStatement.setObject(index++, date.getTime(), Types.BIGINT);
-                } else if (obj == null) {
-                    preparedStatement.setNull(index++, Types.NULL);
-                }
+    /**
+     * Query basic SQL Statements, without using the ORM-System.
+     *
+     * @param sqlQuery   The SQL Query.
+     * @param parameters The Parameters for the Query.
+     * @return Either a {@link Integer} or the result object of the ResultSet.
+     */
+    public Object querySQL(String sqlQuery, Object... parameters) {
+        try (Connection connection = getDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            for (int i = 0; i < parameters.length; i++) {
+                preparedStatement.setObject(i + 1, parameters[i]);
             }
-
-            if (sqlQuery.toUpperCase().startsWith("SELECT")) {
-                resultSet = preparedStatement.executeQuery();
-                StoredResultSet storedResultSet = new StoredResultSet();
-
-                storedResultSet.setColumns(resultSet.getMetaData().getColumnCount());
-                resultSet.last();
-                storedResultSet.setRows(resultSet.getRow());
-                resultSet.beforeFirst();
-
-                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                    storedResultSet.addColumn(i, resultSet.getMetaData().getColumnName(i));
+            if (sqlQuery.startsWith("SELECT")) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    return resultSet.next();
                 }
-
-                if (storedResultSet.hasResults()) {
-                    while (resultSet.next()) {
-                        for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                            storedResultSet.setValue(resultSet.getRow() - 1, i, resultSet.getObject(i));
-                        }
-                    }
-                }
-                resultSet.close();
-                return storedResultSet;
             } else {
-                preparedStatement.executeUpdate();
-                return null;
+                return preparedStatement.executeUpdate();
             }
-        } catch (SQLNonTransientConnectionException exception) {
-            if (connectedOnce()) {
-                Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server, most likely a connection Issue", exception);
-                connectToSQLServer();
-                return querySQL(sqlQuery, objcObjects);
-            }
-        } catch (Exception exception) {
-            Main.getInstance().getLogger().error("Couldn't send Query to SQL-Server ( " + sqlQuery + " )", exception);
-        } finally {
-            try {
-                if (preparedStatement != null)
-                    preparedStatement.close();
-
-                if (resultSet != null)
-                    resultSet.close();
-            } catch (Exception ignore) {
-            }
+        } catch (Exception ignore) {
         }
 
         return null;
+    }
+
+    /**
+     * Send an SQL-Query to SQL-Server and get the response.
+     *
+     * @param sqlQuery   the SQL-Query.
+     * @param parameters a list with all parameters that should be considered.
+     * @return The Result from the SQL-Server.
+     */
+    public <R> Query<R> querySQL(@NotNull R r, @NotNull String sqlQuery, @Nullable Map<String, Object> parameters) {
+
+        if (!isConnected()) {
+            if (connectedOnce()) {
+                connectToSQLServer();
+                return querySQL(r, sqlQuery, parameters);
+            } else {
+                return null;
+            }
+        }
+
+        try (Session session = SQLSession.getSessionFactory().openSession()) {
+
+            session.beginTransaction();
+
+            Query<R> query = (Query<R>) session.createQuery(sqlQuery, r.getClass());
+
+            if (parameters != null) {
+                for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                    query.setParameter(entry.getKey(), entry.getValue());
+                }
+            }
+
+            session.getTransaction().commit();
+
+            return query;
+        }
     }
 
     //endregion
@@ -254,7 +232,7 @@ public class SQLConnector {
      */
     public boolean isConnected() {
         try {
-            return connection != null && !connection.isClosed();
+            return getDataSource() != null && !getDataSource().isClosed();
         } catch (Exception ignore) {
         }
 
@@ -269,11 +247,11 @@ public class SQLConnector {
         if (isConnected()) {
             try {
                 // Close if there is and notify.
-                connection.close();
-                Main.getInstance().getLogger().info("Service (MariaDB) has been stopped.");
+                getDataSource().close();
+                log.info("Service (SQL) has been stopped.");
             } catch (Exception ignore) {
                 // Notify if there was an error.
-                Main.getInstance().getLogger().error("Service (MariaDB) couldn't be stopped.");
+                log.error("Service (SQL) couldn't be stopped.");
             }
         }
     }
@@ -281,10 +259,10 @@ public class SQLConnector {
     /**
      * Retrieve an Instance of the SQL-Connection.
      *
-     * @return Connection Instance of te SQL-Connection.
+     * @return DataSource Instance of te SQL-Connection.
      */
-    public Connection getConnection() {
-        return connection;
+    public HikariDataSource getDataSource() {
+        return dataSource;
     }
 
     /**
@@ -294,15 +272,6 @@ public class SQLConnector {
      */
     public SQLWorker getSqlWorker() {
         return sqlWorker;
-    }
-
-    /**
-     * Retrieve an Instance of the entity-Mapper to work with the Data.
-     *
-     * @return {@link EntityMapper} the Instance saved in this SQL-Connector.
-     */
-    public EntityMapper getEntityMapper() {
-        return entityMapper;
     }
 
     /**

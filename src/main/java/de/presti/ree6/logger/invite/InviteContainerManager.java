@@ -1,6 +1,7 @@
 package de.presti.ree6.logger.invite;
 
 import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
@@ -15,6 +16,7 @@ import java.util.Objects;
 /**
  * Utility class to contain every Invite and manage the Invites in our Database.
  */
+@Slf4j
 public class InviteContainerManager {
 
     /**
@@ -40,7 +42,7 @@ public class InviteContainerManager {
         try {
             Main.getInstance().getSqlConnector().getSqlWorker().setInvite(inviteContainer.getGuildId(), inviteContainer.getCreatorId(), inviteContainer.getCode(), inviteContainer.getUses());
         } catch (Exception ex) {
-            Main.getInstance().getLogger().error("[InviteManager] Error while Saving Invites: " + ex.getMessage());
+            log.error("[InviteManager] Error while Saving Invites: " + ex.getMessage());
         }
     }
 
@@ -78,7 +80,7 @@ public class InviteContainerManager {
                 return new InviteImpl(null, vanityInvite.getCode(), true, Objects.requireNonNull(guild.getOwner()).getUser(), 0, -1242525,
                         true, OffsetDateTime.now(), vanityInvite.getUses(), null,  null, null, null, Invite.InviteType.UNKNOWN);
             } catch (Exception ex) {
-                Main.getInstance().getAnalyticsLogger().error("[InviteManager] Error while retrieving Vanity Invite: " + ex.getMessage());
+                log.error("[InviteManager] Error while retrieving Vanity Invite: " + ex.getMessage());
             }
         }
 

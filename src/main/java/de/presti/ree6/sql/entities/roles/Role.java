@@ -1,23 +1,31 @@
 package de.presti.ree6.sql.entities.roles;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.entities.SQLEntity;
+import jakarta.persistence.*;
 
 /**
  * Role class to store data about roles.
  */
-public class Role extends SQLEntity {
+@MappedSuperclass
+public class Role {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The Name of the Role.
      */
-    @Property(name = "gid")
+    @Column(name = "gid")
     String guildId;
 
     /**
      * The ID of the Role.
      */
-    @Property(name = "rid")
+    @Column(name = "rid")
     String roleId;
 
     /**

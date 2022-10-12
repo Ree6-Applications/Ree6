@@ -1,5 +1,6 @@
 package de.presti.ree6.commands;
 
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -132,6 +133,16 @@ public class CommandEvent {
      */
     public void reply(MessageCreateData message, int deleteSecond) {
         Main.getInstance().getCommandManager().sendMessage(message, deleteSecond, getChannel(), getInteractionHook());
+    }
+
+    /**
+     * Get a Message from the Guild specific Language Setting.
+     * @param key the Key of the Message.
+     * @param parameters the Parameters to replace in the Message.
+     * @return the Message.
+     */
+    public String getResource(String key, Object... parameters) {
+        return LanguageService.getByEvent(this, key, parameters);
     }
 
     /**

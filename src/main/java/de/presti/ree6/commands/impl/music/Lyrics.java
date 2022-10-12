@@ -7,18 +7,18 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Get the Lyrics of a Song.
  */
-@Command(name = "lyrics", description = "Wanna see the Lyrics of the current Song?", category = Category.MUSIC)
+@Command(name = "lyrics", description = "command.description.lyrics", category = Category.MUSIC)
 public class Lyrics implements ICommand {
 
     /**

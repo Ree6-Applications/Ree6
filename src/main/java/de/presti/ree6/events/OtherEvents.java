@@ -5,8 +5,6 @@ import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.sql.base.entities.SQLResponse;
-import de.presti.ree6.sql.base.utils.SQLUtil;
 import de.presti.ree6.sql.entities.Suggestions;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
@@ -17,7 +15,12 @@ import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.data.ImageCreationUtility;
-import de.presti.ree6.utils.others.*;
+import de.presti.ree6.utils.others.AutoRoleHandler;
+import de.presti.ree6.utils.others.ModerationUtil;
+import de.presti.ree6.utils.others.RandomUtils;
+import de.presti.ree6.utils.others.ThreadUtil;
+import de.presti.ree6.utils.others.TimeUtil;
+import lombok.extern.slf4j.Slf4j;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -54,16 +57,14 @@ import org.jetbrains.annotations.NotNull;
 import twitter4j.TwitterException;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+@Slf4j
 public class OtherEvents extends ListenerAdapter {
 
     /**
@@ -73,7 +74,7 @@ public class OtherEvents extends ListenerAdapter {
     public void onGenericSessionEvent(@Nonnull GenericSessionEvent event) {
         if (event instanceof ReadyEvent) {
             BotWorker.setState(BotState.STARTED);
-            Main.getInstance().getLogger().info("Boot up finished!");
+            log.info("Boot up finished!");
 
             Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
 
@@ -103,9 +104,8 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
 
-        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
-        if (sqlResponse.isSuccess()) {
-            ChannelStats channelStats = (ChannelStats) sqlResponse.getEntity();
+        ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
+        if (channelStats != null) {
             if (channelStats.getMemberStatsChannelId() != null) {
                 GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
                 if (guildChannel != null) {
@@ -150,7 +150,7 @@ public class OtherEvents extends ListenerAdapter {
                         Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue(), messageContent));
             } catch (IOException e) {
                 wmb.setContent(messageContent);
-                Main.getInstance().getLogger().error("Error while creating join image!", e);
+                log.error("Error while creating join image!", e);
             }
         } else {
             messageContent = messageContent.replace("%user_mention%", event.getMember().getUser().getAsMention());
@@ -167,9 +167,8 @@ public class OtherEvents extends ListenerAdapter {
     public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
         super.onGuildMemberRemove(event);
 
-        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
-        if (sqlResponse.isSuccess()) {
-            ChannelStats channelStats = (ChannelStats) sqlResponse.getEntity();
+        ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
+        if (channelStats != null) {
             if (channelStats.getMemberStatsChannelId() != null) {
                 GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
                 if (guildChannel != null) {
@@ -205,15 +204,15 @@ public class OtherEvents extends ListenerAdapter {
                 ArrayUtil.voiceJoined.put(event.getMember().getUser(), System.currentTimeMillis());
             }
 
-            SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID = ? AND VID = ?", event.getGuild().getId(), event.getChannelJoined().getId());
+            TemporalVoicechannel temporalVoicechannel = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "SELECT * FROM TemporalVoicechannel WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
 
-            if (sqlResponse.isSuccess()) {
+            if (temporalVoicechannel != null) {
                 VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
 
                 if (voiceChannel == null)
                     return;
 
-                if (!((TemporalVoicechannel) sqlResponse.getEntity()).getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
+                if (!temporalVoicechannel.getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
                     return;
                 }
 
@@ -236,11 +235,10 @@ public class OtherEvents extends ListenerAdapter {
                 }
 
                 VoiceUserLevel newUserLevel = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(event.getGuild().getId(), event.getMember().getId());
-                VoiceUserLevel oldUserLevel = (VoiceUserLevel) SQLUtil.cloneEntity(VoiceUserLevel.class, newUserLevel);
                 newUserLevel.setUser(event.getMember().getUser());
                 newUserLevel.addExperience(addxp);
 
-                Main.getInstance().getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), oldUserLevel, newUserLevel);
+                Main.getInstance().getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), newUserLevel);
 
                 AutoRoleHandler.handleVoiceLevelReward(event.getGuild(), event.getMember());
 
@@ -248,20 +246,20 @@ public class OtherEvents extends ListenerAdapter {
 
             if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())
                     && event.getChannelLeft().getMembers().isEmpty()) {
-                event.getChannelLeft().delete().queue();
+                event.getChannelLeft().delete().queue(c -> ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId()));
                 ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId());
             }
         } else {
 
-            SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID = ? AND VID = ?", event.getGuild().getId(), event.getChannelJoined().getId());
+            TemporalVoicechannel temporalVoicechannel = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "SELECT * FROM TemporalVoicechannel WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
 
-            if (sqlResponse.isSuccess()) {
+            if (temporalVoicechannel != null) {
                 VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
 
                 if (voiceChannel == null)
                     return;
 
-                if (!((TemporalVoicechannel) sqlResponse.getEntity()).getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
+                if (!temporalVoicechannel.getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
                     return;
                 }
 
@@ -345,14 +343,13 @@ public class OtherEvents extends ListenerAdapter {
                 if (!ArrayUtil.timeout.contains(event.getMember())) {
 
                     ChatUserLevel userLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
-                    ChatUserLevel oldUserLevel = (ChatUserLevel) SQLUtil.cloneEntity(ChatUserLevel.class, userLevel);
                     userLevel.setUser(event.getMember().getUser());
 
                     if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) {
                         Main.getInstance().getCommandManager().sendMessage("You just leveled up to Chat Level " + userLevel.getLevel() + " " + event.getMember().getAsMention() + " !", event.getChannel());
                     }
 
-                    Main.getInstance().getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), oldUserLevel, userLevel);
+                    Main.getInstance().getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), userLevel);
 
                     ArrayUtil.timeout.add(event.getMember());
 
@@ -399,13 +396,11 @@ public class OtherEvents extends ListenerAdapter {
 
         switch (event.getModalId()) {
             case "re_suggestion_modal" -> {
-                SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(Suggestions.class, "SELECT * FROM Suggestions WHERE guildId = ?", event.getGuild().getIdLong());
+                Suggestions suggestions = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "SELECT * FROM Suggestions WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
 
                 event.deferReply(true).queue();
 
-                if (sqlResponse.isSuccess()) {
-                    Suggestions suggestions = (Suggestions) sqlResponse.getEntity();
-
+                if (suggestions != null) {
                     MessageChannel messageChannel = (MessageChannel) event.getGuild().getGuildChannelById(suggestions.getChannelId());
 
                     if (messageChannel == null) return;
@@ -444,12 +439,8 @@ public class OtherEvents extends ListenerAdapter {
 
                 String channelId = Main.getInstance().getNotifier().getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(twitchUsername)).execute().getUsers().get(0).getId();
                 event.getGuild().createVoiceChannel("Twitch Follower: " + Main.getInstance().getNotifier().getTwitchClient().getHelix().getFollowers(null, null, channelId, null, 20).execute().getTotal(), category).queue(voiceChannel -> {
-                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
-                    ChannelStats channelStats;
-
-                    if (sqlResponse.isSuccess()) {
-                        channelStats = (ChannelStats) sqlResponse.getEntity();
-                        ChannelStats oldChannelStats = (ChannelStats) SQLUtil.cloneEntity(ChannelStats.class, channelStats);
+                    ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
+                    if (channelStats != null) {
 
                         if (channelStats.getTwitchFollowerChannelId() != null) {
                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getTwitchFollowerChannelId());
@@ -460,7 +451,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         channelStats.setTwitchFollowerChannelId(voiceChannel.getId());
                         channelStats.setTwitchFollowerChannelUsername(twitchUsername);
-                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(channelStats);
                         Main.getInstance().getNotifier().registerTwitchChannel(twitchUsername);
                     } else {
                         channelStats = new ChannelStats(event.getGuild().getId(),
@@ -543,12 +534,8 @@ public class OtherEvents extends ListenerAdapter {
                 }
 
                 event.getGuild().createVoiceChannel("YouTube Subscribers: " + (youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount()), category).queue(voiceChannel -> {
-                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
-                    ChannelStats channelStats;
-
-                    if (sqlResponse.isSuccess()) {
-                        channelStats = (ChannelStats) sqlResponse.getEntity();
-                        ChannelStats oldChannelStats = (ChannelStats) SQLUtil.cloneEntity(ChannelStats.class, channelStats);
+                    ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
+                    if (channelStats != null) {
 
                         if (channelStats.getYoutubeSubscribersChannelId() != null) {
                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getYoutubeSubscribersChannelId());
@@ -559,7 +546,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         channelStats.setYoutubeSubscribersChannelId(voiceChannel.getId());
                         channelStats.setYoutubeSubscribersChannelUsername(youtubeChannelName);
-                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(channelStats);
                         Main.getInstance().getNotifier().registerYouTubeChannel(youtubeChannelName);
                     } else {
                         channelStats = new ChannelStats(event.getGuild().getId(),
@@ -628,12 +615,8 @@ public class OtherEvents extends ListenerAdapter {
                 }
 
                 event.getGuild().createVoiceChannel("Subreddit Members: " + subreddit.getActiveUserCount(), category).queue(voiceChannel -> {
-                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
-                    ChannelStats channelStats;
-
-                    if (sqlResponse.isSuccess()) {
-                        channelStats = (ChannelStats) sqlResponse.getEntity();
-                        ChannelStats oldChannelStats = (ChannelStats) SQLUtil.cloneEntity(ChannelStats.class, channelStats);
+                    ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
+                    if (channelStats != null) {
 
                         if (channelStats.getSubredditMemberChannelId() != null) {
                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getSubredditMemberChannelId());
@@ -644,7 +627,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         channelStats.setSubredditMemberChannelId(voiceChannel.getId());
                         channelStats.setSubredditMemberChannelSubredditName(subredditName);
-                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(channelStats);
                         Main.getInstance().getNotifier().registerSubreddit(subredditName);
                     } else {
                         channelStats = new ChannelStats(event.getGuild().getId(),
@@ -713,12 +696,8 @@ public class OtherEvents extends ListenerAdapter {
                 }
 
                 event.getGuild().createVoiceChannel("Twitter Follower: " + twitterUser.getFollowersCount(), category).queue(voiceChannel -> {
-                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
-                    ChannelStats channelStats;
-
-                    if (sqlResponse.isSuccess()) {
-                        channelStats = (ChannelStats) sqlResponse.getEntity();
-                        ChannelStats oldChannelStats = (ChannelStats) SQLUtil.cloneEntity(ChannelStats.class, channelStats);
+                    ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
+                    if (channelStats != null) {
 
                         if (channelStats.getTwitterFollowerChannelId() != null) {
                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getTwitterFollowerChannelId());
@@ -729,7 +708,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         channelStats.setTwitterFollowerChannelId(voiceChannel.getId());
                         channelStats.setTwitterFollowerChannelUsername(twitterName);
-                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(channelStats);
                         Main.getInstance().getNotifier().registerTwitterUser(twitterName);
                     } else {
                         channelStats = new ChannelStats(event.getGuild().getId(),
@@ -798,12 +777,8 @@ public class OtherEvents extends ListenerAdapter {
                 }
 
                 event.getGuild().createVoiceChannel("Instagram Follower: " + instagramUser.getFollower_count(), category).queue(voiceChannel -> {
-                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
-                    ChannelStats channelStats;
-
-                    if (sqlResponse.isSuccess()) {
-                        channelStats = (ChannelStats) sqlResponse.getEntity();
-                        ChannelStats oldChannelStats = (ChannelStats) SQLUtil.cloneEntity(ChannelStats.class, channelStats);
+                    ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
+                    if (channelStats != null) {
 
                         if (channelStats.getInstagramFollowerChannelId() != null) {
                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getInstagramFollowerChannelId());
@@ -814,7 +789,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         channelStats.setInstagramFollowerChannelId(voiceChannel.getId());
                         channelStats.setInstagramFollowerChannelUsername(instagramName);
-                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(channelStats);
                         Main.getInstance().getNotifier().registerInstagramUser(instagramName);
                     } else {
                         channelStats = new ChannelStats(event.getGuild().getId(),
@@ -922,8 +897,7 @@ public class OtherEvents extends ListenerAdapter {
 
                     case "tempvoice" -> {
                         optionList.add(SelectOption.of("Setup", "tempVoiceSetup"));
-
-                        if (Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID=?", event.getGuild().getId()).isSuccess())
+                        if (Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "SELECT * FROM TemporalVoicechannel WHERE GID=:gid", Map.of("gid", event.getGuild().getId())) != null)
                             optionList.add(SelectOption.of("Delete", "tempVoiceDelete"));
 
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
@@ -987,12 +961,8 @@ public class OtherEvents extends ListenerAdapter {
                                 voiceChannel1.getManager().setUserLimit(0).queue();
                                 event.getGuild().createVoiceChannel("Bot Members: " + members.stream().filter(member -> member.getUser().isBot()).count(), category).queue(voiceChannel2 -> {
                                     voiceChannel2.getManager().setUserLimit(0).queue();
-                                    SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE GID=?", event.getGuild().getId());
-                                    ChannelStats channelStats;
-
-                                    if (sqlResponse.isSuccess()) {
-                                        channelStats = (ChannelStats) sqlResponse.getEntity();
-                                        ChannelStats oldChannelStats = (ChannelStats) SQLUtil.cloneEntity(ChannelStats.class, channelStats);
+                                    ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
+                                    if (channelStats != null) {
                                         if (channelStats.getMemberStatsChannelId() != null) {
                                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getMemberStatsChannelId());
 
@@ -1014,7 +984,7 @@ public class OtherEvents extends ListenerAdapter {
                                         channelStats.setMemberStatsChannelId(voiceChannel.getId());
                                         channelStats.setRealMemberStatsChannelId(voiceChannel1.getId());
                                         channelStats.setBotMemberStatsChannelId(voiceChannel2.getId());
-                                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(oldChannelStats, channelStats, false);
+                                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(channelStats);
                                     } else {
                                         channelStats = new ChannelStats(event.getGuild().getId(),
                                                 voiceChannel.getId(),
@@ -1132,11 +1102,9 @@ public class OtherEvents extends ListenerAdapter {
                     }
 
                     case "tempVoiceDelete" -> {
-                        SQLResponse sqlResponse = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(TemporalVoicechannel.class, "SELECT * FROM TemporalVoicechannel WHERE GID=?", event.getGuild().getId());
+                        TemporalVoicechannel temporalVoicechannel = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "SELECT * FROM TemporalVoicechannel WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
 
-                        if (sqlResponse.isSuccess()) {
-                            TemporalVoicechannel temporalVoicechannel = (TemporalVoicechannel) sqlResponse.getEntity();
-
+                        if (temporalVoicechannel != null) {
                             embedBuilder.setDescription("Successfully deleted the Temporal-Voicechannel, nice work!");
                             embedBuilder.setColor(Color.GREEN);
                             event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();

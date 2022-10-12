@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
@@ -29,7 +30,7 @@ public class Cringe implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("shrekimage", "Let shrek tell them that their message was not funny!");
+        return new CommandDataImpl("shrekimage", LanguageService.getDefault("command.description.cringe_slash"));
     }
 
     /**

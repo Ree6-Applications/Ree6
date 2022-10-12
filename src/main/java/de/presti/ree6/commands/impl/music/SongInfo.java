@@ -6,18 +6,18 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Get information about the current Song.
  */
-@Command(name = "songinfo", description = "Get the current playing Track!", category = Category.MUSIC)
+@Command(name = "songinfo", description = "command.description.songinfo", category = Category.MUSIC)
 public class SongInfo implements ICommand {
 
     /**

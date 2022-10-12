@@ -14,7 +14,7 @@ import java.util.ArrayList;
 /**
  * This command is used to manage the Blacklist.
  */
-@Command(name = "blacklist", description = "Manage your filters.", category = Category.MOD)
+@Command(name = "blacklist", description = "command.description.blacklist", category = Category.MOD)
 public class Blacklist implements ICommand {
 
     /**
@@ -23,7 +23,7 @@ public class Blacklist implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
-            Main.getInstance().getCommandManager().sendMessage("This Command doesn't support slash commands yet.", commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.perform.slashNotSupported"), commandEvent.getChannel(), commandEvent.getInteractionHook());
             return;
         }
 

@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**

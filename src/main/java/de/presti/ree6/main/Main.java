@@ -1,6 +1,7 @@
 package de.presti.ree6.main;
 
 import com.google.gson.JsonObject;
+import com.zaxxer.hikari.HikariDataSource;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
 import de.presti.ree6.audio.AudioPlayerSendHandler;
@@ -13,33 +14,35 @@ import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.events.GameEvents;
 import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.OtherEvents;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.sql.SQLConnector;
-import de.presti.ree6.sql.base.entities.StoredResultSet;
+import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Main Application class, used to store Instances of System Relevant classes.
  */
+@Slf4j
 public class Main {
-
     /**
      * An Instance of the class itself.
      */
@@ -76,19 +79,14 @@ public class Main {
     MusicWorker musicWorker;
 
     /**
-     * Instance of the Logger used to log the Command output.
-     */
-    Logger logger;
-
-    /**
-     * Instance of the Logger used to store debug information.
-     */
-    Logger analyticsLogger;
-
-    /**
      * Instance of the Config System.
      */
     Config config;
+
+    /**
+     * A reference to the Bots' generell data source.
+     */
+    HikariDataSource dataSource;
 
     /**
      * String used to identify the last day.
@@ -108,10 +106,6 @@ public class Main {
         // Create the Main instance.
         instance = new Main();
 
-        // Create the Logger Instance.
-        instance.logger = LoggerFactory.getLogger(Main.class);
-        instance.analyticsLogger = LoggerFactory.getLogger("analytics");
-
         // Create the LoggerQueue Instance.
         instance.loggerQueue = new LoggerQueue();
 
@@ -128,79 +122,78 @@ public class Main {
             // We recommend adjusting this value in production.
             options.setTracesSampleRate(1.0);
             // When first trying Sentry it's good to see what the SDK is doing:
-            options.setRelease("1.10.0");
+            options.setRelease("2.0.0");
         });
 
-        // Check if there is a default value, if so close application and inform.
-        if (instance.config.getConfiguration().getString("mysql.pw").equalsIgnoreCase("yourpw")) {
-            instance.logger.error("It looks like the default configuration has not been updated!");
-            instance.logger.error("Please update the configuration file and restart the application!");
-            System.exit(0);
-        }
+        log.info("Starting preparations of the Bot...");
 
-        instance.logger.info("Starting Ree6!");
+        LanguageService.downloadLanguages();
 
-        instance.logger.info("Creating Sentry Instance.");
+        log.info("Finished preparations of the Bot!");
+
+        log.info("Starting Ree6!");
+
+        log.info("Creating Sentry Instance.");
 
         // Create a Sentry Instance to send Exception to an external Service for bug fixing.
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> Sentry.captureException(e));
 
         // Create a new connection between the Application and the SQL-Server.
-        instance.sqlConnector = new SQLConnector(instance.config.getConfiguration().getString("mysql.user"),
-                instance.config.getConfiguration().getString("mysql.db"), instance.config.getConfiguration().getString("mysql.pw"),
-                instance.config.getConfiguration().getString("mysql.host"), instance.config.getConfiguration().getInt("mysql.port"));
+        instance.sqlConnector = new SQLConnector(instance.config.getConfiguration().getString("hikari.sql.user"),
+                instance.config.getConfiguration().getString("hikari.sql.db"), instance.config.getConfiguration().getString("hikari.sql.pw"),
+                instance.config.getConfiguration().getString("hikari.sql.host"), instance.config.getConfiguration().getInt("hikari.sql.port"));
 
         try {
             // Create the Command-Manager instance.
             instance.commandManager = new CommandManager();
         } catch (Exception exception) {
-            instance.logger.error("Shutting down, because of an critical error!", exception);
+            log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
             return;
         }
 
-        instance.logger.info("Creating JDA Instance.");
+        log.info("Creating JDA Instance.");
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.RELEASE, "1.10.0");
+            BotWorker.createBot(BotVersion.DEVELOPMENT_BUILD, "2.0.0");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
-            instance.logger.error("[Main] Error while init: " + ex.getMessage());
+            log.error("[Main] Error while init: " + ex.getMessage());
             System.exit(0);
             return;
         }
 
-        instance.logger.info("Creating Notifier.");
+        log.info("Creating Notifier.");
 
         // Create the Notifier-Manager instance.
         instance.notifier = new Notifier();
 
-        StoredResultSet storedResultSet = instance.sqlConnector.querySQL("SELECT * FROM ChannelStats");
+        List<ChannelStats> channelStats = instance.sqlConnector.getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats", null);
 
         // Register all Twitch Channels.
         instance.notifier.registerTwitchChannel(instance.sqlConnector.getSqlWorker().getAllTwitchNames());
-        instance.notifier.registerTwitchChannel(storedResultSet.getValues("twitchFollowerChannelUsername", true).stream().map(String.class::cast).toList());
+        instance.notifier.registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).toList());
 
         // Register the Event-handler.
         instance.notifier.registerTwitchEventHandler();
 
         // Register all Twitter Users.
         instance.notifier.registerTwitterUser(instance.sqlConnector.getSqlWorker().getAllTwitterNames());
-        instance.notifier.registerTwitterUser(storedResultSet.getValues("twitterFollowerChannelUsername", true).stream().map(String.class::cast).toList());
+        instance.notifier.registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).toList());
 
         // Register all YouTube channels.
         instance.notifier.registerYouTubeChannel(instance.sqlConnector.getSqlWorker().getAllYouTubeChannels());
-        instance.notifier.registerYouTubeChannel(storedResultSet.getValues("youtubeSubscribersChannelUsername", true).stream().map(String.class::cast).toList());
+        instance.notifier.registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).toList());
 
         // Register all Reddit Subreddits.
         instance.notifier.registerSubreddit(instance.sqlConnector.getSqlWorker().getAllSubreddits());
-        instance.notifier.registerSubreddit(storedResultSet.getValues("subredditMemberChannelSubredditName", true).stream().map(String.class::cast).toList());
+        instance.notifier.registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).toList());
 
         // Register all Instagram Users.
         instance.notifier.registerInstagramUser(instance.sqlConnector.getSqlWorker().getAllInstagramUsers());
-        instance.notifier.registerInstagramUser(storedResultSet.getValues("instagramFollowerChannelUsername", true).stream().map(String.class::cast).toList());
+        instance.notifier.registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).toList());
 
         // Add the Runtime-hooks.
         instance.addHooks();
@@ -241,7 +234,7 @@ public class Main {
     private void shutdown() {
         // Current time for later stats.
         long start = System.currentTimeMillis();
-        instance.logger.info("[Main] Shutdown init. !");
+        log.info("[Main] Shutdown init. !");
         BotWorker.setState(BotState.STOPPED);
 
         // Deleting every temporal voicechannel.
@@ -255,29 +248,29 @@ public class Main {
 
         // Check if there is an SQL-connection if so, shutdown.
         if (sqlConnector != null && (sqlConnector.isConnected())) {
-            instance.logger.info("[Main] Closing Database Connection!");
+            log.info("[Main] Closing Database Connection!");
             getSqlConnector().close();
-            instance.logger.info("[Main] Closed Database Connection!");
+            log.info("[Main] Closed Database Connection!");
         }
 
         // Shutdown every Addon.
-        instance.logger.info("[Main] Disabling every Addon!");
+        log.info("[Main] Disabling every Addon!");
         getAddonManager().stopAddons();
-        instance.logger.info("[Main] Every Addon has been disabled!");
+        log.info("[Main] Every Addon has been disabled!");
 
         // Close the Twitch-Client
-        instance.logger.info("[Main] Closing Twitch API Instance!");
+        log.info("[Main] Closing Twitch API Instance!");
         getNotifier().getTwitchClient().close();
-        instance.logger.info("[Main] Twitch API Instance closed!");
+        log.info("[Main] Twitch API Instance closed!");
 
         // Shutdown the Bot instance.
-        instance.logger.info("[Main] JDA Instance shutdown init. !");
+        log.info("[Main] JDA Instance shutdown init. !");
         BotWorker.shutdown();
-        instance.logger.info("[Main] JDA Instance has been shut down!");
+        log.info("[Main] JDA Instance has been shut down!");
 
         // Inform of how long it took.
-        instance.logger.info("[Main] Everything has been shut down in {}ms!", System.currentTimeMillis() - start);
-        instance.logger.info("[Main] Good bye!");
+        log.info("[Main] Everything has been shut down in {}ms!", System.currentTimeMillis() - start);
+        log.info("[Main] Good bye!");
     }
 
     /**
@@ -288,23 +281,18 @@ public class Main {
 
             if (!lastDay.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 
-                if (BotWorker.getStartTime() > System.currentTimeMillis() + 10000) {
-                    getSqlConnector().close();
-                    sqlConnector = new SQLConnector(config.getConfiguration().getString("mysql.user"), config.getConfiguration().getString("mysql.db"), config.getConfiguration().getString("mysql.pw"), config.getConfiguration().getString("mysql.host"), config.getConfiguration().getInt("mysql.port"));
-                }
-
                 ArrayUtil.messageIDwithMessage.clear();
                 ArrayUtil.messageIDwithUser.clear();
 
                 BotWorker.getShardManager().getShards().forEach(jda ->
                         BotWorker.setActivity(jda, "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING));
 
-                instance.logger.info("[Stats] ");
-                instance.logger.info("[Stats] Today's Stats:");
+                log.info("[Stats] ");
+                log.info("[Stats] Today's Stats:");
                 int guildSize = BotWorker.getShardManager().getGuilds().size(), userSize = BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum();
-                instance.logger.info("[Stats] Guilds: {}", guildSize);
-                instance.logger.info("[Stats] Overall Users: {}", userSize);
-                instance.logger.info("[Stats] ");
+                log.info("[Stats] Guilds: {}", guildSize);
+                log.info("[Stats] Overall Users: {}", userSize);
+                log.info("[Stats] ");
 
                 LocalDate yesterday = LocalDate.now().minusDays(1);
                 Statistics statistics = sqlConnector.getSqlWorker().getStatistics(yesterday.getDayOfMonth(), yesterday.getMonthValue(), yesterday.getYear());
@@ -351,7 +339,7 @@ public class Main {
 
                 } catch (Exception ex) {
                     guildMusicManager.scheduler.stopAll(guild, null);
-                    getLogger().error("Error accessing the AudioPlayer.", ex);
+                    log.error("Error accessing the AudioPlayer.", ex);
                 }
             }
         }, null, Duration.ofMinutes(1), true, false);
@@ -425,27 +413,12 @@ public class Main {
     }
 
     /**
-     * Retrieve the Instance of the Logger.
+     * Retrieve the Instance of the {@link HikariDataSource}.
      *
-     * @return {@link Logger} Instance of the Logger.
+     * @return the {@link HikariDataSource} instance.
      */
-    public Logger getLogger() {
-        if (logger == null) {
-            return logger = LoggerFactory.getLogger(Main.class);
-        }
-        return logger;
-    }
-
-    /**
-     * Retrieve the Instance of the Analytics-Logger.
-     *
-     * @return {@link Logger} Instance of the Logger.
-     */
-    public Logger getAnalyticsLogger() {
-        if (analyticsLogger == null) {
-            return analyticsLogger = LoggerFactory.getLogger("analytics");
-        }
-        return analyticsLogger;
+    public HikariDataSource getDataSource() {
+        return dataSource;
     }
 
     /**

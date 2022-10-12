@@ -1,25 +1,32 @@
 package de.presti.ree6.sql.entities;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
+import jakarta.persistence.*;
 
 /**
  * SQL Entity for the Blacklist.
  */
+@Entity
 @Table(name = "ChatProtector")
-public class Blacklist extends SQLEntity {
+public class Blacklist {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The ID of the Guild.
      */
-    @Property(name = "gid")
+    @Column(name = "gid")
     private String guildId;
 
     /**
      * The blacklisted word.
      */
-    @Property(name = "word")
+    @Column(name = "word")
     private String word;
 
     /**

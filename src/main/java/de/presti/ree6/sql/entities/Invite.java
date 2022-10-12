@@ -1,37 +1,44 @@
 package de.presti.ree6.sql.entities;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
-import de.presti.ree6.sql.base.entities.SQLEntity;
+import jakarta.persistence.*;
 
 /**
  * Invite class to store information about an Invite.
  */
+@Entity
 @Table(name = "Invites")
-public class Invite extends SQLEntity {
+public class Invite {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     /**
      * The GuildID of the Invite.
      */
-    @Property(name = "gid")
+    @Column(name = "gid")
     String guild;
 
     /**
      * The UserID of the Invite.
      */
-    @Property(name = "uid")
+    @Column(name = "uid")
     String userId;
 
     /**
      * The Usages of the Invite.
      */
-    @Property(name = "uses", updateQuery = true)
+    @Column(name = "uses")
     long uses;
 
     /**
      * The Code of the Invite.
      */
-    @Property(name = "code")
+    @Column(name = "code")
     String code;
 
     /**

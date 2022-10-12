@@ -4,8 +4,14 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.*;
+import com.google.api.services.youtube.model.Channel;
+import com.google.api.services.youtube.model.ChannelListResponse;
+import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.PlaylistItemListResponse;
+import com.google.api.services.youtube.model.SearchListResponse;
+import com.google.api.services.youtube.model.SearchResult;
 import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +21,7 @@ import java.util.List;
 /**
  * YouTubeAPIHandler.
  */
+@Slf4j
 public class YouTubeAPIHandler {
 
     /**
@@ -39,7 +46,7 @@ public class YouTubeAPIHandler {
         try {
             createYouTube();
         } catch (Exception e) {
-            Main.getInstance().getLogger().error("Couldn't create a YouTube Instance", e);
+            log.error("Couldn't create a YouTube Instance", e);
         }
         instance = this;
     }
@@ -207,7 +214,7 @@ public class YouTubeAPIHandler {
                     .setApplicationName("Ree6")
                     .build();
         } catch (Exception e) {
-            Main.getInstance().getLogger().error("Couldn't create a YouTube Instance", e);
+            log.error("Couldn't create a YouTube Instance", e);
         }
     }
 

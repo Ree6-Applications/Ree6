@@ -5,18 +5,18 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Get the current list of songs.
  */
-@Command(name = "songlist", description = "Show the current Song-Queue.", category = Category.MUSIC)
+@Command(name = "songlist", description = "command.description.songlist", category = Category.MUSIC)
 public class SongList implements ICommand {
 
     /**

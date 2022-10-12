@@ -1,18 +1,20 @@
 package de.presti.ree6.sql.entities.webhook;
 
-import de.presti.ree6.sql.base.annotations.Property;
-import de.presti.ree6.sql.base.annotations.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * SQL Entity for the Instagram-Webhooks.
  */
+@Entity
 @Table(name = "InstagramNotify")
 public class WebhookInstagram extends Webhook {
 
     /**
      * Name of the User.
      */
-    @Property(name = "name")
+    @Column(name = "name")
     private String name;
 
     /**
