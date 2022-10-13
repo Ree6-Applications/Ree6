@@ -110,7 +110,7 @@ public class Play implements ICommand {
             }
 
             if (!isspotify) {
-                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), value, commandEvent.getInteractionHook());
+                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), value, commandEvent.getInteractionHook(), false);
             } else {
                 ArrayList<String> loadFailed = new ArrayList<>();
 
@@ -128,7 +128,7 @@ public class Play implements ICommand {
                         loadFailed.add(search);
                     } else {
                         if (!tempBoolean) {
-                            Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), result, commandEvent.getInteractionHook());
+                            Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), result, commandEvent.getInteractionHook(), false);
                             tempBoolean = true;
                         } else {
                             Main.getInstance().getMusicWorker().loadAndPlaySilence(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), result, commandEvent.getInteractionHook());
@@ -185,7 +185,7 @@ public class Play implements ICommand {
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                 Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
-                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), ytResult, commandEvent.getInteractionHook());
+                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), ytResult, commandEvent.getInteractionHook(), false);
             }
         }
     }
