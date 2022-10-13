@@ -3,6 +3,7 @@ package de.presti.ree6.events;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.Suggestions;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
+import de.presti.ree6.sql.entities.Tickets;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
@@ -598,15 +599,14 @@ public class MenuEvents extends ListenerAdapter {
                     case "tickets" -> {
                         optionList.add(SelectOption.of("Setup", "ticketsSetup"));
 
-                        // TODO:: replace
-                        if (Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "SELECT * FROM Tickets WHERE GID=:gid", Map.of("gid", event.getGuild().getId())) != null)
+                        if (Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GUILDID=:gid", Map.of("gid", event.getGuild().getId())) != null)
                             optionList.add(SelectOption.of("Delete", "ticketsDelete"));
 
                         optionList.add(SelectOption.of("Back to Menu", "backToSetupMenu"));
 
                         embedBuilder.setDescription("You can set up your own Ticket-System!\nBy setting up a specific channel as Ticket-Channel, Ree6 will create a new Ticket-Channel for each Ticket that you create!\nAfter Ticket closing those tickets will be moved to a archive category!");
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupTickets", "Select your Action", 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupTicketsMenu", "Select your Action", 1, 1, false, optionList)).queue();
                     }
 
                     default -> {
