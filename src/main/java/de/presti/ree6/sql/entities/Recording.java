@@ -2,10 +2,7 @@ package de.presti.ree6.sql.entities;
 
 import com.google.gson.JsonArray;
 import de.presti.ree6.utils.others.RandomUtils;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 /**
  * This class is used to represent a Ree6-Voice-Recording, in our Database.
@@ -42,12 +39,14 @@ public class Recording {
     /**
      * The WAV-File bytes.
      */
+    @Convert
     @Column(name = "recording")
     byte[] recording;
 
     /**
      * An JsonArray containing the IDs of the Users who have participated in the Recording.
      */
+    @Convert
     @Column(name = "participants")
     JsonArray jsonArray;
 
