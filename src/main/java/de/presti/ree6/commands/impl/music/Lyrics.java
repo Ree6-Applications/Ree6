@@ -42,9 +42,9 @@ public class Lyrics implements ICommand {
         if (sendingHandler != null && sendingHandler.isMusicPlaying(commandEvent.getGuild())) {
 
             GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild());
-            String title = guildMusicManager.player.getPlayingTrack().getInfo().title.contains("(") && guildMusicManager.player.getPlayingTrack().getInfo().title.contains(")") ?
-                    guildMusicManager.player.getPlayingTrack().getInfo().title.split("\\(")[0] :
-                    guildMusicManager.player.getPlayingTrack().getInfo().title;
+            String title = guildMusicManager.getPlayer().getPlayingTrack().getInfo().title.contains("(") && guildMusicManager.getPlayer().getPlayingTrack().getInfo().title.contains(")") ?
+                    guildMusicManager.getPlayer().getPlayingTrack().getInfo().title.split("\\(")[0] :
+                    guildMusicManager.getPlayer().getPlayingTrack().getInfo().title;
 
             client.getLyrics(title).thenAccept(lyrics -> {
 

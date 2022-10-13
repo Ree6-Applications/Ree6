@@ -32,7 +32,7 @@ public class Resume implements ICommand {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).player.setPaused(false);
+        Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getPlayer().setPaused(false);
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());

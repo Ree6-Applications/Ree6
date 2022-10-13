@@ -29,7 +29,7 @@ public class SongInfo implements ICommand {
         EmbedBuilder em = new EmbedBuilder();
 
         GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild());
-        AudioTrack audioTrack = guildMusicManager != null ? guildMusicManager.player.getPlayingTrack() : null;
+        AudioTrack audioTrack = guildMusicManager != null ? guildMusicManager.getPlayer().getPlayingTrack() : null;
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
@@ -38,9 +38,9 @@ public class SongInfo implements ICommand {
         em.setColor(Color.GREEN);
         em.setDescription(audioTrack == null ? "No Song is being played right now!" : "**Song:** ```"
                 + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + "```\n" +
-                FormatUtil.getStatusEmoji(guildMusicManager.player) + FormatUtil.progressBar((double)audioTrack.getPosition()/audioTrack.getDuration()) +
+                FormatUtil.getStatusEmoji(guildMusicManager.getPlayer()) + FormatUtil.progressBar((double)audioTrack.getPosition()/audioTrack.getDuration()) +
                 " `[" + FormatUtil.formatTime(audioTrack.getPosition()) + "/" + FormatUtil.formatTime(audioTrack.getDuration()) + "]` " +
-                FormatUtil.volumeIcon(guildMusicManager.player.getVolume()));
+                FormatUtil.volumeIcon(guildMusicManager.getPlayer().getVolume()));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
         Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
