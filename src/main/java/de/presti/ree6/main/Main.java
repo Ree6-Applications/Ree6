@@ -327,11 +327,11 @@ public class Main {
 
                     if (guild.getSelfMember().getVoiceState() != null && guild.getSelfMember().getVoiceState().inAudioChannel() &&
                             (playerSendHandler == null || !playerSendHandler.isMusicPlaying(guild))) {
-                        guildMusicManager.scheduler.stopAll(guild, null);
+                        guildMusicManager.getScheduler().stopAll(null);
                     }
 
                 } catch (Exception ex) {
-                    guildMusicManager.scheduler.stopAll(guild, null);
+                    guildMusicManager.getScheduler().stopAll(null);
                     log.error("Error accessing the AudioPlayer.", ex);
                 }
             }

@@ -33,7 +33,7 @@ public class Shuffle implements ICommand {
         EmbedBuilder em = new EmbedBuilder();
 
         Main.getInstance().getMusicWorker().getGuildAudioPlayer(
-                commandEvent.getGuild()).scheduler.shuffle();
+                commandEvent.getGuild()).getScheduler().shuffle();
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());

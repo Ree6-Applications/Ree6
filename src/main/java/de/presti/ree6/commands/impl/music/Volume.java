@@ -43,7 +43,7 @@ public class Volume implements ICommand {
             if (volumeOption != null) {
                 int volume = (int)volumeOption.getAsDouble();
 
-                Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).player.setVolume(volume);
+                Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getPlayer().setVolume(volume);
 
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
@@ -71,7 +71,7 @@ public class Volume implements ICommand {
                     vol = 50;
                 }
 
-                Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).player.setVolume(vol);
+                Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getPlayer().setVolume(vol);
 
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());

@@ -80,71 +80,7 @@ public class MusicWorker {
      * @param interactionHook a InteractionHook if it was an SlashCommand.
      */
     public void loadAndPlaySilence(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild());
-
-        musicManager.scheduler.channel = channel;
-
-        playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
-            /**
-             * Just override the default trackLoaded with a simple play call.
-             * @param track the AudioTrack that you want to play
-             */
-            @Override
-            public void trackLoaded(AudioTrack track) {
-                play(audioChannel, musicManager, track);
-            }
-
-            /**
-             * Just override the default playlistLoaded with a rather simple play and queue call.
-             * @param playlist the AudioPlaylist.
-             */
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist) {
-                AudioTrack firstTrack = playlist.getSelectedTrack();
-
-                if (firstTrack == null) {
-                    firstTrack = playlist.getTracks().get(0);
-                }
-
-                play(audioChannel, musicManager, firstTrack);
-
-                if (playlist.getTracks().size() > 1) {
-                    for (AudioTrack tracks : playlist.getTracks()) {
-                        if (tracks != firstTrack) {
-                            musicManager.scheduler.queue(tracks);
-                        }
-                    }
-                }
-            }
-
-            /**
-             * Override the default noMatches Method to inform the user about it.
-             */
-            @Override
-            public void noMatches() {
-                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(channel.asGuildMessageChannel().getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, channel.asGuildMessageChannel().getGuild().getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle("Music Player!")
-                        .setThumbnail(channel.asGuildMessageChannel().getGuild().getJDA().getSelfUser().getAvatarUrl())
-                        .setColor(Color.GREEN)
-                        .setDescription("A Song with the URL ``" + FormatUtil.filter(trackUrl) + "`` couldn't be found!")
-                        .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
-            }
-
-            /**
-             * Override the default loadFailed Method to inform the user about it.
-             */
-            @Override
-            public void loadFailed(FriendlyException exception) {
-                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle("Music Player!")
-                        .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
-                        .setColor(Color.GREEN)
-                        .setDescription("Error while playing: " + exception.getMessage())
-                        .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
-            }
-        });
+        loadAndPlay(channel, audioChannel, trackUrl, interactionHook, true);
     }
 
     /**
@@ -154,11 +90,12 @@ public class MusicWorker {
      * @param audioChannel    the AudioChannel for the Bot to join.
      * @param trackUrl        the Track URL.
      * @param interactionHook a InteractionHook if it was an SlashCommand.
+     * @param silent          if the Bot shouldn't send a Message.
      */
-    public void loadAndPlay(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook) {
+    public void loadAndPlay(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild());
 
-        musicManager.scheduler.channel = channel;
+        musicManager.getScheduler().setChannel(channel);
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
 
@@ -168,7 +105,8 @@ public class MusicWorker {
              */
             @Override
             public void trackLoaded(AudioTrack track) {
-                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                if (!silent)
+                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
                         .setTitle("Music Player!")
                         .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
@@ -189,9 +127,11 @@ public class MusicWorker {
 
                 if (firstTrack == null) {
                     firstTrack = playlist.getTracks().get(0);
+                    playlist.getTracks().remove(0);
                 }
 
-                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                if (!silent)
+                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
                         .setTitle("Music Player!")
                         .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
@@ -203,9 +143,7 @@ public class MusicWorker {
 
                 if (playlist.getTracks().size() > 1) {
                     for (AudioTrack tracks : playlist.getTracks()) {
-                        if (tracks != firstTrack) {
-                            musicManager.scheduler.queue(tracks);
-                        }
+                        musicManager.getScheduler().queue(tracks);
                     }
                 }
             }
@@ -215,7 +153,8 @@ public class MusicWorker {
              */
             @Override
             public void noMatches() {
-                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                if (!silent)
+                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
                         .setTitle("Music Player!")
                         .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
@@ -248,8 +187,8 @@ public class MusicWorker {
      * @param track        the AudioTrack that should be played.
      */
     public void play(AudioChannel audioChannel, GuildMusicManager musicManager, AudioTrack track) {
-        connectToAudioChannel(musicManager.guild.getAudioManager(), audioChannel);
-        musicManager.scheduler.queue(track);
+        connectToAudioChannel(musicManager.getGuild().getAudioManager(), audioChannel);
+        musicManager.getScheduler().queue(track);
     }
 
     /**
@@ -267,18 +206,17 @@ public class MusicWorker {
                 .setDescription("Skipping to the next Song!")
                 .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
 
-        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).scheduler.nextTrack(channel, skipAmount);
+        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).getScheduler().nextTrack(channel, skipAmount);
     }
 
     /**
      * A method used to seek to a specific position in the current AudioTrack.
      *
      * @param channel             the TextChannel, used to inform the user about the seek.
-     * @param interactionHook     the Interaction-Hook, used to replace the channel if it is a SlashCommand.
      * @param seekAmountInSeconds the amount of seconds that should be seeked.
      */
-    public void seekInTrack(MessageChannelUnion channel, InteractionHook interactionHook, int seekAmountInSeconds) {
-        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).scheduler.seekPosition(channel, seekAmountInSeconds);
+    public void seekInTrack(MessageChannelUnion channel, int seekAmountInSeconds) {
+        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).getScheduler().seekPosition(channel, seekAmountInSeconds);
     }
 
     /**
