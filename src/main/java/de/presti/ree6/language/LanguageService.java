@@ -50,7 +50,7 @@ public class LanguageService {
                     if (inputStream == null) return;
 
                     if (Files.exists(languageFile)) {
-                        log.info("Language file " + language + " already exists!\nWill compare version!");
+                        log.info("Language file {} already exists! Will compare version!", language);
                         YamlConfiguration newLanguageYaml = YamlConfiguration.loadConfiguration(inputStream);
                         Language newLanguage = new Language(newLanguageYaml);
                         Language oldLanguage = new Language(YamlConfiguration.loadConfiguration(languageFile.toFile()));

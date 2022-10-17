@@ -98,6 +98,8 @@ public class SQLConnector {
             HikariConfig hConfig = new HikariConfig();
 
             hConfig.setJdbcUrl(SQLSession.getJdbcURL());
+            hConfig.setUsername(Main.getInstance().getConfig().getConfiguration().getString("hikari.sql.user"));
+            hConfig.setPassword(Main.getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"));
             hConfig.setMaximumPoolSize(SQLSession.getMaxPoolSize());
             dataSource = new HikariDataSource(hConfig);
             log.info("Service (SQL) has been started. Connection was successful.");
@@ -140,12 +142,10 @@ public class SQLConnector {
 
         switch (Main.getInstance().getConfig().getConfiguration().getString("hikari.misc.storage").toLowerCase()) {
             case "mariadb" -> {
-                jdbcUrl = "jdbc:mariadb://%s:%s/%s?user=%s&password=%s";
+                jdbcUrl = "jdbc:mariadb://%s:%s/%s";
                 jdbcUrl = jdbcUrl.formatted(databaseServerIP,
                         databaseServerPort,
-                        databaseName,
-                        databaseUser,
-                        databasePassword);
+                        databaseName);
             }
 
             default -> {

@@ -1,6 +1,7 @@
 package de.presti.ree6.sql;
 
 import com.google.gson.JsonElement;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.TypUtil;
 import jakarta.persistence.AttributeConverter;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class SQLSession {
      * Build a new SessionFactory or return the current one.
      * @return The SessionFactory.
      */
-    public static SessionFactory buildSessionFactory() {
+    public static SessionFactory buildSessionFactory(String username, String password) {
         if (sessionFactory != null) return getSessionFactory();
 
         try {
@@ -47,9 +48,13 @@ public class SQLSession {
             properties.put("hibernate.connection.datasource", "com.zaxxer.hikari.HikariDataSource");
             properties.put("hibernate.connection.provider_class", "org.hibernate.hikaricp.internal.HikariCPConnectionProvider");
             properties.put("hibernate.connection.url", jdbcURL);
-            properties.put("hibernate.hikari.maximumPoolSize", maxPoolSize);
+            properties.put("hibernate.connection.username", username);
+            properties.put("hibernate.connection.password", password);
+            properties.put("hibernate.hikari.maximumPoolSize", String.valueOf(maxPoolSize));
             properties.put("hibernate.dialect","org.hibernate.dialect.MariaDBDialect");
-            properties.put("hibernate.hbm2ddl.auto", "create");
+            properties.put("hibernate.hbm2ddl.auto", "update");
+            properties.put("hibernate.show_sql", true);
+            properties.put("hibernate.format_sql", true);
             configuration.addProperties(properties);
             configuration.addPackage("de.presti.ree6.sql.entities");
             configuration.addAttributeConverter(new AttributeConverter<JsonElement, Blob>() {
@@ -79,10 +84,9 @@ public class SQLSession {
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 
             return sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             // Make sure you log the exception, as it might be swallowed
-            log.error("Initial SessionFactory creation failed." + ex);
+            log.error("Initial SessionFactory creation failed.", ex);
             throw new ExceptionInInitializerError(ex);
         }
     }
@@ -124,7 +128,10 @@ public class SQLSession {
      * @return The SessionFactory.
      */
     public static SessionFactory getSessionFactory() {
-        if (sessionFactory == null) return sessionFactory = buildSessionFactory();
+        if (sessionFactory == null)
+            return sessionFactory = buildSessionFactory(
+                    Main.getInstance().getConfig().getConfiguration().getString("hikari.sql.user"),
+                    Main.getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"));
         return sessionFactory;
     }
 }

@@ -110,7 +110,7 @@ public class Main {
 
         Sentry.init(options -> {
             String dsn = instance.config.getConfiguration().getString("sentry.dsn");
-            options.setDsn(dsn == null ? "" : dsn);
+            options.setDsn((dsn == null || dsn.equalsIgnoreCase("yourSentryDSNHere")) ? "" : dsn);
             // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
             // We recommend adjusting this value in production.
             options.setTracesSampleRate(1.0);
