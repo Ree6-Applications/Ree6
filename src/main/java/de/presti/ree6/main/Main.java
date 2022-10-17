@@ -1,7 +1,6 @@
 package de.presti.ree6.main;
 
 import com.google.gson.JsonObject;
-import com.zaxxer.hikari.HikariDataSource;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
 import de.presti.ree6.audio.AudioPlayerSendHandler;
@@ -36,7 +35,6 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Main Application class, used to store Instances of System Relevant classes.
@@ -82,11 +80,6 @@ public class Main {
      * Instance of the Config System.
      */
     Config config;
-
-    /**
-     * A reference to the Bots' generell data source.
-     */
-    HikariDataSource dataSource;
 
     /**
      * String used to identify the last day.
@@ -410,15 +403,6 @@ public class Main {
      */
     public MusicWorker getMusicWorker() {
         return musicWorker;
-    }
-
-    /**
-     * Retrieve the Instance of the {@link HikariDataSource}.
-     *
-     * @return the {@link HikariDataSource} instance.
-     */
-    public HikariDataSource getDataSource() {
-        return dataSource;
     }
 
     /**

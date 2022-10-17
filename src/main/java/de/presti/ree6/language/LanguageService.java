@@ -44,6 +44,11 @@ public class LanguageService {
                     return;
                 }
 
+                if (!languageFile.toAbsolutePath().startsWith(Path.of("languages/").toAbsolutePath())) {
+                    log.info("Ignoring Language download, since Path Traversal has been detected!");
+                    return;
+                }
+
                 log.info("Downloading Language: {}", language);
 
                 try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(download).build())) {
