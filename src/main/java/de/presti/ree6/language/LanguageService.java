@@ -39,11 +39,6 @@ public class LanguageService {
 
                 Path languageFile = Path.of("languages/", language + ".yml");
 
-                if (Files.exists(languageFile)) {
-                    log.info("Ignoring Language download: {}", language);
-                    return;
-                }
-
                 if (!languageFile.toAbsolutePath().startsWith(Path.of("languages/").toAbsolutePath())) {
                     log.info("Ignoring Language download, since Path Traversal has been detected!");
                     return;
@@ -54,7 +49,21 @@ public class LanguageService {
                 try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(download).build())) {
                     if (inputStream == null) return;
 
-                    Files.copy(inputStream, languageFile);
+                    if (Files.exists(languageFile)) {
+                        log.info("Language file " + language + " already exists!\nWill compare version!");
+                        YamlConfiguration newLanguageYaml = YamlConfiguration.loadConfiguration(inputStream);
+                        Language newLanguage = new Language(newLanguageYaml);
+                        Language oldLanguage = new Language(YamlConfiguration.loadConfiguration(languageFile.toFile()));
+                        if (newLanguage.compareVersion(oldLanguage)) {
+                            log.info("Language file {} is outdated!\nWill update!", language);
+                            Files.delete(languageFile);
+                            newLanguageYaml.save(languageFile.toFile());
+                        } else {
+                            log.info("Language file {} is up to date!", language);
+                        }
+                    } else {
+                        Files.copy(inputStream, languageFile);
+                    }
                 } catch (IOException exception) {
                     log.error("An error occurred while downloading the language file!", exception);
                 }

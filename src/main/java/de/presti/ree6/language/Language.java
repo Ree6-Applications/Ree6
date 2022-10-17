@@ -128,4 +128,31 @@ public class Language {
         if (!resources.containsKey(key)) return "Missing language resource!";
         return String.format(resources.get(key), parameter);
     }
+
+    /**
+     * Compare the current Language version with another Language.
+     * @param language The Language to compare with.
+     * @return The result of the comparison. True, if it should update | False, if it should not be updated.
+     */
+    public boolean compareVersion(Language language) {
+        if (language == null) return false;
+        if (language.getVersion() == null) return false;
+        if (version == null) return true;
+        if (language.getVersion().equals(version)) return false;
+
+        String[] split = version.split("\\.");
+
+        int mayor = Integer.parseInt(split[0]);
+        int minor = Integer.parseInt(split[1]);
+        int patch = Integer.parseInt(split[2]);
+
+        String[] split2 = language.getVersion().split("\\.");
+        int otherMayor = Integer.parseInt(split2[0]);
+        int otherMinor = Integer.parseInt(split2[1]);
+        int otherPatch = Integer.parseInt(split2[2]);
+
+        if (otherMayor > mayor) return true;
+        if (otherMayor == mayor && otherMinor > minor) return true;
+        return otherMayor == mayor && otherMinor == minor && otherPatch > patch;
+    }
 }
