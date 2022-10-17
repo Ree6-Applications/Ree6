@@ -49,6 +49,7 @@ public class SQLSession {
             properties.put("hibernate.connection.url", jdbcURL);
             properties.put("hibernate.hikari.maximumPoolSize", maxPoolSize);
             properties.put("hibernate.dialect","org.hibernate.dialect.MariaDBDialect");
+            properties.put("hibernate.hbm2ddl.auto", "create");
             configuration.addProperties(properties);
             configuration.addPackage("de.presti.ree6.sql.entities");
             configuration.addAttributeConverter(new AttributeConverter<JsonElement, Blob>() {
@@ -123,6 +124,7 @@ public class SQLSession {
      * @return The SessionFactory.
      */
     public static SessionFactory getSessionFactory() {
+        if (sessionFactory == null) return sessionFactory = buildSessionFactory();
         return sessionFactory;
     }
 }
