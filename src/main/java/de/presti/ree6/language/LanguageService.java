@@ -56,7 +56,9 @@ public class LanguageService {
                         Language oldLanguage = new Language(YamlConfiguration.loadConfiguration(languageFile.toFile()));
                         if (newLanguage.compareVersion(oldLanguage)) {
                             log.info("Language file {} is outdated!\nWill update!", language);
-                            Files.delete(languageFile);
+                            if (!languageFile.toFile().delete()) {
+                                log.info("Failed to delete old Language file {}!", language);
+                            }
                             newLanguageYaml.save(languageFile.toFile());
                         } else {
                             log.info("Language file {} is up to date!", language);
