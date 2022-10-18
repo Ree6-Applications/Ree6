@@ -43,7 +43,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class CommandManager {
 
-    // An Arraylist with all registered Commands.
+    /**
+     * An Arraylist with all registered Commands.
+     */
     static final ArrayList<ICommand> commands = new ArrayList<>();
 
     /**

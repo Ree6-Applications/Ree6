@@ -25,16 +25,6 @@ public final class RandomUtils {
     public static final SecureRandom secureRandom = new SecureRandom();
 
     /**
-     * Create a new Base64 String.
-     * @return {@link String} A Base64 String.
-     */
-    public static String getRandomBase64String(int length) {
-        byte[] randomBytes = new byte[length];
-        secureRandom.nextBytes(randomBytes);
-        return Base64.getUrlEncoder().encodeToString(randomBytes);
-    }
-
-    /**
      * Generates a random number between the given min and the given max.
      * @param startInclusive The minimum number.
      * @param endExclusive The maximum number.
@@ -113,5 +103,15 @@ public final class RandomUtils {
             stringBuilder.append(chars[RandomUtils.random.nextInt(chars.length)]);
         }
         return stringBuilder.toString();
+    }
+
+    /**
+     * Create a new Base64 String.
+     * @return {@link String} A Base64 String.
+     */
+    public static String getRandomBase64String(int length) {
+        byte[] randomBytes = new byte[length];
+        secureRandom.nextBytes(randomBytes);
+        return Base64.getUrlEncoder().encodeToString(randomBytes);
     }
 }

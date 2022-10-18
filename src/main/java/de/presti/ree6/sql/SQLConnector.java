@@ -27,22 +27,32 @@ import java.util.Map;
 @SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve"})
 public class SQLConnector {
 
-    // Various String that keep connection information to use for a connection.
+    /**
+     * Various String that keep connection information to use for a connection.
+     */
     private final String databaseUser,
             databaseName,
             databasePassword,
             databaseServerIP;
 
-    // The port of the Server.
+    /**
+     * The port of the Server.
+     */
     private final int databaseServerPort;
 
-    // An Instance of the actual Java SQL Connection.
+    /**
+     * An Instance of the actual Java SQL Connection.
+     */
     private HikariDataSource dataSource;
 
-    // An Instance of the SQL-Worker which works with the Data in the Database.
+    /**
+     * An Instance of the SQL-Worker which works with the Data in the Database.
+     */
     private final SQLWorker sqlWorker;
 
-    // A boolean to keep track if there was at least one valid connection.
+    /**
+     * A boolean to keep track if there was at least one valid connection.
+     */
     private boolean connectedOnce = false;
 
     /**
@@ -186,6 +196,8 @@ public class SQLConnector {
     /**
      * Send an SQL-Query to SQL-Server and get the response.
      *
+     * @param <R> The Class entity.
+     * @param r The class entity.
      * @param sqlQuery   the SQL-Query.
      * @param parameters a list with all parameters that should be considered.
      * @return The Result from the SQL-Server.

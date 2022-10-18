@@ -43,7 +43,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.session.GenericSessionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.Modal;
@@ -71,15 +70,13 @@ public class OtherEvents extends ListenerAdapter {
      * @inheritDoc
      */
     @Override
-    public void onGenericSessionEvent(@Nonnull GenericSessionEvent event) {
-        if (event instanceof ReadyEvent) {
-            BotWorker.setState(BotState.STARTED);
-            log.info("Boot up finished!");
+    public void onReady(@Nonnull ReadyEvent event) {
+        BotWorker.setState(BotState.STARTED);
+        log.info("Boot up finished!");
 
-            Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
+        Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
 
-            BotWorker.setActivity(event.getJDA(), "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
-        }
+        BotWorker.setActivity(event.getJDA(), "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
     }
 
     /**
@@ -414,7 +411,7 @@ public class OtherEvents extends ListenerAdapter {
                     Main.getInstance().getCommandManager().sendMessage(embedBuilder, messageChannel);
                     Main.getInstance().getCommandManager().sendMessage("Suggestion sent!", null, event.getInteraction().getHook());
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("Looks like the Suggestion-System is not set up right?", null,event.getInteraction().getHook());
+                    Main.getInstance().getCommandManager().sendMessage("Looks like the Suggestion-System is not set up right?", null, event.getInteraction().getHook());
                 }
             }
 
@@ -1222,7 +1219,7 @@ public class OtherEvents extends ListenerAdapter {
                         embedBuilder.setDescription("Use the following Command with a Image as attachment: `" + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "setup joinImage`");
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
                     }
-                    
+
                     case "welcomeDelete" -> {
                         Webhook webhook = Main.getInstance().getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId());
 
