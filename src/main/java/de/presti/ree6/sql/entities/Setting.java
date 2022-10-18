@@ -66,6 +66,7 @@ public class Setting {
             return booleanValue;
         } else if (currentValue instanceof String stringValue) {
             if (stringValue.equals("1")) return true;
+            if (stringValue.equals("0")) return false;
             return Boolean.parseBoolean(stringValue);
         }
         return true;
