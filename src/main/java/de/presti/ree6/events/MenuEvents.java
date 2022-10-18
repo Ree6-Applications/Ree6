@@ -16,16 +16,19 @@ import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
 import org.jetbrains.annotations.NotNull;
 import twitter4j.TwitterException;
@@ -33,10 +36,8 @@ import twitter4j.TwitterException;
 import java.awt.*;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -51,11 +52,67 @@ public class MenuEvents extends ListenerAdapter {
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         super.onButtonInteraction(event);
 
-        if (event.getComponentId().equals("re_suggestion")) {
+        switch (event.getComponentId()) {
+            case "re_suggestion" -> {
+                Modal.Builder builder = Modal.create("re_suggestion_modal", "Suggestion");
+                builder.addActionRow(TextInput.create("re_suggestion_text", "Suggestion", TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
+                event.replyModal(builder.build()).queue();
+            }
 
-            Modal.Builder builder = Modal.create("re_suggestion_modal", "Suggestion");
-            builder.addActionRow(TextInput.create("re_suggestion_text", "Suggestion", TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
-            event.replyModal(builder.build()).queue();
+            case "re_ticket_open" -> {
+                event.deferReply(true).queue();
+                Tickets tickets = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GUILDID=:gid", Map.of("gid", event.getGuild().getId()));
+
+                if (tickets != null) {
+                    Category category = event.getGuild().getCategoryById(tickets.getTicketCategory());
+
+                    if (category != null) {
+                        if (category.getTextChannels().stream().anyMatch(c -> c.getName().contains(event.getUser().getName()))) {
+                            event.getHook().sendMessage("You already have a ticket open!").queue();
+                            return;
+                        }
+
+                        category.createTextChannel("ticket-" + event.getUser().getName())
+                                .syncPermissionOverrides()
+                                .addPermissionOverride(event.getMember(), List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS), List.of())
+                                .queue(channel -> {
+                                    channel.sendMessageEmbeds(new EmbedBuilder().setTitle("Ticket").setDescription("Welcome to your Ticket!").setColor(Color.GREEN).setTimestamp(Instant.now()).build()).queue();
+                                    event.reply("We opened a Ticket for you! Check it out " + channel.getAsMention()).queue();
+                                });
+                        tickets.setTicketCount(tickets.getTicketCount() + 1);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(tickets);
+                    } else {
+                        event.getHook().sendMessage("The Ticket Category is not set!").queue();
+                    }
+                }
+            }
+
+            case "re_ticket_close" -> {
+                event.deferReply(true).queue();
+
+                Tickets tickets = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GUILDID=:gid", Map.of("gid", event.getGuild().getId()));
+
+                if (tickets != null) {
+                    Category category = event.getGuild().getCategoryById(tickets.getArchiveCategory());
+
+                    if (category != null) {
+                        if (category.getTextChannels().size() == 50) {
+                            event.getGuild().createCategory("Archive-" + event.getGuild().getCategories().stream().filter(c -> c.getName().startsWith("Arcive")).count() + 1)
+                                    .addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(c -> {
+                                tickets.setArchiveCategory(c.getIdLong());
+                                Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(tickets);
+                                event.getGuildChannel().asTextChannel().getManager().setParent(c).sync().queue();
+                            });
+                        } else {
+                            event.getGuildChannel().asTextChannel().getManager().setParent(category).sync().queue();
+                        }
+
+                        event.reply("The Ticket was closed!").queue();
+                    } else {
+                        event.getHook().sendMessage("The Ticket Category is not set!").queue();
+                    }
+                }
+            }
         }
     }
 
@@ -88,7 +145,7 @@ public class MenuEvents extends ListenerAdapter {
                     Main.getInstance().getCommandManager().sendMessage(embedBuilder, messageChannel);
                     Main.getInstance().getCommandManager().sendMessage("Suggestion sent!", null, event.getInteraction().getHook());
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("Looks like the Suggestion-System is not set up right?", null,event.getInteraction().getHook());
+                    Main.getInstance().getCommandManager().sendMessage("Looks like the Suggestion-System is not set up right?", null, event.getInteraction().getHook());
                 }
             }
 
@@ -732,6 +789,91 @@ public class MenuEvents extends ListenerAdapter {
                         Modal modal = Modal.create("statisticsSetupInstagramModal", "Instagram Statistic Channel").addActionRow(input).build();
 
                         event.replyModal(modal).queue();
+                    }
+
+                    default -> {
+                        if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
+                            return;
+
+                        embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
+                        event.editMessageEmbeds(embedBuilder.build()).queue();
+                    }
+                }
+            }
+
+            case "setupTickets" -> {
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                MessageChannel messageChannel = event.getGuild().getTextChannelById(event.getInteraction().getValues().get(0));
+
+                if (messageChannel != null) {
+                    Tickets tickets = new Tickets();
+                    tickets.setChannelId(messageChannel.getIdLong());
+                    tickets.setGuildId(event.getGuild().getIdLong());
+                    event.getGuild().createCategory("Archive").addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category -> {
+                        tickets.setArchiveCategory(category.getIdLong());
+
+                        event.getGuild().createCategory("Tickets").addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
+                            tickets.setTicketCategory(category1.getIdLong());
+                            Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(tickets);
+
+                            MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+                            messageCreateBuilder.setEmbeds(new EmbedBuilder()
+                                    .setTitle("Open a Ticket!")
+                                    .setDescription("By clicking on the Button below you can open a Ticket!")
+                                    .setColor(0x55ff00)
+                                    .setThumbnail(event.getGuild().getIconUrl())
+                                    .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                                    .build());
+                            messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", "Open a Ticket!", Emoji.fromUnicode("U+1F4E9")));
+                            Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
+                        });
+                    });
+                    embedBuilder.setDescription("Successfully changed the Ticket System, nice work!");
+                    embedBuilder.setColor(Color.GREEN);
+                    event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                } else {
+                    embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
+                    event.editMessageEmbeds(embedBuilder.build()).queue();
+                }
+            }
+
+            case "setupTicketsMenu" -> {
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                java.util.List<SelectOption> optionList = new ArrayList<>();
+
+                switch (event.getInteraction().getValues().get(0)) {
+
+                    case "backToSetupMenu" -> sendDefaultChoice(event);
+
+                    case "ticketsSetup" -> {
+                        for (VoiceChannel channel : event.getGuild().getVoiceChannels()) {
+                            optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                        }
+
+                        embedBuilder.setDescription("Which Channel do you want as Ticket-Channel?\nWe will send a Messsage that allows users to create a Ticket.");
+
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupTickets", "Select a Channel!", 1, 1, false, optionList)).queue();
+                    }
+
+                    case "ticketsDelete" -> {
+                        Tickets tickets = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GUILDID=:gid", Map.of("gid", event.getGuild().getId()));
+
+                        if (tickets != null) {
+                            embedBuilder.setDescription("Successfully deleted the Ticket-Channel, nice work!");
+                            embedBuilder.setColor(Color.GREEN);
+                            event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                            Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(tickets);
+                        }
                     }
 
                     default -> {

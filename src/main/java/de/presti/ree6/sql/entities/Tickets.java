@@ -6,6 +6,7 @@ import de.presti.ree6.sql.converter.JsonAttributeConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "Tickets")
@@ -50,6 +51,7 @@ public class Tickets {
     @Getter
     @Setter
     @Column(name = "ticketCount")
+    @ColumnDefault("0")
     long ticketCount;
 
     /**
