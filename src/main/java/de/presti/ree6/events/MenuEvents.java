@@ -96,11 +96,16 @@ public class MenuEvents extends ListenerAdapter {
                 Tickets tickets = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GUILDID=:gid", Map.of("gid", event.getGuild().getId()));
 
                 if (tickets != null) {
+                    if (event.getGuildChannel().asTextChannel().getParentCategory().getName().startsWith("Archive")) {
+                        event.getHook().sendMessage("This Ticket is already archived?").queue();
+                        return;
+                    }
+                    
                     Category category = event.getGuild().getCategoryById(tickets.getArchiveCategory());
 
                     if (category != null) {
                         if (category.getTextChannels().size() == 50) {
-                            event.getGuild().createCategory("Archive-" + event.getGuild().getCategories().stream().filter(c -> c.getName().startsWith("Arcive")).count() + 1)
+                            event.getGuild().createCategory("Archive-" + event.getGuild().getCategories().stream().filter(c -> c.getName().startsWith("Archive-")).count() + 1)
                                     .addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(c -> {
                                 tickets.setArchiveCategory(c.getIdLong());
                                 Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(tickets);
@@ -110,7 +115,7 @@ public class MenuEvents extends ListenerAdapter {
                             event.getGuildChannel().asTextChannel().getManager().setParent(category).sync().queue();
                         }
 
-                        event.reply("The Ticket was closed!").queue();
+                        event.getHook().sendMessage("The Ticket was closed!").queue();
                     } else {
                         event.getHook().sendMessage("The Ticket Category is not set!").queue();
                     }
