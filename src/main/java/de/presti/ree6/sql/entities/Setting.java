@@ -34,7 +34,7 @@ public class Setting {
      * The value of the Setting.
      */
     @Column(name = "value")
-    private Object value;
+    private String value;
 
     /**
      * Constructor.
@@ -52,7 +52,7 @@ public class Setting {
     public Setting(String guildId, String name, Object value) {
         this.guildId = guildId;
         this.name = name;
-        this.value = value;
+        this.value = String.valueOf(value);
     }
 
     /**
@@ -66,6 +66,7 @@ public class Setting {
             return booleanValue;
         } else if (currentValue instanceof String stringValue) {
             if (stringValue.equals("1")) return true;
+            if (stringValue.equals("0")) return false;
             return Boolean.parseBoolean(stringValue);
         }
         return true;
@@ -130,6 +131,6 @@ public class Setting {
      * @param value new Value as {@link Object}
      */
     public void setValue(Object value) {
-        this.value = value;
+        this.value = String.valueOf(value);
     }
 }

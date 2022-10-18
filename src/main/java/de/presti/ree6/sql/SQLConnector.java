@@ -98,6 +98,8 @@ public class SQLConnector {
             HikariConfig hConfig = new HikariConfig();
 
             hConfig.setJdbcUrl(SQLSession.getJdbcURL());
+            hConfig.setUsername(databaseUser);
+            hConfig.setPassword(databasePassword);
             hConfig.setMaximumPoolSize(SQLSession.getMaxPoolSize());
             dataSource = new HikariDataSource(hConfig);
             log.info("Service (SQL) has been started. Connection was successful.");
@@ -117,6 +119,7 @@ public class SQLConnector {
         if (!isConnected()) return;
 
         try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("sql/schema.sql")) {
+            if (inputStream == null) return;
             List<String> queries = Arrays.stream(new String(inputStream.readAllBytes()).split(";")).filter(s -> !s.isEmpty()).toList();
             for (String query : queries) {
                 log.debug("\t\t[*] Executing query {}/{}", queries.indexOf(query) + 1, queries.size());
@@ -140,12 +143,10 @@ public class SQLConnector {
 
         switch (Main.getInstance().getConfig().getConfiguration().getString("hikari.misc.storage").toLowerCase()) {
             case "mariadb" -> {
-                jdbcUrl = "jdbc:mariadb://%s:%s/%s?user=%s&password=%s";
+                jdbcUrl = "jdbc:mariadb://%s:%s/%s";
                 jdbcUrl = jdbcUrl.formatted(databaseServerIP,
                         databaseServerPort,
-                        databaseName,
-                        databaseUser,
-                        databasePassword);
+                        databaseName);
             }
 
             default -> {
@@ -204,7 +205,7 @@ public class SQLConnector {
 
             session.beginTransaction();
 
-            Query<R> query = (Query<R>) session.createQuery(sqlQuery, r.getClass());
+            Query<R> query = (Query<R>) session.createNativeQuery(sqlQuery, r.getClass());
 
             if (parameters != null) {
                 for (Map.Entry<String, Object> entry : parameters.entrySet()) {

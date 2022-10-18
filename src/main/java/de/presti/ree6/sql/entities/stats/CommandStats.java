@@ -6,7 +6,7 @@ import jakarta.persistence.*;
  * SQL Entity for the Stats.
  */
 @Entity
-@MappedSuperclass
+@Inheritance
 @Table(name = "CommandStats")
 public class CommandStats {
 

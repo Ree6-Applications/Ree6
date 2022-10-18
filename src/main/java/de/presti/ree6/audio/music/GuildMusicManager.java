@@ -12,16 +12,18 @@ public class GuildMusicManager {
     /**
      * Audio player for the guild.
      */
-    public final AudioPlayer player;
+    private final AudioPlayer player;
     /**
      * Track scheduler for the player.
      */
-    public final TrackScheduler scheduler;
+    private final TrackScheduler scheduler;
+
+    private AudioPlayerSendHandler audioPlayerSendHandler;
 
     /**
      * The Guild of the Music-Manager.
      */
-    public final Guild guild;
+    private final Guild guild;
 
     /**
      * Creates a player and a track scheduler.
@@ -31,7 +33,7 @@ public class GuildMusicManager {
     public GuildMusicManager(Guild guild, AudioPlayerManager manager) {
         this.guild = guild;
         player = manager.createPlayer();
-        scheduler = new TrackScheduler(player);
+        scheduler = new TrackScheduler(this, player);
         player.addListener(scheduler);
     }
 
@@ -39,6 +41,31 @@ public class GuildMusicManager {
      * @return Wrapper around AudioPlayer to use it as an AudioSendHandler.
      */
     public AudioPlayerSendHandler getSendHandler() {
-        return new AudioPlayerSendHandler(player);
+        if (audioPlayerSendHandler != null) return audioPlayerSendHandler;
+
+        return audioPlayerSendHandler = new AudioPlayerSendHandler(player);
+    }
+
+    /**
+     * @return AudioPlayer for the Guild.
+     */
+    public AudioPlayer getPlayer() {
+        return player;
+    }
+
+    /**
+     * @return {@link TrackScheduler} for the Guild.
+     */
+    public TrackScheduler getScheduler() {
+        return scheduler;
+    }
+
+    /**
+     * Retrieve the Guild of the Music-Manager.
+     *
+     * @return The Guild of the Music-Manager.
+     */
+    public Guild getGuild() {
+        return guild;
     }
 }

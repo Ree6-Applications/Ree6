@@ -28,7 +28,7 @@ public class SongList implements ICommand {
 
         StringBuilder end = new StringBuilder("```");
 
-        for (AudioTrack track : Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.getQueue()) {
+        for (AudioTrack track : Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().getQueue()) {
             end.append("\n").append(FormatUtil.filter(track.getInfo().title));
         }
 
@@ -38,7 +38,7 @@ public class SongList implements ICommand {
         em.setTitle("Music Player!");
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.getQueue().isEmpty() ? "No Song in the Queue" : (end.length() > 4096 ? "Error (M-SL-01)" : "Songs: " + end));
+        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().getQueue().isEmpty() ? "No Song in the Queue" : (end.length() > 4096 ? "Error (M-SL-01)" : "Songs: " + end));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
         Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());

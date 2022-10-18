@@ -31,16 +31,13 @@ public class Loop implements ICommand {
         }
 
         EmbedBuilder em = new EmbedBuilder();
-        
-        Main.getInstance().getMusicWorker().getGuildAudioPlayer(
-                commandEvent.getGuild()).scheduler.setLoop(!Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.isLoop());
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setTitle("Music Player!");
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.isLoop() ? "Song Loop has been activated!"
+        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().loop() ? "Song Loop has been activated!"
                 : "Song Loop has been deactivated!");
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 

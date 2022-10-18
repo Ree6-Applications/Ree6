@@ -1,17 +1,16 @@
 package de.presti.ree6.sql;
 
-import com.google.gson.JsonElement;
-import de.presti.ree6.utils.data.TypUtil;
-import jakarta.persistence.AttributeConverter;
+import de.presti.ree6.main.Main;
+import jakarta.persistence.Table;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+import org.reflections.Reflections;
 
-import java.sql.Blob;
-import java.util.Base64;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Classed used as a Bridge between Hibernate and our SQL-Base.
@@ -38,7 +37,7 @@ public class SQLSession {
      * Build a new SessionFactory or return the current one.
      * @return The SessionFactory.
      */
-    public static SessionFactory buildSessionFactory() {
+    public static SessionFactory buildSessionFactory(String username, String password) {
         if (sessionFactory != null) return getSessionFactory();
 
         try {
@@ -47,41 +46,23 @@ public class SQLSession {
             properties.put("hibernate.connection.datasource", "com.zaxxer.hikari.HikariDataSource");
             properties.put("hibernate.connection.provider_class", "org.hibernate.hikaricp.internal.HikariCPConnectionProvider");
             properties.put("hibernate.connection.url", jdbcURL);
-            properties.put("hibernate.hikari.maximumPoolSize", maxPoolSize);
-            properties.put("hibernate.dialect","org.hibernate.dialect.MariaDBDialect");
+            properties.put("hibernate.connection.username", username);
+            properties.put("hibernate.connection.password", password);
+            properties.put("hibernate.hikari.maximumPoolSize", String.valueOf(maxPoolSize));
+            properties.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
+            properties.put("hibernate.hbm2ddl.auto", "update");
+            properties.put("jakarta.persistence.schema-generation.database.action", "update");
             configuration.addProperties(properties);
-            configuration.addPackage("de.presti.ree6.sql.entities");
-            configuration.addAttributeConverter(new AttributeConverter<JsonElement, Blob>() {
-                @Override
-                public Blob convertToDatabaseColumn(JsonElement attribute) {
-                    return TypUtil.convertJSONToBlob(attribute);
-                }
 
-                @Override
-                public JsonElement convertToEntityAttribute(Blob dbData) {
-                    return TypUtil.convertBlobToJSON(dbData);
-                }
-            });
-
-            configuration.addAttributeConverter(new AttributeConverter<byte[], String>() {
-                @Override
-                public byte[] convertToEntityAttribute(String attribute) {
-                    return Base64.getDecoder().decode(attribute);
-                }
-
-                @Override
-                public String convertToDatabaseColumn(byte[] dbData) {
-                    return Base64.getEncoder().encodeToString(dbData);
-                }
-            });
+            Set<Class<?>> classSet = new Reflections("de.presti.ree6.sql.entities").getTypesAnnotatedWith(Table.class);
+            classSet.forEach(configuration::addAnnotatedClass);
 
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 
             return sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             // Make sure you log the exception, as it might be swallowed
-            log.error("Initial SessionFactory creation failed." + ex);
+            log.error("Initial SessionFactory creation failed.", ex);
             throw new ExceptionInInitializerError(ex);
         }
     }
@@ -123,6 +104,10 @@ public class SQLSession {
      * @return The SessionFactory.
      */
     public static SessionFactory getSessionFactory() {
+        if (sessionFactory == null)
+            return sessionFactory = buildSessionFactory(
+                    Main.getInstance().getConfig().getConfiguration().getString("hikari.sql.user"),
+                    Main.getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"));
         return sessionFactory;
     }
 }

@@ -44,7 +44,7 @@ public class Seek implements ICommand {
             return;
         }
 
-        Main.getInstance().getMusicWorker().seekInTrack(commandEvent.getChannel(), commandEvent.getInteractionHook(), seekAmountInSeconds);
+        Main.getInstance().getMusicWorker().seekInTrack(commandEvent.getChannel(), seekAmountInSeconds);
     }
 
     /**

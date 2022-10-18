@@ -33,7 +33,7 @@ public class Pause implements ICommand {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).player.setPaused(true);
+        Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getPlayer().setPaused(true);
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());

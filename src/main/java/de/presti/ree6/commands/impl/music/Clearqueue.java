@@ -39,7 +39,7 @@ public class Clearqueue implements ICommand {
 
         Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
-        Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).scheduler.clearQueue();
+        Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().clearQueue();
     }
 
     /**

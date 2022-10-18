@@ -15,7 +15,7 @@ public class ChannelStats {
      * The PrimaryKey of the Entity.
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "id")
     private int id;
 
