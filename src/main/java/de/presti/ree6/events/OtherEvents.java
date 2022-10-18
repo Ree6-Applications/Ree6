@@ -225,15 +225,15 @@ public class OtherEvents extends ListenerAdapter {
             if (ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
                 int min = TimeUtil.getTimeinMin(TimeUtil.getTimeinSec(ArrayUtil.voiceJoined.get(event.getMember().getUser())));
 
-                int addxp = 0;
+                int addXP = 0;
 
                 for (int i = 1; i <= min; i++) {
-                    addxp += RandomUtils.random.nextInt(5, 11);
+                    addXP += RandomUtils.random.nextInt(5, 11);
                 }
 
                 VoiceUserLevel newUserLevel = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(event.getGuild().getId(), event.getMember().getId());
                 newUserLevel.setUser(event.getMember().getUser());
-                newUserLevel.addExperience(addxp);
+                newUserLevel.addExperience(addXP);
 
                 Main.getInstance().getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), newUserLevel);
 
