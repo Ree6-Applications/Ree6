@@ -1,6 +1,8 @@
 package de.presti.ree6.sql.entities;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import de.presti.ree6.sql.converter.JsonAttributeConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,9 +55,9 @@ public class Tickets {
     /**
      * A {@link JsonArray} list with all Ticket IDs and data related to it.
      */
-    @Convert
+    @Convert(converter = JsonAttributeConverter.class)
     @Getter
     @Setter
     @Column(name = "tickets")
-    JsonArray ticketData;
+    JsonElement ticketData;
 }
