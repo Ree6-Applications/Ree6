@@ -7,6 +7,7 @@ command:
   perform:
     cooldown: "You are on cooldown!"
     error: "There was an error while executing the Command!"
+    errorWithException: "There was an error while executing the Command!\nException: {0}"
     internalError: "An error occurred while performing the Command!\nIf this continues to happen please contact our support!\n<https://support.ree6.de>"
     notFound: "That Command couldn't be found"
     blocked: "This Command is blocked!"
@@ -36,8 +37,8 @@ command:
     cringe_slash: "Let shrek tell them that their message was not funny!"
     randomdog: "Shows random Dog Images, from dog.ceo."
     funFact: "Just some random facts!"
-    funnyCrypto: "Wanna see at how much the funniest cryptocurrencies are worth?"
-    hornyjail: "Put someone into the Horny-Jail"
+    game: "Access Ree6 internal Games."
+    hornyjail: "Put someone into the Horny-Jail."
     hug: "Hug someone you like!"
     kiss: "Kiss someone!"
     manga: "Search for mangas on kitsu.io!"
@@ -132,7 +133,15 @@ command:
       searching: "Searching for Anime..."
       found: "Anime found!"
       error: "An Error occurred while searching for Anime!"
-
+    game:
+      actionNeeded: "You need to specify an action!"
+      valueNeeded: "You need to specify an action!"
+      invalidAction: "Please provide a valid action!"
+      invalidInvite: "Please provide a valid Invite!"
+      gameAlreadyStarted: "The Game has been started!"
+      availableGames: "Available Games:"
+    hornyJail: "{0} is now in the Horny-Jail!"
+    hug: "{0} has been hugged by {1}!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."

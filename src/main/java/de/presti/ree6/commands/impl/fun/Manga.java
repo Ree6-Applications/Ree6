@@ -7,6 +7,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.external.RequestUtility;
@@ -202,7 +203,7 @@ public class Manga implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("manga", "Search for mangas on kitsu.io!")
+        return new CommandDataImpl("manga", LanguageService.getDefault("command.description.manga"))
                 .addOption(OptionType.STRING, "search", "The search query to search for.", true);
     }
 

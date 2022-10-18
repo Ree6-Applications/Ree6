@@ -9,6 +9,7 @@ import de.presti.ree6.game.core.GameSession;
 import de.presti.ree6.game.core.base.GameInfo;
 import de.presti.ree6.game.core.base.GamePlayer;
 import de.presti.ree6.game.core.base.GameState;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 /**
  * Command used to access the Game System.
  */
-@Command(name = "game", description = "Access Ree6 internal Games", category = Category.FUN)
+@Command(name = "game", description = "command.description.game", category = Category.FUN)
 public class Game implements ICommand {
 
     /**
@@ -38,12 +39,12 @@ public class Game implements ICommand {
         OptionMapping value = commandEvent.getSlashCommandInteractionEvent().getOption("value");
 
         if (action == null) {
-            commandEvent.reply("You need to specify an action!");
+            commandEvent.reply(commandEvent.getResource("command.game.actionNeeded"));
             return;
         }
 
         if (value == null) {
-            commandEvent.reply("Please specify a value!");
+            commandEvent.reply(commandEvent.getResource("command.game.valueNeeded"));
             return;
         }
 
@@ -63,12 +64,12 @@ public class Game implements ICommand {
 
                 GameSession gameSession = GameManager.getGameSession(value.getAsString());
                 if (gameSession == null) {
-                    commandEvent.reply("This Invite is invalid!");
+                    commandEvent.reply(commandEvent.getResource("command.game.invalidInvite"));
                     return;
                 }
 
                 if (gameSession.getGameState() != GameState.WAITING) {
-                    commandEvent.reply("This Game is already started!");
+                    commandEvent.reply(commandEvent.getResource("command.game.gameAlreadyStarted"));
                     return;
                 }
 
@@ -80,13 +81,13 @@ public class Game implements ICommand {
 
             case "list" -> {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("Available Games:```");
+                stringBuilder.append(commandEvent.getResource("command.game.availableGames")).append("```");
                 GameManager.getGames().forEach(iGame -> stringBuilder.append("\n").append(iGame.getAnnotation(GameInfo.class).name()));
                 stringBuilder.append("```");
                 commandEvent.reply(stringBuilder.toString());
             }
 
-            default -> commandEvent.reply("Unknown Action!");
+            default -> commandEvent.reply(commandEvent.getResource("command.game.invalidAction"));
         }
     }
 
@@ -95,7 +96,7 @@ public class Game implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("game", "Access Ree6 internal Games")
+        return new CommandDataImpl("game", LanguageService.getDefault("command.description.game"))
                 .addOption(OptionType.STRING, "action", "Either use create or join.", true)
                 .addOption(OptionType.STRING, "value", "Either the Game name or Invite code.", true);
     }
