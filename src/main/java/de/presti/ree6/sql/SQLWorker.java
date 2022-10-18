@@ -17,17 +17,11 @@ import de.presti.ree6.sql.entities.roles.VoiceAutoRole;
 import de.presti.ree6.sql.entities.stats.CommandStats;
 import de.presti.ree6.sql.entities.stats.GuildCommandStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
-import de.presti.ree6.sql.entities.webhook.Webhook;
-import de.presti.ree6.sql.entities.webhook.WebhookInstagram;
-import de.presti.ree6.sql.entities.webhook.WebhookLog;
-import de.presti.ree6.sql.entities.webhook.WebhookReddit;
-import de.presti.ree6.sql.entities.webhook.WebhookTwitch;
-import de.presti.ree6.sql.entities.webhook.WebhookTwitter;
-import de.presti.ree6.sql.entities.webhook.WebhookWelcome;
-import de.presti.ree6.sql.entities.webhook.WebhookYouTube;
+import de.presti.ree6.sql.entities.webhook.*;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,8 +33,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * A Class to actually handle the SQL data.
@@ -1876,13 +1868,29 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * Constructs a new mapped Version of the Entity-class.
      *
      * @param r The entity to get.
+     * @param sqlQuery the SQL-Query.
+     * @param parameters all parameters.
      * @return The mapped entity.
      */
-    public <R> List<R> getEntityList(@NotNull R r, @NotNull String query, @Nullable Map<String, Object> parameters) {
-        if (query.isEmpty()) {
-            return sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), null).getResultList();
-        } else {
-            return sqlConnector.querySQL(r, query, parameters).getResultList();
+    public <R> List<R> getEntityList(@NotNull R r, @NotNull String sqlQuery, @Nullable Map<String, Object> parameters) {
+
+        sqlQuery = sqlQuery.isEmpty() ? "SELECT * FROM " + r.getClass().getSimpleName() : sqlQuery;
+
+        try (Session session = SQLSession.getSessionFactory().openSession()) {
+
+            session.beginTransaction();
+
+            Query<R> query = (Query<R>) session.createNativeQuery(sqlQuery, r.getClass());
+
+            if (parameters != null) {
+                for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                    query.setParameter(entry.getKey(), entry.getValue());
+                }
+            }
+
+            session.getTransaction().commit();
+
+            return query.getResultList();
         }
     }
 
@@ -1890,15 +1898,28 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * Constructs a query for the given Class-Entity, and returns a mapped Version of the given Class-Entity.
      *
      * @param r The Class-Entity to get.
-     * @param query  The query to use.
+     * @param sqlQuery  The query to use.
      * @param parameters   The arguments to use.
      * @return The mapped Version of the given Class-Entity.
      */
-    public <R> R getEntity(@NotNull R r, @NotNull String query, @Nullable Map<String, Object> parameters) {
-        if (query.isEmpty()) {
-            return sqlConnector.querySQL(r, "SELECT * FROM " + r.getClass().getSimpleName(), null).getSingleResultOrNull();
-        } else {
-            return sqlConnector.querySQL(r, query, parameters).getSingleResultOrNull();
+    public <R> R getEntity(@NotNull R r, @NotNull String sqlQuery, @Nullable Map<String, Object> parameters) {
+        sqlQuery = sqlQuery.isEmpty() ? "SELECT * FROM " + r.getClass().getSimpleName() : sqlQuery;
+
+        try (Session session = SQLSession.getSessionFactory().openSession()) {
+
+            session.beginTransaction();
+
+            Query<R> query = (Query<R>) session.createNativeQuery(sqlQuery, r.getClass());
+
+            if (parameters != null) {
+                for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                    query.setParameter(entry.getKey(), entry.getValue());
+                }
+            }
+
+            session.getTransaction().commit();
+
+            return query.getSingleResultOrNull();
         }
     }
 

@@ -1,18 +1,16 @@
 package de.presti.ree6.sql;
 
-import com.google.gson.JsonElement;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.data.TypUtil;
-import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Table;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+import org.reflections.Reflections;
 
-import java.sql.Blob;
-import java.util.Base64;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Classed used as a Bridge between Hibernate and our SQL-Base.
@@ -51,35 +49,13 @@ public class SQLSession {
             properties.put("hibernate.connection.username", username);
             properties.put("hibernate.connection.password", password);
             properties.put("hibernate.hikari.maximumPoolSize", String.valueOf(maxPoolSize));
-            properties.put("hibernate.dialect","org.hibernate.dialect.MariaDBDialect");
+            properties.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
             properties.put("hibernate.hbm2ddl.auto", "update");
-            properties.put("hibernate.show_sql", true);
-            properties.put("hibernate.format_sql", true);
+            properties.put("jakarta.persistence.schema-generation.database.action", "update");
             configuration.addProperties(properties);
-            configuration.addPackage("de.presti.ree6.sql.entities");
-            configuration.addAttributeConverter(new AttributeConverter<JsonElement, Blob>() {
-                @Override
-                public Blob convertToDatabaseColumn(JsonElement attribute) {
-                    return TypUtil.convertJSONToBlob(attribute);
-                }
 
-                @Override
-                public JsonElement convertToEntityAttribute(Blob dbData) {
-                    return TypUtil.convertBlobToJSON(dbData);
-                }
-            });
-
-            configuration.addAttributeConverter(new AttributeConverter<byte[], String>() {
-                @Override
-                public byte[] convertToEntityAttribute(String attribute) {
-                    return Base64.getDecoder().decode(attribute);
-                }
-
-                @Override
-                public String convertToDatabaseColumn(byte[] dbData) {
-                    return Base64.getEncoder().encodeToString(dbData);
-                }
-            });
+            Set<Class<?>> classSet = new Reflections("de.presti.ree6.sql.entities").getTypesAnnotatedWith(Table.class);
+            classSet.forEach(configuration::addAnnotatedClass);
 
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 

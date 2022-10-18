@@ -2,6 +2,8 @@ package de.presti.ree6.sql.entities;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import de.presti.ree6.sql.converter.ByteAttributeConverter;
+import de.presti.ree6.sql.converter.JsonAttributeConverter;
 import de.presti.ree6.utils.others.RandomUtils;
 import jakarta.persistence.*;
 
@@ -40,14 +42,14 @@ public class Recording {
     /**
      * The WAV-File bytes.
      */
-    @Convert
+    @Convert(converter = ByteAttributeConverter.class)
     @Column(name = "recording")
     byte[] recording;
 
     /**
      * An JsonArray containing the IDs of the Users who have participated in the Recording.
      */
-    @Convert
+    @Convert(converter = JsonAttributeConverter.class)
     @Column(name = "participants")
     JsonElement jsonArray;
 

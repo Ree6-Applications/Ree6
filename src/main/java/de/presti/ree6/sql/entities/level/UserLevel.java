@@ -1,10 +1,7 @@
 package de.presti.ree6.sql.entities.level;
 
 import de.presti.ree6.utils.data.LevelUtil;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import net.dv8tion.jda.api.entities.User;
 
 @MappedSuperclass
@@ -33,6 +30,7 @@ public class UserLevel {
     /**
      * The User.
      */
+    @Transient
     User user;
 
     /**
@@ -44,11 +42,13 @@ public class UserLevel {
     /**
      * The level of the User.
      */
+    @Transient
     long level = -1;
 
     /**
      * The Rank of the User.
      */
+    @Transient
     int rank = -1;
 
     /**

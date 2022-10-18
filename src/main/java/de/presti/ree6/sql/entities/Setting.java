@@ -34,7 +34,7 @@ public class Setting {
      * The value of the Setting.
      */
     @Column(name = "value")
-    private Object value;
+    private String value;
 
     /**
      * Constructor.
@@ -52,7 +52,7 @@ public class Setting {
     public Setting(String guildId, String name, Object value) {
         this.guildId = guildId;
         this.name = name;
-        this.value = value;
+        this.value = String.valueOf(value);
     }
 
     /**
@@ -130,6 +130,6 @@ public class Setting {
      * @param value new Value as {@link Object}
      */
     public void setValue(Object value) {
-        this.value = value;
+        this.value = String.valueOf(value);
     }
 }
