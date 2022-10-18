@@ -14,7 +14,7 @@ public class CommandStats {
      * The PrimaryKey of the Entity.
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue()
     @Column(name = "id")
     private int id;
 

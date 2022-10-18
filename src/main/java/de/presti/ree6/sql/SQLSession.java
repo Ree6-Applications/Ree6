@@ -56,6 +56,9 @@ public class SQLSession {
             properties.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
             properties.put("hibernate.hbm2ddl.auto", "update");
             properties.put("jakarta.persistence.schema-generation.database.action", "update");
+            properties.put("hibernate.show_sql", true);
+            properties.put("hibernate.format_sql", true);
+
             configuration.addProperties(properties);
 
             Set<Class<?>> classSet = new Reflections("de.presti.ree6.sql.entities").getTypesAnnotatedWith(Table.class);

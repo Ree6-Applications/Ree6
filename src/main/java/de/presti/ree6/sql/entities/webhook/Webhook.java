@@ -1,9 +1,6 @@
 package de.presti.ree6.sql.entities.webhook;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 
 /**
  * SQL Entity for the Webhooks.
@@ -15,7 +12,7 @@ public class Webhook {
      * The PrimaryKey of the Entity.
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
