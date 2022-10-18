@@ -100,7 +100,7 @@ public class MenuEvents extends ListenerAdapter {
                         event.getHook().sendMessage("This Ticket is already archived?").queue();
                         return;
                     }
-                    
+
                     Category category = event.getGuild().getCategoryById(tickets.getArchiveCategory());
 
                     if (category != null) {
