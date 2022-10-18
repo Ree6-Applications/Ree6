@@ -42,7 +42,7 @@ public class InstagramNotifier implements ICommand {
                 Main.getInstance().getCommandManager().sendMessage(end.toString(), 10, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
             } else {
-                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue(), "instagramnotifier list/add/remove"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage", "instagramnotifier list/add/remove"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else if(commandEvent.getArguments().length == 3) {
 
@@ -55,32 +55,32 @@ public class InstagramNotifier implements ICommand {
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
                 commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-InstagramNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addInstagramWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
-                Main.getInstance().getCommandManager().sendMessage("A Instagram Notifier has been created for the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.instagramNotifier.added", name), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
                 if (!Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
                     Main.getInstance().getNotifier().registerInstagramUser(name);
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "instagramnotifier remove InstagramName", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage", "instagramnotifier remove InstagramName"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "instagramnotifier add InstagramName #Channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage", "instagramnotifier add InstagramName #Channel"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else if(commandEvent.getArguments().length == 2) {
             String name = commandEvent.getArguments()[1];
             if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
                 Main.getInstance().getSqlConnector().getSqlWorker().removeInstagramWebhook(commandEvent.getGuild().getId(), name);
-                Main.getInstance().getCommandManager().sendMessage("A Instagram Notifier has been removed from the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.instagramNotifier.removed", name), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
                 if (Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
                     Main.getInstance().getNotifier().unregisterInstagramUser(name);
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "instagramnotifier add InstagramName #Channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","instagramnotifier add InstagramName #Channel"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "instagramnotifier remove InstagramName", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","instagramnotifier remove InstagramName"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "instagramnotifier list/add/remove", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","instagramnotifier list/add/remove"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
