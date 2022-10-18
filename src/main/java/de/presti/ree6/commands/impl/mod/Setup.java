@@ -78,6 +78,7 @@ public class Setup implements ICommand {
             optionList.add(SelectOption.of("Autorole", "autorole"));
             optionList.add(SelectOption.of("Temporal-Voice", "tempvoice"));
             optionList.add(SelectOption.of("Statistics", "statistics"));
+            optionList.add(SelectOption.of("Ticket-System", "tickets"));
 
             SelectMenu selectMenu = new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList);
 

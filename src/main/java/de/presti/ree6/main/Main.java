@@ -12,6 +12,7 @@ import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.events.GameEvents;
 import de.presti.ree6.events.LoggingEvents;
+import de.presti.ree6.events.MenuEvents;
 import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.events.LoggerQueue;
@@ -211,7 +212,7 @@ public class Main {
      * Called to add all Events.
      */
     private void addEvents() {
-        BotWorker.addEvent(new GameEvents(), new LoggingEvents(), new OtherEvents());
+        BotWorker.addEvent(new GameEvents(), new LoggingEvents(), new MenuEvents(), new OtherEvents());
     }
 
     /**
