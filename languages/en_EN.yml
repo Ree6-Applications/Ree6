@@ -142,6 +142,7 @@ command:
       availableGames: "Available Games:"
     hornyJail: "{0} is now in the Horny-Jail!"
     hug: "{0} has been hugged by {1}!"
+    kiss: "{0} has been kissed by {1}!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
