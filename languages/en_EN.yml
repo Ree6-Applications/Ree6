@@ -13,7 +13,16 @@ command:
     slashNotSupported: "This Command doesn't support Slash Commands yet!"
     onlySlashSupported: "This Command only supports Slash-Commands!"
   label:
+    status: "Status"
+    typ: "Type"
+    genres: "Genres"
+    aired: "Aired"
+    episodes: "Episodes"
+    duration: "Duration"
+    averageRating: "Average Rating"
+    rank: "Rank"
     randomCatImage: "Random Cat Image"
+    randomDogImage: "Random Dog Image"
   description:
     birthday: "Let the bot remember your Birthday."
     instagramNotifier: "Manage your Instagram-Notifier!"
@@ -92,6 +101,7 @@ command:
         channel: "Please mention a channel!"
       onlyNSFW: "This Command can only be used in NSFW Channels!"
       invalidQuery: "Please provide a valid Query!"
+      checkBelow: "Check below!"
     birthday:
       added:
         self: "Your Birthday has been added!"

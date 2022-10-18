@@ -130,14 +130,14 @@ public class Anime implements ICommand {
             em.setTitle(name, url);
             em.setThumbnail(thumbnailUrl);
             em.setDescription(description);
-            em.addField(":hourglass_flowing_sand: **Status**", status, true);
-            em.addField(":dividers: **Type**", type, true);
-            em.addField(":arrow_right: **Genres**", genres, false);
-            em.addField(":calendar: **Aired**", "from **" + startDate + "** to **" + endDate + "**", false);
-            em.addField(":minidisc: **Episodes**", episodes, true);
-            em.addField(":stopwatch: **Duration**", duration, true);
-            em.addField(":star: **Average Rating**", " **" + rating + "/100**", true);
-            em.addField(":trophy: **Rank**", "**TOP " + rank + "**", true);
+            em.addField(":hourglass_flowing_sand: **" + commandEvent.getResource("command.label.status") + "**", status, true);
+            em.addField(":dividers: **" + commandEvent.getResource("command.label.type") + "**", type, true);
+            em.addField(":arrow_right: **" + commandEvent.getResource("command.label.genres") + "**", genres, false);
+            em.addField(":calendar: **" + commandEvent.getResource("command.label.aired") + "**", "from **" + startDate + "** to **" + endDate + "**", false);
+            em.addField(":minidisc: **" + commandEvent.getResource("command.label.episodes") + "**", episodes, true);
+            em.addField(":stopwatch: **" + commandEvent.getResource("command.label.duration") + "**", duration, true);
+            em.addField(":star: **" + commandEvent.getResource("command.label.averageRating") + "**", " **" + rating + "/100**", true);
+            em.addField(":trophy: **" + commandEvent.getResource("command.label.rank") + "**", "**TOP " + rank + "**", true);
             em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
             if (commandEvent.isSlashCommand()) {
