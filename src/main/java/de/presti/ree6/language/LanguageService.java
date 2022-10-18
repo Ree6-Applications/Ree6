@@ -127,11 +127,16 @@ public class LanguageService {
      * @return The String.
      */
     public static @NotNull String getByGuild(long guildId, @NotNull String key, @Nullable Object... parameter) {
+        String resource;
         if (guildId == -1) {
-            return getDefault(key, parameter);
+            resource = getDefault(key, parameter);
         } else {
-            return getByLocale(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "configuration_language").getStringValue(), key, parameter);
+            resource = getByLocale(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "configuration_language").getStringValue(), key, parameter);
         }
+        resource = resource
+                .replaceAll("%guild_prefix%", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guildId + "","chatprefix").getStringValue());
+
+        return resource;
     }
 
     /**

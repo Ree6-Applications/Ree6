@@ -42,45 +42,45 @@ public class YouTubeNotifier implements ICommand {
                 Main.getInstance().getCommandManager().sendMessage(end.toString(), 10, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "youtubenotifier list/add/remove", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","youtubenotifier list/add/remove"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else if(commandEvent.getArguments().length == 3) {
 
             if (commandEvent.getMessage().getMentions().getChannels(TextChannel.class).isEmpty() ||
                     !commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "youtubenotifier add/remove YouTubeChannel #Channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","youtubenotifier add/remove YouTubeChannel #Channel"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 return;
             }
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
                 commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-YouTubeNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addYouTubeWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name));
-                Main.getInstance().getCommandManager().sendMessage("A YouTube Notifier has been created for the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.youtubeNotifier.added",name), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
                 if (!Main.getInstance().getNotifier().isYouTubeRegistered(name)) {
                     Main.getInstance().getNotifier().registerYouTubeChannel(name);
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "youtubenotifier remove YouTubeChannel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","youtubenotifier remove YouTubeChannel"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "youtubenotifier add YouTubeChannel #Channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","youtubenotifier add YouTubeChannel #Channel"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else if(commandEvent.getArguments().length == 2) {
             String name = commandEvent.getArguments()[1];
             if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
                 Main.getInstance().getSqlConnector().getSqlWorker().removeYouTubeWebhook(commandEvent.getGuild().getId(), name);
-                Main.getInstance().getCommandManager().sendMessage("A YouTube Notifier has been removed from the User " + name + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.youtubeNotifier.removed",name), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
                 if (Main.getInstance().getNotifier().isYouTubeRegistered(name)) {
                     Main.getInstance().getNotifier().unregisterYouTubeChannel(name);
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "youtubenotifier add YouTubeChannel #Channel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","youtubenotifier add YouTubeChannel #Channel"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "youtubenotifier remove YouTubeChannel", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","youtubenotifier remove YouTubeChannel"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "youtubenotifier list/add/remove", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","youtubenotifier list/add/remove"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }

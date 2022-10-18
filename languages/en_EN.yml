@@ -12,6 +12,8 @@ command:
     blocked: "This Command is blocked!"
     slashNotSupported: "This Command doesn't support Slash Commands yet!"
     onlySlashSupported: "This Command only supports Slash-Commands!"
+  label:
+    randomCatImage: "Random Cat Image"
   description:
     birthday: "Let the bot remember your Birthday."
     instagramNotifier: "Manage your Instagram-Notifier!"
@@ -82,7 +84,7 @@ command:
     rule34: "Shows a random Rule34 Image."
   message:
     default:
-      usage: "Please use {0}{1}."
+      usage: "Please use %guild_prefix%{0}."
       needPermission: "Looks like I do not have the Permission `{0}`!"
       noMention:
         user: "Please mention a user!"
@@ -102,9 +104,25 @@ command:
       other:
         dateError: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
     instagramNotifier:
+      added: "A Instagram Notifier has been created for the User {0}!"
+      removed: "A Instagram Notifier has been removed from the User {0}!"
+    redditNotifier:
+      added: "A Reddit Notifier has been created for the Subreddit {0}!"
+      removed: "A Reddit Notifier has been removed from the Subreddit {0}!"
+    twitchNotifier:
+      added: "A Twitch-Stream Notifier has been created for the Channel {0}!"
+      removed: "A Twitch-Stream Notifier has been removed from the Channel {0}!"
+    twitterNotifier:
+      added: "A Twitter Notifier has been created for the User {0}!"
+      removed: "A Twitter Notifier has been removed from the User {0}!"
+    youtubeNotifier:
+      added: "A Youtube-Video Notifier has been created for the Channel {0}!"
+      removed: "A Youtube-Video Notifier has been removed from the Channel {0}!"
     anime:
       searching: "Searching for Anime..."
       found: "Anime found!"
+      error: "An Error occurred while searching for Anime!"
+
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."

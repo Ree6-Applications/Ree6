@@ -87,7 +87,7 @@ public class Anime implements ICommand {
                     data.getAsJsonObject("links").get("self").getAsString() : null;
 
             String name = attributes.has("canonicalTitle") ?
-                    attributes.get("canonicalTitle").getAsString() : "Error while resolving the Name!";
+                    attributes.get("canonicalTitle").getAsString() : commandEvent.getResource("command.message.anime.error");
 
             String thumbnailUrl = attributes.has("posterImage") &&
                     attributes.get("posterImage").isJsonObject() &&
@@ -144,10 +144,10 @@ public class Anime implements ICommand {
                 message.editMessage(commandEvent.getResource("command.message.anime.found")).queue();
                 Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), null);
             } else {
-                message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage("Anime found!").queue());
+                message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("command.message.anime.found")).queue());
             }
         } else {
-            message.editMessage("There was an error while trying to get the Anime!").queue();
+            message.editMessage(commandEvent.getResource("command.message.anime.error")).queue();
         }
     }
 

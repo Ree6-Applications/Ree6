@@ -31,7 +31,7 @@ public class Birthday implements ICommand {
                 Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.birthday.removed.self"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
 
             } else {
-                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue(), "birthday add/remove [Birthday(day.month.year)] [@User]"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","birthday add/remove [Birthday(day.month.year)] [@User]"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         }
         if (commandEvent.getArguments().length == 2) {
@@ -55,7 +55,7 @@ public class Birthday implements ICommand {
                     Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.other.dateError"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
             } else {
-                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue(), "birthday add/remove [Birthday(day.month.year)] [@User]"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage", "birthday add/remove [Birthday(day.month.year)] [@User]"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else if (commandEvent.getArguments().length == 3) {
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
@@ -75,10 +75,10 @@ public class Birthday implements ICommand {
                     Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.other.dateError"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
                 }
             } else {
-                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue(), "birthday add/remove [Birthday(day.month.year)] [@User]"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","birthday add/remove [Birthday(day.month.year)] [@User]"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue(), "birthday add/remove [Birthday(day.month.year)] [@User]"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage", "birthday add/remove [Birthday(day.month.year)] [@User]"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
         }
 
     }
