@@ -76,8 +76,11 @@ public class MenuEvents extends ListenerAdapter {
                                 .syncPermissionOverrides()
                                 .addPermissionOverride(event.getMember(), List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS), List.of())
                                 .queue(channel -> {
-                                    channel.sendMessageEmbeds(new EmbedBuilder().setTitle("Ticket").setDescription("Welcome to your Ticket!").setColor(Color.GREEN).setTimestamp(Instant.now()).build()).queue();
-                                    event.reply("We opened a Ticket for you! Check it out " + channel.getAsMention()).queue();
+                                    MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+                                    messageCreateBuilder.setEmbeds(new EmbedBuilder().setTitle("Ticket").setDescription("Welcome to your Ticket!").setThumbnail(event.getMember().getEffectiveAvatarUrl()).setColor(Color.GREEN).setTimestamp(Instant.now()).build());
+                                    messageCreateBuilder.addActionRow(Button.primary("re_ticket_close", "Close the Ticket"));
+                                    Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), channel);
+                                    event.getHook().sendMessage("We opened a Ticket for you! Check it out " + channel.getAsMention()).queue();
                                 });
                         tickets.setTicketCount(tickets.getTicketCount() + 1);
                         Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(tickets);
@@ -856,7 +859,7 @@ public class MenuEvents extends ListenerAdapter {
                     case "backToSetupMenu" -> sendDefaultChoice(event);
 
                     case "ticketsSetup" -> {
-                        for (VoiceChannel channel : event.getGuild().getVoiceChannels()) {
+                        for (TextChannel channel : event.getGuild().getTextChannels()) {
                             optionList.add(SelectOption.of(channel.getName(), channel.getId()));
                         }
 
