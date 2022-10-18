@@ -5,11 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.User;
 
 import javax.imageio.ImageIO;
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -21,6 +17,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 
+/**
+ * A utility to create Images.
+ */
 @Slf4j
 public class ImageCreationUtility {
 
@@ -435,6 +434,8 @@ public class ImageCreationUtility {
      * @param inputImage   The original image
      * @param scaledWidth  absolute width in pixels
      * @param scaledHeight absolute height in pixels
+     *
+     * @return The new resized image
      */
     public static BufferedImage resize(BufferedImage inputImage, int scaledWidth, int scaledHeight) {
 

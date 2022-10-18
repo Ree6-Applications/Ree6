@@ -24,6 +24,7 @@ public class LogMessageUser extends LogMessage {
      * @param webhookMessage  WebhookMessage itself.
      * @param guild           The Guild related to the Log-Message
      * @param logTyp          The Typ of the current Log.
+     * @param user            The User related to the Log-Message.
      */
     public LogMessageUser(long webhookId, String webhookAuthCode, WebhookMessage webhookMessage, Guild guild, LogTyp logTyp, User user) {
         super(webhookId, webhookAuthCode, webhookMessage, guild, logTyp);

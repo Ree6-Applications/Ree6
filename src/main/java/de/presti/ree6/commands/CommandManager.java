@@ -56,6 +56,7 @@ public class CommandManager {
      * @throws IllegalAccessException      when an Instance of a Command is not accessible.
      * @throws InstantiationException      when an Instance of a Command is not instantiable.
      * @throws NoSuchMethodException       when a Constructor Instance of a Command is not found.
+     * @throws InvocationTargetException   when a Constructor Instance of a Command is not found.
      */
     public CommandManager() throws CommandInitializerException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         log.info("Initializing Commands!");
@@ -118,6 +119,7 @@ public class CommandManager {
      * Add a single Command to the Command list.
      *
      * @param command the {@link ICommand}.
+     * @throws CommandInitializerException if an error occurs while initializing the Command.
      */
     public void addCommand(ICommand command) throws CommandInitializerException {
         if (!command.getClass().isAnnotationPresent(Command.class) || command.getClass().getAnnotation(Command.class).category() == null)

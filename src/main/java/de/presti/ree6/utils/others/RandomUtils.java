@@ -4,6 +4,9 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
 
+/**
+ * Utility class for random things.
+ */
 public final class RandomUtils {
 
     /**
@@ -107,6 +110,9 @@ public final class RandomUtils {
 
     /**
      * Create a new Base64 String.
+     *
+     * @param length The length of the String.
+     *
      * @return {@link String} A Base64 String.
      */
     public static String getRandomBase64String(int length) {

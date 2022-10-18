@@ -31,6 +31,7 @@ public class GuildMusicManager {
     /**
      * Creates a player and a track scheduler.
      *
+     * @param guild   The Guild of the Music-Manager.
      * @param manager Audio player manager to use for creating the player.
      */
     public GuildMusicManager(Guild guild, AudioPlayerManager manager) {

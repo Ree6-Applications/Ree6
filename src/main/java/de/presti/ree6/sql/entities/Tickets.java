@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+/**
+ * SQL Entity for the Tickets.
+ */
 @Getter
 @Setter
 @Entity

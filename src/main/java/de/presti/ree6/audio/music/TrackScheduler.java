@@ -9,11 +9,10 @@ import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.BlockingQueue;
@@ -202,7 +201,7 @@ public class TrackScheduler extends AudioEventAdapter {
      * Get the next Track from the Queue.
      *
      * @param textChannel the Text-Channel where the command have been performed from.
-     * @param index       the position of the track it should skip to. (relative to the current track)
+     * @param position    the position of the track it should skip to. (relative to the current track)
      */
     public void nextTrack(MessageChannelUnion textChannel, int position) {
         if (loop) {

@@ -66,6 +66,7 @@ public class ModerationUtil {
     /**
      * Check if an Image contains any Blacklisted Words.
      *
+     * @param guildId the ID of the Guild.
      * @param fileUrl the URL of the Image.
      * @return true, if the Image contains any Blacklisted Words.
      */

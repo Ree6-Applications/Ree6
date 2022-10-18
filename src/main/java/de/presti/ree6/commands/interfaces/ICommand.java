@@ -13,6 +13,9 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface ICommand {
 
+    /**
+     * The Logger for this class.
+     */
     Logger log = LoggerFactory.getLogger(ICommand.class);
 
     /**

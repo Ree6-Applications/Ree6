@@ -4,6 +4,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
+/**
+ * Voice Level Autorole.
+ */
 @Entity
 @Table(name = "VCLevelAutoRoles")
 public class VoiceAutoRole extends Role {

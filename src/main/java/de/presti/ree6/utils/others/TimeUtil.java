@@ -3,6 +3,9 @@ package de.presti.ree6.utils.others;
 import java.time.LocalDateTime;
 import java.time.Period;
 
+/**
+ * Utility class for the Time.
+ */
 public class TimeUtil {
 
     /**

@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
-import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -1208,6 +1207,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param guildId       the ID of the Guild.
      * @param inviteCreator the ID of the Invite Creator.
      * @param inviteCode    the Code of the Invite.
+     * @param inviteUsage   the usage count of the Invite.
      */
     public void removeInvite(String guildId, String inviteCreator, String inviteCode, int inviteUsage) {
         deleteEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
@@ -1823,6 +1823,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      *
      * @param <R> The Class-Entity.
      * @param r   The Class-Entity to update.
+     * @return the new update entity.
      */
     public <R> R updateEntity(R r) {
         if (!sqlConnector.isConnected()) {

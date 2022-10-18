@@ -4,6 +4,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
+/**
+ * SQL Entity for the Chat-Auto-Roles.
+ */
 @Entity
 @Table(name = "ChatLevelAutoRoles")
 public class ChatAutoRole extends Role {

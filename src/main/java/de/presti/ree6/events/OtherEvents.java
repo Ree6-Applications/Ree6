@@ -35,6 +35,9 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Event Handler for no categorized Events.
+ */
 @Slf4j
 public class OtherEvents extends ListenerAdapter {
 

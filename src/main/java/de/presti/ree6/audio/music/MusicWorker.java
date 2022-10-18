@@ -26,10 +26,13 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.managers.AudioManager;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Wrapper class that handles most Music related stuff.
+ */
 public class MusicWorker {
 
     /**

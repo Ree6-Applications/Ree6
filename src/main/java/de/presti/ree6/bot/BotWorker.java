@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -99,6 +99,7 @@ public class BotWorker {
     /**
      * Change the current Activity of the Bot.
      *
+     * @param jda          the JDA instance.
      * @param message      the Message of the Activity.
      * @param activityType the Activity type.
      */

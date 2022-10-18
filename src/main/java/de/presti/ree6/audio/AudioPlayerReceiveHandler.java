@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.Color;
+import java.awt.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/*
-    All methods in this class are called by JDA threads when resources are available/ready for processing.
-    The receiver will be provided with the latest 20ms of PCM stereo audio
-    Note you can receive even while setting yourself to deafened
+/**
+ * All methods in this class are called by JDA threads when resources are available/ready for processing.
+ * The receiver will be provided with the latest 20ms of PCM stereo audio
+ * Note you can receive even while setting yourself to deafened
  */
 @Slf4j
 public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
@@ -69,6 +69,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     /**
      * Constructor.
      *
+     * @param member       The member who started the recording.
      * @param voiceChannel The voice channel this handler should handle.
      */
     public AudioPlayerReceiveHandler(Member member, VoiceChannel voiceChannel) {
@@ -176,7 +177,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                         .setColor(Color.GREEN)
                         .setFooter(Data.ADVERTISEMENT, voiceChannel.getGuild().getIconUrl())
                         .setTitle("Recording finished!")
-                        .build()).setActionRow(new ButtonImpl("ree6RedirectButton","Download here", ButtonStyle.LINK,
+                        .build()).setActionRow(new ButtonImpl("ree6RedirectButton", "Download here", ButtonStyle.LINK,
                         "https://cp.ree6.de/recording?recordId=" + recording.getIdentifier(), false, Emoji.fromCustom("shiba", 941219375535509504L, true))).complete();
             }
             // Find a way to still notify that the bot couldn't send the audio.

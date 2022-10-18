@@ -327,7 +327,20 @@ public class RequestUtility {
      * Supported Methods.
      */
     public enum Method {
-        GET, PUT, POST
+        /**
+         * The GET Method.
+         */
+        GET,
+
+        /**
+         * The POST Method.
+         */
+        PUT,
+
+        /**
+         * The POST Method.
+         */
+        POST
     }
 
 }

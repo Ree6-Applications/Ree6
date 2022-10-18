@@ -4,6 +4,9 @@ import de.presti.ree6.utils.data.LevelUtil;
 import jakarta.persistence.*;
 import net.dv8tion.jda.api.entities.User;
 
+/**
+ * Base class for the UserLevel.
+ */
 @MappedSuperclass
 public class UserLevel {
 
@@ -181,7 +184,7 @@ public class UserLevel {
 
     /**
      * Get the GuildId.
-     * @return
+     * @return the GuildId.
      */
     public String getGuildId() {
         return guildId;

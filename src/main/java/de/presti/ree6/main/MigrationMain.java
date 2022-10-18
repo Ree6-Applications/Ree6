@@ -22,6 +22,9 @@ public class MigrationMain {
      */
     Config config;
 
+    /**
+     * Constructor.
+     */
     public MigrationMain() {
         instance = this;
     }

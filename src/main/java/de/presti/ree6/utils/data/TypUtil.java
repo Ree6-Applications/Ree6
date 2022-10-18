@@ -7,8 +7,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.Blob;
 
+/**
+ * Temporal typ util.
+ */
+@Deprecated(forRemoval = true, since = "2.0.0")
 public class TypUtil {
 
+    /**
+     * Instance of GSON.
+     */
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     /**

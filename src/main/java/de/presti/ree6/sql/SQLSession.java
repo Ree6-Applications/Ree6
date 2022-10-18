@@ -35,6 +35,10 @@ public class SQLSession {
 
     /**
      * Build a new SessionFactory or return the current one.
+     *
+     * @param username the username.
+     * @param password the password.
+     *
      * @return The SessionFactory.
      */
     public static SessionFactory buildSessionFactory(String username, String password) {

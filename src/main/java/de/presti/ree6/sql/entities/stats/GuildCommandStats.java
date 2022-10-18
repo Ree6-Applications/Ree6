@@ -26,6 +26,7 @@ public class GuildCommandStats extends CommandStats {
     /**
      * Constructor.
      *
+     * @param guildId The Guild ID.
      * @param command Name of the Command.
      * @param uses    Number of times the Command was used.
      */
@@ -36,6 +37,7 @@ public class GuildCommandStats extends CommandStats {
 
     /**
      * Get the Guild ID.
+     *
      * @return the guild ID.
      */
     public String getGuild() {

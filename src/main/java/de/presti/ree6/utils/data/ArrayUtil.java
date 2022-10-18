@@ -125,6 +125,8 @@ public class ArrayUtil {
      * Check if the channel is a temporal Voice-channel.
      *
      * @param channel the Voice-channel to check.
+     *
+     * @return true if the channel is a temporal Voice-channel.
      */
     public static boolean isTemporalVoicechannel(AudioChannel channel) {
         return temporalVoicechannel.contains(channel.getId());

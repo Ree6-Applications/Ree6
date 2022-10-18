@@ -7,7 +7,6 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.Suggestions;
 import de.presti.ree6.utils.data.Data;
-import jakarta.persistence.Query;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -20,8 +19,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.awt.Color;
-import java.util.HashMap;
+import java.awt.*;
 import java.util.Map;
 
 /**
@@ -62,6 +60,7 @@ public class Suggestion implements ICommand {
 
     /**
      * Create all the entries needed.
+     * @param commandEvent The CommandEvent.
      * @param channel the Suggestion channel.
      * @param messageChannel the Channel for the Message.
      */

@@ -14,7 +14,9 @@ import java.util.ArrayList;
 @Slf4j
 public class AddonManager {
 
-    // The actual List with the Addons.
+    /**
+     * The actual List with the Addons.
+     */
     public final ArrayList<Addon> addons = new ArrayList<>();
 
     /**
@@ -139,7 +141,7 @@ public class AddonManager {
      *
      * @param classLoader the Class Loader of the File.
      * @param classPath   the Path to the Main class.
-     * @return the Main {@link Class<>} of the Addon.
+     * @return the Main class of the Addon.
      * @throws ClassNotFoundException if there is no file with the given Path.
      */
     public Class<?> getClass(URLClassLoader classLoader, String classPath) throws ClassNotFoundException {

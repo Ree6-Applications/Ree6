@@ -1,6 +1,8 @@
 package de.presti.ree6.logger.events;
 
-// The used Log-Types.
+/**
+ * The used Log-Types.
+ */
 public enum LogTyp {
     /**
      * LogTyp for the Logs which are fired when a User joins a Guild.
