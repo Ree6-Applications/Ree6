@@ -18,6 +18,9 @@ public class GuildMusicManager {
      */
     private final TrackScheduler scheduler;
 
+    /**
+     * The AudioPlayer Send-Handler.
+     */
     private AudioPlayerSendHandler audioPlayerSendHandler;
 
     /**

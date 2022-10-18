@@ -6,7 +6,7 @@ import jakarta.persistence.*;
  * SQL Entity for the Stats.
  */
 @Entity
-@Inheritance
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name = "CommandStats")
 public class CommandStats {
 

@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.session.GenericSessionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -43,15 +42,13 @@ public class OtherEvents extends ListenerAdapter {
      * @inheritDoc
      */
     @Override
-    public void onGenericSessionEvent(@Nonnull GenericSessionEvent event) {
-        if (event instanceof ReadyEvent) {
-            BotWorker.setState(BotState.STARTED);
-            log.info("Boot up finished!");
+    public void onReady(@Nonnull ReadyEvent event) {
+        BotWorker.setState(BotState.STARTED);
+        log.info("Boot up finished!");
 
-            Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
+        Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
 
-            BotWorker.setActivity(event.getJDA(), "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
-        }
+        BotWorker.setActivity(event.getJDA(), "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING);
     }
 
     /**

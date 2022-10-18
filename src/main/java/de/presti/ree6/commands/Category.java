@@ -38,10 +38,33 @@ public enum Category {
      */
     HIDDEN("re_icon_hidden",1019221957817933865L, false, "category.hidden");
 
+    /**
+     * The Name of the Icon.
+     */
     private final String icon;
+
+    /**
+     * The ID of the Icon.
+     */
     private final long iconId;
+
+    /**
+     * Value for knowledge about the Emoji being animated or not.
+     */
     private final boolean iconAnimated;
+
+    /**
+     * A short description of the Categories.
+     */
     private final String description;
+
+    /**
+     * Constructor.
+     * @param icon the Icon Name.
+     * @param iconId the Icon ID.
+     * @param iconAnimated the info if the Icon is animated.
+     * @param description a short description.
+     */
     Category(String icon, long iconId, boolean iconAnimated, String description) {
         this.icon = icon;
         this.iconId = iconId;
@@ -49,18 +72,34 @@ public enum Category {
         this.description = description;
     }
 
+    /**
+     * The Icon Name for the Category.
+     * @return the Name.
+     */
     public String getIcon() {
         return icon;
     }
 
+    /**
+     * The Icon ID for the Category.
+     * @return the Icon ID.
+     */
     public long getIconId() {
         return iconId;
     }
 
+    /**
+     * The Information if the Icon is animated.
+     * @return true, if yes | false, if not.
+     */
     public boolean isIconAnimated() {
         return iconAnimated;
     }
 
+    /**
+     * Short description of the Category.
+     * @return the short description.
+     */
     public String getDescription() {
         return description;
     }

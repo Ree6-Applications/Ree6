@@ -32,10 +32,14 @@ import java.util.Map;
 
 public class MusicWorker {
 
-    // The AudioPlayer Manager of the Bot.
+    /**
+     * The AudioPlayer Manager of the Bot.
+     */
     public final AudioPlayerManager playerManager;
 
-    // All Guild Music Manager
+    /**
+     * All Guild Music Manager
+     */
     public final Map<Long, GuildMusicManager> musicManagers;
 
     /**
@@ -107,12 +111,12 @@ public class MusicWorker {
             public void trackLoaded(AudioTrack track) {
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle("Music Player!")
-                        .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
-                        .setColor(Color.GREEN)
-                        .setDescription("The Song ``" + FormatUtil.filter(track.getInfo().title) + "`` has been added to the Queue!")
-                        .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
+                            .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                            .setTitle("Music Player!")
+                            .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                            .setColor(Color.GREEN)
+                            .setDescription("The Song ``" + FormatUtil.filter(track.getInfo().title) + "`` has been added to the Queue!")
+                            .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
 
                 play(audioChannel, musicManager, track);
             }
@@ -132,12 +136,12 @@ public class MusicWorker {
 
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle("Music Player!")
-                        .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
-                        .setColor(Color.GREEN)
-                        .setDescription("The Song ``" + FormatUtil.filter(firstTrack.getInfo().title) + "`` has been added to the Queue! (The first Song of the Playlist: " + FormatUtil.filter(playlist.getName()) + ")")
-                        .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
+                            .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                            .setTitle("Music Player!")
+                            .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                            .setColor(Color.GREEN)
+                            .setDescription("The Song ``" + FormatUtil.filter(firstTrack.getInfo().title) + "`` has been added to the Queue! (The first Song of the Playlist: " + FormatUtil.filter(playlist.getName()) + ")")
+                            .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
 
                 play(audioChannel, musicManager, firstTrack);
 
@@ -155,12 +159,12 @@ public class MusicWorker {
             public void noMatches() {
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle("Music Player!")
-                        .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
-                        .setColor(Color.GREEN)
-                        .setDescription("A Song with the URL ``" + FormatUtil.filter(trackUrl) + "`` couldn't be found!")
-                        .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
+                            .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                            .setTitle("Music Player!")
+                            .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                            .setColor(Color.GREEN)
+                            .setDescription("A Song with the URL ``" + FormatUtil.filter(trackUrl) + "`` couldn't be found!")
+                            .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
             }
 
             /**
