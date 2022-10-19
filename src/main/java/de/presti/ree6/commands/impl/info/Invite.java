@@ -4,7 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -25,7 +24,7 @@ public class Invite implements ICommand {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         messageCreateBuilder.addActionRow(Button.of(ButtonStyle.LINK, "https://invite.ree6.de", commandEvent.getResource("command.label.invite"),
                 Emoji.fromCustom("re_icon_invite", 1019234807844175945L, false)));
-        Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), commandEvent);
+        commandEvent.reply(messageCreateBuilder.build());
     }
 
     /**

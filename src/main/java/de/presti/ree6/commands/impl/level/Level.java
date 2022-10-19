@@ -49,7 +49,6 @@ Level implements ICommand {
                     sendLevel(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent, typ);
                 }
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", commandEvent.getChannel(), commandEvent.getInteractionHook());
                 commandEvent.reply(commandEvent.getResource("command.message.default.usage","level chat/voice [@user]"));
             }
         }

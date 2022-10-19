@@ -33,7 +33,7 @@ public class Waifu implements ICommand {
             em.setColor(Color.RED);
             em.setDescription(commandEvent.getResource("command.default.retrievalError"));
             em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
-            Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(em.build());
             return;
         }
 
@@ -47,7 +47,7 @@ public class Waifu implements ICommand {
         }
         em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
-        Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), commandEvent.getInteractionHook());
+        commandEvent.reply(em.build());
     }
 
     /**

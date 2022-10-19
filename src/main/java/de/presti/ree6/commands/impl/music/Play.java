@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
@@ -16,7 +17,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.awt.Color;
+import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -48,12 +49,12 @@ public class Play implements ICommand {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
+                em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
-                em.setDescription("Usage: " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
+                em.setDescription(commandEvent.getResource("command.message.default.usage","play (Url)"));
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(em.build(), 5);
             }
 
         } else {
@@ -61,12 +62,12 @@ public class Play implements ICommand {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
+                em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
-                em.setDescription("Usage: " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "play (Url)");
+                em.setDescription(commandEvent.getResource("command.message.default.usage","play (Url)"));
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(em.build(), 5);
             } else {
                 playSong(commandEvent.getArguments()[0], commandEvent);
             }
@@ -79,7 +80,7 @@ public class Play implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("play", "Play a song!").addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true));
+        return new CommandDataImpl("play", LanguageService.getDefault("command.description.play")).addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true));
     }
 
     /**
@@ -139,12 +140,12 @@ public class Play implements ICommand {
                 if (!loadFailed.isEmpty()) {
                     EmbedBuilder em = new EmbedBuilder();
                     em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                    em.setTitle("Music Player!");
+                    em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
                     em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                     em.setColor(Color.GREEN);
-                    em.setDescription("We couldn't find ``" + loadFailed.size() + "`` Songs!");
+                    em.setDescription(commandEvent.getResource("command.message.music.notFoundMultiple", loadFailed.size()));
                     em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                    Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(em.build(), 5);
                 }
             }
         } else {
@@ -165,12 +166,12 @@ public class Play implements ICommand {
             } catch (Exception exception) {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
+                em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.RED);
-                em.setDescription("We had an Issue searching for the Song, please try again in 15 minutes!");
+                em.setDescription(commandEvent.getResource("command.message.music.searchFailed"));
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(em.build(), 5);
                 log.error("Error while searching for " + search + " on YouTube", exception);
                 return;
             }
@@ -178,12 +179,12 @@ public class Play implements ICommand {
             if (ytResult == null) {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
+                em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.YELLOW);
-                em.setDescription("A Song with the Name ``" + FormatUtil.filter(search.toString()) + "`` couldn't be found!");
+                em.setDescription(commandEvent.getResource("command.message.music.notFound", FormatUtil.filter(search.toString())));
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(em.build(), 5);
             } else {
                 Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), ytResult, commandEvent.getInteractionHook(), false);
             }

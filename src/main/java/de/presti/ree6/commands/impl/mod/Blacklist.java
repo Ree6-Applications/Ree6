@@ -23,7 +23,7 @@ public class Blacklist implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
-            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.perform.slashNotSupported"), commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.perform.slashNotSupported"));
             return;
         }
 

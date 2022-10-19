@@ -61,7 +61,7 @@ public class Twitter implements ICommand {
                     sendTwitterTweet(commandEvent.getMessage().getMentions().getMembers().get(0), stringBuilder.toString(), commandEvent);
                 }
             } else {
-                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","twitter @User Yourtexthere"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.message.default.usage","twitter @User Yourtexthere"), 5);
             }
         }
     }

@@ -9,7 +9,7 @@ import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Stop the Ree6 from playing Music.
@@ -25,11 +25,11 @@ public class Stop implements ICommand {
             }
             Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().stopAll(commandEvent.getInteractionHook());
         } else {
-            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
-                            commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle("Music Player!")
+            commandEvent.reply(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                            commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle(commandEvent.getResource("command.label.musicPlayer"))
                     .setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl())
                     .setColor(Color.RED)
-                    .setDescription("Im not playing any Music!"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    .setDescription(commandEvent.getResource("command.message.music.notPlaying")).build(), 5);
         }
     }
 

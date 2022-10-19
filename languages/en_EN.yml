@@ -72,6 +72,7 @@ command:
     ticketSystem: "Ticket-System"
     suggestionMenu: "Suggestion-Menu"
     webinterface: "Webinterface"
+    musicPlayer: "Music Player"
   description:
     birthday: "Let the bot remember your Birthday."
     instagramNotifier: "Manage your Instagram-Notifier!"
@@ -272,6 +273,31 @@ command:
       success: "Successfully un-muted {0}!"
       hierarchySelfError: "You can't un-mute someone with a higher or equal role than you!"
       hierarchyBotError: "I can't un-mute someone with a higher or equal role than me!"
+    music:
+      clearQueue: "The Queue has been cleaned!"
+      notPlaying: "Im not playing anything!"
+      notConnected: "I am not connected to a Voice Channel!"
+      loop:
+        enabled: "Loop has been enabled!"
+        disabled: "Loop has been disabled!"
+      lyrics:
+        notFound: "Couldn't find the Lyrics for {0}."
+        foundUnlikely: "Lyrics for {0} found, but they are unlikely to be correct: {1}"
+      pause: "The Player has been paused!"
+      resume: "The Player has been resumed!"
+      shuffle: "The Queue has been shuffled!"
+      songInfo: "**Song:**```{0} by {1}```\n{2} `[{3}/{4}]` {5}"
+      songQueueEmpty: "The Queue is empty!"
+      songQueue: "The Queue contains the following Songs: {0}"
+      volume:
+        success: "Successfully set the Volume to {0}%!"
+        invalid: "Please provide a valid Volume!"
+      notFound: "Couldn't find the Song ``{0}``!"
+      notFoundMultiple: "Couldn't find ``{0}`` Songs!"
+      searchFailed: "An error occurred while searching for the Song, please try again after a few minutes!"
+    nsfw:
+      searching: "Searching for NSFW Content ..."
+      notAllowed: "The Content you are searching for is not allowed! Example: loli hentai"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."

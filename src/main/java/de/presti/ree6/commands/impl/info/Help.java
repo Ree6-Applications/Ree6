@@ -102,7 +102,7 @@ public class Help implements ICommand {
                         );
 
         messageCreateBuilder.setEmbeds(em.build());
-        Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), commandEvent.getChannel(), commandEvent.getInteractionHook());
+        commandEvent.reply(messageCreateBuilder.build());
     }
 
     /**

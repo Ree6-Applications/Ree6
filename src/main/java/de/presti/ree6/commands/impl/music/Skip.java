@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -37,7 +38,8 @@ public class Skip implements ICommand {
         }
 
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to skip!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.music.notConnected"));
+            return;
         }
 
         if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
@@ -52,7 +54,7 @@ public class Skip implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("skip", "Skip the current Song.").addOptions(new OptionData(OptionType.INTEGER, "amount", "The amount of songs that should be skipped!").setRequired(false));
+        return new CommandDataImpl("skip", LanguageService.getDefault("command.description.skip")).addOptions(new OptionData(OptionType.INTEGER, "amount", "The amount of songs that should be skipped!").setRequired(false));
     }
 
     /**

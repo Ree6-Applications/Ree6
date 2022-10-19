@@ -9,7 +9,7 @@ import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Set the Song onto Loop.
@@ -23,7 +23,8 @@ public class Loop implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to loop!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.music.notConnected"));
+            return;
         }
 
         if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
@@ -34,14 +35,15 @@ public class Loop implements ICommand {
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-        em.setTitle("Music Player!");
+        em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().loop() ? "Song Loop has been activated!"
-                : "Song Loop has been deactivated!");
+        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().loop() ?
+                commandEvent.getResource("command.message.music.loop.enable") :
+                commandEvent.getResource("command.message.music.loop.disabled"));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-        Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+        commandEvent.reply(em.build(), 5);
     }
 
     /**

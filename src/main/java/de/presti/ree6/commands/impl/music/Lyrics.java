@@ -13,7 +13,7 @@ import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Get the Lyrics of a Song.
@@ -32,9 +32,9 @@ public class Lyrics implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to see the lyrics of!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.music.notConnected"));
+            return;
         }
 
         AudioPlayerSendHandler sendingHandler = (AudioPlayerSendHandler) commandEvent.getGuild().getAudioManager().getSendingHandler();
@@ -49,11 +49,11 @@ public class Lyrics implements ICommand {
             client.getLyrics(title).thenAccept(lyrics -> {
 
                 if (lyrics == null) {
-                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
-                                    commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle("Music Player!")
+                    commandEvent.reply(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                                    commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle(commandEvent.getResource("command.label.musicPlayer"))
                             .setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setColor(Color.RED)
-                            .setDescription("Couldn't find the Lyrics for ``" + FormatUtil.filter(title) + "``.")
-                            .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl()), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                            .setDescription(commandEvent.getResource("command.message.music.lyrics.notFound", "``" + FormatUtil.filter(title) + "``"))
+                            .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl()).build(), 5);
                     return;
                 }
 
@@ -61,7 +61,7 @@ public class Lyrics implements ICommand {
                         .setAuthor(lyrics.getAuthor())
                         .setTitle(lyrics.getTitle(), lyrics.getURL());
                 if (lyrics.getContent().length() > 15000) {
-                    Main.getInstance().getCommandManager().sendMessage("Lyrics for `" + FormatUtil.filter(title) + "` found but likely not correct: " + lyrics.getURL(), commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.music.lyrics.foundUnlikely", "`" + FormatUtil.filter(title) + "`", lyrics.getURL()));
                 } else if (lyrics.getContent().length() > 2000) {
                     String content = lyrics.getContent().trim();
                     while (content.length() > 2000) {
@@ -72,15 +72,15 @@ public class Lyrics implements ICommand {
                             index = content.lastIndexOf(" ", 2000);
                         if (index == -1)
                             index = 2000;
-                        Main.getInstance().getCommandManager().sendMessage(eb.setDescription(content.substring(0, index).trim()), commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        commandEvent.reply(eb.setDescription(content.substring(0, index).trim()).build());
                         content = content.substring(index).trim();
                         eb.setAuthor(null).setTitle(null, null);
                         eb.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                     }
 
-                    Main.getInstance().getCommandManager().sendMessage(eb.setDescription(content), commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(eb.setDescription(content).build());
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage(eb.setDescription(lyrics.getContent()), commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(eb.setDescription(lyrics.getContent()).build());
                 }
             });
         }

@@ -7,7 +7,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
@@ -35,7 +34,7 @@ public class NSFW implements ICommand {
         if (commandEvent.getChannel().getType() == ChannelType.TEXT && commandEvent.getChannel().asTextChannel().isNSFW()) {
             sendImage(commandEvent);
         } else {
-            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.onlyNSFW"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.default.onlyNSFW"), 5);
         }
     }
 
@@ -46,8 +45,8 @@ public class NSFW implements ICommand {
      */
     public void sendImage(CommandEvent commandEvent) {
         Message message = commandEvent.isSlashCommand() ?
-                commandEvent.getInteractionHook().sendMessage("Searching for Image...").complete() :
-                commandEvent.getChannel().sendMessage("Searching for Image...").complete();
+                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.nsfw.searching")).complete() :
+                commandEvent.getChannel().sendMessage(commandEvent.getResource("command.message.nsfw.searching")).complete();
 
         JsonElement jsonElement = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://www.reddit.com/r/hentai/new.json?sort=hot&limit=50").build());
 
@@ -91,16 +90,16 @@ public class NSFW implements ICommand {
                 em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
                 if (commandEvent.isSlashCommand()) {
-                    message.editMessage("Image found!").queue();
-                    Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), null);
+                    message.editMessage(commandEvent.getResource("command.message.default.checkBelow")).queue();
+                    commandEvent.reply(em.build());
                 } else {
-                    message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage("Image found!").queue());
+                    message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("command.message.default.checkBelow")).queue());
                 }
             } else {
-                message.editMessage("We received an empty Image list from Reddit? Please try again later!").delay(Duration.ofSeconds(5)).flatMap(Message::delete).queue();
+                message.editMessage(commandEvent.getResource("command.message.default.retrievalError")).delay(Duration.ofSeconds(5)).flatMap(Message::delete).queue();
             }
         } else {
-            message.editMessage("We received an Invalid response from Reddit? Please try again later!").delay(Duration.ofSeconds(5)).flatMap(Message::delete).queue();
+            message.editMessage(commandEvent.getResource("command.message.default.retrievalError")).delay(Duration.ofSeconds(5)).flatMap(Message::delete).queue();
         }
     }
 

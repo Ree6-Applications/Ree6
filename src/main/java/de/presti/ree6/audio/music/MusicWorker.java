@@ -13,6 +13,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
@@ -115,7 +116,7 @@ public class MusicWorker {
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
-                            .setTitle("Music Player!")
+                            .setTitle(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(),"command.label.musicPlayer"))
                             .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
                             .setDescription("The Song ``" + FormatUtil.filter(track.getInfo().title) + "`` has been added to the Queue!")
@@ -140,7 +141,7 @@ public class MusicWorker {
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
-                            .setTitle("Music Player!")
+                            .setTitle(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(),"command.label.musicPlayer"))
                             .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
                             .setDescription("The Song ``" + FormatUtil.filter(firstTrack.getInfo().title) + "`` has been added to the Queue! (The first Song of the Playlist: " + FormatUtil.filter(playlist.getName()) + ")")
@@ -163,7 +164,7 @@ public class MusicWorker {
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
-                            .setTitle("Music Player!")
+                            .setTitle(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(),"command.label.musicPlayer"))
                             .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
                             .setDescription("A Song with the URL ``" + FormatUtil.filter(trackUrl) + "`` couldn't be found!")
@@ -177,7 +178,7 @@ public class MusicWorker {
             public void loadFailed(FriendlyException exception) {
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle("Music Player!")
+                        .setTitle(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(),"command.label.musicPlayer"))
                         .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.GREEN)
                         .setDescription("Error while playing: " + exception.getMessage())
@@ -207,7 +208,7 @@ public class MusicWorker {
      */
     public void skipTrack(MessageChannelUnion channel, InteractionHook interactionHook, int skipAmount) {
         Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
-                .setTitle("Music Player!")
+                .setTitle(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(),"command.label.musicPlayer"))
                 .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                 .setColor(Color.GREEN)
                 .setDescription("Skipping to the next Song!")

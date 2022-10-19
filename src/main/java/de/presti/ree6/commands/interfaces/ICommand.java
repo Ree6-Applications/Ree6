@@ -26,7 +26,7 @@ public interface ICommand {
     default void onASyncPerform(CommandEvent commandEvent) {
         CompletableFuture.runAsync(() -> onPerform(commandEvent)).exceptionally(throwable -> {
             if (!throwable.getMessage().contains("Unknown Message")) {
-                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.perform.internalError"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.perform.internalError"), 5);
                 log.error("An error occurred while executing the command!", throwable);
             }
             return null;

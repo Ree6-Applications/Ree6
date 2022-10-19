@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -13,7 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Set the Volume of the AudioPlayer of Ree6.
@@ -27,7 +28,8 @@ public class Volume implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            Main.getInstance().getCommandManager().sendMessage("Im not connected to any Channel, so there is nothing to set the volume for!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.music.notConnected"));
+            return;
         }
 
         if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
@@ -47,17 +49,17 @@ public class Volume implements ICommand {
 
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
+                em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
-                em.setDescription("The Volume has been set to " + volume);
+                em.setDescription(commandEvent.getResource("command.message.music.volume.success", volume));
             } else {
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
+                em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.RED);
-                em.setDescription("No Volume was given.");
+                em.setDescription(commandEvent.getResource("command.message.music.volume.invalid"));
             }
 
         } else {
@@ -75,25 +77,25 @@ public class Volume implements ICommand {
 
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
+                em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
-                em.setDescription("The Volume has been set to " + vol);
+                em.setDescription(commandEvent.getResource("command.message.music.volume.success", vol));
 
 
             } else {
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle("Music Player!");
+                em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
-                em.setDescription("Type " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "volume [voulume]");
+                em.setDescription(commandEvent.getResource("command.message.default.usage", "volume [voulume]"));
             }
         }
 
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-        Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+        commandEvent.reply(em.build(), 5);
     }
 
     /**
@@ -101,7 +103,7 @@ public class Volume implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("volume", "Set the Volume!").addOptions(new OptionData(OptionType.INTEGER, "amount", "The Volume that the Ree6 Music Player should be!").setRequired(true));
+        return new CommandDataImpl("volume", LanguageService.getDefault("command.description.volume")).addOptions(new OptionData(OptionType.INTEGER, "amount", "The Volume that the Ree6 Music Player should be!").setRequired(true));
     }
 
     /**

@@ -10,7 +10,6 @@ import de.presti.ree6.game.core.base.GameInfo;
 import de.presti.ree6.game.core.base.GamePlayer;
 import de.presti.ree6.game.core.base.GameState;
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -31,7 +30,7 @@ public class Game implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
-            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.perform.onlySlashSupported"), commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
             return;
         }
 

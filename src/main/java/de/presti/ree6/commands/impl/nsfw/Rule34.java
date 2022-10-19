@@ -7,7 +7,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.main.Main;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
@@ -39,7 +39,7 @@ public class Rule34 implements ICommand {
 
             sendMessage(commandEvent);
         } else {
-            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.onlyNSFW"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.default.onlyNSFW"), 5);
         }
     }
 
@@ -50,9 +50,8 @@ public class Rule34 implements ICommand {
      */
     public void sendMessage(CommandEvent commandEvent) {
         Message message = commandEvent.isSlashCommand() ?
-                commandEvent.getInteractionHook().sendMessage("Searching for Image...").complete() :
-                commandEvent.getChannel().sendMessage("Searching for Image...").complete();
-
+                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.nsfw.searching")).complete() :
+                commandEvent.getChannel().sendMessage(commandEvent.getResource("command.message.nsfw.searching")).complete();
 
         StringBuilder builder = new StringBuilder();
         String tags = "";
@@ -75,7 +74,7 @@ public class Rule34 implements ICommand {
             tags = "&tags=" + URLEncoder.encode(builder.toString(), StandardCharsets.UTF_8).toLowerCase();
 
         if (tags.contains("loli") || tags.contains("l0li") || tags.contains("lol1") || tags.contains("l0l1")) {
-            message.editMessage("Please do not search for loli hentai.").queue();
+            message.editMessage(commandEvent.getResource("command.message.nsfw.notAllowed")).queue();
             return;
         }
 
@@ -108,22 +107,22 @@ public class Rule34 implements ICommand {
                         em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
                         if (commandEvent.isSlashCommand()) {
-                            message.editMessage("Image found!").queue();
-                            Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), null);
+                            message.editMessage(commandEvent.getResource("command.message.default.checkBelow")).queue();
+                            commandEvent.reply(em.build());
                         } else {
-                            message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage("Image found!").queue());
+                            message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("command.message.default.checkBelow")).queue());
                         }
                     } else {
-                        message.editMessage("Could not find an image.").queue();
+                        message.editMessage(commandEvent.getResource("command.message.default.retrievalError")).queue();
                     }
                 } else {
-                    message.editMessage("Could not find an image.").queue();
+                    message.editMessage(commandEvent.getResource("command.message.default.retrievalError")).queue();
                 }
             } else {
-                message.editMessage("Could not find an image.").queue();
+                message.editMessage(commandEvent.getResource("command.message.default.retrievalError")).queue();
             }
         } else {
-            message.editMessage("Could not find an image.").queue();
+            message.editMessage(commandEvent.getResource("command.message.default.retrievalError")).queue();
         }
     }
 
@@ -132,7 +131,7 @@ public class Rule34 implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("r34", "Get NSFW Image from r34")
+        return new CommandDataImpl("r34", LanguageService.getDefault("command.description.rule34"))
                 .addOptions(new OptionData(OptionType.STRING, "tags", "Tags for the image search"));
     }
 

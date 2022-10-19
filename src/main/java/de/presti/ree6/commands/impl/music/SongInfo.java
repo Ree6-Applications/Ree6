@@ -12,7 +12,7 @@ import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Get information about the current Song.
@@ -25,6 +25,10 @@ public class SongInfo implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
+        if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
+            commandEvent.reply(commandEvent.getResource("command.message.music.notConnected"));
+            return;
+        }
 
         EmbedBuilder em = new EmbedBuilder();
 
@@ -33,17 +37,16 @@ public class SongInfo implements ICommand {
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-        em.setTitle("Music Player!");
+        em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(audioTrack == null ? "No Song is being played right now!" : "**Song:** ```"
-                + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + "```\n" +
-                FormatUtil.getStatusEmoji(guildMusicManager.getPlayer()) + FormatUtil.progressBar((double)audioTrack.getPosition()/audioTrack.getDuration()) +
-                " `[" + FormatUtil.formatTime(audioTrack.getPosition()) + "/" + FormatUtil.formatTime(audioTrack.getDuration()) + "]` " +
-                FormatUtil.volumeIcon(guildMusicManager.getPlayer().getVolume()));
+        em.setDescription(audioTrack == null ? commandEvent.getResource("command.message.music.notPlaying") :
+                commandEvent.getResource("command.message.music.songInfo", audioTrack.getInfo().title, audioTrack.getInfo().author,
+                FormatUtil.getStatusEmoji(guildMusicManager.getPlayer()) + FormatUtil.progressBar((double)audioTrack.getPosition() / audioTrack.getDuration()),
+                FormatUtil.formatTime(audioTrack.getPosition()), FormatUtil.formatTime(audioTrack.getDuration()), FormatUtil.volumeIcon(guildMusicManager.getPlayer().getVolume())));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-        Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+        commandEvent.reply(em.build(), 5);
     }
 
     /**

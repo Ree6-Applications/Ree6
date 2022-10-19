@@ -11,7 +11,7 @@ import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Get the current list of songs.
@@ -35,13 +35,16 @@ public class SongList implements ICommand {
         end.append("```");
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-        em.setTitle("Music Player!");
+        em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().getQueue().isEmpty() ? "No Song in the Queue" : (end.length() > 4096 ? "Error (M-SL-01)" : "Songs: " + end));
+        em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().getQueue().isEmpty() ?
+                commandEvent.getResource("command.message.music.songQueueEmpty") :
+                (end.length() > 4096 ? commandEvent.getResource("command.perform.errorWithException","Error (M-SL-01)") :
+                        commandEvent.getResource("command.message.music.songQueue", end)));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-        Main.getInstance().getCommandManager().sendMessage(em, 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+        commandEvent.reply(em.build(), 5);
     }
 
     /**
