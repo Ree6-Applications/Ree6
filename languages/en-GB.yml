@@ -1,6 +1,6 @@
 language:
   name: "English (UK)"
-  locale: "en_GB"
+  locale: "en-GB"
   version: "2.0.0"
   author: "Presti"
 command:
