@@ -3,6 +3,22 @@ language:
   locale: "en-GB"
   version: "2.0.0"
   author: "Presti"
+logging:
+  actor: "**Actor**"
+  banned: ":airplane_departure: %s **banned.**"
+  unbanned: ":airplane_arriving: %s **unbanned.**"
+  joined:
+    default: "%s **joined the Server.**\n:timer: Age of the Account:\n**%s**\n**%s**"
+    bot:
+      found: "**The Bot** %s **has been invited by** %s"
+      notFound: "**We could not find out who Invite the Bot** %s"
+    invite:
+      vanity: "%s **has been invited via Vanity Invite.**"
+      default: "%s **has been invited by** %s (Code: %s, Uses: %s)"
+      notFound: "**Couldn't determine who invited** %s"
+    left:
+      default: "%s **left the Server.**\n:timer: Joined:\n**%s**"
+      slim: "%s **left the Server.**"
 command:
   perform:
     cooldown: "You are on cooldown!"
