@@ -98,11 +98,9 @@ public class CommandManager {
                 if (description.equals("Missing language resource!")) {
                     description = LanguageService.getByLocale(discordLocale, command.getClass().getAnnotation(Command.class).description());
                 }
-
-                commandData.setNameLocalization(discordLocale, description);
             }
 
-            if (commandAnnotation.category() == Category.MOD) {
+            if (commandAnnotation.category() == Category.MOD && commandData.getDefaultPermissions() == DefaultMemberPermissions.ENABLED) {
                 commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
             }
 
