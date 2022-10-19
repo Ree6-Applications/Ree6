@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.level.UserLevel;
 import de.presti.ree6.utils.data.ImageCreationUtility;
@@ -49,7 +50,7 @@ Level implements ICommand {
                 }
             } else {
                 Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", commandEvent.getChannel(), commandEvent.getInteractionHook());
-                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "level chat/voice or " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "level chat/voice @user", commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.message.default.usage","level chat/voice [@user]"));
             }
         }
     }
@@ -59,7 +60,7 @@ Level implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("level", "Show your own Level or the Level of another User in the Guild.").addOptions(new OptionData(OptionType.STRING, "typ", "Do you want to see chat or voice level?"))
+        return new CommandDataImpl("level", LanguageService.getDefault("command.description.level")).addOptions(new OptionData(OptionType.STRING, "typ", "Do you want to see chat or voice level?"))
                 .addOptions(new OptionData(OptionType.USER, "target", "Show the Level of the User."));
     }
 
@@ -84,25 +85,14 @@ Level implements ICommand {
                 Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getId());
 
         userLevel.setUser(member.getUser());
-
-        if (commandEvent.isSlashCommand()) {
             try {
                 MessageCreateBuilder createBuilder = new MessageCreateBuilder();
                 createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createRankImage(userLevel), "rank.png"));
 
-                commandEvent.getInteractionHook().sendMessage(createBuilder.build()).queue();
-            } catch (Exception ignore) {
-                Main.getInstance().getCommandManager().sendMessage("Couldn't generated Rank Image!", commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(createBuilder.build());
+            } catch (Exception exception) {
+                commandEvent.reply(commandEvent.getResource("command.perform.error"));
+                log.error("Couldn't generated Rank Image!", exception);
             }
-        } else {
-            try {
-                MessageCreateBuilder createBuilder = new MessageCreateBuilder();
-                createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createRankImage(userLevel), "rank.png"));
-
-                commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
-            } catch (Exception ignore) {
-                Main.getInstance().getCommandManager().sendMessage("Couldn't generated Rank Image!", commandEvent.getChannel(), commandEvent.getInteractionHook());
-            }
-        }
     }
 }

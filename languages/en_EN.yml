@@ -58,6 +58,9 @@ command:
     commandStats: "Command Stats"
     topCommands: "Top Commands"
     overallTopCommands: "Overall Top Commands"
+    discordGuidelines: "Discord Guidelines"
+    chatLeaderboard: "Chat-Leaderboard"
+    voiceLeaderboard: "Voice-Leaderboard"
   description:
     birthday: "Let the bot remember your Birthday."
     instagramNotifier: "Manage your Instagram-Notifier!"
@@ -201,6 +204,11 @@ command:
     optout:
       optedOut: "You have been opted out of any data collection!"
       optedIn: "You have been opted in for data collection!"
+    leaderboards: "Below this Message you can find the Leaderboards of the current Server!\nPlease note that you have to be logged in to see these stats, reason for this is Discords Guidelines!"
+    ban:
+      success: "Successfully banned {0}!"
+      hierarchySelfError: "You can't ban someone with a higher or equal role than you!"
+      hierarchyBotError: "I can't ban someone with a higher or equal role than me!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
