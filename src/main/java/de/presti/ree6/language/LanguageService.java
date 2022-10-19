@@ -77,6 +77,7 @@ public class LanguageService {
 
     /**
      * Called to load a Language from a YamlConfiguration.
+     *
      * @param discordLocale The DiscordLocale of the Language.
      * @return The Language.
      */
@@ -99,19 +100,25 @@ public class LanguageService {
 
     /**
      * Called to get a specific String from the Guild specific Language file.
+     *
      * @param commandEvent the CommandEvent.
-     * @param key the key of the String.
-     * @param parameter the parameter to replace.
+     * @param key          the key of the String.
+     * @param parameter    the parameter to replace.
      * @return the String.
      */
     public static @NotNull String getByEvent(@NotNull CommandEvent commandEvent, @NotNull String key, @Nullable Object... parameter) {
-        return getByGuild(commandEvent.getGuild(), key, parameter);
+        if (commandEvent.isSlashCommand()) {
+            return getByInteraction(commandEvent.getInteractionHook().getInteraction(), key, parameter);
+        } else {
+            return getByGuild(commandEvent.getGuild(), key, parameter);
+        }
     }
 
     /**
      * Called to get a specific String from the Language file.
-     * @param guild The Guild to receive the locale from.
-     * @param key The key of the String.
+     *
+     * @param guild     The Guild to receive the locale from.
+     * @param key       The key of the String.
      * @param parameter The Parameters to replace placeholders in the String.
      * @return The String.
      */
@@ -121,8 +128,9 @@ public class LanguageService {
 
     /**
      * Called to get a specific String from the Language file.
-     * @param guildId The Guild ID to receive the locale from.
-     * @param key The key of the String.
+     *
+     * @param guildId   The Guild ID to receive the locale from.
+     * @param key       The key of the String.
      * @param parameter The Parameters to replace placeholders in the String.
      * @return The String.
      */
@@ -134,25 +142,33 @@ public class LanguageService {
             resource = getByLocale(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "configuration_language").getStringValue(), key, parameter);
         }
         resource = resource
-                .replaceAll("%guild_prefix%", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guildId + "","chatprefix").getStringValue());
+                .replaceAll("%guild_prefix%", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guildId + "", "chatprefix").getStringValue());
 
         return resource;
     }
 
     /**
      * Called to get a specific String from the default Language file.
+     *
      * @param interaction The Interaction to receive the locale from.
-     * @param key The key of the String.
-     * @param parameter The Parameters to replace placeholders in the String.
+     * @param key         The key of the String.
+     * @param parameter   The Parameters to replace placeholders in the String.
      * @return The String.
      */
     public static @NotNull String getByInteraction(Interaction interaction, @NotNull String key, @Nullable Object... parameter) {
-        return getByLocale(interaction.getUserLocale(), key, parameter);
+        String resource = getByLocale(interaction.getUserLocale(), key, parameter);
+
+        if (interaction.getGuild() != null)
+            resource = resource
+                    .replaceAll("%guild_prefix%", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(interaction.getGuild().getId(), "chatprefix").getStringValue());
+
+        return resource;
     }
 
     /**
      * Called to get a specific String from the default Language file.
-     * @param key The key of the String.
+     *
+     * @param key       The key of the String.
      * @param parameter The Parameters to replace placeholders in the String.
      * @return The String.
      */
@@ -162,8 +178,9 @@ public class LanguageService {
 
     /**
      * Called to get a specific String from the Language file.
-     * @param locale The locale of the Language file.
-     * @param key The key of the String.
+     *
+     * @param locale     The locale of the Language file.
+     * @param key        The key of the String.
      * @param parameters The Parameters to replace placeholders in the String.
      * @return The String.
      */
@@ -173,9 +190,10 @@ public class LanguageService {
 
     /**
      * Called to get a specific String from the Language file.
+     *
      * @param discordLocale The locale of the Language file.
-     * @param key The key of the String.
-     * @param parameters The Parameters to replace placeholders in the String.
+     * @param key           The key of the String.
+     * @param parameters    The Parameters to replace placeholders in the String.
      * @return The String.
      */
     public static @NotNull String getByLocale(@NotNull DiscordLocale discordLocale, @NotNull String key, @Nullable Object... parameters) {

@@ -24,6 +24,14 @@ command:
     rank: "Rank"
     randomCatImage: "Random Cat Image"
     randomDogImage: "Random Dog Image"
+    published: "Published"
+    chapters: "Chapters"
+    volumes: "Volumes"
+    randomMemeImage: "Random Meme Image"
+    monkey: "Monkey"
+    randomShibaImage: "Random Shiba Image"
+    character: "Character"
+    from: "From"
   description:
     birthday: "Let the bot remember your Birthday."
     instagramNotifier: "Manage your Instagram-Notifier!"
@@ -96,6 +104,7 @@ command:
     default:
       usage: "Please use %guild_prefix%{0}."
       needPermission: "Looks like I do not have the Permission `{0}`!"
+      sufficientPermission: "Looks like you do not have the Permission `{0}`!"
       noMention:
         user: "Please mention a user!"
         role: "Please mention a role!"
@@ -103,6 +112,9 @@ command:
       onlyNSFW: "This Command can only be used in NSFW Channels!"
       invalidQuery: "Please provide a valid Query!"
       checkBelow: "Check below!"
+      retrievalError: "There was an error while retrieving the data!"
+      notInVoiceChannel: "You are not in a Voice-Channel!"
+      alreadyInVoiceChannel: "I am already in a Voice-Channel!"
     birthday:
       added:
         self: "Your Birthday has been added!"
@@ -132,7 +144,7 @@ command:
     anime:
       searching: "Searching for Anime..."
       found: "Anime found!"
-      error: "An Error occurred while searching for Anime!"
+      error: "An error occurred while searching for Anime!"
     game:
       actionNeeded: "You need to specify an action!"
       valueNeeded: "You need to specify an action!"
@@ -143,6 +155,20 @@ command:
     hornyJail: "{0} is now in the Horny-Jail!"
     hug: "{0} has been hugged by {1}!"
     kiss: "{0} has been kissed by {1}!"
+    manga:
+      searching: "Searching for Manga..."
+      found: "Manga found!"
+      error: "An error occurred while searching for Manga!"
+    ping: "Pong"
+    record:
+      recordingStarted: "I am now recording the voice channel!"
+      recordingStopped: "Recording stopped!"
+      recordingError: "An error occurred while recording!"
+    slap: "{0} has been slapped by {1}!"
+    addon:
+      list: "List of Addons:"
+      reloadAll: "Reloading Addons ...."
+      reloadedAll: "Reloaded all Addons!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."

@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.apis.Neko4JsAPI;
 import net.dv8tion.jda.api.entities.Member;
@@ -32,19 +33,18 @@ public class Slap implements ICommand {
             if (targetOption != null && targetOption.getAsMember() != null) {
                 sendSlap(targetOption.getAsMember(), commandEvent);
             } else {
-                Main.getInstance().getCommandManager().sendMessage("No User was given to Slap!" , 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
             }
         } else {
             if (commandEvent.getArguments().length == 1) {
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "slap @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","slap @user"), 5);
                 } else {
                     sendSlap(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                 }
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "slap @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.message.default.usage","slap @user"), 5);
             }
         }
     }
@@ -54,7 +54,7 @@ public class Slap implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("slap", "Slap someone in the face!")
+        return new CommandDataImpl("slap", LanguageService.getDefault("command.description.slap"))
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should be slapped!").setRequired(true));
     }
 
@@ -72,7 +72,7 @@ public class Slap implements ICommand {
      * @param commandEvent The CommandEvent.
      */
     public void sendSlap(Member member, CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage(commandEvent.getMember().getAsMention() + " slapped " + member.getAsMention(), commandEvent.getChannel(), null);
+        Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.slap", member.getAsMention(), commandEvent.getMember().getAsMention()), commandEvent.getChannel(), null);
 
         ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
@@ -83,6 +83,6 @@ public class Slap implements ICommand {
         }
 
         Main.getInstance().getCommandManager().sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), commandEvent.getChannel(), null);
-        if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage("Check below!").queue();
+        if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.default.checkBelow")).queue();
     }
 }

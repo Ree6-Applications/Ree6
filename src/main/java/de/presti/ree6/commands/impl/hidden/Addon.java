@@ -27,18 +27,18 @@ public class Addon implements ICommand {
                             .append(" ").append("for").append(" ").append("by").append(" ").append(addon.getAuthor()).append("\n");
                 }
                 stringBuilder.append("```");
-                Main.getInstance().getCommandManager().sendMessage("List of all Addons: " + (stringBuilder.length() == 6 ? "None" : stringBuilder), commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.message.addon.list") + " " + (stringBuilder.length() == 6 ? "None" : stringBuilder));
             } else {
                 if (commandEvent.getArguments()[0].equalsIgnoreCase("reload")) {
-                    Main.getInstance().getCommandManager().sendMessage("Reloading Addons ...", commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.addon.reloadAll"));
                     Main.getInstance().getAddonManager().reload();
-                    Main.getInstance().getCommandManager().sendMessage("Reloaded Addons!", commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.addon.reloadedAll"));
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("Invalid Argument!", commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
                 }
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("This Command is not made for users.", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission"), 5);
         }
     }
 

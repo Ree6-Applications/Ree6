@@ -36,10 +36,9 @@ public class Record implements ICommand {
                 } else {
                     commandEvent.getGuild().getAudioManager().closeAudioConnection();
                 }
-                Main.getInstance().getCommandManager().sendMessage("Recording stopped!", commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.message.record.recordingStopped"));
             } else {
-                Main.getInstance().getCommandManager().sendMessage("I am already in a channel!",
-                        commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.message.default.alreadyInVoiceChannel"));
             }
         } else {
             connectAndRecord(commandEvent);
@@ -64,11 +63,9 @@ public class Record implements ICommand {
 
             audioManager.setReceivingHandler(handler);
 
-            Main.getInstance().getCommandManager().sendMessage("I am now recording the voice channel!",
-                    commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.record.recordingStarted"));
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You are not in a voice channel!",
-                    commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.default.notInVoiceChannel"));
         }
     }
 

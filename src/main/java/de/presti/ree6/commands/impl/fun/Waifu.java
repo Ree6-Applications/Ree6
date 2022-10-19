@@ -11,7 +11,7 @@ import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * A command to show you are random WaiFu or Husbando.
@@ -31,7 +31,7 @@ public class Waifu implements ICommand {
         if (!jsonObject.has("series")) {
             em.setTitle("Error!");
             em.setColor(Color.RED);
-            em.setDescription("There was a problem with the API-Server! If this continues please visit <https://support.ree6.de>");
+            em.setDescription(commandEvent.getResource("command.default.retrievalError"));
             em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
             Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), commandEvent.getInteractionHook());
             return;
@@ -40,8 +40,8 @@ public class Waifu implements ICommand {
         JsonObject jsonObject1 = jsonObject.get("series").getAsJsonObject();
 
         em.setImage((jsonObject.has("display_picture") ? jsonObject.get("display_picture").getAsString() : "https://images.ree6.de/notfound.png"));
-        em.addField("**Character**", "``" + (jsonObject.has("name") ? jsonObject.get("name").getAsString() : "Invalid Response by API") + "``", true);
-        em.addField("**From**", "``" + (jsonObject1.has("name") ? jsonObject1.get("name").getAsString() : "Invalid Response by API") + "``", true);
+        em.addField("**" + commandEvent.getResource("command.label.character") + "**", "``" + (jsonObject.has("name") ? jsonObject.get("name").getAsString() : commandEvent.getResource("command.default.retrievalError")) + "``", true);
+        em.addField("**"  + commandEvent.getResource("command.label.from") + "**", "``" + (jsonObject1.has("name") ? jsonObject1.get("name").getAsString() : commandEvent.getResource("command.default.retrievalError")) + "``", true);
         if((jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean())) {
             em.addField("**NSFW**", "", true);
         }

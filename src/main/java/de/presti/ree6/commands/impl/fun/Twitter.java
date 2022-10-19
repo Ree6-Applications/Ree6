@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -41,15 +42,15 @@ public class Twitter implements ICommand {
                 sendTwitterTweet(targetOption.getAsMember(), contentOption.getAsString(), commandEvent);
             } else {
                 if (targetOption == null)
-                    Main.getInstance().getCommandManager().sendMessage("No User was given to use for the Tweet!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
                 if (contentOption == null)
-                    Main.getInstance().getCommandManager().sendMessage("No Tweet Content was given!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
             }
 
         } else {
             if (commandEvent.getArguments().length >= 2) {
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    Main.getInstance().getCommandManager().sendMessage("No User given!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
                 } else {
                     StringBuilder stringBuilder = new StringBuilder();
 
@@ -60,7 +61,7 @@ public class Twitter implements ICommand {
                     sendTwitterTweet(commandEvent.getMessage().getMentions().getMembers().get(0), stringBuilder.toString(), commandEvent);
                 }
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "twitter @User Yourtexthere", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.default.usage","twitter @User Yourtexthere"), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
             }
         }
     }
@@ -70,7 +71,7 @@ public class Twitter implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("twitter", "Let the mentioned User Tweet something!")
+        return new CommandDataImpl("twitter", LanguageService.getDefault("command.description.twitter"))
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should tweet something!").setRequired(true))
                 .addOptions(new OptionData(OptionType.STRING, "content", "The Tweet Content!").setRequired(true));
     }
@@ -104,9 +105,10 @@ public class Twitter implements ICommand {
             commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
 
             if (commandEvent.isSlashCommand())
-                commandEvent.getInteractionHook().sendMessage("Check below!").queue();
+                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.default.checkBelow")).queue();
         } catch (Exception ex) {
-            Main.getInstance().getCommandManager().sendMessage("Error while creating the Tweet!\nError: " + ex.getMessage().replaceAll(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"), "Ree6TopSecretAPIToken"), commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.perform.error"));
+            log.error("An error occurred while creating a Tweet!", ex);
         }
     }
 
