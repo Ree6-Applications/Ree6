@@ -47,21 +47,21 @@ public class Stats implements ICommand {
             i += guild.getMemberCount();
         }
 
-        em.addField("**Server Stats:**", "", true);
-        em.addField("**Guilds**", BotWorker.getShardManager().getGuilds().size() + "", true);
-        em.addField("**Users**", i + "", true);
+        em.addField("**" + commandEvent.getResource("command.label.serverStats") + ":**", "", true);
+        em.addField("**" + commandEvent.getResource("command.label.guilds") + "**", BotWorker.getShardManager().getGuilds().size() + "", true);
+        em.addField("**" + commandEvent.getResource("command.label.users") + "**", i + "", true);
 
-        em.addField("**Bot Stats:**", "", true);
-        em.addField("**Version**", BotWorker.getBuild() + "-" + BotWorker.getVersion().name().toUpperCase(), true);
-        em.addField("**Uptime**", TimeUtil.getTime(BotWorker.getStartTime()), true);
+        em.addField("**" + commandEvent.getResource("command.label.botStats") + ":**", "", true);
+        em.addField("**" + commandEvent.getResource("command.label.version") + "**", BotWorker.getBuild() + "-" + BotWorker.getVersion().name().toUpperCase(), true);
+        em.addField("**" + commandEvent.getResource("command.label.uptime") + "**", TimeUtil.getTime(BotWorker.getStartTime()), true);
 
-        em.addField("**Network Stats:**", "", true);
-        em.addField("**Response Time**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);
-        em.addField("**System Date**", new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
+        em.addField("**" + commandEvent.getResource("command.label.networkStats") + ":**", "", true);
+        em.addField("**" + commandEvent.getResource("command.label.responseTime") + "**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);
+        em.addField("**" + commandEvent.getResource("command.label.systemDate") + "**", new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
 
-        em.addField("**Discord Stats:**", "", true);
-        em.addField("**Gateway Time**", BotWorker.getShardManager().getAverageGatewayPing() + "ms", true);
-        em.addField("**Shard Amount**", BotWorker.getShardManager().getShards().size() + " Shards", true);
+        em.addField("**" + commandEvent.getResource("command.label.discordStats") + ":**", "", true);
+        em.addField("**" + commandEvent.getResource("command.label.gatewayTime") + "**", BotWorker.getShardManager().getAverageGatewayPing() + "ms", true);
+        em.addField("**" + commandEvent.getResource("command.label.shardAmount") + "**", BotWorker.getShardManager().getShards().size() + " "  + commandEvent.getResource("command.label.shards"), true);
 
         StringBuilder end = new StringBuilder();
 
@@ -75,13 +75,13 @@ public class Stats implements ICommand {
             end2.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
         }
 
-        em.addField("**Command Stats:**", "", true);
-        em.addField("**Top Commands**", end.toString(), true);
-        em.addField("**Overall Top Commands**", end2.toString(), true);
+        em.addField("**" + commandEvent.getResource("command.label.commandStats") + ":**", "", true);
+        em.addField("**" + commandEvent.getResource("command.label.topCommands") + "**", end.toString(), true);
+        em.addField("**" + commandEvent.getResource("command.label.overallTopCommands") + "**", end2.toString(), true);
 
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-        Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), commandEvent.getInteractionHook());
+        commandEvent.reply(em.build());
     }
 
     /**

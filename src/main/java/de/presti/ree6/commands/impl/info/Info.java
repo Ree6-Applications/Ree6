@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -34,20 +35,19 @@ public class Info implements ICommand {
             if (targetOption != null && targetOption.getAsMember() != null) {
                 sendInfo(targetOption.getAsMember(), commandEvent);
             } else {
-                Main.getInstance().getCommandManager().sendMessage("No User was given to get the Data from!" , 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
             }
 
         } else {
             if (commandEvent.getArguments().length == 1) {
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","info @user"), 5);
                 } else {
                     sendInfo(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                 }
             } else {
-                Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-                Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "info @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
             }
         }
     }
@@ -57,7 +57,7 @@ public class Info implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("info", "Shows you Information about a User.")
+        return new CommandDataImpl("info", LanguageService.getDefault("command.description.info"))
                 .addOptions(new OptionData(OptionType.USER, "target", "The User whose profile Information you want.").setRequired(true));
     }
 

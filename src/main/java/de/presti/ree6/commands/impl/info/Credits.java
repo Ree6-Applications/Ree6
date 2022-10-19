@@ -22,8 +22,8 @@ public class Credits implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-        messageCreateBuilder.addActionRow(Button.link("https://www.ree6.de/#team",
-                "Meet " + (RandomUtils.secureRandom.nextInt(10000) == 1562 ? "the Spy" : "our Team") + "!"));
+        messageCreateBuilder.addActionRow(Button.link("https://www.ree6.de/#team", (RandomUtils.secureRandom.nextInt(10000) == 1562 ?
+                commandEvent.getResource("command.message.credits.easterEgg") : commandEvent.getResource("command.message.credits.default"))));
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), commandEvent);
     }
 

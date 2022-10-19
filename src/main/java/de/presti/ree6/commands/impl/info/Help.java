@@ -5,6 +5,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -117,7 +118,7 @@ public class Help implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("help", "Shows a list of every Command!")
+        return new CommandDataImpl("help", LanguageService.getDefault("command.description.help"))
                 .addOptions(new OptionData(OptionType.STRING, "category", "Which Category you want to check out."));
     }
 
