@@ -19,6 +19,27 @@ logging:
     left:
       default: "%s **left the Server.**\n:timer: Joined:\n**%s**"
       slim: "%s **left the Server.**"
+    timeout:
+      started: "**The User** %s **received a timeout.**\n**Time:** %s"
+      updated: "**The User** %s **received a timeout.**\n**Reason:** %s\n**Moderator:** %s\n**Time:** %s"
+      ended: "**The User** %s **finished their timeout.**\n**Time:** %s"
+    nickname:
+      reset: "The Nickname of %s has been reset.\n**Old Nickname:**\n%s"
+      changed: "The Nickname of %s has been changed.\n**New Nickname:**\n%s\n**Old Nickname:**\n%s"
+    voicechannel:
+      join: "%s **joined the Voice Channel** %s"
+      move: "%s **moved from the Voice Channel** %s **to** %s**.**"
+      leave: "%s **left the Voice Channel** %s"
+    channel:
+      update:
+        voice: ":house: **VoiceChannel updated:** %s"
+        chat: ":house: **TextChannel updated:** %s"
+      delete:
+        voice: ":house: **VoiceChannel deleted:** ``%s``"
+        chat: ":house: **TextChannel deleted:** ``%s``"
+      create:
+        voice: ":house: **VoiceChannel created:** %s"
+        chat: ":house: **TextChannel created:** %s"
 command:
   perform:
     cooldown: "You are on cooldown!"

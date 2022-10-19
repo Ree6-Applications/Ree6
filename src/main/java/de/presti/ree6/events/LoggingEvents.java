@@ -291,18 +291,21 @@ public class LoggingEvents extends ListenerAdapter {
         AuditLogPaginationAction paginationAction = event.getGuild().retrieveAuditLogs().user(event.getUser()).type(ActionType.MEMBER_UPDATE).limit(1);
         if (event.getOldTimeOutEnd() == null) {
             if (paginationAction.isEmpty()) {
-                we.setDescription("The User " + event.getUser().getAsMention() + " received a timeout." +
-                        "\n**Time:** " + TimeFormat.DATE_TIME_SHORT.format(event.getNewTimeOutEnd().toEpochSecond()));
+                we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.timeout.start",
+                        event.getUser().getAsMention(),
+                        TimeFormat.DATE_TIME_SHORT.format(event.getNewTimeOutEnd())));
             } else {
                 AuditLogEntry auditLogEntry = paginationAction.getFirst();
-                we.setDescription("The User " + event.getUser().getAsMention() + " received a timeout." +
-                        "\n**Reason:** " + (auditLogEntry.getReason() == null ? "Couldn't find reason" : auditLogEntry.getReason()) +
-                        "\n**Moderator:** " + (auditLogEntry.getUser() != null ? auditLogEntry.getUser().getAsMention() : "Unknown") +
-                        "\n**Time:** " + TimeFormat.DATE_TIME_SHORT.format(event.getNewTimeOutEnd().toEpochSecond()));
+                we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.timeout.updated",
+                        event.getUser().getAsMention(),
+                        (auditLogEntry.getReason() == null ? "Couldn't find reason" : auditLogEntry.getReason()),
+                        (auditLogEntry.getUser() != null ? auditLogEntry.getUser().getAsMention() : "Unknown"),
+                        TimeFormat.DATE_TIME_SHORT.format(event.getNewTimeOutEnd())));
             }
         } else {
-            we.setDescription("The User " + event.getUser().getAsMention() + " finished their timeout." +
-                    "\n**Time:** " + TimeFormat.DATE_TIME_SHORT.format(event.getOldTimeOutEnd().toEpochSecond()));
+            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.timeout.ended",
+                    event.getUser().getAsMention(),
+                    TimeFormat.DATE_TIME_SHORT.format(event.getOldTimeOutEnd())));
         }
 
         wm.addEmbeds(we.build());
@@ -335,9 +338,9 @@ public class LoggingEvents extends ListenerAdapter {
         we.setTimestamp(Instant.now());
 
         if (event.getNewNickname() == null) {
-            we.setDescription("The Nickname of " + event.getUser().getAsMention() + " has been reset.\n**Old Nickname:**\n" + event.getOldNickname());
+            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.nickname.reset", event.getUser().getAsMention(), event.getOldNickname()));
         } else {
-            we.setDescription("The Nickname of " + event.getUser().getAsMention() + " has been changed.\n**New Nickname:**\n" + event.getNewNickname() + "\n**Old Nickname:**\n" + (event.getOldNickname() != null ? event.getOldNickname() : event.getUser().getName()));
+            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.nickname.changed", event.getUser().getAsMention(), event.getNewNickname(), (event.getOldNickname() != null ? event.getOldNickname() : event.getUser().getName())));
         }
 
         AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_UPDATE).limit(5).stream().filter(auditLogEntry ->
@@ -378,7 +381,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
-            we.setDescription(event.getEntity().getUser().getAsMention() + " **joined the Voicechannel** " + event.getChannelJoined().getAsMention());
+            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.voicechannel.join", event.getEntity().getUser().getAsMention(), event.getChannelJoined().getAsMention()));
 
             wm.addEmbeds(we.build());
 
@@ -399,7 +402,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
-            we.setDescription(event.getEntity().getUser().getAsMention() + " **left the Voicechannel ** " + event.getChannelLeft().getAsMention());
+            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.voicechannel.left", event.getEntity().getUser().getAsMention(), event.getChannelLeft().getAsMention()));
 
             AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_VOICE_KICK).limit(5).stream().filter(auditLogEntry ->
                     auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
@@ -425,7 +428,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
-            we.setDescription(event.getEntity().getUser().getAsMention() + " **switched the Voicechannel from** " + event.getChannelLeft().getAsMention() + " **to** " + event.getChannelJoined().getAsMention() + "**.**");
+            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.voicechannel.move", event.getEntity().getUser().getAsMention(), event.getChannelLeft().getAsMention(), event.getChannelJoined().getAsMention()));
 
             AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_VOICE_MOVE).limit(5).stream().filter(auditLogEntry ->
                     auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
@@ -464,16 +467,16 @@ public class LoggingEvents extends ListenerAdapter {
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
-            we.setDescription(":house: **VoiceChannel updated:** " + event.getChannel().getAsMention());
+            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.channel.update.voice", event.getChannel().getAsMention()));
 
             AuditLogEntry entry;
 
             if (event instanceof ChannelCreateEvent) {
-                we.setDescription(":house: **VoiceChannel created:** " + event.getChannel().getAsMention());
+                we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.channel.create.voice", event.getChannel().getAsMention()));
                 entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_CREATE).limit(5).stream().filter(auditLogEntry ->
                         auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
             } else if (event instanceof ChannelDeleteEvent) {
-                we.setDescription(":house: **VoiceChannel deleted:** ``" + event.getChannel().getName() + "``");
+                we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.channel.delete.voice", event.getChannel().getName()));
                 entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_DELETE).limit(5).stream().filter(auditLogEntry ->
                         auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
             } else if (event instanceof ChannelUpdateNameEvent channelUpdateNameEvent) {
@@ -509,16 +512,17 @@ public class LoggingEvents extends ListenerAdapter {
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
+            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.channel.update.chat", event.getChannel().getAsMention()));
             we.setDescription(":house: **TextChannel updated:** " + event.getChannel().getAsMention());
 
             AuditLogEntry entry;
 
             if (event instanceof ChannelCreateEvent) {
-                we.setDescription(":house: **TextChannel created:** " + event.getChannel().getAsMention());
+                we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.channel.create.chat", event.getChannel().getAsMention()));
                 entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_CREATE).limit(5).stream().filter(auditLogEntry ->
                         auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
             } else if (event instanceof ChannelDeleteEvent) {
-                we.setDescription(":house: **TextChannel deleted:** ``" + event.getChannel().getName() + "``");
+                we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.channel.delete.chat", event.getChannel().getName()));
                 entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_DELETE).limit(5).stream().filter(auditLogEntry ->
                         auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
             } else if (event instanceof ChannelUpdateNameEvent channelUpdateNameEvent) {
