@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -12,7 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.awt.Color;
+import java.awt.*;
 import java.time.Instant;
 
 /**
@@ -27,12 +28,12 @@ public class EmbedSender implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.isSlashCommand()) {
-            commandEvent.reply("This command is only available as slash command!");
+            commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
             return;
         }
 
         if (!commandEvent.getMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-            commandEvent.reply("You do not have the permission to do that!");
+            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.MESSAGE_MANAGE.name()), 5);
             return;
         }
 
@@ -51,8 +52,8 @@ public class EmbedSender implements ICommand {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
 
-        embedBuilder.setTitle(title != null ? title.getAsString() : "Invalid Title", url != null ? url.getAsString() : null);
-        embedBuilder.setDescription(description != null ? description.getAsString() : "Invalid description");
+        embedBuilder.setTitle(title != null ? title.getAsString() : commandEvent.getResource("command.label.title"), url != null ? url.getAsString() : null);
+        embedBuilder.setDescription(description != null ? description.getAsString() : commandEvent.getResource("command.label.description"));
 
         if (color != null) {
             embedBuilder.setColor(new Color(color.getAsInt()));
@@ -86,7 +87,7 @@ public class EmbedSender implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("embed", "Send an Embed!")
+        return new CommandDataImpl("embed", LanguageService.getDefault("command.description.embedSender"))
                 .addOption(OptionType.STRING, "title", "The title of the embed!", true)
                 .addOption(OptionType.STRING, "description", "The description of the embed!", true)
                 .addOption(OptionType.INTEGER, "color", "The color of the embed!", false)

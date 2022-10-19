@@ -42,13 +42,13 @@ public class ClearData implements ICommand {
                     Main.getInstance().getSqlConnector().getSqlWorker().setInvite(commandEvent.getGuild().getId(), commandEvent.getGuild().getOwnerId(), vanityInvite.getCode(), vanityInvite.getUses());
                 }
 
-                Main.getInstance().getCommandManager().sendMessage("All stored Invites have been cleared, and replaced.", commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.message.clearData.success"), 5);
                 ThreadUtil.createNewThread(x -> timeout.remove(commandEvent.getGuild().getId()), null, Duration.ofMinutes(10), false, false);
             } else {
-                Main.getInstance().getCommandManager().sendMessage("You already used this Command in the last 10 Minutes, please wait until you use it again.", commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.message.clearData.cooldown"), 5);
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.ADMINISTRATOR.name()), 5);
         }
     }
 

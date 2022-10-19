@@ -5,6 +5,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.utils.external.RequestUtility;
@@ -107,7 +108,7 @@ public class Import implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("import", "Import data from another Bot.").addOption(OptionType.STRING, "bot", "The Bot you want to import data from.", true);
+        return new CommandDataImpl("import", LanguageService.getDefault("command.description.import")).addOption(OptionType.STRING, "bot", "The Bot you want to import data from.", true);
     }
 
     /**

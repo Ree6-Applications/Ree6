@@ -61,6 +61,8 @@ command:
     discordGuidelines: "Discord Guidelines"
     chatLeaderboard: "Chat-Leaderboard"
     voiceLeaderboard: "Voice-Leaderboard"
+    title: "Title"
+    description: "Description"
   description:
     birthday: "Let the bot remember your Birthday."
     instagramNotifier: "Manage your Instagram-Notifier!"
@@ -209,6 +211,19 @@ command:
       success: "Successfully banned {0}!"
       hierarchySelfError: "You can't ban someone with a higher or equal role than you!"
       hierarchyBotError: "I can't ban someone with a higher or equal role than me!"
+    blacklist:
+      addedList: "The following words have been added to the Blacklist:"
+      added: "The Word `{0}` has been added to the Blacklist!"
+      removed: "The Word `{0}` has been removed from the Blacklist!"
+      setupNeeded: "You need to setup the Blacklist first!"
+      notFound: "The Word `{0}` was not found in the Blacklist!"
+    clear:
+      noNumber: "{0} isn't a number!"
+      notInRange: "{0} isn't between 2 and 200!"
+      success: "Successfully deleted {0} Messages!"
+    clearData:
+        success: "Successfully cleared all Invite Data!"
+        cooldown: "You can only use this command once every 10 minute!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
