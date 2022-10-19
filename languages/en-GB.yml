@@ -7,7 +7,7 @@ command:
   perform:
     cooldown: "You are on cooldown!"
     error: "There was an error while executing the Command!"
-    errorWithException: "There was an error while executing the Command!\nException: {0}"
+    errorWithException: "There was an error while executing the Command!\nException: %s"
     internalError: "An error occurred while performing the Command!\nIf this continues to happen please contact our support!\n<https://support.ree6.de>"
     notFound: "That Command couldn't be found"
     blocked: "This Command is blocked!"
@@ -144,9 +144,9 @@ command:
     rule34: "Shows a random Rule34 Image."
   message:
     default:
-      usage: "Usage %guild_prefix%{0}."
-      needPermission: "Looks like I do not have the Permission `{0}`!"
-      sufficientPermission: "Looks like you do not have the Permission `{0}`!"
+      usage: "Usage {guild_prefix}%s."
+      needPermission: "Looks like I do not have the Permission `%s`!"
+      sufficientPermission: "Looks like you do not have the Permission `%s`!"
       noMention:
         user: "Please mention a user!"
         role: "Please mention a role!"
@@ -160,33 +160,33 @@ command:
       image:
         needed: "A Image is needed!"
         tooBig: "The Image is too big!"
-        tooBigMax: "The Image is too big! Max Size: {0}MB"
+        tooBigMax: "The Image is too big! Max Size: %sMB"
     birthday:
       added:
         self: "Your Birthday has been added!"
-        other: "The Birthday of {0} has been added!"
+        other: "The Birthday of %s has been added!"
         noPerms: "You don't have the permission to add a Birthday!"
       removed:
         self: "Your Birthday has been removed!"
-        other: "The Birthday of {0} has been removed!"
+        other: "The Birthday of %s has been removed!"
         noPerms: "You don't have the permission to remove a Birthday!"
       other:
         dateError: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
     instagramNotifier:
-      added: "A Instagram Notifier has been created for the User {0}!"
-      removed: "A Instagram Notifier has been removed from the User {0}!"
+      added: "A Instagram Notifier has been created for the User %s!"
+      removed: "A Instagram Notifier has been removed from the User %s!"
     redditNotifier:
-      added: "A Reddit Notifier has been created for the Subreddit {0}!"
-      removed: "A Reddit Notifier has been removed from the Subreddit {0}!"
+      added: "A Reddit Notifier has been created for the Subreddit %s!"
+      removed: "A Reddit Notifier has been removed from the Subreddit %s!"
     twitchNotifier:
-      added: "A Twitch-Stream Notifier has been created for the Channel {0}!"
-      removed: "A Twitch-Stream Notifier has been removed from the Channel {0}!"
+      added: "A Twitch-Stream Notifier has been created for the Channel %s!"
+      removed: "A Twitch-Stream Notifier has been removed from the Channel %s!"
     twitterNotifier:
-      added: "A Twitter Notifier has been created for the User {0}!"
-      removed: "A Twitter Notifier has been removed from the User {0}!"
+      added: "A Twitter Notifier has been created for the User %s!"
+      removed: "A Twitter Notifier has been removed from the User %s!"
     youtubeNotifier:
-      added: "A Youtube-Video Notifier has been created for the Channel {0}!"
-      removed: "A Youtube-Video Notifier has been removed from the Channel {0}!"
+      added: "A Youtube-Video Notifier has been created for the Channel %s!"
+      removed: "A Youtube-Video Notifier has been removed from the Channel %s!"
     anime:
       searching: "Searching for Anime..."
       found: "Anime found!"
@@ -198,9 +198,9 @@ command:
       invalidInvite: "Please provide a valid Invite!"
       gameAlreadyStarted: "The Game has been started!"
       availableGames: "Available Games:"
-    hornyJail: "{0} is now in the Horny-Jail!"
-    hug: "{0} has been hugged by {1}!"
-    kiss: "{0} has been kissed by {1}!"
+    hornyJail: "%s is now in the Horny-Jail!"
+    hug: "%s has been hugged by %s!"
+    kiss: "%s has been kissed by %s!"
     manga:
       searching: "Searching for Manga..."
       found: "Manga found!"
@@ -210,7 +210,7 @@ command:
       recordingStarted: "I am now recording the voice channel!"
       recordingStopped: "Recording stopped!"
       recordingError: "An error occurred while recording!"
-    slap: "{0} has been slapped by {1}!"
+    slap: "%s has been slapped by %s!"
     addon:
       list: "List of Addons:"
       reloadAll: "Reloading Addons ...."
@@ -223,41 +223,41 @@ command:
       optedIn: "You have been opted in for data collection!"
     leaderboards: "Below this Message you can find the Leaderboards of the current Server!\nPlease note that you have to be logged in to see these stats, reason for this is Discords Guidelines!"
     ban:
-      success: "Successfully banned {0}!"
+      success: "Successfully banned %s!"
       hierarchySelfError: "You can't ban someone with a higher or equal role than you!"
       hierarchyBotError: "I can't ban someone with a higher or equal role than me!"
     blacklist:
       addedList: "The following words have been added to the Blacklist:"
-      added: "The Word `{0}` has been added to the Blacklist!"
-      removed: "The Word `{0}` has been removed from the Blacklist!"
+      added: "The Word `%s` has been added to the Blacklist!"
+      removed: "The Word `%s` has been removed from the Blacklist!"
       setupNeeded: "You need to setup the Blacklist first!"
-      notFound: "The Word `{0}` was not found in the Blacklist!"
+      notFound: "The Word `%s` was not found in the Blacklist!"
     clear:
-      noNumber: "{0} isn't a number!"
-      notInRange: "{0} isn't between 2 and 200!"
-      success: "Successfully deleted {0} Messages!"
+      noNumber: "%s isn't a number!"
+      notInRange: "%s isn't between 2 and 200!"
+      success: "Successfully deleted %s Messages!"
     clearData:
       success: "Successfully cleared all Invite Data!"
       cooldown: "You can only use this command once every 10 minute!"
     import:
       botRequired: "Please provide a Bot you which to Import data from!"
       unknownBot: "Unknown Bot!"
-      success: "Successfully imported data from {0} Users!"
+      success: "Successfully imported data from %s Users!"
       error:
         unknown: "An unknown error occurred! ({})"
         noData: "No Data found!"
         visibility: "You can't import data from a Bot which is not visible to everyone!"
     kick:
-      success: "Successfully kicked {0}!"
+      success: "Successfully kicked %s!"
       hierarchySelfError: "You can't kick someone with a higher or equal role than you!"
       hierarchyBotError: "I can't kick someone with a higher or equal role than me!"
     mute:
       invalidTime: "Please provide a valid Time!"
-      success: "Successfully muted {0} for {1}s!"
+      success: "Successfully muted %s for %ss!"
       hierarchySelfError: "You can't mute someone with a higher or equal role than you!"
       hierarchyBotError: "I can't mute someone with a higher or equal role than me!"
     prefix:
-      success: "Successfully changed the Prefix to `{0}`!"
+      success: "Successfully changed the Prefix to `%s`!"
     setup:
       successImage: "Successfully set the new Join-Image!"
       setupMenu: "Which configuration do you want to check out?"
@@ -267,10 +267,10 @@ command:
       suggestionMenuPlaceholder: "Suggest something!"
       success: "Successfully setup the Suggestion-System!"
     unban:
-      success: "Successfully unbanned {0}!"
-      notFound: "The User `{0}` was not found!"
+      success: "Successfully unbanned %s!"
+      notFound: "The User `%s` was not found!"
     unmute:
-      success: "Successfully un-muted {0}!"
+      success: "Successfully un-muted %s!"
       hierarchySelfError: "You can't un-mute someone with a higher or equal role than you!"
       hierarchyBotError: "I can't un-mute someone with a higher or equal role than me!"
     music:
@@ -281,19 +281,19 @@ command:
         enabled: "Loop has been enabled!"
         disabled: "Loop has been disabled!"
       lyrics:
-        notFound: "Couldn't find the Lyrics for {0}."
-        foundUnlikely: "Lyrics for {0} found, but they are unlikely to be correct: {1}"
+        notFound: "Couldn't find the Lyrics for %s."
+        foundUnlikely: "Lyrics for %s found, but they are unlikely to be correct: %s"
       pause: "The Player has been paused!"
       resume: "The Player has been resumed!"
       shuffle: "The Queue has been shuffled!"
-      songInfo: "**Song:**```{0} by {1}```\n{2} `[{3}/{4}]` {5}"
+      songInfo: "**Song:**```%s by %s```\n%s `[%s/%s]` %s"
       songQueueEmpty: "The Queue is empty!"
-      songQueue: "The Queue contains the following Songs: {0}"
+      songQueue: "The Queue contains the following Songs: %s"
       volume:
-        success: "Successfully set the Volume to {0}%!"
+        success: "Successfully set the Volume to %s%!"
         invalid: "Please provide a valid Volume!"
-      notFound: "Couldn't find the Song ``{0}``!"
-      notFoundMultiple: "Couldn't find ``{0}`` Songs!"
+      notFound: "Couldn't find the Song ``%s``!"
+      notFoundMultiple: "Couldn't find ``%s`` Songs!"
       searchFailed: "An error occurred while searching for the Song, please try again after a few minutes!"
     nsfw:
       searching: "Searching for NSFW Content ..."

@@ -142,7 +142,7 @@ public class LanguageService {
             resource = getByLocale(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "configuration_language").getStringValue(), key, parameter);
         }
         resource = resource
-                .replaceAll("%guild_prefix%", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guildId + "", "chatprefix").getStringValue());
+                .replace("{guild_prefix}", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guildId + "", "chatprefix").getStringValue());
 
         return resource;
     }
@@ -160,7 +160,7 @@ public class LanguageService {
 
         if (interaction.getGuild() != null)
             resource = resource
-                    .replaceAll("%guild_prefix%", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(interaction.getGuild().getId(), "chatprefix").getStringValue());
+                    .replace("{guild_prefix}", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(interaction.getGuild().getId(), "chatprefix").getStringValue());
 
         return resource;
     }

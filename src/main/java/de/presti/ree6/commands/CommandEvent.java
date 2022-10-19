@@ -1,7 +1,9 @@
 package de.presti.ree6.commands;
 
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
+import lombok.Getter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -21,6 +23,13 @@ import javax.annotation.Nullable;
  * Event class used to parse and provide Information about a command execution.
  */
 public class CommandEvent {
+
+    /**
+     * The Command that has been executed.
+     */
+    @Getter
+    @Nonnull
+    ICommand iCommand;
 
     /**
      * The Member associated with the Command execution.
@@ -60,14 +69,17 @@ public class CommandEvent {
 
     /**
      * Constructor used to save the Data.
-     * @param member the {@link Member} Entity.
-     * @param guild the {@link Guild} Entity.
-     * @param message the {@link Message} Entity.
-     * @param textChannel the {@link TextChannel} Entity.
-     * @param arguments the given Arguments.
+     *
+     * @param iCommand                     the {@link ICommand}
+     * @param member                       the {@link Member} Entity.
+     * @param guild                        the {@link Guild} Entity.
+     * @param message                      the {@link Message} Entity.
+     * @param textChannel                  the {@link TextChannel} Entity.
+     * @param arguments                    the given Arguments.
      * @param slashCommandInteractionEvent the {@link SlashCommandInteractionEvent} Entity.
      */
-    public CommandEvent(@Nonnull Member member, @Nonnull Guild guild, @Nullable Message message, @Nonnull MessageChannelUnion textChannel, @Nullable String[] arguments, @Nullable SlashCommandInteractionEvent slashCommandInteractionEvent) {
+    public CommandEvent(@Nonnull ICommand iCommand, @Nonnull Member member, @Nonnull Guild guild, @Nullable Message message, @Nonnull MessageChannelUnion textChannel, @Nullable String[] arguments, @Nullable SlashCommandInteractionEvent slashCommandInteractionEvent) {
+        this.iCommand = iCommand;
         this.member = member;
         this.guild = guild;
         this.message = message;
@@ -78,9 +90,10 @@ public class CommandEvent {
 
     /**
      * Reply to the Command execution.
+     *
      * @param message the Message to reply with.
      */
-    public void reply (String message) {
+    public void reply(String message) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         messageCreateBuilder.setContent(message);
         reply(messageCreateBuilder.build());
@@ -88,10 +101,11 @@ public class CommandEvent {
 
     /**
      * Reply to the Command execution.
-     * @param message the Message to reply with.
+     *
+     * @param message      the Message to reply with.
      * @param deleteSecond the Seconds to delete the Message after.
      */
-    public void reply (String message, int deleteSecond) {
+    public void reply(String message, int deleteSecond) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         messageCreateBuilder.setContent(message);
         reply(messageCreateBuilder.build(), deleteSecond);
@@ -99,9 +113,10 @@ public class CommandEvent {
 
     /**
      * Reply to the Command execution.
+     *
      * @param message the Message to reply with.
      */
-    public void reply (MessageEmbed message) {
+    public void reply(MessageEmbed message) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         messageCreateBuilder.setEmbeds(message);
         reply(messageCreateBuilder.build());
@@ -109,10 +124,11 @@ public class CommandEvent {
 
     /**
      * Reply to the Command execution.
-     * @param message the Message to reply with.
+     *
+     * @param message      the Message to reply with.
      * @param deleteSecond the Seconds to delete the Message after.
      */
-    public void reply (MessageEmbed message, int deleteSecond) {
+    public void reply(MessageEmbed message, int deleteSecond) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         messageCreateBuilder.setEmbeds(message);
         reply(messageCreateBuilder.build(), deleteSecond);
@@ -120,6 +136,7 @@ public class CommandEvent {
 
     /**
      * Reply to the Command execution.
+     *
      * @param message the Message to reply with.
      */
     public void reply(MessageCreateData message) {
@@ -128,7 +145,8 @@ public class CommandEvent {
 
     /**
      * Reply to the Command execution.
-     * @param message the Message to reply with.
+     *
+     * @param message      the Message to reply with.
      * @param deleteSecond the Seconds to delete the Message after.
      */
     public void reply(MessageCreateData message, int deleteSecond) {
@@ -137,7 +155,8 @@ public class CommandEvent {
 
     /**
      * Get a Message from the Guild specific Language Setting.
-     * @param key the Key of the Message.
+     *
+     * @param key        the Key of the Message.
      * @param parameters the Parameters to replace in the Message.
      * @return the Message.
      */
@@ -147,6 +166,7 @@ public class CommandEvent {
 
     /**
      * Get the {@link Member} Entity associated with the Event.
+     *
      * @return the {@link Member} Entity.
      */
     public @NotNull Member getMember() {
@@ -155,6 +175,7 @@ public class CommandEvent {
 
     /**
      * Get the {@link Guild} Entity associated with the Event.
+     *
      * @return the {@link Guild} Entity.
      */
     public @NotNull Guild getGuild() {
@@ -163,6 +184,7 @@ public class CommandEvent {
 
     /**
      * Get the {@link Message} Entity associated with the Event.
+     *
      * @return the {@link Message} Entity.
      */
     public @Nullable Message getMessage() {
@@ -171,6 +193,7 @@ public class CommandEvent {
 
     /**
      * Get the {@link TextChannel} Entity associated with the Event.
+     *
      * @return the {@link TextChannel} Entity.
      */
     public @NotNull MessageChannelUnion getChannel() {
@@ -179,6 +202,7 @@ public class CommandEvent {
 
     /**
      * Get the Arguments associated with the Event.
+     *
      * @return the Arguments.
      */
     public String[] getArguments() {
@@ -190,6 +214,7 @@ public class CommandEvent {
 
     /**
      * Get the {@link SlashCommandInteractionEvent} Entity associated with the Event.
+     *
      * @return the {@link SlashCommandInteractionEvent} Entity.
      */
     public @Nullable SlashCommandInteractionEvent getSlashCommandInteractionEvent() {
@@ -198,6 +223,7 @@ public class CommandEvent {
 
     /**
      * Check if the Command Execution is a Slash Command or not.
+     *
      * @return true, if it is a Slash Command Execution. | false, if not.
      */
     public boolean isSlashCommand() {
@@ -206,6 +232,7 @@ public class CommandEvent {
 
     /**
      * Get the {@link InteractionHook} from the {@link SlashCommandInteractionEvent}.
+     *
      * @return the {@link InteractionHook} Entity.
      */
     public InteractionHook getInteractionHook() {

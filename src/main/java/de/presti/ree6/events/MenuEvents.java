@@ -147,6 +147,7 @@ public class MenuEvents extends ListenerAdapter {
                     EmbedBuilder embedBuilder = new EmbedBuilder();
                     embedBuilder.setTitle("Suggestion");
                     embedBuilder.setColor(Color.ORANGE);
+                    embedBuilder.setThumbnail(event.getUser().getEffectiveAvatarUrl());
                     embedBuilder.setDescription("```" + event.getValue("re_suggestion_text").getAsString() + "```");
                     embedBuilder.setFooter("Suggestion by " + event.getUser().getAsTag(), event.getUser().getAvatarUrl());
                     embedBuilder.setTimestamp(Instant.now());

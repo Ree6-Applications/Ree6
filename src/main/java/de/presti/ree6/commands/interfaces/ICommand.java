@@ -32,7 +32,7 @@ public interface ICommand {
             return null;
         });
         // Update Stats.
-        Main.getInstance().getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getId(), this.getClass().getAnnotation(Command.class).name());
+        Main.getInstance().getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getId(), commandEvent.getICommand().getClass().getAnnotation(Command.class).name());
     }
 
     /**

@@ -276,7 +276,7 @@ public class CommandManager {
         String[] argumentsParsed = Arrays.copyOfRange(arguments, 1, arguments.length);
 
         // Perform the Command.
-        command.onASyncPerform(new CommandEvent(member, guild, message, textChannel, argumentsParsed, null));
+        command.onASyncPerform(new CommandEvent(command, member, guild, message, textChannel, argumentsParsed, null));
 
         return true;
     }
@@ -304,13 +304,13 @@ public class CommandManager {
         }
 
         // Perform the Command.
-        command.onASyncPerform(new CommandEvent(slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, textChannel, null, slashCommandInteractionEvent));
+        command.onASyncPerform(new CommandEvent(command, slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, textChannel, null, slashCommandInteractionEvent));
 
         return true;
     }
 
     /**
-     * Check if an User is time-outed.
+     * Check if a User is time-outed.
      *
      * @param user the User.
      * @return true, if yes | false, if not.
