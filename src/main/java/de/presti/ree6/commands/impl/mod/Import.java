@@ -27,7 +27,7 @@ public class Import implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
-            commandEvent.reply("You do not have the permission to do that!");
+            commandEvent.reply(commandEvent.getResource("command.message.default.noPermission", Permission.MANAGE_SERVER.name()), 5);
             return;
         }
 
@@ -40,10 +40,10 @@ public class Import implements ICommand {
             switch (commandEvent.getArguments()[0]) {
                 case "mee6" -> importFromMee6(commandEvent);
 
-                default -> commandEvent.reply("Unknown Bot!", 5);
+                default -> commandEvent.reply(commandEvent.getResource("command.message.import.unknownBot"), 5);
             }
         } else {
-            commandEvent.reply("Please provide a Bot you which to Import data from!", 5);
+            commandEvent.reply(commandEvent.getResource("command.message.import.botRequired"), 5);
         }
     }
 
@@ -82,9 +82,9 @@ public class Import implements ICommand {
                         }
                     }
                 });
-                commandEvent.reply("Imported " + jsonElement.getAsJsonObject().get("players").getAsJsonArray().size() + " Users!", 5);
+                commandEvent.reply(commandEvent.getResource("command.message.import.success", jsonElement.getAsJsonObject().get("players").getAsJsonArray().size()), 5);
             } else {
-                commandEvent.reply("Something went wrong!", 5);
+                commandEvent.reply(commandEvent.getResource("command.perform.error"), 5);
             }
         } else {
             int code = jsonElement.isJsonObject() && jsonElement.getAsJsonObject().has("status_code") &&
@@ -94,12 +94,12 @@ public class Import implements ICommand {
                     jsonElement.getAsJsonObject().get("error").isJsonObject() && jsonElement.getAsJsonObject().get("error").getAsJsonObject().has("message") ?
                     jsonElement.getAsJsonObject().get("error").getAsJsonObject().get("message").getAsString() : "Unknown";
 
-            commandEvent.reply("Something went wrong!\n" +
-                    (code == 404 ?
-                            "Looks like Mee6 does not have any data related to this Server!" :
+            commandEvent.reply(
+                    commandEvent.getResource(code == 404 ?
+                            "command.message.import.error.noData" :
                             code == 401 ?
-                                    "Please set your Leaderboards visibility to public!" :
-                                    "Unknown error (" + reason + ")"), 5);
+                                    "command.message.import.error.visibility" :
+                                    "command.message.import.error.unknown", reason), 5);
         }
     }
 

@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -25,9 +26,8 @@ public class Unmute implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS)) {
-            Main.getInstance().getCommandManager().sendMessage("It seems like I do not have the permissions to do that :/\nPlease re-invite me!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.default.noPermission", "MODERATE_MEMBERS"), 5);
             return;
         }
 
@@ -40,24 +40,24 @@ public class Unmute implements ICommand {
                 if (targetOption != null) {
                     unmuteMember(commandEvent.getMember(), targetOption.getAsMember(), commandEvent);
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("No User was given to Unmute!" , 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
                 }
 
             } else {
                 if (commandEvent.getArguments().length == 1) {
                     if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                        Main.getInstance().getCommandManager().sendMessage("No User mentioned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-                        Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "unmute @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                        commandEvent.reply(commandEvent.getResource("command.message.default.usage","unmute @user"), 5);
                     } else {
                         unmuteMember(commandEvent.getMember(), commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                     }
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "unmute @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
+                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","unmute @user"), 5);
                 }
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You dont have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.MODERATE_MEMBERS.name()), 5);
         }
 
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
@@ -68,7 +68,7 @@ public class Unmute implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("unmute", "Unmute a User on the Server!")
+        return new CommandDataImpl("unmute", LanguageService.getDefault("command.description.unmute"))
                 .addOptions(new OptionData(OptionType.USER, "target", "Which User should be unmuted.").setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MODERATE_MEMBERS));
     }
@@ -91,16 +91,14 @@ public class Unmute implements ICommand {
 
         if (executor.canInteract(member) && commandEvent.getGuild().getSelfMember().canInteract(member)) {
             member.removeTimeout().onErrorFlatMap(throwable -> {
-                Main.getInstance().getCommandManager().sendMessage("Could not unmute " + member.getUser().getAsTag() + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.perform.errorWithException", throwable.getMessage()));
                 return null;
-            }).queue(unused ->
-                    Main.getInstance().getCommandManager().sendMessage("User " + member.getAsMention() + " was unmuted!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook()));
-            Main.getInstance().getCommandManager().sendMessage("User " + member.getAsMention() + " has been unmuted!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            }).queue(unused ->commandEvent.reply(commandEvent.getResource("command.message.unmute.success",member.getAsMention())));
         } else {
-            if (!executor.canInteract(member)) {
-                Main.getInstance().getCommandManager().sendMessage("You cannot unmute " + member.getUser().getAsTag() + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
+                commandEvent.reply(commandEvent.getResource("command.message.unmute.hierarchySelfError"), 5);
             } else {
-                Main.getInstance().getCommandManager().sendMessage("I cannot unmute " + member.getUser().getAsTag() + "!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.reply(commandEvent.getResource("command.message.unmute.hierarchyBotError"), 5);
             }
         }
     }

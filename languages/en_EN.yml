@@ -63,6 +63,15 @@ command:
     voiceLeaderboard: "Voice-Leaderboard"
     title: "Title"
     description: "Description"
+    setupMenu: "Setup Menu"
+    auditLog: "Audit-Logging"
+    welcomeChannel: "Welcome-Channel"
+    autoRole: "Auto-Role"
+    temporalVoice: "Temporal-Voice"
+    statistics: "Statistics"
+    ticketSystem: "Ticket-System"
+    suggestionMenu: "Suggestion-Menu"
+    webinterface: "Webinterface"
   description:
     birthday: "Let the bot remember your Birthday."
     instagramNotifier: "Manage your Instagram-Notifier!"
@@ -112,6 +121,7 @@ command:
     mute: "Mute an specific User from the Guild."
     prefix: "Change the Prefix of the Guild."
     setup: "Setup specific features for the Guild."
+    suggestion: "Setup the Suggestion-System!"
     unban: "Unban an specific User from the Guild."
     unmute: "Unmute an specific User from the Guild."
     webinterface: "Shows the url to the Webinterface of Ree6."
@@ -133,7 +143,7 @@ command:
     rule34: "Shows a random Rule34 Image."
   message:
     default:
-      usage: "Please use %guild_prefix%{0}."
+      usage: "Usage %guild_prefix%{0}."
       needPermission: "Looks like I do not have the Permission `{0}`!"
       sufficientPermission: "Looks like you do not have the Permission `{0}`!"
       noMention:
@@ -146,6 +156,10 @@ command:
       retrievalError: "There was an error while retrieving the data!"
       notInVoiceChannel: "You are not in a Voice-Channel!"
       alreadyInVoiceChannel: "I am already in a Voice-Channel!"
+      image:
+        needed: "A Image is needed!"
+        tooBig: "The Image is too big!"
+        tooBigMax: "The Image is too big! Max Size: {0}MB"
     birthday:
       added:
         self: "Your Birthday has been added!"
@@ -222,8 +236,42 @@ command:
       notInRange: "{0} isn't between 2 and 200!"
       success: "Successfully deleted {0} Messages!"
     clearData:
-        success: "Successfully cleared all Invite Data!"
-        cooldown: "You can only use this command once every 10 minute!"
+      success: "Successfully cleared all Invite Data!"
+      cooldown: "You can only use this command once every 10 minute!"
+    import:
+      botRequired: "Please provide a Bot you which to Import data from!"
+      unknownBot: "Unknown Bot!"
+      success: "Successfully imported data from {0} Users!"
+      error:
+        unknown: "An unknown error occurred! ({})"
+        noData: "No Data found!"
+        visibility: "You can't import data from a Bot which is not visible to everyone!"
+    kick:
+      success: "Successfully kicked {0}!"
+      hierarchySelfError: "You can't kick someone with a higher or equal role than you!"
+      hierarchyBotError: "I can't kick someone with a higher or equal role than me!"
+    mute:
+      invalidTime: "Please provide a valid Time!"
+      success: "Successfully muted {0} for {1}s!"
+      hierarchySelfError: "You can't mute someone with a higher or equal role than you!"
+      hierarchyBotError: "I can't mute someone with a higher or equal role than me!"
+    prefix:
+      success: "Successfully changed the Prefix to `{0}`!"
+    setup:
+      successImage: "Successfully set the new Join-Image!"
+      setupMenu: "Which configuration do you want to check out?"
+      setupMenuPlaceholder: "Select a configuration Step!"
+    suggestion:
+      suggestionMenu: "Click on the button below to suggest something!"
+      suggestionMenuPlaceholder: "Suggest something!"
+      success: "Successfully setup the Suggestion-System!"
+    unban:
+      success: "Successfully unbanned {0}!"
+      notFound: "The User `{0}` was not found!"
+    unmute:
+      success: "Successfully un-muted {0}!"
+      hierarchySelfError: "You can't un-mute someone with a higher or equal role than you!"
+      hierarchyBotError: "I can't un-mute someone with a higher or equal role than me!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."

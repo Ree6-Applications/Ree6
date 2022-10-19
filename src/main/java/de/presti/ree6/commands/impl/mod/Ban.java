@@ -33,7 +33,7 @@ public class Ban implements ICommand {
             return;
         }
 
-        if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+        if (commandEvent.getMember().hasPermission(Permission.BAN_MEMBERS)) {
             if (commandEvent.isSlashCommand()) {
                 OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
                 OptionMapping reasonOption = commandEvent.getSlashCommandInteractionEvent().getOption("reason");
@@ -45,7 +45,7 @@ public class Ban implements ICommand {
                         banMember(targetOption.getAsMember(), null, commandEvent);
                     }
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);;
+                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
                 }
             } else {
                 if (commandEvent.getArguments().length > 0) {

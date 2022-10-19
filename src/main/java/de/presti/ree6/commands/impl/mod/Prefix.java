@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -32,21 +33,21 @@ public class Prefix implements ICommand {
 
                 if (prefixOption != null) {
                     Main.getInstance().getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", prefixOption.getAsString());
-                    Main.getInstance().getCommandManager().sendMessage("Your new Prefix has been set to: " + prefixOption.getAsString(), 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.prefix.success", prefixOption.getAsString()), 5);
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "prefix PREFIX", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","prefix PREFIX", 5));
                 }
             } else {
                 if (commandEvent.getArguments().length != 1) {
-                    Main.getInstance().getCommandManager().sendMessage((commandEvent.getArguments().length < 1 ? "Not enough" : "Too many") + " Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "prefix PREFIX", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
+                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","prefix PREFIX", 5));
                 } else {
                     Main.getInstance().getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", commandEvent.getArguments()[0]);
-                    Main.getInstance().getCommandManager().sendMessage("Your new Prefix has been set to: " + commandEvent.getArguments()[0], 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.prefix.success", commandEvent.getArguments()[0]), 5);
                 }
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You don't have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.ADMINISTRATOR.name() + "/" + Permission.MANAGE_SERVER.name()));
         }
     }
 
@@ -55,7 +56,7 @@ public class Prefix implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("prefix", "Change Ree6's Bot-Prefix!")
+        return new CommandDataImpl("prefix", LanguageService.getDefault("command.description.prefix"))
                 .addOptions(new OptionData(OptionType.STRING, "new-prefix", "What should the new Prefix be?").setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR, Permission.MANAGE_SERVER));
     }

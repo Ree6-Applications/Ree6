@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.UserSnowflake;
@@ -35,12 +36,12 @@ public class Unban implements ICommand {
                 if (targetOption != null) {
                     try {
                         commandEvent.getGuild().unban(UserSnowflake.fromId(targetOption.getAsString())).queue();
-                        Main.getInstance().getCommandManager().sendMessage("User <@" + targetOption.getAsString() + "> has been unbanned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        commandEvent.reply(commandEvent.getResource("command.message.unban.success", "<@" + targetOption.getAsString() + ">"), 5);
                     } catch (Exception ignored) {
-                        Main.getInstance().getCommandManager().sendMessage("Received a Invalid UserID", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        commandEvent.reply(commandEvent.getResource("command.message.unban.notFound", targetOption.getAsString()), 5);
                     }
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("No User was given to Unban!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
                 }
 
             } else {
@@ -48,17 +49,17 @@ public class Unban implements ICommand {
                     try {
                         String userId = commandEvent.getArguments()[0];
                         commandEvent.getGuild().unban(UserSnowflake.fromId(userId)).queue();
-                        Main.getInstance().getCommandManager().sendMessage("User <@" + userId + "> has been unbanned!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        commandEvent.reply(commandEvent.getResource("command.message.unban.success", "<@" + userId + ">"), 5);
                     } catch (Exception ignored) {
-                        Main.getInstance().getCommandManager().sendMessage("Received a Invalid UserID", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                        commandEvent.reply(commandEvent.getResource("command.message.unban.notFound", commandEvent.getArguments()[0]), 5);
                     }
                 } else {
-                    Main.getInstance().getCommandManager().sendMessage("Not enough Arguments!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
-                    Main.getInstance().getCommandManager().sendMessage("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "unban @user", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
+                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","unban @user"), 5);
                 }
             }
         } else {
-            Main.getInstance().getCommandManager().sendMessage("You dont have the Permission for this Command!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.BAN_MEMBERS.name()), 5);
         }
 
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
@@ -69,7 +70,7 @@ public class Unban implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("unban", "Unban a User from the Server!")
+        return new CommandDataImpl("unban", LanguageService.getDefault("command.description.unban"))
                 .addOptions(new OptionData(OptionType.STRING, "id", "Which User should be unbanned.").setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS));
     }

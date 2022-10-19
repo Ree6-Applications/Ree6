@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.Suggestions;
 import de.presti.ree6.utils.data.Data;
@@ -25,7 +26,7 @@ import java.util.Map;
 /**
  * A command used to set up the Suggestion System.
  */
-@Command(name = "suggestion", description = "Setup the Suggestion-System!", category = Category.MOD)
+@Command(name = "suggestion", description = "command.description.suggestion", category = Category.MOD)
 public class Suggestion implements ICommand {
 
     /**
@@ -34,7 +35,7 @@ public class Suggestion implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.ADMINISTRATOR)) {
-            Main.getInstance().getCommandManager().sendMessage("It seems like I do not have the permissions to do that :/\nPlease re-invite me!", 5, commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("command.message.default.noPermission", "ADMINISTRATOR"), 5);
             return;
         }
 
@@ -43,7 +44,7 @@ public class Suggestion implements ICommand {
             OptionMapping messageChannel = commandEvent.getSlashCommandInteractionEvent().getOption("messagetarget");
 
             if (channel == null || messageChannel == null) {
-                commandEvent.reply("Please provide a channel!");
+                commandEvent.reply(commandEvent.getResource("command.message.default.noMention.channel"), 5);
                 return;
             }
 
@@ -52,8 +53,8 @@ public class Suggestion implements ICommand {
             if (commandEvent.getMessage() != null && commandEvent.getMessage().getMentions().getChannels().size() == 2) {
                 createSuggestions(commandEvent, (MessageChannel) commandEvent.getMessage().getMentions().getChannels().get(0), (MessageChannel) commandEvent.getMessage().getMentions().getChannels().get(1));
             } else {
-                commandEvent.reply("No channels provided!");
-                commandEvent.reply("Use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "suggestion #suggestions-channel #message-channel");
+                commandEvent.reply(commandEvent.getResource("command.message.default.noMention.channel"), 5);
+                commandEvent.reply(commandEvent.getResource("command.message.default.usage", "suggestion <#suggestions-post-channel> <#suggestions-create-channel>"), 5);
             }
         }
     }
@@ -67,12 +68,12 @@ public class Suggestion implements ICommand {
     public void createSuggestions(CommandEvent commandEvent, MessageChannel channel, MessageChannel messageChannel) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Suggestion-System");
+        embedBuilder.setTitle(commandEvent.getResource("command.label.suggestionMenu"));
         embedBuilder.setColor(Color.ORANGE);
-        embedBuilder.setDescription("Click on the button below to suggest something!");
+        embedBuilder.setDescription(commandEvent.getResource("command.message.suggestion.suggestionMenu"));
         embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
         messageCreateBuilder.setEmbeds(embedBuilder.build());
-        messageCreateBuilder.setActionRow(Button.primary("re_suggestion", "Suggest something!"));
+        messageCreateBuilder.setActionRow(Button.primary("re_suggestion", commandEvent.getResource("command.message.suggestion.suggestionMenuPlaceholder")));
 
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
 
@@ -86,7 +87,7 @@ public class Suggestion implements ICommand {
             Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(suggestions);
         }
 
-        commandEvent.reply("Successfully setup the Suggestion-System!", 5);
+        commandEvent.reply(commandEvent.getResource("command.message.suggestion.success"), 5);
     }
 
     /**
@@ -94,7 +95,7 @@ public class Suggestion implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("suggestion", "Setup the Suggestion-System!")
+        return new CommandDataImpl("suggestion", LanguageService.getDefault("command.description.suggestion"))
                 .addOptions(new OptionData(OptionType.CHANNEL, "target", "The channel the suggestions should be shown in.").setRequired(true))
                 .addOptions(new OptionData(OptionType.CHANNEL, "messagetarget", "The channel the bot should send the suggestion message to.").setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));

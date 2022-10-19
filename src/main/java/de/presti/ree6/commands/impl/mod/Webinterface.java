@@ -21,7 +21,7 @@ public class Webinterface implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-        messageCreateBuilder.addActionRow(Button.link("https://webinterface.ree6.de", "Webinterface"));
+        messageCreateBuilder.addActionRow(Button.link("https://webinterface.ree6.de", commandEvent.getResource("message.label.webinterface")));
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), commandEvent);
     }
 
