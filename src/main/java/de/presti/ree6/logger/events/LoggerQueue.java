@@ -4,6 +4,7 @@ import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.bot.util.WebhookUtil;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.events.implentation.LogMessageMember;
 import de.presti.ree6.logger.events.implentation.LogMessageRole;
 import de.presti.ree6.logger.events.implentation.LogMessageUser;
@@ -12,7 +13,7 @@ import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.Permission;
 
-import java.awt.Color;
+import java.awt.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -70,8 +71,7 @@ public class LoggerQueue {
                     // Set the new Webhook Message.
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(logMessageVoice.getMember().getUser().getAsTag(),
                             logMessageVoice.getMember().getUser().getAvatarUrl(), null));
-                    webhookEmbedBuilder.setDescription(logMessageVoice.getMember().getAsMention() + " **rejoined the Voice-channel** " +
-                            logMessageVoice.getCurrentVoiceChannel().getAsMention());
+                    webhookEmbedBuilder.setDescription(LanguageService.getByGuild(loggerMessage.getGuild(), "logging.voicechannel.rejoin", logMessageVoice.getMember().getAsMention(), logMessageVoice.getCurrentVoiceChannel().getAsMention()));
 
                     modified = true;
                 }
@@ -92,8 +92,7 @@ public class LoggerQueue {
                     // Set the new Webhook Message.
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(logMessageVoice.getMember().getUser().getAsTag(),
                             logMessageVoice.getMember().getUser().getAvatarUrl(), null));
-                    webhookEmbedBuilder.setDescription(logMessageVoice.getMember().getUser().getAsMention() + " **moved through many Voice-channels and is now in** "
-                            + logMessageVoice.getCurrentVoiceChannel().getAsMention());
+                        webhookEmbedBuilder.setDescription(LanguageService.getByGuild(loggerMessage.getGuild(), "logging.voicechannel.moveMany", logMessageVoice.getMember().getAsMention(), logMessageVoice.getCurrentVoiceChannel().getAsMention()));
 
                     modified = true;
                 }
@@ -113,8 +112,7 @@ public class LoggerQueue {
                     // Set the new Webhook Message.
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(logMessageVoice.getMember().getUser().getAsTag(),
                             logMessageVoice.getMember().getUser().getAvatarUrl(), null));
-                    webhookEmbedBuilder.setDescription(logMessageVoice.getMember().getUser().getAsMention() + " **joined and left the Voice-channel** " +
-                            logMessageVoice.getPreviousVoiceChannel().getAsMention());
+                    webhookEmbedBuilder.setDescription(LanguageService.getByGuild(loggerMessage.getGuild(), "logging.voicechannel.leaveInstant", logMessageVoice.getMember().getAsMention(), logMessageVoice.getPreviousVoiceChannel().getAsMention()));
 
                     modified = true;
                 }
@@ -144,9 +142,10 @@ public class LoggerQueue {
                     // Set the new Webhook Message.
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(logMessageMember.getMember().getUser().getAsTag(),
                             logMessageMember.getMember().getUser().getAvatarUrl(), null));
-                    webhookEmbedBuilder.setDescription("The Nickname of " + logMessageMember.getMember().getAsMention() + " has been changed.\n**New Nickname:**\n" +
-                            logMessageMember.getCurrentName() + "\n**Old Nickname:**\n" +
-                            (memberData != null && memberData.getPreviousName() != null ? memberData.getPreviousName() : logMessageMember.getMember().getUser().getName()));
+                    webhookEmbedBuilder.setDescription(LanguageService.getByGuild(loggerMessage.getGuild(), "logging.nickname.changed",
+                            logMessageMember.getMember().getAsMention(),
+                            logMessageMember.getPreviousName(),
+                            memberData != null && memberData.getPreviousName() != null ? memberData.getPreviousName() : logMessageMember.getMember().getUser().getName()));
 
                     modified = true;
                 }
@@ -215,10 +214,11 @@ public class LoggerQueue {
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(logMessageMember.getMember().getUser().getAsTag(),
                             logMessageMember.getMember().getUser().getAvatarUrl(), null));
                     webhookEmbedBuilder.setThumbnailUrl(logMessageMember.getMember().getUser().getAvatarUrl());
-                    webhookEmbedBuilder.setDescription(":writing_hand: " + logMessageMember.getMember().getAsMention() + " **has been updated.**");
+                    webhookEmbedBuilder.setDescription(LanguageService.getByGuild(loggerMessage.getGuild(), "logging.member",
+                            logMessageMember.getMember().getAsMention()));
 
                     if (!logMessageMember.getAddedRoles().isEmpty() || !logMessageMember.getRemovedRoles().isEmpty())
-                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Roles:**", stringBuilder.toString()));
+                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.roles") + ":**", stringBuilder.toString()));
 
                     modified = true;
                 }
@@ -311,14 +311,14 @@ public class LoggerQueue {
                     if (!logMessageRole.isCreated() && !logMessageRole.isDeleted()) {
 
                         // Set update as Description
-                        webhookEmbedBuilder.setDescription(":family_mmb: ``" + logMessageRole.getCurrentName() + "`` **has been updated.**");
+                        webhookEmbedBuilder.setDescription(LanguageService.getByGuild(loggerMessage.getGuild(), "logging.role.update", logMessageRole.getCurrentName()));
 
                         // Check if there is a previous and current Name.
                         if (logMessageRole.getPreviousName() != null && logMessageRole.getCurrentName() != null) {
 
                             // Add new Fields with Information.
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Old name**", logMessageRole.getPreviousName()));
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**New name**", logMessageRole.getCurrentName()));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.oldName") + "**", logMessageRole.getPreviousName()));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newName") + "**", logMessageRole.getCurrentName()));
                             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "** **", "** **"));
                         }
 
@@ -326,8 +326,8 @@ public class LoggerQueue {
                         if (logMessageRole.isChangedMentioned()) {
 
                             // Add new Fields with Information.
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Old mentionable**", !logMessageRole.isMentioned() + ""));
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**New mentionable**", logMessageRole.isMentioned() + ""));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.oldMentionable") + "**", !logMessageRole.isMentioned() + ""));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newMentionable") + "**", logMessageRole.isMentioned() + ""));
                             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "** **", "** **"));
                         }
 
@@ -335,8 +335,8 @@ public class LoggerQueue {
                         if (logMessageRole.isChangedHoisted()) {
 
                             // Add new Fields with Information.
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Old hoist**", !logMessageRole.isHoisted() + ""));
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**New hoist**", logMessageRole.isHoisted() + ""));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.oldHoist") + "**", !logMessageRole.isHoisted() + ""));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newHoist") + "**", logMessageRole.isHoisted() + ""));
                             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "** **", "** **"));
                         }
 
@@ -344,9 +344,9 @@ public class LoggerQueue {
                         if (logMessageRole.getPreviousColor() != null || logMessageRole.getCurrentColor() != null) {
 
                             // Add new Fields with Information.
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Old color**", (logMessageRole.getPreviousColor() != null ?
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.oldColor") + "**", (logMessageRole.getPreviousColor() != null ?
                                     logMessageRole.getPreviousColor() : Color.gray).getRGB() + ""));
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**New color**", (logMessageRole.getCurrentColor() != null ?
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newColor") + "**", (logMessageRole.getCurrentColor() != null ?
                                     logMessageRole.getCurrentColor() : Color.gray).getRGB() + ""));
                             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "** **", "** **"));
                         }
@@ -384,18 +384,17 @@ public class LoggerQueue {
 
                         // Add the String from the StringBuilder as Embed to the Message
                         if (!stringBuilder.toString().isEmpty())
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**New permissions**", stringBuilder.toString()));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newPermissions") + "**", stringBuilder.toString()));
 
                     } else {
                         // Check if the Role has been created.
                         if (logMessageRole.isCreated()) {
 
                             // Set description to new Role created.
-                            webhookEmbedBuilder.setDescription(":family_mmb: ``" + logMessageRole.getCurrentName() + "`` **has been created.**");
+                            webhookEmbedBuilder.setDescription(LanguageService.getByGuild(loggerMessage.getGuild(), "logging.role.create", logMessageRole.getCurrentName()));
                         } else {
-
                             // Set description to Role deleted.
-                            webhookEmbedBuilder.setDescription(":family_mmb: ``" + logMessageRole.getCurrentName() + "`` **has been deleted.**");
+                            webhookEmbedBuilder.setDescription(LanguageService.getByGuild(loggerMessage.getGuild(), "logging.role.delete", logMessageRole.getCurrentName()));
                         }
                     }
 
@@ -425,12 +424,12 @@ public class LoggerQueue {
                                     loggerMessages instanceof LogMessageUser logMessageUser1 &&
                                     logMessageUser1.getUser().getIdLong() == logMessageUser.getUser().getIdLong())
                             .anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.USER_BAN)) {
-                        webhookEmbedBuilder.setDescription(logMessageUser.getUser().getAsMention() + " **has been banned.** ");
+                        webhookEmbedBuilder.setDescription(LanguageService.getByGuild(loggerMessage.getGuild(), "logging.banned", logMessageUser.getUser().getAsMention()));
 
                         logs.stream().filter(logMessage -> logMessage != loggerMessage && logMessage.getId() == loggerMessage.getId() && logMessage instanceof LogMessageUser logMessageUser1 &&
                                 logMessageUser1.getUser().getIdLong() == logMessageUser.getUser().getIdLong()).forEach(LogMessage::cancel);
                     } else {
-                        webhookEmbedBuilder.setDescription(logMessageUser.getUser().getAsMention() + " **joined and left this Server.** ");
+                        webhookEmbedBuilder.setDescription(LanguageService.getByGuild(loggerMessage.getGuild(), "logging.joined.leave", logMessageUser.getUser().getAsMention()));
                     }
 
                     modified = true;

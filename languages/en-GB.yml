@@ -11,6 +11,7 @@ logging:
     bot:
       found: "**The Bot** %s **has been invited by** %s"
       notFound: "**We could not find out who Invite the Bot** %s"
+    leave: "%s **joined and left the Server.**"
     invite:
       vanity: "%s **has been invited via Vanity Invite.**"
       default: "%s **has been invited by** %s (Code: %s, Uses: %s)"
@@ -28,7 +29,10 @@ logging:
     voicechannel:
       join: "%s **joined the Voice Channel** %s"
       move: "%s **moved from the Voice Channel** %s **to** %s**.**"
+      moveMany: "%s **moved through many Voice Channel and is now in** %2"
       leave: "%s **left the Voice Channel** %s"
+      leaveInstant: "%s **joined and left the Voice Channel** %s"
+      rejoin: "%s **rejoined the Voice Channel** %s"
     channel:
       update:
         voice: ":house: **VoiceChannel updated:** %s"
@@ -127,6 +131,9 @@ label:
   temporalVoiceName: "Temporal VC #%s"
   chat: "Chat"
   voice: "Voice"
+  startGame: "Start Game"
+  joinGame: "Join Game"
+  blackJack: "BlackJack"
 message:
   default:
     usage: "Usage {guild_prefix}%s."
@@ -285,6 +292,19 @@ message:
     notAllowed: "The Content you are searching for is not allowed! Example: loli hentai"
   blacklisted: "Your message contains blacklisted/blocked content!"
   levelUp: "You just leveled up to %s(%s)! %s"
+  gameCore:
+    needMore: "A participants amount of %s is needed to play this game!"
+    alreadyStarted: "The game has already started!"
+    full: "The game is already full!"
+    alreadyIn: "You are already a participant of this game!"
+    minimalReached: "The minimal amount of participants have been reached!\nYou may start the game by clicking the button below!"
+    minimalReachedHost: "The minimal amount of participants have been reached!\nYou may start the game by clicking the button on the first Message!"
+    joined: "You are now a participant of this game!\nPlease wait for the host to start the game!"
+  blackJackGame:
+    welcome: "Welcome to Blackjack! You can start the game by clicking the button below!\nBefore you can start it thou, you will need someone else to play with you!\nThey will need to use /game join %s to join the game!\nOr press the button below!"
+game:
+  description:
+    blackjack: "Play Blackjack with your friends!"
 command:
   perform:
     cooldown: "You are on cooldown!"

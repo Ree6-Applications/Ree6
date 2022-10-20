@@ -2,6 +2,8 @@ package de.presti.ree6.game.core;
 
 import de.presti.ree6.game.core.base.GameState;
 import de.presti.ree6.game.core.base.IGame;
+import lombok.Getter;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
@@ -33,29 +35,40 @@ public class GameSession {
     private final MessageChannelUnion channel;
 
     /**
+     * The Guild in which this Session originated.
+     */
+    @Getter
+    private final Guild guild;
+
+    /**
      * The Participants of the Game.
      */
     ArrayList<User> participants;
 
     /**
      * Constructor for the GameSession.
-     * @param gameIdentifier The Identifier of the GameSession.
+     *
+     * @param gameIdentifier      The Identifier of the GameSession.
+     * @param guild               The Guild in which this Session originated.
      * @param messageChannelUnion The Channel where the Game is played.
-     * @param participants The Participants of the Game.
+     * @param participants        The Participants of the Game.
      */
-    public GameSession(String gameIdentifier, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
-        this(gameIdentifier, null, messageChannelUnion, participants);
+    public GameSession(String gameIdentifier, Guild guild, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
+        this(gameIdentifier, guild, null, messageChannelUnion, participants);
     }
 
     /**
      * Constructor for the GameSession.
-     * @param gameIdentifier The Identifier of the GameSession.
-     * @param game The Game class.
+     *
+     * @param gameIdentifier      The Identifier of the GameSession.
+     * @param guild               The Guild in which this Session originated.
+     * @param game                The Game class.
      * @param messageChannelUnion The Channel where the Game is played.
-     * @param participants The Participants of the Game.
+     * @param participants        The Participants of the Game.
      */
-    public GameSession(String gameIdentifier, IGame game, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
+    public GameSession(String gameIdentifier, Guild guild, IGame game, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
         this.gameIdentifier = gameIdentifier;
+        this.guild = guild;
         this.game = game;
         this.channel = messageChannelUnion;
         this.participants = participants;
@@ -63,6 +76,7 @@ public class GameSession {
 
     /**
      * Method used to get the Identifier of the GameSession.
+     *
      * @return The Identifier of the GameSession.
      */
     public String getGameIdentifier() {
@@ -71,6 +85,7 @@ public class GameSession {
 
     /**
      * Method used to get the Game class.
+     *
      * @return The Game class.
      */
     public IGame getGame() {
@@ -79,6 +94,7 @@ public class GameSession {
 
     /**
      * Method used to set the Game class.
+     *
      * @param game The Game class.
      */
     public void setGame(IGame game) {
@@ -87,6 +103,7 @@ public class GameSession {
 
     /**
      * Method used to get the Channel where the Game is played.
+     *
      * @return The Channel where the Game is played.
      */
     public MessageChannelUnion getChannel() {
@@ -95,6 +112,7 @@ public class GameSession {
 
     /**
      * Method used to get the Participants of the Game.
+     *
      * @return The Participants of the Game.
      */
     public ArrayList<User> getParticipants() {
@@ -103,6 +121,7 @@ public class GameSession {
 
     /**
      * Method used to get the current Game-State.
+     *
      * @return The current Game-State.
      */
     public GameState getGameState() {
@@ -111,6 +130,7 @@ public class GameSession {
 
     /**
      * Method used to set the current Game-State.
+     *
      * @param gameState The current Game-State.
      */
     public void setGameState(GameState gameState) {
