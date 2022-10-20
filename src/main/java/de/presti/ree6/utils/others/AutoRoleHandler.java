@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.others;
 
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
@@ -7,8 +8,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.util.Map;
-
-// TODO:: translate.
 
 /**
  * Utility class used to handle Roles that should be added to Members automatically.
@@ -42,8 +41,7 @@ public class AutoRoleHandler {
 
                 if (guild.getOwner() != null)
                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                            privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
-                                            "If you didn't notice Im not allowed to AutoRole people because the role is higher than my own role!")
+                            privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone"))
                                     .queue());
                 return;
             }
@@ -54,17 +52,13 @@ public class AutoRoleHandler {
                 if (role != null && !guild.getSelfMember().canInteract(role)) {
                     if (guild.getOwner() != null)
                         guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
-                                                "If you didn't notice Im not allowed to AutoRole people because the role is higher than my own role!\n" +
-                                                "The role that I can't give people when joining is: ``" + role.getName() + "``")
+                                privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))
                                         .queue());
                     return;
                 } else if (role == null) {
                     if (guild.getOwner() != null)
                         guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
-                                                "There was an invalid role set, which has been removed now from the AutoRole list.\n" +
-                                                "Since it doesn't exists anymore!")
+                                privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.deleted"))
                                         .queue());
 
                     Main.getInstance().getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), roles.getRoleId());
@@ -95,9 +89,9 @@ public class AutoRoleHandler {
                 log.error("[AutoRole] Server: {}", guild.getName());
 
                 if (guild.getOwner() != null)
-                    guild.getOwner().getUser().openPrivateChannel().queue(privateChannel -> privateChannel.
-                            sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
-                                    "If you didn't notice Im not allowed to AutoRole people because the role is higher than my own role!").queue());
+                    guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
+                            privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone"))
+                            .queue());
 
                 return;
             }
@@ -111,17 +105,13 @@ public class AutoRoleHandler {
                     if (role != null && !guild.getSelfMember().canInteract(role)) {
                         if (guild.getOwner() != null)
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                    privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
-                                                    "If you didn't notice Im not allowed to AutoRole people because the role is higher than my own role!\n" +
-                                                    "The role that I cant give people when leveling up is: ``" + role.getName() + "``")
+                                    privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))
                                             .queue());
                         return;
                     } else if (role == null) {
                         if (guild.getOwner() != null)
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                    privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
-                                                    "There was an invalid role set, which has been removed now from the Voice-AutoRole list.\n" +
-                                                    "Since it doesn't exists anymore!")
+                                    privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.deleted"))
                                             .queue());
 
                         Main.getInstance().getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), entry.getValue());
@@ -154,9 +144,9 @@ public class AutoRoleHandler {
                 log.error("[AutoRole] Server: {}", guild.getName());
 
                 if (guild.getOwner() != null)
-                    guild.getOwner().getUser().openPrivateChannel().queue(privateChannel -> privateChannel.
-                            sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
-                                    "If you didn't notice Im not allowed to AutoRole people because the role is higher than my own role!").queue());
+                    guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
+                            privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone"))
+                                    .queue());
 
                 return;
             }
@@ -169,17 +159,12 @@ public class AutoRoleHandler {
                     if (role != null && !guild.getSelfMember().canInteract(role)) {
                         if (guild.getOwner() != null)
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                    privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
-                                                    "If you didn't notice Im not allowed to AutoRole people because the role is higher than my own role!\n" +
-                                                    "The role that I cant give people when leveling up is: ``" + role.getName() + "``")
+                                    privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))
                                             .queue());
-                        return;
                     } else if (role == null) {
                         if (guild.getOwner() != null)
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                    privateChannel.sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
-                                                    "There was an invalid role set, which has been removed now from the Chat-AutoRole list.\n" +
-                                                    "Since it doesn't exists anymore!")
+                                    privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.deleted"))
                                             .queue());
 
                         Main.getInstance().getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), entry.getValue());
@@ -209,9 +194,9 @@ public class AutoRoleHandler {
             log.error("[AutoRole] Failed to give a Role!");
             log.error("[AutoRole] Server: {}", guild.getName());
             if (guild.getOwner() != null)
-                guild.getOwner().getUser().openPrivateChannel().queue(privateChannel -> privateChannel.
-                        sendMessage("Hey its the BRS(short for Bug-Report-System) from Ree6!\n" +
-                                "If you didn't notice Im not allowed to AutoRole people because the role is higher than my own role!").queue());
+                guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
+                        privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))
+                                .queue());
         }
     }
 }

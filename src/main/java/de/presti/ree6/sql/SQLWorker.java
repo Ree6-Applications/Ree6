@@ -18,21 +18,20 @@ import de.presti.ree6.sql.entities.stats.CommandStats;
 import de.presti.ree6.sql.entities.stats.GuildCommandStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.sql.entities.webhook.*;
+import jakarta.persistence.Table;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.reflections.Reflections;
 
 import javax.annotation.Nonnull;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A Class to actually handle the SQL data.
@@ -1788,7 +1787,15 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param guildId the ID of the Guild.
      */
     public void deleteAllData(String guildId) {
-        // TODO:: find a way todo this with Hibernate.
+        Reflections reflections = new Reflections("de.presti.ree6.sql.entities");
+        Set<Class<?>> classSet = reflections.getTypesAnnotatedWith(Table.class);
+        for (Class<?> clazz : classSet) {
+            if (clazz.isAnnotationPresent(Table.class)) {
+                Table table = clazz.getAnnotation(Table.class);
+                sqlConnector.querySQL("DELETE FROM " + table.name() + " WHERE GID=?", guildId);
+                sqlConnector.querySQL("DELETE FROM " + table.name() + " WHERE GUILDID=?", guildId);
+            }
+        }
     }
 
     //endregion

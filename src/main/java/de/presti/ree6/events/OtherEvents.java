@@ -172,7 +172,6 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
-        // TODO:: translate.
         if (event.getChannelLeft() == null) {
             if (!ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
                 ArrayUtil.voiceJoined.put(event.getMember().getUser(), System.currentTimeMillis());
@@ -191,8 +190,9 @@ public class OtherEvents extends ListenerAdapter {
                 }
 
                 if (voiceChannel.getParentCategory() != null) {
-                    voiceChannel.getParentCategory().createVoiceChannel("Temporal VC #" +
-                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith("Temporal VC")).toList().size() + 1).queue(channel -> {
+                    voiceChannel.getParentCategory().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName",
+                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", 0)
+                                    .substring(0, LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", 0).length() - 3))).toList().size() + 1)).queue(channel -> {
                         event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
                         ArrayUtil.temporalVoicechannel.add(channel.getId());
                     });

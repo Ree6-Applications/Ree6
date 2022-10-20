@@ -56,13 +56,12 @@ public class ArrayUtil {
      */
     public static final List<String> temporalVoicechannel = new ArrayList<>();
 
-    // TODO:: translate.
     /**
      * String Array used to store answer options, for later use by the 8Ball command.
      */
-    public static final String[] answers = new String[]{"It is certain.", "It is decidedly so.", "Without a doubt.", "Yes – definitely.", "You may rely on it.",
-            "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes", "Reply hazy, try again.", "Ask again later.", "Better not tell you now.",
-            "Cannot predict now.", "Concentrate and ask again.", "Don't count on it.", "My reply is no.", "My sources say no.", "Outlook not so good.", "Very doubtful."};
+    public static final String[] answers = new String[]{"message.8ball.answers.1", "message.8ball.answers.2", "message.8ball.answers.3", "message.8ball.answers.4", "message.8ball.answers.5",
+            "message.8ball.answers.6", "message.8ball.answers.7", "message.8ball.answers.8", "message.8ball.answers.9", "message.8ball.answers.10", "message.8ball.answers.11", "message.8ball.answers.12", "message.8ball.answers.13",
+            "message.8ball.answers.14", "message.8ball.answers.15", "message.8ball.answers.16", "message.8ball.answers.17", "message.8ball.answers.18", "message.8ball.answers.19", "message.8ball.answers.20"};
 
     /**
      * Get a String fully of random Number by the given length.

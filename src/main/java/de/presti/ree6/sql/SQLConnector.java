@@ -175,6 +175,15 @@ public class SQLConnector {
      * @return Either a {@link Integer} or the result object of the ResultSet.
      */
     public Object querySQL(String sqlQuery, Object... parameters) {
+        if (!isConnected()) {
+            if (connectedOnce()) {
+                connectToSQLServer();
+                return querySQL(sqlQuery, parameters);
+            } else {
+                return null;
+            }
+        }
+
         try (Connection connection = getDataSource().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             for (int i = 0; i < parameters.length; i++) {
