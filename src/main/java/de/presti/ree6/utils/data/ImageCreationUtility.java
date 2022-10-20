@@ -17,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 
+// TODO:: translate.
+
 /**
  * A utility to create Images.
  */

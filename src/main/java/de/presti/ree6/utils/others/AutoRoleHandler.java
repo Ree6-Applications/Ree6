@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.entities.Role;
 
 import java.util.Map;
 
+// TODO:: translate.
+
 /**
  * Utility class used to handle Roles that should be added to Members automatically.
  */

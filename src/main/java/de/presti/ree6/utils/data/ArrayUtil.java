@@ -56,6 +56,7 @@ public class ArrayUtil {
      */
     public static final List<String> temporalVoicechannel = new ArrayList<>();
 
+    // TODO:: translate.
     /**
      * String Array used to store answer options, for later use by the 8Ball command.
      */
