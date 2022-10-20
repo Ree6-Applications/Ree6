@@ -9,11 +9,7 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class to manage Games.
@@ -42,7 +38,7 @@ public class GameManager {
      * @return The created GameSession.
      */
     public static GameSession createGameSession(String gameIdentifier, String gameName, MessageChannelUnion channel, ArrayList<User> participants) {
-        GameSession gameSession = new GameSession(gameIdentifier, channel, participants);
+        GameSession gameSession = new GameSession(gameIdentifier, channel.asGuildMessageChannel().getGuild(), channel, participants);
         gameSession.setGame(getGame(gameName, gameSession));
         gameSessions.put(gameIdentifier, gameSession);
         return gameSession;
