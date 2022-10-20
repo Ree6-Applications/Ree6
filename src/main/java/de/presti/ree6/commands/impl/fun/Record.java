@@ -36,9 +36,9 @@ public class Record implements ICommand {
                 } else {
                     commandEvent.getGuild().getAudioManager().closeAudioConnection();
                 }
-                commandEvent.reply(commandEvent.getResource("command.message.record.recordingStopped"));
+                commandEvent.reply(commandEvent.getResource("message.record.recordingStopped"));
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.alreadyInVoiceChannel"));
+                commandEvent.reply(commandEvent.getResource("message.default.alreadyInVoiceChannel"));
             }
         } else {
             connectAndRecord(commandEvent);
@@ -63,9 +63,9 @@ public class Record implements ICommand {
 
             audioManager.setReceivingHandler(handler);
 
-            commandEvent.reply(commandEvent.getResource("command.message.record.recordingStarted"));
+            commandEvent.reply(commandEvent.getResource("message.record.recordingStarted"));
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.notInVoiceChannel"));
+            commandEvent.reply(commandEvent.getResource("message.default.notInVoiceChannel"));
         }
     }
 

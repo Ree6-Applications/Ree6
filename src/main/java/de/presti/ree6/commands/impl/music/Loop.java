@@ -23,7 +23,7 @@ public class Loop implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            commandEvent.reply(commandEvent.getResource("command.message.music.notConnected"));
+            commandEvent.reply(commandEvent.getResource("message.music.notConnected"));
             return;
         }
 
@@ -35,12 +35,12 @@ public class Loop implements ICommand {
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-        em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
+        em.setTitle(commandEvent.getResource("label.musicPlayer"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
         em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().loop() ?
-                commandEvent.getResource("command.message.music.loop.enable") :
-                commandEvent.getResource("command.message.music.loop.disabled"));
+                commandEvent.getResource("message.music.loop.enable") :
+                commandEvent.getResource("message.music.loop.disabled"));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
         commandEvent.reply(em.build(), 5);

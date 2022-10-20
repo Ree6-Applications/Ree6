@@ -22,7 +22,7 @@ public class Credits implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         messageCreateBuilder.addActionRow(Button.link("https://www.ree6.de/#team", (RandomUtils.secureRandom.nextInt(10000) == 1562 ?
-                commandEvent.getResource("command.message.credits.easterEgg") : commandEvent.getResource("command.message.credits.default"))));
+                commandEvent.getResource("message.credits.easterEgg") : commandEvent.getResource("message.credits.default"))));
         commandEvent.reply(messageCreateBuilder.build());
     }
 

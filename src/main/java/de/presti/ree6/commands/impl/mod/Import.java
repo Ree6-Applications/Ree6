@@ -27,7 +27,7 @@ public class Import implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
-            commandEvent.reply(commandEvent.getResource("command.message.default.noPermission", Permission.MANAGE_SERVER.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.noPermission", Permission.MANAGE_SERVER.name()), 5);
             return;
         }
 
@@ -40,10 +40,10 @@ public class Import implements ICommand {
             switch (commandEvent.getArguments()[0]) {
                 case "mee6" -> importFromMee6(commandEvent);
 
-                default -> commandEvent.reply(commandEvent.getResource("command.message.import.unknownBot"), 5);
+                default -> commandEvent.reply(commandEvent.getResource("message.import.unknownBot"), 5);
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.import.botRequired"), 5);
+            commandEvent.reply(commandEvent.getResource("message.import.botRequired"), 5);
         }
     }
 
@@ -82,7 +82,7 @@ public class Import implements ICommand {
                         }
                     }
                 });
-                commandEvent.reply(commandEvent.getResource("command.message.import.success", jsonElement.getAsJsonObject().get("players").getAsJsonArray().size()), 5);
+                commandEvent.reply(commandEvent.getResource("message.import.success", jsonElement.getAsJsonObject().get("players").getAsJsonArray().size()), 5);
             } else {
                 commandEvent.reply(commandEvent.getResource("command.perform.error"), 5);
             }
@@ -96,10 +96,10 @@ public class Import implements ICommand {
 
             commandEvent.reply(
                     commandEvent.getResource(code == 404 ?
-                            "command.message.import.error.noData" :
+                            "message.import.error.noData" :
                             code == 401 ?
-                                    "command.message.import.error.visibility" :
-                                    "command.message.import.error.unknown", reason), 5);
+                                    "message.import.error.visibility" :
+                                    "message.import.error.unknown", reason), 5);
         }
     }
 

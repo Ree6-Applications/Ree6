@@ -22,7 +22,7 @@ public class Support implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-        messageCreateBuilder.addActionRow(Button.of(ButtonStyle.LINK, "https://support.ree6.de", commandEvent.getResource("command.label.support"),
+        messageCreateBuilder.addActionRow(Button.of(ButtonStyle.LINK, "https://support.ree6.de", commandEvent.getResource("label.support"),
                 Emoji.fromCustom("re_icon_help", 1019234684745564170L, false)));
         commandEvent.reply(messageCreateBuilder.build());
     }

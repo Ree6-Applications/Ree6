@@ -4,6 +4,7 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
@@ -81,7 +82,7 @@ public class OtherEvents extends ListenerAdapter {
             if (channelStats.getMemberStatsChannelId() != null) {
                 GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
                 if (guildChannel != null) {
-                    guildChannel.getManager().setName("Overall Members: " + event.getGuild().getMemberCount()).queue();
+                    guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(),"label.overallMembers") + ": " + event.getGuild().getMemberCount()).queue();
                 }
             }
 
@@ -89,14 +90,14 @@ public class OtherEvents extends ListenerAdapter {
                 if (channelStats.getRealMemberStatsChannelId() != null) {
                     GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getRealMemberStatsChannelId());
                     if (guildChannel != null) {
-                        guildChannel.getManager().setName("Real Members: " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
+                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(),"label.realMembers") + ": " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
                     }
                 }
 
                 if (channelStats.getBotMemberStatsChannelId() != null) {
                     GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getBotMemberStatsChannelId());
                     if (guildChannel != null) {
-                        guildChannel.getManager().setName("Bot Members: " + members.stream().filter(member -> member.getUser().isBot()).count()).queue();
+                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(),"label.botMembers") + ": "+ members.stream().filter(member -> member.getUser().isBot()).count()).queue();
                     }
                 }
             });
@@ -144,7 +145,7 @@ public class OtherEvents extends ListenerAdapter {
             if (channelStats.getMemberStatsChannelId() != null) {
                 GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
                 if (guildChannel != null) {
-                    guildChannel.getManager().setName("Overall Members: " + event.getGuild().getMemberCount()).queue();
+                    guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(),"label.overallMembers") + ": " + event.getGuild().getMemberCount()).queue();
                 }
             }
 
@@ -152,14 +153,14 @@ public class OtherEvents extends ListenerAdapter {
                 if (channelStats.getRealMemberStatsChannelId() != null) {
                     GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getRealMemberStatsChannelId());
                     if (guildChannel != null) {
-                        guildChannel.getManager().setName("Real Members: " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
+                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(),"label.realMembers") + ": " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
                     }
                 }
 
                 if (channelStats.getBotMemberStatsChannelId() != null) {
                     GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getBotMemberStatsChannelId());
                     if (guildChannel != null) {
-                        guildChannel.getManager().setName("Bot Members: " + members.stream().filter(member -> member.getUser().isBot()).count()).queue();
+                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(),"label.botMembers") + ": " + members.stream().filter(member -> member.getUser().isBot()).count()).queue();
                     }
                 }
             });
@@ -171,6 +172,7 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
+        // TODO:: translate.
         if (event.getChannelLeft() == null) {
             if (!ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
                 ArrayUtil.voiceJoined.put(event.getMember().getUser(), System.currentTimeMillis());
@@ -269,7 +271,7 @@ public class OtherEvents extends ListenerAdapter {
             if (ModerationUtil.shouldModerate(event.getGuild().getId())) {
                 if (ModerationUtil.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
                     Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
-                    Main.getInstance().getCommandManager().sendMessage("Your message contains blacklisted words!", event.getChannel(), null);
+                    Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.blacklisted"), event.getChannel(), null);
                     return;
                 } /* else if (!event.getMessage().getAttachments().isEmpty()) {
                     for (Message.Attachment attachment : event.getMessage().getAttachments()) {
@@ -309,7 +311,7 @@ public class OtherEvents extends ListenerAdapter {
             if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
 
                 if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
-                    event.getChannel().sendMessage("Usage " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "help").queue();
+                    event.getChannel().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.default.usage", "help")).queue();
                 }
 
                 if (!ArrayUtil.timeout.contains(event.getMember())) {
@@ -318,7 +320,9 @@ public class OtherEvents extends ListenerAdapter {
                     userLevel.setUser(event.getMember().getUser());
 
                     if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) {
-                        Main.getInstance().getCommandManager().sendMessage("You just leveled up to Chat Level " + userLevel.getLevel() + " " + event.getMember().getAsMention() + " !", event.getChannel());
+                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(),
+                                "message.levelUp", userLevel.getLevel(), LanguageService.getByGuild(event.getGuild(),"label.chat")
+                                , event.getMember().getAsMention()), event.getChannel());
                     }
 
                     Main.getInstance().getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), userLevel);

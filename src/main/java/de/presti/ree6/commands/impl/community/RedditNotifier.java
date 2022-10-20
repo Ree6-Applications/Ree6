@@ -21,7 +21,7 @@ public class RedditNotifier implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
-            commandEvent.reply(commandEvent.getResource("command.message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
+            commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
         }
 
         if (commandEvent.isSlashCommand()) {
@@ -42,7 +42,7 @@ public class RedditNotifier implements ICommand {
                 commandEvent.reply(end.toString(), 10);
 
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage", "redditnotifier list/add/remove"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage", "redditnotifier list/add/remove"), 5);
             }
         } else if(commandEvent.getArguments().length == 3) {
 
@@ -55,32 +55,32 @@ public class RedditNotifier implements ICommand {
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
                 commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-RedditNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name));
-                commandEvent.reply(commandEvent.getResource("command.message.instagramNotifier.added",name), 5);
+                commandEvent.reply(commandEvent.getResource("message.instagramNotifier.added",name), 5);
 
                 if (!Main.getInstance().getNotifier().isSubredditRegistered(name)) {
                     Main.getInstance().getNotifier().registerSubreddit(name);
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","redditnotifier remove Subreddit"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","redditnotifier remove Subreddit"), 5);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","redditnotifier add Subreddit #Channel"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","redditnotifier add Subreddit #Channel"), 5);
             }
         } else if(commandEvent.getArguments().length == 2) {
             String name = commandEvent.getArguments()[1];
             if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
                 Main.getInstance().getSqlConnector().getSqlWorker().removeRedditWebhook(commandEvent.getGuild().getId(), name);
-                commandEvent.reply(commandEvent.getResource("command.message.instagramNotifier.removed",name), 5);
+                commandEvent.reply(commandEvent.getResource("message.instagramNotifier.removed",name), 5);
 
                 if (Main.getInstance().getNotifier().isSubredditRegistered(name)) {
                     Main.getInstance().getNotifier().unregisterSubreddit(name);
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","redditnotifier add Subreddit #Channel"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","redditnotifier add Subreddit #Channel"), 5);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","redditnotifier remove Subreddit"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","redditnotifier remove Subreddit"), 5);
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.usage","redditnotifier list/add/remove"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.usage","redditnotifier list/add/remove"), 5);
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }

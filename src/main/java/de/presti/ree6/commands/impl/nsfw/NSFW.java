@@ -34,7 +34,7 @@ public class NSFW implements ICommand {
         if (commandEvent.getChannel().getType() == ChannelType.TEXT && commandEvent.getChannel().asTextChannel().isNSFW()) {
             sendImage(commandEvent);
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.onlyNSFW"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.onlyNSFW"), 5);
         }
     }
 
@@ -45,8 +45,8 @@ public class NSFW implements ICommand {
      */
     public void sendImage(CommandEvent commandEvent) {
         Message message = commandEvent.isSlashCommand() ?
-                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.nsfw.searching")).complete() :
-                commandEvent.getChannel().sendMessage(commandEvent.getResource("command.message.nsfw.searching")).complete();
+                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.nsfw.searching")).complete() :
+                commandEvent.getChannel().sendMessage(commandEvent.getResource("message.nsfw.searching")).complete();
 
         JsonElement jsonElement = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://www.reddit.com/r/hentai/new.json?sort=hot&limit=50").build());
 
@@ -90,16 +90,16 @@ public class NSFW implements ICommand {
                 em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
                 if (commandEvent.isSlashCommand()) {
-                    message.editMessage(commandEvent.getResource("command.message.default.checkBelow")).queue();
+                    message.editMessage(commandEvent.getResource("message.default.checkBelow")).queue();
                     commandEvent.reply(em.build());
                 } else {
-                    message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("command.message.default.checkBelow")).queue());
+                    message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("message.default.checkBelow")).queue());
                 }
             } else {
-                message.editMessage(commandEvent.getResource("command.message.default.retrievalError")).delay(Duration.ofSeconds(5)).flatMap(Message::delete).queue();
+                message.editMessage(commandEvent.getResource("message.default.retrievalError")).delay(Duration.ofSeconds(5)).flatMap(Message::delete).queue();
             }
         } else {
-            message.editMessage(commandEvent.getResource("command.message.default.retrievalError")).delay(Duration.ofSeconds(5)).flatMap(Message::delete).queue();
+            message.editMessage(commandEvent.getResource("message.default.retrievalError")).delay(Duration.ofSeconds(5)).flatMap(Message::delete).queue();
         }
     }
 

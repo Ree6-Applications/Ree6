@@ -27,7 +27,7 @@ public class Clear implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
 
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-            commandEvent.reply(commandEvent.getResource("command.message.default.noPermission", Permission.MESSAGE_MANAGE.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.noPermission", Permission.MESSAGE_MANAGE.name()), 5);
             return;
         }
 
@@ -45,20 +45,20 @@ public class Clear implements ICommand {
                         if (amount <= 200 && amount >= 2) {
                             deleteMessages(commandEvent, amount);
                         } else {
-                            commandEvent.reply(commandEvent.getResource("command.message.clear.notInRange", commandEvent.getArguments()[0]), 5);
-                            commandEvent.reply(commandEvent.getResource("command.message.default.usage", "clear 2-200"), 5);
+                            commandEvent.reply(commandEvent.getResource("message.clear.notInRange", commandEvent.getArguments()[0]), 5);
+                            commandEvent.reply(commandEvent.getResource("message.default.usage", "clear 2-200"), 5);
                         }
                     } catch (Exception ex) {
-                        commandEvent.reply(commandEvent.getResource("command.message.clear.noNumber",commandEvent.getArguments()[0]), 5);
-                        commandEvent.reply(commandEvent.getResource("command.message.default.usage","clear 2-200"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.clear.noNumber",commandEvent.getArguments()[0]), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.usage","clear 2-200"), 5);
                     }
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
-                    commandEvent.reply(commandEvent.getResource("command.message.default.usage", "clear 2-200"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.usage", "clear 2-200"), 5);
                 }
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.MESSAGE_MANAGE.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MESSAGE_MANAGE.name()), 5);
         }
     }
 
@@ -95,7 +95,7 @@ public class Clear implements ICommand {
                 Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
                 commandEvent.getChannel().getIterableHistory().takeAsync(amount).thenAccept(messages -> {
                     commandEvent.getChannel().purgeMessages(messages);
-                    commandEvent.reply(commandEvent.getResource("command.message.clear.success", amount), 5);
+                    commandEvent.reply(commandEvent.getResource("message.clear.success", amount), 5);
                 }).exceptionally(throwable -> {
                     commandEvent.reply(commandEvent.getResource("command.perform.errorWithException", throwable.getMessage()), 5);
                     return null;
@@ -104,8 +104,8 @@ public class Clear implements ICommand {
                 commandEvent.reply(commandEvent.getResource("command.perform.errorWithException", exception.getMessage()), 5);
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.clear.notInRange", commandEvent.getArguments()[0]), 5);
-            commandEvent.reply(commandEvent.getResource("command.message.default.usage", "clear 2-200"), 5);
+            commandEvent.reply(commandEvent.getResource("message.clear.notInRange", commandEvent.getArguments()[0]), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.usage", "clear 2-200"), 5);
         }
     }
 }

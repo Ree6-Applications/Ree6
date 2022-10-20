@@ -31,10 +31,10 @@ public class Clearqueue implements ICommand {
         
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-        em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
+        em.setTitle(commandEvent.getResource("label.musicPlayer"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(commandEvent.getResource("command.message.music.clearQueue"));
+        em.setDescription(commandEvent.getResource("message.music.clearQueue"));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
         commandEvent.reply(em.build(), 5);

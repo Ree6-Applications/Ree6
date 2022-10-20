@@ -40,8 +40,8 @@ public class Waifu implements ICommand {
         JsonObject jsonObject1 = jsonObject.get("series").getAsJsonObject();
 
         em.setImage((jsonObject.has("display_picture") ? jsonObject.get("display_picture").getAsString() : "https://images.ree6.de/notfound.png"));
-        em.addField("**" + commandEvent.getResource("command.label.character") + "**", "``" + (jsonObject.has("name") ? jsonObject.get("name").getAsString() : commandEvent.getResource("command.default.retrievalError")) + "``", true);
-        em.addField("**"  + commandEvent.getResource("command.label.from") + "**", "``" + (jsonObject1.has("name") ? jsonObject1.get("name").getAsString() : commandEvent.getResource("command.default.retrievalError")) + "``", true);
+        em.addField("**" + commandEvent.getResource("label.character") + "**", "``" + (jsonObject.has("name") ? jsonObject.get("name").getAsString() : commandEvent.getResource("command.default.retrievalError")) + "``", true);
+        em.addField("**"  + commandEvent.getResource("label.from") + "**", "``" + (jsonObject1.has("name") ? jsonObject1.get("name").getAsString() : commandEvent.getResource("command.default.retrievalError")) + "``", true);
         if((jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean())) {
             em.addField("**NSFW**", "", true);
         }

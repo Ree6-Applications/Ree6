@@ -32,8 +32,8 @@ public class Anime implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         Message message = commandEvent.isSlashCommand() ?
-                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.anime.searching")).complete() :
-                commandEvent.getChannel().sendMessage(commandEvent.getResource("command.message.anime.searching")).complete();
+                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.anime.searching")).complete() :
+                commandEvent.getChannel().sendMessage(commandEvent.getResource("message.anime.searching")).complete();
 
         String[] args = commandEvent.getArguments();
 
@@ -54,7 +54,7 @@ public class Anime implements ICommand {
         if (args.length > 0) {
             sendAnime(commandEvent, message, builder.toString());
         } else {
-            message.editMessage(commandEvent.getResource("command.message.default.invalidQuery")).queue();
+            message.editMessage(commandEvent.getResource("message.default.invalidQuery")).queue();
         }
     }
 
@@ -87,7 +87,7 @@ public class Anime implements ICommand {
                     data.getAsJsonObject("links").get("self").getAsString() : null;
 
             String name = attributes.has("canonicalTitle") ?
-                    attributes.get("canonicalTitle").getAsString() : commandEvent.getResource("command.message.anime.error");
+                    attributes.get("canonicalTitle").getAsString() : commandEvent.getResource("message.anime.error");
 
             String thumbnailUrl = attributes.has("posterImage") &&
                     attributes.get("posterImage").isJsonObject() &&
@@ -130,24 +130,24 @@ public class Anime implements ICommand {
             em.setTitle(name, url);
             em.setThumbnail(thumbnailUrl);
             em.setDescription(description);
-            em.addField(":hourglass_flowing_sand: **" + commandEvent.getResource("command.label.status") + "**", status, true);
-            em.addField(":dividers: **" + commandEvent.getResource("command.label.type") + "**", type, true);
-            em.addField(":arrow_right: **" + commandEvent.getResource("command.label.genres") + "**", genres, false);
-            em.addField(":calendar: **" + commandEvent.getResource("command.label.aired") + "**", "from **" + startDate + "** to **" + endDate + "**", false);
-            em.addField(":minidisc: **" + commandEvent.getResource("command.label.episodes") + "**", episodes, true);
-            em.addField(":stopwatch: **" + commandEvent.getResource("command.label.duration") + "**", duration, true);
-            em.addField(":star: **" + commandEvent.getResource("command.label.averageRating") + "**", " **" + rating + "/100**", true);
-            em.addField(":trophy: **" + commandEvent.getResource("command.label.rank") + "**", "**TOP " + rank + "**", true);
+            em.addField(":hourglass_flowing_sand: **" + commandEvent.getResource("label.status") + "**", status, true);
+            em.addField(":dividers: **" + commandEvent.getResource("label.type") + "**", type, true);
+            em.addField(":arrow_right: **" + commandEvent.getResource("label.genres") + "**", genres, false);
+            em.addField(":calendar: **" + commandEvent.getResource("label.aired") + "**", "from **" + startDate + "** to **" + endDate + "**", false);
+            em.addField(":minidisc: **" + commandEvent.getResource("label.episodes") + "**", episodes, true);
+            em.addField(":stopwatch: **" + commandEvent.getResource("label.duration") + "**", duration, true);
+            em.addField(":star: **" + commandEvent.getResource("label.averageRating") + "**", " **" + rating + "/100**", true);
+            em.addField(":trophy: **" + commandEvent.getResource("label.rank") + "**", "**TOP " + rank + "**", true);
             em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
             if (commandEvent.isSlashCommand()) {
-                message.editMessage(commandEvent.getResource("command.message.anime.found")).queue();
+                message.editMessage(commandEvent.getResource("message.anime.found")).queue();
                 Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), null);
             } else {
-                message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("command.message.anime.found")).queue());
+                message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("message.anime.found")).queue());
             }
         } else {
-            message.editMessage(commandEvent.getResource("command.message.anime.error")).queue();
+            message.editMessage(commandEvent.getResource("message.anime.error")).queue();
         }
     }
 

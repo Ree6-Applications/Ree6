@@ -181,7 +181,7 @@ public class TrackScheduler extends AudioEventAdapter {
         if (track != null) {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                     .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "command.label.musicPlayer"))
+                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                     .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                     .setColor(Color.GREEN)
                     .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
@@ -190,7 +190,7 @@ public class TrackScheduler extends AudioEventAdapter {
         } else {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                     .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "command.label.musicPlayer"))
+                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                     .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                     .setColor(Color.RED)
                     .setDescription("There is no new Song!")
@@ -221,7 +221,7 @@ public class TrackScheduler extends AudioEventAdapter {
         if (track != null) {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                     .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "command.label.musicPlayer"))
+                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                     .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                     .setColor(Color.GREEN)
                     .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
@@ -230,7 +230,7 @@ public class TrackScheduler extends AudioEventAdapter {
         } else {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                     .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "command.label.musicPlayer"))
+                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                     .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                     .setColor(Color.RED)
                     .setDescription("There is no new Song!")
@@ -248,7 +248,7 @@ public class TrackScheduler extends AudioEventAdapter {
         if (player.getPlayingTrack() == null) {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                     .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "command.label.musicPlayer"))
+                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                     .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                     .setColor(Color.RED)
                     .setDescription("There is no Song playing!")
@@ -259,7 +259,7 @@ public class TrackScheduler extends AudioEventAdapter {
         if (player.getPlayingTrack().getPosition() / 1000 + seekAmountInSeconds > player.getPlayingTrack().getDuration() / 1000) {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                     .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "command.label.musicPlayer"))
+                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                     .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                     .setColor(Color.RED)
                     .setDescription("You can't seek to a position that is longer than the song!")
@@ -276,7 +276,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
         Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                 .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "command.label.musicPlayer"))
+                .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                 .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                 .setColor(Color.GREEN)
                 .setDescription("Seeked to ``" + FormatUtil.formatTime(player.getPlayingTrack().getPosition()) + "``!")
@@ -307,7 +307,7 @@ public class TrackScheduler extends AudioEventAdapter {
                     if (getChannel() != null) {
                         Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                                 .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                                .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "command.label.musicPlayer"))
+                                .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                                 .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                                 .setColor(Color.RED)
                                 .setDescription("Error while playing: ``" + FormatUtil.filter(track.getInfo().title) + "``\nError: Track is not existing!")
@@ -321,7 +321,7 @@ public class TrackScheduler extends AudioEventAdapter {
                 if (getChannel() != null) {
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                            .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "command.label.musicPlayer"))
+                            .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                             .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                             .setColor(Color.RED)
                             .setDescription("Error while playing: ``" + FormatUtil.filter(track.getInfo().title) + "``\nError: " + endReason.name())
@@ -337,7 +337,7 @@ public class TrackScheduler extends AudioEventAdapter {
                 if (endReason == AudioTrackEndReason.LOAD_FAILED && getChannel() != null) {
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                            .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "command.label.musicPlayer"))
+                            .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                             .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                             .setColor(Color.RED)
                             .setDescription("Error while playing: ``" + FormatUtil.filter(track.getInfo().title) + "``\nError: " + endReason.name())
@@ -364,13 +364,13 @@ public class TrackScheduler extends AudioEventAdapter {
 
             Main.getInstance().getMusicWorker().disconnect(guildMusicManager.getGuild());
             em.setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());
-            em.setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "command.label.musicPlayer"));
+            em.setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"));
             em.setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());
             em.setColor(Color.GREEN);
             em.setDescription("Successfully stopped the Player!");
         } else {
             em.setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());
-            em.setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "command.label.musicPlayer"));
+            em.setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"));
             em.setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());
             em.setColor(Color.RED);
             em.setDescription("Im not playing any Music!");

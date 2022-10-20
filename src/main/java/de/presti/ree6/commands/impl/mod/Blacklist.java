@@ -31,11 +31,11 @@ public class Blacklist implements ICommand {
             if(commandEvent.getArguments().length >= 1) {
                 if(commandEvent.getArguments().length == 1) {
                     if(commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                        commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
-                        commandEvent.reply(commandEvent.getResource("command.message.default.usage","blacklist add [WORD...]"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.usage","blacklist add [WORD...]"), 5);
                     } else if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                        commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
-                        commandEvent.reply(commandEvent.getResource("command.message.default.usage","blacklist remove WORD"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.usage","blacklist remove WORD"), 5);
                     } else if (commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
                         if(ModerationUtil.shouldModerate(commandEvent.getGuild().getId())) {
                             StringBuilder end = new StringBuilder();
@@ -46,12 +46,12 @@ public class Blacklist implements ICommand {
 
                             commandEvent.reply("```" + end + "```");
                         } else {
-                            commandEvent.reply(commandEvent.getResource("command.message.blacklist.setupNeeded"));
-                            commandEvent.reply(commandEvent.getResource("command.message.default.usage","blacklist add [WORD...]"), 5);
+                            commandEvent.reply(commandEvent.getResource("message.blacklist.setupNeeded"));
+                            commandEvent.reply(commandEvent.getResource("message.default.usage","blacklist add [WORD...]"), 5);
                         }
                     } else {
-                        commandEvent.reply(commandEvent.getResource("command.message.blacklist.notFound", commandEvent.getArguments()[0]), 5);
-                        commandEvent.reply(commandEvent.getResource("command.message.default.usage","blacklist add/remove/list"),5);
+                        commandEvent.reply(commandEvent.getResource("message.blacklist.notFound", commandEvent.getArguments()[0]), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.usage","blacklist add/remove/list"),5);
                     }
                 } else {
                     if(commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
@@ -63,25 +63,25 @@ public class Blacklist implements ICommand {
                                 end.append("\n").append(commandEvent.getArguments()[i]);
                             }
                             ModerationUtil.blacklist(commandEvent.getGuild().getId(), words);
-                            commandEvent.reply(commandEvent.getResource("command.message.blacklist.addedList","```" + end + "```"), 5);
+                            commandEvent.reply(commandEvent.getResource("message.blacklist.addedList","```" + end + "```"), 5);
                         } else {
                             ModerationUtil.blacklist(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
-                            commandEvent.reply(commandEvent.getResource("command.message.blacklist.list.added", commandEvent.getArguments()[1]), 5);
+                            commandEvent.reply(commandEvent.getResource("message.blacklist.list.added", commandEvent.getArguments()[1]), 5);
                         }
                     } else if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
                         ModerationUtil.removeBlacklist(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
-                        commandEvent.reply(commandEvent.getResource("command.message.blacklist.list.removed", commandEvent.getArguments()[1]), 5);
+                        commandEvent.reply(commandEvent.getResource("message.blacklist.list.removed", commandEvent.getArguments()[1]), 5);
                     } else {
-                        commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
-                        commandEvent.reply(commandEvent.getResource("command.message.default.usage","blacklist add/remove/list"),5);
+                        commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.usage","blacklist add/remove/list"),5);
                     }
                 }
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","blacklist add/remove/list"),5);
+                commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","blacklist add/remove/list"),5);
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.ADMINISTRATOR.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.ADMINISTRATOR.name()), 5);
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }

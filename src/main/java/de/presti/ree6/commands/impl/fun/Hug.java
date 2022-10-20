@@ -33,18 +33,18 @@ public class Hug implements ICommand {
             if (targetOption != null && targetOption.getAsMember() != null) {
                 sendHug(targetOption.getAsMember(), commandEvent);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"),5);
+                commandEvent.reply(commandEvent.getResource("message.default.noMention.user"),5);
             }
         } else {
             if (commandEvent.getArguments().length == 1) {
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"),5);
-                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","hug @user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.user"),5);
+                    commandEvent.reply(commandEvent.getResource("message.default.usage","hug @user"), 5);
                 } else {
                     sendHug(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                 }
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","hug @user"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","hug @user"), 5);
             }
         }
     }
@@ -71,7 +71,7 @@ public class Hug implements ICommand {
      * @param commandEvent The CommandEvent.
      */
     public void sendHug(Member member, CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.hug", member.getAsMention(), commandEvent.getMember().getAsMention()), commandEvent.getChannel(), null);
+        Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("message.hug", member.getAsMention(), commandEvent.getMember().getAsMention()), commandEvent.getChannel(), null);
 
         ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
@@ -82,7 +82,7 @@ public class Hug implements ICommand {
         }
 
         Main.getInstance().getCommandManager().sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), commandEvent.getChannel(), null);
-        if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.default.checkBelow")).queue();
+        if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).queue();
     }
 
 }

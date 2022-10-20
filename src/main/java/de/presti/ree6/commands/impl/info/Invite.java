@@ -22,7 +22,7 @@ public class Invite implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-        messageCreateBuilder.addActionRow(Button.of(ButtonStyle.LINK, "https://invite.ree6.de", commandEvent.getResource("command.label.invite"),
+        messageCreateBuilder.addActionRow(Button.of(ButtonStyle.LINK, "https://invite.ree6.de", commandEvent.getResource("label.invite"),
                 Emoji.fromCustom("re_icon_invite", 1019234807844175945L, false)));
         commandEvent.reply(messageCreateBuilder.build());
     }

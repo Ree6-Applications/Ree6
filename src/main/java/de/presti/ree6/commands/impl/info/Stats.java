@@ -47,21 +47,21 @@ public class Stats implements ICommand {
             i += guild.getMemberCount();
         }
 
-        em.addField("**" + commandEvent.getResource("command.label.serverStats") + ":**", "", true);
-        em.addField("**" + commandEvent.getResource("command.label.guilds") + "**", BotWorker.getShardManager().getGuilds().size() + "", true);
-        em.addField("**" + commandEvent.getResource("command.label.users") + "**", i + "", true);
+        em.addField("**" + commandEvent.getResource("label.serverStats") + ":**", "", true);
+        em.addField("**" + commandEvent.getResource("label.guilds") + "**", BotWorker.getShardManager().getGuilds().size() + "", true);
+        em.addField("**" + commandEvent.getResource("label.users") + "**", i + "", true);
 
-        em.addField("**" + commandEvent.getResource("command.label.botStats") + ":**", "", true);
-        em.addField("**" + commandEvent.getResource("command.label.version") + "**", BotWorker.getBuild() + "-" + BotWorker.getVersion().name().toUpperCase(), true);
-        em.addField("**" + commandEvent.getResource("command.label.uptime") + "**", TimeUtil.getTime(BotWorker.getStartTime()), true);
+        em.addField("**" + commandEvent.getResource("label.botStats") + ":**", "", true);
+        em.addField("**" + commandEvent.getResource("label.version") + "**", BotWorker.getBuild() + "-" + BotWorker.getVersion().name().toUpperCase(), true);
+        em.addField("**" + commandEvent.getResource("label.uptime") + "**", TimeUtil.getTime(BotWorker.getStartTime()), true);
 
-        em.addField("**" + commandEvent.getResource("command.label.networkStats") + ":**", "", true);
-        em.addField("**" + commandEvent.getResource("command.label.responseTime") + "**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);
-        em.addField("**" + commandEvent.getResource("command.label.systemDate") + "**", new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
+        em.addField("**" + commandEvent.getResource("label.networkStats") + ":**", "", true);
+        em.addField("**" + commandEvent.getResource("label.responseTime") + "**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);
+        em.addField("**" + commandEvent.getResource("label.systemDate") + "**", new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
 
-        em.addField("**" + commandEvent.getResource("command.label.discordStats") + ":**", "", true);
-        em.addField("**" + commandEvent.getResource("command.label.gatewayTime") + "**", BotWorker.getShardManager().getAverageGatewayPing() + "ms", true);
-        em.addField("**" + commandEvent.getResource("command.label.shardAmount") + "**", BotWorker.getShardManager().getShards().size() + " "  + commandEvent.getResource("command.label.shards"), true);
+        em.addField("**" + commandEvent.getResource("label.discordStats") + ":**", "", true);
+        em.addField("**" + commandEvent.getResource("label.gatewayTime") + "**", BotWorker.getShardManager().getAverageGatewayPing() + "ms", true);
+        em.addField("**" + commandEvent.getResource("label.shardAmount") + "**", BotWorker.getShardManager().getShards().size() + " "  + commandEvent.getResource("label.shards"), true);
 
         StringBuilder end = new StringBuilder();
 
@@ -75,9 +75,9 @@ public class Stats implements ICommand {
             end2.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
         }
 
-        em.addField("**" + commandEvent.getResource("command.label.commandStats") + ":**", "", true);
-        em.addField("**" + commandEvent.getResource("command.label.topCommands") + "**", end.toString(), true);
-        em.addField("**" + commandEvent.getResource("command.label.overallTopCommands") + "**", end2.toString(), true);
+        em.addField("**" + commandEvent.getResource("label.commandStats") + ":**", "", true);
+        em.addField("**" + commandEvent.getResource("label.topCommands") + "**", end.toString(), true);
+        em.addField("**" + commandEvent.getResource("label.overallTopCommands") + "**", end2.toString(), true);
 
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 

@@ -26,7 +26,7 @@ public class SongInfo implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            commandEvent.reply(commandEvent.getResource("command.message.music.notConnected"));
+            commandEvent.reply(commandEvent.getResource("message.music.notConnected"));
             return;
         }
 
@@ -37,11 +37,11 @@ public class SongInfo implements ICommand {
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-        em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
+        em.setTitle(commandEvent.getResource("label.musicPlayer"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(audioTrack == null ? commandEvent.getResource("command.message.music.notPlaying") :
-                commandEvent.getResource("command.message.music.songInfo", audioTrack.getInfo().title, audioTrack.getInfo().author,
+        em.setDescription(audioTrack == null ? commandEvent.getResource("message.music.notPlaying") :
+                commandEvent.getResource("message.music.songInfo", audioTrack.getInfo().title, audioTrack.getInfo().author,
                 FormatUtil.getStatusEmoji(guildMusicManager.getPlayer()) + FormatUtil.progressBar((double)audioTrack.getPosition() / audioTrack.getDuration()),
                 FormatUtil.formatTime(audioTrack.getPosition()), FormatUtil.formatTime(audioTrack.getDuration()), FormatUtil.volumeIcon(guildMusicManager.getPlayer().getVolume())));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());

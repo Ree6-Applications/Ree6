@@ -42,19 +42,19 @@ public class Setup implements ICommand {
 
                 if (commandEvent.getMessage().getAttachments().isEmpty() ||
                         commandEvent.getMessage().getAttachments().stream().noneMatch(Message.Attachment::isImage)) {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.image.needed"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.image.needed"), 5);
                 } else {
                     try (Message.Attachment attachment = commandEvent.getMessage().getAttachments().stream().filter(Message.Attachment::isImage).findFirst().orElse(null)) {
                         if (attachment != null) {
                             if (attachment.getSize() > 1024 * 1024 * 20) {
-                                commandEvent.reply(commandEvent.getResource("command.message.default.image.tooBigMax", "20"), 5);
+                                commandEvent.reply(commandEvent.getResource("message.default.image.tooBigMax", "20"), 5);
                             } else {
                                 try (InputStream inputStream = attachment.getProxy().download(1920, 1080).get()) {
                                     byte[] imageArray = inputStream.readAllBytes();
 
                                     Main.getInstance().getSqlConnector().getSqlWorker()
                                             .setSetting(new Setting(commandEvent.getGuild().getId(), "message_join_image", Base64.getEncoder().encodeToString(imageArray)));
-                                    commandEvent.reply(commandEvent.getResource("command.message.setup.successImage"));
+                                    commandEvent.reply(commandEvent.getResource("message.setup.successImage"));
                                 } catch (Exception e) {
                                     commandEvent.reply(commandEvent.getResource("command.perform.error"));
                                     log.error("Couldn't convert the Image!", e);
@@ -67,20 +67,20 @@ public class Setup implements ICommand {
             }
 
             EmbedBuilder embedBuilder = new EmbedBuilder()
-                    .setTitle(commandEvent.getResource("command.label.setup"))
+                    .setTitle(commandEvent.getResource("label.setup"))
                     .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl())
                     .setColor(Color.cyan)
-                    .setDescription(commandEvent.getResource("command.message.setup.setupMenu"));
+                    .setDescription(commandEvent.getResource("message.setup.setupMenu"));
 
             List<SelectOption> optionList = new ArrayList<>();
-            optionList.add(SelectOption.of(commandEvent.getResource("command.label.auditLog"), "log"));
-            optionList.add(SelectOption.of(commandEvent.getResource("command.label.welcomeChannel"), "welcome"));
-            optionList.add(SelectOption.of(commandEvent.getResource("command.label.autoRole"), "autorole"));
-            optionList.add(SelectOption.of(commandEvent.getResource("command.label.temporalVoice"), "tempvoice"));
-            optionList.add(SelectOption.of(commandEvent.getResource("command.label.statistics"), "statistics"));
-            optionList.add(SelectOption.of(commandEvent.getResource("command.label.ticketSystem"), "tickets"));
+            optionList.add(SelectOption.of(commandEvent.getResource("label.auditLog"), "log"));
+            optionList.add(SelectOption.of(commandEvent.getResource("label.welcomeChannel"), "welcome"));
+            optionList.add(SelectOption.of(commandEvent.getResource("label.autoRole"), "autorole"));
+            optionList.add(SelectOption.of(commandEvent.getResource("label.temporalVoice"), "tempvoice"));
+            optionList.add(SelectOption.of(commandEvent.getResource("label.statistics"), "statistics"));
+            optionList.add(SelectOption.of(commandEvent.getResource("label.ticketSystem"), "tickets"));
 
-            SelectMenu selectMenu = new SelectMenuImpl("setupActionMenu", commandEvent.getResource("command.message.setup.setupMenuPlaceholder"), 1, 1, false, optionList);
+            SelectMenu selectMenu = new SelectMenuImpl("setupActionMenu", commandEvent.getResource("message.setup.setupMenuPlaceholder"), 1, 1, false, optionList);
 
             if (commandEvent.isSlashCommand()) {
                 commandEvent.getInteractionHook().sendMessageEmbeds(embedBuilder.build())
@@ -90,7 +90,7 @@ public class Setup implements ICommand {
                         .addActionRow(selectMenu).queue();
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.ADMINISTRATOR.name() + "/" + Permission.MANAGE_SERVER.name()));
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.ADMINISTRATOR.name() + "/" + Permission.MANAGE_SERVER.name()));
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }

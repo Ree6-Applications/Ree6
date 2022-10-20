@@ -29,7 +29,7 @@ public class Mute implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS)) {
-            commandEvent.reply(commandEvent.getResource("command.message.default.noPermission", "MODERATE_MEMBERS"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.noPermission", "MODERATE_MEMBERS"), 5);
             return;
         }
 
@@ -52,14 +52,14 @@ public class Mute implements ICommand {
                     Duration duration = Duration.ofMinutes(time);
                     muteMember(commandEvent.getMember(), targetOption.getAsMember(), duration, (reasonOption != null ? reasonOption.getAsString() : "No Reason given!"), commandEvent);
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
                 }
 
             } else {
                 if (commandEvent.getArguments().length <= 2 && commandEvent.getArguments().length <= 3) {
                     if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                        commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
-                        commandEvent.reply(commandEvent.getResource("command.message.default.usage","mute @user"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.usage","mute @user"), 5);
                     } else {
                         long time;
                         try {
@@ -73,12 +73,12 @@ public class Mute implements ICommand {
                         muteMember(commandEvent.getMember(), commandEvent.getMessage().getMentions().getMembers().get(0), duration, reason, commandEvent);
                     }
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
-                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","mute @user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.usage","mute @user"), 5);
                 }
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.MODERATE_MEMBERS.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MODERATE_MEMBERS.name()), 5);
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
@@ -117,12 +117,12 @@ public class Mute implements ICommand {
             member.timeoutFor(duration).reason(reason).onErrorFlatMap(throwable -> {
                 commandEvent.reply(commandEvent.getResource("command.perform.errorWithException", throwable.getMessage()));
                 return null;
-            }).queue(unused -> commandEvent.reply(commandEvent.getResource("command.message.mute.success",member.getAsMention(), duration.getSeconds())));
+            }).queue(unused -> commandEvent.reply(commandEvent.getResource("message.mute.success",member.getAsMention(), duration.getSeconds())));
         } else {
             if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
-                commandEvent.reply(commandEvent.getResource("command.message.mute.hierarchySelfError"), 5);
+                commandEvent.reply(commandEvent.getResource("message.mute.hierarchySelfError"), 5);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.mute.hierarchyBotError"), 5);
+                commandEvent.reply(commandEvent.getResource("message.mute.hierarchyBotError"), 5);
             }
         }
     }

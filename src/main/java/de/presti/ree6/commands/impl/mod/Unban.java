@@ -36,12 +36,12 @@ public class Unban implements ICommand {
                 if (targetOption != null) {
                     try {
                         commandEvent.getGuild().unban(UserSnowflake.fromId(targetOption.getAsString())).queue();
-                        commandEvent.reply(commandEvent.getResource("command.message.unban.success", "<@" + targetOption.getAsString() + ">"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.unban.success", "<@" + targetOption.getAsString() + ">"), 5);
                     } catch (Exception ignored) {
-                        commandEvent.reply(commandEvent.getResource("command.message.unban.notFound", targetOption.getAsString()), 5);
+                        commandEvent.reply(commandEvent.getResource("message.unban.notFound", targetOption.getAsString()), 5);
                     }
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
                 }
 
             } else {
@@ -49,17 +49,17 @@ public class Unban implements ICommand {
                     try {
                         String userId = commandEvent.getArguments()[0];
                         commandEvent.getGuild().unban(UserSnowflake.fromId(userId)).queue();
-                        commandEvent.reply(commandEvent.getResource("command.message.unban.success", "<@" + userId + ">"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.unban.success", "<@" + userId + ">"), 5);
                     } catch (Exception ignored) {
-                        commandEvent.reply(commandEvent.getResource("command.message.unban.notFound", commandEvent.getArguments()[0]), 5);
+                        commandEvent.reply(commandEvent.getResource("message.unban.notFound", commandEvent.getArguments()[0]), 5);
                     }
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
-                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","unban @user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.usage","unban @user"), 5);
                 }
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.BAN_MEMBERS.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.BAN_MEMBERS.name()), 5);
         }
 
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());

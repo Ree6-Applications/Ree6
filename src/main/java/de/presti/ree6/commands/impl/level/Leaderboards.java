@@ -20,11 +20,11 @@ public class Leaderboards implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-        messageCreateBuilder.setContent(commandEvent.getResource("command.message.leaderboards"));
+        messageCreateBuilder.setContent(commandEvent.getResource("message.leaderboards"));
         messageCreateBuilder.addActionRow(
-                Button.link("https://support-dev.discord.com/hc/de/articles/360043053492-Statistics-Bot-Policy", commandEvent.getResource("command.label.discordGuidelines")),
-                Button.link("https://cp.ree6.de/leaderboard/chat?guildId=" + commandEvent.getGuild().getId(), commandEvent.getResource("command.label.chatLeaderboard")),
-                Button.link("https://cp.ree6.de/leaderboard/voice?guildId=" + commandEvent.getGuild().getId(), commandEvent.getResource("command.label.voiceLeaderboard"))
+                Button.link("https://support-dev.discord.com/hc/de/articles/360043053492-Statistics-Bot-Policy", commandEvent.getResource("label.discordGuidelines")),
+                Button.link("https://cp.ree6.de/leaderboard/chat?guildId=" + commandEvent.getGuild().getId(), commandEvent.getResource("label.chatLeaderboard")),
+                Button.link("https://cp.ree6.de/leaderboard/voice?guildId=" + commandEvent.getGuild().getId(), commandEvent.getResource("label.voiceLeaderboard"))
         );
         commandEvent.reply(messageCreateBuilder.build());
     }

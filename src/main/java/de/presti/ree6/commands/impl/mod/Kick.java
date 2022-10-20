@@ -27,7 +27,7 @@ public class Kick implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.KICK_MEMBERS)) {
-            commandEvent.reply(commandEvent.getResource("command.message.default.noPermission", "KICK_MEMBERS"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.noPermission", "KICK_MEMBERS"), 5);
             return;
         }
 
@@ -41,25 +41,25 @@ public class Kick implements ICommand {
                 if (targetOption != null) {
                     kickMember(targetOption.getAsMember(), (reasonOption != null ? reasonOption.getAsString() : "No Reason given!"), commandEvent);
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
                 }
 
             } else {
                 if (commandEvent.getArguments().length <= 1 && commandEvent.getArguments().length <= 2) {
                     if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                        commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
-                        commandEvent.reply(commandEvent.getResource("command.message.default.usage","kick @user"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.usage","kick @user"), 5);
                     } else {
                         String reason = commandEvent.getArguments().length == 2 ? commandEvent.getArguments()[1] : "No Reason given!";
                         kickMember(commandEvent.getMessage().getMentions().getMembers().get(0), reason, commandEvent);
                     }
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
-                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","kick @user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.usage","kick @user"), 5);
                 }
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.KICK_MEMBERS.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.KICK_MEMBERS.name()), 5);
         }
 
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
@@ -92,13 +92,13 @@ public class Kick implements ICommand {
      */
     public void kickMember(Member member, String reason, CommandEvent commandEvent) {
         if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
-            commandEvent.reply(commandEvent.getResource("command.message.kick.success", member.getAsMention()), 5);
+            commandEvent.reply(commandEvent.getResource("message.kick.success", member.getAsMention()), 5);
             commandEvent.getGuild().kick(member).reason(reason).queue();
         } else {
             if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
-                commandEvent.reply(commandEvent.getResource("command.message.kick.hierarchySelfError"), 5);
+                commandEvent.reply(commandEvent.getResource("message.kick.hierarchySelfError"), 5);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.kick.hierarchyBotError"), 5);
+                commandEvent.reply(commandEvent.getResource("message.kick.hierarchyBotError"), 5);
             }
         }
     }

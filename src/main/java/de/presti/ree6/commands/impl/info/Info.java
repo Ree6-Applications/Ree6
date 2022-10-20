@@ -34,19 +34,19 @@ public class Info implements ICommand {
             if (targetOption != null && targetOption.getAsMember() != null) {
                 sendInfo(targetOption.getAsMember(), commandEvent);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
             }
 
         } else {
             if (commandEvent.getArguments().length == 1) {
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
-                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","info @user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.usage","info @user"), 5);
                 } else {
                     sendInfo(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                 }
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
             }
         }
     }

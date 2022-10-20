@@ -27,7 +27,7 @@ public class CatImage implements ICommand {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setTitle(commandEvent.getResource("command.label.randomCatImage"));
+        em.setTitle(commandEvent.getResource("label.randomCatImage"));
         em.setColor(BotWorker.randomEmbedColor());
         em.setImage(js.get(0).getAsJsonObject().get("url").getAsString());
         em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());

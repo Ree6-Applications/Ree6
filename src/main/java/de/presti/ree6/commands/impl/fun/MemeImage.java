@@ -27,13 +27,13 @@ public class MemeImage implements ICommand {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setTitle(commandEvent.getResource("command.label.randomMemeImage"));
+        em.setTitle(commandEvent.getResource("label.randomMemeImage"));
         em.setColor(BotWorker.randomEmbedColor());
 
         if (js.has("url")) {
             em.setImage(js.get("url").getAsString());
         } else {
-            em.setDescription(commandEvent.getResource("command.message.default.retrievalError"));
+            em.setDescription(commandEvent.getResource("message.default.retrievalError"));
         }
 
         em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());

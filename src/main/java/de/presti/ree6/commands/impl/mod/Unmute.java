@@ -27,7 +27,7 @@ public class Unmute implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS)) {
-            commandEvent.reply(commandEvent.getResource("command.message.default.noPermission", "MODERATE_MEMBERS"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.noPermission", "MODERATE_MEMBERS"), 5);
             return;
         }
 
@@ -40,24 +40,24 @@ public class Unmute implements ICommand {
                 if (targetOption != null) {
                     unmuteMember(commandEvent.getMember(), targetOption.getAsMember(), commandEvent);
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
                 }
 
             } else {
                 if (commandEvent.getArguments().length == 1) {
                     if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                        commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
-                        commandEvent.reply(commandEvent.getResource("command.message.default.usage","unmute @user"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.usage","unmute @user"), 5);
                     } else {
                         unmuteMember(commandEvent.getMember(), commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                     }
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
-                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","unmute @user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.usage","unmute @user"), 5);
                 }
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.MODERATE_MEMBERS.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MODERATE_MEMBERS.name()), 5);
         }
 
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
@@ -93,12 +93,12 @@ public class Unmute implements ICommand {
             member.removeTimeout().onErrorFlatMap(throwable -> {
                 commandEvent.reply(commandEvent.getResource("command.perform.errorWithException", throwable.getMessage()));
                 return null;
-            }).queue(unused ->commandEvent.reply(commandEvent.getResource("command.message.unmute.success",member.getAsMention())));
+            }).queue(unused ->commandEvent.reply(commandEvent.getResource("message.unmute.success",member.getAsMention())));
         } else {
             if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
-                commandEvent.reply(commandEvent.getResource("command.message.unmute.hierarchySelfError"), 5);
+                commandEvent.reply(commandEvent.getResource("message.unmute.hierarchySelfError"), 5);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.unmute.hierarchyBotError"), 5);
+                commandEvent.reply(commandEvent.getResource("message.unmute.hierarchyBotError"), 5);
             }
         }
     }

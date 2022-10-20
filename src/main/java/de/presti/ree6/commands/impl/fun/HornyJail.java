@@ -33,17 +33,17 @@ public class HornyJail implements ICommand {
             if (targetOption != null) {
                 sendHornyJail(targetOption.getAsMember(), commandEvent);
             } else {
-               commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"),5);
+               commandEvent.reply(commandEvent.getResource("message.default.noMention.user"),5);
             }
         } else {
             if (commandEvent.getArguments().length == 1) {
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
                 } else {
                     sendHornyJail(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                 }
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","hornyjail @User"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","hornyjail @User"), 5);
             }
         }
     }
@@ -73,9 +73,9 @@ public class HornyJail implements ICommand {
         try {
             MessageCreateBuilder createBuilder = new MessageCreateBuilder();
             createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createHornyJailImage(member.getUser()), "hornyjail.png"));
-            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.hornyJail", member.getAsMention()), commandEvent.getChannel(), commandEvent.getInteractionHook());
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("message.hornyJail", member.getAsMention()), commandEvent.getChannel(), commandEvent.getInteractionHook());
             commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
-            if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.default.checkBelow")).queue();
+            if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).queue();
         } catch (Exception ex) {
             Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.perform.error"), commandEvent.getChannel(), commandEvent.getInteractionHook());
             log.error("Error while sending Horny-jail!", ex);

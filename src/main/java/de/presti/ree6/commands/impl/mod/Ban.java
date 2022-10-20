@@ -29,7 +29,7 @@ public class Ban implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
-            commandEvent.reply(commandEvent.getResource("command.message.default.noPermission", "BAN_MEMBERS"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.noPermission", "BAN_MEMBERS"), 5);
             return;
         }
 
@@ -45,13 +45,13 @@ public class Ban implements ICommand {
                         banMember(targetOption.getAsMember(), null, commandEvent);
                     }
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
                 }
             } else {
                 if (commandEvent.getArguments().length > 0) {
                     if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                        commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
-                        commandEvent.reply(commandEvent.getResource("command.message.default.usage","ban @user"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.usage","ban @user"), 5);
                     } else {
                         if (commandEvent.getArguments().length == 1) {
                             banMember(commandEvent.getMessage().getMentions().getMembers().get(0), null, commandEvent);
@@ -65,12 +65,12 @@ public class Ban implements ICommand {
                         }
                     }
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
-                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","ban @user [reason]"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.usage","ban @user [reason]"), 5);
                 }
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.ADMINISTRATOR.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.ADMINISTRATOR.name()), 5);
         }
 
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
@@ -106,13 +106,13 @@ public class Ban implements ICommand {
      */
     public void banMember(Member member, String reason, CommandEvent commandEvent) {
         if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
-            commandEvent.reply(commandEvent.getResource("command.message.ban.success", member.getUser().getAsTag()), 5);
+            commandEvent.reply(commandEvent.getResource("message.ban.success", member.getUser().getAsTag()), 5);
             commandEvent.getGuild().ban(member, 7, TimeUnit.DAYS).reason(reason).queue();
         } else {
             if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
-                commandEvent.reply(commandEvent.getResource("command.message.ban.hierarchySelfError"), 5);
+                commandEvent.reply(commandEvent.getResource("message.ban.hierarchySelfError"), 5);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.ban.hierarchyBotError"), 5);
+                commandEvent.reply(commandEvent.getResource("message.ban.hierarchyBotError"), 5);
             }
         }
     }

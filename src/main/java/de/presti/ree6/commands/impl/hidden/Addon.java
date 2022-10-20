@@ -27,18 +27,18 @@ public class Addon implements ICommand {
                             .append(" ").append("for").append(" ").append("by").append(" ").append(addon.getAuthor()).append("\n");
                 }
                 stringBuilder.append("```");
-                commandEvent.reply(commandEvent.getResource("command.message.addon.list") + " " + (stringBuilder.length() == 6 ? "None" : stringBuilder));
+                commandEvent.reply(commandEvent.getResource("message.addon.list") + " " + (stringBuilder.length() == 6 ? "None" : stringBuilder));
             } else {
                 if (commandEvent.getArguments()[0].equalsIgnoreCase("reload")) {
-                    commandEvent.reply(commandEvent.getResource("command.message.addon.reloadAll"));
+                    commandEvent.reply(commandEvent.getResource("message.addon.reloadAll"));
                     Main.getInstance().getAddonManager().reload();
-                    commandEvent.reply(commandEvent.getResource("command.message.addon.reloadedAll"));
+                    commandEvent.reply(commandEvent.getResource("message.addon.reloadedAll"));
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
                 }
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission"), 5);
         }
     }
 

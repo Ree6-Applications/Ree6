@@ -33,7 +33,7 @@ public class EmbedSender implements ICommand {
         }
 
         if (!commandEvent.getMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.MESSAGE_MANAGE.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MESSAGE_MANAGE.name()), 5);
             return;
         }
 
@@ -52,8 +52,8 @@ public class EmbedSender implements ICommand {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
 
-        embedBuilder.setTitle(title != null ? title.getAsString() : commandEvent.getResource("command.label.title"), url != null ? url.getAsString() : null);
-        embedBuilder.setDescription(description != null ? description.getAsString() : commandEvent.getResource("command.label.description"));
+        embedBuilder.setTitle(title != null ? title.getAsString() : commandEvent.getResource("label.title"), url != null ? url.getAsString() : null);
+        embedBuilder.setDescription(description != null ? description.getAsString() : commandEvent.getResource("label.description"));
 
         if (color != null) {
             embedBuilder.setColor(new Color(color.getAsInt()));

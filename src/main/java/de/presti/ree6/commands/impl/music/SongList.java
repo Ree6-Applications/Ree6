@@ -35,13 +35,13 @@ public class SongList implements ICommand {
         end.append("```");
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-        em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
+        em.setTitle(commandEvent.getResource("label.musicPlayer"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
         em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().getQueue().isEmpty() ?
-                commandEvent.getResource("command.message.music.songQueueEmpty") :
+                commandEvent.getResource("message.music.songQueueEmpty") :
                 (end.length() > 4096 ? commandEvent.getResource("command.perform.errorWithException","Error (M-SL-01)") :
-                        commandEvent.getResource("command.message.music.songQueue", end)));
+                        commandEvent.getResource("message.music.songQueue", end)));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
         commandEvent.reply(em.build(), 5);

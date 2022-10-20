@@ -33,21 +33,21 @@ public class Prefix implements ICommand {
 
                 if (prefixOption != null) {
                     Main.getInstance().getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", prefixOption.getAsString());
-                    commandEvent.reply(commandEvent.getResource("command.message.prefix.success", prefixOption.getAsString()), 5);
+                    commandEvent.reply(commandEvent.getResource("message.prefix.success", prefixOption.getAsString()), 5);
                 } else {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","prefix PREFIX", 5));
+                    commandEvent.reply(commandEvent.getResource("message.default.usage","prefix PREFIX", 5));
                 }
             } else {
                 if (commandEvent.getArguments().length != 1) {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
-                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","prefix PREFIX", 5));
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.usage","prefix PREFIX", 5));
                 } else {
                     Main.getInstance().getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", commandEvent.getArguments()[0]);
-                    commandEvent.reply(commandEvent.getResource("command.message.prefix.success", commandEvent.getArguments()[0]), 5);
+                    commandEvent.reply(commandEvent.getResource("message.prefix.success", commandEvent.getArguments()[0]), 5);
                 }
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.ADMINISTRATOR.name() + "/" + Permission.MANAGE_SERVER.name()));
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.ADMINISTRATOR.name() + "/" + Permission.MANAGE_SERVER.name()));
         }
     }
 

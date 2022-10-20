@@ -49,10 +49,10 @@ public class Play implements ICommand {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
+                em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
-                em.setDescription(commandEvent.getResource("command.message.default.usage","play (Url)"));
+                em.setDescription(commandEvent.getResource("message.default.usage","play (Url)"));
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                 commandEvent.reply(em.build(), 5);
             }
@@ -62,10 +62,10 @@ public class Play implements ICommand {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
+                em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
-                em.setDescription(commandEvent.getResource("command.message.default.usage","play (Url)"));
+                em.setDescription(commandEvent.getResource("message.default.usage","play (Url)"));
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                 commandEvent.reply(em.build(), 5);
             } else {
@@ -140,10 +140,10 @@ public class Play implements ICommand {
                 if (!loadFailed.isEmpty()) {
                     EmbedBuilder em = new EmbedBuilder();
                     em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                    em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
+                    em.setTitle(commandEvent.getResource("label.musicPlayer"));
                     em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                     em.setColor(Color.GREEN);
-                    em.setDescription(commandEvent.getResource("command.message.music.notFoundMultiple", loadFailed.size()));
+                    em.setDescription(commandEvent.getResource("message.music.notFoundMultiple", loadFailed.size()));
                     em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                     commandEvent.reply(em.build(), 5);
                 }
@@ -166,10 +166,10 @@ public class Play implements ICommand {
             } catch (Exception exception) {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
+                em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.RED);
-                em.setDescription(commandEvent.getResource("command.message.music.searchFailed"));
+                em.setDescription(commandEvent.getResource("message.music.searchFailed"));
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                 commandEvent.reply(em.build(), 5);
                 log.error("Error while searching for " + search + " on YouTube", exception);
@@ -179,10 +179,10 @@ public class Play implements ICommand {
             if (ytResult == null) {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
+                em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.YELLOW);
-                em.setDescription(commandEvent.getResource("command.message.music.notFound", FormatUtil.filter(search.toString())));
+                em.setDescription(commandEvent.getResource("message.music.notFound", FormatUtil.filter(search.toString())));
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                 commandEvent.reply(em.build(), 5);
             } else {

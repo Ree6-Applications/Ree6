@@ -42,15 +42,15 @@ public class Twitter implements ICommand {
                 sendTwitterTweet(targetOption.getAsMember(), contentOption.getAsString(), commandEvent);
             } else {
                 if (targetOption == null)
-                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
                 if (contentOption == null)
-                    commandEvent.reply(commandEvent.getResource("command.message.default.invalidQuery"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
             }
 
         } else {
             if (commandEvent.getArguments().length >= 2) {
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
                 } else {
                     StringBuilder stringBuilder = new StringBuilder();
 
@@ -61,7 +61,7 @@ public class Twitter implements ICommand {
                     sendTwitterTweet(commandEvent.getMessage().getMentions().getMembers().get(0), stringBuilder.toString(), commandEvent);
                 }
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","twitter @User Yourtexthere"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","twitter @User Yourtexthere"), 5);
             }
         }
     }
@@ -105,9 +105,9 @@ public class Twitter implements ICommand {
             commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
 
             if (commandEvent.isSlashCommand())
-                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.default.checkBelow")).queue();
+                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).queue();
         } catch (Exception ex) {
-            commandEvent.reply(commandEvent.getResource("command.message.perform.error"));
+            commandEvent.reply(commandEvent.getResource("message.perform.error"));
             log.error("An error occurred while creating a Tweet!", ex);
         }
     }

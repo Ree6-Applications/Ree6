@@ -21,7 +21,7 @@ public class TwitterNotifier implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
-            commandEvent.reply(commandEvent.getResource("command.message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
+            commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
         }
 
         if (commandEvent.isSlashCommand()) {
@@ -42,45 +42,45 @@ public class TwitterNotifier implements ICommand {
                 commandEvent.reply(end.toString(), 10);
 
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","twitternotifier list/add/remove"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","twitternotifier list/add/remove"), 5);
             }
         } else if(commandEvent.getArguments().length == 3) {
 
             if (commandEvent.getMessage().getMentions().getChannels(TextChannel.class).isEmpty() ||
                     !commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","twitternotifier add/remove TwitterName #Channel"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","twitternotifier add/remove TwitterName #Channel"), 5);
                 return;
             }
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
                 commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-TwitterNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addTwitterWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
-                commandEvent.reply(commandEvent.getResource("command.message.twitterNotifier.added",name), 5);
+                commandEvent.reply(commandEvent.getResource("message.twitterNotifier.added",name), 5);
 
                 if (!Main.getInstance().getNotifier().isTwitterRegistered(name)) {
                     Main.getInstance().getNotifier().registerTwitterUser(name);
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","twitternotifier remove TwitterName"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","twitternotifier remove TwitterName"), 5);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","twitternotifier add TwitterName #Channel"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","twitternotifier add TwitterName #Channel"), 5);
             }
         } else if(commandEvent.getArguments().length == 2) {
             String name = commandEvent.getArguments()[1];
             if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
                 Main.getInstance().getSqlConnector().getSqlWorker().removeTwitterWebhook(commandEvent.getGuild().getId(), name);
-                commandEvent.reply(commandEvent.getResource("command.message.twitterNotifier.removed",name), 5);
+                commandEvent.reply(commandEvent.getResource("message.twitterNotifier.removed",name), 5);
 
                 if (Main.getInstance().getNotifier().isTwitterRegistered(name)) {
                     Main.getInstance().getNotifier().unregisterTwitterUser(name);
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","twitternotifier add TwitterName #Channel"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","twitternotifier add TwitterName #Channel"), 5);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","twitternotifier remove TwitterName"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","twitternotifier remove TwitterName"), 5);
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.usage","twitternotifier list/add/remove"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.usage","twitternotifier list/add/remove"), 5);
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }

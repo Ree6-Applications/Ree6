@@ -17,7 +17,7 @@ public class Ping implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        commandEvent.reply(commandEvent.getResource("command.message.ping"));
+        commandEvent.reply(commandEvent.getResource("message.ping"));
     }
 
     /**

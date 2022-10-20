@@ -20,10 +20,10 @@ public class Optout implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         if (Main.getInstance().getSqlConnector().getSqlWorker().isOptOut(commandEvent.getGuild().getId(), commandEvent.getMember().getId())) {
             Main.getInstance().getSqlConnector().getSqlWorker().optIn(commandEvent.getGuild().getId(), commandEvent.getMember().getId());
-            commandEvent.reply(commandEvent.getResource("command.message.optout.optedIn"));
+            commandEvent.reply(commandEvent.getResource("message.optout.optedIn"));
         } else {
             Main.getInstance().getSqlConnector().getSqlWorker().optOut(commandEvent.getGuild().getId(), commandEvent.getMember().getId());
-            commandEvent.reply(commandEvent.getResource("command.message.optout.optedOut"));
+            commandEvent.reply(commandEvent.getResource("message.optout.optedOut"));
         }
     }
 

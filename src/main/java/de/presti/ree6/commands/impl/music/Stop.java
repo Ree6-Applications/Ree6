@@ -26,10 +26,10 @@ public class Stop implements ICommand {
             Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().stopAll(commandEvent.getInteractionHook());
         } else {
             commandEvent.reply(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
-                            commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle(commandEvent.getResource("command.label.musicPlayer"))
+                            commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle(commandEvent.getResource("label.musicPlayer"))
                     .setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl())
                     .setColor(Color.RED)
-                    .setDescription(commandEvent.getResource("command.message.music.notPlaying")).build(), 5);
+                    .setDescription(commandEvent.getResource("message.music.notPlaying")).build(), 5);
         }
     }
 

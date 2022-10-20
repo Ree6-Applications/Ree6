@@ -33,7 +33,7 @@ public class Lyrics implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            commandEvent.reply(commandEvent.getResource("command.message.music.notConnected"));
+            commandEvent.reply(commandEvent.getResource("message.music.notConnected"));
             return;
         }
 
@@ -50,9 +50,9 @@ public class Lyrics implements ICommand {
 
                 if (lyrics == null) {
                     commandEvent.reply(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
-                                    commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle(commandEvent.getResource("command.label.musicPlayer"))
+                                    commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setTitle(commandEvent.getResource("label.musicPlayer"))
                             .setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl()).setColor(Color.RED)
-                            .setDescription(commandEvent.getResource("command.message.music.lyrics.notFound", "``" + FormatUtil.filter(title) + "``"))
+                            .setDescription(commandEvent.getResource("message.music.lyrics.notFound", "``" + FormatUtil.filter(title) + "``"))
                             .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl()).build(), 5);
                     return;
                 }
@@ -61,7 +61,7 @@ public class Lyrics implements ICommand {
                         .setAuthor(lyrics.getAuthor())
                         .setTitle(lyrics.getTitle(), lyrics.getURL());
                 if (lyrics.getContent().length() > 15000) {
-                    commandEvent.reply(commandEvent.getResource("command.message.music.lyrics.foundUnlikely", "`" + FormatUtil.filter(title) + "`", lyrics.getURL()));
+                    commandEvent.reply(commandEvent.getResource("message.music.lyrics.foundUnlikely", "`" + FormatUtil.filter(title) + "`", lyrics.getURL()));
                 } else if (lyrics.getContent().length() > 2000) {
                     String content = lyrics.getContent().trim();
                     while (content.length() > 2000) {

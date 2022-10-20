@@ -42,13 +42,13 @@ public class ClearData implements ICommand {
                     Main.getInstance().getSqlConnector().getSqlWorker().setInvite(commandEvent.getGuild().getId(), commandEvent.getGuild().getOwnerId(), vanityInvite.getCode(), vanityInvite.getUses());
                 }
 
-                commandEvent.reply(commandEvent.getResource("command.message.clearData.success"), 5);
+                commandEvent.reply(commandEvent.getResource("message.clearData.success"), 5);
                 ThreadUtil.createNewThread(x -> timeout.remove(commandEvent.getGuild().getId()), null, Duration.ofMinutes(10), false, false);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.clearData.cooldown"), 5);
+                commandEvent.reply(commandEvent.getResource("message.clearData.cooldown"), 5);
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.sufficientPermission", Permission.ADMINISTRATOR.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.ADMINISTRATOR.name()), 5);
         }
     }
 

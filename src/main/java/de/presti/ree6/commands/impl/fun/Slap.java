@@ -33,18 +33,18 @@ public class Slap implements ICommand {
             if (targetOption != null && targetOption.getAsMember() != null) {
                 sendSlap(targetOption.getAsMember(), commandEvent);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
             }
         } else {
             if (commandEvent.getArguments().length == 1) {
                 if (commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
-                    commandEvent.reply(commandEvent.getResource("command.message.default.noMention.user"), 5);
-                    commandEvent.reply(commandEvent.getResource("command.message.default.usage","slap @user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.default.usage","slap @user"), 5);
                 } else {
                     sendSlap(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                 }
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","slap @user"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","slap @user"), 5);
             }
         }
     }
@@ -72,7 +72,7 @@ public class Slap implements ICommand {
      * @param commandEvent The CommandEvent.
      */
     public void sendSlap(Member member, CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.message.slap", member.getAsMention(), commandEvent.getMember().getAsMention()), commandEvent.getChannel(), null);
+        Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("message.slap", member.getAsMention(), commandEvent.getMember().getAsMention()), commandEvent.getChannel(), null);
 
         ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
@@ -83,6 +83,6 @@ public class Slap implements ICommand {
         }
 
         Main.getInstance().getCommandManager().sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), commandEvent.getChannel(), null);
-        if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.default.checkBelow")).queue();
+        if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).queue();
     }
 }

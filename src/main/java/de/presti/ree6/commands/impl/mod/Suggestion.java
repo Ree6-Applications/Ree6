@@ -35,7 +35,7 @@ public class Suggestion implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.ADMINISTRATOR)) {
-            commandEvent.reply(commandEvent.getResource("command.message.default.noPermission", "ADMINISTRATOR"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.noPermission", "ADMINISTRATOR"), 5);
             return;
         }
 
@@ -44,7 +44,7 @@ public class Suggestion implements ICommand {
             OptionMapping messageChannel = commandEvent.getSlashCommandInteractionEvent().getOption("messagetarget");
 
             if (channel == null || messageChannel == null) {
-                commandEvent.reply(commandEvent.getResource("command.message.default.noMention.channel"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.noMention.channel"), 5);
                 return;
             }
 
@@ -53,8 +53,8 @@ public class Suggestion implements ICommand {
             if (commandEvent.getMessage() != null && commandEvent.getMessage().getMentions().getChannels().size() == 2) {
                 createSuggestions(commandEvent, (MessageChannel) commandEvent.getMessage().getMentions().getChannels().get(0), (MessageChannel) commandEvent.getMessage().getMentions().getChannels().get(1));
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.noMention.channel"), 5);
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage", "suggestion <#suggestions-post-channel> <#suggestions-create-channel>"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.noMention.channel"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage", "suggestion <#suggestions-post-channel> <#suggestions-create-channel>"), 5);
             }
         }
     }
@@ -68,12 +68,12 @@ public class Suggestion implements ICommand {
     public void createSuggestions(CommandEvent commandEvent, MessageChannel channel, MessageChannel messageChannel) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle(commandEvent.getResource("command.label.suggestionMenu"));
+        embedBuilder.setTitle(commandEvent.getResource("label.suggestionMenu"));
         embedBuilder.setColor(Color.ORANGE);
-        embedBuilder.setDescription(commandEvent.getResource("command.message.suggestion.suggestionMenu"));
+        embedBuilder.setDescription(commandEvent.getResource("message.suggestion.suggestionMenu"));
         embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
         messageCreateBuilder.setEmbeds(embedBuilder.build());
-        messageCreateBuilder.setActionRow(Button.primary("re_suggestion", commandEvent.getResource("command.message.suggestion.suggestionMenuPlaceholder")));
+        messageCreateBuilder.setActionRow(Button.primary("re_suggestion", commandEvent.getResource("message.suggestion.suggestionMenuPlaceholder")));
 
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
 
@@ -87,7 +87,7 @@ public class Suggestion implements ICommand {
             Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(suggestions);
         }
 
-        commandEvent.reply(commandEvent.getResource("command.message.suggestion.success"), 5);
+        commandEvent.reply(commandEvent.getResource("message.suggestion.success"), 5);
     }
 
     /**

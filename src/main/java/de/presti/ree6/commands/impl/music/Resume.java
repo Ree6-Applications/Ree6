@@ -23,7 +23,7 @@ public class Resume implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
-            commandEvent.reply(commandEvent.getResource("command.message.music.notConnected"));
+            commandEvent.reply(commandEvent.getResource("message.music.notConnected"));
             return;
         }
 
@@ -37,10 +37,10 @@ public class Resume implements ICommand {
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-        em.setTitle(commandEvent.getResource("command.label.musicPlayer"));
+        em.setTitle(commandEvent.getResource("label.musicPlayer"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
-        em.setDescription(commandEvent.getResource("command.message.music.resume"));
+        em.setDescription(commandEvent.getResource("message.music.resume"));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
         commandEvent.reply(em.build(), 5);

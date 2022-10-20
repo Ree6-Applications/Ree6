@@ -26,7 +26,7 @@ public class DogImage implements ICommand {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setTitle(commandEvent.getResource("command.label.randomDogImage"));
+        em.setTitle(commandEvent.getResource("label.randomDogImage"));
         em.setColor(BotWorker.randomEmbedColor());
         em.setImage(js.get("message").getAsString());
         em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());

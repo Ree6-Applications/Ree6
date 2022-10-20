@@ -39,7 +39,7 @@ public class Rule34 implements ICommand {
 
             sendMessage(commandEvent);
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.onlyNSFW"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.onlyNSFW"), 5);
         }
     }
 
@@ -50,8 +50,8 @@ public class Rule34 implements ICommand {
      */
     public void sendMessage(CommandEvent commandEvent) {
         Message message = commandEvent.isSlashCommand() ?
-                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("command.message.nsfw.searching")).complete() :
-                commandEvent.getChannel().sendMessage(commandEvent.getResource("command.message.nsfw.searching")).complete();
+                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.nsfw.searching")).complete() :
+                commandEvent.getChannel().sendMessage(commandEvent.getResource("message.nsfw.searching")).complete();
 
         StringBuilder builder = new StringBuilder();
         String tags = "";
@@ -74,7 +74,7 @@ public class Rule34 implements ICommand {
             tags = "&tags=" + URLEncoder.encode(builder.toString(), StandardCharsets.UTF_8).toLowerCase();
 
         if (tags.contains("loli") || tags.contains("l0li") || tags.contains("lol1") || tags.contains("l0l1")) {
-            message.editMessage(commandEvent.getResource("command.message.nsfw.notAllowed")).queue();
+            message.editMessage(commandEvent.getResource("message.nsfw.notAllowed")).queue();
             return;
         }
 
@@ -107,22 +107,22 @@ public class Rule34 implements ICommand {
                         em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
                         if (commandEvent.isSlashCommand()) {
-                            message.editMessage(commandEvent.getResource("command.message.default.checkBelow")).queue();
+                            message.editMessage(commandEvent.getResource("message.default.checkBelow")).queue();
                             commandEvent.reply(em.build());
                         } else {
-                            message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("command.message.default.checkBelow")).queue());
+                            message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("message.default.checkBelow")).queue());
                         }
                     } else {
-                        message.editMessage(commandEvent.getResource("command.message.default.retrievalError")).queue();
+                        message.editMessage(commandEvent.getResource("message.default.retrievalError")).queue();
                     }
                 } else {
-                    message.editMessage(commandEvent.getResource("command.message.default.retrievalError")).queue();
+                    message.editMessage(commandEvent.getResource("message.default.retrievalError")).queue();
                 }
             } else {
-                message.editMessage(commandEvent.getResource("command.message.default.retrievalError")).queue();
+                message.editMessage(commandEvent.getResource("message.default.retrievalError")).queue();
             }
         } else {
-            message.editMessage(commandEvent.getResource("command.message.default.retrievalError")).queue();
+            message.editMessage(commandEvent.getResource("message.default.retrievalError")).queue();
         }
     }
 

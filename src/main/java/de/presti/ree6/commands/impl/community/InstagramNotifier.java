@@ -21,7 +21,7 @@ public class InstagramNotifier implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
-            commandEvent.reply(commandEvent.getResource("command.message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
+            commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
         }
 
         if (commandEvent.isSlashCommand()) {
@@ -42,45 +42,45 @@ public class InstagramNotifier implements ICommand {
                 commandEvent.reply(end.toString(), 10);
 
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage", "instagramnotifier list/add/remove"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage", "instagramnotifier list/add/remove"), 5);
             }
         } else if(commandEvent.getArguments().length == 3) {
 
             if (commandEvent.getMessage().getMentions().getChannels(TextChannel.class).isEmpty() ||
                     !commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
-                commandEvent.reply("command.message.default.noMention.channel", 5);
+                commandEvent.reply("message.default.noMention.channel", 5);
                 return;
             }
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
                 commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-InstagramNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addInstagramWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
-                commandEvent.reply(commandEvent.getResource("command.message.instagramNotifier.added", name), 5);
+                commandEvent.reply(commandEvent.getResource("message.instagramNotifier.added", name), 5);
 
                 if (!Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
                     Main.getInstance().getNotifier().registerInstagramUser(name);
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage", "instagramnotifier remove InstagramName"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage", "instagramnotifier remove InstagramName"), 5);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage", "instagramnotifier add InstagramName #Channel"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage", "instagramnotifier add InstagramName #Channel"), 5);
             }
         } else if(commandEvent.getArguments().length == 2) {
             String name = commandEvent.getArguments()[1];
             if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
                 Main.getInstance().getSqlConnector().getSqlWorker().removeInstagramWebhook(commandEvent.getGuild().getId(), name);
-                commandEvent.reply(commandEvent.getResource("command.message.instagramNotifier.removed", name), 5);
+                commandEvent.reply(commandEvent.getResource("message.instagramNotifier.removed", name), 5);
 
                 if (Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
                     Main.getInstance().getNotifier().unregisterInstagramUser(name);
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","instagramnotifier add InstagramName #Channel"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","instagramnotifier add InstagramName #Channel"), 5);
             } else {
-                commandEvent.reply(commandEvent.getResource("command.message.default.usage","instagramnotifier remove InstagramName"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage","instagramnotifier remove InstagramName"), 5);
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.message.default.usage","instagramnotifier list/add/remove"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.usage","instagramnotifier list/add/remove"), 5);
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
