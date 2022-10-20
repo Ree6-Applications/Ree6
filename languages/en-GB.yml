@@ -138,6 +138,13 @@ label:
   stand: "Stand"
   userCards: "%ss **Cards**"
   userCardsSelf: "**Your Cards**"
+  suggestion: "Suggestion"
+  closeTicket: "Close Ticket"
+  setup: "Setup"
+  delete: "Delete"
+  backToMenu: "Back to Menu"
+  setImage: "Set Image"
+  unknownMenu:
 message:
   default:
     usage: "Usage {guild_prefix}%s."
@@ -157,6 +164,7 @@ message:
       needed: "A Image is needed!"
       tooBig: "The Image is too big!"
       tooBigMax: "The Image is too big! Max Size: %sMB"
+    unknownMenu: "There was an error while resolving the modal!"
   birthday:
     added:
       self: "Your Birthday has been added!"
@@ -262,6 +270,9 @@ message:
     suggestionMenu: "Click on the button below to suggest something!"
     suggestionMenuPlaceholder: "Suggest something!"
     success: "Successfully setup the Suggestion-System!"
+    sent: "Your Suggestion has been sent!"
+    footer: "Suggestion by %s"
+    notSetup: "Looks like the Suggestion-System is not set up the right way!"
   unban:
     success: "Successfully unbanned %s!"
     notFound: "The User `%s` was not found!"
