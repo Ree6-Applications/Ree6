@@ -1,7 +1,6 @@
 package de.presti.ree6.commands;
 
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
@@ -322,7 +321,7 @@ public class CommandManager {
      * @return true, if yes | false, if not.
      */
     public boolean isTimeout(User user) {
-        return ArrayUtil.commandCooldown.contains(user.getId()) && BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD;
+        return ArrayUtil.commandCooldown.contains(user.getId()) && !BotWorker.getVersion().isDebug();
     }
 
     /**
