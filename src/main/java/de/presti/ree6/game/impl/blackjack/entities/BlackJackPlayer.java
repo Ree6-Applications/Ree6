@@ -81,6 +81,8 @@ public class BlackJackPlayer extends GamePlayer {
      * If so, the value of the ace will be set to 1.
      * @param currentValue The value of the hand.
      * @param checkHidden Whether to check the value of hidden cards or not.
+     *
+     * @return The value of the hand.
      */
     private int aceCheck(int currentValue, boolean checkHidden) {
         if (currentValue > 21 && hand.stream().anyMatch(blackJackCard -> blackJackCard.getValue() == 11 && (!blackJackCard.isHidden() || checkHidden))) {

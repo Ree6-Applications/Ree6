@@ -290,6 +290,8 @@ public class CommandManager {
      *
      * @param textChannel                  the TextChannel where the command has been performed.
      * @param slashCommandInteractionEvent the Slash-Command Event.
+     *
+     * @return true, if a command has been performed.
      */
     private boolean performSlashCommand(MessageChannelUnion textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
         //Get the Command by the Slash Command Name.
