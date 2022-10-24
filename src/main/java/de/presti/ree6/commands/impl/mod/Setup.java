@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.StringSelectMenuImpl;
 
 import java.awt.*;
 import java.io.InputStream;
@@ -80,7 +81,7 @@ public class Setup implements ICommand {
             optionList.add(SelectOption.of(commandEvent.getResource("label.statistics"), "statistics"));
             optionList.add(SelectOption.of(commandEvent.getResource("label.ticketSystem"), "tickets"));
 
-            SelectMenu selectMenu = new SelectMenuImpl("setupActionMenu", commandEvent.getResource("message.setup.setupMenuPlaceholder"), 1, 1, false, optionList);
+            SelectMenu selectMenu = new StringSelectMenuImpl("setupActionMenu", commandEvent.getResource("message.setup.setupMenuPlaceholder"), 1, 1, false, optionList);
 
             if (commandEvent.isSlashCommand()) {
                 commandEvent.getInteractionHook().sendMessageEmbeds(embedBuilder.build())
