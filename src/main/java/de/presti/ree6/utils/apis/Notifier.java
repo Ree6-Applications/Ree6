@@ -291,6 +291,8 @@ public class Notifier {
         if (getTwitchClient() == null) return;
 
         twitchChannels.forEach(s -> {
+            if (s == null) return;
+
             s = s.toLowerCase();
             if (!isTwitchRegistered(s)) registeredTwitchChannels.add(s);
         });
