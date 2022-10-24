@@ -181,7 +181,7 @@ public class MenuEvents extends ListenerAdapter {
                 }
 
                 String channelId = Main.getInstance().getNotifier().getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(twitchUsername)).execute().getUsers().get(0).getId();
-                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.twitchNotifierName", Main.getInstance().getNotifier().getTwitchClient().getHelix().getFollowers(null, null, channelId, null, 20).execute().getTotal()), category).queue(voiceChannel -> {
+                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.twitchCountName", Main.getInstance().getNotifier().getTwitchClient().getHelix().getFollowers(null, null, channelId, null, 20).execute().getTotal()), category).queue(voiceChannel -> {
                     ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
                     if (channelStats != null) {
 
@@ -276,7 +276,7 @@ public class MenuEvents extends ListenerAdapter {
                     return;
                 }
 
-                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.youtubeNotifierName", (youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount())), category).queue(voiceChannel -> {
+                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.youtubeCountName", (youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount())), category).queue(voiceChannel -> {
                     ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
                     if (channelStats != null) {
 
@@ -357,7 +357,7 @@ public class MenuEvents extends ListenerAdapter {
                     return;
                 }
 
-                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.redditNotifierName", subreddit.getActiveUserCount()), category).queue(voiceChannel -> {
+                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.redditCountName", subreddit.getActiveUserCount()), category).queue(voiceChannel -> {
                     ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
                     if (channelStats != null) {
 
@@ -438,7 +438,7 @@ public class MenuEvents extends ListenerAdapter {
                     return;
                 }
 
-                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.twitterNotifierName", twitterUser.getFollowersCount()), category).queue(voiceChannel -> {
+                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.twitterCountName", twitterUser.getFollowersCount()), category).queue(voiceChannel -> {
                     ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
                     if (channelStats != null) {
 
@@ -519,7 +519,7 @@ public class MenuEvents extends ListenerAdapter {
                     return;
                 }
 
-                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.instagramNotifierName", instagramUser.getFollower_count()), category).queue(voiceChannel -> {
+                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.instagramCountName", instagramUser.getFollower_count()), category).queue(voiceChannel -> {
                     ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
                     if (channelStats != null) {
 
@@ -652,12 +652,12 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     case "statistics" -> {
-                        optionList.add(SelectOption.of("Setup Member Statistics", "statisticsSetupMember"));
-                        optionList.add(SelectOption.of("Setup Twitch Statistics", "statisticsSetupTwitch"));
-                        optionList.add(SelectOption.of("Setup YouTube Statistics", "statisticsSetupYouTube"));
-                        optionList.add(SelectOption.of("Setup Reddit Statistics", "statisticsSetupReddit"));
-                        optionList.add(SelectOption.of("Setup Twitter Statistics", "statisticsSetupTwitter"));
-                        optionList.add(SelectOption.of("Setup Instagram Statistics", "statisticsSetupInstagram"));
+                        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setupMemberStatistics"), "statisticsSetupMember"));
+                        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setupTwitchStatistics"), "statisticsSetupTwitch"));
+                        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setupYoutubeStatistics"), "statisticsSetupYouTube"));
+                        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setupRedditStatistics"), "statisticsSetupReddit"));
+                        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setupTwitterStatistics"), "statisticsSetupTwitter"));
+                        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setupInstagramStatistics"), "statisticsSetupInstagram"));
 
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.backToMenu"), "backToSetupMenu"));
 
@@ -674,13 +674,13 @@ public class MenuEvents extends ListenerAdapter {
 
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.backToMenu"), "backToSetupMenu"));
 
-                        embedBuilder.setDescription("You can set up your own Ticket-System!\nBy setting up a specific channel as Ticket-Channel, Ree6 will create a new Ticket-Channel for each Ticket that you create!\nAfter Ticket closing those tickets will be moved to a archive category!");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.setup"));
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTicketsMenu", LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired"), 1, 1, false, optionList)).queue();
                     }
 
                     default -> {
-                        embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOption"));
                         event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
                 }
@@ -699,7 +699,7 @@ public class MenuEvents extends ListenerAdapter {
                     case "backToSetupMenu" -> sendDefaultChoice(event);
 
                     case "statisticsSetupMember" -> {
-                        embedBuilder.setDescription("Successfully setup the statistics channels for Member statistics!");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.memberSuccess"));
                         embedBuilder.setColor(Color.GREEN);
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                         java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistic"), true);
@@ -712,11 +712,11 @@ public class MenuEvents extends ListenerAdapter {
                             category = categories.get(0);
                         }
 
-                        event.getGuild().loadMembers().onSuccess(members -> event.getGuild().createVoiceChannel("Overall Members: " + event.getGuild().getMemberCount(), category).queue(voiceChannel -> {
+                        event.getGuild().loadMembers().onSuccess(members -> event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.overallMembersName", event.getGuild().getMemberCount()), category).queue(voiceChannel -> {
                             voiceChannel.getManager().setUserLimit(0).queue();
-                            event.getGuild().createVoiceChannel("Real Members: " + members.stream().filter(member -> !member.getUser().isBot()).count(), category).queue(voiceChannel1 -> {
+                            event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.realMembersName", members.stream().filter(member -> !member.getUser().isBot()).count()), category).queue(voiceChannel1 -> {
                                 voiceChannel1.getManager().setUserLimit(0).queue();
-                                event.getGuild().createVoiceChannel("Bot Members: " + members.stream().filter(member -> member.getUser().isBot()).count(), category).queue(voiceChannel2 -> {
+                                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.botMemberName", members.stream().filter(member -> member.getUser().isBot()).count()), category).queue(voiceChannel2 -> {
                                     voiceChannel2.getManager().setUserLimit(0).queue();
                                     ChannelStats channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
                                     if (channelStats != null) {
@@ -765,41 +765,41 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     case "statisticsSetupTwitch" -> {
-                        TextInput input = TextInput.create("twitchChannelName", "Twitch Channel Name", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Twitch Channel name here!").build();
+                        TextInput input = TextInput.create("twitchChannelName", LanguageService.getByGuild(event.getGuild(), "label.channelName"), TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Twitch Channel name here!").build();
 
-                        Modal modal = Modal.create("statisticsSetupTwitchModal", "Twitch Statistic Channel").addActionRow(input).build();
+                        Modal modal = Modal.create("statisticsSetupTwitchModal", LanguageService.getByGuild(event.getGuild(), "label.setupTwitchStatistics")).addActionRow(input).build();
 
                         event.replyModal(modal).queue();
                     }
 
                     case "statisticsSetupYouTube" -> {
-                        TextInput input = TextInput.create("youtubeChannelName", "YouTube Channel Name", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the YouTube Channel name here!").build();
+                        TextInput input = TextInput.create("youtubeChannelName", LanguageService.getByGuild(event.getGuild(), "label.channelName"), TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the YouTube Channel name here!").build();
 
-                        Modal modal = Modal.create("statisticsSetupYouTubeModal", "YouTube Statistic Channel").addActionRow(input).build();
+                        Modal modal = Modal.create("statisticsSetupYouTubeModal", LanguageService.getByGuild(event.getGuild(), "label.setupYoutubeStatistics")).addActionRow(input).build();
 
                         event.replyModal(modal).queue();
                     }
 
                     case "statisticsSetupReddit" -> {
-                        TextInput input = TextInput.create("subredditName", "Subreddit Name", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Subreddit name here!").build();
+                        TextInput input = TextInput.create("subredditName", LanguageService.getByGuild(event.getGuild(), "label.subreddit"), TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Subreddit name here!").build();
 
-                        Modal modal = Modal.create("statisticsSetupRedditModal", "Reddit Statistic Channel").addActionRow(input).build();
+                        Modal modal = Modal.create("statisticsSetupRedditModal", LanguageService.getByGuild(event.getGuild(), "label.setupRedditStatistics")).addActionRow(input).build();
 
                         event.replyModal(modal).queue();
                     }
 
                     case "statisticsSetupTwitter" -> {
-                        TextInput input = TextInput.create("twitterName", "Twitter Name", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Twitter name here!").build();
+                        TextInput input = TextInput.create("twitterName", LanguageService.getByGuild(event.getGuild(), "label.name"), TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Twitter name here!").build();
 
-                        Modal modal = Modal.create("statisticsSetupTwitterModal", "Twitter Statistic Channel").addActionRow(input).build();
+                        Modal modal = Modal.create("statisticsSetupTwitterModal", LanguageService.getByGuild(event.getGuild(), "label.setupTwitterStatistics")).addActionRow(input).build();
 
                         event.replyModal(modal).queue();
                     }
 
                     case "statisticsSetupInstagram" -> {
-                        TextInput input = TextInput.create("instagramName", "Instagram Name", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Instagram name here!").build();
+                        TextInput input = TextInput.create("instagramName", LanguageService.getByGuild(event.getGuild(), "label.name"), TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Instagram name here!").build();
 
-                        Modal modal = Modal.create("statisticsSetupInstagramModal", "Instagram Statistic Channel").addActionRow(input).build();
+                        Modal modal = Modal.create("statisticsSetupInstagramModal", LanguageService.getByGuild(event.getGuild(), "label.setupInstagramStatistics")).addActionRow(input).build();
 
                         event.replyModal(modal).queue();
                     }
@@ -808,7 +808,7 @@ public class MenuEvents extends ListenerAdapter {
                         if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
                             return;
 
-                        embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOption"));
                         event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
                 }
@@ -827,7 +827,7 @@ public class MenuEvents extends ListenerAdapter {
                     Tickets tickets = new Tickets();
                     tickets.setChannelId(messageChannel.getIdLong());
                     tickets.setGuildId(event.getGuild().getIdLong());
-                    event.getGuild().createCategory("Archive").addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category -> {
+                    event.getGuild().createCategory("Archive-1").addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category -> {
                         tickets.setArchiveCategory(category.getIdLong());
 
                         event.getGuild().createCategory("Tickets").addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
@@ -836,21 +836,21 @@ public class MenuEvents extends ListenerAdapter {
 
                             MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
                             messageCreateBuilder.setEmbeds(new EmbedBuilder()
-                                    .setTitle("Open a Ticket!")
-                                    .setDescription("By clicking on the Button below you can open a Ticket!")
+                                    .setTitle(LanguageService.getByGuild(event.getGuild(), "label.openTicket"))
+                                    .setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.menuDescription"))
                                     .setColor(0x55ff00)
                                     .setThumbnail(event.getGuild().getIconUrl())
                                     .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                                     .build());
-                            messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", "Open a Ticket!", Emoji.fromUnicode("U+1F4E9")));
+                            messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(event.getGuild(), "label.openTicket"), Emoji.fromUnicode("U+1F4E9")));
                             Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
                         });
                     });
-                    embedBuilder.setDescription("Successfully changed the Ticket System, nice work!");
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.setupSuccess"));
                     embedBuilder.setColor(Color.GREEN);
                     event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                 } else {
-                    embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOptionChannel"));
                     event.editMessageEmbeds(embedBuilder.build()).queue();
                 }
             }
@@ -873,16 +873,16 @@ public class MenuEvents extends ListenerAdapter {
                             optionList.add(SelectOption.of(channel.getName(), channel.getId()));
                         }
 
-                        embedBuilder.setDescription("Which Channel do you want as Ticket-Channel?\nWe will send a Messsage that allows users to create a Ticket.");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.setupDescription"));
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTickets", "Select a Channel!", 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTickets", LanguageService.getByGuild(event.getGuild(), "label.selectChannel"), 1, 1, false, optionList)).queue();
                     }
 
                     case "ticketsDelete" -> {
                         Tickets tickets = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GUILDID=:gid", Map.of("gid", event.getGuild().getId()));
 
                         if (tickets != null) {
-                            embedBuilder.setDescription("Successfully deleted the Ticket-Channel, nice work!");
+                            embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.deleted"));
                             embedBuilder.setColor(Color.GREEN);
                             event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                             Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(tickets);
@@ -893,7 +893,7 @@ public class MenuEvents extends ListenerAdapter {
                         if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
                             return;
 
-                        embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOption"));
                         event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
                 }
@@ -910,11 +910,11 @@ public class MenuEvents extends ListenerAdapter {
 
                 if (voiceChannel != null) {
                     Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(new TemporalVoicechannel(event.getGuild().getId(), voiceChannel.getId()));
-                    embedBuilder.setDescription("Successfully changed the Temporal Voicechannel, nice work!");
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.setupSuccess"));
                     embedBuilder.setColor(Color.GREEN);
                     event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                 } else {
-                    embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOptionChannel"));
                     event.editMessageEmbeds(embedBuilder.build()).queue();
                 }
             }
@@ -938,16 +938,16 @@ public class MenuEvents extends ListenerAdapter {
                             optionList.add(SelectOption.of(channel.getName(), channel.getId()));
                         }
 
-                        embedBuilder.setDescription("Which Channel do you want to use as Temporal-Voicechannel?");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.setupDescription"));
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTempVoicechannel", "Select a Channel!", 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTempVoicechannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel"), 1, 1, false, optionList)).queue();
                     }
 
                     case "tempVoiceDelete" -> {
                         TemporalVoicechannel temporalVoicechannel = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "SELECT * FROM TemporalVoicechannel WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
 
                         if (temporalVoicechannel != null) {
-                            embedBuilder.setDescription("Successfully deleted the Temporal-Voicechannel, nice work!");
+                            embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.deleted"));
                             embedBuilder.setColor(Color.GREEN);
                             event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                             Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel);
@@ -958,7 +958,7 @@ public class MenuEvents extends ListenerAdapter {
                         if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
                             return;
 
-                        embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOption"));
                         event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
                 }
@@ -983,9 +983,9 @@ public class MenuEvents extends ListenerAdapter {
                             optionList.add(SelectOption.of(channel.getName(), channel.getId()));
                         }
 
-                        embedBuilder.setDescription("Which Channel do you want to use as Logging-Channel?");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupDescription"));
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupLogChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupLogChannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel"), 1, 1, false, optionList)).queue();
                     }
 
                     case "logDelete" -> {
@@ -994,7 +994,7 @@ public class MenuEvents extends ListenerAdapter {
                         if (webhook != null) {
                             event.getJDA().retrieveWebhookById(webhook.getChannelId()).queue(webhook1 -> {
                                 webhook1.delete().queue();
-                                embedBuilder.setDescription("Successfully deleted the Log Channel, nice work!");
+                                embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.deleted"));
                                 embedBuilder.setColor(Color.GREEN);
                                 event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                                 Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(webhook);
@@ -1006,7 +1006,7 @@ public class MenuEvents extends ListenerAdapter {
                         if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
                             return;
 
-                        embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOption"));
                         event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
                 }
@@ -1025,12 +1025,12 @@ public class MenuEvents extends ListenerAdapter {
                 if (textChannel != null) {
                     textChannel.createWebhook("Ree6-Logs").queue(webhook -> {
                         Main.getInstance().getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
-                        embedBuilder.setDescription("Successfully changed the Logging Channel, nice work!");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupSuccess"));
                         embedBuilder.setColor(Color.GREEN);
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     });
                 } else {
-                    embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOptionChannel"));
                     event.editMessageEmbeds(embedBuilder.build()).queue();
                 }
 
@@ -1055,13 +1055,13 @@ public class MenuEvents extends ListenerAdapter {
                             optionList.add(SelectOption.of(channel.getName(), channel.getId()));
                         }
 
-                        embedBuilder.setDescription("Which Channel do you want to use as Welcome-Channel?");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.setupDescription"));
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupWelcomeChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupWelcomeChannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel"), 1, 1, false, optionList)).queue();
                     }
 
                     case "welcomeImage" -> {
-                        embedBuilder.setDescription("Use the following Command with a Image as attachment: `" + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "chatprefix").getStringValue() + "setup joinImage`");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.imageRequired"));
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new ArrayList<>()).queue();
                     }
 
@@ -1071,7 +1071,7 @@ public class MenuEvents extends ListenerAdapter {
                         if (webhook != null) {
                             event.getJDA().retrieveWebhookById(webhook.getChannelId()).queue(webhook1 -> {
                                 webhook1.delete().queue();
-                                embedBuilder.setDescription("Successfully deleted the Welcome Channel, nice work!");
+                                embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.deleted"));
                                 embedBuilder.setColor(Color.GREEN);
                                 event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                                 Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(webhook);
@@ -1083,7 +1083,7 @@ public class MenuEvents extends ListenerAdapter {
                         if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
                             return;
 
-                        embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(),"message.default.invalidOption"));
                         event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
                 }
@@ -1102,12 +1102,12 @@ public class MenuEvents extends ListenerAdapter {
                 if (textChannel != null) {
                     textChannel.createWebhook("Ree6-Welcome").queue(webhook -> {
                         Main.getInstance().getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
-                        embedBuilder.setDescription("Successfully changed the Welcome-Channel, nice work!");
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(),"message.welcome.setupSuccess"));
                         embedBuilder.setColor(Color.GREEN);
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     });
                 } else {
-                    embedBuilder.setDescription("The given Channel doesn't exists, how did you select it? Are you a Wizard?");
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOptionChannel"));
                     event.editMessageEmbeds(embedBuilder.build()).queue();
                 }
 
@@ -1118,7 +1118,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
-                embedBuilder.setDescription("You somehow selected a Invalid Option? Are you a Wizard?");
+                embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOption"));
                 event.editMessageEmbeds(embedBuilder.build()).queue();
             }
         }
