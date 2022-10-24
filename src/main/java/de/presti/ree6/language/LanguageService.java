@@ -5,6 +5,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.external.RequestUtility;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
 import org.jetbrains.annotations.NotNull;
@@ -112,6 +113,18 @@ public class LanguageService {
         } else {
             return getByGuild(commandEvent.getGuild(), key, parameter);
         }
+    }
+
+    /**
+     * Called to get a specific String from the Guild specific Language file.
+     *
+     * @param commandEvent the GuildEvent.
+     * @param key          the key of the String.
+     * @param parameter    the parameter to replace.
+     * @return the String.
+     */
+    public static @NotNull String getByEvent(@NotNull GenericGuildEvent commandEvent, @NotNull String key, @Nullable Object... parameter) {
+        return getByGuild(commandEvent.getGuild(), key, parameter);
     }
 
     /**

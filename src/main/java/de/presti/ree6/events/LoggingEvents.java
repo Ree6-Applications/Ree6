@@ -101,12 +101,12 @@ public class LoggingEvents extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
-        we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.banned", event.getUser().getAsMention()));
+        we.setDescription(LanguageService.getByEvent(event, "logging.banned", event.getUser().getAsMention()));
 
         AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.BAN).limit(5).stream().filter(auditLogEntry ->
                 auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
 
-        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.actor") + "**", entry.getUser().getAsMention()));
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
 
         wm.addEmbeds(we.build());
 
@@ -135,12 +135,12 @@ public class LoggingEvents extends ListenerAdapter {
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
-        we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.unbanned", event.getUser().getAsMention()));
+        we.setDescription(LanguageService.getByEvent(event, "logging.unbanned", event.getUser().getAsMention()));
 
         AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.UNBAN).limit(5).stream().filter(auditLogEntry ->
                 auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
 
-        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.actor") + "**", entry.getUser().getAsMention()));
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
 
         wm.addEmbeds(we.build());
 
@@ -175,7 +175,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getAsTag(), event.getUser().getAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
-            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.joined.default", event.getUser().getAsMention(), TimeFormat.DATE_TIME_SHORT.format(event.getUser().getTimeCreated()), TimeFormat.RELATIVE.format(event.getUser().getTimeCreated())));
+            we.setDescription(LanguageService.getByEvent(event, "logging.joined.default", event.getUser().getAsMention(), TimeFormat.DATE_TIME_SHORT.format(event.getUser().getTimeCreated()), TimeFormat.RELATIVE.format(event.getUser().getTimeCreated())));
 
             wm.addEmbeds(we.build());
             Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.SERVER_JOIN, event.getUser()));
@@ -191,20 +191,20 @@ public class LoggingEvents extends ListenerAdapter {
             if (event.getUser().isBot()) {
                 event.getGuild().retrieveAuditLogs().type(ActionType.BOT_ADD).limit(1).queue(auditLogEntries -> {
                     if (auditLogEntries.isEmpty()) {
-                        wm2.append(LanguageService.getByGuild(event.getGuild(), "logging.joined.bot.notFound", event.getUser().getAsMention()));
+                        wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()));
                         return;
                     }
                     AuditLogEntry entry = auditLogEntries.get(0);
 
                     if (entry.getUser() == null) {
-                        wm2.append(LanguageService.getByGuild(event.getGuild(), "logging.joined.bot.notFound", event.getUser().getAsMention()));
+                        wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()));
                         return;
                     }
 
                     if (entry.getTargetId().equals(event.getUser().getId())) {
-                        wm2.append(LanguageService.getByGuild(event.getGuild(), "logging.joined.bot.found", event.getUser().getAsMention(), entry.getUser().getAsMention()));
+                        wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.found", event.getUser().getAsMention(), entry.getUser().getAsMention()));
                     } else {
-                        wm2.append(LanguageService.getByGuild(event.getGuild(), "logging.joined.bot.notFound", event.getUser().getAsMention()));
+                        wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()));
                     }
                 });
             } else {
@@ -212,13 +212,13 @@ public class LoggingEvents extends ListenerAdapter {
                 if (inviteContainer != null) {
                     inviteContainer.setUses(inviteContainer.getUses() + 1);
                     if (inviteContainer.isVanity()) {
-                        wm2.append(LanguageService.getByGuild(event.getGuild(), "logging.joined.invite.vanity", event.getUser().getAsMention()));
+                        wm2.append(LanguageService.getByEvent(event, "logging.joined.invite.vanity", event.getUser().getAsMention()));
                     } else {
-                        wm2.append(LanguageService.getByGuild(event.getGuild(), "logging.joined.invite.default", event.getUser().getAsMention(), "<@" + inviteContainer.getCreatorId() + ">", inviteContainer.getCode(), inviteContainer.getUses()));
+                        wm2.append(LanguageService.getByEvent(event, "logging.joined.invite.default", event.getUser().getAsMention(), "<@" + inviteContainer.getCreatorId() + ">", inviteContainer.getCode(), inviteContainer.getUses()));
                     }
                     InviteContainerManager.addInvite(inviteContainer);
                 } else {
-                    wm2.append(LanguageService.getByGuild(event.getGuild(), "logging.joined.invite.notFound", event.getMember().getAsMention()));
+                    wm2.append(LanguageService.getByEvent(event, "logging.joined.invite.notFound", event.getMember().getAsMention()));
                 }
             }
 
@@ -249,15 +249,15 @@ public class LoggingEvents extends ListenerAdapter {
         we.setTimestamp(Instant.now());
 
         if (event.getMember() != null) {
-            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.left.default", event.getUser().getAsMention(), TimeFormat.DATE_TIME_SHORT.format(event.getUser().getTimeCreated())));
+            we.setDescription(LanguageService.getByEvent(event, "logging.left.default", event.getUser().getAsMention(), TimeFormat.DATE_TIME_SHORT.format(event.getUser().getTimeCreated())));
         } else {
-            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.left.slim", event.getUser().getAsMention()));
+            we.setDescription(LanguageService.getByEvent(event, "logging.left.slim", event.getUser().getAsMention()));
         }
 
         AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.KICK).limit(5).stream().filter(auditLogEntry ->
                 auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
 
-        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.actor") + "**", entry.getUser().getAsMention()));
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
 
         wm.addEmbeds(we.build());
 
@@ -291,19 +291,19 @@ public class LoggingEvents extends ListenerAdapter {
         AuditLogPaginationAction paginationAction = event.getGuild().retrieveAuditLogs().user(event.getUser()).type(ActionType.MEMBER_UPDATE).limit(1);
         if (event.getOldTimeOutEnd() == null) {
             if (paginationAction.isEmpty()) {
-                we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.timeout.start",
+                we.setDescription(LanguageService.getByEvent(event, "logging.timeout.start",
                         event.getUser().getAsMention(),
                         TimeFormat.DATE_TIME_SHORT.format(event.getNewTimeOutEnd())));
             } else {
                 AuditLogEntry auditLogEntry = paginationAction.getFirst();
-                we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.timeout.updated",
+                we.setDescription(LanguageService.getByEvent(event, "logging.timeout.updated",
                         event.getUser().getAsMention(),
                         (auditLogEntry.getReason() == null ? "Couldn't find reason" : auditLogEntry.getReason()),
                         (auditLogEntry.getUser() != null ? auditLogEntry.getUser().getAsMention() : "Unknown"),
                         TimeFormat.DATE_TIME_SHORT.format(event.getNewTimeOutEnd())));
             }
         } else {
-            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.timeout.ended",
+            we.setDescription(LanguageService.getByEvent(event, "logging.timeout.ended",
                     event.getUser().getAsMention(),
                     TimeFormat.DATE_TIME_SHORT.format(event.getOldTimeOutEnd())));
         }
@@ -338,15 +338,15 @@ public class LoggingEvents extends ListenerAdapter {
         we.setTimestamp(Instant.now());
 
         if (event.getNewNickname() == null) {
-            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.nickname.reset", event.getUser().getAsMention(), event.getOldNickname()));
+            we.setDescription(LanguageService.getByEvent(event, "logging.nickname.reset", event.getUser().getAsMention(), event.getOldNickname()));
         } else {
-            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.nickname.changed", event.getUser().getAsMention(), event.getNewNickname(), (event.getOldNickname() != null ? event.getOldNickname() : event.getUser().getName())));
+            we.setDescription(LanguageService.getByEvent(event, "logging.nickname.changed", event.getUser().getAsMention(), event.getNewNickname(), (event.getOldNickname() != null ? event.getOldNickname() : event.getUser().getName())));
         }
 
         AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_UPDATE).limit(5).stream().filter(auditLogEntry ->
                 auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
 
-        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.actor") + "**", entry.getUser().getAsMention()));
+        if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
 
         wm.addEmbeds(we.build());
 
@@ -381,7 +381,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
-            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.voicechannel.join", event.getEntity().getUser().getAsMention(), event.getChannelJoined().getAsMention()));
+            we.setDescription(LanguageService.getByEvent(event, "logging.voicechannel.join", event.getEntity().getUser().getAsMention(), event.getChannelJoined().getAsMention()));
 
             wm.addEmbeds(we.build());
 
@@ -402,12 +402,12 @@ public class LoggingEvents extends ListenerAdapter {
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
-            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.voicechannel.left", event.getEntity().getUser().getAsMention(), event.getChannelLeft().getAsMention()));
+            we.setDescription(LanguageService.getByEvent(event, "logging.voicechannel.left", event.getEntity().getUser().getAsMention(), event.getChannelLeft().getAsMention()));
 
             AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_VOICE_KICK).limit(5).stream().filter(auditLogEntry ->
                     auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
 
-            if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.actor") + "**", entry.getUser().getAsMention()));
+            if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
 
             wm.addEmbeds(we.build());
 
@@ -428,12 +428,12 @@ public class LoggingEvents extends ListenerAdapter {
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
-            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.voicechannel.move", event.getEntity().getUser().getAsMention(), event.getChannelLeft().getAsMention(), event.getChannelJoined().getAsMention()));
+            we.setDescription(LanguageService.getByEvent(event, "logging.voicechannel.move", event.getEntity().getUser().getAsMention(), event.getChannelLeft().getAsMention(), event.getChannelJoined().getAsMention()));
 
             AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_VOICE_MOVE).limit(5).stream().filter(auditLogEntry ->
                     auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
 
-            if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.actor") + "**", entry.getUser().getAsMention()));
+            if (entry != null && entry.getUser() != null) we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
 
             wm.addEmbeds(we.build());
 

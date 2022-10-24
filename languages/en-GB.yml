@@ -144,7 +144,13 @@ label:
   delete: "Delete"
   backToMenu: "Back to Menu"
   setImage: "Set Image"
-  unknownMenu:
+  ticket: "Ticket"
+  twitchNotifierName: "Twitch Follower: %s"
+  youtubeNotifierName: "Youtube Subscribers: %s"
+  redditNotifierName: "Subreddit Members: %s"
+  twitterNotifierName: "Twitter Followers: %s"
+  instagramNotifierName: "Instagram Followers: %s"
+  unknownMenu: "Unknown Menu"
 message:
   default:
     usage: "Usage {guild_prefix}%s."
@@ -164,6 +170,7 @@ message:
       needed: "A Image is needed!"
       tooBig: "The Image is too big!"
       tooBigMax: "The Image is too big! Max Size: %sMB"
+    actionRequired: "Select an Action!"
     unknownMenu: "There was an error while resolving the modal!"
   birthday:
     added:
@@ -266,6 +273,11 @@ message:
     successImage: "Successfully set the new Join-Image!"
     setupMenu: "Which configuration do you want to check out?"
     setupMenuPlaceholder: "Select a configuration Step!"
+    steps:
+      auditLog: "You can set up our own Audit-Logging which provides all the Information over and Webhook into the Channel of your desire!\nBut ours is not the same as the default Auditions, ours gives your the ability to set what you want to be logged and what not!\nWe also allow you to log Voice Events!"
+      welcome: "You can set up our own Welcome-Messages!\nYou can choice the Welcome-Channel by your own and even configure the Message!"
+      autoRole: "You can set up our own Autorole-System!\nYou can select Roles that Users should get upon joining the Server!"
+      temporalVoice: "You can set up your own Temporal Voice channel!\nBy setting up Temporal Voice channel on a specific channel which will be used to create a new Voice channel when ever someones joins into it!"
   suggestion:
     suggestionMenu: "Click on the button below to suggest something!"
     suggestionMenuPlaceholder: "Suggest something!"
@@ -350,6 +362,20 @@ message:
     autoRole:
       hierarchy: "Ree6-BRS (Bug-Report-System))\nWe detected that Im not allowed to AutoRole people since my role is below the AutoRole-Role!\nPlease move my role above the AutoRole-Role!\nThe role that causes the Issue is ``%s``!"
       deleted: "Ree6-BRS (Bug-Report-System))\nWe detected that I can not AutoRole people since the AutoRole-Role has been deleted!\nWe now removed the given Role!"
+  ticket:
+    created: "We opened a Ticket for you! Check it out %s"
+    alreadyOpen: "You already have an open Ticket!"
+    categoryNotFound: "The Ticket-Category was not found!"
+    alreadyArchived: "The Ticket is already archived!"
+    close: "Ticket closed!"
+  statistics:
+    twitchSuccess: "Successfully setup the statics channels for Twitch statistics!"
+    youtubeSuccess: "Successfully setup the statics channels for YouTube statistics!"
+    youtubeNotFound: "We could not find the given channel! You sure the name/id is correct?"
+    redditSuccess: "Successfully setup the statics channels for Reddit statistics!"
+    twitterSuccess: "Successfully setup the statics channels for Twitter statistics!"
+    instagramSuccess: "Successfully setup the statics channels for Instagram statistics!"
+    setup: "You can set up your own Statistic-channels!\nBy setting up Statistic-channels Ree6 will create new channels for each Statistic-Type that you setup!\nIf you want to get rid of a Statistic-Channel, just delete it!"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
