@@ -170,6 +170,7 @@ public class BotWorker {
      * @return the {@link BotVersion}
      */
     public static BotVersion getVersion() {
+        if (version == null) return BotVersion.DEVELOPMENT_BUILD;
         return version;
     }
 
