@@ -78,7 +78,7 @@ public class Import implements ICommand {
                                 chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getId(), id.getAsString(), xp.getAsLong());
                             }
 
-                            Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(chatUserLevel);
+                            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(chatUserLevel);
                         }
                     }
                 });

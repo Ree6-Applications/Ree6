@@ -76,7 +76,7 @@ public class LoggingEvents extends ListenerAdapter {
             Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(invite);
         } else {
             event.getGuild().retrieveVanityInvite().onErrorMap(throwable -> null).queue(vanityInvite ->
-                    Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(new Invite(event.getGuild().getId(), event.getGuild().getOwnerId(), vanityInvite.getUses(), event.getNewVanityCode())));
+                    Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(new Invite(event.getGuild().getId(), event.getGuild().getOwnerId(), vanityInvite.getUses(), event.getNewVanityCode())));
         }
     }
 

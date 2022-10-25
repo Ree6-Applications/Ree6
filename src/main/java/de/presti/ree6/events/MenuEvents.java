@@ -210,7 +210,7 @@ public class MenuEvents extends ListenerAdapter {
                                 null,
                                 null,
                                 null);
-                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(channelStats);
                         Main.getInstance().getNotifier().registerTwitchChannel(twitchUsername);
                     }
                 });
@@ -305,7 +305,7 @@ public class MenuEvents extends ListenerAdapter {
                                 youtubeChannelName,
                                 null,
                                 null);
-                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(channelStats);
                         Main.getInstance().getNotifier().registerYouTubeChannel(youtubeChannelName);
                     }
                 });
@@ -386,7 +386,7 @@ public class MenuEvents extends ListenerAdapter {
                                 null,
                                 voiceChannel.getId(),
                                 subredditName);
-                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(channelStats);
                         Main.getInstance().getNotifier().registerSubreddit(subredditName);
                     }
                 });
@@ -467,7 +467,7 @@ public class MenuEvents extends ListenerAdapter {
                                 null,
                                 null,
                                 null);
-                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(channelStats);
                         Main.getInstance().getNotifier().registerTwitterUser(twitterName);
                     }
                 });
@@ -548,7 +548,7 @@ public class MenuEvents extends ListenerAdapter {
                                 null,
                                 null,
                                 null);
-                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(channelStats);
                         Main.getInstance().getNotifier().registerInstagramUser(instagramName);
                     }
                 });
@@ -767,7 +767,7 @@ public class MenuEvents extends ListenerAdapter {
                                                 null,
                                                 null,
                                                 null);
-                                        Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(channelStats);
+                                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(channelStats);
                                     }
                                 });
                             });
@@ -842,7 +842,7 @@ public class MenuEvents extends ListenerAdapter {
 
                         event.getGuild().createCategory("Tickets").addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
                             tickets.setTicketCategory(category1.getIdLong());
-                            Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(tickets);
+                            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(tickets);
 
                             MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
                             messageCreateBuilder.setEmbeds(new EmbedBuilder()
@@ -919,7 +919,7 @@ public class MenuEvents extends ListenerAdapter {
                 VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getInteraction().getValues().get(0));
 
                 if (voiceChannel != null) {
-                    Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(new TemporalVoicechannel(event.getGuild().getId(), voiceChannel.getId()));
+                    Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(new TemporalVoicechannel(event.getGuild().getId(), voiceChannel.getId()));
                     embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.setupSuccess"));
                     embedBuilder.setColor(Color.GREEN);
                     event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();

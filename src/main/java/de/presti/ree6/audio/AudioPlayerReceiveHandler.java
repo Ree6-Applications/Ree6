@@ -169,7 +169,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
             Recording recording = new Recording(voiceChannel.getGuild().getId(), voiceChannel.getId(), creatorId, AudioUtil.convertPCMtoWAV(byteBuffer),
                     JsonParser.parseString(new Gson().toJson(participants)).getAsJsonArray());
 
-            Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(recording);
+            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(recording);
 
             if (voiceChannel.canTalk()) {
                 message.editMessageEmbeds(new EmbedBuilder()
