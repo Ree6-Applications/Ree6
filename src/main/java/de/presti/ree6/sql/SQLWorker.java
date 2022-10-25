@@ -1808,25 +1808,13 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Save an Entity to the Database.
      *
-     * @param entity the Entity to save.
+     * @param r the Entity to save.
+     *
+     * @deprecated Use {@link #updateEntity(Object)} instead.
      */
-    public void saveEntity(Object entity) {
-        if (!sqlConnector.isConnected()) {
-            if (sqlConnector.connectedOnce()) {
-                sqlConnector.connectToSQLServer();
-                saveEntity(entity);
-                return;
-            }
-        }
-
-        try (Session session = SQLSession.getSessionFactory().openSession()) {
-
-            session.beginTransaction();
-
-            session.persist(entity);
-
-            session.getTransaction().commit();
-        }
+    @Deprecated(since = "2.0.4", forRemoval = true)
+    public <R> R saveEntity(R r) {
+        return updateEntity(r);
     }
 
     /**
