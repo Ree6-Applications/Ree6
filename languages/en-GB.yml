@@ -1,7 +1,7 @@
 language:
   name: "English (UK)"
   locale: "en-GB"
-  version: "2.0.0"
+  version: "2.0.3"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **banned.**"
@@ -16,43 +16,43 @@ logging:
       vanity: "%s **has been invited via Vanity Invite.**"
       default: "%s **has been invited by** %s (Code: %s, Uses: %s)"
       notFound: "**Couldn't determine who invited** %s"
-    left:
-      default: "%s **left the Server.**\n:timer: Joined:\n**%s**"
-      slim: "%s **left the Server.**"
-    timeout:
-      started: "**The User** %s **received a timeout.**\n**Time:** %s"
-      updated: "**The User** %s **received a timeout.**\n**Reason:** %s\n**Moderator:** %s\n**Time:** %s"
-      ended: "**The User** %s **finished their timeout.**\n**Time:** %s"
-    nickname:
-      reset: "The Nickname of %s has been reset.\n**Old Nickname:**\n%s"
-      changed: "The Nickname of %s has been changed.\n**New Nickname:**\n%s\n**Old Nickname:**\n%s"
-    voicechannel:
-      join: "%s **joined the Voice Channel** %s"
-      move: "%s **moved from the Voice Channel** %s **to** %s**.**"
-      moveMany: "%s **moved through many Voice Channel and is now in** %2"
-      leave: "%s **left the Voice Channel** %s"
-      leaveInstant: "%s **joined and left the Voice Channel** %s"
-      rejoin: "%s **rejoined the Voice Channel** %s"
-    channel:
-      update:
-        voice: ":house: **VoiceChannel updated:** %s"
-        chat: ":house: **TextChannel updated:** %s"
-      delete:
-        voice: ":house: **VoiceChannel deleted:** ``%s``"
-        chat: ":house: **TextChannel deleted:** ``%s``"
-      create:
-        voice: ":house: **VoiceChannel created:** %s"
-        chat: ":house: **TextChannel created:** %s"
-    member: ":writing_hand: %s **has been updated."
-    role:
-      create: ":family_mmb: ``%s`` **has been created.**"
-      update: ":family_mmb: ``%s`` **has been updated.**"
-      delete: ":family_mmb: ``%s`` **has been deleted.**"
-    message:
-      deleted: ":wastebasket: **Message of %s in %s has been deleted.**\n%s"
-      tooLong: "Message is too long to display!"
-      attachmentFailed: "Could not add Message Attachment reason: %s"
-      attachmentNotice: "Below are the attachments, we recommend being careful with these files!"
+  left:
+    default: "%s **left the Server.**\n:timer: Joined:\n**%s**"
+    slim: "%s **left the Server.**"
+  timeout:
+    started: "**The User** %s **received a timeout.**\n**Time:** %s"
+    updated: "**The User** %s **received a timeout.**\n**Reason:** %s\n**Moderator:** %s\n**Time:** %s"
+    ended: "**The User** %s **finished their timeout.**\n**Time:** %s"
+  nickname:
+    reset: "The Nickname of %s has been reset.\n**Old Nickname:**\n%s"
+    changed: "The Nickname of %s has been changed.\n**New Nickname:**\n%s\n**Old Nickname:**\n%s"
+  voicechannel:
+    join: "%s **joined the Voice Channel** %s"
+    move: "%s **moved from the Voice Channel** %s **to** %s**.**"
+    moveMany: "%s **moved through many Voice Channel and is now in** %2"
+    leave: "%s **left the Voice Channel** %s"
+    leaveInstant: "%s **joined and left the Voice Channel** %s"
+    rejoin: "%s **rejoined the Voice Channel** %s"
+  channel:
+    update:
+      voice: ":house: **VoiceChannel updated:** %s"
+      chat: ":house: **TextChannel updated:** %s"
+    delete:
+      voice: ":house: **VoiceChannel deleted:** ``%s``"
+      chat: ":house: **TextChannel deleted:** ``%s``"
+    create:
+      voice: ":house: **VoiceChannel created:** %s"
+      chat: ":house: **TextChannel created:** %s"
+  member: ":writing_hand: %s **has been updated."
+  role:
+    create: ":family_mmb: ``%s`` **has been created.**"
+    update: ":family_mmb: ``%s`` **has been updated.**"
+    delete: ":family_mmb: ``%s`` **has been deleted.**"
+  message:
+    deleted: ":wastebasket: **Message of %s in %s has been deleted.**\n%s"
+    tooLong: "Message is too long to display!"
+    attachmentFailed: "Could not add Message Attachment reason: %s"
+    attachmentNotice: "Below are the attachments, we recommend being careful with these files!"
 label:
   status: "Status"
   typ: "Type"
