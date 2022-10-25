@@ -1933,7 +1933,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
             session.getTransaction().commit();
 
-            return query.getSingleResultOrNull();
+            return query.setMaxResults(1).getSingleResultOrNull();
         }
     }
 
