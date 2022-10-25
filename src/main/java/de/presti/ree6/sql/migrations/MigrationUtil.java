@@ -4,6 +4,9 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLConnector;
 import de.presti.ree6.sql.migrations.Migration;
 import lombok.extern.slf4j.Slf4j;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.Scanners;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,21 +36,20 @@ public class MigrationUtil {
      * Runs all stored migrations.
      *
      * @param sqlConnector The SQLConnector.
-     * @throws IOException if there was an error while running the migrations.
      */
-    public static void runAllMigrations(SQLConnector sqlConnector) throws IOException {
-        Enumeration<URL> resources = Main.class.getClassLoader().getResources("sql/migrations/");
-        for (Iterator<URL> it = resources.asIterator(); it.hasNext(); ) {
-            URL url = it.next();
-            if (url.getPath().endsWith(".migration")) {
-                try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream(url.getPath())) {
+    public static void runAllMigrations(SQLConnector sqlConnector) {
+        Reflections reflections = new Reflections("sql",Scanners.Resources);
+
+        for (String url : reflections.getResources(".*\\.migration")) {
+            if (url.endsWith(".migration")) {
+                try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream(url)) {
                     if (inputStream == null) break;
 
                     String migrationContent = new String(inputStream.readAllBytes());
 
                     runMigration(migrationContent, sqlConnector);
                 } catch (Exception exception) {
-                    log.error("Couldn't create Tables!", exception);
+                    log.error("Couldn't create run Migration!", exception);
                 }
             }
         }
