@@ -90,29 +90,48 @@ public class CommandManager {
                 commandData = new CommandDataImpl(command.getClass().getAnnotation(Command.class).name(), command.getClass().getAnnotation(Command.class).description());
             }
 
-            for (DiscordLocale discordLocale : DiscordLocale.values()) {
-                if (!LanguageService.languageResources.containsKey(discordLocale)) continue;
+            if (commandData instanceof CommandDataImpl commandData1) {
 
-                String description = LanguageService.getByLocale(discordLocale, command.getClass().getAnnotation(Command.class).description() + "_slash");
-                if (description.equals("Missing language resource!")) {
-                    description = LanguageService.getByLocale(discordLocale, command.getClass().getAnnotation(Command.class).description());
-                }
+                for (DiscordLocale discordLocale : DiscordLocale.values()) {
+                    if (!LanguageService.languageResources.containsKey(discordLocale)) continue;
 
-                if (!description.equals("Missing language resource!")) {
-                    if (commandData instanceof CommandDataImpl commandData1) {
+                    String description = LanguageService.getByLocale(discordLocale, command.getClass().getAnnotation(Command.class).description() + "_slash");
+                    if (description.equals("Missing language resource!")) {
+                        description = LanguageService.getByLocale(discordLocale, command.getClass().getAnnotation(Command.class).description());
+                    }
+
+                    if (!description.equals("Missing language resource!")) {
                         commandData1.setDescriptionLocalization(discordLocale, description);
                     }
                 }
+
+                String description = LanguageService.getDefault(command.getClass().getAnnotation(Command.class).description() + "_slash");
+                if (description.equals("Missing language resource!")) {
+                    description = LanguageService.getDefault(command.getClass().getAnnotation(Command.class).description());
+                }
+
+                if (!description.equals("Missing language resource!")) {
+                    commandData1.setDescription(description);
+                }
+
+                if (commandAnnotation.category() == Category.MOD && commandData.getDefaultPermissions() == DefaultMemberPermissions.ENABLED) {
+                    commandData1.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+                }
+
+                commandData1.setGuildOnly(true);
+
+                //noinspection ResultOfMethodCallIgnored
+                listUpdateAction.addCommands(commandData1);
+            } else {
+                if (commandAnnotation.category() == Category.MOD && commandData.getDefaultPermissions() == DefaultMemberPermissions.ENABLED) {
+                    commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+                }
+
+                commandData.setGuildOnly(true);
+
+                //noinspection ResultOfMethodCallIgnored
+                listUpdateAction.addCommands(commandData);
             }
-
-            if (commandAnnotation.category() == Category.MOD && commandData.getDefaultPermissions() == DefaultMemberPermissions.ENABLED) {
-                commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
-            }
-
-            commandData.setGuildOnly(true);
-
-            //noinspection ResultOfMethodCallIgnored
-            listUpdateAction.addCommands(commandData);
         }
 
         listUpdateAction.queue();
@@ -279,7 +298,7 @@ public class CommandManager {
         String[] argumentsParsed = Arrays.copyOfRange(arguments, 1, arguments.length);
 
         // Perform the Command.
-        command.onASyncPerform(new CommandEvent(command, member, guild, message, textChannel, argumentsParsed, null));
+        command.onASyncPerform(new CommandEvent(command.getClass().getAnnotation(Command.class).name(), member, guild, message, textChannel, argumentsParsed, null));
 
         return true;
     }
@@ -289,7 +308,6 @@ public class CommandManager {
      *
      * @param textChannel                  the TextChannel where the command has been performed.
      * @param slashCommandInteractionEvent the Slash-Command Event.
-     *
      * @return true, if a command has been performed.
      */
     private boolean performSlashCommand(MessageChannelUnion textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
@@ -309,7 +327,7 @@ public class CommandManager {
         }
 
         // Perform the Command.
-        command.onASyncPerform(new CommandEvent(command, slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, textChannel, null, slashCommandInteractionEvent));
+        command.onASyncPerform(new CommandEvent(command.getClass().getAnnotation(Command.class).name(), slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, textChannel, null, slashCommandInteractionEvent));
 
         return true;
     }
