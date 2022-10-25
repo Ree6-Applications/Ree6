@@ -1,46 +1,47 @@
 package de.presti.ree6.sql.entities.stats;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * SQL Entity for the Guild-Stats.
  */
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "GuildStats")
-public class GuildCommandStats extends CommandStats {
+public class GuildCommandStats {
+
+    /**
+     * The PrimaryKey of the Entity.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
 
     /**
      * The Guild ID.
      */
+    @Getter
     @Column(name = "gid")
     private String guildId;
 
     /**
-     * Constructor.
+     * Name of the Command.
      */
-    public GuildCommandStats() {
-    }
+    @Getter
+    @Column(name = "command")
+    private String command;
 
     /**
-     * Constructor.
-     *
-     * @param guildId The Guild ID.
-     * @param command Name of the Command.
-     * @param uses    Number of times the Command was used.
+     * Number of times the Command was used.
      */
-    public GuildCommandStats(String guildId, String command, int uses) {
-        super(command, uses);
-        this.guildId = guildId;
-    }
-
-    /**
-     * Get the Guild ID.
-     *
-     * @return the guild ID.
-     */
-    public String getGuild() {
-        return guildId;
-    }
+    @Getter
+    @Setter
+    @Column(name = "uses")
+    private int uses;
 }

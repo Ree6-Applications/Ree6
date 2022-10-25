@@ -1650,7 +1650,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             newGuildStats.setUses(newGuildStats.getUses() + 1);
             updateEntity(newGuildStats);
         } else {
-            saveEntity(new GuildCommandStats(guildId, command, 1));
+            saveEntity(new GuildCommandStats(0, guildId, command, 1));
         }
 
         // Check if there is an entry.
