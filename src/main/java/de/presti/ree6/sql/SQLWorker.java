@@ -1815,6 +1815,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             if (sqlConnector.connectedOnce()) {
                 sqlConnector.connectToSQLServer();
                 saveEntity(entity);
+                return;
             }
         }
 
