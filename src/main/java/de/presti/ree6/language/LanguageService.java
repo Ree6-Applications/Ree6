@@ -57,6 +57,15 @@ public class LanguageService {
      * Called to download every Language file from the GitHub Repository.
      */
     public static void downloadLanguages() {
+        File languagePath = Path.of("languages/").toFile();
+        if (!languagePath.exists()) {
+            if (languagePath.mkdirs()) {
+                log.info("Created the language folder!");
+            } else {
+                log.error("Couldn't create the language folder!");
+            }
+        }
+
         try {
             RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.github.com/repos/Ree6-Applications/Ree6/contents/languages").build()).getAsJsonArray().forEach(jsonElement -> {
                 String language = jsonElement.getAsJsonObject().get("name").getAsString().replace(".yml", "");
@@ -64,7 +73,7 @@ public class LanguageService {
 
                 Path languageFile = Path.of("languages/", language + ".yml");
 
-                if (!languageFile.toAbsolutePath().startsWith(Path.of("languages/").toAbsolutePath())) {
+                if (!languageFile.toAbsolutePath().startsWith(languagePath.toPath().toAbsolutePath())) {
                     log.info("Ignoring Language download, since Path Traversal has been detected!");
                     return;
                 }
