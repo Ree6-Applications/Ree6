@@ -42,8 +42,6 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-//TODO:: translate
-
 /**
  * EventHandler for Menu Events.
  */
