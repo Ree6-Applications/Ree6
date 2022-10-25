@@ -440,6 +440,8 @@ public class ImageCreationUtility {
      * @return The new resized image
      */
     public static BufferedImage resize(BufferedImage inputImage, int scaledWidth, int scaledHeight) {
+        if (inputImage == null)
+            return null;
 
         if (inputImage.getWidth() == scaledWidth && inputImage.getHeight() == scaledHeight) {
             return inputImage;

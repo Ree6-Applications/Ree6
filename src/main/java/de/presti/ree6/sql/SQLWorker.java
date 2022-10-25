@@ -1459,6 +1459,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (!hasSetting(guildId, "message_join"))
             setSetting(new Setting(guildId, "message_join", "Welcome %user_mention%!\nWe wish you a great stay on %guild_name%"));
 
+        if (!hasSetting(guildId, "message_join_image"))
+            setSetting(new Setting(guildId, "message_join_image", ""));
+
         // Create Command Settings.
         for (ICommand command : Main.getInstance().getCommandManager().getCommands()) {
 
