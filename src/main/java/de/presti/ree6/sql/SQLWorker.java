@@ -1808,7 +1808,10 @@ public record SQLWorker(SQLConnector sqlConnector) {
     /**
      * Save an Entity to the Database.
      *
+     * @param <R> The Class-Entity.
      * @param r the Entity to save.
+     *
+     * @return the new saved entity.
      *
      * @deprecated Use {@link #updateEntity(Object)} instead.
      */
