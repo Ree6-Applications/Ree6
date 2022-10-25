@@ -1453,7 +1453,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
         // Create the Language Setting.
         if (!hasSetting(guildId, "configuration_language"))
-            setSetting(new Setting(guildId, "configuration_language", "en_GB"));
+            setSetting(new Setting(guildId, "configuration_language", "en-GB"));
 
         // Create the Join Message Setting
         if (!hasSetting(guildId, "message_join"))

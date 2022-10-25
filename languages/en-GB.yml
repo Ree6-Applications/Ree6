@@ -165,6 +165,7 @@ label:
   name: "Name"
   selectChannel: "Select a Channel!"
   unknownMenu: "Unknown Menu"
+  language: "Language"
 message:
   default:
     usage: "Usage {guild_prefix}%s."
@@ -294,6 +295,7 @@ message:
       welcome: "You can set up our own Welcome-Messages!\nYou can choice the Welcome-Channel by your own and even configure the Message!"
       autoRole: "You can set up our own Autorole-System!\nYou can select Roles that Users should get upon joining the Server!"
       temporalVoice: "You can set up your own Temporal Voice channel!\nBy setting up Temporal Voice channel on a specific channel which will be used to create a new Voice channel when ever someones joins into it!"
+      lang: "You can change the Language Setting of the Bot!"
   suggestion:
     suggestionMenu: "Click on the button below to suggest something!"
     suggestionMenuPlaceholder: "Suggest something!"
@@ -411,6 +413,8 @@ message:
     setupDescription: "Which Channel do you want to use as Welcome-channel?"
     imageRequired: "Use the following Command with a Image as attachment: `{guild_prefix}setup joinImage`!"
     deleted: "Successfully deleted the Welcome-channel, nice work!"
+  lang:
+    setupSuccess: "Successfully changed the Language to %s!"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"

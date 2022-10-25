@@ -55,7 +55,7 @@ public class Language {
         yamlConfiguration.getKeys(true).forEach(key -> {
             if (key.startsWith("language.")) return;
 
-            resources.put(key, yamlConfiguration.getString(key));
+            resources.putIfAbsent(key, yamlConfiguration.getString(key));
         });
 
         discordLocale = DiscordLocale.from(locale);

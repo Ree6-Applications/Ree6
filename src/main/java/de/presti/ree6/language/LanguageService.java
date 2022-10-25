@@ -12,11 +12,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Utility used to work with Languages.
@@ -28,6 +31,27 @@ public class LanguageService {
      * A Hashmap containing the locale as key and the YamlConfiguration as value.
      */
     public static final HashMap<DiscordLocale, Language> languageResources = new HashMap<>();
+
+    /**
+     * Called to load every Language file into memory.
+     */
+    public static void initializeLanguages() {
+        Path languagePath = Path.of("languages");
+
+        try {
+            for (File file : Objects.requireNonNull(languagePath.toFile().listFiles())) {
+                if (!file.getName().endsWith(".yml") && !file.getName().endsWith(".yaml")) {
+                    log.info("Skipping file {} because it's not a YAML file!", file.getName());
+                    continue;
+                }
+
+                Language language = new Language(YamlConfiguration.loadConfiguration(file));
+                loadLanguageFromFile(language.getDiscordLocale());
+            }
+        } catch (Exception e) {
+            log.error("Couldn't load the language files!", e);
+        }
+    }
 
     /**
      * Called to download every Language file from the GitHub Repository.
@@ -61,6 +85,10 @@ public class LanguageService {
                                 log.info("Failed to delete old Language file {}!", language);
                             }
                             newLanguageYaml.save(languageFile.toFile());
+
+                            if (languageResources.remove(oldLanguage.getDiscordLocale()) != null) {
+                                log.info("Removed old Language of {} from memory!", oldLanguage.getDiscordLocale().getLocale());
+                            }
                         } else {
                             log.info("Language file {} is up to date!", language);
                         }
@@ -74,6 +102,8 @@ public class LanguageService {
         } catch (Exception exception) {
             log.error("An error occurred while downloading the language files!", exception);
         }
+
+        initializeLanguages();
     }
 
     /**
@@ -88,7 +118,7 @@ public class LanguageService {
             try {
                 YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(languageFile.toFile());
                 Language language = new Language(yamlConfiguration);
-                languageResources.put(discordLocale, language);
+                languageResources.putIfAbsent(discordLocale, language);
                 return language;
             } catch (Exception exception) {
                 log.error("Error while getting Language File!", exception);
@@ -213,5 +243,13 @@ public class LanguageService {
         if (discordLocale == DiscordLocale.UNKNOWN) return getDefault(key, parameters);
         Language language = languageResources.containsKey(discordLocale) ? languageResources.get(discordLocale) : loadLanguageFromFile(discordLocale);
         return language != null ? language.getResource(key, parameters) : "Missing language resource!";
+    }
+
+    /**
+     * Called to retrieve all supported Locals.
+     * @return The supported Locals.
+     */
+    public static Set<DiscordLocale> getSupported() {
+        return languageResources.keySet();
     }
 }

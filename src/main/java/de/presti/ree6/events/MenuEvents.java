@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
@@ -604,6 +605,17 @@ public class MenuEvents extends ListenerAdapter {
                 java.util.List<SelectOption> optionList = new ArrayList<>();
 
                 switch (event.getInteraction().getValues().get(0)) {
+                    case "lang" -> {
+
+                        for (DiscordLocale locale : LanguageService.getSupported()) {
+                            optionList.add(SelectOption.of(locale.getLanguageName(), locale.getLocale()));
+                        }
+
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.setup.steps.lang"));
+
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupLangMenu", LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired"), 1, 1, false, optionList)).queue();
+                    }
+
                     case "log" -> {
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setup"), "logSetup"));
 
@@ -964,6 +976,26 @@ public class MenuEvents extends ListenerAdapter {
                 }
             }
 
+            case "setupLangMenu" -> {
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                DiscordLocale selectedLocale = DiscordLocale.from(event.getInteraction().getValues().get(0));
+
+                if (selectedLocale != DiscordLocale.UNKNOWN) {
+                    Main.getInstance().getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_language", selectedLocale.getLocale());
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.lang.setupSuccess", selectedLocale.getLanguageName()));
+                    embedBuilder.setColor(Color.GREEN);
+                    event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                } else {
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOption"));
+                    event.editMessageEmbeds(embedBuilder.build()).queue();
+                }
+            }
+
             case "setupLogMenu" -> {
 
                 if (checkPerms(event.getMember(), event.getChannel())) {
@@ -1133,6 +1165,7 @@ public class MenuEvents extends ListenerAdapter {
         EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
         List<SelectOption> optionList = new ArrayList<>();
+        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(),"label.language"), "lang"));
         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(),"label.auditLog"), "log"));
         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(),"label.welcomeChannel"), "welcome"));
         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(),"label.autoRole"), "autorole"));
@@ -1150,7 +1183,7 @@ public class MenuEvents extends ListenerAdapter {
      *
      * @param member  The Member who should be checked.
      * @param channel The Channel used.
-     * @return True if the user has the required Permissions, false if not.
+     * @return True if the user does not have the required Permissions, false if otherwise.
      */
     private boolean checkPerms(Member member, MessageChannel channel) {
         if (member == null || !member.hasPermission(Permission.ADMINISTRATOR)) {

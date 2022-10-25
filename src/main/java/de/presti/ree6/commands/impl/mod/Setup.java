@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
 import net.dv8tion.jda.internal.interactions.component.StringSelectMenuImpl;
 
 import java.awt.*;
@@ -74,6 +73,7 @@ public class Setup implements ICommand {
                     .setDescription(commandEvent.getResource("message.setup.setupMenu"));
 
             List<SelectOption> optionList = new ArrayList<>();
+            optionList.add(SelectOption.of(commandEvent.getResource("label.language"), "lang"));
             optionList.add(SelectOption.of(commandEvent.getResource("label.auditLog"), "log"));
             optionList.add(SelectOption.of(commandEvent.getResource("label.welcomeChannel"), "welcome"));
             optionList.add(SelectOption.of(commandEvent.getResource("label.autoRole"), "autorole"));
