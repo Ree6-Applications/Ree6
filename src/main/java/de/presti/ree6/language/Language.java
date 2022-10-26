@@ -1,5 +1,6 @@
 package de.presti.ree6.language;
 
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 /**
  * Class used to represent a Language.
  */
+@Slf4j
 public class Language {
 
     /**
@@ -125,7 +127,10 @@ public class Language {
      * @return The entry.
      */
     public String getResource(@NotNull String key, @Nullable Object... parameter) {
-        if (!resources.containsKey(key)) return "Missing language resource!";
+        if (!resources.containsKey(key)) {
+            log.info("Missing Language-Entry: {}", key);
+            return "Missing language resource!";
+        }
         return String.format(resources.get(key), parameter);
     }
 

@@ -1580,7 +1580,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return all the Command-Stats related to the given Guild.
      */
     public List<GuildCommandStats> getStats(String guildId) {
-        return getEntityList(new GuildCommandStats(), "SELECT * FROM GuildStats WHERE GID=:gid ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", Map.of("gid", guildId));
+        return getEntityList(new GuildCommandStats(), "SELECT * FROM GuildStats WHERE GID=:gid ORDER BY CAST(uses as INT) DESC LIMIT 5", Map.of("gid", guildId));
     }
 
     /**
@@ -1589,7 +1589,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return all the Command-Stats globally.
      */
     public List<CommandStats> getStatsGlobal() {
-        return getEntityList(new CommandStats(), "SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", null);
+        return getEntityList(new CommandStats(), "SELECT * FROM CommandStats ORDER BY CAST(uses as INT) DESC LIMIT 5", null);
     }
 
     /**

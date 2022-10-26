@@ -946,7 +946,7 @@ public class LoggingEvents extends ListenerAdapter {
                 wm.append(LanguageService.getByGuild(event.getGuild(), "logging.message.attachmentNotice") + "\n");
             }
 
-            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.message.delete", user.getAsMention(), event.getChannel().getAsMention(),
+            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.message.deleted", user.getAsMention(), event.getChannel().getAsMention(),
                     message != null ? message.getContentRaw().length() >= 650 ?
                             LanguageService.getByGuild(event.getGuild(), "logging.message.tooLong") :
                             message.getContentRaw() : ""));

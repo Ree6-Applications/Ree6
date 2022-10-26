@@ -43,7 +43,7 @@ logging:
     create:
       voice: ":house: **VoiceChannel created:** %s"
       chat: ":house: **TextChannel created:** %s"
-  member: ":writing_hand: %s **has been updated."
+  member: ":writing_hand: %s **has been updated.**"
   role:
     create: ":family_mmb: ``%s`` **has been created.**"
     update: ":family_mmb: ``%s`` **has been updated.**"
@@ -166,6 +166,12 @@ label:
   selectChannel: "Select a Channel!"
   unknownMenu: "Unknown Menu"
   language: "Language"
+  recording:
+    start: "Recording started!"
+    name: "[\uD83D\uDD34] Recording!"
+    finished: "Recording finished!"
+  download: "Download"
+  error: "Error"
 message:
   default:
     usage: "Usage {guild_prefix}%s."
@@ -189,6 +195,7 @@ message:
     unknownMenu: "There was an error while resolving the modal!"
     invalidOption: "You somehow selected an invalid Option! Are you a Wizard?"
     invalidOptionChannel: "The given Channel doesn't exists, how did you select it? Are you a Wizard?"
+    nameChangeFailed: "Could not change the my own nickname!"
   birthday:
     added:
       self: "Your Birthday has been added!"
@@ -415,6 +422,12 @@ message:
     deleted: "Successfully deleted the Welcome-channel, nice work!"
   lang:
     setupSuccess: "Successfully changed the Language to %s!"
+  recording:
+    started: "I am now recording this Voice-channel as requested by an participant!"
+    startReason: "Recording started by %s"
+    stopReason: "Recording stopped."
+    stopped: "Your Audio has been converted and is now available for download!"
+    error: "Something went wrong while converting your audio!\nReason: %s"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
