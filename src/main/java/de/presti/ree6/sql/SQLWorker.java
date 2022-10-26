@@ -88,14 +88,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             return;
         }
 
-        // Check if the User is already saved in the Database.
-        if (existsInChatLevel(guildId, userLevel.getUserId())) {
-
-            // If so change the current XP to the new.
-            updateEntity(userLevel);
-        } else {
-            updateEntity(userLevel);
-        }
+        updateEntity(userLevel);
     }
 
     /**
@@ -163,14 +156,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             return;
         }
 
-        // Check if the User is already saved in the Database.
-        if (existsInVoiceLevel(guildId, voiceUserLevel.getUserId())) {
-
-            // If so change the current XP to the new.
-            updateEntity(voiceUserLevel);
-        } else {
-            updateEntity(voiceUserLevel);
-        }
+        updateEntity(voiceUserLevel);
     }
 
     /**
@@ -1157,13 +1143,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param inviteUsage   the Usage count of the Invite.
      */
     public void setInvite(String guildId, String inviteCreator, String inviteCode, long inviteUsage) {
-        // Check if there is an entry with the same data.
-        if (existsInvite(guildId, inviteCreator, inviteCode)) {
-            // Update entry.
-            updateEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
-        } else {
-            updateEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
-        }
+        updateEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
     }
 
     /**
@@ -1245,14 +1225,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param content the Join Message.
      */
     public void setMessage(String guildId, String content) {
-
-        if (isMessageSetup(guildId)) {
-            // If there is already an entry just replace it.
-            updateEntity(new Setting(guildId, "message_join", content));
-        } else {
-            // Create a new entry, if there was none.
-            updateEntity(new Setting(guildId, "message_join", content));
-        }
+        updateEntity(new Setting(guildId, "message_join", content));
     }
 
     /**
@@ -1384,13 +1357,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if it is null.
         if (settingValue == null) createSettings(guildId);
 
-        // Check if there is an entry.
-        if (hasSetting(guildId, settingName)) {
-            // If so update it.
-            updateEntity(new Setting(guildId, settingName, settingValue));
-        } else {
-            updateEntity(new Setting(guildId, settingName, settingValue));
-        }
+        updateEntity(new Setting(guildId, settingName, settingValue));
     }
 
     /**
@@ -1718,11 +1685,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public void addBirthday(String guildId, String channelId, String userId, String birthday) {
         try {
             BirthdayWish newBirthday = new BirthdayWish(guildId, channelId, userId, new SimpleDateFormat("dd.MM.yyyy").parse(birthday));
-            if (isBirthdaySaved(guildId, userId)) {
-                updateEntity(newBirthday);
-            } else {
-                updateEntity(newBirthday);
-            }
+            updateEntity(newBirthday);
         } catch (ParseException ignore) {
         }
     }

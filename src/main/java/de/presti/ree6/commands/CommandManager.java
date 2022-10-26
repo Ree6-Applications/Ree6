@@ -95,7 +95,7 @@ public class CommandManager {
                 for (DiscordLocale discordLocale : DiscordLocale.values()) {
                     if (!LanguageService.languageResources.containsKey(discordLocale)) continue;
 
-                    String description = LanguageService.getByLocale(discordLocale, command.getClass().getAnnotation(Command.class).description() + "_slash");
+                    String description = LanguageService.getByLocale(discordLocale, command.getClass().getAnnotation(Command.class).description());
                     if (description.equals("Missing language resource!")) {
                         description = LanguageService.getByLocale(discordLocale, command.getClass().getAnnotation(Command.class).description());
                     }
@@ -105,9 +105,9 @@ public class CommandManager {
                     }
                 }
 
-                String description = LanguageService.getDefault(command.getClass().getAnnotation(Command.class).description() + "_slash");
+                String description = LanguageService.getDefault(command.getClass().getAnnotation(Command.class).description());
                 if (description.equals("Missing language resource!")) {
-                    description = LanguageService.getDefault(command.getClass().getAnnotation(Command.class).description());
+                    description = LanguageService.getDefault(description);
                 }
 
                 if (!description.equals("Missing language resource!")) {

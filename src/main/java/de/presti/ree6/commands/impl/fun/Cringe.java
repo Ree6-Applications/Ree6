@@ -12,7 +12,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * A command to let the bot response to the last Message with a cringe Image.
  */
-@Command(name = "cringe", description = "Let shrek tell them that their message was cringe!", category = Category.FUN)
+@Command(name = "cringe", description = "command.description.cringe", category = Category.FUN)
 public class Cringe implements ICommand {
 
     /**
