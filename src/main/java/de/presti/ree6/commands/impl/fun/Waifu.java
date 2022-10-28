@@ -31,7 +31,7 @@ public class Waifu implements ICommand {
         if (!jsonObject.has("series")) {
             em.setTitle("Error!");
             em.setColor(Color.RED);
-            em.setDescription(commandEvent.getResource("command.default.retrievalError"));
+            em.setDescription(commandEvent.getResource("message.default.retrievalError"));
             em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
             commandEvent.reply(em.build());
             return;
@@ -40,8 +40,8 @@ public class Waifu implements ICommand {
         JsonObject jsonObject1 = jsonObject.get("series").getAsJsonObject();
 
         em.setImage((jsonObject.has("display_picture") ? jsonObject.get("display_picture").getAsString() : "https://images.ree6.de/notfound.png"));
-        em.addField("**" + commandEvent.getResource("label.character") + "**", "``" + (jsonObject.has("name") ? jsonObject.get("name").getAsString() : commandEvent.getResource("command.default.retrievalError")) + "``", true);
-        em.addField("**"  + commandEvent.getResource("label.from") + "**", "``" + (jsonObject1.has("name") ? jsonObject1.get("name").getAsString() : commandEvent.getResource("command.default.retrievalError")) + "``", true);
+        em.addField("**" + commandEvent.getResource("label.character") + "**", "``" + (jsonObject.has("name") ? jsonObject.get("name").getAsString() : commandEvent.getResource("message.default.retrievalError")) + "``", true);
+        em.addField("**"  + commandEvent.getResource("label.from") + "**", "``" + (jsonObject1.has("name") ? jsonObject1.get("name").getAsString() : commandEvent.getResource("message.default.retrievalError")) + "``", true);
         if((jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean())) {
             em.addField("**NSFW**", "", true);
         }

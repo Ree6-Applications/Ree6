@@ -53,7 +53,7 @@ public class HornyJail implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("hornyjail", LanguageService.getDefault("command.description.hornyjail")).addOptions(new OptionData(OptionType.USER, "target", "The User that should be put into the Hornyjail!").setRequired(true));
+        return new CommandDataImpl("behavejail", LanguageService.getDefault("command.description.hornyjail_slash")).addOptions(new OptionData(OptionType.USER, "target", "The User that should be put into the Hornyjail!").setRequired(true));
     }
 
     /**

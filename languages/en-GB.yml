@@ -456,6 +456,7 @@ command:
     funFact: "Just some random facts!"
     game: "Access Ree6 internal Games."
     hornyjail: "Put someone into the Horny-Jail."
+    hornyjail_slash: "Put someone into the Not-Well-Behaved-Jail."
     hug: "Hug someone you like!"
     kiss: "Kiss someone!"
     manga: "Search for mangas on kitsu.io!"
@@ -510,6 +511,7 @@ command:
     volume: "Change the Volume of the current Track."
     nsfw: "Shows a random NSFW Image."
     rule34: "Shows a random Rule34 Image."
+    rule34_slash: "Shows not safe for work Images from a specific Website."
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
