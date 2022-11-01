@@ -80,7 +80,7 @@ public class ImageCreationUtility {
         actionPerformance = System.currentTimeMillis();
 
         if (user == null)
-            return new byte[128];
+            return null;
 
         log.debug("Loading and creating Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -331,7 +331,7 @@ public class ImageCreationUtility {
      */
     public static byte[] createHornyJailImage(User user) throws IOException {
         if (user == null)
-            return new byte[128];
+            return null;
 
         // Generate a 128x128 Image Background.
         BufferedImage base = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
@@ -388,6 +388,8 @@ public class ImageCreationUtility {
         log.debug("Started User Image creation.");
 
         BufferedImage mainImage = resize(ImageIO.read(url), 250, 250);
+
+        if (mainImage == null) return null;
 
         log.debug("Loading Image from URL and resizing it. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
