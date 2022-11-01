@@ -6,7 +6,6 @@ import jakarta.persistence.*;
  * SQL Entity for the Stats.
  */
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name = "CommandStats")
 public class CommandStats {
 
@@ -14,7 +13,7 @@ public class CommandStats {
      * The PrimaryKey of the Entity.
      */
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 

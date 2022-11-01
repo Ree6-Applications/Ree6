@@ -24,43 +24,27 @@ import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
-import de.presti.ree6.sql.entities.webhook.WebhookInstagram;
-import de.presti.ree6.sql.entities.webhook.WebhookReddit;
-import de.presti.ree6.sql.entities.webhook.WebhookTwitch;
-import de.presti.ree6.sql.entities.webhook.WebhookTwitter;
-import de.presti.ree6.sql.entities.webhook.WebhookYouTube;
+import de.presti.ree6.sql.entities.webhook.*;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 import masecla.reddit4j.client.Reddit4J;
 import masecla.reddit4j.objects.Sorting;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import twitter4j.FilterQuery;
-import twitter4j.StallWarning;
-import twitter4j.Status;
-import twitter4j.StatusDeletionNotice;
-import twitter4j.StatusListener;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.TwitterStream;
-import twitter4j.TwitterStreamFactory;
+import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -511,9 +495,12 @@ public class Notifier {
                         for (ChannelStats channelStat : channelStats) {
                             if (channelStat.getYoutubeSubscribersChannelId() != null) {
                                 GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getYoutubeSubscribersChannelId());
+
                                 String newName = "YouTube Subscribers: " + (youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount());
                                 if (guildChannel != null &&
                                         !guildChannel.getName().equalsIgnoreCase(newName)) {
+                                    if (guildChannel.getType() == ChannelType.VOICE && !guildChannel.getGuild().getSelfMember().hasPermission(Permission.VOICE_CONNECT)) continue;
+
                                     guildChannel.getManager().setName(newName).queue();
                                 }
                             }

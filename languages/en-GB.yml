@@ -1,7 +1,7 @@
 language:
   name: "English (UK)"
   locale: "en-GB"
-  version: "2.0.0"
+  version: "2.0.7"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **banned.**"
@@ -16,43 +16,43 @@ logging:
       vanity: "%s **has been invited via Vanity Invite.**"
       default: "%s **has been invited by** %s (Code: %s, Uses: %s)"
       notFound: "**Couldn't determine who invited** %s"
-    left:
-      default: "%s **left the Server.**\n:timer: Joined:\n**%s**"
-      slim: "%s **left the Server.**"
-    timeout:
-      started: "**The User** %s **received a timeout.**\n**Time:** %s"
-      updated: "**The User** %s **received a timeout.**\n**Reason:** %s\n**Moderator:** %s\n**Time:** %s"
-      ended: "**The User** %s **finished their timeout.**\n**Time:** %s"
-    nickname:
-      reset: "The Nickname of %s has been reset.\n**Old Nickname:**\n%s"
-      changed: "The Nickname of %s has been changed.\n**New Nickname:**\n%s\n**Old Nickname:**\n%s"
-    voicechannel:
-      join: "%s **joined the Voice Channel** %s"
-      move: "%s **moved from the Voice Channel** %s **to** %s**.**"
-      moveMany: "%s **moved through many Voice Channel and is now in** %2"
-      leave: "%s **left the Voice Channel** %s"
-      leaveInstant: "%s **joined and left the Voice Channel** %s"
-      rejoin: "%s **rejoined the Voice Channel** %s"
-    channel:
-      update:
-        voice: ":house: **VoiceChannel updated:** %s"
-        chat: ":house: **TextChannel updated:** %s"
-      delete:
-        voice: ":house: **VoiceChannel deleted:** ``%s``"
-        chat: ":house: **TextChannel deleted:** ``%s``"
-      create:
-        voice: ":house: **VoiceChannel created:** %s"
-        chat: ":house: **TextChannel created:** %s"
-    member: ":writing_hand: %s **has been updated."
-    role:
-      create: ":family_mmb: ``%s`` **has been created.**"
-      update: ":family_mmb: ``%s`` **has been updated.**"
-      delete: ":family_mmb: ``%s`` **has been deleted.**"
-    message:
-      deleted: ":wastebasket: **Message of %s in %s has been deleted.**\n%s"
-      tooLong: "Message is too long to display!"
-      attachmentFailed: "Could not add Message Attachment reason: %s"
-      attachmentNotice: "Below are the attachments, we recommend being careful with these files!"
+  left:
+    default: "%s **left the Server.**\n:timer: Joined:\n**%s**"
+    slim: "%s **left the Server.**"
+  timeout:
+    started: "**The User** %s **received a timeout.**\n**Time:** %s"
+    updated: "**The User** %s **received a timeout.**\n**Reason:** %s\n**Moderator:** %s\n**Time:** %s"
+    ended: "**The User** %s **finished their timeout.**\n**Time:** %s"
+  nickname:
+    reset: "The Nickname of %s has been reset.\n**Old Nickname:**\n%s"
+    changed: "The Nickname of %s has been changed.\n**New Nickname:**\n%s\n**Old Nickname:**\n%s"
+  voicechannel:
+    join: "%s **joined the Voice Channel** %s"
+    move: "%s **moved from the Voice Channel** %s **to** %s**.**"
+    moveMany: "%s **moved through many Voice Channel and is now in** %2"
+    leave: "%s **left the Voice Channel** %s"
+    leaveInstant: "%s **joined and left the Voice Channel** %s"
+    rejoin: "%s **rejoined the Voice Channel** %s"
+  channel:
+    update:
+      voice: ":house: **VoiceChannel updated:** %s"
+      chat: ":house: **TextChannel updated:** %s"
+    delete:
+      voice: ":house: **VoiceChannel deleted:** ``%s``"
+      chat: ":house: **TextChannel deleted:** ``%s``"
+    create:
+      voice: ":house: **VoiceChannel created:** %s"
+      chat: ":house: **TextChannel created:** %s"
+  member: ":writing_hand: %s **has been updated.**"
+  role:
+    create: ":family_mmb: ``%s`` **has been created.**"
+    update: ":family_mmb: ``%s`` **has been updated.**"
+    delete: ":family_mmb: ``%s`` **has been deleted.**"
+  message:
+    deleted: ":wastebasket: **Message of %s in %s has been deleted.**\n%s"
+    tooLong: "Message is too long to display!"
+    attachmentFailed: "Could not add Message Attachment reason: %s"
+    attachmentNotice: "Below are the attachments, we recommend being careful with these files!"
 label:
   status: "Status"
   typ: "Type"
@@ -166,6 +166,12 @@ label:
   selectChannel: "Select a Channel!"
   unknownMenu: "Unknown Menu"
   language: "Language"
+  recording:
+    start: "Recording started!"
+    name: "[\uD83D\uDD34] Recording!"
+    finished: "Recording finished!"
+  download: "Download"
+  error: "Error"
 message:
   default:
     usage: "Usage {guild_prefix}%s."
@@ -189,6 +195,7 @@ message:
     unknownMenu: "There was an error while resolving the modal!"
     invalidOption: "You somehow selected an invalid Option! Are you a Wizard?"
     invalidOptionChannel: "The given Channel doesn't exists, how did you select it? Are you a Wizard?"
+    nameChangeFailed: "Could not change the my own nickname!"
   birthday:
     added:
       self: "Your Birthday has been added!"
@@ -415,6 +422,12 @@ message:
     deleted: "Successfully deleted the Welcome-channel, nice work!"
   lang:
     setupSuccess: "Successfully changed the Language to %s!"
+  recording:
+    started: "I am now recording this Voice-channel as requested by an participant!"
+    startReason: "Recording started by %s"
+    stopReason: "Recording stopped."
+    stopped: "Your Audio has been converted and is now available for download!"
+    error: "Something went wrong while converting your audio!\nReason: %s"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
@@ -443,6 +456,7 @@ command:
     funFact: "Just some random facts!"
     game: "Access Ree6 internal Games."
     hornyjail: "Put someone into the Horny-Jail."
+    hornyjail_slash: "Put someone into the Not-Well-Behaved-Jail."
     hug: "Hug someone you like!"
     kiss: "Kiss someone!"
     manga: "Search for mangas on kitsu.io!"
@@ -497,6 +511,7 @@ command:
     volume: "Change the Volume of the current Track."
     nsfw: "Shows a random NSFW Image."
     rule34: "Shows a random Rule34 Image."
+    rule34_slash: "Shows not safe for work Images from a specific Website."
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."

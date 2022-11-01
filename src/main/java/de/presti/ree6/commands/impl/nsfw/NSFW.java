@@ -7,6 +7,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
@@ -91,6 +92,7 @@ public class NSFW implements ICommand {
 
                 if (commandEvent.isSlashCommand()) {
                     message.editMessage(commandEvent.getResource("message.default.checkBelow")).queue();
+                    Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel());
                     commandEvent.reply(em.build());
                 } else {
                     message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("message.default.checkBelow")).queue());

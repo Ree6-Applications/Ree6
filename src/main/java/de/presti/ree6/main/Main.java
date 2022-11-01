@@ -116,7 +116,7 @@ public class Main {
             // We recommend adjusting this value in production.
             options.setTracesSampleRate(1.0);
             // When first trying Sentry it's good to see what the SDK is doing:
-            options.setRelease("2.0.0");
+            options.setRelease("2.0.8");
         });
 
         log.info("Starting preparations of the Bot...");
@@ -150,7 +150,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.RELEASE, "2.0.0");
+            BotWorker.createBot(BotVersion.RELEASE, "2.0.8");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
+import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.simpleyaml.configuration.file.YamlConfiguration;
@@ -15,8 +16,10 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
@@ -57,6 +60,15 @@ public class LanguageService {
      * Called to download every Language file from the GitHub Repository.
      */
     public static void downloadLanguages() {
+        File languagePath = Path.of("languages/").toFile();
+        if (!languagePath.exists()) {
+            if (languagePath.mkdirs()) {
+                log.info("Created the language folder!");
+            } else {
+                log.error("Couldn't create the language folder!");
+            }
+        }
+
         try {
             RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.github.com/repos/Ree6-Applications/Ree6/contents/languages").build()).getAsJsonArray().forEach(jsonElement -> {
                 String language = jsonElement.getAsJsonObject().get("name").getAsString().replace(".yml", "");
@@ -64,7 +76,7 @@ public class LanguageService {
 
                 Path languageFile = Path.of("languages/", language + ".yml");
 
-                if (!languageFile.toAbsolutePath().startsWith(Path.of("languages/").toAbsolutePath())) {
+                if (!languageFile.toAbsolutePath().startsWith(languagePath.toPath().toAbsolutePath())) {
                     log.info("Ignoring Language download, since Path Traversal has been detected!");
                     return;
                 }
@@ -74,17 +86,24 @@ public class LanguageService {
                 try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(download).build())) {
                     if (inputStream == null) return;
 
+                    String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+
                     if (Files.exists(languageFile)) {
+
                         log.info("Language file {} already exists! Will compare version!", language);
-                        YamlConfiguration newLanguageYaml = YamlConfiguration.loadConfiguration(inputStream);
+                        YamlConfiguration newLanguageYaml = YamlConfiguration.loadConfigurationFromString(content);
                         Language newLanguage = new Language(newLanguageYaml);
                         Language oldLanguage = new Language(YamlConfiguration.loadConfiguration(languageFile.toFile()));
-                        if (newLanguage.compareVersion(oldLanguage)) {
-                            log.info("Language file {} is outdated!\nWill update!", language);
+                        if (oldLanguage.compareVersion(newLanguage)) {
+                            log.info("Language file {} is outdated! Will update!", language);
                             if (!languageFile.toFile().delete()) {
                                 log.info("Failed to delete old Language file {}!", language);
                             }
-                            newLanguageYaml.save(languageFile.toFile());
+
+                            // Not using YamlConfiguration#save, since that methods breaks the whole file somehow? Unsure why?
+                            Files.writeString(languageFile, content, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
+
+                            log.info("Updated Language file {}!", language);
 
                             if (languageResources.remove(oldLanguage.getDiscordLocale()) != null) {
                                 log.info("Removed old Language of {} from memory!", oldLanguage.getDiscordLocale().getLocale());

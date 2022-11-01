@@ -88,14 +88,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             return;
         }
 
-        // Check if the User is already saved in the Database.
-        if (existsInChatLevel(guildId, userLevel.getUserId())) {
-
-            // If so change the current XP to the new.
-            updateEntity(userLevel);
-        } else {
-            saveEntity(userLevel);
-        }
+        updateEntity(userLevel);
     }
 
     /**
@@ -163,14 +156,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             return;
         }
 
-        // Check if the User is already saved in the Database.
-        if (existsInVoiceLevel(guildId, voiceUserLevel.getUserId())) {
-
-            // If so change the current XP to the new.
-            updateEntity(voiceUserLevel);
-        } else {
-            saveEntity(voiceUserLevel);
-        }
+        updateEntity(voiceUserLevel);
     }
 
     /**
@@ -240,7 +226,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             sqlConnector.querySQL("DELETE FROM LogWebhooks WHERE GID=?", guildId);
         }
 
-        saveEntity(new WebhookLog(guildId, webhookId, authToken));
+        updateEntity(new WebhookLog(guildId, webhookId, authToken));
     }
 
     /**
@@ -319,7 +305,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             sqlConnector.querySQL("DELETE FROM WelcomeWebhooks WHERE GID=?", guildId);
         }
 
-        saveEntity(new WebhookWelcome(guildId, webhookId, authToken));
+        updateEntity(new WebhookWelcome(guildId, webhookId, authToken));
 
     }
 
@@ -391,7 +377,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         removeTwitchWebhook(guildId, twitchName);
 
         // Add a new entry into the Database.
-        saveEntity(new WebhookTwitch(guildId, twitchName, webhookId, authToken));
+        updateEntity(new WebhookTwitch(guildId, twitchName, webhookId, authToken));
     }
 
     /**
@@ -498,7 +484,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         removeInstagramWebhook(guildId, name);
 
         // Add a new entry into the Database.
-        saveEntity(new WebhookInstagram(guildId, name, webhookId, authToken));
+        updateEntity(new WebhookInstagram(guildId, name, webhookId, authToken));
     }
 
     /**
@@ -605,7 +591,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         removeRedditWebhook(guildId, subreddit);
 
         // Add a new entry into the Database.
-        saveEntity(new WebhookReddit(guildId, subreddit, webhookId, authToken));
+        updateEntity(new WebhookReddit(guildId, subreddit, webhookId, authToken));
     }
 
     /**
@@ -712,7 +698,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         removeYouTubeWebhook(guildId, youtubeChannel);
 
         // Add a new entry into the Database.
-        saveEntity(new WebhookYouTube(guildId, youtubeChannel, webhookId, authToken));
+        updateEntity(new WebhookYouTube(guildId, youtubeChannel, webhookId, authToken));
     }
 
     /**
@@ -819,7 +805,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         removeTwitterWebhook(guildId, twitterName);
 
         // Add a new entry into the Database.
-        saveEntity(new WebhookTwitter(guildId, twitterName, webhookId, authToken));
+        updateEntity(new WebhookTwitter(guildId, twitterName, webhookId, authToken));
     }
 
     /**
@@ -895,7 +881,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (!isAutoRoleSetup(guildId, roleId)) {
             // Add a new entry into the Database.
-            saveEntity(new AutoRole(guildId, roleId));
+            updateEntity(new AutoRole(guildId, roleId));
         }
     }
 
@@ -968,7 +954,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (!isChatLevelRewardSetup(guildId, roleId, level)) {
             // Add a new entry into the Database.
-            saveEntity(new ChatAutoRole(guildId, roleId, level));
+            updateEntity(new ChatAutoRole(guildId, roleId, level));
         }
     }
 
@@ -1052,7 +1038,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if there is a role in the database.
         if (!isVoiceLevelRewardSetup(guildId, roleId, level)) {
             // Add a new entry into the Database.
-            saveEntity(new VoiceAutoRole(guildId, roleId, level));
+            updateEntity(new VoiceAutoRole(guildId, roleId, level));
         }
     }
 
@@ -1157,13 +1143,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param inviteUsage   the Usage count of the Invite.
      */
     public void setInvite(String guildId, String inviteCreator, String inviteCode, long inviteUsage) {
-        // Check if there is an entry with the same data.
-        if (existsInvite(guildId, inviteCreator, inviteCode)) {
-            // Update entry.
-            updateEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
-        } else {
-            saveEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
-        }
+        updateEntity(new Invite(guildId, inviteCreator, inviteUsage, inviteCode));
     }
 
     /**
@@ -1245,14 +1225,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @param content the Join Message.
      */
     public void setMessage(String guildId, String content) {
-
-        if (isMessageSetup(guildId)) {
-            // If there is already an entry just replace it.
-            updateEntity(new Setting(guildId, "message_join", content));
-        } else {
-            // Create a new entry, if there was none.
-            saveEntity(new Setting(guildId, "message_join", content));
-        }
+        updateEntity(new Setting(guildId, "message_join", content));
     }
 
     /**
@@ -1312,7 +1285,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         if (isChatProtectorSetup(guildId, word)) return;
 
         // If not then just add it.
-        saveEntity(new Blacklist(guildId, word));
+        updateEntity(new Blacklist(guildId, word));
     }
 
     /**
@@ -1384,13 +1357,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Check if it is null.
         if (settingValue == null) createSettings(guildId);
 
-        // Check if there is an entry.
-        if (hasSetting(guildId, settingName)) {
-            // If so update it.
-            updateEntity(new Setting(guildId, settingName, settingValue));
-        } else {
-            saveEntity(new Setting(guildId, settingName, settingValue));
-        }
+        updateEntity(new Setting(guildId, settingName, settingValue));
     }
 
     /**
@@ -1458,6 +1425,9 @@ public record SQLWorker(SQLConnector sqlConnector) {
         // Create the Join Message Setting
         if (!hasSetting(guildId, "message_join"))
             setSetting(new Setting(guildId, "message_join", "Welcome %user_mention%!\nWe wish you a great stay on %guild_name%"));
+
+        if (!hasSetting(guildId, "message_join_image"))
+            setSetting(new Setting(guildId, "message_join_image", ""));
 
         // Create Command Settings.
         for (ICommand command : Main.getInstance().getCommandManager().getCommands()) {
@@ -1545,7 +1515,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             updateEntity(statistics);
         } else {
             statistics = new Statistics(today.getDayOfMonth(), today.getMonthValue(), today.getYear(), statisticObject);
-            saveEntity(statistics);
+            updateEntity(statistics);
         }
     }
 
@@ -1577,7 +1547,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return all the Command-Stats related to the given Guild.
      */
     public List<GuildCommandStats> getStats(String guildId) {
-        return getEntityList(new GuildCommandStats(), "SELECT * FROM GuildStats WHERE GID=:gid ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", Map.of("gid", guildId));
+        return getEntityList(new GuildCommandStats(), "SELECT * FROM GuildStats WHERE GID=:gid ORDER BY CAST(uses as INT) DESC LIMIT 5", Map.of("gid", guildId));
     }
 
     /**
@@ -1586,7 +1556,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      * @return all the Command-Stats globally.
      */
     public List<CommandStats> getStatsGlobal() {
-        return getEntityList(new CommandStats(), "SELECT * FROM CommandStats ORDER BY CAST(uses as UNSIGNED) DESC LIMIT 5", null);
+        return getEntityList(new CommandStats(), "SELECT * FROM CommandStats ORDER BY CAST(uses as INT) DESC LIMIT 5", null);
     }
 
     /**
@@ -1647,7 +1617,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             newGuildStats.setUses(newGuildStats.getUses() + 1);
             updateEntity(newGuildStats);
         } else {
-            saveEntity(new GuildCommandStats(guildId, command, 1));
+            updateEntity(new GuildCommandStats(0, guildId, command, 1));
         }
 
         // Check if there is an entry.
@@ -1656,7 +1626,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
             stats.setUses(stats.getUses() + 1);
             updateEntity(stats);
         } else {
-            saveEntity(new CommandStats(command, 1));
+            updateEntity(new CommandStats(command, 1));
         }
     }
 
@@ -1684,7 +1654,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
      */
     public void optOut(String guildId, String userId) {
         if (!isOptOut(guildId, userId)) {
-            saveEntity(new OptOut(guildId, userId));
+            updateEntity(new OptOut(guildId, userId));
         }
     }
 
@@ -1715,11 +1685,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
     public void addBirthday(String guildId, String channelId, String userId, String birthday) {
         try {
             BirthdayWish newBirthday = new BirthdayWish(guildId, channelId, userId, new SimpleDateFormat("dd.MM.yyyy").parse(birthday));
-            if (isBirthdaySaved(guildId, userId)) {
-                updateEntity(newBirthday);
-            } else {
-                saveEntity(newBirthday);
-            }
+            updateEntity(newBirthday);
         } catch (ParseException ignore) {
         }
     }
@@ -1802,28 +1768,6 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
     //region Entity-System
 
-    /**
-     * Save an Entity to the Database.
-     *
-     * @param entity the Entity to save.
-     */
-    public void saveEntity(Object entity) {
-        if (!sqlConnector.isConnected()) {
-            if (sqlConnector.connectedOnce()) {
-                sqlConnector.connectToSQLServer();
-                saveEntity(entity);
-            }
-        }
-
-        try (Session session = SQLSession.getSessionFactory().openSession()) {
-
-            session.beginTransaction();
-
-            session.persist(entity);
-
-            session.getTransaction().commit();
-        }
-    }
 
     /**
      * Update an Entity in the Database.
@@ -1933,7 +1877,7 @@ public record SQLWorker(SQLConnector sqlConnector) {
 
             session.getTransaction().commit();
 
-            return query.getSingleResultOrNull();
+            return query.setMaxResults(1).getSingleResultOrNull();
         }
     }
 

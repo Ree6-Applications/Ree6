@@ -80,7 +80,7 @@ public class ImageCreationUtility {
         actionPerformance = System.currentTimeMillis();
 
         if (user == null)
-            return new byte[128];
+            return new byte[128];;
 
         log.debug("Loading and creating Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -216,15 +216,13 @@ public class ImageCreationUtility {
         log.debug("Finished disposing Graphics2D instance. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        // Create a ByteArrayOutputStream to convert the BufferedImage to an Array of Bytes.
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
-        ImageIO.write(base, "PNG", outputStream);
-        log.debug("Finished writing Image into ByteArrayOutputStream. ({}ms)", System.currentTimeMillis() - actionPerformance);
-        log.debug("Finished creation in {}ms", System.currentTimeMillis() - start);
-        byte[] bytes = outputStream.toByteArray();
-        outputStream.close();
-        return bytes;
+            ImageIO.write(base, "PNG", outputStream);
+            log.debug("Finished writing Image into ByteArrayOutputStream. ({}ms)", System.currentTimeMillis() - actionPerformance);
+            log.debug("Finished creation in {}ms", System.currentTimeMillis() - start);
+            return outputStream.toByteArray();
+        }
     }
 
     /**
@@ -249,6 +247,13 @@ public class ImageCreationUtility {
             backgroundImage = joinBackgroundBase.get(messageImage);
         } else {
             backgroundImage = resize(ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(messageImage))), 1920, 1080);
+            if (backgroundImage == null) {
+                try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+
+                    ImageIO.write(base, "PNG", outputStream);
+                    return outputStream.toByteArray();
+                }
+            }
             joinBackgroundBase.put(messageImage, backgroundImage);
         }
 
@@ -308,13 +313,13 @@ public class ImageCreationUtility {
         log.debug("Finished disposing Graphics2D instance. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        // Create a ByteArrayOutputStream to convert the BufferedImage to an Array of Bytes.
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
-        ImageIO.write(base, "PNG", outputStream);
-        log.debug("Finished writing Image into ByteArrayOutputStream. ({}ms)", System.currentTimeMillis() - actionPerformance);
-        log.debug("Finished creation in {}ms", System.currentTimeMillis() - start);
-        return outputStream.toByteArray();
+            ImageIO.write(base, "PNG", outputStream);
+            log.debug("Finished writing Image into ByteArrayOutputStream. ({}ms)", System.currentTimeMillis() - actionPerformance);
+            log.debug("Finished creation in {}ms", System.currentTimeMillis() - start);
+            return outputStream.toByteArray();
+        }
     }
 
     /**
@@ -362,13 +367,11 @@ public class ImageCreationUtility {
         // Close the Graphics2D instance.
         graphics2D.dispose();
 
-        // Create a ByteArrayOutputStream to convert the BufferedImage to an Array of Bytes.
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
-        ImageIO.write(base, "PNG", outputStream);
-        byte[] bytes = outputStream.toByteArray();
-        outputStream.close();
-        return bytes;
+            ImageIO.write(base, "PNG", outputStream);
+            return outputStream.toByteArray();
+        }
     }
 
     /**
@@ -385,6 +388,8 @@ public class ImageCreationUtility {
         log.debug("Started User Image creation.");
 
         BufferedImage mainImage = resize(ImageIO.read(url), 250, 250);
+
+        if (mainImage == null) return null;
 
         log.debug("Loading Image from URL and resizing it. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -440,6 +445,8 @@ public class ImageCreationUtility {
      * @return The new resized image
      */
     public static BufferedImage resize(BufferedImage inputImage, int scaledWidth, int scaledHeight) {
+        if (inputImage == null)
+            return null;
 
         if (inputImage.getWidth() == scaledWidth && inputImage.getHeight() == scaledHeight) {
             return inputImage;

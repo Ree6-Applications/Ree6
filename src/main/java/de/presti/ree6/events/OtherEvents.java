@@ -116,7 +116,7 @@ public class OtherEvents extends ListenerAdapter {
                 .replace("%user_name%", event.getMember().getUser().getName())
                 .replace("%guild_name%", event.getGuild().getName())
                 .replace("%guild_member_count%", String.valueOf(event.getGuild().getMemberCount()));
-        if (Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue() != null) {
+        if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue().isBlank()) {
             try {
                 messageContent = messageContent.replace("%user_mention%", event.getMember().getUser().getName());
                 wmb.addFile("welcome.png", ImageCreationUtility.createJoinImage(event.getUser(),

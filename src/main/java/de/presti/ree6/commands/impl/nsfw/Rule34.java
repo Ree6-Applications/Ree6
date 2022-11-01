@@ -131,7 +131,7 @@ public class Rule34 implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("r34", LanguageService.getDefault("command.description.rule34"))
+        return new CommandDataImpl("r34", LanguageService.getDefault("command.description.rule34_slash"))
                 .addOptions(new OptionData(OptionType.STRING, "tags", "Tags for the image search"));
     }
 

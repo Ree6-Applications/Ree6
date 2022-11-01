@@ -84,7 +84,7 @@ public class Suggestion implements ICommand {
             Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(suggestions);
         } else {
             suggestions = new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong());
-            Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(suggestions);
+            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(suggestions);
         }
 
         commandEvent.reply(commandEvent.getResource("message.suggestion.success"), 5);

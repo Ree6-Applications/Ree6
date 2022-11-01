@@ -76,7 +76,7 @@ public class LoggingEvents extends ListenerAdapter {
             Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(invite);
         } else {
             event.getGuild().retrieveVanityInvite().onErrorMap(throwable -> null).queue(vanityInvite ->
-                    Main.getInstance().getSqlConnector().getSqlWorker().saveEntity(new Invite(event.getGuild().getId(), event.getGuild().getOwnerId(), vanityInvite.getUses(), event.getNewVanityCode())));
+                    Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(new Invite(event.getGuild().getId(), event.getGuild().getOwnerId(), vanityInvite.getUses(), event.getNewVanityCode())));
         }
     }
 
@@ -402,7 +402,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getUser().getAsTag(), event.getEntity().getUser().getAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
-            we.setDescription(LanguageService.getByEvent(event, "logging.voicechannel.left", event.getEntity().getUser().getAsMention(), event.getChannelLeft().getAsMention()));
+            we.setDescription(LanguageService.getByEvent(event, "logging.voicechannel.leave", event.getEntity().getUser().getAsMention(), event.getChannelLeft().getAsMention()));
 
             AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.MEMBER_VOICE_KICK).limit(5).stream().filter(auditLogEntry ->
                     auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
@@ -946,7 +946,7 @@ public class LoggingEvents extends ListenerAdapter {
                 wm.append(LanguageService.getByGuild(event.getGuild(), "logging.message.attachmentNotice") + "\n");
             }
 
-            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.message.delete", user.getAsMention(), event.getChannel().getAsMention(),
+            we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.message.deleted", user.getAsMention(), event.getChannel().getAsMention(),
                     message != null ? message.getContentRaw().length() >= 650 ?
                             LanguageService.getByGuild(event.getGuild(), "logging.message.tooLong") :
                             message.getContentRaw() : ""));

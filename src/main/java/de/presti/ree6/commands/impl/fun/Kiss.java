@@ -54,7 +54,7 @@ public class Kiss implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("kiss", LanguageService.getDefault("message.description.kiss"))
+        return new CommandDataImpl("kiss", LanguageService.getDefault("command.description.kiss"))
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should be kissed!").setRequired(true));
     }
 

@@ -1,6 +1,5 @@
 package de.presti.ree6.commands;
 
-import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import lombok.Getter;
@@ -25,11 +24,10 @@ import javax.annotation.Nullable;
 public class CommandEvent {
 
     /**
-     * The Command that has been executed.
+     * The Name of Command that has been executed.
      */
     @Getter
-    @Nonnull
-    ICommand iCommand;
+    String command;
 
     /**
      * The Member associated with the Command execution.
@@ -70,7 +68,7 @@ public class CommandEvent {
     /**
      * Constructor used to save the Data.
      *
-     * @param iCommand                     the {@link ICommand}
+     * @param command                      the Command Name.
      * @param member                       the {@link Member} Entity.
      * @param guild                        the {@link Guild} Entity.
      * @param message                      the {@link Message} Entity.
@@ -78,8 +76,8 @@ public class CommandEvent {
      * @param arguments                    the given Arguments.
      * @param slashCommandInteractionEvent the {@link SlashCommandInteractionEvent} Entity.
      */
-    public CommandEvent(@Nonnull ICommand iCommand, @Nonnull Member member, @Nonnull Guild guild, @Nullable Message message, @Nonnull MessageChannelUnion textChannel, @Nullable String[] arguments, @Nullable SlashCommandInteractionEvent slashCommandInteractionEvent) {
-        this.iCommand = iCommand;
+    public CommandEvent(String command, @Nonnull Member member, @Nonnull Guild guild, @Nullable Message message, @Nonnull MessageChannelUnion textChannel, @Nullable String[] arguments, @Nullable SlashCommandInteractionEvent slashCommandInteractionEvent) {
+        this.command = command;
         this.member = member;
         this.guild = guild;
         this.message = message;
