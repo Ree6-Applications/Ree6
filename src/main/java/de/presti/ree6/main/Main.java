@@ -110,6 +110,9 @@ public class Main {
         // Initialize the Config.
         instance.config.init();
 
+        log.info("Creating Sentry Instance.");
+
+        // Create a Sentry Instance to send Exception to an external Service for bug fixing.
         Sentry.init(options -> {
             String dsn = instance.config.getConfiguration().getString("sentry.dsn");
             options.setDsn((dsn == null || dsn.equalsIgnoreCase("yourSentryDSNHere")) ? "" : dsn);
@@ -117,8 +120,10 @@ public class Main {
             // We recommend adjusting this value in production.
             options.setTracesSampleRate(1.0);
             // When first trying Sentry it's good to see what the SDK is doing:
-            options.setRelease("2.0.8");
+            options.setRelease("2.0.9");
         });
+
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> Sentry.captureException(e));
 
         log.info("Starting preparations of the Bot...");
 
@@ -127,11 +132,6 @@ public class Main {
         log.info("Finished preparations of the Bot!");
 
         log.info("Starting Ree6!");
-
-        log.info("Creating Sentry Instance.");
-
-        // Create a Sentry Instance to send Exception to an external Service for bug fixing.
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> Sentry.captureException(e));
 
         // Create a new connection between the Application and the SQL-Server.
         instance.sqlConnector = new SQLConnector(instance.config.getConfiguration().getString("hikari.sql.user"),
@@ -151,7 +151,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.DEVELOPMENT_BUILD, "2.0.8");
+            BotWorker.createBot(BotVersion.RELEASE, "2.0.9");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -166,6 +166,7 @@ public class Main {
         instance.notifier = new Notifier();
 
         ThreadUtil.createThread(x -> {
+            log.info("Loading Notifier data.");
             List<ChannelStats> channelStats = instance.sqlConnector.getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats", null);
 
             // Register all Twitch Channels.
