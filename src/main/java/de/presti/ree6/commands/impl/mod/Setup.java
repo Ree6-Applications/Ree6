@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.StringSelectMenuImpl;
 
 import java.awt.*;
 import java.io.InputStream;
@@ -79,7 +79,7 @@ public class Setup implements ICommand {
             optionList.add(SelectOption.of("Temporal-Voice", "tempvoice"));
             optionList.add(SelectOption.of("Statistics", "statistics"));
 
-            SelectMenu selectMenu = new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList);
+            SelectMenu selectMenu = new StringSelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList);
 
             if (commandEvent.isSlashCommand()) {
                 commandEvent.getInteractionHook().sendMessageEmbeds(embedBuilder.build())

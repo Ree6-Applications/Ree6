@@ -38,18 +38,18 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.GenericSessionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
-import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.StringSelectMenuImpl;
 import org.jetbrains.annotations.NotNull;
 import twitter4j.TwitterException;
 
@@ -859,8 +859,8 @@ public class OtherEvents extends ListenerAdapter {
      * @inheritDoc
      */
     @Override
-    public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
-        super.onSelectMenuInteraction(event);
+    public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
+        super.onStringSelectInteraction(event);
 
         if (event.getInteraction().getComponent().getId() == null ||
                 event.getGuild() == null)
@@ -896,7 +896,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("You can set up our own Audit-Logging which provides all the Information over and Webhook into the Channel of your desire! " + "But ours is not the same as the default Auditions, ours gives your the ability to set what you want to be logged and what not! " + "We also allow you to log Voice Events!");
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupLogMenu", "Select your Action", 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupLogMenu", "Select your Action", 1, 1, false, optionList)).queue();
                     }
 
                     case "welcome" -> {
@@ -911,7 +911,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("You can set up our own Welcome-Messages!\nYou can choice the Welcome-Channel by your own and even configure the Message!");
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupWelcomeMenu", "Select your Action", 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupWelcomeMenu", "Select your Action", 1, 1, false, optionList)).queue();
                     }
 
                     case "autorole" -> {
@@ -930,7 +930,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("You can set up your own Temporal Voicechannel!\nBy setting up Temporal Voicechannel on a specific channel which will be used to create a new Voicechannel when ever someones joins into it!");
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupTempVoiceMenu", "Select your Action", 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTempVoiceMenu", "Select your Action", 1, 1, false, optionList)).queue();
                     }
 
                     case "statistics" -> {
@@ -945,7 +945,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("You can set up your own Statistic-channels!\nBy setting up Statistic-channels Ree6 will create new channels for each Statistic-Type that you setup!\nIf you want to get rid of a Statistic-Channel, just delete it!");
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupStatisticsMenu", "Select your Action", 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupStatisticsMenu", "Select your Action", 1, 1, false, optionList)).queue();
                     }
 
                     default -> {
@@ -1128,7 +1128,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("Which Channel do you want to use as Temporal-Voicechannel?");
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupTempVoicechannel", "Select a Channel!", 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTempVoicechannel", "Select a Channel!", 1, 1, false, optionList)).queue();
                     }
 
                     case "tempVoiceDelete" -> {
@@ -1175,7 +1175,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("Which Channel do you want to use as Logging-Channel?");
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupLogChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupLogChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
                     }
 
                     case "logDelete" -> {
@@ -1247,7 +1247,7 @@ public class OtherEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription("Which Channel do you want to use as Welcome-Channel?");
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupWelcomeChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupWelcomeChannel", "Select a Channel!", 1, 1, false, optionList)).queue();
                     }
 
                     case "welcomeImage" -> {
@@ -1319,7 +1319,7 @@ public class OtherEvents extends ListenerAdapter {
      *
      * @param event The InteractionEvent of the SelectMenu.
      */
-    public void sendDefaultChoice(SelectMenuInteractionEvent event) {
+    public void sendDefaultChoice(StringSelectInteractionEvent event) {
         EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
         List<SelectOption> optionList = new ArrayList<>();
@@ -1331,7 +1331,7 @@ public class OtherEvents extends ListenerAdapter {
 
         embedBuilder.setDescription("Which configuration do you want to check out?");
 
-        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new SelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList)).queue();
+        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupActionMenu", "Select a configuration Step!", 1, 1, false, optionList)).queue();
     }
 
     /**
