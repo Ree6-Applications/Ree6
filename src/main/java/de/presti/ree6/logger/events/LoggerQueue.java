@@ -463,7 +463,7 @@ public class LoggerQueue {
             }
 
             // Create new Thread for Log-Message to send.
-            ThreadUtil.createNewThread(x -> {
+            ThreadUtil.createThread(x -> {
                 // If not canceled send it.
                 if (!loggerMessage.isCanceled()) {
                     WebhookUtil.sendWebhook(loggerMessage, loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode(), true);

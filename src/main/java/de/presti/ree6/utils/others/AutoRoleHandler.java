@@ -34,7 +34,7 @@ public class AutoRoleHandler {
 
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isAutoRoleSetup(guild.getId())) return;
 
-        ThreadUtil.createNewThread(x -> {
+        ThreadUtil.createThread(x -> {
             if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
                 log.error("[AutoRole] Failed to give a role, when someone joined the Guild!");
                 log.error("[AutoRole] Server: {}", guild.getName());
@@ -81,7 +81,7 @@ public class AutoRoleHandler {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isVoiceLevelRewardSetup(guild.getId()))
             return;
 
-        ThreadUtil.createNewThread(x -> {
+        ThreadUtil.createThread(x -> {
             long level = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(guild.getId(), member.getUser().getId()).getLevel();
 
             if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
@@ -135,7 +135,7 @@ public class AutoRoleHandler {
         if (!Main.getInstance().getSqlConnector().getSqlWorker().isChatLevelRewardSetup(guild.getId()))
             return;
 
-        ThreadUtil.createNewThread(x -> {
+        ThreadUtil.createThread(x -> {
 
             long level = (Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(guild.getId(), member.getUser().getId()).getLevel());
 

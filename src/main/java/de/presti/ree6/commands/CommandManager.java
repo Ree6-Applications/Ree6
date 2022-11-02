@@ -234,7 +234,7 @@ public class CommandManager {
 
         // Check if this is a Developer build, if not then cooldown the User.
         if (!BotWorker.getVersion().isDebug()) {
-            ThreadUtil.createNewThread(x -> ArrayUtil.commandCooldown.remove(member.getUser().getId()), null, Duration.ofSeconds(5), false, false);
+            ThreadUtil.createThread(x -> ArrayUtil.commandCooldown.remove(member.getUser().getId()), null, Duration.ofSeconds(5), false, false);
         }
 
         // Add them to the Cooldown.

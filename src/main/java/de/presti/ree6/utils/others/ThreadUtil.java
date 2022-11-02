@@ -20,11 +20,21 @@ public class ThreadUtil {
      *
      * @param success  the Consumer, that will be executed, when the Thread is finished.
      * @param failure  the Consumer, that will be executed, when the Thread failed.
+     */
+    public static void createThread(Consumer<Void> success, Consumer<Throwable> failure) {
+        createThread(success, failure, null, false, true);
+    }
+
+    /**
+     * Creates a Thread with a Consumer.
+     *
+     * @param success  the Consumer, that will be executed, when the Thread is finished.
+     * @param failure  the Consumer, that will be executed, when the Thread failed.
      * @param duration the delay duration of the Thread.
      * @param loop     if the Thread should be looped.
      * @param pre      the Consumer, that will be executed, before the Thread is going into the sleep state.
      */
-    public static void createNewThread(Consumer<Void> success, Consumer<Throwable> failure, Duration duration, boolean loop, boolean pre) {
+    public static void createThread(Consumer<Void> success, Consumer<Throwable> failure, Duration duration, boolean loop, boolean pre) {
         executorService.submit(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 if (pre) {
