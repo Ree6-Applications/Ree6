@@ -33,6 +33,7 @@ import masecla.reddit4j.objects.Sorting;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
@@ -501,7 +502,7 @@ public class Notifier {
                                 String newName = "YouTube Subscribers: " + (youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount());
                                 if (guildChannel != null &&
                                         !guildChannel.getName().equalsIgnoreCase(newName)) {
-                                    if (guildChannel.getType() == ChannelType.VOICE && !guildChannel.getGuild().getSelfMember().hasPermission(Permission.VOICE_CONNECT)) continue;
+                                    if (guildChannel instanceof AudioChannel && !guildChannel.getGuild().getSelfMember().hasPermission(Permission.VOICE_CONNECT)) continue;
 
                                     guildChannel.getManager().setName(newName).queue();
                                 }
