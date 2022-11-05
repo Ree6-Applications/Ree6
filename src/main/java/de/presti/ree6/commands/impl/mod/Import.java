@@ -92,7 +92,7 @@ public class Import implements ICommand {
 
             String reason = jsonElement.isJsonObject() && jsonElement.getAsJsonObject().has("error") &&
                     jsonElement.getAsJsonObject().get("error").isJsonObject() && jsonElement.getAsJsonObject().get("error").getAsJsonObject().has("message") ?
-                    jsonElement.getAsJsonObject().get("error").getAsJsonObject().get("message").getAsString() : "Unknown";
+                    jsonElement.getAsJsonObject().get("error").getAsJsonObject().get("message").getAsString() : commandEvent.getResource("label.unknown");
 
             commandEvent.reply(
                     commandEvent.getResource(code == 404 ?

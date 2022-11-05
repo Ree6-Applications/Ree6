@@ -38,12 +38,12 @@ public class Game implements ICommand {
         OptionMapping value = commandEvent.getSlashCommandInteractionEvent().getOption("value");
 
         if (action == null) {
-            commandEvent.reply(commandEvent.getResource("command.game.actionNeeded"));
+            commandEvent.reply(commandEvent.getResource("message.game.actionNeeded"));
             return;
         }
 
         if (value == null) {
-            commandEvent.reply(commandEvent.getResource("command.game.valueNeeded"));
+            commandEvent.reply(commandEvent.getResource("message.game.valueNeeded"));
             return;
         }
 
@@ -63,12 +63,12 @@ public class Game implements ICommand {
 
                 GameSession gameSession = GameManager.getGameSession(value.getAsString());
                 if (gameSession == null) {
-                    commandEvent.reply(commandEvent.getResource("command.game.invalidInvite"));
+                    commandEvent.reply(commandEvent.getResource("message.game.invalidInvite"));
                     return;
                 }
 
                 if (gameSession.getGameState() != GameState.WAITING) {
-                    commandEvent.reply(commandEvent.getResource("command.game.gameAlreadyStarted"));
+                    commandEvent.reply(commandEvent.getResource("message.game.gameAlreadyStarted"));
                     return;
                 }
 
@@ -80,13 +80,13 @@ public class Game implements ICommand {
 
             case "list" -> {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(commandEvent.getResource("command.game.availableGames")).append("```");
+                stringBuilder.append(commandEvent.getResource("message.game.availableGames")).append("```");
                 GameManager.getGames().forEach(iGame -> stringBuilder.append("\n").append(LanguageService.getByEvent(commandEvent, iGame.getAnnotation(GameInfo.class).name())));
                 stringBuilder.append("```");
                 commandEvent.reply(stringBuilder.toString());
             }
 
-            default -> commandEvent.reply(commandEvent.getResource("command.game.invalidAction"));
+            default -> commandEvent.reply(commandEvent.getResource("message.game.invalidAction"));
         }
     }
 

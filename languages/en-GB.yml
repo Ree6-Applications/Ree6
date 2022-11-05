@@ -166,6 +166,7 @@ label:
   selectChannel: "Select a Channel!"
   unknownMenu: "Unknown Menu"
   language: "Language"
+  unknown: "Unknown"
   recording:
     start: "Recording started!"
     name: "[\uD83D\uDD34] Recording!"

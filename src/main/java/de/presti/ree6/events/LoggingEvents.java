@@ -289,9 +289,9 @@ public class LoggingEvents extends ListenerAdapter {
         we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         AuditLogPaginationAction paginationAction = event.getGuild().retrieveAuditLogs().user(event.getUser()).type(ActionType.MEMBER_UPDATE).limit(1);
-        if (event.getOldTimeOutEnd() == null) {
+        if (event.getNewTimeOutEnd() != null) {
             if (paginationAction.isEmpty()) {
-                we.setDescription(LanguageService.getByEvent(event, "logging.timeout.start",
+                we.setDescription(LanguageService.getByEvent(event, "logging.timeout.started",
                         event.getUser().getAsMention(),
                         TimeFormat.DATE_TIME_SHORT.format(event.getNewTimeOutEnd())));
             } else {
@@ -299,7 +299,7 @@ public class LoggingEvents extends ListenerAdapter {
                 we.setDescription(LanguageService.getByEvent(event, "logging.timeout.updated",
                         event.getUser().getAsMention(),
                         (auditLogEntry.getReason() == null ? "Couldn't find reason" : auditLogEntry.getReason()),
-                        (auditLogEntry.getUser() != null ? auditLogEntry.getUser().getAsMention() : "Unknown"),
+                        (auditLogEntry.getUser() != null ? auditLogEntry.getUser().getAsMention() : LanguageService.getByGuild(event.getGuild(), "label.unknown")),
                         TimeFormat.DATE_TIME_SHORT.format(event.getNewTimeOutEnd())));
             }
         } else {
