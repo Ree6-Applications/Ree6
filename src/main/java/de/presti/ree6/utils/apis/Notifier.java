@@ -164,7 +164,7 @@ public class Notifier {
         log.info("Initializing YouTube Streams...");
         createUploadStream();
 
-        ThreadUtil.createNewThread(x -> {
+        ThreadUtil.createThread(x -> {
             for (String twitterName : registeredTwitterUsers.keySet()) {
                 List<ChannelStats> channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),"SELECT * FROM ChannelStats WHERE twitterFollowerChannelUsername=:name", Map.of("name", twitterName));
                 if (!channelStats.isEmpty()) {
@@ -481,7 +481,7 @@ public class Notifier {
      * Used to create a Thread that listens for new YouTube uploads.
      */
     public void createUploadStream() {
-        ThreadUtil.createNewThread(x -> {
+        ThreadUtil.createThread(x -> {
             try {
                 for (String channel : registeredYouTubeChannels) {
 
@@ -613,7 +613,7 @@ public class Notifier {
      * Used to register a Reddit-Post Event for all Subreddits.
      */
     public void createRedditPostStream() {
-        ThreadUtil.createNewThread(x -> {
+        ThreadUtil.createThread(x -> {
             try {
                 for (String subreddit : registeredSubreddits) {
                     List<ChannelStats> channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),
@@ -746,7 +746,7 @@ public class Notifier {
      * Used to register an Instagram-Post Event for all Insta-Users.
      */
     public void createInstagramPostStream() {
-        ThreadUtil.createNewThread(x -> {
+        ThreadUtil.createThread(x -> {
             for (String username : registeredInstagramUsers) {
 
                 instagramClient.actions().users().findByUsername(username).thenAccept(userAction -> {

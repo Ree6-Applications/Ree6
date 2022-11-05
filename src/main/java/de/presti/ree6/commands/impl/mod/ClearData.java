@@ -43,7 +43,7 @@ public class ClearData implements ICommand {
                 }
 
                 commandEvent.reply(commandEvent.getResource("message.clearData.success"), 5);
-                ThreadUtil.createNewThread(x -> timeout.remove(commandEvent.getGuild().getId()), null, Duration.ofMinutes(10), false, false);
+                ThreadUtil.createThread(x -> timeout.remove(commandEvent.getGuild().getId()), null, Duration.ofMinutes(10), false, false);
             } else {
                 commandEvent.reply(commandEvent.getResource("message.clearData.cooldown"), 5);
             }

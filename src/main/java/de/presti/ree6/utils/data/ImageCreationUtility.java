@@ -80,7 +80,7 @@ public class ImageCreationUtility {
         actionPerformance = System.currentTimeMillis();
 
         if (user == null)
-            return new byte[128];
+            return new byte[128];;
 
         log.debug("Loading and creating Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -388,6 +388,8 @@ public class ImageCreationUtility {
         log.debug("Started User Image creation.");
 
         BufferedImage mainImage = resize(ImageIO.read(url), 250, 250);
+
+        if (mainImage == null) return null;
 
         log.debug("Loading Image from URL and resizing it. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();

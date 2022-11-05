@@ -2,22 +2,16 @@ package de.presti.ree6.sql.migrations;
 
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLConnector;
-import de.presti.ree6.sql.migrations.Migration;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.Scanners;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * MigrationUtil is used to manage migrations.

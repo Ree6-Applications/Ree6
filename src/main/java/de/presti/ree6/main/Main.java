@@ -36,6 +36,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Main Application class, used to store Instances of System Relevant classes.
@@ -109,6 +110,9 @@ public class Main {
         // Initialize the Config.
         instance.config.init();
 
+        log.info("Creating Sentry Instance.");
+
+        // Create a Sentry Instance to send Exception to an external Service for bug fixing.
         Sentry.init(options -> {
             String dsn = instance.config.getConfiguration().getString("sentry.dsn");
             options.setDsn((dsn == null || dsn.equalsIgnoreCase("yourSentryDSNHere")) ? "" : dsn);
@@ -116,8 +120,10 @@ public class Main {
             // We recommend adjusting this value in production.
             options.setTracesSampleRate(1.0);
             // When first trying Sentry it's good to see what the SDK is doing:
-            options.setRelease("2.0.7");
+            options.setRelease("2.0.9");
         });
+
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> Sentry.captureException(e));
 
         log.info("Starting preparations of the Bot...");
 
@@ -126,11 +132,6 @@ public class Main {
         log.info("Finished preparations of the Bot!");
 
         log.info("Starting Ree6!");
-
-        log.info("Creating Sentry Instance.");
-
-        // Create a Sentry Instance to send Exception to an external Service for bug fixing.
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> Sentry.captureException(e));
 
         // Create a new connection between the Application and the SQL-Server.
         instance.sqlConnector = new SQLConnector(instance.config.getConfiguration().getString("hikari.sql.user"),
@@ -150,7 +151,7 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.RELEASE, "2.0.7");
+            BotWorker.createBot(BotVersion.RELEASE, "2.0.9");
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
@@ -164,30 +165,33 @@ public class Main {
         // Create the Notifier-Manager instance.
         instance.notifier = new Notifier();
 
-        List<ChannelStats> channelStats = instance.sqlConnector.getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats", null);
+        ThreadUtil.createThread(x -> {
+            log.info("Loading Notifier data.");
+            List<ChannelStats> channelStats = instance.sqlConnector.getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats", null);
 
-        // Register all Twitch Channels.
-        instance.notifier.registerTwitchChannel(instance.sqlConnector.getSqlWorker().getAllTwitchNames());
-        instance.notifier.registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).toList());
+            // Register all Twitch Channels.
+            instance.notifier.registerTwitchChannel(instance.sqlConnector.getSqlWorker().getAllTwitchNames());
+            instance.notifier.registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).toList());
 
-        // Register the Event-handler.
-        instance.notifier.registerTwitchEventHandler();
+            // Register the Event-handler.
+            instance.notifier.registerTwitchEventHandler();
 
-        // Register all Twitter Users.
-        instance.notifier.registerTwitterUser(instance.sqlConnector.getSqlWorker().getAllTwitterNames());
-        instance.notifier.registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).toList());
+            // Register all Twitter Users.
+            instance.notifier.registerTwitterUser(instance.sqlConnector.getSqlWorker().getAllTwitterNames());
+            instance.notifier.registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).filter(Objects::nonNull).toList());
 
-        // Register all YouTube channels.
-        instance.notifier.registerYouTubeChannel(instance.sqlConnector.getSqlWorker().getAllYouTubeChannels());
-        instance.notifier.registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).toList());
+            // Register all YouTube channels.
+            instance.notifier.registerYouTubeChannel(instance.sqlConnector.getSqlWorker().getAllYouTubeChannels());
+            instance.notifier.registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).filter(Objects::nonNull).toList());
 
-        // Register all Reddit Subreddits.
-        instance.notifier.registerSubreddit(instance.sqlConnector.getSqlWorker().getAllSubreddits());
-        instance.notifier.registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).toList());
+            // Register all Reddit Subreddits.
+            instance.notifier.registerSubreddit(instance.sqlConnector.getSqlWorker().getAllSubreddits());
+            instance.notifier.registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).filter(Objects::nonNull).toList());
 
-        // Register all Instagram Users.
-        instance.notifier.registerInstagramUser(instance.sqlConnector.getSqlWorker().getAllInstagramUsers());
-        instance.notifier.registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).toList());
+            // Register all Instagram Users.
+            instance.notifier.registerInstagramUser(instance.sqlConnector.getSqlWorker().getAllInstagramUsers());
+            instance.notifier.registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
+        }, t -> Sentry.captureException(t.getCause()));
 
         // Add the Runtime-hooks.
         instance.addHooks();
@@ -271,7 +275,7 @@ public class Main {
      * Method creates a Thread used to create a Checker Thread.
      */
     public void createCheckerThread() {
-        ThreadUtil.createNewThread(x -> {
+        ThreadUtil.createThread(x -> {
 
             if (!lastDay.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 

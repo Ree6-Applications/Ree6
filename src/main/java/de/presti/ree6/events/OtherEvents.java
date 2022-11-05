@@ -329,7 +329,7 @@ public class OtherEvents extends ListenerAdapter {
 
                     ArrayUtil.timeout.add(event.getMember());
 
-                    ThreadUtil.createNewThread(x -> ArrayUtil.timeout.remove(event.getMember()), null, Duration.ofSeconds(30), false, false);
+                    ThreadUtil.createThread(x -> ArrayUtil.timeout.remove(event.getMember()), null, Duration.ofSeconds(30), false, false);
                 }
 
                 AutoRoleHandler.handleChatLevelReward(event.getGuild(), event.getMember());
