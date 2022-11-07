@@ -29,7 +29,7 @@ logging:
   voicechannel:
     join: "%s **joined the Voice Channel** %s"
     move: "%s **moved from the Voice Channel** %s **to** %s**.**"
-    moveMany: "%s **moved through many Voice Channel and is now in** %2"
+    moveMany: "%s **moved through many Voice Channel and is now in** %s"
     leave: "%s **left the Voice Channel** %s"
     leaveInstant: "%s **joined and left the Voice Channel** %s"
     rejoin: "%s **rejoined the Voice Channel** %s"

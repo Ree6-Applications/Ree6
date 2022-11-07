@@ -131,7 +131,12 @@ public class Language {
             log.info("Missing Language-Entry: {}", key);
             return "Missing language resource!";
         }
-        return String.format(resources.get(key), parameter);
+        try {
+            return String.format(resources.get(key), parameter);
+        } catch (Exception e) {
+            log.error("Error while formatting language resource! (" + key + ")", e);
+            return "Error while formatting language resource!";
+        }
     }
 
     /**
