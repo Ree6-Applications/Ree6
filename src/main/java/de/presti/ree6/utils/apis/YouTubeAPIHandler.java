@@ -105,7 +105,7 @@ public class YouTubeAPIHandler {
             playlistItemRequest.setPlaylistId(channel.getContentDetails().getRelatedPlaylists().getUploads());
             playlistItemRequest.setFields(
                     "items(contentDetails/videoId,snippet/title,snippet/description,snippet/thumbnails,snippet/publishedAt,snippet/channelTitle),nextPageToken,pageInfo");
-            playlistItemRequest.setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
+            playlistItemRequest.setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key2"));
 
             String nextToken = "";
             while (nextToken != null) {
@@ -131,7 +131,7 @@ public class YouTubeAPIHandler {
         YouTube.Search.List request = youTube.search().list(Collections.singletonList("snippet"))
                 .setQ(channelName)
                 .setType(Collections.singletonList("channel"))
-                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
+                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key2"));
         SearchListResponse channelListResponse = request.execute();
 
         if (channelListResponse != null &&
@@ -159,7 +159,7 @@ public class YouTubeAPIHandler {
     public Channel getYouTubeChannelByName(String channelName, String listValues) throws IOException {
         YouTube.Channels.List request = youTube.channels()
                 .list(Collections.singletonList(listValues))
-                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
+                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key2"));
         ChannelListResponse channelListResponse = request.setForUsername(channelName).execute();
 
         if (channelListResponse != null &&
@@ -181,7 +181,7 @@ public class YouTubeAPIHandler {
     public Channel getYouTubeChannelById(String channelId, String listValues) throws IOException {
         YouTube.Channels.List request = youTube.channels()
                 .list(Collections.singletonList(listValues))
-                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"));
+                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key2"));
         ChannelListResponse channelListResponse = request.setId(Collections.singletonList(channelId)).execute();
 
         if (channelListResponse != null &&
