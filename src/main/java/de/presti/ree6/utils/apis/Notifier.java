@@ -181,7 +181,7 @@ public class Notifier {
                             if (guildChannel == null) continue;
                             String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.twitterCountName", twitterUser.getFollowersCount());
 
-                            if (guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                            if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
                                 continue;
 
                             if (!guildChannel.getName().equalsIgnoreCase(newName)) {
@@ -247,7 +247,7 @@ public class Notifier {
                     if (channelStat.getTwitchFollowerChannelId() != null) {
                         GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
                         if (guildChannel != null) {
-                            if (guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                            if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
                                 continue;
 
                             guildChannel.getManager().setName(LanguageService.getByGuild(guildChannel.getGuild(), "label.twitchCountName", channelFollowCountUpdateEvent.getFollowCount())).queue();
@@ -508,7 +508,7 @@ public class Notifier {
 
                                 String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount());
                                 if (!guildChannel.getName().equalsIgnoreCase(newName)) {
-                                    if (guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                                    if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
                                         continue;
 
                                     guildChannel.getManager().setName(newName).queue();
@@ -642,7 +642,7 @@ public class Notifier {
                                 if (guildChannel != null &&
                                         !guildChannel.getName().equalsIgnoreCase(newName)) {
 
-                                    if (guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                                    if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
                                         continue;
 
                                     guildChannel.getManager().setName(newName).queue();
@@ -776,7 +776,7 @@ public class Notifier {
 
                                 String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.instagramCountName", user.getFollower_count());
                                 if (!guildChannel.getName().equalsIgnoreCase(newName)) {
-                                    if (guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                                    if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
                                         continue;
 
                                     guildChannel.getManager().setName(newName).queue();
