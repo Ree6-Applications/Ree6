@@ -9,10 +9,10 @@ import lombok.Setter;
 /**
  * File to store Settings information.
  */
-@NoArgsConstructor
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @Table(name = "ReactionRole")
 public class ReactionRole {
 
