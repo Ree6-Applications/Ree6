@@ -32,8 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 import masecla.reddit4j.client.Reddit4J;
 import masecla.reddit4j.objects.Sorting;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
@@ -183,6 +181,9 @@ public class Notifier {
                             if (guildChannel == null) continue;
                             String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.twitterCountName", twitterUser.getFollowersCount());
 
+                            if (guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                                continue;
+
                             if (!guildChannel.getName().equalsIgnoreCase(newName)) {
                                 guildChannel.getManager().setName(newName).queue();
                             }
@@ -246,6 +247,9 @@ public class Notifier {
                     if (channelStat.getTwitchFollowerChannelId() != null) {
                         GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
                         if (guildChannel != null) {
+                            if (guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                                continue;
+
                             guildChannel.getManager().setName(LanguageService.getByGuild(guildChannel.getGuild(), "label.twitchCountName", channelFollowCountUpdateEvent.getFollowCount())).queue();
                         }
                     }
@@ -504,10 +508,7 @@ public class Notifier {
 
                                 String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount());
                                 if (!guildChannel.getName().equalsIgnoreCase(newName)) {
-                                    log.info("YouTube Upload channel name: " + guildChannel.getType().name());
-                                    log.info("YouTube Upload channel class: " + guildChannel.getClass().getSimpleName());
-
-                                    if (guildChannel instanceof AudioChannel && !guildChannel.getGuild().getSelfMember().hasPermission(Permission.VOICE_CONNECT))
+                                    if (guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
                                         continue;
 
                                     guildChannel.getManager().setName(newName).queue();
@@ -640,6 +641,10 @@ public class Notifier {
                                 String newName = "Subreddit Members: " + subredditEntity.getActiveUserCount();
                                 if (guildChannel != null &&
                                         !guildChannel.getName().equalsIgnoreCase(newName)) {
+
+                                    if (guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                                        continue;
+
                                     guildChannel.getManager().setName(newName).queue();
                                 }
                             }
@@ -771,6 +776,9 @@ public class Notifier {
 
                                 String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.instagramCountName", user.getFollower_count());
                                 if (!guildChannel.getName().equalsIgnoreCase(newName)) {
+                                    if (guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                                        continue;
+
                                     guildChannel.getManager().setName(newName).queue();
                                 }
                             }

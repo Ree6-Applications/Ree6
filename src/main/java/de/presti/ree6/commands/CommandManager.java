@@ -97,7 +97,7 @@ public class CommandManager {
 
                     String description = LanguageService.getByLocale(discordLocale, command.getClass().getAnnotation(Command.class).description());
                     if (description.equals("Missing language resource!")) {
-                        description = LanguageService.getByLocale(discordLocale, command.getClass().getAnnotation(Command.class).description());
+                        description = LanguageService.getDefault(command.getClass().getAnnotation(Command.class).description());
                     }
 
                     if (!description.equals("Missing language resource!")) {
@@ -106,9 +106,6 @@ public class CommandManager {
                 }
 
                 String description = LanguageService.getDefault(command.getClass().getAnnotation(Command.class).description());
-                if (description.equals("Missing language resource!")) {
-                    description = LanguageService.getDefault(description);
-                }
 
                 if (!description.equals("Missing language resource!")) {
                     commandData1.setDescription(description);

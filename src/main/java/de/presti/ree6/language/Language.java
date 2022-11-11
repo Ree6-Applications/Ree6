@@ -1,5 +1,9 @@
 package de.presti.ree6.language;
 
+import io.sentry.Sentry;
+import io.sentry.SentryEvent;
+import io.sentry.SentryLevel;
+import io.sentry.protocol.Message;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
@@ -129,12 +133,29 @@ public class Language {
     public String getResource(@NotNull String key, @Nullable Object... parameter) {
         if (!resources.containsKey(key)) {
             log.info("Missing Language-Entry: {}", key);
+
+            SentryEvent sentryEvent = new SentryEvent();
+            Message message = new Message();
+            message.setMessage("Missing Language-Entry: " + key);
+            sentryEvent.setMessage(message);
+            sentryEvent.setLevel(SentryLevel.ERROR);
+            Sentry.captureEvent(sentryEvent);
+
             return "Missing language resource!";
         }
         try {
             return String.format(resources.get(key), parameter);
         } catch (Exception e) {
             log.error("Error while formatting language resource! (" + key + ")", e);
+
+            SentryEvent sentryEvent = new SentryEvent();
+            Message message = new Message();
+            message.setMessage("Error while formatting language resource! (" + key + ")");
+            sentryEvent.setMessage(message);
+            sentryEvent.setThrowable(e.getCause());
+            sentryEvent.setLevel(SentryLevel.FATAL);
+            Sentry.captureEvent(sentryEvent);
+
             return "Error while formatting language resource!";
         }
     }
