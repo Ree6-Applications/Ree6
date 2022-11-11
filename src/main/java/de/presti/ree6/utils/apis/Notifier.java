@@ -22,6 +22,7 @@ import com.google.api.services.youtube.model.PlaylistItemContentDetails;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.*;
@@ -32,7 +33,6 @@ import masecla.reddit4j.client.Reddit4J;
 import masecla.reddit4j.objects.Sorting;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import twitter4j.*;
@@ -167,7 +167,7 @@ public class Notifier {
 
         ThreadUtil.createThread(x -> {
             for (String twitterName : registeredTwitterUsers.keySet()) {
-                List<ChannelStats> channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),"SELECT * FROM ChannelStats WHERE twitterFollowerChannelUsername=:name", Map.of("name", twitterName));
+                List<ChannelStats> channelStats = Main.getInstance().getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats WHERE twitterFollowerChannelUsername=:name", Map.of("name", twitterName));
                 if (!channelStats.isEmpty()) {
                     twitter4j.User twitterUser;
                     try {
@@ -178,14 +178,15 @@ public class Notifier {
 
 
                     for (ChannelStats channelStat : channelStats) {
-                    if (channelStat.getTwitterFollowerChannelUsername() != null) {
-                        GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
-                        String newName = "Twitter Follower: " + twitterUser.getFollowersCount();
-                        if (guildChannel != null &&
-                                !guildChannel.getName().equalsIgnoreCase(newName)) {
-                            guildChannel.getManager().setName(newName).queue();
+                        if (channelStat.getTwitterFollowerChannelUsername() != null) {
+                            GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
+                            if (guildChannel == null) continue;
+                            String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.twitterCountName", twitterUser.getFollowersCount());
+
+                            if (!guildChannel.getName().equalsIgnoreCase(newName)) {
+                                guildChannel.getManager().setName(newName).queue();
+                            }
                         }
-                    }
                     }
                 }
             }
@@ -245,7 +246,7 @@ public class Notifier {
                     if (channelStat.getTwitchFollowerChannelId() != null) {
                         GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
                         if (guildChannel != null) {
-                            guildChannel.getManager().setName("Twitch Follower: " + channelFollowCountUpdateEvent.getFollowCount()).queue();
+                            guildChannel.getManager().setName(LanguageService.getByGuild(guildChannel.getGuild(), "label.twitchCountName", channelFollowCountUpdateEvent.getFollowCount())).queue();
                         }
                     }
                 }
@@ -499,10 +500,15 @@ public class Notifier {
                             if (channelStat.getYoutubeSubscribersChannelId() != null) {
                                 GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getYoutubeSubscribersChannelId());
 
-                                String newName = "YouTube Subscribers: " + (youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount());
-                                if (guildChannel != null &&
-                                        !guildChannel.getName().equalsIgnoreCase(newName)) {
-                                    if (guildChannel instanceof AudioChannel && !guildChannel.getGuild().getSelfMember().hasPermission(Permission.VOICE_CONNECT)) continue;
+                                if (guildChannel == null) continue;
+
+                                String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount());
+                                if (!guildChannel.getName().equalsIgnoreCase(newName)) {
+                                    log.info("YouTube Upload channel name: " + guildChannel.getType().name());
+                                    log.info("YouTube Upload channel class: " + guildChannel.getClass().getSimpleName());
+
+                                    if (guildChannel instanceof AudioChannel && !guildChannel.getGuild().getSelfMember().hasPermission(Permission.VOICE_CONNECT))
+                                        continue;
 
                                     guildChannel.getManager().setName(newName).queue();
                                 }
@@ -724,7 +730,8 @@ public class Notifier {
         if (getRedditClient() == null) return;
 
         if (!Main.getInstance().getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit).isEmpty() ||
-                Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE subredditMemberChannelSubredditName=:name", Map.of("name", subreddit)) != null) return;
+                Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE subredditMemberChannelSubredditName=:name", Map.of("name", subreddit)) != null)
+            return;
 
         if (isSubredditRegistered(subreddit)) registeredSubreddits.remove(subreddit);
     }
@@ -759,9 +766,11 @@ public class Notifier {
                         for (ChannelStats channelStat : channelStats) {
                             if (channelStat.getInstagramFollowerChannelId() != null) {
                                 GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getInstagramFollowerChannelId());
-                                String newName = "Instagram Follower: " + user.getFollower_count();
-                                if (guildChannel != null &&
-                                        !guildChannel.getName().equalsIgnoreCase(newName)) {
+
+                                if (guildChannel == null) continue;
+
+                                String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.instagramCountName", user.getFollower_count());
+                                if (!guildChannel.getName().equalsIgnoreCase(newName)) {
                                     guildChannel.getManager().setName(newName).queue();
                                 }
                             }
@@ -851,7 +860,8 @@ public class Notifier {
         if (getInstagramClient() == null) return;
 
         if (!Main.getInstance().getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).isEmpty() ||
-                Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE instagramFollowerChannelUsername=:name", Map.of("name", username)) != null) return;
+                Main.getInstance().getSqlConnector().getSqlWorker().getEntity(ChannelStats.class, "SELECT * FROM ChannelStats WHERE instagramFollowerChannelUsername=:name", Map.of("name", username)) != null)
+            return;
 
         if (isInstagramUserRegistered(username)) registeredInstagramUsers.remove(username);
     }

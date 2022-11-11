@@ -173,6 +173,8 @@ label:
     finished: "Recording finished!"
   download: "Download"
   error: "Error"
+  game: "Game"
+  viewer: "Viewer"
 message:
   default:
     usage: "Usage {guild_prefix}%s."
