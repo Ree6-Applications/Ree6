@@ -77,7 +77,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
         this.creatorId = member.getId();
         this.voiceChannel = voiceChannel;
         if (voiceChannel.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_CHANGE)) {
-            voiceChannel.getGuild().getSelfMember().modifyNickname(LanguageService.getByGuild(member.getGuild(), "label.recording.name")).reason(LanguageService.getByGuild(member.getGuild(), "message.recording.startReason")).onErrorMap(throwable -> {
+            voiceChannel.getGuild().getSelfMember().modifyNickname(LanguageService.getByGuild(member.getGuild(), "label.recording.name")).reason(LanguageService.getByGuild(member.getGuild(), "message.recording.startReason", member.getUser().getAsTag())).onErrorMap(throwable -> {
                 if (voiceChannel.canTalk()) voiceChannel.sendMessage(LanguageService.getByGuild(member.getGuild(), "message.default.nameChangeFailed")).queue();
                 return null;
             }).queue();

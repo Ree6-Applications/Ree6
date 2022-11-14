@@ -145,7 +145,7 @@ public class Manga implements ICommand {
                 message.editMessage("Manga found!").queue();
                 Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), null);
             } else {
-                message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource( commandEvent.getResource("message.manga.found"))).queue());
+                message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("message.manga.found")).queue());
             }
         } else {
             message.editMessage(commandEvent.getResource("message.manga.error")).queue();
