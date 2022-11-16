@@ -54,7 +54,7 @@ public class SQLSession {
             properties.put("hibernate.connection.username", username);
             properties.put("hibernate.connection.password", password);
             properties.put("hibernate.hikari.maximumPoolSize", String.valueOf(maxPoolSize));
-            properties.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
+            properties.put("hibernate.dialect", Main.getInstance().getSqlConnector().getDatabaseTyp().getHibernateDialect());
             if (BotWorker.getVersion().isDebug()) {
                 properties.put("hibernate.show_sql", true);
                 properties.put("hibernate.format_sql", true);

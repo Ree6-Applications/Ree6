@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -23,6 +25,12 @@ public class Config {
     public void init() {
 
         yamlFile = createConfiguration();
+
+        try {
+            Files.createDirectory(Path.of("storage"));
+        } catch (Exception exception) {
+            log.error("Could not create Storage folder!", exception);
+        }
 
         if (!getFile().exists()) {
             yamlFile.options().copyHeader();
@@ -93,6 +101,9 @@ public class Config {
 
                     if (key.startsWith("mysql"))
                         key = key.replace("mysql", "hikari.sql");
+
+                    if (key.endsWith(".rel"))
+                        key = key.replace(".rel", ".release");
 
                     yamlFile.set(key, entry.getValue());
                 }

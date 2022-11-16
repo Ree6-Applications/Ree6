@@ -92,6 +92,9 @@ public class Config {
                     if (key.startsWith("mysql"))
                         key = key.replace("mysql", "hikari.sql");
 
+                    if (key.endsWith(".rel"))
+                        key = key.replace(".rel", ".release");
+
                     yamlFile.set(key, entry.getValue());
                 }
 
