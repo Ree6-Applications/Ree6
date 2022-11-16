@@ -169,7 +169,7 @@ public class SQLConnector {
                     databaseServerPort,
                     databaseName);
 
-            default -> jdbcUrl = DatabaseTyp.SQLite.getJdbcURL().formatted("storage/Ree6.db");
+            default -> jdbcUrl = DatabaseTyp.SQLite.getJdbcURL().formatted(Main.getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"));
         }
         return jdbcUrl;
     }
