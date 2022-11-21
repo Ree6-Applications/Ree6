@@ -29,7 +29,7 @@ public class Ban implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
-            commandEvent.reply(commandEvent.getResource("message.default.noPermission", "BAN_MEMBERS"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.BAN_MEMBERS.name()), 5);
             return;
         }
 
