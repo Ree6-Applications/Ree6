@@ -142,7 +142,7 @@ public class Manga implements ICommand {
             em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 
             if (commandEvent.isSlashCommand()) {
-                message.editMessage("Manga found!").queue();
+                message.editMessage(commandEvent.getResource("message.manga.found")).queue();
                 Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), null);
             } else {
                 message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("message.manga.found")).queue());
