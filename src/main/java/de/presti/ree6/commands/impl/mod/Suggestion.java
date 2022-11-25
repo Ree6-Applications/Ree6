@@ -35,7 +35,7 @@ public class Suggestion implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.ADMINISTRATOR)) {
-            commandEvent.reply(commandEvent.getResource("message.default.noPermission", "ADMINISTRATOR"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.ADMINISTRATOR.name()), 5);
             return;
         }
 

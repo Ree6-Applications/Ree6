@@ -41,6 +41,11 @@ public class SQLConnector {
     private final int databaseServerPort;
 
     /**
+     * Information about the current Database-Typ (MariaDB, SQLite ...)
+     */
+    private DatabaseTyp databaseTyp;
+
+    /**
      * An Instance of the actual Java SQL Connection.
      */
     private HikariDataSource dataSource;
@@ -70,6 +75,14 @@ public class SQLConnector {
         this.databasePassword = databasePassword;
         this.databaseServerIP = databaseServerIP;
         this.databaseServerPort = databaseServerPort;
+
+        switch (Main.getInstance().getConfig().getConfiguration().getString("hikari.misc.storage").toLowerCase()) {
+            case "mariadb" -> databaseTyp = DatabaseTyp.MariaDB;
+
+            //// case "h2" -> databaseTyp = DatabaseTyp.H2;
+
+            default -> databaseTyp = DatabaseTyp.SQLite;
+        }
 
         sqlWorker = new SQLWorker(this);
 
@@ -151,18 +164,12 @@ public class SQLConnector {
     public String buildConnectionURL() {
         String jdbcUrl;
 
-        switch (Main.getInstance().getConfig().getConfiguration().getString("hikari.misc.storage").toLowerCase()) {
-            case "mariadb" -> {
-                jdbcUrl = "jdbc:mariadb://%s:%s/%s";
-                jdbcUrl = jdbcUrl.formatted(databaseServerIP,
-                        databaseServerPort,
-                        databaseName);
-            }
+        switch (databaseTyp) {
+            case MariaDB -> jdbcUrl = databaseTyp.getJdbcURL().formatted(databaseServerIP,
+                    databaseServerPort,
+                    databaseName);
 
-            default -> {
-                jdbcUrl = "jdbc:sqlite:%s";
-                jdbcUrl = jdbcUrl.formatted("storage/Ree6.db");
-            }
+            default -> jdbcUrl = DatabaseTyp.SQLite.getJdbcURL().formatted(Main.getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"));
         }
         return jdbcUrl;
     }
@@ -205,8 +212,8 @@ public class SQLConnector {
     /**
      * Send an SQL-Query to SQL-Server and get the response.
      *
-     * @param <R> The Class entity.
-     * @param r The class entity.
+     * @param <R>        The Class entity.
+     * @param r          The class entity.
      * @param sqlQuery   the SQL-Query.
      * @param parameters a list with all parameters that should be considered.
      * @return The Result from the SQL-Server.
@@ -289,6 +296,10 @@ public class SQLConnector {
      */
     public SQLWorker getSqlWorker() {
         return sqlWorker;
+    }
+
+    public DatabaseTyp getDatabaseTyp() {
+        return databaseTyp;
     }
 
     /**

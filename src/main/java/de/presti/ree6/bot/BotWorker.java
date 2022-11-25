@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.awt.*;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -63,13 +64,11 @@ public class BotWorker {
      * Create a new {@link net.dv8tion.jda.api.JDA} instance and set the rest information for later use.
      *
      * @param version1 the current Bot Version "typ".
-     * @param build1   the current Bot Version.
      */
-    public static void createBot(BotVersion version1, String build1) {
+    public static void createBot(BotVersion version1) {
         version = version1;
         token = Main.getInstance().getConfig().getConfiguration().getString(getVersion().getTokenPath());
         state = BotState.INIT;
-        build = build1;
 
         shardManager = DefaultShardManagerBuilder
                 .createDefault(token)
@@ -189,6 +188,9 @@ public class BotWorker {
      * @return the Build.
      */
     public static String getBuild() {
+        if (build == null) {
+            build = Objects.requireNonNullElse(BotWorker.class.getPackage().getImplementationVersion(), "2.0.13");
+        }
         return build;
     }
 

@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -24,6 +26,12 @@ public class Config {
 
         yamlFile = createConfiguration();
 
+        try {
+            Files.createDirectory(Path.of("storage"));
+        } catch (Exception exception) {
+            log.error("Could not create Storage folder!", exception);
+        }
+
         if (!getFile().exists()) {
             yamlFile.options().copyHeader();
             yamlFile.options().copyDefaults();
@@ -43,6 +51,7 @@ public class Config {
             yamlFile.addDefault("hikari.sql.host", "localhost");
             yamlFile.addDefault("hikari.sql.port", 3306);
             yamlFile.addDefault("hikari.misc.storage", "sqlite");
+            yamlFile.addDefault("hikari.misc.storageFile", "storage/Ree6.db");
             yamlFile.addDefault("hikari.misc.poolSize", 10);
             yamlFile.addDefault("dagpi.apitoken", "yourdagpixyztokenhere");
             yamlFile.addDefault("sentry.dsn", "yourSentryDSNHere");
@@ -93,6 +102,9 @@ public class Config {
 
                     if (key.startsWith("mysql"))
                         key = key.replace("mysql", "hikari.sql");
+
+                    if (key.endsWith(".rel"))
+                        key = key.replace(".rel", ".release");
 
                     yamlFile.set(key, entry.getValue());
                 }
