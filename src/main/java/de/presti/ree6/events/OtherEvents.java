@@ -381,7 +381,7 @@ public class OtherEvents extends ListenerAdapter {
                     }
                 }
             } else {
-                ReactionRole reactionRole = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ReactionRole(), "SELECT * FROM ReactionRole WHERE gid=:gid AND emoteId:emoteId AND messageId=:messageId", Map.of("gid", event.getGuild().getIdLong(), "emoteId", event.getReaction().getEmoji().asCustom().getIdLong(), "messageId", message.getIdLong()));
+                ReactionRole reactionRole = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ReactionRole(), "SELECT * FROM ReactionRole WHERE gid=:gid AND emoteId=:emoteId AND messageId=:messageId", Map.of("gid", event.getGuild().getIdLong(), "emoteId", event.getReaction().getEmoji().asCustom().getIdLong(), "messageId", message.getIdLong()));
                 if (reactionRole != null) {
                     Role role = event.getGuild().getRoleById(reactionRole.getRoleId());
 
