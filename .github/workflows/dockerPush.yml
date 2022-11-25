@@ -34,9 +34,6 @@ jobs:
         with:
           images: prestischmesti/ree6-bot
 
-      - name: Show current contents of the repo
-        run: ls -la
-
       - name: Build and push Docker image
         uses: docker/build-push-action@175d02bffea74695e96b351069ac938b338802f9
         with:
@@ -44,6 +41,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Show current contents of the repo
-        run: ls -la
