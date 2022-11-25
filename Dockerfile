@@ -3,7 +3,7 @@ MAINTAINER ree6.de
 #
 # Build the image
 #
-FROM maven:3.8.6-eclipse-temurin-17-alpine as build
+FROM maven:3.8.6-eclipse-temurin-17-alpine AS build
 RUN mvn -f pom.xml clean package
 
 #
