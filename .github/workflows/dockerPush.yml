@@ -35,7 +35,9 @@ jobs:
           images: prestischmesti/ree6-bot
 
       - name: Show current contents of the repo
-        run: ls -la
+        run: |
+          echo "ls -la" >> $OUTPUT
+          echo $OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@175d02bffea74695e96b351069ac938b338802f9
