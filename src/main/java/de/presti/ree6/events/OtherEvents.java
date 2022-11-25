@@ -6,6 +6,7 @@ import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.entities.ReactionRole;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
@@ -14,7 +15,9 @@ import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.ImageCreationUtility;
 import de.presti.ree6.utils.others.*;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -26,6 +29,7 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -335,6 +339,48 @@ public class OtherEvents extends ListenerAdapter {
                 AutoRoleHandler.handleChatLevelReward(event.getGuild(), event.getMember());
             }
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+        if (event.getMember() == null) return;
+
+        event.retrieveMessage().queue(message -> {
+            if (message.getAuthor().getId().equalsIgnoreCase(event.getJDA().getSelfUser().getId())) {
+                String messageContent = message.getContentRaw();
+                if (messageContent.startsWith(LanguageService.getByGuild(event.getGuild(), "message.reactions.reactionNeeded", message.getIdLong(), "SPLIT_HERE").split("SPLIT_HERE")[0])) {
+                    if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+                        long emojiId = event.getReaction().getEmoji().asCustom().getIdLong();
+                        String[] split = LanguageService.getByGuild(event.getGuild(), "message.reactions.reactionNeeded", message.getIdLong(), "SPLIT_HERE").split("SPLIT_HERE");
+                        String roleId = messageContent;
+                        for (String entry : split) {
+                            roleId = roleId.replace(entry, "");
+                        }
+                        roleId = roleId.replace(" ", "");
+
+                        if (roleId.isEmpty()) {
+                            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound"), event.getChannel());
+                            return;
+                        }
+
+                        Role role = event.getGuild().getRoleById(roleId);
+
+                        if (role == null) {
+                            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound"), event.getChannel());
+                            return;
+                        }
+
+                        ReactionRole reactionRole = new ReactionRole(event.getGuild().getIdLong(), emojiId, role.getIdLong(), message.getIdLong());
+                        Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(reactionRole);
+
+                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleAdded", role.getAsMention()), event.getChannel());
+                    }
+                }
+            }
+        });
     }
 
     /**
