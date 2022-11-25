@@ -1,7 +1,5 @@
 # syntax=docker/dockerfile:1
 
-MAINTAINER ree6.de
-
 FROM maven:3.8.6-amazoncorretto-17 AS build
 RUN mvn -B package --file pom.xml
 
