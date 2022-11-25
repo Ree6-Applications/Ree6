@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -379,8 +380,34 @@ public class OtherEvents extends ListenerAdapter {
                         Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleAdded", role.getAsMention()), event.getChannel());
                     }
                 }
+            } else {
+                ReactionRole reactionRole = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ReactionRole(), "SELECT * FROM ReactionRole WHERE gid=:gid AND emoteId:emoteId AND messageId=:messageId", Map.of("gid", event.getGuild().getIdLong(), "emoteId", event.getReaction().getEmoji().asCustom().getIdLong(), "messageId", message.getIdLong()));
+                if (reactionRole != null) {
+                    Role role = event.getGuild().getRoleById(reactionRole.getRoleId());
+
+                    if (role != null) {
+                        event.getGuild().addRoleToMember(event.getMember(), role).queue();
+                    }
+                }
             }
         });
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
+        if (event.getMember() == null) return;
+
+        ReactionRole reactionRole = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ReactionRole(), "SELECT * FROM ReactionRole WHERE gid=:gid AND emoteId:emoteId AND messageId=:messageId", Map.of("gid", event.getGuild().getIdLong(), "emoteId", event.getReaction().getEmoji().asCustom().getIdLong(), "messageId", event.getMessageIdLong()));
+        if (reactionRole != null) {
+            Role role = event.getGuild().getRoleById(reactionRole.getRoleId());
+
+            if (role != null) {
+                event.getGuild().removeRoleFromMember(event.getMember(), role).queue();
+            }
+        }
     }
 
     /**
