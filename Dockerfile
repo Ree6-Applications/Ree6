@@ -1,14 +1,10 @@
+# syntax=docker/dockerfile:1
+
 MAINTAINER ree6.de
 
-#
-# Build the image
-#
-FROM maven:3.8.6-eclipse-temurin-17-alpine AS build
-RUN mvn -f pom.xml clean package
+FROM maven:3.8.6-amazoncorretto-17 AS build
+RUN mvn -B package --file pom.xml
 
-#
-# Package the image
-#
 FROM amazoncorretto:17-alpine3.16-full
 ARG JAR_FILE=target/*-jar-with-dependencies.jar
 COPY --from=build ${JAR_FILE} Ree6.jar
