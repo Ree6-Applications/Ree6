@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM maven:3.8.6-amazoncorretto-17
+FROM maven:3.8.6-amazoncorretto-17 AS build
 CMD ["ls", "-la"]
 RUN mvn -f pom.xml clean package
 
