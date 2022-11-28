@@ -33,10 +33,8 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Main Application class, used to store Instances of System Relevant classes.
@@ -151,7 +149,18 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            BotWorker.createBot(BotVersion.DEVELOPMENT_BUILD);
+            Stream<String> stringStream = Arrays.stream(args);
+
+            if (stringStream.anyMatch(s -> s.equalsIgnoreCase("--runDEV"))) {
+                BotWorker.createBot(BotVersion.DEVELOPMENT_BUILD);
+            } else if (stringStream.anyMatch(s -> s.equalsIgnoreCase("--runPROD"))) {
+                BotWorker.createBot(BotVersion.RELEASE);
+            } else if (stringStream.anyMatch(s -> s.equalsIgnoreCase("--runBETA"))) {
+                BotWorker.createBot(BotVersion.BETA_BUILD);
+            } else {
+                BotWorker.createBot(BotVersion.RELEASE);
+            }
+
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
         } catch (Exception ex) {
