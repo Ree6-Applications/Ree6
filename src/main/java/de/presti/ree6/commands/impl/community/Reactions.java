@@ -43,7 +43,10 @@ public class Reactions implements ICommand {
                         return;
                     }
 
-                    commandEvent.getChannel().retrieveMessageById(message.getAsLong()).queue(msg -> {
+                    commandEvent.getChannel().retrieveMessageById(message.getAsLong()).onErrorFlatMap(x -> {
+                       commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
+                        return null;
+                    }).queue(msg -> {
                         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
                         messageCreateBuilder.setContent(commandEvent.getResource("message.reactions.reactionNeeded", role.getAsRole().getAsMention()));
                         msg.reply(messageCreateBuilder.build()).queue();
@@ -75,7 +78,7 @@ public class Reactions implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("reactions", "command.description.reactions")
                 .addOption(OptionType.STRING, "action", "The current action that should be performed.", true)
-                .addOption(OptionType.NUMBER, "message", "The ID of the Message.", true)
+                .addOption(OptionType.INTEGER, "message", "The ID of the Message.", true)
                 .addOption(OptionType.ROLE, "role", "The Role to be given.", true);
     }
 
