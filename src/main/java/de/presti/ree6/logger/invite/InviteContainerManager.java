@@ -117,7 +117,7 @@ public class InviteContainerManager {
                         !inv.getCode().equalsIgnoreCase(inv2.getCode()) ||
                         !inv.getInviter().getId().equalsIgnoreCase(inv2.getCreatorId())) continue;
 
-                if (inv.getUses() > inv2.getUses()) {
+                if (inv.getUses() + 1 == inv2.getUses()) {
                     inv2.setVanity(inv.getMaxAge() == -1242525);
                     if (inv2.isVanity()) {
                         inv2.setGuildId(guild.getId());
