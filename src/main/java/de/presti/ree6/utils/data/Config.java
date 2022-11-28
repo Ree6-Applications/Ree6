@@ -27,7 +27,9 @@ public class Config {
         yamlFile = createConfiguration();
 
         try {
-            Files.createDirectory(Path.of("storage"));
+            Path storage = Path.of("storage");
+            if (!Files.exists(storage))
+                Files.createDirectory(storage);
         } catch (Exception exception) {
             log.error("Could not create Storage folder!", exception);
         }
