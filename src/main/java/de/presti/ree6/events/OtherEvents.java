@@ -355,19 +355,13 @@ public class OtherEvents extends ListenerAdapter {
                 if (messageContent.startsWith(LanguageService.getByGuild(event.getGuild(), "message.reactions.reactionNeeded", message.getIdLong(), "SPLIT_HERE").split("SPLIT_HERE")[0])) {
                     if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
                         long emojiId = event.getReaction().getEmoji().asCustom().getIdLong();
-                        String[] split = LanguageService.getByGuild(event.getGuild(), "message.reactions.reactionNeeded", message.getIdLong(), "SPLIT_HERE").split("SPLIT_HERE");
-                        String roleId = messageContent;
-                        for (String entry : split) {
-                            roleId = roleId.replace(entry, "");
-                        }
-                        roleId = roleId.replace(" ", "");
 
-                        if (roleId.isEmpty()) {
+                        if (message.getMentions().getRoles().isEmpty()) {
                             Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound"), event.getChannel());
                             return;
                         }
 
-                        Role role = event.getGuild().getRoleById(roleId);
+                        Role role = message.getMentions().getRoles().get(0);
 
                         if (role == null) {
                             Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound"), event.getChannel());
@@ -377,7 +371,7 @@ public class OtherEvents extends ListenerAdapter {
                         ReactionRole reactionRole = new ReactionRole(event.getGuild().getIdLong(), emojiId, role.getIdLong(), message.getIdLong());
                         Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(reactionRole);
 
-                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleAdded", role.getAsMention()), event.getChannel());
+                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleAssign", role.getAsMention()), event.getChannel());
                     }
                 }
             } else {
@@ -386,7 +380,11 @@ public class OtherEvents extends ListenerAdapter {
                     Role role = event.getGuild().getRoleById(reactionRole.getRoleId());
 
                     if (role != null) {
-                        event.getGuild().addRoleToMember(event.getMember(), role).queue();
+                        if (!event.getMember().getRoles().contains(role)) {
+                            event.getGuild().addRoleToMember(event.getMember(), role).queue();
+                        } else {
+                            event.getGuild().removeRoleFromMember(event.getMember(), role).queue();
+                        }
                     }
                 }
             }

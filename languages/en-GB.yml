@@ -431,6 +431,13 @@ message:
     stopReason: "Recording stopped."
     stopped: "Your Audio has been converted and is now available for download!"
     error: "Something went wrong while converting your audio!\nReason: %s"
+  reactions:
+    roleAssign: "You have assigned the Role %s to the Reaction!"
+    reactionNeeded: "You need to react to the message with the reaction you want to assign %s to!"
+    roleNotFound: "The Role you want to assign to the reaction was not found!"
+    removed: "Successfully removed the Reaction-Role for the Role %s!"
+    roleAdded: "You have received the Role %s!"
+    roleRemoved: "You have lost the Role %s!"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"

@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.util.Map;
@@ -42,7 +43,11 @@ public class Reactions implements ICommand {
                         return;
                     }
 
-                    commandEvent.reply(commandEvent.getResource("message.reactions.reactionNeeded", message.getAsString(), role.getAsString()));
+                    commandEvent.getChannel().retrieveMessageById(message.getAsLong()).queue(msg -> {
+                        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+                        messageCreateBuilder.setContent(commandEvent.getResource("message.reactions.reactionNeeded", role.getAsRole().getAsMention()));
+                        msg.reply(messageCreateBuilder.build()).queue();
+                    });
                 }
 
                 case "remove" -> {
@@ -53,7 +58,7 @@ public class Reactions implements ICommand {
 
                     ReactionRole reactionRole = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ReactionRole(), "SELECT * FROM ReactionRole WHERE gid=:gid AND roleId=:roleId AND messageId=:messageId", Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsLong(), "messageId", message.getAsLong()));
                     Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(reactionRole);
-                    commandEvent.reply(commandEvent.getResource("message.reactions.removed", message.getAsLong()), 5);
+                    commandEvent.reply(commandEvent.getResource("message.reactions.removed", role.getAsRole().getIdLong()), 5);
                 }
 
                 default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
