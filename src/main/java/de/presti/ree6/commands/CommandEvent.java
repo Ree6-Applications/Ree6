@@ -203,10 +203,32 @@ public class CommandEvent {
      *
      * @return the Arguments.
      */
+
     public String[] getArguments() {
+        return getArguments(false);
+    }
+
+    /**
+     * Get the Arguments associated with the Event.
+     *
+     * @param parseFromSlash if the Arguments should be parsed from the SlashCommandInteractionEvent.
+     *
+     * @return the Arguments.
+     */
+    public String[] getArguments(boolean parseFromSlash) {
         if (arguments == null) {
             arguments = new String[0];
         }
+
+        if (isSlashCommand() && parseFromSlash) {
+            getSlashCommandInteractionEvent().getOptions().forEach(option -> {
+                String[] newArguments = new String[arguments.length + 1];
+                System.arraycopy(arguments, 0, newArguments, 0, arguments.length);
+                newArguments[newArguments.length - 1] = option.getAsString();
+                arguments = newArguments;
+            });
+        }
+
         return arguments;
     }
 
