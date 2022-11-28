@@ -17,10 +17,12 @@ import de.presti.ree6.utils.others.*;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -40,6 +42,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Event Handler for no categorized Events.
@@ -87,7 +90,7 @@ public class OtherEvents extends ListenerAdapter {
             if (channelStats.getMemberStatsChannelId() != null) {
                 GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
                 if (guildChannel != null) {
-                    guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(),"label.overallMembers") + ": " + event.getGuild().getMemberCount()).queue();
+                    guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.overallMembers") + ": " + event.getGuild().getMemberCount()).queue();
                 }
             }
 
@@ -95,14 +98,14 @@ public class OtherEvents extends ListenerAdapter {
                 if (channelStats.getRealMemberStatsChannelId() != null) {
                     GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getRealMemberStatsChannelId());
                     if (guildChannel != null) {
-                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(),"label.realMembers") + ": " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
+                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.realMembers") + ": " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
                     }
                 }
 
                 if (channelStats.getBotMemberStatsChannelId() != null) {
                     GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getBotMemberStatsChannelId());
                     if (guildChannel != null) {
-                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(),"label.botMembers") + ": "+ members.stream().filter(member -> member.getUser().isBot()).count()).queue();
+                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.botMembers") + ": " + members.stream().filter(member -> member.getUser().isBot()).count()).queue();
                     }
                 }
             });
@@ -150,7 +153,7 @@ public class OtherEvents extends ListenerAdapter {
             if (channelStats.getMemberStatsChannelId() != null) {
                 GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
                 if (guildChannel != null) {
-                    guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(),"label.overallMembers") + ": " + event.getGuild().getMemberCount()).queue();
+                    guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.overallMembers") + ": " + event.getGuild().getMemberCount()).queue();
                 }
             }
 
@@ -158,14 +161,14 @@ public class OtherEvents extends ListenerAdapter {
                 if (channelStats.getRealMemberStatsChannelId() != null) {
                     GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getRealMemberStatsChannelId());
                     if (guildChannel != null) {
-                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(),"label.realMembers") + ": " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
+                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.realMembers") + ": " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
                     }
                 }
 
                 if (channelStats.getBotMemberStatsChannelId() != null) {
                     GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getBotMemberStatsChannelId());
                     if (guildChannel != null) {
-                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(),"label.botMembers") + ": " + members.stream().filter(member -> member.getUser().isBot()).count()).queue();
+                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.botMembers") + ": " + members.stream().filter(member -> member.getUser().isBot()).count()).queue();
                     }
                 }
             });
@@ -326,7 +329,7 @@ public class OtherEvents extends ListenerAdapter {
 
                     if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && Main.getInstance().getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) {
                         Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(),
-                                "message.levelUp", userLevel.getLevel(), LanguageService.getByGuild(event.getGuild(),"label.chat")
+                                "message.levelUp", userLevel.getLevel(), LanguageService.getByGuild(event.getGuild(), "label.chat")
                                 , event.getMember().getAsMention()), event.getChannel());
                     }
 
@@ -350,41 +353,52 @@ public class OtherEvents extends ListenerAdapter {
         if (event.getMember() == null) return;
 
         event.retrieveMessage().queue(message -> {
+
+            String reactionCode = event.getReaction().getEmoji().getAsReactionCode();
+
+            long emojiId;
+            if (event.getReaction().getEmoji().getType() == Emoji.Type.CUSTOM) {
+                emojiId = Long.parseLong(reactionCode.split(":")[1]);
+            } else {
+                emojiId = reactionCode.replace(":", "").hashCode();
+            }
+
             if (message.getAuthor().getId().equalsIgnoreCase(event.getJDA().getSelfUser().getId())) {
                 String messageContent = message.getContentRaw();
-                if (messageContent.startsWith(LanguageService.getByGuild(event.getGuild(), "message.reactions.reactionNeeded", message.getIdLong(), "SPLIT_HERE").split("SPLIT_HERE")[0])) {
-                    if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-                        long emojiId = event.getReaction().getEmoji().asCustom().getIdLong();
 
+                if (messageContent.startsWith(LanguageService.getByGuild(event.getGuild(), "message.reactions.reactionNeeded", "SPLIT_HERE").split("SPLIT_HERE")[0])) {
+                    if (event.getMember().hasPermission(Permission.ADMINISTRATOR) && message.getMessageReference() != null) {
                         if (message.getMentions().getRoles().isEmpty()) {
-                            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound"), event.getChannel());
+                            message.editMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound")).queue();
                             return;
                         }
 
                         Role role = message.getMentions().getRoles().get(0);
 
                         if (role == null) {
-                            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound"), event.getChannel());
+                            message.editMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound")).queue();
                             return;
                         }
 
-                        ReactionRole reactionRole = new ReactionRole(event.getGuild().getIdLong(), emojiId, role.getIdLong(), message.getIdLong());
+                        ReactionRole reactionRole = new ReactionRole(event.getGuild().getIdLong(), emojiId, role.getIdLong(), message.getMessageReference().getMessageIdLong());
                         Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(reactionRole);
 
-                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleAssign", role.getAsMention()), event.getChannel());
+                        if (message.getMessageReference().getMessage() != null) {
+                            message.getMessageReference().getMessage().addReaction(event.getEmoji()).queue();
+                        }
+
+                        message.editMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleAssign", role.getAsMention()))
+                                .delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
                     }
                 }
             } else {
-                ReactionRole reactionRole = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ReactionRole(), "SELECT * FROM ReactionRole WHERE gid=:gid AND emoteId=:emoteId AND messageId=:messageId", Map.of("gid", event.getGuild().getIdLong(), "emoteId", event.getReaction().getEmoji().asCustom().getIdLong(), "messageId", message.getIdLong()));
+                ReactionRole reactionRole = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ReactionRole(), "SELECT * FROM ReactionRole WHERE gid=:gid AND emoteId=:emoteId AND messageId=:messageId", Map.of("gid", event.getGuild().getIdLong(), "emoteId", emojiId, "messageId", message.getIdLong()));
+
                 if (reactionRole != null) {
                     Role role = event.getGuild().getRoleById(reactionRole.getRoleId());
 
                     if (role != null) {
-                        if (!event.getMember().getRoles().contains(role)) {
-                            event.getGuild().addRoleToMember(event.getMember(), role).queue();
-                        } else {
-                            event.getGuild().removeRoleFromMember(event.getMember(), role).queue();
-                        }
+                        event.getGuild().addRoleToMember(event.getMember(), role).queue();
                     }
                 }
             }
@@ -398,7 +412,19 @@ public class OtherEvents extends ListenerAdapter {
     public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
         if (event.getMember() == null) return;
 
-        ReactionRole reactionRole = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ReactionRole(), "SELECT * FROM ReactionRole WHERE gid=:gid AND emoteId:emoteId AND messageId=:messageId", Map.of("gid", event.getGuild().getIdLong(), "emoteId", event.getReaction().getEmoji().asCustom().getIdLong(), "messageId", event.getMessageIdLong()));
+        String reactionCode = event.getReaction().getEmoji().getAsReactionCode();
+
+        long emojiId;
+        if (event.getReaction().getEmoji().getType() == Emoji.Type.CUSTOM) {
+            emojiId = Long.parseLong(reactionCode.split(":")[1]);
+        } else {
+            emojiId = reactionCode.replace(":", "").hashCode();
+        }
+
+        ReactionRole reactionRole = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
+                "SELECT * FROM ReactionRole WHERE gid=:gid AND emoteId=:emoteId AND messageId=:messageId",
+                Map.of("gid", event.getGuild().getIdLong(), "emoteId", emojiId, "messageId", event.getMessageIdLong()));
+
         if (reactionRole != null) {
             Role role = event.getGuild().getRoleById(reactionRole.getRoleId());
 

@@ -43,25 +43,34 @@ public class Reactions implements ICommand {
                         return;
                     }
 
-                    commandEvent.getChannel().retrieveMessageById(message.getAsLong()).onErrorFlatMap(x -> {
+                    commandEvent.getChannel().retrieveMessageById(message.getAsString()).onErrorMap(x -> {
                        commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
                         return null;
                     }).queue(msg -> {
+                        if (msg == null) return;
                         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
                         messageCreateBuilder.setContent(commandEvent.getResource("message.reactions.reactionNeeded", role.getAsRole().getAsMention()));
                         msg.reply(messageCreateBuilder.build()).queue();
                     });
+
+                    commandEvent.reply(commandEvent.getResource("message.default.checkBelow"));
                 }
 
                 case "remove" -> {
-                    if (message == null) {
+                    if (message == null || role == null) {
                         commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
                         return;
                     }
 
-                    ReactionRole reactionRole = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ReactionRole(), "SELECT * FROM ReactionRole WHERE gid=:gid AND roleId=:roleId AND messageId=:messageId", Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsLong(), "messageId", message.getAsLong()));
-                    Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(reactionRole);
-                    commandEvent.reply(commandEvent.getResource("message.reactions.removed", role.getAsRole().getIdLong()), 5);
+                    ReactionRole reactionRole = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
+                            "SELECT * FROM ReactionRole WHERE gid=:gid AND roleId=:roleId AND messageId=:messageId",
+                            Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsRole().getIdLong(), "messageId", Long.parseLong(message.getAsString())));
+
+                    if (reactionRole != null) {
+                        Main.getInstance().getSqlConnector().getSqlWorker().deleteEntity(reactionRole);
+
+                        commandEvent.reply(commandEvent.getResource("message.reactions.removed", role.getAsRole().getIdLong()), 5);
+                    }
                 }
 
                 default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
@@ -78,7 +87,7 @@ public class Reactions implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("reactions", "command.description.reactions")
                 .addOption(OptionType.STRING, "action", "The current action that should be performed.", true)
-                .addOption(OptionType.INTEGER, "message", "The ID of the Message.", true)
+                .addOption(OptionType.STRING, "message", "The ID of the Message.", true)
                 .addOption(OptionType.ROLE, "role", "The Role to be given.", true);
     }
 
