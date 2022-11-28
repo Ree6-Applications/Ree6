@@ -90,6 +90,10 @@ public class CommandManager {
                 commandData = new CommandDataImpl(command.getClass().getAnnotation(Command.class).name(), command.getClass().getAnnotation(Command.class).description());
             }
 
+            if (commandAnnotation.category() == Category.NSFW) {
+                commandData.setNSFW(true);
+            }
+
             if (commandData instanceof CommandDataImpl commandData1) {
 
                 for (DiscordLocale discordLocale : DiscordLocale.values()) {

@@ -52,7 +52,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.22</version>
+            <version>5.0.0-beta.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.walkyst</groupId>
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
             <artifactId>Simple-Yaml</artifactId>
-            <version>1.8.2</version>
+            <version>1.8.3</version>
         </dependency>
 
         <!-- API Wrappers -->
