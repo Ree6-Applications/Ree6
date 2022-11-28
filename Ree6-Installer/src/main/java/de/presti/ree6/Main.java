@@ -1,19 +1,46 @@
 package de.presti.ree6;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Iterator;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class Main {
 
     private static final Config config = new Config();
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, MalformedURLException, URISyntaxException {
+        if (Files.exists(Paths.get("config.yml"))) {
+            print("We found a config.yml!\nDo you want to update Ree6 or fully configure it? (update/configure)");
+
+            String input = System.console().readLine();
+            switch (input) {
+                case "update" -> {
+                    print("Updating Ree6...");
+                    update();
+                }
+                case "configure" -> {
+                    print("Configuring Ree6...");
+                    config();
+                }
+                default -> {
+                    print("Invalid input!");
+                    System.exit(0);
+                }
+            }
+        } else {
+            config();
+        }
+    }
+
+    public static void config() throws InterruptedException {
         config.init();
 
         try {
@@ -22,7 +49,7 @@ public class Main {
             exception.printStackTrace();
             print("Error, will restart!");
             Thread.sleep(1000);
-            main(args);
+            config();
         }
     }
 
@@ -42,7 +69,7 @@ public class Main {
         } catch (IOException | InterruptedException ignore) {}
     }
 
-    public static void setupStepOne() throws InterruptedException, IOException {
+    public static void setupStepOne() throws InterruptedException, IOException, URISyntaxException {
         clear();
         print("Welcome to the setup System of Ree6!\nLets start by configuration the Config!\nPlease select one of these Database Types: MariaDB, SQLLite, H2");
 
@@ -123,24 +150,29 @@ public class Main {
         config.getConfiguration().save();
 
         print("Great, we finished setting up everything!\nGive me a second to download the newest JAR!");
+    }
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonNode = mapper.readTree(new URL("https://api.github.com/repos/Ree6-Applications/Ree6/releases"));
-        JsonNode latestReleaseNode = jsonNode.get(0);
-        JsonNode assetsNode = latestReleaseNode.get("assets");
+    public static void update() throws MalformedURLException, URISyntaxException {
+        JSONArray jsonObject = new JSONArray(RequestUtility.request("https://api.github.com/repos/Ree6-Applications/Ree6/releases"));
 
-        String tagName = latestReleaseNode.get("tag_name").asText();
+        JSONObject jsonObject1 = jsonObject.getJSONObject(0);
 
-        for (Iterator<JsonNode> it = assetsNode.elements(); it.hasNext(); ) {
-            JsonNode asset = it.next();
-            if (asset.get("name").asText().contains("-jar-with-dependencies.jar")) {
-                String downloadUrl = asset.get("browser_download_url").asText();
+        JSONArray assets = jsonObject1.getJSONArray("assets");
+
+        String tagName = jsonObject1.getString("tag_name");
+
+        for (Object o : assets) {
+            JSONObject asset = (JSONObject) o;
+            if (asset.getString("name").contains("-jar-with-dependencies.jar")) {
+                String downloadUrl = asset.getString("browser_download_url");
 
                 try {
-                    IOUtils.copy(new URL(downloadUrl), new File("Ree6.jar"));
+                    InputStream in = new URL(downloadUrl).openStream();
+                    Files.copy(in, Paths.get("Ree6.jar"), StandardCopyOption.REPLACE_EXISTING);
                     print("We downloaded the newest Ree6 version! (" + tagName + ")");
                 } catch (Exception exception) {
                     print("We could not download the newest Ree6 version!\nManually download it over " + downloadUrl);
+                    exception.printStackTrace();
                 }
                 break;
             }

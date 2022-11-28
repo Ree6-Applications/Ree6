@@ -1,0 +1,49 @@
+package de.presti.ree6;
+
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class RequestUtility {
+
+    /**
+     * HTTP Client used to send the Requests.
+     */
+    private static final HttpClient CLIENT = HttpClient.newHttpClient();
+
+    /**
+     * User-Agent for all the Requests.
+     */
+    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.52 Safari/537.36 Ree6/1.0-INSTALLER";
+
+    /**
+     * Send a Request.
+     *
+     * @param url the Request-Url.
+     * @return an {@link String}.
+     */
+    public static String request(String url) throws MalformedURLException, URISyntaxException {
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(new URL(url).toURI())
+                .header("User-Agent", USER_AGENT)
+                .GET()
+                .build();
+
+        try {
+            HttpResponse<String> httpResponse = CLIENT.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            if (httpResponse.statusCode() == 200) {
+                return httpResponse.body();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return "{}";
+    }
+}
