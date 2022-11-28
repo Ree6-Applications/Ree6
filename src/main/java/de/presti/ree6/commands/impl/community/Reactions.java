@@ -33,8 +33,8 @@ public class Reactions implements ICommand {
 
         if (commandEvent.isSlashCommand()) {
             OptionMapping action = commandEvent.getSlashCommandInteractionEvent().getOption("action");
-            OptionMapping message = commandEvent.getSlashCommandInteractionEvent().getOption("messageId");
-            OptionMapping role = commandEvent.getSlashCommandInteractionEvent().getOption("roleId");
+            OptionMapping message = commandEvent.getSlashCommandInteractionEvent().getOption("message");
+            OptionMapping role = commandEvent.getSlashCommandInteractionEvent().getOption("role");
 
             switch (action.getAsString()) {
                 case "add" -> {
@@ -64,7 +64,7 @@ public class Reactions implements ICommand {
                 default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
             }
         } else {
-            commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported", commandEvent.getArguments()[0], commandEvent.getArguments()[1]));
+            commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
         }
     }
 
@@ -75,8 +75,8 @@ public class Reactions implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("reactions", "command.description.reactions")
                 .addOption(OptionType.STRING, "action", "The current action that should be performed.", true)
-                .addOption(OptionType.NUMBER, "messageId", "The ID of the Message.", true)
-                .addOption(OptionType.ROLE, "roleId", "The Role to be given.", true);
+                .addOption(OptionType.NUMBER, "message", "The ID of the Message.", true)
+                .addOption(OptionType.ROLE, "role", "The Role to be given.", true);
     }
 
     /**

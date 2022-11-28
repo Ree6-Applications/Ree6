@@ -522,6 +522,7 @@ command:
     nsfw: "Shows a random NSFW Image."
     rule34: "Shows a random Rule34 Image."
     rule34_slash: "Shows not safe for work Images from a specific Website."
+    reactions: "Assign roles to reactions on a message!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
