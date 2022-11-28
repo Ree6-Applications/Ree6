@@ -149,13 +149,13 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            Stream<String> stringStream = Arrays.stream(args);
+            List<String> argList = Arrays.stream(args).map(String::toLowerCase).toList();
 
-            if (stringStream.anyMatch(s -> s.equalsIgnoreCase("--runDEV"))) {
+            if (argList.contains("--dev")) {
                 BotWorker.createBot(BotVersion.DEVELOPMENT_BUILD);
-            } else if (stringStream.anyMatch(s -> s.equalsIgnoreCase("--runPROD"))) {
+            } else if (argList.contains("--prod")) {
                 BotWorker.createBot(BotVersion.RELEASE);
-            } else if (stringStream.anyMatch(s -> s.equalsIgnoreCase("--runBETA"))) {
+            } else if (argList.contains("--beta")) {
                 BotWorker.createBot(BotVersion.BETA_BUILD);
             } else {
                 BotWorker.createBot(BotVersion.RELEASE);
