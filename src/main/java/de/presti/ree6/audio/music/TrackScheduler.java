@@ -331,6 +331,10 @@ public class TrackScheduler extends AudioEventAdapter {
                 nextTrack(getChannel());
             }
         } else {
+            if (endReason == AudioTrackEndReason.CLEANUP) {
+                return;
+            }
+
             // Check if a new song shoud be played or not.
             if (endReason.mayStartNext) {
                 // check if there was an error on the current song if so inform user.
