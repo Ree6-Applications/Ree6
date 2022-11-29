@@ -330,25 +330,6 @@ public class Main {
 
                 lastDay = new SimpleDateFormat("dd").format(new Date());
             }
-
-            for (Guild guild : BotWorker.getShardManager().getGuilds().stream().filter(guild -> guild.getAudioManager().getSendingHandler() != null
-                    && guild.getSelfMember().getVoiceState() != null &&
-                    guild.getSelfMember().getVoiceState().inAudioChannel()).toList()) {
-                GuildMusicManager guildMusicManager = musicWorker.getGuildAudioPlayer(guild);
-
-                try {
-                    AudioPlayerSendHandler playerSendHandler = (AudioPlayerSendHandler) guild.getAudioManager().getSendingHandler();
-
-                    if (guild.getSelfMember().getVoiceState() != null && guild.getSelfMember().getVoiceState().inAudioChannel() &&
-                            (playerSendHandler == null || !playerSendHandler.isMusicPlaying(guild))) {
-                        guildMusicManager.getScheduler().stopAll(null);
-                    }
-
-                } catch (Exception ex) {
-                    guildMusicManager.getScheduler().stopAll(null);
-                    log.error("Error accessing the AudioPlayer.", ex);
-                }
-            }
         }, null, Duration.ofMinutes(1), true, false);
     }
 
