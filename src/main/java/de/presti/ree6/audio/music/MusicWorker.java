@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Wrapper class that handles most Music related stuff.
