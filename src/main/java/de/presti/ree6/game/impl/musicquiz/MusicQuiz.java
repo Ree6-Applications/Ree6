@@ -198,6 +198,7 @@ public class MusicQuiz implements IGame {
 
         // TODO:: play the Audio with the 10 seconds timer.
         // TODO:: also add a way to detect when those 10 seconds end and then select the next song.
+        //// Main.getInstance().getMusicWorker().getGuildAudioPlayer(session.getGuild()).getPlayer().addListener();
     }
 
     public MusicQuizPlayer getParticipantByUserId(long userId) {
