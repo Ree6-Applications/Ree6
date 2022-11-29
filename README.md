@@ -9,7 +9,7 @@
   [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6)
 </div>
  
-# ⚠️ THIS BRANCH IS LTS!⚠️<br> NO NEW FEATURES, ONLY FIXES!
+# ⚠️ THIS BRANCH IS NO LONGER SUPPORTET!⚠️<br> FOR YOUR OWN SAFETY USE v2!
 
 # What is Ree6?
 Ree6 is an all-in-one Discord Bot maintained by Presti, which started as an alternative of Mee6 to provide a lot of features that are hidden behind a paywall or subscription.
@@ -35,11 +35,3 @@ for monitoring and profiling Java and .NET applications.
 YourKit is the creator of <a href="https://www.yourkit.com/java/profiler/">YourKit Java Profiler</a>,
 <a href="https://www.yourkit.com/.net/profiler/">YourKit .NET Profiler</a>,
 and <a href="https://www.yourkit.com/youmonitor/">YourKit YouMonitor</a>.
-
-# Used APIs.
-- [JDA](https://github.com/DV8FromTheWorld/JDA)
-- [LavaPlayer](https://github.com/sedmelluq/lavaplayer)
-- [Spotify Web API](https://github.com/thelinmichael/spotify-web-api-java)
-- [Youtube Data API v3](https://github.com/googleapis/google-api-java-client-services/tree/master/clients/google-api-services-youtube/v3)
-- [Twitch4J](https://github.com/twitch4j/twitch4j)
-- [Twitter4J](https://github.com/Twitter4J/Twitter4J)
