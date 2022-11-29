@@ -1,5 +1,9 @@
 package de.presti.ree6.game.impl.musicquiz;
 
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEvent;
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
+import com.sedmelluq.discord.lavaplayer.player.event.TrackEndEvent;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.game.core.GameSession;
 import de.presti.ree6.game.core.base.GameInfo;
@@ -45,6 +49,19 @@ public class MusicQuiz implements IGame {
      */
     MusicQuizEntry currentEntry;
 
+    AudioEventListener audioEventListener = new AudioEventListener() {
+        @Override
+        public void onEvent(AudioEvent event) {
+            if (event instanceof TrackEndEvent) {
+                if (((TrackEndEvent) event).endReason == AudioTrackEndReason.REPLACED) {
+                    return;
+                }
+
+                selectNextSong();
+            }
+        }
+    };
+
     /**
      * Constructor.
      * @param gameSession The game session.
@@ -75,6 +92,8 @@ public class MusicQuiz implements IGame {
         messageCreateBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame")).asDisabled(),
                 Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame")).asEnabled());
         session.getChannel().sendMessage(messageCreateBuilder.build()).queue(message -> menuMessage = message);
+
+        Main.getInstance().getMusicWorker().getGuildAudioPlayer(session.getGuild()).getPlayer().addListener(audioEventListener);
     }
 
     /**
@@ -181,10 +200,14 @@ public class MusicQuiz implements IGame {
      */
     @Override
     public void stopGame() {
-
+        Main.getInstance().getMusicWorker().getGuildAudioPlayer(session.getGuild()).getPlayer().removeListener(audioEventListener);
     }
 
     public void selectNextSong() {
+        if (session.getGameState() != GameState.STARTED) {
+            return;
+        }
+
         currentEntry = MusicQuizUtil.getRandomEntry();
 
         MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
@@ -198,7 +221,6 @@ public class MusicQuiz implements IGame {
 
         // TODO:: play the Audio with the 10 seconds timer.
         // TODO:: also add a way to detect when those 10 seconds end and then select the next song.
-        //// Main.getInstance().getMusicWorker().getGuildAudioPlayer(session.getGuild()).getPlayer().addListener();
     }
 
     public MusicQuizPlayer getParticipantByUserId(long userId) {
