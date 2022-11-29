@@ -41,6 +41,12 @@ public class GameSession {
     private final Guild guild;
 
     /**
+     * The Creator of the Game.
+     */
+    @Getter
+    private User host;
+
+    /**
      * The Participants of the Game.
      */
     ArrayList<User> participants;
@@ -54,7 +60,7 @@ public class GameSession {
      * @param participants        The Participants of the Game.
      */
     public GameSession(String gameIdentifier, Guild guild, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
-        this(gameIdentifier, guild, null, messageChannelUnion, participants);
+        this(gameIdentifier, guild, null, null, messageChannelUnion, participants);
     }
 
     /**
@@ -62,13 +68,15 @@ public class GameSession {
      *
      * @param gameIdentifier      The Identifier of the GameSession.
      * @param guild               The Guild in which this Session originated.
+     * @param user                The Creator of the Game.
      * @param game                The Game class.
      * @param messageChannelUnion The Channel where the Game is played.
      * @param participants        The Participants of the Game.
      */
-    public GameSession(String gameIdentifier, Guild guild, IGame game, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
+    public GameSession(String gameIdentifier, Guild guild, User user, IGame game, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
         this.gameIdentifier = gameIdentifier;
         this.guild = guild;
+        this.host = user;
         this.game = game;
         this.channel = messageChannelUnion;
         this.participants = participants;

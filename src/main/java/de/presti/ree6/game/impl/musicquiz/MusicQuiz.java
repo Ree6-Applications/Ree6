@@ -1,6 +1,5 @@
 package de.presti.ree6.game.impl.musicquiz;
 
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEvent;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
 import com.sedmelluq.discord.lavaplayer.player.event.TrackEndEvent;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
@@ -49,16 +48,13 @@ public class MusicQuiz implements IGame {
      */
     MusicQuizEntry currentEntry;
 
-    AudioEventListener audioEventListener = new AudioEventListener() {
-        @Override
-        public void onEvent(AudioEvent event) {
-            if (event instanceof TrackEndEvent) {
-                if (((TrackEndEvent) event).endReason == AudioTrackEndReason.REPLACED) {
-                    return;
-                }
-
-                selectNextSong();
+    AudioEventListener audioEventListener = event -> {
+        if (event instanceof TrackEndEvent) {
+            if (((TrackEndEvent) event).endReason == AudioTrackEndReason.REPLACED) {
+                return;
             }
+
+            selectNextSong();
         }
     };
 
@@ -219,6 +215,7 @@ public class MusicQuiz implements IGame {
         messageEditBuilder.setActionRow(Button.success("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame")).asEnabled());
         menuMessage.editMessage(messageEditBuilder.build()).queue();
 
+        Main.getInstance().getMusicWorker().loadAndPlay(session.getChannel(), session.getGuild().getMember(session.getHost()).getVoiceState().getChannel(),"storage/audio/timer.mp3", null, true);
         // TODO:: play the Audio with the 10 seconds timer.
         // TODO:: also add a way to detect when those 10 seconds end and then select the next song.
     }
