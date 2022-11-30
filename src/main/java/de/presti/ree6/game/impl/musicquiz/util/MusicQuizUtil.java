@@ -2,6 +2,7 @@ package de.presti.ree6.game.impl.musicquiz.util;
 
 import de.presti.ree6.game.impl.musicquiz.entities.MusicQuizEntry;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
+import de.presti.ree6.utils.others.RandomUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.ParseException;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
@@ -12,12 +13,30 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Class used to handle MusicQuiz related Utilities.
+ */
 @Slf4j
 public class MusicQuizUtil {
 
+    /**
+     * List with songs from Spotify.
+     */
     List<MusicQuizEntry> entries = new ArrayList<>();
+
+    /**
+     * Instance of the MusicQuizUtil.
+     */
     private static MusicQuizUtil instance;
 
+    /**
+     * Constructor. <br>
+     * This constructor will load all songs from the Spotify API.
+     * <p> Reason why Spotify is being used is because it stores direct information about artists and the normal song title.
+     * YouTube version will most likely have a different title and artist names like "Mr. HumanRealRaper VEVO".
+     * Features are most "ft. Artist" and "feat. Artist", so it is easier just using spotify instead of making a
+     * complicated regex to get the correct artist name/parser with low precision.</p>
+     */
     public MusicQuizUtil() {
         instance = this;
 
@@ -82,8 +101,13 @@ public class MusicQuizUtil {
         });
     }
 
+
+    /**
+     * Retrieve a random entry from this list.
+     * @return A random entry.
+     */
     public static MusicQuizEntry getRandomEntry() {
-        return new MusicQuizEntry(instance.entries.get((int) (Math.random() * instance.entries.size())));
+        return new MusicQuizEntry(instance.entries.get(RandomUtils.secureRandom.nextInt(instance.entries.size())));
     }
 
 }
