@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @GameInfo(
         name = "MusicQuiz",
@@ -30,6 +32,9 @@ import java.util.ArrayList;
         minPlayers = 2,
         maxPlayers = -1)
 public class MusicQuiz implements IGame {
+
+    int currentRound = 0;
+    int maxRounds = 10;
 
     /**
      * The game session.
@@ -49,12 +54,10 @@ public class MusicQuiz implements IGame {
     MusicQuizEntry currentEntry;
 
     AudioEventListener audioEventListener = event -> {
-        if (event instanceof TrackEndEvent) {
-            if (((TrackEndEvent) event).endReason == AudioTrackEndReason.REPLACED) {
-                return;
+        if (event instanceof TrackEndEvent trackEndEvent) {
+            if (trackEndEvent.track.getInfo().title.equalsIgnoreCase("timer")) {
+                selectNextSong();
             }
-
-            selectNextSong();
         }
     };
 
@@ -197,10 +200,33 @@ public class MusicQuiz implements IGame {
     @Override
     public void stopGame() {
         Main.getInstance().getMusicWorker().getGuildAudioPlayer(session.getGuild()).getPlayer().removeListener(audioEventListener);
+        MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
+        messageEditBuilder.applyMessage(menuMessage);
+        EmbedBuilder embedBuilder = new EmbedBuilder(messageEditBuilder.getEmbeds().get(0));
+
+        embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.newSong"));
+        List<MusicQuizPlayer> sortedList = participants.stream().sorted(Comparator.comparingInt(MusicQuizPlayer::getPoints).reversed()).toList();
+
+        for (int i = 0; i < sortedList.size(); i++) {
+            MusicQuizPlayer musicQuizPlayer = sortedList.get(i);
+            embedBuilder.addField(LanguageService.getByGuild(session.getGuild(), "label.position", i + 1),
+                    LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.points", musicQuizPlayer.getPoints(),
+                            musicQuizPlayer.getRelatedUser().getAsMention()), false);
+        }
+
+        messageEditBuilder.setEmbeds(embedBuilder.build());
+        menuMessage.editMessage(messageEditBuilder.build()).queue();
     }
 
     public void selectNextSong() {
         if (session.getGameState() != GameState.STARTED) {
+            return;
+        }
+
+        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.finishedSong"), 5, session.getChannel());
+
+        if (currentRound >= maxRounds) {
+            stopGame();
             return;
         }
 
@@ -212,12 +238,13 @@ public class MusicQuiz implements IGame {
 
         embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.newSong"));
         messageEditBuilder.setEmbeds(embedBuilder.build());
-        messageEditBuilder.setActionRow(Button.success("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame")).asEnabled());
+        messageEditBuilder.setActionRow(Button.success("game_musicquiz_skip", LanguageService.getByGuild(session.getGuild(), "label.skip")).asEnabled());
         menuMessage.editMessage(messageEditBuilder.build()).queue();
 
+        Main.getInstance().getMusicWorker().loadAndPlay(session.getChannel(), session.getGuild().getMember(session.getHost()).getVoiceState().getChannel(),currentEntry.getAudioUrl(), null, true);
         Main.getInstance().getMusicWorker().loadAndPlay(session.getChannel(), session.getGuild().getMember(session.getHost()).getVoiceState().getChannel(),"storage/audio/timer.mp3", null, true);
-        // TODO:: play the Audio with the 10 seconds timer.
-        // TODO:: also add a way to detect when those 10 seconds end and then select the next song.
+
+        currentRound++;
     }
 
     public MusicQuizPlayer getParticipantByUserId(long userId) {
