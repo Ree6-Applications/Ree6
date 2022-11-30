@@ -213,6 +213,11 @@ public class MusicQuiz implements IGame {
     @Override
     public void onButtonInteractionReceive(ButtonInteractionEvent buttonInteractionEvent) {
         IGame.super.onButtonInteractionReceive(buttonInteractionEvent);
+
+        if (buttonInteractionEvent.getComponentId().equalsIgnoreCase("game_musicquiz_skip")) {
+            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.skipSong"), 5, session.getChannel());
+            selectNextSong();
+        }
     }
 
     /**
