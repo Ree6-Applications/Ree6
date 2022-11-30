@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @GameInfo(
         name = "MusicQuiz",
@@ -186,17 +187,18 @@ public class MusicQuiz implements IGame {
 
         if (currentEntry.checkTitle(messageContent)) {
             musicQuizPlayer.addPoints(1);
-            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundTitle", currentEntry.getTitle())).queue();
+            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundTitle", currentEntry.getTitle())).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
         }
 
         if (currentEntry.checkArtist(messageContent)) {
             musicQuizPlayer.addPoints(2);
-            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundArtists", currentEntry.getArtist())).queue();
+            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundArtists", currentEntry.getArtist())).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
         }
 
         if (currentEntry.checkFeatures(messageContent)) {
             musicQuizPlayer.addPoints(3);
-            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundFeature", String.join(",", currentEntry.getFeatures()))).queue();
+            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundFeature", String.join(",", currentEntry.getFeatures()))).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+
         }
 
         if (currentEntry.isTitleGuessed() && currentEntry.isArtistGuessed() && currentEntry.isFeaturesGuessed()) {
