@@ -33,7 +33,14 @@ import java.util.List;
         maxPlayers = -1)
 public class MusicQuiz implements IGame {
 
+    /**
+     * The indicator for the current round.
+     */
     int currentRound = 0;
+
+    /**
+     * Amount of rounds to play.
+     */
     int maxRounds = 10;
 
     /**
@@ -41,6 +48,9 @@ public class MusicQuiz implements IGame {
      */
     private final GameSession session;
 
+    /**
+     * List of all participants.
+     */
     private final  ArrayList<MusicQuizPlayer> participants = new ArrayList<>();
 
     /**
@@ -53,6 +63,9 @@ public class MusicQuiz implements IGame {
      */
     MusicQuizEntry currentEntry;
 
+    /**
+     * {@link AudioEventListener} to check if the song/timer is over.
+     */
     AudioEventListener audioEventListener = event -> {
         if (event instanceof TrackEndEvent trackEndEvent) {
             if (trackEndEvent.track.getInfo().title.equalsIgnoreCase("timer")) {
@@ -71,13 +84,14 @@ public class MusicQuiz implements IGame {
     }
 
     /**
-     *
+     * @inheritDoc
      */
     @Override
     public void createGame() {
-        if (session.getParticipants().isEmpty() || session.getParticipants().size() < 2) {
-            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.gameCore.needMore", 2), session.getChannel());
-            stopGame();
+
+        if (session.getHost().getVoiceState() == null || session.getHost().getVoiceState().getChannel() == null) {
+            session.getChannel().sendMessage(LanguageService.getByGuild(session.getGuild(),"message.default.notInVoiceChannel")).queue();
+            return;
         }
 
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
@@ -96,11 +110,16 @@ public class MusicQuiz implements IGame {
     }
 
     /**
-     *
+     * @inheritDoc
      */
     @Override
     public void startGame() {
         if (session.getGameState() == GameState.STARTED) {
+            return;
+        }
+
+        if (session.getParticipants().isEmpty() || session.getParticipants().size() < 2) {
+            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.gameCore.needMore", 2), session.getChannel());
             return;
         }
 
@@ -110,7 +129,7 @@ public class MusicQuiz implements IGame {
     }
 
     /**
-     * @param user The User who wants to join.
+     * @inheritDoc
      */
     @Override
     public void joinGame(GamePlayer user) {
@@ -140,7 +159,7 @@ public class MusicQuiz implements IGame {
     }
 
     /**
-     * @param user The User who wants to leave.
+     * @inheritDoc
      */
     @Override
     public void leaveGame(GamePlayer user) {
@@ -148,7 +167,7 @@ public class MusicQuiz implements IGame {
     }
 
     /**
-     * @param messageReceivedEvent The Event.
+     * @inheritDoc
      */
     @Override
     public void onMessageReceive(MessageReceivedEvent messageReceivedEvent) {
@@ -187,7 +206,7 @@ public class MusicQuiz implements IGame {
     }
 
     /**
-     * @param buttonInteractionEvent The Event.
+     * @inheritDoc
      */
     @Override
     public void onButtonInteractionReceive(ButtonInteractionEvent buttonInteractionEvent) {
@@ -195,7 +214,7 @@ public class MusicQuiz implements IGame {
     }
 
     /**
-     *
+     * @inheritDoc
      */
     @Override
     public void stopGame() {
@@ -218,6 +237,9 @@ public class MusicQuiz implements IGame {
         menuMessage.editMessage(messageEditBuilder.build()).queue();
     }
 
+    /**
+     * Select a new song and play the timer!
+     */
     public void selectNextSong() {
         if (session.getGameState() != GameState.STARTED) {
             return;
@@ -247,6 +269,11 @@ public class MusicQuiz implements IGame {
         currentRound++;
     }
 
+    /**
+     * Retrieve a participant by his user id.
+     * @param userId The user id.
+     * @return The participant or null.
+     */
     public MusicQuizPlayer getParticipantByUserId(long userId) {
         return participants.stream().filter(c -> c.getRelatedUserId() == userId).findFirst().orElse(null);
     }

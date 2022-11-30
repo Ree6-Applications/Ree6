@@ -3,10 +3,7 @@ package de.presti.ree6.commands;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import lombok.Getter;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -160,6 +157,19 @@ public class CommandEvent {
      */
     public String getResource(String key, Object... parameters) {
         return LanguageService.getByEvent(this, key, parameters);
+    }
+
+    /**
+     * Get the {@link User} Entity associated with the Event.
+     *
+     * @return the {@link User} Entity.
+     */
+    public @NotNull User getUser() {
+        if (isSlashCommand()) {
+            return getSlashCommandInteractionEvent().getUser();
+        } else {
+            return member.getUser();
+        }
     }
 
     /**
