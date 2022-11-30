@@ -164,7 +164,7 @@ public class MusicQuiz implements IGame {
      */
     @Override
     public void leaveGame(GamePlayer user) {
-
+        //TODO:: leave handler.
     }
 
     /**
