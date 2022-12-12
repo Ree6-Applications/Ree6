@@ -7,7 +7,10 @@ import de.presti.ree6.audio.music.MusicWorker;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.bot.version.BotVersion;
+import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandManager;
+import de.presti.ree6.commands.interfaces.Command;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.events.GameEvents;
 import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.MenuEvents;
@@ -16,8 +19,10 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.sql.DatabaseTyp;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
+import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
@@ -141,6 +146,15 @@ public class Main {
         try {
             // Create the Command-Manager instance.
             instance.commandManager = new CommandManager();
+            // Create Command Settings.
+            for (ICommand command : getInstance().getCommandManager().getCommands()) {
+
+                // Skip the hidden Commands.
+                if (command.getClass().getAnnotation(Command.class).category() == Category.HIDDEN) continue;
+
+                SettingsManager.getSettings().add(new Setting("-1",
+                        "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase(), true));
+            }
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
