@@ -4,7 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.apache.commons.validator.GenericValidator;
@@ -27,7 +27,7 @@ public class Birthday implements ICommand {
 
         if (commandEvent.getArguments().length == 1) {
             if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                Main.getInstance().getSqlConnector().getSqlWorker().removeBirthday(commandEvent.getGuild().getId(), commandEvent.getMember().getId());
+                SQLSession.getSqlConnector().getSqlWorker().removeBirthday(commandEvent.getGuild().getId(), commandEvent.getMember().getId());
                 commandEvent.reply(commandEvent.getResource("message.birthday.removed.self"), 5);
 
             } else {
@@ -41,7 +41,7 @@ public class Birthday implements ICommand {
                             commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
                         commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
                     } else {
-                        Main.getInstance().getSqlConnector().getSqlWorker().removeBirthday(commandEvent.getGuild().getId(), commandEvent.getMessage().getMentions().getMembers().get(0).getId());
+                        SQLSession.getSqlConnector().getSqlWorker().removeBirthday(commandEvent.getGuild().getId(), commandEvent.getMessage().getMentions().getMembers().get(0).getId());
                         commandEvent.reply(commandEvent.getResource("message.birthday.removed.other", commandEvent.getMessage().getMentions().getMembers().get(0).getAsMention()), 5);
                     }
                 } else {
@@ -49,7 +49,7 @@ public class Birthday implements ICommand {
                 }
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
                 if (GenericValidator.isDate(commandEvent.getArguments()[1], "dd.MM.yyyy", true)) {
-                    Main.getInstance().getSqlConnector().getSqlWorker().addBirthday(commandEvent.getGuild().getId(), commandEvent.getChannel().getId(), commandEvent.getMember().getId(), commandEvent.getArguments()[1]);
+                    SQLSession.getSqlConnector().getSqlWorker().addBirthday(commandEvent.getGuild().getId(), commandEvent.getChannel().getId(), commandEvent.getMember().getId(), commandEvent.getArguments()[1]);
                     commandEvent.reply(commandEvent.getResource("message.added.self"), 5);
                 } else {
                     commandEvent.reply(commandEvent.getResource("message.other.dateError"), 5);
@@ -65,7 +65,7 @@ public class Birthday implements ICommand {
                                 commandEvent.getMessage().getMentions().getMembers().isEmpty()) {
                             commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
                         } else {
-                            Main.getInstance().getSqlConnector().getSqlWorker().addBirthday(commandEvent.getGuild().getId(), commandEvent.getChannel().getId(), commandEvent.getMessage().getMentions().getMembers().get(0).getId(), commandEvent.getArguments()[1]);
+                            SQLSession.getSqlConnector().getSqlWorker().addBirthday(commandEvent.getGuild().getId(), commandEvent.getChannel().getId(), commandEvent.getMessage().getMentions().getMembers().get(0).getId(), commandEvent.getArguments()[1]);
                             commandEvent.reply(commandEvent.getResource("message.birthday.added.other", commandEvent.getMessage().getMentions().getMembers().get(0).getAsMention()), 5);
                         }
                     } else {

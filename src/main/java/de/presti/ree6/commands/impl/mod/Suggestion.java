@@ -6,6 +6,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Suggestions;
 import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -77,14 +78,14 @@ public class Suggestion implements ICommand {
 
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
 
-        Suggestions suggestions = Main.getInstance().getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "SELECT * FROM Suggestions WHERE guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()));
+        Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "SELECT * FROM Suggestions WHERE guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()));
 
         if (suggestions != null) {
             suggestions.setChannelId(channel.getIdLong());
-            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(suggestions);
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions);
         } else {
             suggestions = new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong());
-            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(suggestions);
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions);
         }
 
         commandEvent.reply(commandEvent.getResource("message.suggestion.success"), 5);

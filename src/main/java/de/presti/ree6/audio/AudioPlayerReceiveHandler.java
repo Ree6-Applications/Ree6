@@ -3,7 +3,7 @@ package de.presti.ree6.audio;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Recording;
 import de.presti.ree6.utils.data.AudioUtil;
 import de.presti.ree6.utils.data.Data;
@@ -170,7 +170,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
             Recording recording = new Recording(voiceChannel.getGuild().getId(), voiceChannel.getId(), creatorId, AudioUtil.convertPCMtoWAV(byteBuffer),
                     JsonParser.parseString(new Gson().toJson(participants)).getAsJsonArray());
 
-            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(recording);
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(recording);
 
             if (voiceChannel.canTalk()) {
                 message.editMessageEmbeds(new EmbedBuilder()

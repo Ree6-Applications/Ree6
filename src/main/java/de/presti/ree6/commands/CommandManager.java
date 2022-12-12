@@ -5,7 +5,7 @@ import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.others.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -213,7 +213,7 @@ public class CommandManager {
             if (slashCommandInteractionEvent != null) {
                 sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown"), 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 deleteMessage(message, slashCommandInteractionEvent.getHook().setEphemeral(true));
-            } else if (messageContent.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase())) {
+            } else if (messageContent.toLowerCase().startsWith(SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase())) {
                 sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown"), 5, textChannel, null);
                 deleteMessage(message, null);
             }
@@ -265,11 +265,11 @@ public class CommandManager {
         }
 
         // Check if the message starts with the prefix.
-        if (!messageContent.toLowerCase().startsWith(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase()))
+        if (!messageContent.toLowerCase().startsWith(SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase()))
             return false;
 
         // Parse the Message and remove the prefix from it.
-        messageContent = messageContent.substring(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().length());
+        messageContent = messageContent.substring(SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().length());
 
         // Split all Arguments.
         String[] arguments = messageContent.split(" ");
@@ -289,7 +289,7 @@ public class CommandManager {
         }
 
         // Check if the Command is blacklisted.
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() &&
+        if (!SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() &&
                 command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
             sendMessage(LanguageService.getByGuild(guild, "command.perform.blocked"), 5, textChannel, null);
             return false;
@@ -322,7 +322,7 @@ public class CommandManager {
         }
 
         // Check if the command is blocked or not.
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
+        if (!SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
             sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
             return false;
         }

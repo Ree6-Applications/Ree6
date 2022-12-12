@@ -1,7 +1,7 @@
 package de.presti.ree6.commands.interfaces;
 
 import de.presti.ree6.commands.CommandEvent;
-import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public interface ICommand {
             return null;
         });
         // Update Stats.
-        Main.getInstance().getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getId(), commandEvent.getCommand());
+        SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getId(), commandEvent.getCommand());
     }
 
     /**

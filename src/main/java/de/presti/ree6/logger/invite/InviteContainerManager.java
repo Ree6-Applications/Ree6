@@ -1,6 +1,7 @@
 package de.presti.ree6.logger.invite;
 
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -11,6 +12,7 @@ import net.dv8tion.jda.internal.entities.InviteImpl;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -40,7 +42,7 @@ public class InviteContainerManager {
      */
     public static void addInvite(InviteContainer inviteContainer) {
         try {
-            Main.getInstance().getSqlConnector().getSqlWorker().setInvite(inviteContainer.getGuildId(), inviteContainer.getCreatorId(), inviteContainer.getCode(), inviteContainer.getUses());
+            SQLSession.getSqlConnector().getSqlWorker().setInvite(inviteContainer.getGuildId(), inviteContainer.getCreatorId(), inviteContainer.getCode(), inviteContainer.getUses());
         } catch (Exception ex) {
             log.error("[InviteManager] Error while Saving Invites: " + ex.getMessage());
         }
@@ -54,7 +56,7 @@ public class InviteContainerManager {
      * @param code    the Code of the Invite.
      */
     public static void removeInvite(String guildID, String creator, String code) {
-        Main.getInstance().getSqlConnector().getSqlWorker().removeInvite(guildID, creator, code);
+        SQLSession.getSqlConnector().getSqlWorker().removeInvite(guildID, creator, code);
     }
 
     /**
@@ -64,7 +66,7 @@ public class InviteContainerManager {
      * @param code    the Code of the Invite.
      */
     public static void removeInvite(String guildID, String code) {
-        Main.getInstance().getSqlConnector().getSqlWorker().removeInvite(guildID, code);
+        SQLSession.getSqlConnector().getSqlWorker().removeInvite(guildID, code);
     }
 
     /**
@@ -144,7 +146,14 @@ public class InviteContainerManager {
      * @return {@link ArrayList<InviteContainer>} with every Invite saved in our Database.
      */
     public static ArrayList<InviteContainer> getInvites(String guildId) {
-        return (ArrayList<InviteContainer>) Main.getInstance().getSqlConnector().getSqlWorker().getInvites(guildId);
+        ArrayList<InviteContainer> containerList = new ArrayList<>();
+
+        List<de.presti.ree6.sql.entities.Invite> inviteList = SQLSession.getSqlConnector().getSqlWorker().getInvites(guildId);
+        inviteList.stream()
+                .forEach(invite -> containerList.add(new InviteContainer(invite.getUserId(), invite.getGuild(), invite.getCode(), invite.getUses(),
+                        false)));
+
+        return containerList;
     }
 
     /**

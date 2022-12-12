@@ -3,7 +3,7 @@ package de.presti.ree6.bot.util;
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import de.presti.ree6.logger.events.LogMessage;
-import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.webhook.Webhook;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,7 +47,7 @@ public class WebhookUtil {
         if (webhookToken.contains("Not setup!") || webhookId == 0) return;
 
         // Check if the given data is in the Database.
-        if (isLog && !Main.getInstance().getSqlConnector().getSqlWorker().existsLogData(webhookId, webhookToken)) return;
+        if (isLog && !SQLSession.getSqlConnector().getSqlWorker().existsLogData(webhookId, webhookToken)) return;
 
         // Check if the LoggerMessage is canceled.
         if (isLog && (loggerMessage == null || loggerMessage.isCanceled())) {
@@ -64,7 +64,7 @@ public class WebhookUtil {
                 if (throwable.getMessage().contains("failure 404")) {
                     // Inform and delete invalid webhook.
                     if (isLog) {
-                        Main.getInstance().getSqlConnector().getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
+                        SQLSession.getSqlConnector().getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
                         log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                     } else {
                         log.error("[Webhook] Invalid Webhook: {} - {}, has not been deleted since it is not a Log-Webhook.", webhookId, webhookToken);

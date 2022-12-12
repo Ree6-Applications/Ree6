@@ -1,7 +1,7 @@
 package de.presti.ree6.utils.others;
 
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -32,7 +32,7 @@ public class AutoRoleHandler {
      */
     public static void handleMemberJoin(Guild guild, Member member) {
 
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isAutoRoleSetup(guild.getId())) return;
+        if (!SQLSession.getSqlConnector().getSqlWorker().isAutoRoleSetup(guild.getId())) return;
 
         ThreadUtil.createThread(x -> {
             if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
@@ -46,7 +46,7 @@ public class AutoRoleHandler {
                 return;
             }
 
-            for (de.presti.ree6.sql.entities.roles.Role roles : Main.getInstance().getSqlConnector().getSqlWorker().getAutoRoles(guild.getId())) {
+            for (de.presti.ree6.sql.entities.roles.Role roles : SQLSession.getSqlConnector().getSqlWorker().getAutoRoles(guild.getId())) {
                 Role role = guild.getRoleById(roles.getRoleId());
 
                 if (role != null && !guild.getSelfMember().canInteract(role)) {
@@ -61,7 +61,7 @@ public class AutoRoleHandler {
                                 privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.deleted"))
                                         .queue());
 
-                    Main.getInstance().getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), roles.getRoleId());
+                    SQLSession.getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), roles.getRoleId());
                     return;
                 }
 
@@ -78,11 +78,11 @@ public class AutoRoleHandler {
      */
     public static void handleVoiceLevelReward(Guild guild, Member member) {
 
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isVoiceLevelRewardSetup(guild.getId()))
+        if (!SQLSession.getSqlConnector().getSqlWorker().isVoiceLevelRewardSetup(guild.getId()))
             return;
 
         ThreadUtil.createThread(x -> {
-            long level = Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(guild.getId(), member.getUser().getId()).getLevel();
+            long level = SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(guild.getId(), member.getUser().getId()).getLevel();
 
             if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
                 log.error("[AutoRole] Failed to give a role, when someone leveled up in Voice!");
@@ -96,7 +96,7 @@ public class AutoRoleHandler {
                 return;
             }
 
-            for (Map.Entry<Integer, String> entry : Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelRewards(guild.getId()).entrySet()) {
+            for (Map.Entry<Integer, String> entry : SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelRewards(guild.getId()).entrySet()) {
 
                 if (entry.getKey() <= level) {
 
@@ -114,7 +114,7 @@ public class AutoRoleHandler {
                                     privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.deleted"))
                                             .queue());
 
-                        Main.getInstance().getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), entry.getValue());
+                        SQLSession.getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), entry.getValue());
                         return;
                     }
 
@@ -132,12 +132,12 @@ public class AutoRoleHandler {
      */
     public static void handleChatLevelReward(Guild guild, Member member) {
 
-        if (!Main.getInstance().getSqlConnector().getSqlWorker().isChatLevelRewardSetup(guild.getId()))
+        if (!SQLSession.getSqlConnector().getSqlWorker().isChatLevelRewardSetup(guild.getId()))
             return;
 
         ThreadUtil.createThread(x -> {
 
-            long level = (Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(guild.getId(), member.getUser().getId()).getLevel());
+            long level = (SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(guild.getId(), member.getUser().getId()).getLevel());
 
             if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
                 log.error("[AutoRole] Failed to give a Role, when someone leveled up in Chat!");
@@ -151,7 +151,7 @@ public class AutoRoleHandler {
                 return;
             }
 
-            for (Map.Entry<Integer, String> entry : Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelRewards(guild.getId()).entrySet()) {
+            for (Map.Entry<Integer, String> entry : SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(guild.getId()).entrySet()) {
 
                 if (entry.getKey() <= level) {
                     Role role = guild.getRoleById(entry.getValue());
@@ -167,7 +167,7 @@ public class AutoRoleHandler {
                                     privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.deleted"))
                                             .queue());
 
-                        Main.getInstance().getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), entry.getValue());
+                        SQLSession.getSqlConnector().getSqlWorker().removeAutoRole(guild.getId(), entry.getValue());
                         return;
                     }
 

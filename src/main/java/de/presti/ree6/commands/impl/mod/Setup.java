@@ -5,6 +5,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -52,7 +53,7 @@ public class Setup implements ICommand {
                                 try (InputStream inputStream = attachment.getProxy().download(1920, 1080).get()) {
                                     byte[] imageArray = inputStream.readAllBytes();
 
-                                    Main.getInstance().getSqlConnector().getSqlWorker()
+                                    SQLSession.getSqlConnector().getSqlWorker()
                                             .setSetting(new Setting(commandEvent.getGuild().getId(), "message_join_image", Base64.getEncoder().encodeToString(imageArray)));
                                     commandEvent.reply(commandEvent.getResource("message.setup.successImage"));
                                 } catch (Exception e) {

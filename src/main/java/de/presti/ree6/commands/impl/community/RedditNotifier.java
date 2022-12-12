@@ -5,6 +5,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -33,7 +34,7 @@ public class RedditNotifier implements ICommand {
             if(commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
                 StringBuilder end = new StringBuilder("```\n");
 
-                for(String users : Main.getInstance().getSqlConnector().getSqlWorker().getAllSubreddits(commandEvent.getGuild().getId())) {
+                for(String users : SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits(commandEvent.getGuild().getId())) {
                     end.append(users).append("\n");
                 }
 
@@ -48,13 +49,13 @@ public class RedditNotifier implements ICommand {
 
             if (commandEvent.getMessage().getMentions().getChannels(TextChannel.class).isEmpty() ||
                     !commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
-                commandEvent.reply("Please use " + Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "redditnotifier add/remove Subreddit #Channel", 5);
+                commandEvent.reply("Please use " + SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "redditnotifier add/remove Subreddit #Channel", 5);
                 return;
             }
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-RedditNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name));
+                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-RedditNotifier-" + name).queue(w -> SQLSession.getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name));
                 commandEvent.reply(commandEvent.getResource("message.instagramNotifier.added",name), 5);
 
                 if (!Main.getInstance().getNotifier().isSubredditRegistered(name)) {
@@ -68,7 +69,7 @@ public class RedditNotifier implements ICommand {
         } else if(commandEvent.getArguments().length == 2) {
             String name = commandEvent.getArguments()[1];
             if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                Main.getInstance().getSqlConnector().getSqlWorker().removeRedditWebhook(commandEvent.getGuild().getId(), name);
+                SQLSession.getSqlConnector().getSqlWorker().removeRedditWebhook(commandEvent.getGuild().getId(), name);
                 commandEvent.reply(commandEvent.getResource("message.instagramNotifier.removed",name), 5);
 
                 if (Main.getInstance().getNotifier().isSubredditRegistered(name)) {

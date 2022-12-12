@@ -7,6 +7,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -67,7 +68,7 @@ public class Help implements ICommand {
             for (Category cat : Category.values()) {
                 if (cat != Category.HIDDEN) {
                     String formattedName = cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase();
-                    em.addField("**" + formattedName + "**", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "help " + cat.name().toLowerCase(), true);
+                    em.addField("**" + formattedName + "**", SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "help " + cat.name().toLowerCase(), true);
                 }
             }
         } else {
@@ -77,7 +78,7 @@ public class Help implements ICommand {
                 Category category = getCategoryFromString(categoryString);
                 for (ICommand cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).category() == category).toList()) {
                     end.append("``")
-                            .append(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue())
+                            .append(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue())
                             .append(cmd.getClass().getAnnotation(Command.class).name())
                             .append("``\n")
                             .append(commandEvent.getResource(cmd.getClass().getAnnotation(Command.class).description()))

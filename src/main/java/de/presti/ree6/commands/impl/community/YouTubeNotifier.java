@@ -5,6 +5,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -33,7 +34,7 @@ public class YouTubeNotifier implements ICommand {
             if(commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
                 StringBuilder end = new StringBuilder("```\n");
 
-                for(String users : Main.getInstance().getSqlConnector().getSqlWorker().getAllYouTubeChannels(commandEvent.getGuild().getId())) {
+                for(String users : SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels(commandEvent.getGuild().getId())) {
                     end.append(users).append("\n");
                 }
 
@@ -54,7 +55,7 @@ public class YouTubeNotifier implements ICommand {
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-YouTubeNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addYouTubeWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name));
+                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-YouTubeNotifier-" + name).queue(w -> SQLSession.getSqlConnector().getSqlWorker().addYouTubeWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name));
                 commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.added",name), 5);
 
                 if (!Main.getInstance().getNotifier().isYouTubeRegistered(name)) {
@@ -68,7 +69,7 @@ public class YouTubeNotifier implements ICommand {
         } else if(commandEvent.getArguments().length == 2) {
             String name = commandEvent.getArguments()[1];
             if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                Main.getInstance().getSqlConnector().getSqlWorker().removeYouTubeWebhook(commandEvent.getGuild().getId(), name);
+                SQLSession.getSqlConnector().getSqlWorker().removeYouTubeWebhook(commandEvent.getGuild().getId(), name);
                 commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.removed",name), 5);
 
                 if (Main.getInstance().getNotifier().isYouTubeRegistered(name)) {
