@@ -126,7 +126,7 @@ public class Main {
 
         DatabaseTyp databaseTyp;
 
-        switch (Main.getInstance().getConfig().getConfiguration().getString("hikari.misc.storage").toLowerCase()) {
+        switch (getInstance().getConfig().getConfiguration().getString("hikari.misc.storage").toLowerCase()) {
             case "mariadb" -> databaseTyp = DatabaseTyp.MariaDB;
 
             default -> databaseTyp = DatabaseTyp.SQLite;
