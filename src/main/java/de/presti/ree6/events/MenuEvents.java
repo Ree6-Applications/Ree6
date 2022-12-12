@@ -1,5 +1,6 @@
 package de.presti.ree6.events;
 
+import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
@@ -1055,6 +1056,10 @@ public class MenuEvents extends ListenerAdapter {
 
                 if (textChannel != null) {
                     textChannel.createWebhook("Ree6-Logs").queue(webhook -> {
+                        if (SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId())) {
+                            WebhookUtil.deleteWebhook(event.getGuild().getId(), SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId()));
+                        }
+                        
                         SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupSuccess"));
                         embedBuilder.setColor(Color.GREEN);
@@ -1132,6 +1137,10 @@ public class MenuEvents extends ListenerAdapter {
 
                 if (textChannel != null) {
                     textChannel.createWebhook("Ree6-Welcome").queue(webhook -> {
+                        if (SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId())) {
+                            WebhookUtil.deleteWebhook(event.getGuild().getId(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()));
+                        }
+
                         SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(),"message.welcome.setupSuccess"));
                         embedBuilder.setColor(Color.GREEN);

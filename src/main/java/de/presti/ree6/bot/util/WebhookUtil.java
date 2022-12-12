@@ -2,10 +2,12 @@ package de.presti.ree6.bot.util;
 
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.logger.events.LogMessage;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.webhook.Webhook;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.Guild;
 
 /**
  * Class to handle Webhook sends.
@@ -79,6 +81,25 @@ public class WebhookUtil {
             // Inform that this is an Invalid Webhook.
             log.error("[Webhook] Invalid Webhook: {} - {}", webhookId, webhookToken);
             log.error("[Webhook] Exception: ", ex);
+        }
+    }
+
+    /**
+     * Delete a Webhook entry from the Guild.
+     * @param guildId the ID of the Guild.
+     * @param webhookEntity the Webhook entity.
+     */
+    public static void deleteWebhook(String guildId, Webhook webhookEntity) {
+        // Get the Guild from the ID.
+        Guild guild = BotWorker.getShardManager().getGuildById(guildId);
+
+        if (guild != null) {
+            // Delete the existing Webhook.
+            guild.retrieveWebhooks()
+                    .queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null)
+                    .filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) &&
+                            webhook.getToken().equalsIgnoreCase(webhookEntity.getToken()))
+                            .forEach(webhook -> webhook.delete().queue()));
         }
     }
 }
