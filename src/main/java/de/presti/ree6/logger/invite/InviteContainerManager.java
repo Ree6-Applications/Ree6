@@ -1,6 +1,5 @@
 package de.presti.ree6.logger.invite;
 
-import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
@@ -12,7 +11,6 @@ import net.dv8tion.jda.internal.entities.InviteImpl;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
