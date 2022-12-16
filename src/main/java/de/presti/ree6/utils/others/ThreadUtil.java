@@ -1,5 +1,7 @@
 package de.presti.ree6.utils.others;
 
+import io.sentry.Sentry;
+
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,7 +49,11 @@ public class ThreadUtil {
                     if (duration != null)
                         Thread.sleep(duration.toMillis());
                 } catch (InterruptedException e) {
-                    failure.accept(e);
+                    if (failure == null)
+                        Sentry.captureException(e);
+                    else
+                        failure.accept(e);
+                    
                     Thread.currentThread().interrupt();
                 }
 
