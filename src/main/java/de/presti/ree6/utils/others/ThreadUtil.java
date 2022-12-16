@@ -53,7 +53,7 @@ public class ThreadUtil {
                         Sentry.captureException(e);
                     else
                         failure.accept(e);
-                    
+
                     Thread.currentThread().interrupt();
                 }
 
