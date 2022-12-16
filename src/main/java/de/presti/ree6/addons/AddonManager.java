@@ -14,6 +14,8 @@ import java.util.ArrayList;
 @Slf4j
 public class AddonManager {
 
+    // TODO:: store the Interface instance in the Addon entry to be able to call the methods, without creating a new Instance.
+
     /**
      * The actual List with the Addons.
      */
