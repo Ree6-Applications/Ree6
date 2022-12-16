@@ -107,12 +107,6 @@
             <groupId>com.github.twitch4j</groupId>
             <artifactId>twitch4j</artifactId>
             <version>1.12.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.squareup.okhttp3</groupId>
-                    <artifactId>okhttp</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>se.michaelthelin.spotify</groupId>
@@ -184,6 +178,11 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
         </dependency>
 
         <!-- HTTP Clients -->
