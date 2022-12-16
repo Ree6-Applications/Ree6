@@ -68,12 +68,6 @@
             <groupId>club.minnced</groupId>
             <artifactId>discord-webhooks</artifactId>
             <version>0.8.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.squareup.okhttp3</groupId>
-                    <artifactId>okhttp</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- Sentry and YAML -->
@@ -138,17 +132,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.Twitter4J.Twitter4J</groupId>
-            <artifactId>twitter4j-async</artifactId>
-            <version>4.0.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.Twitter4J.Twitter4J</groupId>
             <artifactId>twitter4j-stream</artifactId>
-            <version>4.0.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.Twitter4J.Twitter4J</groupId>
-            <artifactId>twitter4j-http2-support</artifactId>
             <version>4.0.7</version>
         </dependency>
 
@@ -195,6 +179,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
             <version>4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
         </dependency>
 
         <!-- HTTP Clients -->
