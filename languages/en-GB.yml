@@ -1,7 +1,7 @@
 language:
   name: "English (UK)"
   locale: "en-GB"
-  version: "2.1.8"
+  version: "2.1.9"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **banned.**"
@@ -175,6 +175,7 @@ label:
   error: "Error"
   game: "Game"
   viewer: "Viewer"
+  more: "More"
 message:
   default:
     usage: "Usage {guild_prefix}%s."
