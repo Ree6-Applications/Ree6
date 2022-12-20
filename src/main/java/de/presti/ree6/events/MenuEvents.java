@@ -882,7 +882,7 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "ticketsSetup" -> {
                         for (TextChannel channel : event.getGuild().getTextChannels()) {
-                            optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                            optionList.add(SelectOption.of("%1.25s".formatted(channel.getName()), channel.getId()));
                         }
 
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.setupDescription"));
@@ -947,7 +947,7 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "tempVoiceSetup" -> {
                         for (VoiceChannel channel : event.getGuild().getVoiceChannels()) {
-                            optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                            optionList.add(SelectOption.of("%1.25s".formatted(channel.getName()), channel.getId()));
                         }
 
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.setupDescription"));
@@ -1012,7 +1012,7 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "logSetup" -> {
                         for (TextChannel channel : event.getGuild().getTextChannels()) {
-                            optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                            optionList.add(SelectOption.of("%1.25s".formatted(channel.getName()), channel.getId()));
                         }
 
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupDescription"));
@@ -1088,7 +1088,7 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "welcomeSetup" -> {
                         for (TextChannel channel : event.getGuild().getTextChannels()) {
-                            optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                            optionList.add(SelectOption.of("%1.25s".formatted(channel.getName()), channel.getId()));
                         }
 
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.setupDescription"));
