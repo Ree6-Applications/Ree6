@@ -1154,9 +1154,13 @@ public class MenuEvents extends ListenerAdapter {
                     case "backToSetupMenu" -> sendDefaultChoice(event);
 
                     case "welcomeSetup" -> {
-                        if (optionList.size() == 24) {
-                            optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.more"), "more"));
-                            break;
+                        for (TextChannel channel : event.getGuild().getTextChannels()) {
+                            if (optionList.size() == 24) {
+                                optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.more"), "more"));
+                                break;
+                            }
+
+                            optionList.add(SelectOption.of(channel.getName(), channel.getId()));
                         }
 
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.setupDescription"));
@@ -1200,6 +1204,26 @@ public class MenuEvents extends ListenerAdapter {
                 }
 
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                String value = event.getInteraction().getValues().get(0);
+
+                if (value.equals("more")) {
+                    java.util.List<SelectOption> optionList = new ArrayList<>();
+
+                    for (TextChannel channel : event.getGuild().getTextChannels().stream().skip(24).toList()) {
+                        if (optionList.size() == 24) {
+                            optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.more"), "more"));
+                            break;
+                        }
+
+                        optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                    }
+
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.setupDescription"));
+
+                    event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupWelcomeChannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel"), 1, 1, false, optionList)).queue();
+                    return;
+                }
 
                 TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getValues().get(0));
 
