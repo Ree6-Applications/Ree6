@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.data;
 
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.sql.entities.level.UserLevel;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.User;
@@ -58,7 +59,7 @@ public class ImageCreationUtility {
         log.debug("Getting User. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        User user = userLevel.getUser();
+        User user = BotWorker.getShardManager().getUserById(userLevel.getUserId());
 
         log.debug("Getting default needed Data. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();

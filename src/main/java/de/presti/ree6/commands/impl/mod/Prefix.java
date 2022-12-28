@@ -5,7 +5,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -32,7 +32,7 @@ public class Prefix implements ICommand {
                 OptionMapping prefixOption = commandEvent.getSlashCommandInteractionEvent().getOption("new-prefix");
 
                 if (prefixOption != null) {
-                    Main.getInstance().getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", prefixOption.getAsString());
+                    SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", prefixOption.getAsString());
                     commandEvent.reply(commandEvent.getResource("message.prefix.success", prefixOption.getAsString()), 5);
                 } else {
                     commandEvent.reply(commandEvent.getResource("message.default.usage","prefix PREFIX", 5));
@@ -42,7 +42,7 @@ public class Prefix implements ICommand {
                     commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
                     commandEvent.reply(commandEvent.getResource("message.default.usage","prefix PREFIX", 5));
                 } else {
-                    Main.getInstance().getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", commandEvent.getArguments()[0]);
+                    SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", commandEvent.getArguments()[0]);
                     commandEvent.reply(commandEvent.getResource("message.prefix.success", commandEvent.getArguments()[0]), 5);
                 }
             }

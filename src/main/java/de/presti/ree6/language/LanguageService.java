@@ -1,7 +1,7 @@
 package de.presti.ree6.language;
 
 import de.presti.ree6.commands.CommandEvent;
-import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.external.RequestUtility;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
@@ -201,10 +201,10 @@ public class LanguageService {
         if (guildId == -1) {
             resource = getDefault(key, parameter);
         } else {
-            resource = getByLocale(Main.getInstance().getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "configuration_language").getStringValue(), key, parameter);
+            resource = getByLocale(SQLSession.getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "configuration_language").getStringValue(), key, parameter);
         }
         resource = resource
-                .replace("{guild_prefix}", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(guildId + "", "chatprefix").getStringValue());
+                .replace("{guild_prefix}", SQLSession.getSqlConnector().getSqlWorker().getSetting(guildId + "", "chatprefix").getStringValue());
 
         return resource;
     }
@@ -222,7 +222,7 @@ public class LanguageService {
 
         if (interaction.getGuild() != null)
             resource = resource
-                    .replace("{guild_prefix}", Main.getInstance().getSqlConnector().getSqlWorker().getSetting(interaction.getGuild().getId(), "chatprefix").getStringValue());
+                    .replace("{guild_prefix}", SQLSession.getSqlConnector().getSqlWorker().getSetting(interaction.getGuild().getId(), "chatprefix").getStringValue());
 
         return resource;
     }

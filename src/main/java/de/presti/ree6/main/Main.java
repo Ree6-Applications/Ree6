@@ -3,22 +3,26 @@ package de.presti.ree6.main;
 import com.google.gson.JsonObject;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
-import de.presti.ree6.audio.AudioPlayerSendHandler;
-import de.presti.ree6.audio.music.GuildMusicManager;
 import de.presti.ree6.audio.music.MusicWorker;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.bot.version.BotVersion;
+import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandManager;
+import de.presti.ree6.commands.interfaces.Command;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.events.GameEvents;
 import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.MenuEvents;
 import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.events.LoggerQueue;
-import de.presti.ree6.sql.SQLConnector;
+import de.presti.ree6.sql.DatabaseTyp;
+import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
+import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
@@ -34,7 +38,6 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Main Application class, used to store Instances of System Relevant classes.
@@ -60,11 +63,6 @@ public class Main {
      * Addon Manager, used to manage the Addons.
      */
     AddonManager addonManager;
-
-    /**
-     * Instance of the SQL-Connector used to manage the connection between the SQL Server and the Application.
-     */
-    SQLConnector sqlConnector;
 
     /**
      * Instance of the LoggerQueue, used to merge Logs to prevent Rate-Limits.
@@ -131,14 +129,32 @@ public class Main {
 
         log.info("Starting Ree6!");
 
-        // Create a new connection between the Application and the SQL-Server.
-        instance.sqlConnector = new SQLConnector(instance.config.getConfiguration().getString("hikari.sql.user"),
+        DatabaseTyp databaseTyp;
+
+        switch (getInstance().getConfig().getConfiguration().getString("hikari.misc.storage").toLowerCase()) {
+            case "mariadb" -> databaseTyp = DatabaseTyp.MariaDB;
+
+            default -> databaseTyp = DatabaseTyp.SQLite;
+        }
+
+        new SQLSession(instance.config.getConfiguration().getString("hikari.sql.user"),
                 instance.config.getConfiguration().getString("hikari.sql.db"), instance.config.getConfiguration().getString("hikari.sql.pw"),
-                instance.config.getConfiguration().getString("hikari.sql.host"), instance.config.getConfiguration().getInt("hikari.sql.port"));
+                instance.config.getConfiguration().getString("hikari.sql.host"), instance.config.getConfiguration().getInt("hikari.sql.port"),
+                instance.config.getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
+                instance.config.getConfiguration().getInt("hikari.misc.poolSize"));
 
         try {
             // Create the Command-Manager instance.
             instance.commandManager = new CommandManager();
+            // Create Command Settings.
+            for (ICommand command : getInstance().getCommandManager().getCommands()) {
+
+                // Skip the hidden Commands.
+                if (command.getClass().getAnnotation(Command.class).category() == Category.HIDDEN) continue;
+
+                SettingsManager.getSettings().add(new Setting("-1",
+                        "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase(), true));
+            }
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
@@ -176,29 +192,29 @@ public class Main {
 
         ThreadUtil.createThread(x -> {
             log.info("Loading Notifier data.");
-            List<ChannelStats> channelStats = instance.sqlConnector.getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats", null);
+            List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats", null);
 
             // Register all Twitch Channels.
-            instance.notifier.registerTwitchChannel(instance.sqlConnector.getSqlWorker().getAllTwitchNames());
+            instance.notifier.registerTwitchChannel(SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames());
             instance.notifier.registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).toList());
 
             // Register the Event-handler.
             instance.notifier.registerTwitchEventHandler();
 
             // Register all Twitter Users.
-            instance.notifier.registerTwitterUser(instance.sqlConnector.getSqlWorker().getAllTwitterNames());
+            instance.notifier.registerTwitterUser(SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames());
             instance.notifier.registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).filter(Objects::nonNull).toList());
 
             // Register all YouTube channels.
-            instance.notifier.registerYouTubeChannel(instance.sqlConnector.getSqlWorker().getAllYouTubeChannels());
+            instance.notifier.registerYouTubeChannel(SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels());
             instance.notifier.registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).filter(Objects::nonNull).toList());
 
             // Register all Reddit Subreddits.
-            instance.notifier.registerSubreddit(instance.sqlConnector.getSqlWorker().getAllSubreddits());
+            instance.notifier.registerSubreddit(SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits());
             instance.notifier.registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).filter(Objects::nonNull).toList());
 
             // Register all Instagram Users.
-            instance.notifier.registerInstagramUser(instance.sqlConnector.getSqlWorker().getAllInstagramUsers());
+            instance.notifier.registerInstagramUser(SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers());
             instance.notifier.registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
         }, t -> Sentry.captureException(t.getCause()));
 
@@ -254,9 +270,9 @@ public class Main {
         }
 
         // Check if there is an SQL-connection if so, shutdown.
-        if (sqlConnector != null && (sqlConnector.isConnected())) {
+        if (SQLSession.getSqlConnector() != null && (SQLSession.getSqlConnector().isConnected())) {
             log.info("[Main] Closing Database Connection!");
-            getSqlConnector().close();
+            SQLSession.getSqlConnector().close();
             log.info("[Main] Closed Database Connection!");
         }
 
@@ -302,7 +318,7 @@ public class Main {
                 log.info("[Stats] ");
 
                 LocalDate yesterday = LocalDate.now().minusDays(1);
-                Statistics statistics = sqlConnector.getSqlWorker().getStatistics(yesterday.getDayOfMonth(), yesterday.getMonthValue(), yesterday.getYear());
+                Statistics statistics = SQLSession.getSqlConnector().getSqlWorker().getStatistics(yesterday.getDayOfMonth(), yesterday.getMonthValue(), yesterday.getYear());
                 JsonObject jsonObject = statistics != null ? statistics.getStatsObject() : new JsonObject();
                 JsonObject guildStats = statistics != null && jsonObject.has("guild") ? jsonObject.getAsJsonObject("guild") : new JsonObject();
 
@@ -311,11 +327,11 @@ public class Main {
 
                 jsonObject.add("guild", guildStats);
 
-                sqlConnector.getSqlWorker().updateStatistic(jsonObject);
+                SQLSession.getSqlConnector().getSqlWorker().updateStatistic(jsonObject);
 
                 Calendar currentCalendar = Calendar.getInstance();
 
-                getSqlConnector().getSqlWorker()
+                SQLSession.getSqlConnector().getSqlWorker()
                         .getBirthdays().stream().filter(birthday -> {
                             Calendar calendar = Calendar.getInstance();
                             calendar.setTime(birthday.getBirthdate());
@@ -371,15 +387,6 @@ public class Main {
      */
     public AddonManager getAddonManager() {
         return addonManager;
-    }
-
-    /**
-     * Retrieve the Instance of the SQL-Connector.
-     *
-     * @return {@link SQLConnector} Instance of the SQL-Connector.
-     */
-    public SQLConnector getSqlConnector() {
-        return sqlConnector;
     }
 
     /**

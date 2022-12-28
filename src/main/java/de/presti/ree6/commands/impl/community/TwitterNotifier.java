@@ -5,6 +5,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -33,7 +34,7 @@ public class TwitterNotifier implements ICommand {
             if(commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
                 StringBuilder end = new StringBuilder("```\n");
 
-                for(String users : Main.getInstance().getSqlConnector().getSqlWorker().getAllTwitterNames(commandEvent.getGuild().getId())) {
+                for(String users : SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames(commandEvent.getGuild().getId())) {
                     end.append(users).append("\n");
                 }
 
@@ -54,7 +55,7 @@ public class TwitterNotifier implements ICommand {
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-TwitterNotifier-" + name).queue(w -> Main.getInstance().getSqlConnector().getSqlWorker().addTwitterWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
+                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-TwitterNotifier-" + name).queue(w -> SQLSession.getSqlConnector().getSqlWorker().addTwitterWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
                 commandEvent.reply(commandEvent.getResource("message.twitterNotifier.added",name), 5);
 
                 if (!Main.getInstance().getNotifier().isTwitterRegistered(name)) {
@@ -68,7 +69,7 @@ public class TwitterNotifier implements ICommand {
         } else if(commandEvent.getArguments().length == 2) {
             String name = commandEvent.getArguments()[1];
             if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                Main.getInstance().getSqlConnector().getSqlWorker().removeTwitterWebhook(commandEvent.getGuild().getId(), name);
+                SQLSession.getSqlConnector().getSqlWorker().removeTwitterWebhook(commandEvent.getGuild().getId(), name);
                 commandEvent.reply(commandEvent.getResource("message.twitterNotifier.removed",name), 5);
 
                 if (Main.getInstance().getNotifier().isTwitterRegistered(name)) {

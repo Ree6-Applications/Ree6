@@ -6,6 +6,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.stats.CommandStats;
 import de.presti.ree6.sql.entities.stats.GuildCommandStats;
 import de.presti.ree6.utils.data.Data;
@@ -65,13 +66,13 @@ public class Stats implements ICommand {
 
         StringBuilder end = new StringBuilder();
 
-        for (GuildCommandStats values : Main.getInstance().getSqlConnector().getSqlWorker().getStats(commandEvent.getGuild().getId())) {
+        for (GuildCommandStats values : SQLSession.getSqlConnector().getSqlWorker().getStats(commandEvent.getGuild().getId())) {
             end.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
         }
 
         StringBuilder end2 = new StringBuilder();
 
-        for (CommandStats values : Main.getInstance().getSqlConnector().getSqlWorker().getStatsGlobal()) {
+        for (CommandStats values : SQLSession.getSqlConnector().getSqlWorker().getStatsGlobal()) {
             end2.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
         }
 

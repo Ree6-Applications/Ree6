@@ -5,7 +5,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.level.UserLevel;
 import de.presti.ree6.utils.data.ImageCreationUtility;
 import net.dv8tion.jda.api.entities.Member;
@@ -80,10 +80,9 @@ Level implements ICommand {
     public void sendLevel(Member member, CommandEvent commandEvent, String type) {
 
         UserLevel userLevel = type.equalsIgnoreCase("voice") ?
-                Main.getInstance().getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getId(), member.getId()) :
-                Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getId());
+                SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getId(), member.getId()) :
+                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getId());
 
-        userLevel.setUser(member.getUser());
             try {
                 MessageCreateBuilder createBuilder = new MessageCreateBuilder();
                 createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createRankImage(userLevel), "rank.png"));

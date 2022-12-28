@@ -66,11 +66,11 @@ public class Blacklist implements ICommand {
                             commandEvent.reply(commandEvent.getResource("message.blacklist.addedList","```" + end + "```"), 5);
                         } else {
                             ModerationUtil.blacklist(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
-                            commandEvent.reply(commandEvent.getResource("message.blacklist.list.added", commandEvent.getArguments()[1]), 5);
+                            commandEvent.reply(commandEvent.getResource("message.blacklist.added", commandEvent.getArguments()[1]), 5);
                         }
                     } else if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
                         ModerationUtil.removeBlacklist(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
-                        commandEvent.reply(commandEvent.getResource("message.blacklist.list.removed", commandEvent.getArguments()[1]), 5);
+                        commandEvent.reply(commandEvent.getResource("message.blacklist.removed", commandEvent.getArguments()[1]), 5);
                     } else {
                         commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
                         commandEvent.reply(commandEvent.getResource("message.default.usage","blacklist add/remove/list"),5);

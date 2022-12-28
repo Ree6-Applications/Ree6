@@ -6,7 +6,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.Permission;
@@ -69,8 +69,8 @@ public class Import implements ICommand {
 
                         if (id.isJsonPrimitive() && xp.isJsonPrimitive()) {
                             ChatUserLevel chatUserLevel;
-                            if (Main.getInstance().getSqlConnector().getSqlWorker().existsInChatLevel(commandEvent.getGuild().getId(), id.getAsString())) {
-                                chatUserLevel = Main.getInstance().getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), id.getAsString());
+                            if (SQLSession.getSqlConnector().getSqlWorker().existsInChatLevel(commandEvent.getGuild().getId(), id.getAsString())) {
+                                chatUserLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), id.getAsString());
                                 if (chatUserLevel.getExperience() > xp.getAsLong()) {
                                     return;
                                 }
@@ -78,7 +78,7 @@ public class Import implements ICommand {
                                 chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getId(), id.getAsString(), xp.getAsLong());
                             }
 
-                            Main.getInstance().getSqlConnector().getSqlWorker().updateEntity(chatUserLevel);
+                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel);
                         }
                     }
                 });

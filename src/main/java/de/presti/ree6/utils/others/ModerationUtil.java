@@ -1,6 +1,6 @@
 package de.presti.ree6.utils.others;
 
-import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.apis.GoogleVisionAPI;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class ModerationUtil {
      * @return an {@link ArrayList} with every Blacklisted word from the Guild.
      */
     public static List<String> getBlacklist(String guildId) {
-        return Main.getInstance().getSqlConnector().getSqlWorker().getChatProtectorWords(guildId);
+        return SQLSession.getSqlConnector().getSqlWorker().getChatProtectorWords(guildId);
     }
 
     /**
@@ -60,7 +60,7 @@ public class ModerationUtil {
      * @return true, if the Server should be moderated.
      */
     public static boolean shouldModerate(String guildId) {
-        return Main.getInstance().getSqlConnector().getSqlWorker().isChatProtectorSetup(guildId);
+        return SQLSession.getSqlConnector().getSqlWorker().isChatProtectorSetup(guildId);
     }
 
     /**
@@ -69,7 +69,10 @@ public class ModerationUtil {
      * @param guildId the ID of the Guild.
      * @param fileUrl the URL of the Image.
      * @return true, if the Image contains any Blacklisted Words.
+     *
+     * @deprecated This method is deprecated, since it is not used anymore and the support for GoogleVision Moderation has been dropped by us.
      */
+    @Deprecated(forRemoval = true, since = "2.1.4")
     public static boolean checkImage(String guildId, String fileUrl) {
         return Arrays.stream(GoogleVisionAPI.retrieveTextFromImage(fileUrl)).anyMatch(word -> checkBlacklist(guildId, word));
     }
@@ -82,7 +85,7 @@ public class ModerationUtil {
      */
     public static void blacklist(String guildId, String word) {
         if (!getBlacklist(guildId).contains(word)) {
-            Main.getInstance().getSqlConnector().getSqlWorker().addChatProtectorWord(guildId, word);
+            SQLSession.getSqlConnector().getSqlWorker().addChatProtectorWord(guildId, word);
         }
     }
 
@@ -104,7 +107,7 @@ public class ModerationUtil {
      */
     public static void removeBlacklist(String guildId, String word) {
         if (getBlacklist(guildId).contains(word)) {
-            Main.getInstance().getSqlConnector().getSqlWorker().removeChatProtectorWord(guildId, word);
+            SQLSession.getSqlConnector().getSqlWorker().removeChatProtectorWord(guildId, word);
         }
     }
 
