@@ -5,6 +5,7 @@ import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
+import de.presti.ree6.news.AnnouncementManager;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.others.ThreadUtil;
@@ -205,6 +206,18 @@ public class CommandManager {
      * @return true, if a command has been performed.
      */
     public boolean perform(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
+
+        ThreadUtil.createThread(x -> {
+            AnnouncementManager.getAnnouncementList().forEach(a -> {
+                if (!AnnouncementManager.hasReceivedAnnouncement(guild.getIdLong(), a.id())) {
+                    textChannel.sendMessageEmbeds(new EmbedBuilder().setTitle(a.title())
+                            .setAuthor("Ree6-Info")
+                            .setDescription(a.content())
+                            .setColor(BotWorker.randomEmbedColor()).build()).queue();
+                    AnnouncementManager.addReceivedAnnouncement(guild.getIdLong(), a.id());
+                }
+            });
+        }, null);
 
         // Check if the User is under Cooldown.
         if (isTimeout(member.getUser())) {
