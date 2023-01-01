@@ -13,6 +13,8 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+import java.util.Arrays;
+
 /**
  * A command to create an announcement.
  */
@@ -24,26 +26,31 @@ public class Announcement implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        if (!commandEvent.isSlashCommand()) {
-            commandEvent.reply(commandEvent.getResource("message.default.slashCommandOnly"), 5);
-            return;
-        }
 
         if (!commandEvent.getMember().getUser().getId().equalsIgnoreCase("321580743488831490")) {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission"), 5);
             return;
         }
 
-        OptionMapping title = commandEvent.getSlashCommandInteractionEvent().getOption("title");
-        OptionMapping content = commandEvent.getSlashCommandInteractionEvent().getOption("content");
-
-        if (title == null || content == null) {
+        if (commandEvent.getArguments().length > 2) {
             commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
             return;
         }
 
-        de.presti.ree6.news.Announcement announcement = new de.presti.ree6.news.Announcement(RandomUtils.randomString(16), title.getAsString(), content.getAsString());
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (String s : Arrays.stream(commandEvent.getArguments()).skip(1).toArray(String[]::new)) {
+            stringBuilder.append(s).append(" ");
+        }
+
+        String title = commandEvent.getArguments()[0].replace("%_%", " ");
+
+        de.presti.ree6.news.Announcement announcement =
+                new de.presti.ree6.news.Announcement(RandomUtils.randomString(16), title,
+                        stringBuilder.toString());
+
         AnnouncementManager.addAnnouncement(announcement);
+
         commandEvent.reply(commandEvent.getResource("message.announcement.added"), 5);
     }
 
