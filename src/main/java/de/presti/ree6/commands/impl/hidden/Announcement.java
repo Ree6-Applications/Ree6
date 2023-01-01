@@ -32,7 +32,7 @@ public class Announcement implements ICommand {
             return;
         }
 
-        if (commandEvent.getArguments().length > 2) {
+        if (commandEvent.getArguments().length < 2) {
             commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
             return;
         }
@@ -43,7 +43,7 @@ public class Announcement implements ICommand {
             stringBuilder.append(s).append(" ");
         }
 
-        String title = commandEvent.getArguments()[0].replace("%_%", " ");
+        String title = commandEvent.getArguments()[0].replace("%l%", " ");
 
         de.presti.ree6.news.Announcement announcement =
                 new de.presti.ree6.news.Announcement(RandomUtils.randomString(16), title,
