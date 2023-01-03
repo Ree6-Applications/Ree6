@@ -50,7 +50,7 @@
     <dependencies>
         <!-- Discord -->
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
             <version>8d583fb6c1</version>
         </dependency>
