@@ -30,7 +30,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@7cb52e275081c4e9294d257dd188716a82c82670
+        uses: docker/metadata-action@9e6ae02878038daef2841c9e4bb61e486c726684
         with:
           images: prestischmesti/ree6-bot
 
