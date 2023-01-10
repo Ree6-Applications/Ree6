@@ -831,7 +831,22 @@ public class MenuEvents extends ListenerAdapter {
                     return;
                 }
 
+                String value = event.getInteraction().getValues().get(0);
+
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                if (value.equalsIgnoreCase("more")) {
+                    java.util.List<SelectOption> optionList = new ArrayList<>();
+
+                    for (TextChannel channel : event.getGuild().getTextChannels().stream().skip(24).toList()) {
+                        optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                    }
+
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.setupDescription"));
+
+                    event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTickets", LanguageService.getByGuild(event.getGuild(), "label.selectChannel"), 1, 1, false, optionList)).queue();
+                    return;
+                }
 
                 MessageChannel messageChannel = event.getGuild().getTextChannelById(event.getInteraction().getValues().get(0));
 
@@ -882,6 +897,11 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "ticketsSetup" -> {
                         for (TextChannel channel : event.getGuild().getTextChannels()) {
+                            if (optionList.size() == 24) {
+                                optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.more"), "more"));
+                                break;
+                            }
+
                             optionList.add(SelectOption.of(channel.getName(), channel.getId()));
                         }
 
@@ -916,9 +936,24 @@ public class MenuEvents extends ListenerAdapter {
                     return;
                 }
 
+                String value = event.getInteraction().getValues().get(0);
+
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
-                VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getInteraction().getValues().get(0));
+                if (value.equalsIgnoreCase("more")) {
+                    java.util.List<SelectOption> optionList = new ArrayList<>();
+
+                    for (VoiceChannel channel : event.getGuild().getVoiceChannels().stream().skip(24).toList()) {
+                        optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                    }
+
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.setupDescription"));
+
+                    event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTempVoicechannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel"), 1, 1, false, optionList)).queue();
+                    return;
+                }
+
+                VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(value);
 
                 if (voiceChannel != null) {
                     SQLSession.getSqlConnector().getSqlWorker().updateEntity(new TemporalVoicechannel(event.getGuild().getId(), voiceChannel.getId()));
@@ -947,6 +982,11 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "tempVoiceSetup" -> {
                         for (VoiceChannel channel : event.getGuild().getVoiceChannels()) {
+                            if (optionList.size() == 24) {
+                                optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.more"), "more"));
+                                break;
+                            }
+
                             optionList.add(SelectOption.of(channel.getName(), channel.getId()));
                         }
 
@@ -1012,6 +1052,11 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "logSetup" -> {
                         for (TextChannel channel : event.getGuild().getTextChannels()) {
+                            if (optionList.size() == 24) {
+                                optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.more"), "more"));
+                                break;
+                            }
+
                             optionList.add(SelectOption.of(channel.getName(), channel.getId()));
                         }
 
@@ -1050,9 +1095,30 @@ public class MenuEvents extends ListenerAdapter {
                     return;
                 }
 
+                String value = event.getInteraction().getValues().get(0);
+
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
-                TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getValues().get(0));
+                if (value.equals("more")) {
+                    java.util.List<SelectOption> optionList = new ArrayList<>();
+
+                    for (TextChannel channel : event.getGuild().getTextChannels().stream().skip(24).toList()) {
+                        if (optionList.size() == 24) {
+                            optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.more"), "more"));
+                            break;
+                        }
+
+                        optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                    }
+
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupDescription"));
+
+                    event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupLogChannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel"), 1, 1, false, optionList)).queue();
+                    return;
+                }
+
+
+                TextChannel textChannel = event.getGuild().getTextChannelById(value);
 
                 if (textChannel != null) {
                     textChannel.createWebhook("Ree6-Logs").queue(webhook -> {
@@ -1088,6 +1154,11 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "welcomeSetup" -> {
                         for (TextChannel channel : event.getGuild().getTextChannels()) {
+                            if (optionList.size() == 24) {
+                                optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.more"), "more"));
+                                break;
+                            }
+
                             optionList.add(SelectOption.of(channel.getName(), channel.getId()));
                         }
 
@@ -1132,6 +1203,26 @@ public class MenuEvents extends ListenerAdapter {
                 }
 
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+
+                String value = event.getInteraction().getValues().get(0);
+
+                if (value.equals("more")) {
+                    java.util.List<SelectOption> optionList = new ArrayList<>();
+
+                    for (TextChannel channel : event.getGuild().getTextChannels().stream().skip(24).toList()) {
+                        if (optionList.size() == 24) {
+                            optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.more"), "more"));
+                            break;
+                        }
+
+                        optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                    }
+
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.setupDescription"));
+
+                    event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupWelcomeChannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel"), 1, 1, false, optionList)).queue();
+                    return;
+                }
 
                 TextChannel textChannel = event.getGuild().getTextChannelById(event.getInteraction().getValues().get(0));
 

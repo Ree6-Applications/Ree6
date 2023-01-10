@@ -1,7 +1,7 @@
 language:
   name: "English (UK)"
   locale: "en-GB"
-  version: "2.1.8"
+  version: "2.1.10"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **banned.**"
@@ -175,6 +175,7 @@ label:
   error: "Error"
   game: "Game"
   viewer: "Viewer"
+  more: "More"
 message:
   default:
     usage: "Usage {guild_prefix}%s."
@@ -438,6 +439,8 @@ message:
     removed: "Successfully removed the Reaction-Role for the Role %s!"
     roleAdded: "You have received the Role %s!"
     roleRemoved: "You have lost the Role %s!"
+  announcement:
+    added: "Successfully added the Announcement!"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
@@ -523,6 +526,7 @@ command:
     rule34: "Shows a random Rule34 Image."
     rule34_slash: "Shows not safe for work Images from a specific Website."
     reactions: "Assign roles to reactions on a message!"
+    announcement: "Create an Announcement!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
