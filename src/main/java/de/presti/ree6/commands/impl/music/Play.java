@@ -103,7 +103,7 @@ public class Play implements ICommand {
 
             if (value.contains("spotify")) {
                 try {
-                    spotiftrackinfos = new SpotifyAPIHandler().convert(value);
+                    spotiftrackinfos = SpotifyAPIHandler.getInstance().convert(value);
                     isspotify = true;
                 } catch (Exception ignored) {
 

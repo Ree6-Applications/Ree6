@@ -29,7 +29,7 @@ public class Game implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        if (commandEvent.isSlashCommand()) {
+        if (!commandEvent.isSlashCommand()) {
             commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
             return;
         }

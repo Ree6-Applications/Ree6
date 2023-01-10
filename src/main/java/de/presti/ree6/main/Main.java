@@ -15,6 +15,7 @@ import de.presti.ree6.events.GameEvents;
 import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.MenuEvents;
 import de.presti.ree6.events.OtherEvents;
+import de.presti.ree6.game.impl.musicquiz.util.MusicQuizUtil;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.sql.DatabaseTyp;
@@ -24,6 +25,7 @@ import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.apis.Notifier;
+import de.presti.ree6.utils.apis.SpotifyAPIHandler;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
 import de.presti.ree6.utils.others.ThreadUtil;
@@ -184,6 +186,12 @@ public class Main {
             System.exit(0);
             return;
         }
+
+        log.info("Loading SpotifyAPI");
+        new SpotifyAPIHandler();
+
+        log.info("Loading MusicQuizUtil");
+        new MusicQuizUtil();
 
         log.info("Creating Notifier.");
 

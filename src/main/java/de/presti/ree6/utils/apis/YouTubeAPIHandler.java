@@ -61,20 +61,34 @@ public class YouTubeAPIHandler {
      * @throws Exception if there was a search problem.
      */
     public String searchYoutube(String search) throws Exception {
+        return searchYoutube(search, false);
+    }
+
+    /**
+     * Search on YouTube a specific query.
+     *
+     * @param search The query.
+     * @param forceKey if a thirdkey should be used.
+     * @return A link to the first Video result.
+     * @throws Exception if there was a search problem.
+     */
+    public String searchYoutube(String search, boolean forceKey) throws Exception {
         if (youTube == null) {
             createYouTube();
         }
+
         List<SearchResult> results = youTube.search()
                 .list(Collections.singletonList("snippet"))
                 .setQ(search)
                 .setMaxResults(2L)
-                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"))
+                .setKey(forceKey ?
+                        Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key3") :
+                        Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"))
                 .execute()
                 .getItems();
 
         if (!results.isEmpty()) {
             String videoId = results.get(0).getId().getVideoId();
-
 
             if (videoId == null) {
                 createYouTube();

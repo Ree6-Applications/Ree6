@@ -2,6 +2,7 @@ package de.presti.ree6.game.impl.musicquiz.util;
 
 import de.presti.ree6.game.impl.musicquiz.entities.MusicQuizEntry;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
+import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.others.RandomUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.ParseException;
@@ -47,8 +48,8 @@ public class MusicQuizUtil {
             String url = null;
 
             try {
-                url = SpotifyAPIHandler.getInstance().convert("https://open.spotify.com/track/" + track.getId()).get(0);
-            } catch (ParseException | SpotifyWebApiException | IOException e) {
+                url = YouTubeAPIHandler.getInstance().searchYoutube(SpotifyAPIHandler.getInstance().convert("https://open.spotify.com/track/" + track.getId()).get(0), true);
+            } catch (Exception e) {
                 log.error("Couldn't get Track from ID", e);
             }
 

@@ -98,14 +98,14 @@ public class MusicQuiz implements IGame {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle(LanguageService.getByGuild(session.getGuild(), "label.musicquiz"));
+        embedBuilder.setTitle(LanguageService.getByGuild(session.getGuild(), "label.musicQuiz"));
         embedBuilder.setColor(BotWorker.randomEmbedColor());
         embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.welcome", session.getGameIdentifier()));
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
         messageCreateBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame")).asDisabled(),
                 Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame")).asEnabled());
-        session.getChannel().sendMessage(messageCreateBuilder.build()).queue(message -> menuMessage = message);
+        menuMessage = session.getChannel().sendMessage(messageCreateBuilder.build()).complete();
 
         Main.getInstance().getMusicWorker().getGuildAudioPlayer(session.getGuild()).getPlayer().addListener(audioEventListener);
     }
@@ -172,7 +172,6 @@ public class MusicQuiz implements IGame {
      */
     @Override
     public void onMessageReceive(MessageReceivedEvent messageReceivedEvent) {
-        IGame.super.onMessageReceive(messageReceivedEvent);
 
         if (session.getGameState() != GameState.STARTED) {
             return;
@@ -212,7 +211,6 @@ public class MusicQuiz implements IGame {
      */
     @Override
     public void onButtonInteractionReceive(ButtonInteractionEvent buttonInteractionEvent) {
-        IGame.super.onButtonInteractionReceive(buttonInteractionEvent);
 
         if (buttonInteractionEvent.getComponentId().equalsIgnoreCase("game_musicquiz_skip")) {
             Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.skipSong"), 5, session.getChannel());
@@ -236,8 +234,8 @@ public class MusicQuiz implements IGame {
         for (int i = 0; i < sortedList.size(); i++) {
             MusicQuizPlayer musicQuizPlayer = sortedList.get(i);
             embedBuilder.addField(LanguageService.getByGuild(session.getGuild(), "label.position", i + 1),
-                    LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.points", musicQuizPlayer.getPoints(),
-                            musicQuizPlayer.getRelatedUser().getAsMention()), false);
+                    LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.points", musicQuizPlayer.getRelatedUser().getAsMention(),
+                            musicQuizPlayer.getPoints()), false);
         }
 
         messageEditBuilder.setEmbeds(embedBuilder.build());
