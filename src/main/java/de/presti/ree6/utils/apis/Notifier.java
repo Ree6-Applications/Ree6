@@ -15,6 +15,8 @@ import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelFollowCountUpdateEvent;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.helix.domain.User;
+import com.github.twitch4j.pubsub.events.FollowingEvent;
+import com.github.twitch4j.pubsub.events.RewardRedeemedEvent;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.PlaylistItem;
@@ -27,6 +29,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.*;
+import de.presti.ree6.streamtools.StreamActionContainer;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -111,6 +114,30 @@ public class Notifier {
                 .withClientSecret(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"))
                 .withEnablePubSub(true)
                 .build();
+
+        twitchClient.getEventManager().onEvent(RewardRedeemedEvent.class, event -> {
+            // TODO:: add a way to load all the StreamActions and convert them into StreamActionContainer for easier use!
+            List<StreamActionContainer> list = new ArrayList<>();
+            list.forEach(container -> {
+                if (!event.getRedemption().getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
+
+                if (container.getArguments().length == 0) {
+                    container.runActions(event.getRedemption().getUserInput());
+                } else  if (event.getRedemption().getReward().getId().equals(container.getArguments()[0])) {
+                    container.runActions(event.getRedemption().getUserInput());
+                }
+            });
+        });
+
+        twitchClient.getEventManager().onEvent(FollowingEvent.class, event -> {
+            // TODO:: add a way to load all the StreamActions and convert them into StreamActionContainer for easier use!
+            List<StreamActionContainer> list = new ArrayList<>();
+            list.forEach(container -> {
+                if (!event.getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
+
+                container.runActions(event.getData().getUsername());
+            });
+        });
 
         log.info("Initializing Twitter Client...");
 

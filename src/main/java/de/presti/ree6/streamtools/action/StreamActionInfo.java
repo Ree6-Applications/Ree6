@@ -4,7 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
-public @interface ActionInfo {
+public @interface StreamActionInfo {
     String name();
     String command();
     String description();

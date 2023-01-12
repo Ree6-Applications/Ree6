@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface IAction {
+public interface IStreamAction {
 
     /**
      * Run the specific action.
