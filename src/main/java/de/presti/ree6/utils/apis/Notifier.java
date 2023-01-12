@@ -10,6 +10,7 @@ import com.github.instagram4j.instagram4j.models.media.timeline.TimelineVideoMed
 import com.github.instagram4j.instagram4j.requests.feed.FeedUserRequest;
 import com.github.instagram4j.instagram4j.responses.feed.FeedUserResponse;
 import com.github.instagram4j.instagram4j.utils.IGChallengeUtils;
+import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelFollowCountUpdateEvent;
@@ -27,9 +28,12 @@ import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.StreamAction;
+import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.*;
 import de.presti.ree6.streamtools.StreamActionContainer;
+import de.presti.ree6.streamtools.StreamActionContainerCreator;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -115,9 +119,17 @@ public class Notifier {
                 .withEnablePubSub(true)
                 .build();
 
+        for (TwitchIntegration twitchIntegrations :
+                SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "SELECT * FROM TwitchIntegration", null)) {
+
+            OAuth2Credential credential = new OAuth2Credential("twitch", twitchIntegrations.getToken());
+
+            Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(credential, twitchIntegrations.getChannelId());
+            Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForSubscriptionEvents(credential, twitchIntegrations.getChannelId());
+        }
+
         twitchClient.getEventManager().onEvent(RewardRedeemedEvent.class, event -> {
-            // TODO:: add a way to load all the StreamActions and convert them into StreamActionContainer for easier use!
-            List<StreamActionContainer> list = new ArrayList<>();
+            List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(StreamAction.StreamListener.REDEMPTION);
             list.forEach(container -> {
                 if (!event.getRedemption().getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
@@ -130,8 +142,7 @@ public class Notifier {
         });
 
         twitchClient.getEventManager().onEvent(FollowingEvent.class, event -> {
-            // TODO:: add a way to load all the StreamActions and convert them into StreamActionContainer for easier use!
-            List<StreamActionContainer> list = new ArrayList<>();
+            List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(StreamAction.StreamListener.FOLLOW);
             list.forEach(container -> {
                 if (!event.getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
