@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * From <a href="https://github.com/jagrosh/MusicBot">J MusicBot</a>
- * @author John Grosh <john.a.grosh@gmail.com>
+ * @author <a href="mailto:john.a.grosh@gmail.com">John Grosh</a>
  */
 public class FormatUtil {
 
