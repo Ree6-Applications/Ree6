@@ -115,7 +115,6 @@ public class RequestUtility {
                 }
 
                 return jsonObject;
-
             } catch (Exception ex) {
                 log.error("Couldn't send a Request!", ex);
             }
@@ -126,6 +125,31 @@ public class RequestUtility {
         }
 
         return jsonObject;
+    }
+
+    /**
+     * Send a Request.
+     * @param request the Request.
+     * @return a {@link byte[]}
+     */
+    public static byte[] requestBytes(Request request) {
+        try (InputStream httpResponse = request(request)) {
+
+            if (httpResponse == null) {
+                return new byte[0];
+            }
+
+            try {
+                return httpResponse.readAllBytes();
+            } catch (Exception ex) {
+                log.error("Couldn't send a Request!", ex);
+            }
+        } catch (IOException e) {
+            log.error("Couldn't send a Request!", e);
+            return new byte[0];
+        }
+
+        return new byte[0];
     }
 
     /**
@@ -281,6 +305,33 @@ public class RequestUtility {
              */
             public RequestBuilder method(Method method) {
                 this.method = method;
+                return this;
+            }
+
+            /**
+             * Change the Request method to GET.
+             * @return the RequestBuilder.
+             */
+            public RequestBuilder GET() {
+                this.method = Method.GET;
+                return this;
+            }
+
+            /**
+             * Change the Request method to POST.
+             * @return the RequestBuilder.
+             */
+            public RequestBuilder POST() {
+                this.method = Method.POST;
+                return this;
+            }
+
+            /**
+             * Change the Request method to PUT.
+             * @return the RequestBuilder.
+             */
+            public RequestBuilder PUT() {
+                this.method = Method.PUT;
                 return this;
             }
 
