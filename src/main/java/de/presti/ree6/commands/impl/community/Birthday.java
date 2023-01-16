@@ -50,9 +50,9 @@ public class Birthday implements ICommand {
             } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
                 if (GenericValidator.isDate(commandEvent.getArguments()[1], "dd.MM.yyyy", true)) {
                     SQLSession.getSqlConnector().getSqlWorker().addBirthday(commandEvent.getGuild().getId(), commandEvent.getChannel().getId(), commandEvent.getMember().getId(), commandEvent.getArguments()[1]);
-                    commandEvent.reply(commandEvent.getResource("message.added.self"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.birthday.added.self"), 5);
                 } else {
-                    commandEvent.reply(commandEvent.getResource("message.other.dateError"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.birthday.other.dateError"), 5);
                 }
             } else {
                 commandEvent.reply(commandEvent.getResource("message.default.usage", "birthday add/remove [Birthday(day.month.year)] [@User]"), 5);
@@ -72,7 +72,7 @@ public class Birthday implements ICommand {
                         commandEvent.reply(commandEvent.getResource("message.birthday.added.noPerms"), 5);
                     }
                 } else {
-                    commandEvent.reply(commandEvent.getResource("message.other.dateError"), 5);
+                    commandEvent.reply(commandEvent.getResource("message.birthday.other.dateError"), 5);
                 }
             } else {
                 commandEvent.reply(commandEvent.getResource("message.default.usage","birthday add/remove [Birthday(day.month.year)] [@User]"), 5);
