@@ -340,7 +340,7 @@ message:
     songQueueEmpty: "The Queue is empty!"
     songQueue: "The Queue contains the following Songs: %s"
     volume:
-      success: "Successfully set the Volume to %s%!"
+      success: "Successfully set the Volume to %s!"
       invalid: "Please provide a valid Volume!"
     notFound: "Couldn't find the Song ``%s``!"
     notFoundMultiple: "Couldn't find ``%s`` Songs!"
