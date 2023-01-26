@@ -11,6 +11,7 @@ import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.data.Data;
+import de.presti.wrapper.entities.channel.ChannelResult;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -250,14 +251,14 @@ public class MenuEvents extends ListenerAdapter {
                     category = categories.get(0);
                 }
 
-                com.google.api.services.youtube.model.Channel youTubeChannel;
+                ChannelResult youTubeChannel;
                 try {
                     if (YouTubeAPIHandler.getInstance().isValidChannelId(youtubeChannelName)) {
-                        youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelById(youtubeChannelName, "statistics");
+                        youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelById(youtubeChannelName);
                     } else {
-                        youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(youtubeChannelName, "statistics");
+                        youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(youtubeChannelName);
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     embedBuilder = embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu"))
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
@@ -277,7 +278,7 @@ public class MenuEvents extends ListenerAdapter {
                     return;
                 }
 
-                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.youtubeCountName", (youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount())), category).queue(voiceChannel -> {
+                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText()), category).queue(voiceChannel -> {
                     ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
                     if (channelStats != null) {
 
