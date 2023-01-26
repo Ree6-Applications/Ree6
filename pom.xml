@@ -139,7 +139,7 @@
         <dependency>
             <groupId>com.github.Ree6-Applications</groupId>
             <artifactId>Ree6-SQL</artifactId>
-            <version>8e7b5b6af7</version>
+            <version>1.3.1</version>
         </dependency>
 
         <!-- Logging -->
