@@ -48,7 +48,7 @@ public class MusicQuizUtil {
             String url = null;
 
             try {
-                url = YouTubeAPIHandler.getInstance().searchYoutube(SpotifyAPIHandler.getInstance().convert("https://open.spotify.com/track/" + track.getId()).get(0), true);
+                url = YouTubeAPIHandler.getInstance().searchYoutube(SpotifyAPIHandler.getInstance().convert("https://open.spotify.com/track/" + track.getId()).get(0));
             } catch (Exception e) {
                 log.error("Couldn't get Track from ID", e);
             }
