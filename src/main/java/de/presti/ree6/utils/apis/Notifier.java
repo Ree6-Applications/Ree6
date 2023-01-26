@@ -15,11 +15,6 @@ import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelFollowCountUpdateEvent;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.helix.domain.User;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.util.DateTime;
-import com.google.api.services.youtube.model.PlaylistItem;
-import com.google.api.services.youtube.model.PlaylistItemContentDetails;
-import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.language.LanguageService;
@@ -29,11 +24,14 @@ import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.*;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
+import de.presti.wrapper.entities.VideoResult;
+import de.presti.wrapper.entities.channel.ChannelResult;
 import lombok.extern.slf4j.Slf4j;
 import masecla.reddit4j.client.Reddit4J;
 import masecla.reddit4j.objects.Sorting;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.utils.TimeFormat;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -494,9 +492,9 @@ public class Notifier {
 
                     List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", channel));
                     if (!channelStats.isEmpty()) {
-                        com.google.api.services.youtube.model.Channel youTubeChannel;
+                        ChannelResult youTubeChannel;
                         try {
-                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(channel, "statistics");
+                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(channel);
                         } catch (IOException e) {
                             return;
                         }
@@ -507,7 +505,7 @@ public class Notifier {
 
                                 if (guildChannel == null) continue;
 
-                                String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getStatistics().getHiddenSubscriberCount() ? "HIDDEN" : youTubeChannel.getStatistics().getSubscriberCount());
+                                String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText());
                                 if (!guildChannel.getName().equalsIgnoreCase(newName)) {
                                     if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
                                         continue;
@@ -522,13 +520,10 @@ public class Notifier {
 
                     if (webhooks.isEmpty()) return;
 
-                    List<PlaylistItem> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
+                    List<VideoResult> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
                     if (!playlistItemList.isEmpty()) {
-                        for (PlaylistItem playlistItem : playlistItemList) {
-                            PlaylistItemSnippet snippet = playlistItem.getSnippet();
-                            DateTime dateTime = snippet.getPublishedAt();
-                            if (dateTime != null && dateTime.getValue() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) {
-                                PlaylistItemContentDetails contentDetails = playlistItem.getContentDetails();
+                        for (VideoResult playlistItem : playlistItemList) {
+                            if (playlistItem.getUploadDate() != -1 && playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) {
                                 // Create Webhook Message.
                                 WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
@@ -537,16 +532,19 @@ public class Notifier {
 
                                 WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
-                                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(snippet.getChannelTitle(), null));
+                                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(playlistItem.getOwnerId(), null));
                                 webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("YouTube Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
 
-                                webhookEmbedBuilder.setImageUrl(snippet.getThumbnails().getHigh().getUrl());
+                                webhookEmbedBuilder.setImageUrl(playlistItem.getThumbnail());
 
                                 // Set rest of the Information.
-                                webhookEmbedBuilder.setDescription(snippet.getChannelTitle() + " just uploaded a new Video! Check it out <https://www.youtube.com/watch?v=" + contentDetails.getVideoId() + "/> !");
-                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", snippet.getTitle()));
-                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", snippet.getDescription().isEmpty() ? "No Description" : snippet.getDescription()));
-                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", snippet.getPublishedAt().toStringRfc3339()));
+                                webhookEmbedBuilder.setDescription(playlistItem.getOwnerId() + " just uploaded a new Video! Check it out <https://www.youtube.com/watch?v=" + playlistItem.getId() + "/> !");
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", playlistItem.getTitle()));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet()));
+
+                                if (playlistItem.getUploadDate() != -1)
+                                    webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", TimeFormat.DATE_TIME_SHORT.format(playlistItem.getUploadDate())));
+
                                 webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
                                 webhookEmbedBuilder.setColor(Color.RED.getRGB());
 
@@ -557,8 +555,6 @@ public class Notifier {
                         }
                     }
                 }
-            } catch (GoogleJsonResponseException googleJsonResponseException) {
-                log.error("Encountered an error, while trying to get the YouTube Uploads!", googleJsonResponseException);
             } catch (Exception e) {
                 log.error("Couldn't get upload data!", e);
             }

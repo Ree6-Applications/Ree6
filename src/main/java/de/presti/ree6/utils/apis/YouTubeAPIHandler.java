@@ -1,21 +1,14 @@
 package de.presti.ree6.utils.apis;
 
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.Channel;
-import com.google.api.services.youtube.model.ChannelListResponse;
-import com.google.api.services.youtube.model.PlaylistItem;
-import com.google.api.services.youtube.model.PlaylistItemListResponse;
-import com.google.api.services.youtube.model.SearchListResponse;
-import com.google.api.services.youtube.model.SearchResult;
-import de.presti.ree6.main.Main;
+import de.presti.wrapper.YouTubeWrapper;
+import de.presti.wrapper.entities.VideoResult;
+import de.presti.wrapper.entities.channel.ChannelResult;
+import de.presti.wrapper.entities.channel.ChannelVideoResult;
+import de.presti.wrapper.entities.search.ChannelSearchResult;
+import de.presti.wrapper.entities.search.SearchResult;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 // TODO:: check if there is a way to make this more efficient, maybe use a cache system or merge multiple requests into one and split the result for further use again?
@@ -27,29 +20,14 @@ import java.util.List;
 public class YouTubeAPIHandler {
 
     /**
-     * The YouTube API.
-     */
-    private YouTube youTube;
-
-    /**
      * The YouTube API-Handler.
      */
     public static YouTubeAPIHandler instance;
 
     /**
-     * Instance of the JsonFactory.
-     */
-    private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-
-    /**
      * Constructor.
      */
     public YouTubeAPIHandler() {
-        try {
-            createYouTube();
-        } catch (Exception e) {
-            log.error("Couldn't create a YouTube Instance", e);
-        }
         instance = this;
     }
 
@@ -61,41 +39,12 @@ public class YouTubeAPIHandler {
      * @throws Exception if there was a search problem.
      */
     public String searchYoutube(String search) throws Exception {
-        return searchYoutube(search, false);
-    }
-
-    /**
-     * Search on YouTube a specific query.
-     *
-     * @param search The query.
-     * @param forceKey if a thirdkey should be used.
-     * @return A link to the first Video result.
-     * @throws Exception if there was a search problem.
-     */
-    public String searchYoutube(String search, boolean forceKey) throws Exception {
-        if (youTube == null) {
-            createYouTube();
-        }
-
-        List<SearchResult> results = youTube.search()
-                .list(Collections.singletonList("snippet"))
-                .setQ(search)
-                .setMaxResults(2L)
-                .setKey(forceKey ?
-                        Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key3") :
-                        Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key"))
-                .execute()
-                .getItems();
+        List<SearchResult> results = YouTubeWrapper.search(search, SearchResult.FILTER.VIDEO);
 
         if (!results.isEmpty()) {
-            String videoId = results.get(0).getId().getVideoId();
+            String videoId = results.get(0).getId();
 
-            if (videoId == null) {
-                createYouTube();
-                return searchYoutube(search);
-            } else {
-                return "https://www.youtube.com/watch?v=" + videoId;
-            }
+            return "https://www.youtube.com/watch?v=" + videoId;
         }
 
         return null;
@@ -108,28 +57,15 @@ public class YouTubeAPIHandler {
      * @return A list of all Video ids.
      * @throws Exception if something went wrong.
      */
-    public List<PlaylistItem> getYouTubeUploads(String channelId) throws Exception {
-        List<PlaylistItem> playlistItemList = new ArrayList<>();
+    public List<VideoResult> getYouTubeUploads(String channelId) throws Exception {
+        List<VideoResult> playlistItemList = new ArrayList<>();
 
-        Channel channel = isValidChannelId(channelId) ?
-                getYouTubeChannelById(channelId, "snippet, contentDetails") :
-                getYouTubeChannelByName(channelId, "snippet, contentDetails");
+        if (isValidChannelId(channelId)) {
+            ChannelVideoResult channelVideo = YouTubeWrapper.getChannelVideo(channelId);
 
-        if (channel != null) {
-            YouTube.PlaylistItems.List playlistItemRequest =
-                    youTube.playlistItems().list(Collections.singletonList("id,contentDetails,snippet"));
-            playlistItemRequest.setPlaylistId(channel.getContentDetails().getRelatedPlaylists().getUploads());
-            playlistItemRequest.setFields(
-                    "items(contentDetails/videoId,snippet/title,snippet/description,snippet/thumbnails,snippet/publishedAt,snippet/channelTitle),nextPageToken,pageInfo");
-            playlistItemRequest.setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key2"));
-
-            String nextToken = "";
-            while (nextToken != null) {
-                playlistItemRequest.setPageToken(nextToken);
-                PlaylistItemListResponse playlistItemListResponse = playlistItemRequest.execute();
-
-                playlistItemList.addAll(playlistItemListResponse.getItems());
-                nextToken = playlistItemListResponse.getNextPageToken();
+            // Convert it to an actual Video instead of a stripped down version.
+            for (VideoResult video : channelVideo.getVideos()) {
+                playlistItemList.add(YouTubeWrapper.getVideo(video.getId()));
             }
         }
 
@@ -138,79 +74,35 @@ public class YouTubeAPIHandler {
 
     /**
      * Get an YouTube channel by id.
+     *
      * @param channelName The channel name.
-     * @param listValues The values to get.
      * @return The channel.
-     * @throws IOException if something went wrong.
+     * @throws Exception if something went wrong.
      */
-    public Channel getYouTubeChannelBySearch(String channelName, String listValues) throws IOException {
-        YouTube.Search.List request = youTube.search().list(Collections.singletonList("snippet"))
-                .setQ(channelName)
-                .setType(Collections.singletonList("channel"))
-                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key2"));
-        SearchListResponse channelListResponse = request.execute();
+    public ChannelResult getYouTubeChannelBySearch(String channelName) throws Exception {
+        ChannelSearchResult channelSearchResult = (ChannelSearchResult) YouTubeWrapper.search(channelName, SearchResult.FILTER.CHANNEL).get(0);
 
-        if (channelListResponse != null &&
-                channelListResponse.getItems() != null &&
-                !channelListResponse.getItems().isEmpty()) {
-            SearchResult searchResult = channelListResponse.getItems().get(0);
-
-            if (searchResult.getId().getKind().equals("youtube#channel")) {
-                return getYouTubeChannelById(searchResult.getId().getChannelId(), listValues);
-            } else {
-                return null;
-            }
-        } else {
+        if (channelSearchResult == null) {
             return null;
         }
+
+        return YouTubeWrapper.getChannel(channelSearchResult.getId());
     }
 
     /**
      * Get an YouTube channel by id.
-     * @param channelName The channel name.
-     * @param listValues The values to get.
-     * @return The channel.
-     * @throws IOException if something went wrong.
-     */
-    public Channel getYouTubeChannelByName(String channelName, String listValues) throws IOException {
-        YouTube.Channels.List request = youTube.channels()
-                .list(Collections.singletonList(listValues))
-                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key2"));
-        ChannelListResponse channelListResponse = request.setForUsername(channelName).execute();
-
-        if (channelListResponse != null &&
-                channelListResponse.getItems() != null &&
-                !channelListResponse.getItems().isEmpty()) {
-            return channelListResponse.getItems().get(0);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Get an YouTube channel by id.
+     *
      * @param channelId The channel id.
-     * @param listValues The values to get.
      * @return The channel.
-     * @throws IOException if something went wrong.
+     * @throws Exception if something went wrong.
      */
-    public Channel getYouTubeChannelById(String channelId, String listValues) throws IOException {
-        YouTube.Channels.List request = youTube.channels()
-                .list(Collections.singletonList(listValues))
-                .setKey(Main.getInstance().getConfig().getConfiguration().getString("youtube.api.key2"));
-        ChannelListResponse channelListResponse = request.setId(Collections.singletonList(channelId)).execute();
-
-        if (channelListResponse != null &&
-                channelListResponse.getItems() != null &&
-                !channelListResponse.getItems().isEmpty()) {
-            return channelListResponse.getItems().get(0);
-        } else {
-            return null;
-        }
+    public ChannelResult getYouTubeChannelById(String channelId) throws Exception {
+        return YouTubeWrapper.getChannel(channelId);
     }
 
     /**
      * Check if a given channel ID matches the pattern of a YouTube channel ID.
+     *
      * @param channelId The channel ID.
      * @return True if it matches, false if not.
      */
@@ -218,24 +110,10 @@ public class YouTubeAPIHandler {
         return channelId.matches("^UC[\\w-]{21}[AQgw]$");
     }
 
-    /**
-     * Create a YouTube instance.
-     */
-    public void createYouTube() {
-        try {
-            youTube = new YouTube.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    JSON_FACTORY,
-                    null)
-                    .setApplicationName("Ree6")
-                    .build();
-        } catch (Exception e) {
-            log.error("Couldn't create a YouTube Instance", e);
-        }
-    }
 
     /**
      * Method used to return an instance of the handler.
+     *
      * @return instance of the handler.
      */
     public static YouTubeAPIHandler getInstance() {
