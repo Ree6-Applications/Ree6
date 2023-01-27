@@ -13,6 +13,7 @@ public class GuildMusicManager {
      * Audio player for the guild.
      */
     private final AudioPlayer player;
+    
     /**
      * Track scheduler for the player.
      */

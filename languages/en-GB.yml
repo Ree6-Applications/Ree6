@@ -1,7 +1,7 @@
 language:
   name: "English (UK)"
   locale: "en-GB"
-  version: "2.1.12"
+  version: "2.2.0"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **banned.**"
@@ -133,6 +133,7 @@ label:
   voice: "Voice"
   startGame: "Start Game"
   joinGame: "Join Game"
+  leaveGame: "Leave Game"
   blackJack: "BlackJack"
   hit: "Hit"
   stand: "Stand"
@@ -176,6 +177,9 @@ label:
   game: "Game"
   viewer: "Viewer"
   more: "More"
+  skip: "Skip"
+  musicQuiz: "Music Quiz"
+  position: "Position %s"
 message:
   default:
     usage: "Usage {guild_prefix}%s."
@@ -439,6 +443,16 @@ message:
     removed: "Successfully removed the Reaction-Role for the Role %s!"
     roleAdded: "You have received the Role %s!"
     roleRemoved: "You have lost the Role %s!"
+  musicQuiz:
+    welcome: "Welcome to Music Quiz! You can start the game by clicking the button below!\nBefore you can start it thou, you will need someone else to play with you!\nThey will need to use /game join %s to join the game!\nOr press the button below!"
+    foundTitle: "You have guessed the Title it was %s! You receive 1pts"
+    foundArtists: "You have guessed the Artists it was %s! You receive 2pts"
+    foundFeature: "You have guessed a Feature it was %s! You receive 3pts"
+    foundAll: "Everything has been guessed!"
+    skipSong: "The Song has been skipped!"
+    finishedSong: "The current Song has ended, it was %s by %s! Lets start with the next one!"
+    newSong: "Guess the Title(1pts), the Artists(2pts) or a Feature (3pts)"
+    points: "%s reached %s pts"
   announcement:
     added: "Successfully added the Announcement!"
 game:

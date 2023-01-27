@@ -4,6 +4,7 @@ import de.presti.ree6.game.core.base.GameState;
 import de.presti.ree6.game.core.base.IGame;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
@@ -41,6 +42,12 @@ public class GameSession {
     private final Guild guild;
 
     /**
+     * The Creator of the Game.
+     */
+    @Getter
+    private final Member host;
+
+    /**
      * The Participants of the Game.
      */
     ArrayList<User> participants;
@@ -50,11 +57,12 @@ public class GameSession {
      *
      * @param gameIdentifier      The Identifier of the GameSession.
      * @param guild               The Guild in which this Session originated.
+     * @param user                The Creator of the Game.
      * @param messageChannelUnion The Channel where the Game is played.
      * @param participants        The Participants of the Game.
      */
-    public GameSession(String gameIdentifier, Guild guild, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
-        this(gameIdentifier, guild, null, messageChannelUnion, participants);
+    public GameSession(String gameIdentifier, Guild guild, Member user, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
+        this(gameIdentifier, guild, user, null, messageChannelUnion, participants);
     }
 
     /**
@@ -62,13 +70,15 @@ public class GameSession {
      *
      * @param gameIdentifier      The Identifier of the GameSession.
      * @param guild               The Guild in which this Session originated.
+     * @param user                The Creator of the Game.
      * @param game                The Game class.
      * @param messageChannelUnion The Channel where the Game is played.
      * @param participants        The Participants of the Game.
      */
-    public GameSession(String gameIdentifier, Guild guild, IGame game, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
+    public GameSession(String gameIdentifier, Guild guild, Member user, IGame game, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
         this.gameIdentifier = gameIdentifier;
         this.guild = guild;
+        this.host = user;
         this.game = game;
         this.channel = messageChannelUnion;
         this.participants = participants;
@@ -135,5 +145,14 @@ public class GameSession {
      */
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
+    }
+
+    /**
+     * Retrieve the current Session Host as {@link User}
+     *
+     * @return The current Session Host as {@link User}
+     */
+    public User getHostAsUser() {
+        return host.getUser();
     }
 }
