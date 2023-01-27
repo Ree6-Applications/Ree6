@@ -115,8 +115,6 @@ public class MusicQuiz implements IGame {
         messageCreateBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame")).asDisabled(),
                 Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame")).asEnabled());
         menuMessage = session.getChannel().sendMessage(messageCreateBuilder.build()).complete();
-
-        Main.getInstance().getMusicWorker().getGuildAudioPlayer(session.getGuild()).getPlayer().addListener(audioEventListener);
     }
 
     /**
@@ -132,6 +130,8 @@ public class MusicQuiz implements IGame {
             Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.gameCore.needMore", 2), session.getChannel());
             return;
         }
+
+        Main.getInstance().getMusicWorker().getGuildAudioPlayer(session.getGuild()).getPlayer().addListener(audioEventListener);
 
         session.setGameState(GameState.STARTED);
 
@@ -161,7 +161,7 @@ public class MusicQuiz implements IGame {
         user.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
 
         if (participants.size() >= 2) {
-            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.minimalReached"));
+            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.welcome", session.getGameIdentifier()));
             messageEditBuilder.setEmbeds(embedBuilder.build());
             messageEditBuilder.setActionRow(Button.success("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame")).asEnabled());
             menuMessage.editMessage(messageEditBuilder.build()).queue();
@@ -173,7 +173,20 @@ public class MusicQuiz implements IGame {
      */
     @Override
     public void leaveGame(GamePlayer user) {
-        //TODO:: leave handler.
+        user.getInteractionHook().deleteOriginal().queue();
+        participants.removeIf(c -> c.getRelatedUserId() == user.getRelatedUserId());
+
+        if (participants.size() <= 2) {
+            MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
+            messageEditBuilder.applyMessage(menuMessage);
+            EmbedBuilder embedBuilder = new EmbedBuilder(messageEditBuilder.getEmbeds().get(0));
+
+            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.joined"));
+            messageEditBuilder.setEmbeds(embedBuilder.build());
+            messageEditBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame")).asDisabled(),
+                    Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame")).asEnabled());
+            menuMessage = menuMessage.editMessage(messageEditBuilder.build()).complete();
+        }
     }
 
     /**
