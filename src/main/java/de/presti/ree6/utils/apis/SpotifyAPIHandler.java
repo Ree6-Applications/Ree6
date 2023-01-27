@@ -59,8 +59,65 @@ public class SpotifyAPIHandler {
         this.spotifyApi = new SpotifyApi.Builder().setClientId(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.id")).setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.secret")).build();
 
         ClientCredentialsRequest.Builder request = new ClientCredentialsRequest.Builder(spotifyApi.getClientId(), spotifyApi.getClientSecret());
-        ClientCredentials creds = request.grant_type("client_credentials").build().execute();
-        spotifyApi.setAccessToken(creds.getAccessToken());
+        ClientCredentials credentials = request.grant_type("client_credentials").build().execute();
+        spotifyApi.setAccessToken(credentials.getAccessToken());
+    }
+
+    /**
+     * Get the Track.
+     *
+     * @param trackId The Track ID.
+     * @return a {@link Track} Object.
+     * @throws ParseException         if the response is not a Valid JSON.
+     * @throws SpotifyWebApiException if the and error occurs.
+     * @throws IOException            if there was a network error.
+     */
+    public Track getTrack(String trackId) throws ParseException, SpotifyWebApiException, IOException {
+        return spotifyApi.getTrack(trackId).build().execute();
+    }
+
+    /**
+     * Get the Tracks on a Playlist.
+     *
+     * @param playlistId The Playlist ID.
+     * @return a {@link java.util.List} of {@link Track} Objects.
+     */
+    public ArrayList<Track> getTracks(String playlistId) {
+        ArrayList<Track> tracks = new ArrayList<>();
+        GetPlaylistRequest request = spotifyApi.getPlaylist(playlistId).build();
+        try {
+            Playlist playlist = request.execute();
+            Paging<PlaylistTrack> playlistTracks = playlist.getTracks();
+
+            for (PlaylistTrack track : playlistTracks.getItems()) {
+                tracks.add(getTrack(track.getTrack().getId()));
+            }
+        } catch (ParseException | SpotifyWebApiException | IOException e) {
+            log.error("Couldn't get Tracks from Playlist", e);
+        }
+        return tracks;
+    }
+
+    /**
+     * Get the Artist and Track Name of a Track.
+     *
+     * @param trackID The Track ID.
+     * @return The Artist and Track Name.
+     * @throws ParseException         if the response is not a Valid JSON.
+     * @throws SpotifyWebApiException if the and error occurs.
+     * @throws IOException            if there was a network error.
+     */
+    public String getArtistAndName(String trackID) throws ParseException, SpotifyWebApiException, IOException {
+        StringBuilder artistNameAndTrackName;
+        Track track = getTrack(trackID);
+        artistNameAndTrackName = new StringBuilder(track.getName() + " - ");
+
+        ArtistSimplified[] artists = track.getArtists();
+        for (ArtistSimplified i : artists) {
+            artistNameAndTrackName.append(i.getName()).append(" ");
+        }
+
+        return artistNameAndTrackName.toString();
     }
 
     /**
@@ -93,45 +150,20 @@ public class SpotifyAPIHandler {
         }
 
         if (type.contentEquals("playlist")) {
-            GetPlaylistRequest playlistRequest = spotifyApi.getPlaylist(id).build();
-            Playlist playlist = playlistRequest.execute();
-            Paging<PlaylistTrack> playlistPaging = playlist.getTracks();
-            PlaylistTrack[] playlistTracks = playlistPaging.getItems();
+            ArrayList<Track> tracks = getTracks(id);
 
-            for (PlaylistTrack i : playlistTracks) {
-                Track track = (Track) i.getTrack();
-                String trackID = track.getId();
-                listOfTracks.add(getArtistAndName(trackID));
-            }
+            tracks.stream().map(Track::getId).forEach(s -> {
+                try {
+                    listOfTracks.add(getArtistAndName(s));
+                } catch (ParseException | SpotifyWebApiException | IOException e) {
+                    log.error("Couldn't get Tracks from ID", e);
+                }
+            });
 
             return listOfTracks;
         }
 
         return new ArrayList<>();
-    }
-
-    /**
-     * Get the Artist and Track Name of a Track.
-     *
-     * @param trackID The Track ID.
-     * @return The Artist and Track Name.
-     * @throws ParseException         if the response is not a Valid JSON.
-     * @throws SpotifyWebApiException if the and error occurs.
-     * @throws IOException            if there was a network error.
-     */
-    public String getArtistAndName(String trackID) throws ParseException, SpotifyWebApiException, IOException {
-        StringBuilder artistNameAndTrackName;
-        GetTrackRequest trackRequest = spotifyApi.getTrack(trackID).build();
-
-        Track track = trackRequest.execute();
-        artistNameAndTrackName = new StringBuilder(track.getName() + " - ");
-
-        ArtistSimplified[] artists = track.getArtists();
-        for (ArtistSimplified i : artists) {
-            artistNameAndTrackName.append(i.getName()).append(" ");
-        }
-
-        return artistNameAndTrackName.toString();
     }
 
     /**

@@ -33,6 +33,8 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
+//TODO:: translate
+
 /**
  * Wrapper class that handles most Music related stuff.
  */
@@ -94,6 +96,19 @@ public class MusicWorker {
     }
 
     /**
+     * Play or add a Song to the Queue without a Message.
+     *
+     * @param channel         the TextChannel where the command has been performed, used for errors.
+     * @param audioChannel    the AudioChannel for the Bot to join.
+     * @param trackUrl        the Track URL.
+     * @param interactionHook a InteractionHook if it was an SlashCommand.
+     * @param silent          if the Bot shouldn't send a Message.
+     */
+    public void loadAndPlay(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent) {
+        loadAndPlay(channel, audioChannel, trackUrl, interactionHook, silent, false);
+    }
+
+    /**
      * Play or add a Song to the Queue with a Message.
      *
      * @param channel         the TextChannel where the command has been performed.
@@ -116,7 +131,7 @@ public class MusicWorker {
      * @param interactionHook a InteractionHook if it was an SlashCommand.
      * @param silent          if the Bot shouldn't send a Message.
      */
-    public void loadAndPlay(final Guild guild, MessageChannelUnion channel, AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent) {
+    public void loadAndPlay(final Guild guild, MessageChannelUnion channel, AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent, boolean force) {
         GuildMusicManager musicManager = getGuildAudioPlayer(guild);
 
         if (channel != null)
@@ -139,13 +154,13 @@ public class MusicWorker {
                 if (silent) return;
 
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(guild.getJDA().getSelfUser().getName(), Data.WEBSITE,
-                                guild.getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle(LanguageService.getByGuild(guild,"label.musicPlayer"))
-                        .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
-                        .setColor(Color.RED)
-                        .setDescription(LanguageService.getByGuild(guild,"message.music.notPlaying"))
-                        .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl())
+                                .setAuthor(guild.getJDA().getSelfUser().getName(), Data.WEBSITE,
+                                        guild.getJDA().getSelfUser().getAvatarUrl())
+                                .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
+                                .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
+                                .setColor(Color.RED)
+                                .setDescription(LanguageService.getByGuild(guild, "message.music.notPlaying"))
+                                .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl())
                         , channel, interactionHook);
                 return;
             }
@@ -165,13 +180,13 @@ public class MusicWorker {
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(), Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
-                            .setTitle(LanguageService.getByGuild(guild,"label.musicPlayer"))
+                            .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
                             .setDescription("The Song ``" + FormatUtil.filter(track.getInfo().title) + "`` has been added to the Queue!")
                             .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl()), 5, messageChannel, interactionHook);
 
-                play(finalAudioChannel, musicManager, track);
+                play(finalAudioChannel, musicManager, track, force);
             }
 
             /**
@@ -190,13 +205,13 @@ public class MusicWorker {
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(), Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
-                            .setTitle(LanguageService.getByGuild(guild,"label.musicPlayer"))
+                            .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
                             .setDescription("The Song ``" + FormatUtil.filter(firstTrack.getInfo().title) + "`` has been added to the Queue! (The first Song of the Playlist: " + FormatUtil.filter(playlist.getName()) + ")")
                             .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl()), 5, messageChannel, interactionHook);
 
-                play(finalAudioChannel, musicManager, firstTrack);
+                play(finalAudioChannel, musicManager, firstTrack, force);
 
                 if (playlist.getTracks().size() > 1) {
                     for (AudioTrack tracks : playlist.getTracks()) {
@@ -213,7 +228,7 @@ public class MusicWorker {
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(), Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
-                            .setTitle(LanguageService.getByGuild(guild,"label.musicPlayer"))
+                            .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
                             .setDescription("A Song with the URL ``" + FormatUtil.filter(trackUrl) + "`` couldn't be found!")
@@ -225,13 +240,14 @@ public class MusicWorker {
              */
             @Override
             public void loadFailed(FriendlyException exception) {
-                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(guild.getJDA().getSelfUser().getName(), Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle(LanguageService.getByGuild(guild,"label.musicPlayer"))
-                        .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
-                        .setColor(Color.GREEN)
-                        .setDescription("Error while playing: " + exception.getMessage())
-                        .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl()), 5, messageChannel, interactionHook);
+                if (!silent)
+                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                            .setAuthor(guild.getJDA().getSelfUser().getName(), Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
+                            .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
+                            .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
+                            .setColor(Color.GREEN)
+                            .setDescription("Error while playing: " + exception.getMessage())
+                            .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl()), 5, messageChannel, interactionHook);
             }
         });
     }
@@ -244,8 +260,20 @@ public class MusicWorker {
      * @param track        the AudioTrack that should be played.
      */
     public void play(AudioChannel audioChannel, GuildMusicManager musicManager, AudioTrack track) {
+        play(audioChannel, musicManager, track, false);
+    }
+
+    /**
+     * The simple Audio play method, used to Queue songs and let the Bot join the Audio-channel if not present.
+     *
+     * @param audioChannel the Audio-channel for the Bot.
+     * @param musicManager the Music-Manager of the Guild.
+     * @param track        the AudioTrack that should be played.
+     * @param force        if the Track should be played immediately.
+     */
+    public void play(AudioChannel audioChannel, GuildMusicManager musicManager, AudioTrack track, boolean force) {
         connectToAudioChannel(musicManager.getGuild().getAudioManager(), audioChannel);
-        musicManager.getScheduler().queue(track);
+        musicManager.getScheduler().queue(track, force);
     }
 
     /**
@@ -256,14 +284,28 @@ public class MusicWorker {
      * @param skipAmount      the amount of Tracks that should be skipped.
      */
     public void skipTrack(MessageChannelUnion channel, InteractionHook interactionHook, int skipAmount) {
-        Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
-                .setTitle(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(),"label.musicPlayer"))
-                .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
-                .setColor(Color.GREEN)
-                .setDescription("Skipping to the next Song!")
-                .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
+        skipTrack(channel, interactionHook, skipAmount, false);
+    }
 
-        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).getScheduler().nextTrack(channel, skipAmount);
+    /**
+     * A method use to skip the current AudioTrack that is played.
+     *
+     * @param channel         the TextChannel, used to inform the user about the skip.
+     * @param interactionHook the Interaction-Hook, used to replace the channel if it is a SlashCommand.
+     * @param skipAmount      the amount of Tracks that should be skipped.
+     * @param silent          if the skip should be silent or not.
+     */
+    public void skipTrack(MessageChannelUnion channel, InteractionHook interactionHook, int skipAmount, boolean silent) {
+        if (!silent) {
+            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                    .setTitle(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(), "label.musicPlayer"))
+                    .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                    .setColor(Color.GREEN)
+                    .setDescription("Skipping to the next Song!")
+                    .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
+        }
+
+        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).getScheduler().nextTrack(channel, skipAmount, silent);
     }
 
     /**

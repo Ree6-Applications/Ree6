@@ -29,7 +29,7 @@ public class Game implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        if (commandEvent.isSlashCommand()) {
+        if (!commandEvent.isSlashCommand()) {
             commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
             return;
         }
@@ -42,13 +42,14 @@ public class Game implements ICommand {
             return;
         }
 
-        if (value == null) {
-            commandEvent.reply(commandEvent.getResource("message.game.valueNeeded"));
-            return;
-        }
 
         switch (action.getAsString()) {
             case "create" -> {
+
+                if (value == null) {
+                    commandEvent.reply(commandEvent.getResource("message.game.valueNeeded"));
+                    return;
+                }
 
                 ArrayList<User> participants = new ArrayList<>();
                 participants.add(commandEvent.getSlashCommandInteractionEvent().getUser());
@@ -56,10 +57,15 @@ public class Game implements ICommand {
                 GamePlayer gamePlayer = new GamePlayer(commandEvent.getMember().getUser());
                 gamePlayer.setInteractionHook(commandEvent.getInteractionHook());
 
-                GameManager.createGameSession(GameManager.generateInvite(), value.getAsString(),
+                GameManager.createGameSession(GameManager.generateInvite(), value.getAsString(), commandEvent.getMember(),
                         commandEvent.getChannel(), participants).getGame().joinGame(gamePlayer);
             }
             case "join" -> {
+
+                if (value == null) {
+                    commandEvent.reply(commandEvent.getResource("message.game.valueNeeded"));
+                    return;
+                }
 
                 GameSession gameSession = GameManager.getGameSession(value.getAsString());
                 if (gameSession == null) {
@@ -81,7 +87,7 @@ public class Game implements ICommand {
             case "list" -> {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append(commandEvent.getResource("message.game.availableGames")).append("```");
-                GameManager.getGames().forEach(iGame -> stringBuilder.append("\n").append(LanguageService.getByEvent(commandEvent, iGame.getAnnotation(GameInfo.class).name())));
+                GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append("- ").append(LanguageService.getByEvent(commandEvent,entryValue.getAnnotation(GameInfo.class).description())));
                 stringBuilder.append("```");
                 commandEvent.reply(stringBuilder.toString());
             }
@@ -97,7 +103,7 @@ public class Game implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("game", LanguageService.getDefault("command.description.game"))
                 .addOption(OptionType.STRING, "action", "Either use create or join.", true)
-                .addOption(OptionType.STRING, "value", "Either the Game name or Invite code.", true);
+                .addOption(OptionType.STRING, "value", "Either the Game name or Invite code.", false);
     }
 
     /**

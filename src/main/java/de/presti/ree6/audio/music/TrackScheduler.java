@@ -2,6 +2,7 @@ package de.presti.ree6.audio.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
+import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.presti.ree6.language.LanguageService;
@@ -69,17 +70,28 @@ public class TrackScheduler extends AudioEventAdapter {
      * @param track The track to play or add to queue.
      */
     public void queue(AudioTrack track) {
+        queue(track, false);
+    }
+
+    /**
+     * Add the next track to queue or play right away if nothing is in the queue.
+     *
+     * @param track The track to play or add to queue.
+     * @param force If the track should be played right away.
+     */
+    public void queue(AudioTrack track, boolean force) {
         // Calling startTrack with the noInterrupt set to true will start the track only
         // if nothing is currently playing. If
         // something is playing, it returns false and does nothing. In that case the
         // player was already playing so this
         // track goes to the queue instead.
-        if (!player.startTrack(track, true)) {
+        if (!player.startTrack(track, !force)) {
             if (!queue.offer(track)) {
                 log.error("[TrackScheduler] Couldn't offer a new Track!");
             }
         }
     }
+
 
     /**
      * Toggle the loop.
@@ -114,7 +126,7 @@ public class TrackScheduler extends AudioEventAdapter {
      */
     public void shuffle() {
         ArrayList<AudioTrack> audioTrackArrayList = new ArrayList<>();
-        queue.addAll(audioTrackArrayList);
+        audioTrackArrayList.addAll(queue.stream().toList());
         Collections.shuffle(audioTrackArrayList);
         queue.clear();
         queue.addAll(audioTrackArrayList);
@@ -167,8 +179,9 @@ public class TrackScheduler extends AudioEventAdapter {
      * Get the next Track from the Queue.
      *
      * @param textChannel the Text-Channel where the command have been performed from.
+     * @param silent      should the bot send a message or not?
      */
-    public void nextTrack(MessageChannelUnion textChannel) {
+    public void nextTrack(MessageChannelUnion textChannel, boolean silent) {
         if (loop) {
             player.startTrack(player.getPlayingTrack(), true);
             return;
@@ -179,22 +192,24 @@ public class TrackScheduler extends AudioEventAdapter {
         AudioTrack track = queue.poll();
 
         if (track != null) {
-            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                    .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
-                    .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setColor(Color.GREEN)
-                    .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
-                    .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+            if (!silent)
+                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                        .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                        .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
+                        .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
+                        .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
             player.startTrack(track, false);
         } else {
-            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                    .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
-                    .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setColor(Color.RED)
-                    .setDescription("There is no new Song!")
-                    .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+            if (!silent)
+                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                        .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                        .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
+                        .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                        .setColor(Color.RED)
+                        .setDescription("There is no new Song!")
+                        .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
         }
     }
 
@@ -203,8 +218,9 @@ public class TrackScheduler extends AudioEventAdapter {
      *
      * @param textChannel the Text-Channel where the command have been performed from.
      * @param position    the position of the track it should skip to. (relative to the current track)
+     * @param silent      should the bot send a message or not?
      */
-    public void nextTrack(MessageChannelUnion textChannel, int position) {
+    public void nextTrack(MessageChannelUnion textChannel, int position, boolean silent) {
         if (loop) {
             player.startTrack(player.getPlayingTrack(), true);
             return;
@@ -219,22 +235,24 @@ public class TrackScheduler extends AudioEventAdapter {
         }
 
         if (track != null) {
-            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                    .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
-                    .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setColor(Color.GREEN)
-                    .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
-                    .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+            if (!silent)
+                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                        .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                        .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
+                        .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                        .setColor(Color.GREEN)
+                        .setDescription("Next Song!\nSong: ``" + FormatUtil.filter(track.getInfo().title) + "``")
+                        .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
             player.startTrack(track, false);
         } else {
-            Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                    .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
-                    .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                    .setColor(Color.RED)
-                    .setDescription("There is no new Song!")
-                    .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+            if (!silent)
+                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                        .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                        .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
+                        .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                        .setColor(Color.RED)
+                        .setDescription("There is no new Song!")
+                        .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
         }
     }
 
@@ -314,7 +332,7 @@ public class TrackScheduler extends AudioEventAdapter {
                                 .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
                     }
 
-                    nextTrack(getChannel());
+                    nextTrack(getChannel(), track.getSourceManager() instanceof LocalAudioSourceManager);
                 }
                 // If there was a error cancel the loop, and go to the next song in the playlist.
             } else if (endReason == AudioTrackEndReason.LOAD_FAILED) {
@@ -328,7 +346,7 @@ public class TrackScheduler extends AudioEventAdapter {
                             .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
                 }
 
-                nextTrack(getChannel());
+                nextTrack(getChannel(), track.getSourceManager() instanceof LocalAudioSourceManager);
             }
         } else {
             if (endReason == AudioTrackEndReason.CLEANUP) {
@@ -347,7 +365,7 @@ public class TrackScheduler extends AudioEventAdapter {
                             .setDescription("Error while playing: ``" + FormatUtil.filter(track.getInfo().title) + "``\nError: " + endReason.name())
                             .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
                 }
-                nextTrack(getChannel());
+                nextTrack(getChannel(), track.getSourceManager() instanceof LocalAudioSourceManager);
             }
         }
     }
