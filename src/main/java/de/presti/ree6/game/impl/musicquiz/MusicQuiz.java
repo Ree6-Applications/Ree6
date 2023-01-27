@@ -2,7 +2,6 @@ package de.presti.ree6.game.impl.musicquiz;
 
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
 import com.sedmelluq.discord.lavaplayer.player.event.TrackEndEvent;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.game.core.GameSession;
 import de.presti.ree6.game.core.base.GameInfo;
@@ -56,7 +55,7 @@ public class MusicQuiz implements IGame {
     /**
      * List of all participants.
      */
-    private final  ArrayList<MusicQuizPlayer> participants = new ArrayList<>();
+    private final ArrayList<MusicQuizPlayer> participants = new ArrayList<>();
 
     /**
      * The message of the game.
@@ -77,15 +76,15 @@ public class MusicQuiz implements IGame {
      * {@link AudioEventListener} to check if the song/timer is over.
      */
     AudioEventListener audioEventListener = event -> {
-        if (event instanceof TrackEndEvent trackEndEvent) {
-            if (trackEndEvent.track.getInfo().title.equalsIgnoreCase("timer")) {
-                selectNextSong();
-            }
+        if (event instanceof TrackEndEvent trackEndEvent &&
+                trackEndEvent.track.getInfo().title.equalsIgnoreCase("timer")) {
+            selectNextSong();
         }
     };
 
     /**
      * Constructor.
+     *
      * @param gameSession The game session.
      */
     public MusicQuiz(GameSession gameSession) {
@@ -100,7 +99,7 @@ public class MusicQuiz implements IGame {
     public void createGame() {
 
         if (session.getHost().getVoiceState() == null || session.getHost().getVoiceState().getChannel() == null) {
-            session.getChannel().sendMessage(LanguageService.getByGuild(session.getGuild(),"message.default.notInVoiceChannel")).queue();
+            session.getChannel().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.default.notInVoiceChannel")).queue();
             return;
         }
 
@@ -307,16 +306,17 @@ public class MusicQuiz implements IGame {
         AudioChannel audioChannel = session.getGuild().getMember(session.getHost()).getVoiceState().getChannel();
 
         internalTimer = ThreadUtil.createThread(x -> Main.getInstance().getMusicWorker().loadAndPlay(session.getChannel(), audioChannel,
-                "storage/audio/timer.mp3", null, true, true),null, Duration.ofSeconds(10),
+                        "storage/audio/timer.mp3", null, true, true), null, Duration.ofSeconds(10),
                 false, false);
 
-        Main.getInstance().getMusicWorker().loadAndPlay(session.getChannel(), audioChannel,currentEntry.getAudioUrl(), null, true);
+        Main.getInstance().getMusicWorker().loadAndPlay(session.getChannel(), audioChannel, currentEntry.getAudioUrl(), null, true);
 
         currentRound++;
     }
 
     /**
      * Retrieve a participant by his user id.
+     *
      * @param userId The user id.
      * @return The participant or null.
      */

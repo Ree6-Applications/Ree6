@@ -7,11 +7,8 @@ import de.presti.ree6.utils.others.RandomUtils;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hc.core5.http.ParseException;
-import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
