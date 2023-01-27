@@ -178,6 +178,7 @@ label:
   more: "More"
   skip: "Skip"
   musicQuiz: "Music Quiz"
+  position: "Position %s"
 message:
   default:
     usage: "Usage {guild_prefix}%s."

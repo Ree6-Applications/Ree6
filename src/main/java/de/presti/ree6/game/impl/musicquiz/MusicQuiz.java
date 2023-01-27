@@ -46,7 +46,7 @@ public class MusicQuiz implements IGame {
     /**
      * Amount of rounds to play.
      */
-    int maxRounds = 10;
+    int maxRounds = 5;
 
     /**
      * The game session.
@@ -196,17 +196,19 @@ public class MusicQuiz implements IGame {
         if (currentEntry.checkTitle(messageContent)) {
             musicQuizPlayer.addPoints(1);
             messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundTitle", currentEntry.getTitle())).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+            messageReceivedEvent.getMessage().delete().queue();
         }
 
         if (currentEntry.checkArtist(messageContent)) {
             musicQuizPlayer.addPoints(2);
             messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundArtists", currentEntry.getArtist())).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+            messageReceivedEvent.getMessage().delete().queue();
         }
 
         if (currentEntry.checkFeatures(messageContent)) {
             musicQuizPlayer.addPoints(3);
             messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundFeature", String.join(",", currentEntry.getFeatures()))).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
-
+            messageReceivedEvent.getMessage().delete().queue();
         }
 
         if (currentEntry.isTitleGuessed() && currentEntry.isArtistGuessed() && currentEntry.isFeaturesGuessed()) {
@@ -233,9 +235,9 @@ public class MusicQuiz implements IGame {
     @Override
     public void stopGame() {
         Main.getInstance().getMusicWorker().getGuildAudioPlayer(session.getGuild()).getPlayer().removeListener(audioEventListener);
-        MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
-        messageEditBuilder.applyMessage(menuMessage);
-        EmbedBuilder embedBuilder = new EmbedBuilder(messageEditBuilder.getEmbeds().get(0));
+        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+        messageCreateBuilder.applyMessage(menuMessage);
+        EmbedBuilder embedBuilder = new EmbedBuilder(messageCreateBuilder.getEmbeds().get(0));
 
         embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.newSong"));
         List<MusicQuizPlayer> sortedList = participants.stream().sorted(Comparator.comparingInt(MusicQuizPlayer::getPoints).reversed()).toList();
@@ -247,8 +249,11 @@ public class MusicQuiz implements IGame {
                             musicQuizPlayer.getPoints()), false);
         }
 
-        messageEditBuilder.setEmbeds(embedBuilder.build());
-        menuMessage.editMessage(messageEditBuilder.build()).queue();
+        messageCreateBuilder.setEmbeds(embedBuilder.build());
+        menuMessage.delete().queue();
+        session.getChannel().sendMessage(messageCreateBuilder.build()).queue();
+
+        Main.getInstance().getMusicWorker().disconnect(session.getGuild());
     }
 
     /**
