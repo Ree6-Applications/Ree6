@@ -3,6 +3,7 @@ package de.presti.ree6.game.core;
 import de.presti.ree6.game.core.base.GameInfo;
 import de.presti.ree6.game.core.base.IGame;
 import de.presti.ree6.utils.others.RandomUtils;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
@@ -22,6 +23,7 @@ public class GameManager {
      * A HashMap used to cache the Games.
      * The Key is the Name of the Game.
      */
+    @Getter
     private final static HashMap<String, Class<? extends IGame>> gameCache = new HashMap<>();
 
     /**

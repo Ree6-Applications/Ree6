@@ -87,7 +87,7 @@ public class Game implements ICommand {
             case "list" -> {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append(commandEvent.getResource("message.game.availableGames")).append("```");
-                GameManager.getGames().forEach(iGame -> stringBuilder.append("\n").append(LanguageService.getByEvent(commandEvent, iGame.getAnnotation(GameInfo.class).name())));
+                GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append("- ").append(LanguageService.getByEvent(commandEvent,entryValue.getAnnotation(GameInfo.class).description())));
                 stringBuilder.append("```");
                 commandEvent.reply(stringBuilder.toString());
             }
