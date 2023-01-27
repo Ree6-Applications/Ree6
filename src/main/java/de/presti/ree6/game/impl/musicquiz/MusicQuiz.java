@@ -278,6 +278,8 @@ public class MusicQuiz implements IGame {
             return;
         }
 
+        Main.getInstance().getMusicWorker().getGuildAudioPlayer(session.getGuild()).getScheduler().clearQueue();
+
         currentEntry = MusicQuizUtil.getRandomEntry();
 
         MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
