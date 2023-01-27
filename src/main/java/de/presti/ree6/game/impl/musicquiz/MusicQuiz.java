@@ -14,17 +14,21 @@ import de.presti.ree6.game.impl.musicquiz.entities.MusicQuizPlayer;
 import de.presti.ree6.game.impl.musicquiz.util.MusicQuizUtil;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 @GameInfo(
@@ -63,6 +67,11 @@ public class MusicQuiz implements IGame {
      * The current Song.
      */
     MusicQuizEntry currentEntry;
+
+    /**
+     * The Internal Timer.
+     */
+    Future<?> internalTimer;
 
     /**
      * {@link AudioEventListener} to check if the song/timer is over.
@@ -250,7 +259,15 @@ public class MusicQuiz implements IGame {
             return;
         }
 
-        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.finishedSong"), 5, session.getChannel());
+        if (internalTimer != null && !internalTimer.isDone()) {
+            internalTimer.cancel(true);
+        }
+
+        if (currentRound > 0) {
+            Main.getInstance().getCommandManager()
+                    .sendMessage(LanguageService.getByGuild(session.getGuild(),
+                            "message.musicQuiz.finishedSong", currentEntry.getTitle(), currentEntry.getArtist()), 5, session.getChannel());
+        }
 
         if (currentRound >= maxRounds) {
             stopGame();
@@ -268,8 +285,13 @@ public class MusicQuiz implements IGame {
         messageEditBuilder.setActionRow(Button.success("game_musicquiz_skip", LanguageService.getByGuild(session.getGuild(), "label.skip")).asEnabled());
         menuMessage.editMessage(messageEditBuilder.build()).queue();
 
-        Main.getInstance().getMusicWorker().loadAndPlay(session.getChannel(), session.getGuild().getMember(session.getHost()).getVoiceState().getChannel(),currentEntry.getAudioUrl(), null, true);
-        Main.getInstance().getMusicWorker().loadAndPlay(session.getChannel(), session.getGuild().getMember(session.getHost()).getVoiceState().getChannel(),"storage/audio/timer.mp3", null, true);
+        AudioChannel audioChannel = session.getGuild().getMember(session.getHost()).getVoiceState().getChannel();
+
+        internalTimer = ThreadUtil.createThread(x -> Main.getInstance().getMusicWorker().loadAndPlay(session.getChannel(), audioChannel,
+                "storage/audio/timer.mp3", null, true),null, Duration.ofSeconds(10),
+                false, false);
+
+        Main.getInstance().getMusicWorker().loadAndPlay(session.getChannel(), audioChannel,currentEntry.getAudioUrl(), null, true);
 
         currentRound++;
     }

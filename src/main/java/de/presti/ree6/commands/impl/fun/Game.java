@@ -42,13 +42,14 @@ public class Game implements ICommand {
             return;
         }
 
-        if (value == null) {
-            commandEvent.reply(commandEvent.getResource("message.game.valueNeeded"));
-            return;
-        }
 
         switch (action.getAsString()) {
             case "create" -> {
+
+                if (value == null) {
+                    commandEvent.reply(commandEvent.getResource("message.game.valueNeeded"));
+                    return;
+                }
 
                 ArrayList<User> participants = new ArrayList<>();
                 participants.add(commandEvent.getSlashCommandInteractionEvent().getUser());
@@ -60,6 +61,11 @@ public class Game implements ICommand {
                         commandEvent.getChannel(), participants).getGame().joinGame(gamePlayer);
             }
             case "join" -> {
+
+                if (value == null) {
+                    commandEvent.reply(commandEvent.getResource("message.game.valueNeeded"));
+                    return;
+                }
 
                 GameSession gameSession = GameManager.getGameSession(value.getAsString());
                 if (gameSession == null) {
@@ -97,7 +103,7 @@ public class Game implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("game", LanguageService.getDefault("command.description.game"))
                 .addOption(OptionType.STRING, "action", "Either use create or join.", true)
-                .addOption(OptionType.STRING, "value", "Either the Game name or Invite code.", true);
+                .addOption(OptionType.STRING, "value", "Either the Game name or Invite code.", false);
     }
 
     /**
