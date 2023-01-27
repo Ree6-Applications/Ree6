@@ -1,6 +1,7 @@
 package de.presti.ree6;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpClient;
@@ -25,10 +26,10 @@ public class RequestUtility {
      * @param url the Request-Url.
      * @return an {@link String}.
      */
-    public static String request(String url) throws MalformedURLException, URISyntaxException {
+    public static String request(String url) {
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(new URL(url).toURI())
+                .uri(URI.create(url))
                 .header("User-Agent", USER_AGENT)
                 .GET()
                 .build();
