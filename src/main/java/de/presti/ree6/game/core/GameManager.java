@@ -31,6 +31,23 @@ public class GameManager {
     private final static HashMap<String, GameSession> gameSessions = new HashMap<>();
 
     /**
+     * Should be called to load all Games into the cache.
+     */
+    public static void loadAllGames() {
+        Reflections reflections = new Reflections("de.presti.ree6.game.impl");
+        Set<Class<? extends IGame>> classes = reflections.getSubTypesOf(IGame.class);
+
+        for (Class<? extends IGame> aClass : classes) {
+            if (aClass.isAnnotationPresent(GameInfo.class)) {
+                GameInfo gameInfo = aClass.getAnnotation(GameInfo.class);
+                if (!gameCache.containsKey(gameInfo.name().trim().toLowerCase())) {
+                    gameCache.put(gameInfo.name().trim().toLowerCase(), aClass);
+                }
+            }
+        }
+    }
+
+    /**
      * Method used to create a new GameSession.
      *
      * @param gameIdentifier The Identifier of the Session.

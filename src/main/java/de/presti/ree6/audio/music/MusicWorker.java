@@ -192,13 +192,14 @@ public class MusicWorker {
              */
             @Override
             public void loadFailed(FriendlyException exception) {
-                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(), "label.musicPlayer"))
-                        .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
-                        .setColor(Color.GREEN)
-                        .setDescription("Error while playing: " + exception.getMessage())
-                        .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
+                if (!silent)
+                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                            .setAuthor(channel.getJDA().getSelfUser().getName(), Data.WEBSITE, channel.getJDA().getSelfUser().getAvatarUrl())
+                            .setTitle(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(), "label.musicPlayer"))
+                            .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
+                            .setColor(Color.GREEN)
+                            .setDescription("Error while playing: " + exception.getMessage())
+                            .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
             }
         });
     }
@@ -257,7 +258,7 @@ public class MusicWorker {
                     .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
         }
 
-        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).getScheduler().nextTrack(channel, skipAmount);
+        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).getScheduler().nextTrack(channel, skipAmount, silent);
     }
 
     /**

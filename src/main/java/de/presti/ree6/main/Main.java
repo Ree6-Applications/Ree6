@@ -15,6 +15,7 @@ import de.presti.ree6.events.GameEvents;
 import de.presti.ree6.events.LoggingEvents;
 import de.presti.ree6.events.MenuEvents;
 import de.presti.ree6.events.OtherEvents;
+import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.impl.musicquiz.util.MusicQuizUtil;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.events.LoggerQueue;
@@ -192,6 +193,9 @@ public class Main {
 
         log.info("Loading MusicQuizUtil");
         new MusicQuizUtil();
+
+        log.info("Loading GameManager");
+        GameManager.loadAllGames();
 
         log.info("Creating Notifier.");
 

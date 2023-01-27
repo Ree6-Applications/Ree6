@@ -236,8 +236,7 @@ public class MusicQuiz implements IGame {
     public void stopGame() {
         Main.getInstance().getMusicWorker().getGuildAudioPlayer(session.getGuild()).getPlayer().removeListener(audioEventListener);
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-        messageCreateBuilder.applyMessage(menuMessage);
-        EmbedBuilder embedBuilder = new EmbedBuilder(messageCreateBuilder.getEmbeds().get(0));
+        EmbedBuilder embedBuilder = new EmbedBuilder(menuMessage.getEmbeds().get(0));
 
         embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.newSong"));
         List<MusicQuizPlayer> sortedList = participants.stream().sorted(Comparator.comparingInt(MusicQuizPlayer::getPoints).reversed()).toList();
