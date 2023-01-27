@@ -81,6 +81,24 @@ public class GameEvents extends ListenerAdapter {
             }
         }
 
+        if (event.getComponentId().startsWith("game_leave")) {
+            if (event.getComponentId().contains(":")) {
+                String gameIdentifier = event.getComponentId().split(":")[1];
+                GameSession gameSession = GameManager.getGameSession(gameIdentifier);
+                if (gameSession != null && gameSession.getGameState() == GameState.WAITING) {
+                    if (gameSession.getChannel().getId().equals(event.getChannel().getId())) {
+                        if (gameSession.getParticipants().stream().anyMatch(user -> user.getId().equals(event.getUser().getId()))) {
+                            event.deferReply(true).queue(interactionHook -> {
+                                GamePlayer gamePlayer = new GamePlayer(event.getUser());
+                                gamePlayer.setInteractionHook(interactionHook);
+                                gameSession.getGame().leaveGame(gamePlayer);
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
         for (GameSession gameSession : GameManager.getGameSessions(event.getChannel())) {
             if (gameSession.getChannel().getId().equals(event.getChannel().getId())) {
                 if (gameSession.getParticipants().stream().anyMatch(user -> user.getId().equals(event.getUser().getId()))) {

@@ -133,6 +133,7 @@ label:
   voice: "Voice"
   startGame: "Start Game"
   joinGame: "Join Game"
+  leaveGame: "Leave Game"
   blackJack: "BlackJack"
   hit: "Hit"
   stand: "Stand"
