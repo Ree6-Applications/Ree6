@@ -69,17 +69,28 @@ public class TrackScheduler extends AudioEventAdapter {
      * @param track The track to play or add to queue.
      */
     public void queue(AudioTrack track) {
+        queue(track, false);
+    }
+
+    /**
+     * Add the next track to queue or play right away if nothing is in the queue.
+     *
+     * @param track The track to play or add to queue.
+     * @param force If the track should be played right away.
+     */
+    public void queue(AudioTrack track, boolean force) {
         // Calling startTrack with the noInterrupt set to true will start the track only
         // if nothing is currently playing. If
         // something is playing, it returns false and does nothing. In that case the
         // player was already playing so this
         // track goes to the queue instead.
-        if (!player.startTrack(track, true)) {
+        if (!player.startTrack(track, !force)) {
             if (!queue.offer(track)) {
                 log.error("[TrackScheduler] Couldn't offer a new Track!");
             }
         }
     }
+
 
     /**
      * Toggle the loop.

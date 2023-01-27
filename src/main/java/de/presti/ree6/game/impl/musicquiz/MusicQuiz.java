@@ -288,7 +288,7 @@ public class MusicQuiz implements IGame {
         AudioChannel audioChannel = session.getGuild().getMember(session.getHost()).getVoiceState().getChannel();
 
         internalTimer = ThreadUtil.createThread(x -> Main.getInstance().getMusicWorker().loadAndPlay(session.getChannel(), audioChannel,
-                "storage/audio/timer.mp3", null, true),null, Duration.ofSeconds(10),
+                "storage/audio/timer.mp3", null, true, true),null, Duration.ofSeconds(10),
                 false, false);
 
         Main.getInstance().getMusicWorker().loadAndPlay(session.getChannel(), audioChannel,currentEntry.getAudioUrl(), null, true);

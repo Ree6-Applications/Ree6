@@ -48,7 +48,7 @@ public class MusicQuizUtil {
             String url = null;
 
             try {
-                url = YouTubeAPIHandler.getInstance().searchYoutube(SpotifyAPIHandler.getInstance().convert("https://open.spotify.com/track/" + track.getId()).get(0));
+                url = YouTubeAPIHandler.getInstance().searchYoutube(track.getName() + " - " + artistSimplified[0].getName());
             } catch (Exception e) {
                 log.error("Couldn't get Track from ID", e);
             }
@@ -68,8 +68,8 @@ public class MusicQuizUtil {
             String url = null;
 
             try {
-                url = SpotifyAPIHandler.getInstance().convert("https://open.spotify.com/track/" + track.getId()).get(0);
-            } catch (ParseException | SpotifyWebApiException | IOException e) {
+                url = YouTubeAPIHandler.getInstance().searchYoutube(track.getName() + " - " + artistSimplified[0].getName());
+            } catch (Exception e) {
                 log.error("Couldn't get Track from ID", e);
             }
             
@@ -88,8 +88,8 @@ public class MusicQuizUtil {
             String url = null;
 
             try {
-                url = SpotifyAPIHandler.getInstance().convert("https://open.spotify.com/track/" + track.getId()).get(0);
-            } catch (ParseException | SpotifyWebApiException | IOException e) {
+                url = YouTubeAPIHandler.getInstance().searchYoutube(track.getName() + " - " + artistSimplified[0].getName());
+            } catch (Exception e) {
                 log.error("Couldn't get Track from ID", e);
             }
 
