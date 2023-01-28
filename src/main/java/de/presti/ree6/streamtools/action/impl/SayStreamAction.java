@@ -3,13 +3,21 @@ package de.presti.ree6.streamtools.action.impl;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.streamtools.action.StreamActionInfo;
 import de.presti.ree6.streamtools.action.IStreamAction;
+import lombok.NoArgsConstructor;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * StreamAction used to say a message.
+ */
+@NoArgsConstructor
 @StreamActionInfo(name = "Say", command = "say", description = "Says a message.", introduced = "2.2.0")
 public class SayStreamAction implements IStreamAction {
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void runAction(@NotNull Guild guild, String[] arguments) {
         if (arguments == null || arguments.length == 0) {

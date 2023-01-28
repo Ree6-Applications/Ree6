@@ -95,10 +95,11 @@ public class MusicWorker {
         loadAndPlay(channel, audioChannel, trackUrl, interactionHook, true);
     }
 
+
     /**
-     * Play or add a Song to the Queue without a Message.
+     * Play or add a Song to the Queue with a Message.
      *
-     * @param channel         the TextChannel where the command has been performed, used for errors.
+     * @param channel         the TextChannel where the command has been performed.
      * @param audioChannel    the AudioChannel for the Bot to join.
      * @param trackUrl        the Track URL.
      * @param interactionHook a InteractionHook if it was an SlashCommand.
@@ -117,8 +118,8 @@ public class MusicWorker {
      * @param interactionHook a InteractionHook if it was an SlashCommand.
      * @param silent          if the Bot shouldn't send a Message.
      */
-    public void loadAndPlay(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent) {
-        loadAndPlay(channel.asGuildMessageChannel().getGuild(), channel, audioChannel, trackUrl, interactionHook, silent);
+    public void loadAndPlay(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent, boolean force) {
+        loadAndPlay(channel.asGuildMessageChannel().getGuild(), channel, audioChannel, trackUrl, interactionHook, silent, force);
     }
 
     /**

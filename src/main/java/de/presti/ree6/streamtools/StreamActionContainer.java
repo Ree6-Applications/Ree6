@@ -11,26 +11,50 @@ import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.HashMap;
 
+/**
+ * A Container used to store all needed Information for a StreamAction.
+ */
 public class StreamActionContainer {
 
+    /**
+     * The Twitch Channel ID.
+     */
     @Getter(AccessLevel.PUBLIC)
     String twitchChannelId;
 
+    /**
+     * The Guild.
+     */
     @Getter(AccessLevel.PUBLIC)
     Guild guild;
 
+    /**
+     * The Extra Argument.
+     */
     @Getter(AccessLevel.PUBLIC)
     String extraArgument;
 
+    /**
+     * The Arguments.
+     */
     @Getter(AccessLevel.PUBLIC)
     String[] arguments;
 
+    /**
+     * The Actions.
+     */
     HashMap<IStreamAction, String[]> actions = new HashMap<>();
 
+    /**
+     * Create a new StreamActionContainer.
+     *
+     * @param streamAction The StreamAction to create the Container for.
+     */
     public StreamActionContainer(StreamAction streamAction) {
         twitchChannelId = streamAction.getIntegration().getChannelId();
         guild = BotWorker.getShardManager().getGuildById(streamAction.getGuildId());
         extraArgument = streamAction.getArgument();
+
         for (JsonElement jsonElement : streamAction.getActions().getAsJsonArray()) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
 
@@ -41,10 +65,25 @@ public class StreamActionContainer {
                 String action = jsonObject.getAsJsonPrimitive("action").getAsString();
                 String value = jsonObject.getAsJsonPrimitive("value").getAsString();
                 String[] args = value.split(" ");
+
+                Class<? extends IStreamAction> actionClass = StreamActionContainerCreator.getAction(action);
+                if (actionClass != null) {
+                    try {
+                        IStreamAction streamAction1 = actionClass.getConstructor().newInstance();
+                        actions.put(streamAction1, args);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
 
+    /**
+     * Run all Actions.
+     *
+     * @param userInput The User Input.
+     */
     public void runActions(String userInput) {
         actions.forEach((action, args) -> {
 
