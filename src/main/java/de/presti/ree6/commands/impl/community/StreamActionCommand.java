@@ -54,7 +54,7 @@ public class StreamActionCommand implements ICommand {
         if (createName != null) {
             StreamAction streamAction = SQLSession.getSqlConnector().getSqlWorker()
                     .getEntity(new StreamAction(), "SELECT * FROM StreamActions WHERE actionName = :name AND guildId = :gid",
-                            Map.of("name", deleteName.getAsString(), "gid", commandEvent.getGuild().getIdLong()));
+                            Map.of("name", createName.getAsString(), "gid", commandEvent.getGuild().getIdLong()));
 
             if (streamAction == null) {
                 TwitchIntegration twitchIntegration = SQLSession.getSqlConnector().getSqlWorker()
