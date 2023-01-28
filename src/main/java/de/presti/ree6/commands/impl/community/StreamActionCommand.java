@@ -47,7 +47,7 @@ public class StreamActionCommand implements ICommand {
 
 
         if (!commandEvent.getMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
-            commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MANAGE_WEBHOOKS.getName()));
             return;
         }
 
@@ -108,7 +108,7 @@ public class StreamActionCommand implements ICommand {
                 switch (manageAction.getAsString()) {
                     case "add": {
                         if (manageActionValue == null) {
-                            commandEvent.reply(commandEvent.getResource("message.default.missionOption", "manageActionValue"));
+                            commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
                             return;
                         }
 
@@ -134,7 +134,7 @@ public class StreamActionCommand implements ICommand {
 
                     case "listen": {
                         if (manageActionValue == null) {
-                            commandEvent.reply(commandEvent.getResource("message.default.missionOption", "manageActionValue"));
+                            commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
                             return;
                         }
 
@@ -146,14 +146,14 @@ public class StreamActionCommand implements ICommand {
                             } else if (values[0].equalsIgnoreCase("follow")) {
                                 streamAction.setListener(StreamAction.StreamListener.FOLLOW);
                             } else {
-                                commandEvent.reply(commandEvent.getResource("message.default.missionOption", "manageActionValue"));
+                                commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
                                 return;
                             }
 
                             streamAction.setArgument(values[1]);
                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
                         } else {
-                            commandEvent.reply(commandEvent.getResource("message.default.missionOption", "manageActionValue"));
+                            commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
                         }
                     }
 
@@ -168,12 +168,16 @@ public class StreamActionCommand implements ICommand {
 
                     case "delete": {
                         if (manageActionValue == null) {
-                            commandEvent.reply(commandEvent.getResource("message.default.missionOption", "manageActionValue"));
+                            commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
                             return;
                         }
 
-                        String value = manageActionValue.getAsString();
-                        // TODO:: add line deletion.
+                        try {
+                            int value = manageActionValue.getAsInt();
+
+                        } catch (Exception exception) {
+                            commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
+                        }
                     }
                 }
             } else {

@@ -32,7 +32,7 @@ public class TwitterNotifier implements ICommand {
         }
 
         if (!commandEvent.getMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
-            commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MANAGE_WEBHOOKS.getName()));
             return;
         }
 
