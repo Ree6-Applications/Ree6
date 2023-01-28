@@ -23,10 +23,16 @@ public class InstagramNotifier implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
             commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
+            return;
         }
 
         if (commandEvent.isSlashCommand()) {
             commandEvent.reply(commandEvent.getResource("command.perform.slashNotSupported"));
+            return;
+        }
+
+        if (!commandEvent.getMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MANAGE_WEBHOOKS.getName()));
             return;
         }
 

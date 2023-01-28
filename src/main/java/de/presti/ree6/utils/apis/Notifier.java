@@ -10,22 +10,37 @@ import com.github.instagram4j.instagram4j.models.media.timeline.TimelineVideoMed
 import com.github.instagram4j.instagram4j.requests.feed.FeedUserRequest;
 import com.github.instagram4j.instagram4j.responses.feed.FeedUserResponse;
 import com.github.instagram4j.instagram4j.utils.IGChallengeUtils;
+import com.github.philippheuer.credentialmanager.CredentialManager;
+import com.github.philippheuer.credentialmanager.CredentialManagerBuilder;
+import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
+import com.github.twitch4j.auth.TwitchAuth;
+import com.github.twitch4j.auth.providers.TwitchIdentityProvider;
 import com.github.twitch4j.events.ChannelFollowCountUpdateEvent;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.helix.domain.User;
+import com.github.twitch4j.pubsub.events.FollowingEvent;
+import com.github.twitch4j.pubsub.events.RewardRedeemedEvent;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
+import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.StreamAction;
+import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.*;
+import de.presti.ree6.streamtools.StreamActionContainer;
+import de.presti.ree6.streamtools.StreamActionContainerCreator;
 import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.utils.data.DatabaseStorageBackend;
 import de.presti.ree6.utils.others.ThreadUtil;
 import de.presti.wrapper.entities.VideoResult;
 import de.presti.wrapper.entities.channel.ChannelResult;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import masecla.reddit4j.client.Reddit4J;
 import masecla.reddit4j.objects.Sorting;
@@ -56,21 +71,37 @@ public class Notifier {
     /**
      * Instance of the Twitch API Client.
      */
+    @Getter(AccessLevel.PUBLIC)
     private final TwitchClient twitchClient;
+
+    /**
+     * Twitch Credential Manager instance.
+     */
+    @Getter(AccessLevel.PUBLIC)
+    CredentialManager credentialManager;
+
+    /**
+     * Twitch Identity Provider instance.
+     */
+    @Getter(AccessLevel.PUBLIC)
+    TwitchIdentityProvider twitchIdentityProvider;
 
     /**
      * Instance of the Twitter API Client.
      */
+    @Getter(AccessLevel.PUBLIC)
     private final Twitter twitterClient;
 
     /**
      * Instance of the Reddit API Client.
      */
+    @Getter(AccessLevel.PUBLIC)
     private final Reddit4J redditClient;
 
     /**
      * Instance of the Instagram API Client.
      */
+    @Getter(AccessLevel.PUBLIC)
     private final IGClient instagramClient;
 
     /**
@@ -102,13 +133,53 @@ public class Notifier {
      */
     public Notifier() {
         log.info("Initializing Twitch Client...");
+        credentialManager = CredentialManagerBuilder.builder()
+                .withStorageBackend(new DatabaseStorageBackend())
+                .build();
+
+        TwitchAuth.registerIdentityProvider(credentialManager, Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"),
+                Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"),
+                (BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD ? "https://cp.ree6.de" : "http://localhost:8888") + "/twitch/auth/callback");
+
+        twitchIdentityProvider = (TwitchIdentityProvider) credentialManager.getIdentityProviderByName("twitch").orElse(null);
+
         twitchClient = TwitchClientBuilder
                 .builder()
                 .withEnableHelix(true)
                 .withClientId(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"))
                 .withClientSecret(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"))
                 .withEnablePubSub(true)
+                .withCredentialManager(credentialManager)
                 .build();
+
+        for (TwitchIntegration twitchIntegrations :
+                SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "SELECT * FROM TwitchIntegration", null)) {
+
+            OAuth2Credential credential = new OAuth2Credential("twitch", twitchIntegrations.getToken());
+
+            getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(credential, twitchIntegrations.getChannelId());
+            getTwitchClient().getPubSub().listenForSubscriptionEvents(credential, twitchIntegrations.getChannelId());
+        }
+
+        twitchClient.getEventManager().onEvent(RewardRedeemedEvent.class, event -> {
+            List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(StreamAction.StreamListener.REDEMPTION);
+            list.forEach(container -> {
+                if (!event.getRedemption().getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
+
+                if (container.getArguments().length == 0 || event.getRedemption().getReward().getId().equals(container.getArguments()[0])) {
+                    container.runActions(event.getRedemption().getUserInput());
+                }
+            });
+        });
+
+        twitchClient.getEventManager().onEvent(FollowingEvent.class, event -> {
+            List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(StreamAction.StreamListener.FOLLOW);
+            list.forEach(container -> {
+                if (!event.getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
+
+                container.runActions(event.getData().getUsername());
+            });
+        });
 
         log.info("Initializing Twitter Client...");
 
@@ -152,7 +223,10 @@ public class Notifier {
         // handler for challenge login
         IGClient.Builder.LoginHandler challengeHandler = (client, response) -> IGChallengeUtils.resolveChallenge(client, response, inputCode);
 
-        instagramClient = IGClient.builder().username(Main.getInstance().getConfig().getConfiguration().getString("instagram.username")).password(Main.getInstance().getConfig().getConfiguration().getString("instagram.password")).onChallenge(challengeHandler).build();
+        instagramClient = IGClient.builder()
+                .username(Main.getInstance().getConfig().getConfiguration().getString("instagram.username"))
+                .password(Main.getInstance().getConfig().getConfiguration().getString("instagram.password"))
+                .onChallenge(challengeHandler).build();
         instagramClient.sendLoginRequest().exceptionally(throwable -> {
             log.error("Failed to login to Instagram API.", throwable);
             return null;
@@ -882,40 +956,4 @@ public class Notifier {
     }
 
     //endregion
-
-    /**
-     * Get an instance of the TwitchClient.
-     *
-     * @return instance of the TwitchClient.
-     */
-    public TwitchClient getTwitchClient() {
-        return twitchClient;
-    }
-
-    /**
-     * Get an instance of the TwitterClient.
-     *
-     * @return instance of the TwitterClient.
-     */
-    public Twitter getTwitterClient() {
-        return twitterClient;
-    }
-
-    /**
-     * Get an instance of the RedditClient.
-     *
-     * @return instance of the RedditClient.
-     */
-    public Reddit4J getRedditClient() {
-        return redditClient;
-    }
-
-    /**
-     * Get an instance of the InstagramClient.
-     *
-     * @return instance of the InstagramClient.
-     */
-    public IGClient getInstagramClient() {
-        return instagramClient;
-    }
 }

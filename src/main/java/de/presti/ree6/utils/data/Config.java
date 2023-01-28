@@ -28,8 +28,13 @@ public class Config {
 
         try {
             Path storage = Path.of("storage");
+            Path storageTemp = Path.of("storage/tmp");
+
             if (!Files.exists(storage))
                 Files.createDirectory(storage);
+
+            if (!Files.exists(storageTemp))
+                Files.createDirectory(storageTemp);
         } catch (Exception exception) {
             log.error("Could not create Storage folder!", exception);
         }

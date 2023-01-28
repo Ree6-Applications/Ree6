@@ -37,6 +37,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -358,6 +362,21 @@ public class Main {
 
                 lastDay = new SimpleDateFormat("dd").format(new Date());
             }
+
+            File storageTemp = new File("storage/tmp/");
+            if (storageTemp.isDirectory()) {
+                File[] files = storageTemp.listFiles();
+                if (files != null) {
+                    Arrays.stream(files).forEach(f -> {
+                        try {
+                            Files.deleteIfExists(f.toPath());
+                        } catch (IOException e) {
+                            log.error("Couldn't delete file " + f.getName(), e);
+                        }
+                    });
+                }
+            }
+
         }, null, Duration.ofMinutes(1), true, false);
     }
 
