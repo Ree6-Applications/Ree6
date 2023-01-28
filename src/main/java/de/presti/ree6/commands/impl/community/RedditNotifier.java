@@ -23,6 +23,7 @@ public class RedditNotifier implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
             commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
+            return;
         }
 
         if (commandEvent.isSlashCommand()) {
@@ -30,6 +31,10 @@ public class RedditNotifier implements ICommand {
             return;
         }
 
+        if (!commandEvent.getMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
+            commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
+            return;
+        }
         if(commandEvent.getArguments().length == 1) {
             if(commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
                 StringBuilder end = new StringBuilder("```\n");

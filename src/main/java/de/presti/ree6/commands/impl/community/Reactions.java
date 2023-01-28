@@ -4,6 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.ReactionRole;
 import net.dv8tion.jda.api.Permission;
@@ -85,7 +86,7 @@ public class Reactions implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("reactions", "command.description.reactions")
+        return new CommandDataImpl("reactions", LanguageService.getDefault("command.description.reactions"))
                 .addOption(OptionType.STRING, "action", "The current action that should be performed.", true)
                 .addOption(OptionType.STRING, "message", "The ID of the Message.", true)
                 .addOption(OptionType.ROLE, "role", "The Role to be given.", true);
