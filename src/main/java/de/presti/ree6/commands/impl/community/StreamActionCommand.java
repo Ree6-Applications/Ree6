@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,6 +51,10 @@ public class StreamActionCommand implements ICommand {
 
         OptionMapping createName = commandEvent.getSlashCommandInteractionEvent().getOption("createName");
         OptionMapping deleteName = commandEvent.getSlashCommandInteractionEvent().getOption("deleteName");
+        OptionMapping name = commandEvent.getSlashCommandInteractionEvent().getOption("name");
+        OptionMapping manageAction = commandEvent.getSlashCommandInteractionEvent().getOption("manageAction");
+        OptionMapping manageActionValue = commandEvent.getSlashCommandInteractionEvent().getOption("manageActionValue");
+
 
         if (createName != null) {
             StreamAction streamAction = SQLSession.getSqlConnector().getSqlWorker()
@@ -82,20 +87,7 @@ public class StreamActionCommand implements ICommand {
             } else {
                 commandEvent.reply(commandEvent.getResource("message.stream-action.notFound", deleteName.getAsString()));
             }
-        } else {
-            OptionMapping name = commandEvent.getSlashCommandInteractionEvent().getOption("name");
-            OptionMapping manageAction = commandEvent.getSlashCommandInteractionEvent().getOption("manageAction");
-            OptionMapping manageActionValue = commandEvent.getSlashCommandInteractionEvent().getOption("manageActionValue");
-
-            if (name == null) {
-                commandEvent.reply(commandEvent.getResource("message.default.missingOption", "name"));
-                return;
-            }
-
-            if (manageAction == null) {
-                commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageAction"));
-                return;
-            }
+        } else if (name != null && manageAction != null) {
 
             StreamAction streamAction = SQLSession.getSqlConnector().getSqlWorker()
                     .getEntity(new StreamAction(), "SELECT * FROM StreamActions WHERE actionName = :name AND guildId = :gid",
@@ -127,6 +119,7 @@ public class StreamActionCommand implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
 
                         commandEvent.reply(commandEvent.getResource("message.stream-action.added"));
+                        break;
                     }
 
                     case "listen": {
@@ -152,15 +145,17 @@ public class StreamActionCommand implements ICommand {
                         } else {
                             commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
                         }
+                        break;
                     }
 
                     case "list": {
                         StreamActionContainer streamActionContainer = new StreamActionContainer(streamAction);
-                        commandEvent.reply(commandEvent.getResource("message.stream-action.list",
+                        commandEvent.reply(commandEvent.getResource("message.stream-action.actionList",
                                 streamActionContainer.getActions().entrySet().stream()
                                         .map((Map.Entry<IStreamAction, String[]> entry) ->
                                                 entry.getKey().getClass().getAnnotation(StreamActionInfo.class).name() + " -> "
-                                                        + String.join(" ", entry.getValue()))));
+                                                        + String.join(" ", entry.getValue()) + "\n")));
+                        break;
                     }
 
                     case "delete": {
@@ -181,11 +176,23 @@ public class StreamActionCommand implements ICommand {
                         } catch (Exception exception) {
                             commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
                         }
+                        break;
+                    }
+
+                    default: {
+                        commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
+                        break;
                     }
                 }
             } else {
                 commandEvent.reply(commandEvent.getResource("message.stream-action.notFound", name.getAsString()));
             }
+        } else {
+            List<StreamAction> streamActions = SQLSession.getSqlConnector().getSqlWorker()
+                    .getEntityList(new StreamAction(), "SELECT * FROM StreamActions WHERE actionName = :name AND guildId = :gid",
+                            Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong()));
+
+            commandEvent.reply(LanguageService.getByEvent(commandEvent, "message.stream-action.list", streamActions.stream().map(c -> c.getActionName() + "\n")));
         }
 
     }

@@ -461,6 +461,8 @@ message:
     deleted: "We successfully deleted the Stream-action with the name **%s**"
     deletedLine: "We successfully deleted the action line %s!"
     alreadyExisting: "We found a already existing Stream-action with the name **%s**"
+    list: "Here is a list of all stream-actions!\n```%s```"
+    actionlist: "Here is a list of all actions!\n```%s```"
     noTwitch: "To use this feature we require you to authorize your Twitch! Check out <%s> for it!"
     notFound: "We couldn't find the Stream-Action with the name **%s**"
 game:
