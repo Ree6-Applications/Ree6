@@ -456,6 +456,12 @@ message:
     points: "%s reached %s pts"
   announcement:
     added: "Successfully added the Announcement!"
+  stream-action:
+    added: "We successfully added the Stream-action with the name **%s**"
+    deleted: "We successfully deleted the Stream-action with the name **%s**"
+    alreadyExisting: "We found a already existing Stream-action with the name **%s**"
+    noTwitch: "To use this feature we require you to authorize your Twitch! Check out <%s> for it!"
+    notFound: "We couldn't find the Stream-Action with the name **%s**"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
@@ -542,6 +548,7 @@ command:
     rule34_slash: "Shows not safe for work Images from a specific Website."
     reactions: "Assign roles to reactions on a message!"
     announcement: "Create an Announcement!"
+    stream-action: "Manage Stream actions that can bring you stream into the Voice-channel!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."

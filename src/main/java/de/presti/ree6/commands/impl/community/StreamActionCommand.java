@@ -70,10 +70,10 @@ public class StreamActionCommand implements ICommand {
 
                     SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
                 } else {
-                    commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", createName.getAsString()));
+                    commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", "https://cp.ree6.de/twitch/auth"));
                 }
             } else {
-                commandEvent.reply(commandEvent.getResource("message.stream-action.knownAction", createName.getAsString()));
+                commandEvent.reply(commandEvent.getResource("message.stream-action.alreadyExisting", createName.getAsString()));
             }
         } else if (deleteName != null) {
             StreamAction streamAction = SQLSession.getSqlConnector().getSqlWorker()
@@ -83,7 +83,7 @@ public class StreamActionCommand implements ICommand {
                 SQLSession.getSqlConnector().getSqlWorker().deleteEntity(streamAction);
                 commandEvent.reply(commandEvent.getResource("message.stream-action.deleted", deleteName.getAsString()));
             } else {
-                commandEvent.reply(commandEvent.getResource("message.stream-action.unknownAction", deleteName.getAsString()));
+                commandEvent.reply(commandEvent.getResource("message.stream-action.notFound", deleteName.getAsString()));
             }
         } else {
             OptionMapping name = commandEvent.getSlashCommandInteractionEvent().getOption("name");
@@ -177,7 +177,7 @@ public class StreamActionCommand implements ICommand {
                     }
                 }
             } else {
-                commandEvent.reply(commandEvent.getResource("message.stream-action.notFound", "StreamAction", name.getAsString()));
+                commandEvent.reply(commandEvent.getResource("message.stream-action.notFound", name.getAsString()));
             }
         }
 
