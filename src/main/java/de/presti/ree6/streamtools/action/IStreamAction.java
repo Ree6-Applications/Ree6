@@ -1,6 +1,5 @@
 package de.presti.ree6.streamtools.action;
 
-import lombok.NoArgsConstructor;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -166,9 +166,7 @@ public class Notifier {
             list.forEach(container -> {
                 if (!event.getRedemption().getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
-                if (container.getArguments().length == 0) {
-                    container.runActions(event.getRedemption().getUserInput());
-                } else if (event.getRedemption().getReward().getId().equals(container.getArguments()[0])) {
+                if (container.getArguments().length == 0 && event.getRedemption().getReward().getId().equals(container.getArguments()[0])) {
                     container.runActions(event.getRedemption().getUserInput());
                 }
             });
