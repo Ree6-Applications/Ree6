@@ -203,6 +203,7 @@ message:
     unknownMenu: "There was an error while resolving the modal!"
     invalidOption: "You somehow selected an invalid Option! Are you a Wizard?"
     invalidOptionChannel: "The given Channel doesn't exists, how did you select it? Are you a Wizard?"
+    missionOption: "You need to provide a value for the option %s!"
     nameChangeFailed: "Could not change the my own nickname!"
   birthday:
     added:

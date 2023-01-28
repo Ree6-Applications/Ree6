@@ -43,6 +43,7 @@ public class StreamActionContainer {
     /**
      * The Actions.
      */
+    @Getter(AccessLevel.PUBLIC)
     HashMap<IStreamAction, String[]> actions = new HashMap<>();
 
     /**
