@@ -7,6 +7,7 @@ import de.presti.ree6.sql.entities.StreamAction;
 import de.presti.ree6.streamtools.action.IStreamAction;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 /**
  * A Container used to store all needed Information for a StreamAction.
  */
+@Slf4j
 public class StreamActionContainer {
 
     /**
@@ -73,7 +75,7 @@ public class StreamActionContainer {
                         IStreamAction streamAction1 = actionClass.getConstructor().newInstance();
                         actions.put(streamAction1, args);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.error("Couldn't parse Stream-action!", e);
                     }
                 }
             }
