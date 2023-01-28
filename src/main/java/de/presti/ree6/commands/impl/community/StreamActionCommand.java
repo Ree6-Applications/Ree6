@@ -189,8 +189,8 @@ public class StreamActionCommand implements ICommand {
             }
         } else {
             List<StreamAction> streamActions = SQLSession.getSqlConnector().getSqlWorker()
-                    .getEntityList(new StreamAction(), "SELECT * FROM StreamActions WHERE actionName = :name AND guildId = :gid",
-                            Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong()));
+                    .getEntityList(new StreamAction(), "SELECT * FROM StreamActions WHERE guildId = :gid",
+                            Map.of("gid", commandEvent.getGuild().getIdLong()));
 
             commandEvent.reply(LanguageService.getByEvent(commandEvent, "message.stream-action.list", streamActions.stream().map(c -> c.getActionName() + "\n")));
         }
