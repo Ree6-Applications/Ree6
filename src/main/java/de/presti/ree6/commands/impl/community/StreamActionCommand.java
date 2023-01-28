@@ -174,7 +174,13 @@ public class StreamActionCommand implements ICommand {
 
                         try {
                             int value = manageActionValue.getAsInt();
-
+                            if (streamAction.getActions().getAsJsonArray().size() >= value && value > 0) {
+                                streamAction.getActions().getAsJsonArray().remove(value -1);
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
+                                commandEvent.reply(commandEvent.getResource("message.stream-action.deletedLine", "" + value));
+                            } else {
+                                commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
+                            }
                         } catch (Exception exception) {
                             commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
                         }
