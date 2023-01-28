@@ -27,13 +27,13 @@ public class StreamActionContainerCreator {
      * @return The Class of the Action.
      */
     public static Class<? extends IStreamAction> getAction(String action) {
+        action = action.trim().toLowerCase();
+
         if (cachedActions.containsKey(action))
             return cachedActions.get(action);
 
         Reflections reflections = new Reflections("de.presti.ree6.streamtools.action.impl");
         Set<Class<? extends IStreamAction>> classes = reflections.getSubTypesOf(IStreamAction.class);
-
-        action = action.trim().toLowerCase();
 
         for (Class<? extends IStreamAction> aClass : classes) {
             if (aClass.isAnnotationPresent(StreamActionInfo.class) && aClass.getAnnotation(StreamActionInfo.class).name().trim().equalsIgnoreCase(action)) {
