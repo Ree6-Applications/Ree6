@@ -1,12 +1,15 @@
 package de.presti.ree6.streamtools.action;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
  * Annotation used to store Information about a StreamAction.
  */
 @Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface StreamActionInfo {
 
     /**
