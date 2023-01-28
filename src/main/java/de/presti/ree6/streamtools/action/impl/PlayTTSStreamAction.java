@@ -4,12 +4,15 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.streamtools.action.StreamActionInfo;
 import de.presti.ree6.streamtools.action.IStreamAction;
 import de.presti.ree6.utils.external.RequestUtility;
+import de.presti.ree6.utils.others.RandomUtils;
 import lombok.NoArgsConstructor;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * StreamAction used to play a text-to-speech messages.
@@ -36,6 +39,12 @@ public class PlayTTSStreamAction implements IStreamAction {
                 .GET().build();
         byte[] tts = RequestUtility.requestBytes(request);
 
-        // TODO:: play method, mostly waiting for https://github.com/Walkyst/lavaplayer-fork/pull/45
+        Path filePath = Path.of("storage/tmp/", RandomUtils.randomString(16) + ".mp3");
+
+        try {
+            Files.write(filePath, tts);
+            Main.getInstance().getMusicWorker().loadAndPlay(guild, null, null, filePath.toAbsolutePath().toString(), null, true, false);
+        } catch (Exception ignore) {
+        }
     }
 }
