@@ -1,5 +1,6 @@
 package de.presti.ree6.streamtools.action.impl;
 
+import de.presti.ree6.main.Main;
 import de.presti.ree6.streamtools.action.StreamActionInfo;
 import de.presti.ree6.streamtools.action.IStreamAction;
 import de.presti.ree6.utils.external.RequestUtility;
@@ -25,6 +26,8 @@ public class PlayTTSStreamAction implements IStreamAction {
         if (arguments == null || arguments.length == 0) {
             return;
         }
+
+        if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return;
 
         String text = String.join(" ", arguments);
 

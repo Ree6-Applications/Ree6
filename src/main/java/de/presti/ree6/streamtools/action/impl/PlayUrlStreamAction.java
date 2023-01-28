@@ -23,6 +23,9 @@ public class PlayUrlStreamAction implements IStreamAction {
         if (arguments == null || arguments.length == 0) {
             return;
         }
+
+        if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return;
+
         Main.getInstance().getMusicWorker().loadAndPlay(guild, null, null, arguments[0], null, true, false);
     }
 }

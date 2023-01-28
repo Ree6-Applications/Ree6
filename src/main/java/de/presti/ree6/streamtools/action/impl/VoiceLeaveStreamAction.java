@@ -19,6 +19,8 @@ public class VoiceLeaveStreamAction implements IStreamAction {
      */
     @Override
     public void runAction(@NotNull Guild guild, String[] arguments) {
+        if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return;
+
         Main.getInstance().getMusicWorker().disconnect(guild);
     }
 

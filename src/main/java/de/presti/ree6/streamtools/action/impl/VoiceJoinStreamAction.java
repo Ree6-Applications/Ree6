@@ -27,6 +27,12 @@ public class VoiceJoinStreamAction implements IStreamAction {
 
         try {
             VoiceChannel voiceChannel = guild.getVoiceChannelById(arguments[0]);
+            if (voiceChannel == null) return;
+
+            if (Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) {
+                Main.getInstance().getMusicWorker().disconnect(guild);
+            }
+
             Main.getInstance().getMusicWorker().connectToAudioChannel(guild.getAudioManager(), voiceChannel);
         } catch (Exception exception) {
             Sentry.captureMessage("Invalid Voice Channel ID! Related guild: " + guild.getIdLong());
