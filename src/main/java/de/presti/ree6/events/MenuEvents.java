@@ -120,7 +120,7 @@ public class MenuEvents extends ListenerAdapter {
                             .append("\n");
 
 
-                    for (Message message : event.getChannel().asTextChannel().getIterableHistory()) {
+                    for (Message message : event.getChannel().asTextChannel().getIterableHistory().reverse()) {
                         stringBuilder
                                 .append("[")
                                 .append(message.getTimeCreated().toZonedDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
