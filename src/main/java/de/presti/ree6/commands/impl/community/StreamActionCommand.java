@@ -43,7 +43,6 @@ public class StreamActionCommand implements ICommand {
             return;
         }
 
-
         if (!commandEvent.getMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MANAGE_WEBHOOKS.getName()));
             return;

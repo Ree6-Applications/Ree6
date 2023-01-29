@@ -45,6 +45,7 @@ import twitter4j.TwitterException;
 
 import java.awt.*;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -145,7 +146,8 @@ public class MenuEvents extends ListenerAdapter {
                     webhookEmbedBuilder.setColor(BotWorker.randomEmbedColor().getRGB());
 
                     webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-                    
+                    webhookMessageBuilder.addFile(tickets.getTicketCount() + "_transcript.txt", stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
+
                     WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), tickets.getLogChannelId(), tickets.getLogChannelWebhookToken(), false);
 
                     event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.close")).queue();
@@ -853,60 +855,6 @@ public class MenuEvents extends ListenerAdapter {
                 }
             }
 
-            case "setupTickets" -> {
-                if (checkPerms(event.getMember(), event.getChannel())) {
-                    return;
-                }
-
-                String value = event.getInteraction().getValues().get(0);
-
-                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
-
-                if (value.equalsIgnoreCase("more")) {
-                    java.util.List<SelectOption> optionList = new ArrayList<>();
-
-                    for (TextChannel channel : event.getGuild().getTextChannels().stream().skip(24).toList()) {
-                        optionList.add(SelectOption.of(channel.getName(), channel.getId()));
-                    }
-
-                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.setupDescription"));
-
-                    event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTickets", LanguageService.getByGuild(event.getGuild(), "label.selectChannel"), 1, 1, false, optionList)).queue();
-                    return;
-                }
-
-                MessageChannel messageChannel = event.getGuild().getTextChannelById(event.getInteraction().getValues().get(0));
-
-                if (messageChannel != null) {
-                    Tickets tickets = new Tickets();
-                    tickets.setChannelId(messageChannel.getIdLong());
-                    tickets.setGuildId(event.getGuild().getIdLong());
-
-                    event.getGuild().createCategory("Tickets").addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
-                        tickets.setTicketCategory(category1.getIdLong());
-                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(tickets);
-
-                        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-                        messageCreateBuilder.setEmbeds(new EmbedBuilder()
-                                .setTitle(LanguageService.getByGuild(event.getGuild(), "label.openTicket"))
-                                .setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.menuDescription"))
-                                .setColor(0x55ff00)
-                                .setThumbnail(event.getGuild().getIconUrl())
-                                .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
-                                .build());
-                        messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(event.getGuild(), "label.openTicket"), Emoji.fromUnicode("U+1F4E9")));
-                        Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
-                    });
-
-                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.setupSuccess"));
-                    embedBuilder.setColor(Color.GREEN);
-                    event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
-                } else {
-                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOptionChannel"));
-                    event.editMessageEmbeds(embedBuilder.build()).queue();
-                }
-            }
-
             case "setupTicketsMenu" -> {
                 if (checkPerms(event.getMember(), event.getChannel())) {
                     return;
@@ -914,25 +862,14 @@ public class MenuEvents extends ListenerAdapter {
 
                 EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
-                java.util.List<SelectOption> optionList = new ArrayList<>();
-
                 switch (event.getInteraction().getValues().get(0)) {
 
                     case "backToSetupMenu" -> sendDefaultChoice(event);
 
                     case "ticketsSetup" -> {
-                        for (TextChannel channel : event.getGuild().getTextChannels()) {
-                            if (optionList.size() == 24) {
-                                optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.more"), "more"));
-                                break;
-                            }
-
-                            optionList.add(SelectOption.of(channel.getName(), channel.getId()));
-                        }
-
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.setupDescription"));
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTickets", LanguageService.getByGuild(event.getGuild(), "label.selectChannel"), 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(Collections.emptyList()).queue();
                     }
 
                     case "ticketsDelete" -> {
