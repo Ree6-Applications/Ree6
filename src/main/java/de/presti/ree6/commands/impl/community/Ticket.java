@@ -91,7 +91,7 @@ public class Ticket implements ICommand {
         embedBuilder.setDescription(LanguageService.getByGuild(commandEvent.getGuild(), "message.ticket.setupSuccess"));
         embedBuilder.setColor(Color.GREEN);
 
-
+        commandEvent.reply(embedBuilder.build());
     }
 
     /**
