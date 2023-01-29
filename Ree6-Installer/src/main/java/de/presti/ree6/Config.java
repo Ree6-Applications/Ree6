@@ -33,7 +33,7 @@ public class Config {
                     #                              #
                     ################################
                     """);
-            yamlFile.addDefault("config.version", "2.0.0");
+            yamlFile.addDefault("config.version", "2.1.0");
             yamlFile.addDefault("config.creation", System.currentTimeMillis());
             yamlFile.addDefault("hikari.sql.user", "root");
             yamlFile.addDefault("hikari.sql.db", "root");
@@ -41,6 +41,7 @@ public class Config {
             yamlFile.addDefault("hikari.sql.host", "localhost");
             yamlFile.addDefault("hikari.sql.port", 3306);
             yamlFile.addDefault("hikari.misc.storage", "sqlite");
+            yamlFile.addDefault("hikari.misc.storageFile", "storage/Ree6.db");
             yamlFile.addDefault("hikari.misc.poolSize", 10);
             yamlFile.addDefault("dagpi.apitoken", "yourdagpixyztokenhere");
             yamlFile.addDefault("sentry.dsn", "yourSentryDSNHere");
@@ -56,8 +57,6 @@ public class Config {
             yamlFile.addDefault("reddit.client.secret", "yourredditclientsecret");
             yamlFile.addDefault("instagram.username", "yourInstagramUsername");
             yamlFile.addDefault("instagram.password", "yourInstagramPassword");
-            yamlFile.addDefault("youtube.api.key", "youryoutubeapikey");
-            yamlFile.addDefault("youtube.api.key2", "youryoutubeapikey2");
             yamlFile.addDefault("bot.tokens.release", "ReleaseTokenhere");
             yamlFile.addDefault("bot.tokens.beta", "BetaTokenhere");
             yamlFile.addDefault("bot.tokens.dev", "DevTokenhere");

@@ -69,18 +69,14 @@ public class Main {
         } catch (IOException | InterruptedException ignore) {}
     }
 
-    public static void setupStepOne() throws InterruptedException, IOException, URISyntaxException {
+    public static void setupStepOne() throws InterruptedException, IOException {
         clear();
         print("Welcome to the setup System of Ree6!\nLets start by configuration the Config!\nPlease select one of these Database Types: MariaDB, SQLLite, H2");
 
         switch (getValueOrDefault("sqllite").toLowerCase()) {
-            case "mariadb" -> {
-                setupMariaDB();
-            }
+            case "mariadb" -> setupMariaDB();
 
-            case "sqllite" -> {
-                setupSQLLite();
-            }
+            case "sqllite" -> setupSQLLite();
 
             default -> {
                 print("Unknown Database Typ!");
@@ -138,12 +134,6 @@ public class Main {
         print("Enter your Instagram Account password (NONE)");
         config.getConfiguration().set("instagram.password", getValueOrDefaultHidden(""));
 
-        print("Enter your main YouTube-API-Key (NONE)");
-        config.getConfiguration().set("youtube.api.key", getValueOrDefaultHidden(""));
-
-        print("Enter your secondary YouTube-API-Key (NONE)");
-        config.getConfiguration().set("youtube.api.key2", getValueOrDefaultHidden(""));
-
         print("Enter your Discord Bot-Token (*)");
         config.getConfiguration().set("bot.tokens.release", getValueOrDefaultHidden(""));
 
@@ -152,7 +142,7 @@ public class Main {
         print("Great, we finished setting up everything!\nGive me a second to download the newest JAR!");
     }
 
-    public static void update() throws MalformedURLException, URISyntaxException {
+    public static void update() {
         JSONArray jsonObject = new JSONArray(RequestUtility.request("https://api.github.com/repos/Ree6-Applications/Ree6/releases"));
 
         JSONObject jsonObject1 = jsonObject.getJSONObject(0);
