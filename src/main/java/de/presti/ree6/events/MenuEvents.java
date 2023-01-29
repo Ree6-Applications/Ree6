@@ -1,5 +1,9 @@
 package de.presti.ree6.events;
 
+import club.minnced.discord.webhook.send.WebhookEmbed;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
@@ -16,6 +20,7 @@ import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -41,9 +46,14 @@ import twitter4j.TwitterException;
 import java.awt.*;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * EventHandler for Menu Events.
@@ -101,29 +111,45 @@ public class MenuEvents extends ListenerAdapter {
                 Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GUILDID=:gid", Map.of("gid", event.getGuild().getId()));
 
                 if (tickets != null) {
-                    if (event.getGuildChannel().asTextChannel().getParentCategory().getName().startsWith("Archive")) {
-                        event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.alreadyArchived")).queue();
-                        return;
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append("Ree6 Ticket transcript")
+                            .append(" ")
+                            .append(ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)))
+                            .append("\n");
+
+
+                    for (Message message : event.getChannel().asTextChannel().getIterableHistory()) {
+                        stringBuilder
+                                .append("[")
+                                .append(message.getTimeCreated().toZonedDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
+                                .append("]")
+                                .append(" ")
+                                .append(message.getAuthor().getAsTag())
+                                .append(" ")
+                                .append("->")
+                                .append(" ")
+                                .append(message.getContentRaw())
+                                .append("\n");
                     }
 
-                    Category category = event.getGuild().getCategoryById(tickets.getArchiveCategory());
+                    stringBuilder.append("Closed by").append(" ").append(event.getUser().getAsTag());
 
-                    if (category != null) {
-                        if (category.getTextChannels().size() == 50) {
-                            event.getGuild().createCategory("Archive-" + event.getGuild().getCategories().stream().filter(c -> c.getName().startsWith("Archive-")).count() + 1)
-                                    .addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(c -> {
-                                tickets.setArchiveCategory(c.getIdLong());
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(tickets);
-                                event.getGuildChannel().asTextChannel().getManager().setParent(c).sync().queue();
-                            });
-                        } else {
-                            event.getGuildChannel().asTextChannel().getManager().setParent(category).sync().queue();
-                        }
+                    WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+                    webhookMessageBuilder.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
+                    webhookMessageBuilder.setUsername("Ree6-Tickets");
 
-                        event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.close")).queue();
-                    } else {
-                        event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.categoryNotFound")).queue();
-                    }
+                    WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                    webhookEmbedBuilder.setDescription("Here is the transcript of the ticket " + tickets.getTicketCount() + "!");
+                    webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
+                    webhookEmbedBuilder.setColor(BotWorker.randomEmbedColor().getRGB());
+
+                    webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+                    
+                    WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), tickets.getLogChannelId(), tickets.getLogChannelWebhookToken(), false);
+
+                    event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.close")).queue();
+                    event.getChannel().delete().delay(2, TimeUnit.SECONDS).queue();
                 }
             }
         }
@@ -855,25 +881,23 @@ public class MenuEvents extends ListenerAdapter {
                     Tickets tickets = new Tickets();
                     tickets.setChannelId(messageChannel.getIdLong());
                     tickets.setGuildId(event.getGuild().getIdLong());
-                    event.getGuild().createCategory("Archive-1").addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category -> {
-                        tickets.setArchiveCategory(category.getIdLong());
 
-                        event.getGuild().createCategory("Tickets").addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
-                            tickets.setTicketCategory(category1.getIdLong());
-                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(tickets);
+                    event.getGuild().createCategory("Tickets").addPermissionOverride(event.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
+                        tickets.setTicketCategory(category1.getIdLong());
+                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(tickets);
 
-                            MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-                            messageCreateBuilder.setEmbeds(new EmbedBuilder()
-                                    .setTitle(LanguageService.getByGuild(event.getGuild(), "label.openTicket"))
-                                    .setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.menuDescription"))
-                                    .setColor(0x55ff00)
-                                    .setThumbnail(event.getGuild().getIconUrl())
-                                    .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
-                                    .build());
-                            messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(event.getGuild(), "label.openTicket"), Emoji.fromUnicode("U+1F4E9")));
-                            Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
-                        });
+                        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+                        messageCreateBuilder.setEmbeds(new EmbedBuilder()
+                                .setTitle(LanguageService.getByGuild(event.getGuild(), "label.openTicket"))
+                                .setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.menuDescription"))
+                                .setColor(0x55ff00)
+                                .setThumbnail(event.getGuild().getIconUrl())
+                                .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
+                                .build());
+                        messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(event.getGuild(), "label.openTicket"), Emoji.fromUnicode("U+1F4E9")));
+                        Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
                     });
+
                     embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.setupSuccess"));
                     embedBuilder.setColor(Color.GREEN);
                     event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
@@ -1126,7 +1150,7 @@ public class MenuEvents extends ListenerAdapter {
                         if (SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId())) {
                             WebhookUtil.deleteWebhook(event.getGuild().getId(), SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId()));
                         }
-                        
+
                         SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupSuccess"));
                         embedBuilder.setColor(Color.GREEN);
@@ -1191,7 +1215,7 @@ public class MenuEvents extends ListenerAdapter {
                         if (event.getMessage().getEmbeds().isEmpty() || event.getMessage().getEmbeds().get(0) == null)
                             return;
 
-                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(),"message.default.invalidOption"));
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.invalidOption"));
                         event.editMessageEmbeds(embedBuilder.build()).queue();
                     }
                 }
@@ -1234,7 +1258,7 @@ public class MenuEvents extends ListenerAdapter {
                         }
 
                         SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
-                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(),"message.welcome.setupSuccess"));
+                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.setupSuccess"));
                         embedBuilder.setColor(Color.GREEN);
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     });
@@ -1265,17 +1289,17 @@ public class MenuEvents extends ListenerAdapter {
         EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
 
         List<SelectOption> optionList = new ArrayList<>();
-        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(),"label.language"), "lang"));
-        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(),"label.auditLog"), "log"));
-        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(),"label.welcomeChannel"), "welcome"));
-        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(),"label.autoRole"), "autorole"));
-        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(),"label.temporalVoice"), "tempvoice"));
-        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(),"label.statistics"), "statistics"));
-        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(),"label.ticketSystem"), "tickets"));
+        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.language"), "lang"));
+        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.auditLog"), "log"));
+        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.welcomeChannel"), "welcome"));
+        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.autoRole"), "autorole"));
+        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.temporalVoice"), "tempvoice"));
+        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.statistics"), "statistics"));
+        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.ticketSystem"), "tickets"));
 
-        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(),"message.setup.setupMenu"));
+        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.setup.setupMenu"));
 
-        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupActionMenu", LanguageService.getByGuild(event.getGuild(),"message.setup.setupMenuPlaceholder"), 1, 1, false, optionList)).queue();
+        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupActionMenu", LanguageService.getByGuild(event.getGuild(), "message.setup.setupMenuPlaceholder"), 1, 1, false, optionList)).queue();
     }
 
     /**
@@ -1287,12 +1311,12 @@ public class MenuEvents extends ListenerAdapter {
      */
     private boolean checkPerms(Member member, MessageChannel channel) {
         if (member == null || !member.hasPermission(Permission.ADMINISTRATOR)) {
-            channel.sendMessage(LanguageService.getByGuild((member == null ? null : member.getGuild()),"message.default.insufficientPermission", Permission.ADMINISTRATOR.name())).queue();
+            channel.sendMessage(LanguageService.getByGuild((member == null ? null : member.getGuild()), "message.default.insufficientPermission", Permission.ADMINISTRATOR.name())).queue();
             return true;
         }
 
         if (!member.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
-            channel.sendMessage(LanguageService.getByGuild( member.getGuild(),"message.default.needPermission", Permission.MANAGE_WEBHOOKS.name())).queue();
+            channel.sendMessage(LanguageService.getByGuild(member.getGuild(), "message.default.needPermission", Permission.MANAGE_WEBHOOKS.name())).queue();
             return true;
         }
 

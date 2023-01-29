@@ -121,7 +121,8 @@ public class OtherEvents extends ListenerAdapter {
         wmb.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
         wmb.setUsername("Welcome!");
 
-        String messageContent = SQLSession.getSqlConnector().getSqlWorker().getMessage(event.getGuild().getId())
+        String messageContent = SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join")
+                .getStringValue()
                 .replace("%user_name%", event.getMember().getUser().getName())
                 .replace("%guild_name%", event.getGuild().getName())
                 .replace("%guild_member_count%", String.valueOf(event.getGuild().getMemberCount()));
