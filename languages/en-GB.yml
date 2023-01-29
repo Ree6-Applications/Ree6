@@ -552,6 +552,7 @@ command:
     reactions: "Assign roles to reactions on a message!"
     announcement: "Create an Announcement!"
     stream-action: "Manage Stream actions that can bring you stream into the Voice-channel!"
+    tickets: "Create a Ticket System to communicate with your community!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
