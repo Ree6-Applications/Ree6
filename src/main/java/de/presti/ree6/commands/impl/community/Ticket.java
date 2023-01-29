@@ -51,8 +51,8 @@ public class Ticket implements ICommand {
             return;
         }
 
-        OptionMapping ticketChannel = commandEvent.getSlashCommandInteractionEvent().getOption("supportChannel");
-        OptionMapping logChannel = commandEvent.getSlashCommandInteractionEvent().getOption("logChannel");
+        OptionMapping ticketChannel = commandEvent.getSlashCommandInteractionEvent().getOption("supportchannel");
+        OptionMapping logChannel = commandEvent.getSlashCommandInteractionEvent().getOption("logchannel");
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
 
@@ -100,8 +100,8 @@ public class Ticket implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("tickets", LanguageService.getDefault("command.description.tickets"))
-                .addOption(OptionType.CHANNEL, "supportChannel", "The channel that should have the ticket creation message.", true)
-                .addOption(OptionType.CHANNEL, "logChannel", "The channel that should receive the transcripts.", true);
+                .addOption(OptionType.CHANNEL, "supportchannel", "The channel that should have the ticket creation message.", true)
+                .addOption(OptionType.CHANNEL, "logchannel", "The channel that should receive the transcripts.", true);
     }
 
     /**

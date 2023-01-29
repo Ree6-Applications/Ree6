@@ -48,11 +48,11 @@ public class StreamActionCommand implements ICommand {
             return;
         }
 
-        OptionMapping createName = commandEvent.getSlashCommandInteractionEvent().getOption("createName");
-        OptionMapping deleteName = commandEvent.getSlashCommandInteractionEvent().getOption("deleteName");
+        OptionMapping createName = commandEvent.getSlashCommandInteractionEvent().getOption("createname");
+        OptionMapping deleteName = commandEvent.getSlashCommandInteractionEvent().getOption("deletename");
         OptionMapping name = commandEvent.getSlashCommandInteractionEvent().getOption("name");
-        OptionMapping manageAction = commandEvent.getSlashCommandInteractionEvent().getOption("manageAction");
-        OptionMapping manageActionValue = commandEvent.getSlashCommandInteractionEvent().getOption("manageActionValue");
+        OptionMapping manageAction = commandEvent.getSlashCommandInteractionEvent().getOption("manageaction");
+        OptionMapping manageActionValue = commandEvent.getSlashCommandInteractionEvent().getOption("manageactionvalue");
 
 
         if (createName != null) {
@@ -203,11 +203,11 @@ public class StreamActionCommand implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("stream-action",
                 LanguageService.getDefault("command.description.stream-action"))
-                .addOption(OptionType.STRING, "createName", "The name of the to be created action")
-                .addOption(OptionType.STRING, "deleteName", "The name of the to be deleted action")
+                .addOption(OptionType.STRING, "createname", "The name of the to be created action")
+                .addOption(OptionType.STRING, "deletename", "The name of the to be deleted action")
                 .addOption(OptionType.STRING, "name", "The name of the already created action")
-                .addOption(OptionType.STRING, "manageAction", "The managing action that should be performed on the Stream-Action")
-                .addOption(OptionType.STRING, "manageActionValue", "The value of the managing action");
+                .addOption(OptionType.STRING, "manageaction", "The managing action that should be performed on the Stream-Action")
+                .addOption(OptionType.STRING, "manageactionvalue", "The value of the managing action");
     }
 
     /**
