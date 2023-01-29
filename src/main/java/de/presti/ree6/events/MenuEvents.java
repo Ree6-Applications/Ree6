@@ -116,6 +116,7 @@ public class MenuEvents extends ListenerAdapter {
                     stringBuilder.append("Ree6 Ticket transcript")
                             .append(" ")
                             .append(ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)))
+                            .append("\n")
                             .append("\n");
 
 
@@ -133,7 +134,7 @@ public class MenuEvents extends ListenerAdapter {
                                 .append("\n");
                     }
 
-                    stringBuilder.append("Closed by").append(" ").append(event.getUser().getAsTag());
+                    stringBuilder.append("\n").append("Closed by").append(" ").append(event.getUser().getAsTag());
 
                     WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
                     webhookMessageBuilder.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
