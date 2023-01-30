@@ -203,7 +203,7 @@ message:
     unknownMenu: "There was an error while resolving the modal!"
     invalidOption: "You somehow selected an invalid Option! Are you a Wizard?"
     invalidOptionChannel: "The given Channel doesn't exists, how did you select it? Are you a Wizard?"
-    missionOption: "You need to provide a value for the option %s!"
+    missingOption: "You need to provide a value for the option %s!"
     nameChangeFailed: "Could not change the my own nickname!"
   birthday:
     added:
@@ -458,11 +458,12 @@ message:
     added: "Successfully added the Announcement!"
   stream-action:
     added: "We successfully added the Stream-action with the name **%s**"
+    addedLine: "We successfully added the Stream-action with the name **%s**"
     deleted: "We successfully deleted the Stream-action with the name **%s**"
     deletedLine: "We successfully deleted the action line %s!"
     alreadyExisting: "We found a already existing Stream-action with the name **%s**"
     list: "Here is a list of all stream-actions!\n```%s```"
-    actionlist: "Here is a list of all actions!\n```%s```"
+    actionList: "Here is a list of all actions!\n```%s```"
     noTwitch: "To use this feature we require you to authorize your Twitch! Check out <%s> for it!"
     notFound: "We couldn't find the Stream-Action with the name **%s**"
 game:

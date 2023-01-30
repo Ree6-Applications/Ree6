@@ -70,7 +70,7 @@ public class StreamActionCommand implements ICommand {
                     streamAction.setActionName(createName.getAsString());
 
                     SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
-                    commandEvent.reply(commandEvent.getResource("message.stream-action.created", createName.getAsString()));
+                    commandEvent.reply(commandEvent.getResource("message.stream-action.added", createName.getAsString()));
                 } else {
                     commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", "https://cp.ree6.de/twitch/auth"));
                 }
@@ -118,7 +118,7 @@ public class StreamActionCommand implements ICommand {
 
                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
 
-                        commandEvent.reply(commandEvent.getResource("message.stream-action.added", values[0]));
+                        commandEvent.reply(commandEvent.getResource("message.stream-action.addedLine", values[0]));
                         break;
                     }
 
