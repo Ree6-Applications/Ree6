@@ -25,6 +25,7 @@ import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.sql.util.SettingsManager;
+import de.presti.ree6.streamtools.StreamActionContainerCreator;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
 import de.presti.ree6.utils.data.ArrayUtil;
@@ -200,6 +201,9 @@ public class Main {
 
         log.info("Loading GameManager");
         GameManager.loadAllGames();
+
+        log.info("Loading Stream-actions");
+        StreamActionContainerCreator.loadAll();
 
         log.info("Creating Notifier.");
 

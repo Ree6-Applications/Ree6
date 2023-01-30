@@ -4,6 +4,7 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.StreamAction;
 import de.presti.ree6.streamtools.action.IStreamAction;
 import de.presti.ree6.streamtools.action.StreamActionInfo;
+import de.presti.ree6.streamtools.action.impl.*;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
@@ -22,6 +23,17 @@ public class StreamActionContainerCreator {
      * A Cache for all StreamActions.
      */
     private static HashMap<String, Class<? extends IStreamAction>> cachedActions = new HashMap<>();
+
+    /**
+     * Load all actions.
+     */
+    public static void loadAll() {
+        cachedActions.put("voice-join", VoiceJoinStreamAction.class);
+        cachedActions.put("voice-leave", VoiceLeaveStreamAction.class);
+        cachedActions.put("play-url", PlayUrlStreamAction.class);
+        cachedActions.put("play-tts", PlayTTSStreamAction.class);
+        cachedActions.put("say", SayStreamAction.class);
+    }
 
     /**
      * Get the Class of a StreamAction.
