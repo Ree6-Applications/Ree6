@@ -30,7 +30,7 @@ public class DatabaseStorageBackend implements IStorageBackend {
             if (credential instanceof OAuth2Credential oAuth2Credential) {
                 TwitchIntegration twitchIntegration =
                         SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(),
-                                "SELECT * FROM TwitchIntegration WHERE channelId = :userid", Map.of("userid",oAuth2Credential.getUserId()));
+                                "SELECT * FROM TwitchIntegration WHERE channel_id = :userid", Map.of("userid",oAuth2Credential.getUserId()));
 
                 if (twitchIntegration == null) {
                     twitchIntegration = new TwitchIntegration();
@@ -49,7 +49,7 @@ public class DatabaseStorageBackend implements IStorageBackend {
     @Override
     public Optional<Credential> getCredentialByUserId(String userId) {
         Optional<TwitchIntegration> twitchIntegration = Optional.ofNullable(SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(),
-                "SELECT * FROM TwitchIntegration WHERE channelId = :userid", Map.of("userid", userId)));
+                "SELECT * FROM TwitchIntegration WHERE channel_id = :userid", Map.of("userid", userId)));
 
         if (twitchIntegration.isPresent()) {
             TwitchIntegration twitchIntegration1 = twitchIntegration.get();
