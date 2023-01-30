@@ -32,7 +32,7 @@ public class StreamActionContainerCreator {
         if (cachedActions.containsKey(action))
             return cachedActions.get(action);
 
-        Reflections reflections = new Reflections("de.presti.ree6.streamtools.action.impl");
+        Reflections reflections = new Reflections();
         Set<Class<? extends IStreamAction>> classes = reflections.getSubTypesOf(IStreamAction.class);
 
         for (Class<? extends IStreamAction> aClass : classes) {
