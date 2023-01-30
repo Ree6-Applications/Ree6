@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl.community;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
@@ -108,17 +109,22 @@ public class StreamActionCommand implements ICommand {
                         }
 
                         JsonObject jsonObject = new JsonObject();
-                        jsonObject.addProperty("action", values[0]);
+                        String actionName = values[0];
+                        jsonObject.addProperty("action", actionName);
 
                         values = Arrays.stream(values).skip(1).toArray(String[]::new);
 
                         jsonObject.addProperty("value", String.join(" ", values));
 
+                        if (streamAction.getActions() == null || !streamAction.getActions().isJsonArray()) {
+                            streamAction.setActions(new JsonArray());
+                        }
+
                         streamAction.getActions().getAsJsonArray().add(jsonObject);
 
                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
 
-                        commandEvent.reply(commandEvent.getResource("message.stream-action.addedLine", values[0]));
+                        commandEvent.reply(commandEvent.getResource("message.stream-action.addedLine", actionName));
                         break;
                     }
 
@@ -144,6 +150,11 @@ public class StreamActionCommand implements ICommand {
                                 streamAction.setArgument(values[1]);
                             
                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
+                            if (values.length >= 2) {
+                                commandEvent.reply(commandEvent.getResource("message.stream-action.listenerArgument", values[0], values[1]));
+                            } else {
+                                commandEvent.reply(commandEvent.getResource("message.stream-action.listener", values[0]));
+                            }
                         } else {
                             commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
                         }
@@ -152,11 +163,14 @@ public class StreamActionCommand implements ICommand {
 
                     case "list": {
                         StreamActionContainer streamActionContainer = new StreamActionContainer(streamAction);
-                        commandEvent.reply(commandEvent.getResource("message.stream-action.actionList",
-                                streamActionContainer.getActions().entrySet().stream()
-                                        .map((Map.Entry<IStreamAction, String[]> entry) ->
-                                                entry.getKey().getClass().getAnnotation(StreamActionInfo.class).name() + " -> "
-                                                        + String.join(" ", entry.getValue()) + "\n")));
+
+                        StringBuilder stringBuilder = new StringBuilder();
+                        streamActionContainer.getActions().entrySet().stream()
+                                .forEach((Map.Entry<IStreamAction, String[]> entry) ->
+                                        stringBuilder.append(entry.getKey().getClass().getAnnotation(StreamActionInfo.class).name()).append(" -> ")
+                                                .append(String.join(" ", entry.getValue()) + "\n"));
+
+                        commandEvent.reply(commandEvent.getResource("message.stream-action.actionList", stringBuilder.toString()));
                         break;
                     }
 
