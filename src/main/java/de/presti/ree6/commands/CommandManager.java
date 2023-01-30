@@ -207,17 +207,16 @@ public class CommandManager {
      */
     public boolean perform(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
 
-        ThreadUtil.createThread(x -> {
-            AnnouncementManager.getAnnouncementList().forEach(a -> {
-                if (!AnnouncementManager.hasReceivedAnnouncement(guild.getIdLong(), a.id())) {
-                    textChannel.sendMessageEmbeds(new EmbedBuilder().setTitle(a.title())
-                            .setAuthor("Ree6-Info")
-                            .setDescription(a.content())
-                            .setColor(BotWorker.randomEmbedColor()).build()).queue();
-                    AnnouncementManager.addReceivedAnnouncement(guild.getIdLong(), a.id());
-                }
-            });
-        }, null);
+        ThreadUtil.createThread(x -> AnnouncementManager.getAnnouncementList().forEach(a -> {
+            if (!AnnouncementManager.hasReceivedAnnouncement(guild.getIdLong(), a.id())) {
+                sendMessage(new EmbedBuilder().setTitle(a.title())
+                        .setAuthor("Ree6-Info")
+                        .setDescription(a.content())
+                        .setColor(BotWorker.randomEmbedColor()), 15, textChannel);
+
+                AnnouncementManager.addReceivedAnnouncement(guild.getIdLong(), a.id());
+            }
+        }), null);
 
         // Check if the User is under Cooldown.
         if (isTimeout(member.getUser())) {

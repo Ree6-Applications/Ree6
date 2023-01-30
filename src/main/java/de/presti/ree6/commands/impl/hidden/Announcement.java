@@ -15,6 +15,8 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.util.Arrays;
 
+// TODO:: add a way to remove and list announcements. Missing Slash Command support.
+
 /**
  * A command to create an announcement.
  */
