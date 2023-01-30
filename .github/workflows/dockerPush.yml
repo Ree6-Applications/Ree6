@@ -35,7 +35,7 @@ jobs:
           images: prestischmesti/ree6-bot
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v3.3.0
+        uses: docker/build-push-action@v3.3.1
         with:
           context: .
           push: true
