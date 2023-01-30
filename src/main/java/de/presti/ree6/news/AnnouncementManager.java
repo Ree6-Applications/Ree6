@@ -62,4 +62,12 @@ public class AnnouncementManager {
             receivedAnnouncements.put(guildId, announcementIds);
         }
     }
+
+    /**
+     * Method used to remove announcements from the list.
+     * @param id The ID of the announcement to remove.
+     */
+    public static void removeAnnouncement(String id) {
+        announcementList.removeIf(announcement -> announcement.id().equalsIgnoreCase(id));
+    }
 }

@@ -206,18 +206,6 @@ public class CommandManager {
      * @return true, if a command has been performed.
      */
     public boolean perform(Member member, Guild guild, String messageContent, Message message, MessageChannelUnion textChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
-
-        ThreadUtil.createThread(x -> AnnouncementManager.getAnnouncementList().forEach(a -> {
-            if (!AnnouncementManager.hasReceivedAnnouncement(guild.getIdLong(), a.id())) {
-                sendMessage(new EmbedBuilder().setTitle(a.title())
-                        .setAuthor("Ree6-Info")
-                        .setDescription(a.content())
-                        .setColor(BotWorker.randomEmbedColor()), 15, textChannel);
-
-                AnnouncementManager.addReceivedAnnouncement(guild.getIdLong(), a.id());
-            }
-        }), null);
-
         // Check if the User is under Cooldown.
         if (isTimeout(member.getUser())) {
 
@@ -280,6 +268,17 @@ public class CommandManager {
         if (!messageContent.toLowerCase().startsWith(SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase()))
             return false;
 
+        ThreadUtil.createThread(x -> AnnouncementManager.getAnnouncementList().forEach(a -> {
+            if (!AnnouncementManager.hasReceivedAnnouncement(guild.getIdLong(), a.id())) {
+                sendMessage(new EmbedBuilder().setTitle(a.title())
+                        .setAuthor("Ree6-Info")
+                        .setDescription(a.content())
+                        .setColor(BotWorker.randomEmbedColor()), 15, textChannel);
+
+                AnnouncementManager.addReceivedAnnouncement(guild.getIdLong(), a.id());
+            }
+        }), null);
+
         // Parse the Message and remove the prefix from it.
         messageContent = messageContent.substring(SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().length());
 
@@ -332,6 +331,17 @@ public class CommandManager {
             sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.notFound"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
             return false;
         }
+
+        ThreadUtil.createThread(x -> AnnouncementManager.getAnnouncementList().forEach(a -> {
+            if (!AnnouncementManager.hasReceivedAnnouncement(textChannel.asTextChannel().getGuild().getIdLong(), a.id())) {
+                sendMessage(new EmbedBuilder().setTitle(a.title())
+                        .setAuthor("Ree6-Info")
+                        .setDescription(a.content())
+                        .setColor(BotWorker.randomEmbedColor()), 15, textChannel);
+
+                AnnouncementManager.addReceivedAnnouncement(textChannel.asTextChannel().getGuild().getIdLong(), a.id());
+            }
+        }), null);
 
         // Check if the command is blocked or not.
         if (!SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {

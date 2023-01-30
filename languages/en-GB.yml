@@ -456,6 +456,8 @@ message:
     points: "%s reached %s pts"
   announcement:
     added: "Successfully added the Announcement!"
+    list: "Here is a list of all Announcements!\n```%s```"
+    removed: "Successfully removed the Announcement!"
   stream-action:
     added: "We successfully added the Stream-action with the name **%s**"
     addedLine: "We successfully added the Stream-action with the name **%s**"

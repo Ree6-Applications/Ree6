@@ -15,8 +15,6 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.util.Arrays;
 
-// TODO:: add a way to remove and list announcements. Missing Slash Command support.
-
 /**
  * A command to create an announcement.
  */
@@ -30,30 +28,34 @@ public class Announcement implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
 
         if (!commandEvent.getMember().getUser().getId().equalsIgnoreCase("321580743488831490")) {
-            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission"), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", "BE DEVELOPER"), 5);
             return;
         }
 
-        if (commandEvent.getArguments().length < 2) {
-            commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+        if (!commandEvent.isSlashCommand()) {
+            commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
             return;
         }
 
-        StringBuilder stringBuilder = new StringBuilder();
+        OptionMapping title = commandEvent.getSlashCommandInteractionEvent().getOption("title");
+        OptionMapping content = commandEvent.getSlashCommandInteractionEvent().getOption("content");
+        OptionMapping toDeleteId = commandEvent.getSlashCommandInteractionEvent().getOption("id");
 
-        for (String s : Arrays.stream(commandEvent.getArguments()).skip(1).toArray(String[]::new)) {
-            stringBuilder.append(s).append(" ");
+        if (title != null && content != null) {
+            de.presti.ree6.news.Announcement announcement =
+                    new de.presti.ree6.news.Announcement(RandomUtils.randomString(16), title.getAsString(),
+                            content.getAsString());
+
+            AnnouncementManager.addAnnouncement(announcement);
+
+            commandEvent.reply(commandEvent.getResource("message.announcement.added"), 5);
+        } else if (toDeleteId != null) {
+            AnnouncementManager.removeAnnouncement(toDeleteId.getAsString());
+            commandEvent.reply(commandEvent.getResource("message.announcement.removed"), 5);
+        } else {
+            commandEvent.reply(commandEvent.getResource("message.announcement.list", String.join("\n",
+                    AnnouncementManager.getAnnouncementList().stream().map(c -> c.id() + " -> " + c.title()).toArray(String[]::new))));
         }
-
-        String title = commandEvent.getArguments()[0].replace("%l%", " ");
-
-        de.presti.ree6.news.Announcement announcement =
-                new de.presti.ree6.news.Announcement(RandomUtils.randomString(16), title,
-                        stringBuilder.toString());
-
-        AnnouncementManager.addAnnouncement(announcement);
-
-        commandEvent.reply(commandEvent.getResource("message.announcement.added"), 5);
     }
 
     /**
@@ -62,8 +64,9 @@ public class Announcement implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("announcement", LanguageService.getDefault("command.description.announcement"))
-                .addOptions(new OptionData(OptionType.STRING, "title", "The title of the announcement", true),
-                        new OptionData(OptionType.STRING, "content", "The content of the announcement", true));
+                .addOptions(new OptionData(OptionType.STRING, "title", "The title of the announcement.", false),
+                        new OptionData(OptionType.STRING, "content", "The content of the announcement.", false),
+                        new OptionData(OptionType.STRING, "id", "The to delete announcement id.", false));
     }
 
     /**
