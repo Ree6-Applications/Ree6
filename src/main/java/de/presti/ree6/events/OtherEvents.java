@@ -1,6 +1,7 @@
 package de.presti.ree6.events;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import de.presti.ree6.audio.AudioPlayerReceiveHandler;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
@@ -36,6 +37,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -224,7 +226,20 @@ public class OtherEvents extends ListenerAdapter {
                 SQLSession.getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), newUserLevel);
 
                 AutoRoleHandler.handleVoiceLevelReward(event.getGuild(), event.getMember());
+            }
 
+            if (event.getChannelLeft().getMembers().size() == 1 &&
+                    event.getChannelLeft().getMembers().get(0).getIdLong() == event.getJDA().getSelfUser().getIdLong()) {
+                AudioManager audioManager = event.getGuild().getAudioManager();
+
+                AudioPlayerReceiveHandler handler = (AudioPlayerReceiveHandler) audioManager.getReceivingHandler();
+
+                if (handler != null) {
+                    handler.endReceiving();
+                }
+
+                Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild()).getScheduler().stopAll(null);
+                Main.getInstance().getMusicWorker().disconnect(event.getGuild());
             }
 
             if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())
