@@ -5,6 +5,8 @@ import de.presti.ree6.sql.entities.StreamAction;
 import de.presti.ree6.streamtools.action.IStreamAction;
 import de.presti.ree6.streamtools.action.StreamActionInfo;
 import org.reflections.Reflections;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +34,9 @@ public class StreamActionContainerCreator {
         if (cachedActions.containsKey(action))
             return cachedActions.get(action);
 
-        Reflections reflections = new Reflections();
+        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.addClassLoaders(ClasspathHelper.staticClassLoader());
+        Reflections reflections = new Reflections(configurationBuilder);
         Set<Class<? extends IStreamAction>> classes = reflections.getSubTypesOf(IStreamAction.class);
 
         for (Class<? extends IStreamAction> aClass : classes) {
