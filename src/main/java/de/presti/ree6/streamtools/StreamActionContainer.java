@@ -58,24 +58,26 @@ public class StreamActionContainer {
         guild = BotWorker.getShardManager().getGuildById(streamAction.getGuildId());
         extraArgument = streamAction.getArgument();
 
-        for (JsonElement jsonElement : streamAction.getActions().getAsJsonArray()) {
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
+        if (streamAction.getActions() != null && streamAction.getActions().isJsonArray()) {
+            for (JsonElement jsonElement : streamAction.getActions().getAsJsonArray()) {
+                JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-            if (jsonObject.has("action") &&
-                    jsonObject.has("value") &&
-                    jsonObject.get("action").isJsonPrimitive() &&
-                    jsonObject.get("value").isJsonPrimitive()) {
-                String action = jsonObject.getAsJsonPrimitive("action").getAsString();
-                String value = jsonObject.getAsJsonPrimitive("value").getAsString();
-                String[] args = value.split(" ");
+                if (jsonObject.has("action") &&
+                        jsonObject.has("value") &&
+                        jsonObject.get("action").isJsonPrimitive() &&
+                        jsonObject.get("value").isJsonPrimitive()) {
+                    String action = jsonObject.getAsJsonPrimitive("action").getAsString();
+                    String value = jsonObject.getAsJsonPrimitive("value").getAsString();
+                    String[] args = value.split(" ");
 
-                Class<? extends IStreamAction> actionClass = StreamActionContainerCreator.getAction(action);
-                if (actionClass != null) {
-                    try {
-                        IStreamAction streamAction1 = actionClass.getConstructor().newInstance();
-                        actions.put(streamAction1, args);
-                    } catch (Exception e) {
-                        log.error("Couldn't parse Stream-action!", e);
+                    Class<? extends IStreamAction> actionClass = StreamActionContainerCreator.getAction(action);
+                    if (actionClass != null) {
+                        try {
+                            IStreamAction streamAction1 = actionClass.getConstructor().newInstance();
+                            actions.put(streamAction1, args);
+                        } catch (Exception e) {
+                            log.error("Couldn't parse Stream-action!", e);
+                        }
                     }
                 }
             }

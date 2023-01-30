@@ -67,9 +67,10 @@ public class StreamActionCommand implements ICommand {
                     streamAction = new StreamAction();
                     streamAction.setIntegration(twitchIntegration);
                     streamAction.setGuildId(commandEvent.getGuild().getIdLong());
-                    streamAction.setActionName(createName.getName());
+                    streamAction.setActionName(createName.getAsString());
 
                     SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
+                    commandEvent.reply(commandEvent.getResource("message.stream-action.created", createName.getAsString()));
                 } else {
                     commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", "https://cp.ree6.de/twitch/auth"));
                 }
@@ -117,7 +118,7 @@ public class StreamActionCommand implements ICommand {
 
                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
 
-                        commandEvent.reply(commandEvent.getResource("message.stream-action.added"));
+                        commandEvent.reply(commandEvent.getResource("message.stream-action.added", values[0]));
                         break;
                     }
 
@@ -129,7 +130,7 @@ public class StreamActionCommand implements ICommand {
 
                         String[] values = manageActionValue.getAsString().split("\\s+");
 
-                        if (values.length == 2) {
+                        if (values.length >= 1) {
                             if (values[0].equalsIgnoreCase("redemption")) {
                                 streamAction.setListener(StreamAction.StreamListener.REDEMPTION);
                             } else if (values[0].equalsIgnoreCase("follow")) {
@@ -139,7 +140,9 @@ public class StreamActionCommand implements ICommand {
                                 return;
                             }
 
-                            streamAction.setArgument(values[1]);
+                            if (values.length >= 2)
+                                streamAction.setArgument(values[1]);
+                            
                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
                         } else {
                             commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
