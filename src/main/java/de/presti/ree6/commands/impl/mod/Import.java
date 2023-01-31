@@ -40,6 +40,8 @@ public class Import implements ICommand {
             switch (commandEvent.getArguments()[0]) {
                 case "mee6" -> importFromMee6(commandEvent);
 
+                case "amari" -> commandEvent.reply("We are awaiting approval for the Amari API.");
+
                 default -> commandEvent.reply(commandEvent.getResource("message.import.unknownBot"), 5);
             }
         } else {
