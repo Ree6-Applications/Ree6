@@ -458,6 +458,9 @@ message:
     added: "Successfully added the Announcement!"
     list: "Here is a list of all Announcements!\n```%s```"
     removed: "Successfully removed the Announcement!"
+  news:
+    enabled: "Successfully enabled the receiving of News!"
+    disabled: "Successfully disabled the receiving of News!"
   stream-action:
     added: "We successfully added the Stream-action with the name **%s**"
     addedLine: "We successfully added the Stream-action with the name **%s**"
@@ -558,6 +561,7 @@ command:
     announcement: "Create an Announcement!"
     stream-action: "Manage Stream actions that can bring you stream into the Voice-channel!"
     tickets: "Create a Ticket System to communicate with your community!"
+    news: "Configure the receiving of News from Ree6!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."

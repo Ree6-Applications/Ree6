@@ -8,6 +8,7 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.news.AnnouncementManager;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.ArrayUtil;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -268,16 +269,19 @@ public class CommandManager {
         if (!messageContent.toLowerCase().startsWith(SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase()))
             return false;
 
-        ThreadUtil.createThread(x -> AnnouncementManager.getAnnouncementList().forEach(a -> {
-            if (!AnnouncementManager.hasReceivedAnnouncement(guild.getIdLong(), a.id())) {
-                sendMessage(new EmbedBuilder().setTitle(a.title())
-                        .setAuthor("Ree6-Info")
-                        .setDescription(a.content())
-                        .setColor(BotWorker.randomEmbedColor()), 15, textChannel);
+        if (SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "configuration_news").getBooleanValue()) {
+            ThreadUtil.createThread(x -> AnnouncementManager.getAnnouncementList().forEach(a -> {
+                if (!AnnouncementManager.hasReceivedAnnouncement(guild.getIdLong(), a.id())) {
+                    sendMessage(new EmbedBuilder().setTitle(a.title())
+                            .setAuthor("Ree6-Info")
+                            .setDescription(a.content().replace("\\n", "\n") + "\n\nTo disable the receiving of news use /news")
+                            .setFooter(Data.ADVERTISEMENT, guild.getIconUrl())
+                            .setColor(BotWorker.randomEmbedColor()), 15, textChannel);
 
-                AnnouncementManager.addReceivedAnnouncement(guild.getIdLong(), a.id());
-            }
-        }), null);
+                    AnnouncementManager.addReceivedAnnouncement(guild.getIdLong(), a.id());
+                }
+            }), null);
+        }
 
         // Parse the Message and remove the prefix from it.
         messageContent = messageContent.substring(SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().length());
@@ -332,16 +336,19 @@ public class CommandManager {
             return false;
         }
 
-        ThreadUtil.createThread(x -> AnnouncementManager.getAnnouncementList().forEach(a -> {
-            if (!AnnouncementManager.hasReceivedAnnouncement(textChannel.asTextChannel().getGuild().getIdLong(), a.id())) {
-                sendMessage(new EmbedBuilder().setTitle(a.title())
-                        .setAuthor("Ree6-Info")
-                        .setDescription(a.content())
-                        .setColor(BotWorker.randomEmbedColor()), 15, textChannel);
+        if (SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getId(), "configuration_news").getBooleanValue()) {
+            ThreadUtil.createThread(x -> AnnouncementManager.getAnnouncementList().forEach(a -> {
+                if (!AnnouncementManager.hasReceivedAnnouncement(textChannel.asTextChannel().getGuild().getIdLong(), a.id())) {
+                    sendMessage(new EmbedBuilder().setTitle(a.title())
+                            .setAuthor("Ree6-Info")
+                            .setDescription(a.content().replace("\\n", "\n") + "\n\nTo disable the receiving of news use /news")
+                            .setFooter(Data.ADVERTISEMENT, textChannel.asTextChannel().getGuild().getIconUrl())
+                            .setColor(BotWorker.randomEmbedColor()), 15, textChannel);
 
-                AnnouncementManager.addReceivedAnnouncement(textChannel.asTextChannel().getGuild().getIdLong(), a.id());
-            }
-        }), null);
+                    AnnouncementManager.addReceivedAnnouncement(textChannel.asTextChannel().getGuild().getIdLong(), a.id());
+                }
+            }), null);
+        }
 
         // Check if the command is blocked or not.
         if (!SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
