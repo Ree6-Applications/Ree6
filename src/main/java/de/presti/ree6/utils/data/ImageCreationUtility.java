@@ -81,7 +81,7 @@ public class ImageCreationUtility {
         actionPerformance = System.currentTimeMillis();
 
         if (user == null)
-            return new byte[128];;
+            return new byte[128];
 
         log.debug("Loading and creating Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
