@@ -375,7 +375,7 @@ public class Main {
                 lastDay = new SimpleDateFormat("dd").format(new Date());
             }
 
-            File storageTemp = new File("storage/tmp/");
+            File storageTemp = new File("storage/tmp");
             if (storageTemp.isDirectory()) {
                 File[] files = storageTemp.listFiles();
                 if (files != null) {
