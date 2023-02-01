@@ -172,18 +172,18 @@ public class Notifier {
         }
 
         twitchClient.getEventManager().onEvent(RewardRedeemedEvent.class, event -> {
-            List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(StreamAction.StreamListener.REDEMPTION);
+            List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(0);
             list.forEach(container -> {
                 if (!event.getRedemption().getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
-                if (container.getArguments().length == 0 || event.getRedemption().getReward().getId().equals(container.getArguments()[0])) {
+                if (container.getExtraArgument() == null || event.getRedemption().getReward().getId().equals(container.getExtraArgument())) {
                     container.runActions(event.getRedemption().getUserInput());
                 }
             });
         });
 
         twitchClient.getEventManager().onEvent(FollowingEvent.class, event -> {
-            List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(StreamAction.StreamListener.FOLLOW);
+            List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(1);
             list.forEach(container -> {
                 if (!event.getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 

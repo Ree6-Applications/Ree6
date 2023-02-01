@@ -67,12 +67,12 @@ public class StreamActionContainerCreator {
     /**
      * Get all StreamActionContainers.
      *
-     * @param listener The Listener to get the Containers for.
+     * @param listenerId The Listener to get the Containers for.
      * @return A List of StreamActionContainers.
      */
-    public static List<StreamActionContainer> getContainers(StreamAction.StreamListener listener) {
+    public static List<StreamActionContainer> getContainers(int listenerId) {
         return SQLSession.getSqlConnector().getSqlWorker()
-                .getEntityList(new StreamAction(), "SELECT * FROM StreamActions WHERE listener = :listener", Map.of("listener", listener))
+                .getEntityList(new StreamAction(), "SELECT * FROM StreamActions WHERE listener = :listener", Map.of("listener", listenerId))
                 .stream().map(StreamActionContainer::new).toList();
     }
 

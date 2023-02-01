@@ -1,5 +1,6 @@
 package de.presti.ree6.streamtools;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import de.presti.ree6.bot.BotWorker;
@@ -10,7 +11,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A Container used to store all needed Information for a StreamAction.
@@ -37,16 +41,10 @@ public class StreamActionContainer {
     String extraArgument;
 
     /**
-     * The Arguments.
-     */
-    @Getter(AccessLevel.PUBLIC)
-    String[] arguments;
-
-    /**
      * The Actions.
      */
     @Getter(AccessLevel.PUBLIC)
-    HashMap<IStreamAction, String[]> actions = new HashMap<>();
+    List<StreamActionRun> actions = new ArrayList<>();
 
     /**
      * Create a new StreamActionContainer.
@@ -59,7 +57,8 @@ public class StreamActionContainer {
         extraArgument = streamAction.getArgument();
 
         if (streamAction.getActions() != null && streamAction.getActions().isJsonArray()) {
-            for (JsonElement jsonElement : streamAction.getActions().getAsJsonArray()) {
+            JsonArray jsonArray = streamAction.getActions().getAsJsonArray();
+            for (JsonElement jsonElement : jsonArray) {
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
 
                 if (jsonObject.has("action") &&
@@ -74,7 +73,7 @@ public class StreamActionContainer {
                     if (actionClass != null) {
                         try {
                             IStreamAction streamAction1 = actionClass.getConstructor().newInstance();
-                            actions.put(streamAction1, args);
+                            actions.add(new StreamActionRun(streamAction1, args));
                         } catch (Exception e) {
                             log.error("Couldn't parse Stream-action!", e);
                         }
@@ -90,7 +89,9 @@ public class StreamActionContainer {
      * @param userInput The User Input.
      */
     public void runActions(String userInput) {
-        actions.forEach((action, args) -> {
+        actions.forEach((run) -> {
+
+            String[] args = run.getArguments();
 
             for (int i = 0; i < args.length; i++) {
                 String arg = args[i];
@@ -99,7 +100,7 @@ public class StreamActionContainer {
                 }
             }
 
-            action.runAction(guild, args);
+            run.getAction().runAction(guild, args);
         });
     }
 }

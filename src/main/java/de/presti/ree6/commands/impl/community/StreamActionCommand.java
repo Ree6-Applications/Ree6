@@ -108,10 +108,6 @@ public class StreamActionCommand implements ICommand {
 
                         String[] values = manageActionValue.getAsString().split("\\s+");
 
-                        if (values.length < 2) {
-                            return;
-                        }
-
                         JsonObject jsonObject = new JsonObject();
                         String actionName = values[0];
                         jsonObject.addProperty("action", actionName);
@@ -142,9 +138,9 @@ public class StreamActionCommand implements ICommand {
 
                         if (values.length >= 1) {
                             if (values[0].equalsIgnoreCase("redemption")) {
-                                streamAction.setListener(StreamAction.StreamListener.REDEMPTION);
+                                streamAction.setListener(0);
                             } else if (values[0].equalsIgnoreCase("follow")) {
-                                streamAction.setListener(StreamAction.StreamListener.FOLLOW);
+                                streamAction.setListener(1);
                             } else {
                                 commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
                                 return;
@@ -169,10 +165,11 @@ public class StreamActionCommand implements ICommand {
                         StreamActionContainer streamActionContainer = new StreamActionContainer(streamAction);
 
                         StringBuilder stringBuilder = new StringBuilder();
-                        streamActionContainer.getActions().entrySet().stream()
-                                .forEach((Map.Entry<IStreamAction, String[]> entry) ->
-                                        stringBuilder.append(entry.getKey().getClass().getAnnotation(StreamActionInfo.class).name()).append(" -> ")
-                                                .append(String.join(" ", entry.getValue()) + "\n"));
+                        streamActionContainer.getActions()
+                                .forEach(actionRun ->
+                                        stringBuilder.append(actionRun.getAction().getClass().getAnnotation(StreamActionInfo.class).name())
+                                                .append(" -> ")
+                                                .append(String.join(" ", actionRun.getArguments())).append("\n"));
 
                         commandEvent.reply(commandEvent.getResource("message.stream-action.actionList", stringBuilder.toString()));
                         break;
