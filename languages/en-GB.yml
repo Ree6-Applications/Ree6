@@ -469,6 +469,7 @@ message:
     alreadyExisting: "We found a already existing Stream-action with the name **%s**"
     list: "Here is a list of all stream-actions!\n```%s```"
     actionList: "Here is a list of all actions!\n```%s```"
+    points: "Here is a list of all channel point rewards!\n```%s```"
     listener: "You have set the listener to **%s**"
     listenerArgument: "You have set the listener to **%s** with the id **%s**"
     noTwitch: "To use this feature we require you to authorize your Twitch! Check out <%s> for it!"

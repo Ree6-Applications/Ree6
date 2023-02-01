@@ -7,6 +7,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.StreamAction;
 import de.presti.ree6.sql.entities.TwitchIntegration;
@@ -171,6 +172,21 @@ public class StreamActionCommand implements ICommand {
                                                 .append(String.join(" ", entry.getValue()) + "\n"));
 
                         commandEvent.reply(commandEvent.getResource("message.stream-action.actionList", stringBuilder.toString()));
+                        break;
+                    }
+
+                    case "points": {
+                        TwitchIntegration twitchIntegration = SQLSession.getSqlConnector().getSqlWorker()
+                                .getEntity(new TwitchIntegration(), "SELECT * FROM TwitchIntegration WHERE user_id = :uid", Map.of("uid", commandEvent.getUser().getIdLong()));
+                        if (twitchIntegration != null) {
+                            StringBuilder stringBuilder = new StringBuilder();
+                            Main.getInstance().getNotifier().getTwitchClient().getHelix()
+                                    .getCustomRewards(twitchIntegration.getToken(), twitchIntegration.getChannelId(), null, true)
+                                    .execute().getRewards().forEach(c -> stringBuilder.append(c.getId()).append(" - ").append(c.getTitle()).append("\n"));
+                            commandEvent.reply(commandEvent.getResource("message.stream-action.points", stringBuilder.toString()));
+                        } else {
+                            commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", "https://cp.ree6.de/twitch/auth"));
+                        }
                         break;
                     }
 
