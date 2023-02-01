@@ -381,6 +381,9 @@ public class Main {
                 }
             }
 
+            // Need to load them all.
+            Main.getInstance().getNotifier().getCredentialManager().load();
+
         }, null, Duration.ofMinutes(1), true, false);
     }
 
