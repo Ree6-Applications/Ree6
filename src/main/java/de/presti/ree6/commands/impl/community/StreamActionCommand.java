@@ -18,8 +18,11 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -181,9 +184,12 @@ public class StreamActionCommand implements ICommand {
                         if (twitchIntegration != null) {
                             StringBuilder stringBuilder = new StringBuilder();
                             Main.getInstance().getNotifier().getTwitchClient().getHelix()
-                                    .getCustomRewards(twitchIntegration.getToken(), twitchIntegration.getChannelId(), null, true)
+                                    .getCustomRewards(twitchIntegration.getToken(), twitchIntegration.getChannelId(), null, false)
                                     .execute().getRewards().forEach(c -> stringBuilder.append(c.getId()).append(" - ").append(c.getTitle()).append("\n"));
-                            commandEvent.reply(commandEvent.getResource("message.stream-action.points", stringBuilder.toString()));
+                            MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+                            messageCreateBuilder.setContent(commandEvent.getResource("message.stream-action.points"));
+                            messageCreateBuilder.addFiles(FileUpload.fromData(stringBuilder.toString().getBytes(StandardCharsets.UTF_8), "points.txt"));
+                            commandEvent.reply(messageCreateBuilder.build());
                         } else {
                             commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", "https://cp.ree6.de/twitch/auth"));
                         }
