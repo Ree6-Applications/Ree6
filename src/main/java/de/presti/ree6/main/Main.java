@@ -1,5 +1,10 @@
 package de.presti.ree6.main;
 
+import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
+import com.github.philippheuer.events4j.api.domain.IEventSubscription;
+import com.github.twitch4j.common.events.TwitchEvent;
+import com.github.twitch4j.pubsub.PubSubSubscription;
+import com.github.twitch4j.pubsub.events.ChannelPointsRedemptionEvent;
 import com.google.gson.JsonObject;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
@@ -22,6 +27,7 @@ import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.sql.DatabaseTyp;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
+import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.sql.util.SettingsManager;
@@ -30,6 +36,8 @@ import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
+import de.presti.ree6.utils.data.CustomOAuth2Credential;
+import de.presti.ree6.utils.data.CustomOAuth2Util;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
@@ -384,6 +392,21 @@ public class Main {
             // Need to load them all.
             Main.getInstance().getNotifier().getCredentialManager().load();
 
+            for (TwitchIntegration twitchIntegrations :
+                    SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "SELECT * FROM TwitchIntegration", null)) {
+
+                CustomOAuth2Credential credential = CustomOAuth2Util.convert(twitchIntegrations);
+
+                OAuth2Credential originalCredential = new OAuth2Credential("twitch", credential.getAccessToken(), credential.getRefreshToken(),  credential.getUserId(), credential.getUserName(), credential.getExpiresIn(), credential.getScopes());
+
+                if (!Main.getInstance().getNotifier().getTwitchSubscription().containsKey(credential.getUserId())) {
+                    PubSubSubscription[] subscriptions = new PubSubSubscription[2];
+                    subscriptions[0] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(originalCredential, twitchIntegrations.getChannelId());
+                    subscriptions[1] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForSubscriptionEvents(originalCredential, twitchIntegrations.getChannelId());
+
+                    Main.getInstance().getNotifier().getTwitchSubscription().put(credential.getUserId(), subscriptions);
+                }
+            }
         }, null, Duration.ofMinutes(1), true, false);
     }
 

@@ -20,6 +20,7 @@ import com.github.twitch4j.auth.providers.TwitchIdentityProvider;
 import com.github.twitch4j.events.ChannelFollowCountUpdateEvent;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.helix.domain.User;
+import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.github.twitch4j.pubsub.events.FollowingEvent;
 import com.github.twitch4j.pubsub.events.RewardRedeemedEvent;
 import de.presti.ree6.bot.BotWorker;
@@ -110,6 +111,12 @@ public class Notifier {
     private final ArrayList<String> registeredTwitchChannels = new ArrayList<>();
 
     /**
+     * A list with all the Twitch Subscription for the Streaming Tools.
+     */
+    @Getter(AccessLevel.PUBLIC)
+    private final HashMap<String, PubSubSubscription[]> twitchSubscription = new HashMap();
+
+    /**
      * Local list of registered YouTube Channels.
      */
     private final ArrayList<String> registeredYouTubeChannels = new ArrayList<>();
@@ -157,8 +164,11 @@ public class Notifier {
 
             OAuth2Credential credential = new OAuth2Credential("twitch", twitchIntegrations.getToken());
 
-            getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(credential, twitchIntegrations.getChannelId());
-            getTwitchClient().getPubSub().listenForSubscriptionEvents(credential, twitchIntegrations.getChannelId());
+            PubSubSubscription[] subscriptions = new PubSubSubscription[2];
+            subscriptions[0] = getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(credential, twitchIntegrations.getChannelId());
+            subscriptions[1] = getTwitchClient().getPubSub().listenForSubscriptionEvents(credential, twitchIntegrations.getChannelId());
+
+            twitchSubscription.put(credential.getUserId(), subscriptions);
         }
 
         twitchClient.getEventManager().onEvent(RewardRedeemedEvent.class, event -> {

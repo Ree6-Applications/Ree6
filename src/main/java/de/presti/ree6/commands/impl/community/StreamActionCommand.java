@@ -208,7 +208,7 @@ public class StreamActionCommand implements ICommand {
                     .getEntityList(new StreamAction(), "SELECT * FROM StreamActions WHERE guildId = :gid",
                             Map.of("gid", commandEvent.getGuild().getIdLong()));
 
-            commandEvent.reply(LanguageService.getByEvent(commandEvent, "message.stream-action.list", streamActions.stream().map(c -> c.getActionName() + "\n")));
+            commandEvent.reply(LanguageService.getByEvent(commandEvent, "message.stream-action.list", String.join("\n", streamActions.stream().map(StreamAction::getActionName).toArray(String[]::new))));
         }
 
     }
