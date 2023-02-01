@@ -39,7 +39,7 @@ public class PlayTTSStreamAction implements IStreamAction {
                 .GET().build();
         byte[] tts = RequestUtility.requestBytes(request);
 
-        Path filePath = Path.of("storage/tmp/", RandomUtils.randomString(16) + ".mp3");
+        Path filePath = Path.of("storage/tmp/", RandomUtils.randomString(16, false) + ".mp3");
 
         try {
             Files.write(filePath, tts);

@@ -78,10 +78,15 @@ public final class RandomUtils {
     /**
      * Generates a string with the given amount of characters.
      * @param length The amount of characters.
+     * @param specialChars If special characters should be used.
      * @return A string with the given amount of characters.
      */
-    public static String randomString(int length) {
-        return RandomUtils.random(length, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@/+§!$()=?]}{[");
+    public static String randomString(int length, boolean specialChars) {
+        if (specialChars) {
+            return RandomUtils.random(length, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@/+§!$()=?]}{[");
+        } else {
+            return RandomUtils.random(length, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+        }
     }
 
     /**

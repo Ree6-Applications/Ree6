@@ -43,7 +43,7 @@ public class Announcement implements ICommand {
 
         if (title != null && content != null) {
             de.presti.ree6.news.Announcement announcement =
-                    new de.presti.ree6.news.Announcement(RandomUtils.randomString(16), title.getAsString(),
+                    new de.presti.ree6.news.Announcement(RandomUtils.randomString(16, false), title.getAsString(),
                             content.getAsString());
 
             AnnouncementManager.addAnnouncement(announcement);
