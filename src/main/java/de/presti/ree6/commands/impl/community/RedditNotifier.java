@@ -7,7 +7,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 /**
@@ -52,15 +52,16 @@ public class RedditNotifier implements ICommand {
             }
         } else if(commandEvent.getArguments().length == 3) {
 
-            if (commandEvent.getMessage().getMentions().getChannels(TextChannel.class).isEmpty() ||
-                    !commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
+            if (commandEvent.getMessage().getMentions().getChannels().isEmpty() ||
+                    !commandEvent.getMessage().getMentions().getChannels().get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
                 commandEvent.reply("Please use " + SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "redditnotifier add/remove Subreddit #Channel", 5);
                 return;
             }
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-RedditNotifier-" + name).queue(w -> SQLSession.getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name));
+                commandEvent.getMessage().getMentions().getChannels(GuildMessageChannelUnion.class).get(0)
+                        .asStandardGuildMessageChannel().createWebhook("Ree6-RedditNotifier-" + name).queue(w -> SQLSession.getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name));
                 commandEvent.reply(commandEvent.getResource("message.instagramNotifier.added",name), 5);
 
                 if (!Main.getInstance().getNotifier().isSubredditRegistered(name)) {

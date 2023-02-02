@@ -7,7 +7,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 /**
@@ -53,15 +53,17 @@ public class TwitchNotifier implements ICommand {
             }
         } else if (commandEvent.getArguments().length == 3) {
 
-            if (commandEvent.getMessage().getMentions().getChannels(TextChannel.class).isEmpty() ||
-                    !commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
+            if (commandEvent.getMessage().getMentions().getChannels().isEmpty() ||
+                    !commandEvent.getMessage().getMentions().getChannels().get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
                 commandEvent.reply(commandEvent.getResource("message.default.usage","twitch add/remove TwitchName #Channel"), 5);
                 return;
             }
 
             String name = commandEvent.getArguments()[1];
             if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.getMessage().getMentions().getChannels(TextChannel.class).get(0).createWebhook("Ree6-TwitchNotifier-" + name).queue(w -> SQLSession.getSqlConnector().getSqlWorker().addTwitchWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
+                commandEvent.getMessage().getMentions().getChannels(GuildMessageChannelUnion.class).get(0)
+                        .asStandardGuildMessageChannel().createWebhook("Ree6-TwitchNotifier-" + name)
+                        .queue(w -> SQLSession.getSqlConnector().getSqlWorker().addTwitchWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
                 commandEvent.reply(commandEvent.getResource("message.twitchNotifier.added",name), 5);
 
                 if (!Main.getInstance().getNotifier().isTwitchRegistered(name)) {
