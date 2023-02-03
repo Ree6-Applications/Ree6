@@ -320,7 +320,14 @@ public class Notifier {
             wmb.addEmbeds(webhookEmbedBuilder.build());
 
             // Go through every Webhook that is registered for the Twitch Channel
-            webhooks.forEach(webhook -> WebhookUtil.sendWebhook(null, wmb.build(), webhook, false));
+            webhooks.forEach(webhook -> {
+                String message = webhook.getMessage()
+                        .replace("%name%", channelGoLiveEvent.getStream().getUserName())
+                        .replace("%url%", "https://twitch.tv/" + channelGoLiveEvent.getChannel().getName());
+                webhookEmbedBuilder.setDescription(message);
+                wmb.addEmbeds(webhookEmbedBuilder.build());
+                WebhookUtil.sendWebhook(null, wmb.build(), webhook, false);
+            });
         });
 
         getTwitchClient().getEventManager().onEvent(ChannelFollowCountUpdateEvent.class, channelFollowCountUpdateEvent -> {
@@ -476,7 +483,13 @@ public class Notifier {
 
                         webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                        webhooks.forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+                        webhooks.forEach(webhook -> {
+                            String message = webhook.getMessage()
+                                    .replace("%name%", status.getUser().getName())
+                                    .replace("%url%", "https://twitter.com/" + status.getUser().getScreenName() + "/status/" + status.getId());
+                            webhookMessageBuilder.setContent(message);
+                            WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false);
+                        });
                     }
 
                     /**
@@ -622,7 +635,6 @@ public class Notifier {
                                 webhookEmbedBuilder.setImageUrl(playlistItem.getThumbnail());
 
                                 // Set rest of the Information.
-                                webhookEmbedBuilder.setDescription(playlistItem.getOwnerId() + " just uploaded a new Video! Check it out <https://www.youtube.com/watch?v=" + playlistItem.getId() + "/> !");
                                 webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", playlistItem.getTitle()));
                                 webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet()));
 
@@ -634,7 +646,16 @@ public class Notifier {
 
                                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                                webhooks.forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+                                webhooks.forEach(webhook -> {
+                                    String message = webhook.getMessage().replace("%name%", playlistItem.getOwnerId())
+                                            .replace("%title%", playlistItem.getTitle())
+                                            .replace("%description%", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet())
+                                            .replace("%url%", "https://www.youtube.com/watch?v=" + playlistItem.getId());
+
+                                    webhookEmbedBuilder.setDescription(message);
+                                    webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+                                    WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false);
+                                });
                             }
                         }
                     }
@@ -762,7 +783,15 @@ public class Notifier {
 
                         webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                        webhooks.forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+                        webhooks.forEach(webhook -> {
+                            String message = webhook.getMessage()
+                                    .replace("%title%", redditPost.getTitle()
+                                            .replace("%author%", redditPost.getAuthor())
+                                            .replace("%name%", redditPost.getSubreddit())
+                                            .replace("%url%", redditPost.getUrl()));
+                            webhookMessageBuilder.setContent(message);
+                            WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false);
+                        });
                     });
                 }
             } catch (Exception exception) {
