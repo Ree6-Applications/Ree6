@@ -29,7 +29,6 @@ import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.StreamAction;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.*;
@@ -257,7 +256,6 @@ public class Notifier {
                         continue;
                     }
 
-
                     for (ChannelStats channelStat : channelStats) {
                         if (channelStat.getTwitterFollowerChannelUsername() != null) {
                             GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
@@ -290,6 +288,8 @@ public class Notifier {
                 return;
             }
 
+            String twitchUrl = "https://twitch.tv/" + channelGoLiveEvent.getChannel().getName();
+
             // Create Webhook Message.
             WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
@@ -298,20 +298,18 @@ public class Notifier {
 
             WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
-            webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(channelGoLiveEvent.getStream().getUserName(), null));
+            webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(channelGoLiveEvent.getStream().getUserName(), twitchUrl));
             webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitch Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
 
             // Try getting the User.
             Optional<User> twitchUserRequest = getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(channelGoLiveEvent.getStream().getUserName())).execute().getUsers().stream().findFirst();
-            if (getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(channelGoLiveEvent.getStream().getUserName())).execute().getUsers().stream().findFirst().isPresent()) {
-                webhookEmbedBuilder.setImageUrl(twitchUserRequest.orElseThrow().getProfileImageUrl());
-            } else {
-                webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrl());
+            if (twitchUserRequest.isPresent()) {
+                webhookEmbedBuilder.setThumbnailUrl(twitchUserRequest.orElseThrow().getProfileImageUrl());
             }
+            webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrl());
 
             // Set rest of the Information.
-            webhookEmbedBuilder.setDescription(channelGoLiveEvent.getStream().getUserName() + " is now Live on Twitch! Come and join the Stream <https://twitch.tv/" + channelGoLiveEvent.getChannel().getName() + "> !");
-            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", channelGoLiveEvent.getStream().getTitle()));
+            webhookEmbedBuilder.setDescription(channelGoLiveEvent.getStream().getTitle());
             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Game**", channelGoLiveEvent.getStream().getGameName()));
             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Viewer**", "" + channelGoLiveEvent.getStream().getViewerCount()));
             webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
@@ -323,9 +321,8 @@ public class Notifier {
             webhooks.forEach(webhook -> {
                 String message = webhook.getMessage()
                         .replace("%name%", channelGoLiveEvent.getStream().getUserName())
-                        .replace("%url%", "https://twitch.tv/" + channelGoLiveEvent.getChannel().getName());
-                webhookEmbedBuilder.setDescription(message);
-                wmb.addEmbeds(webhookEmbedBuilder.build());
+                        .replace("%url%", twitchUrl);
+                wmb.setContent(message);
                 WebhookUtil.sendWebhook(null, wmb.build(), webhook, false);
             });
         });
