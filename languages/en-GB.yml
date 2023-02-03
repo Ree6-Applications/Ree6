@@ -567,6 +567,7 @@ command:
     stream-action: "Manage Stream actions that can bring you stream into the Voice-channel!"
     tickets: "Create a Ticket System to communicate with your community!"
     news: "Configure the receiving of News from Ree6!"
+    levelrole: "Manage Auto-Roles for Voice or Text Levels!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
