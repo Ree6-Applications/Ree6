@@ -237,7 +237,7 @@ message:
     error: "An error occurred while searching for Anime!"
   game:
     actionNeeded: "You need to specify an action!"
-    valueNeeded: "You need to specify an action!"
+    valueNeeded: "You need to specify a value!"
     invalidAction: "Please provide a valid action!"
     invalidInvite: "Please provide a valid Invite!"
     gameAlreadyStarted: "The Game has been started!"
