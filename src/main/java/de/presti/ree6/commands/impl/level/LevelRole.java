@@ -1,4 +1,4 @@
-package de.presti.ree6.commands.impl.mod;
+package de.presti.ree6.commands.impl.level;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * A Command to set a Role for a Level.
  */
-@Command(name = "levelrole", description = "command.description.levelrole", category = Category.MOD)
+@Command(name = "levelrole", description = "command.description.levelrole", category = Category.LEVEL)
 public class LevelRole implements ICommand {
 
     /**
@@ -99,11 +99,11 @@ public class LevelRole implements ICommand {
         return new CommandDataImpl("levelrole",
                 LanguageService.getDefault("command.description.levelrole"))
                 .addSubcommands(new SubcommandData("add", "Add a new Level-Role")
-                                .addOptions(new OptionData(OptionType.BOOLEAN, "voice", "True if the Level-Role should be applied to the Voice-Level and false if it should be applied to the Text-Level").setRequired(true),
+                                .addOptions(new OptionData(OptionType.BOOLEAN, "voice", "True -> Voice-Level and False -> Text-Level").setRequired(true),
                                         new OptionData(OptionType.NUMBER, "level", "The level that needs to be reached to get the role.").setRequired(true).setMinValue(1),
                                         new OptionData(OptionType.ROLE, "role", "The name of the already created action").setRequired(true)),
                         new SubcommandData("remove", "Remove a Level-Role")
-                                .addOptions(new OptionData(OptionType.BOOLEAN, "voice", "True if the Level-Role should be applied to the Voice-Level and false if it should be applied to the Text-Level").setRequired(true),
+                                .addOptions(new OptionData(OptionType.BOOLEAN, "voice", "True -> Voice-Level and False -> Text-Level").setRequired(true),
                                         new OptionData(OptionType.NUMBER, "level", "The level that needs to be reached to get the role.").setRequired(true).setMinValue(1),
                                         new OptionData(OptionType.ROLE, "role", "The name of the already created action").setRequired(true)),
                         new SubcommandData("list", "List all Level-Roles"));
