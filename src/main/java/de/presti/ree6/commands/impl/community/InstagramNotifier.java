@@ -8,7 +8,15 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * A Command to activate Instagram Notifications.
@@ -26,8 +34,8 @@ public class InstagramNotifier implements ICommand {
             return;
         }
 
-        if (commandEvent.isSlashCommand()) {
-            commandEvent.reply(commandEvent.getResource("command.perform.slashNotSupported"));
+        if (!commandEvent.isSlashCommand()) {
+            commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
             return;
         }
 
@@ -36,61 +44,63 @@ public class InstagramNotifier implements ICommand {
             return;
         }
 
-        if(commandEvent.getArguments().length == 1) {
-            if(commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
-                StringBuilder end = new StringBuilder("```\n");
+        String command = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+        OptionMapping nameMapping = commandEvent.getSlashCommandInteractionEvent().getOption("voice");
+        OptionMapping channelMapping = commandEvent.getSlashCommandInteractionEvent().getOption("channel");
+        OptionMapping messageMapping = commandEvent.getSlashCommandInteractionEvent().getOption("message");
 
-                for(String users : SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers(commandEvent.getGuild().getId())) {
+        switch (command) {
+            case "list" -> {
+                StringBuilder end = new StringBuilder();
+
+                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers(commandEvent.getGuild().getId())) {
                     end.append(users).append("\n");
                 }
 
-                end.append("```");
-
-                commandEvent.reply(end.toString(), 10);
-
-            } else {
-                commandEvent.reply(commandEvent.getResource("message.default.usage", "instagramnotifier list/add/remove"), 5);
+                commandEvent.reply(commandEvent.getResource("message.instagramNotifier.list", end.toString()), 10);
             }
-        } else if(commandEvent.getArguments().length == 3) {
+            case "add" -> {
+                if (nameMapping == null || channelMapping == null) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));
+                    return;
+                }
 
-            if (commandEvent.getMessage().getMentions().getChannels().isEmpty() ||
-                    !commandEvent.getMessage().getMentions().getChannels().get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
-                commandEvent.reply("message.default.noMention.channel", 5);
-                return;
-            }
+                if (!channelMapping.getAsChannel().getGuild().getId().equals(commandEvent.getGuild().getId())) {
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.channel"), 5);
+                    return;
+                }
 
-            String name = commandEvent.getArguments()[1];
-            if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.getMessage().getMentions().getChannels(GuildMessageChannelUnion.class).get(0)
-                        .asStandardGuildMessageChannel().createWebhook("Ree6-InstagramNotifier-" + name).queue(w -> SQLSession.getSqlConnector().getSqlWorker().addInstagramWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
+                String name = nameMapping.getAsString();
+                channelMapping.getAsChannel().asStandardGuildMessageChannel().createWebhook("Ree6-InstagramNotifier-" + name).queue(w -> {
+                    if (messageMapping != null) {
+                        SQLSession.getSqlConnector().getSqlWorker().addInstagramWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase(), messageMapping.getAsString());
+                    } else {
+                        SQLSession.getSqlConnector().getSqlWorker().addInstagramWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase());
+                    }
+                });
                 commandEvent.reply(commandEvent.getResource("message.instagramNotifier.added", name), 5);
 
                 if (!Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
                     Main.getInstance().getNotifier().registerInstagramUser(name);
                 }
-            } else if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                commandEvent.reply(commandEvent.getResource("message.default.usage", "instagramnotifier remove InstagramName"), 5);
-            } else {
-                commandEvent.reply(commandEvent.getResource("message.default.usage", "instagramnotifier add InstagramName #Channel"), 5);
             }
-        } else if(commandEvent.getArguments().length == 2) {
-            String name = commandEvent.getArguments()[1];
-            if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
+            case "remove" -> {
+                if (nameMapping == null) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));
+                    return;
+                }
+
+                String name = nameMapping.getAsString();
                 SQLSession.getSqlConnector().getSqlWorker().removeInstagramWebhook(commandEvent.getGuild().getId(), name);
                 commandEvent.reply(commandEvent.getResource("message.instagramNotifier.removed", name), 5);
 
                 if (Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
                     Main.getInstance().getNotifier().unregisterInstagramUser(name);
                 }
-            } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","instagramnotifier add InstagramName #Channel"), 5);
-            } else {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","instagramnotifier remove InstagramName"), 5);
             }
-        } else {
-            commandEvent.reply(commandEvent.getResource("message.default.usage","instagramnotifier list/add/remove"), 5);
+
+            default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
         }
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
     /**
@@ -98,7 +108,14 @@ public class InstagramNotifier implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return null;
+        return new CommandDataImpl("instagramnotifier", "command.description.instagramNotifier")
+                .addSubcommands(new SubcommandData("list", "List all Instagram users."))
+                .addSubcommands(new SubcommandData("add", "Add a Instagram Notifier for a specific user.")
+                        .addOption(OptionType.STRING, "name", "The username.", true)
+                        .addOption(OptionType.CHANNEL, "channel", "The channel.", true)
+                        .addOption(OptionType.STRING, "message", "Custom announcement message.", false))
+                .addSubcommands(new SubcommandData("remove", "Remove a Instagram Notifier for a specific user.")
+                        .addOption(OptionType.STRING, "name", "The username of the Notifier.", true));
     }
 
     /**
@@ -106,6 +123,6 @@ public class InstagramNotifier implements ICommand {
      */
     @Override
     public String[] getAlias() {
-        return new String[] { "instanotifier", "insta", "instagram" };
+        return new String[]{"instanotifier", "insta", "instagram"};
     }
 }

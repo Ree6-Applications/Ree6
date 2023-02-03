@@ -8,7 +8,11 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 /**
  * A Command to activate Twitch Notifications.
@@ -26,8 +30,8 @@ public class TwitchNotifier implements ICommand {
             return;
         }
 
-        if (commandEvent.isSlashCommand()) {
-            commandEvent.reply(commandEvent.getResource("command.perform.slashNotSupported"));
+        if (!commandEvent.isSlashCommand()) {
+            commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
             return;
         }
 
@@ -36,62 +40,63 @@ public class TwitchNotifier implements ICommand {
             return;
         }
 
-        if (commandEvent.getArguments().length == 1) {
-            if (commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
-                StringBuilder end = new StringBuilder("```\n");
+        String command = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+        OptionMapping nameMapping = commandEvent.getSlashCommandInteractionEvent().getOption("voice");
+        OptionMapping channelMapping = commandEvent.getSlashCommandInteractionEvent().getOption("channel");
+        OptionMapping messageMapping = commandEvent.getSlashCommandInteractionEvent().getOption("message");
+
+        switch (command) {
+            case "list" -> {
+                StringBuilder end = new StringBuilder();
 
                 for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames(commandEvent.getGuild().getId())) {
                     end.append(users).append("\n");
                 }
 
-                end.append("```");
-
-                commandEvent.reply(end.toString(), 10);
-
-            } else {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","twitch list/add/remove"), 5);
+                commandEvent.reply(commandEvent.getResource("message.twitchNotifier.list", end.toString()), 10);
             }
-        } else if (commandEvent.getArguments().length == 3) {
-
-            if (commandEvent.getMessage().getMentions().getChannels().isEmpty() ||
-                    !commandEvent.getMessage().getMentions().getChannels().get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","twitch add/remove TwitchName #Channel"), 5);
-                return;
-            }
-
-            String name = commandEvent.getArguments()[1];
-            if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.getMessage().getMentions().getChannels(GuildMessageChannelUnion.class).get(0)
-                        .asStandardGuildMessageChannel().createWebhook("Ree6-TwitchNotifier-" + name)
-                        .queue(w -> SQLSession.getSqlConnector().getSqlWorker().addTwitchWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase()));
-                commandEvent.reply(commandEvent.getResource("message.twitchNotifier.added",name), 5);
-
-                if (!Main.getInstance().getNotifier().isTwitchRegistered(name)) {
-                    Main.getInstance().getNotifier().registerTwitchChannel(name);
+            case "add" -> {
+                if (nameMapping == null || channelMapping == null) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));
+                    return;
                 }
-            } else if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","twitch remove TwitchName"), 5);
-            } else {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","twitch add TwitchName #Channel"), 5);
-            }
-        } else if (commandEvent.getArguments().length == 2) {
-            String name = commandEvent.getArguments()[1];
-            if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                SQLSession.getSqlConnector().getSqlWorker().removeTwitchWebhook(commandEvent.getGuild().getId(), name);
-                commandEvent.reply(commandEvent.getResource("message.twitchNotifier.removed",name), 5);
 
-                if (Main.getInstance().getNotifier().isTwitchRegistered(name)) {
-                    Main.getInstance().getNotifier().unregisterTwitchChannel(name);
+                if (!channelMapping.getAsChannel().getGuild().getId().equals(commandEvent.getGuild().getId())) {
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.channel"), 5);
+                    return;
                 }
-            } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","twitch add TwitchName #Channel"), 5);
-            } else {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","twitch remove TwitchName"), 5);
+
+                String name = nameMapping.getAsString();
+                channelMapping.getAsChannel().asStandardGuildMessageChannel().createWebhook("Ree6-TwitchNotifier-" + name).queue(w -> {
+                    if (messageMapping != null) {
+                        SQLSession.getSqlConnector().getSqlWorker().addTwitchWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase(), messageMapping.getAsString());
+                    } else {
+                        SQLSession.getSqlConnector().getSqlWorker().addTwitchWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase());
+                    }
+                });
+                commandEvent.reply(commandEvent.getResource("message.twitchNotifier.added", name), 5);
+
+                if (!Main.getInstance().getNotifier().isSubredditRegistered(name)) {
+                    Main.getInstance().getNotifier().registerSubreddit(name);
+                }
             }
-        } else {
-            commandEvent.reply(commandEvent.getResource("message.default.usage","twitch list/add/remove"), 5);
+            case "remove" -> {
+                if (nameMapping == null) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));
+                    return;
+                }
+
+                String name = nameMapping.getAsString();
+                SQLSession.getSqlConnector().getSqlWorker().removeInstagramWebhook(commandEvent.getGuild().getId(), name);
+                commandEvent.reply(commandEvent.getResource("message.twitchNotifier.removed", name), 5);
+
+                if (Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
+                    Main.getInstance().getNotifier().unregisterInstagramUser(name);
+                }
+            }
+
+            default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
         }
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
     /**
@@ -107,6 +112,13 @@ public class TwitchNotifier implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return null;
+        return new CommandDataImpl("twitch", "command.description.twitch")
+                .addSubcommands(new SubcommandData("list", "List all Twitch channels."))
+                .addSubcommands(new SubcommandData("add", "Add a Twitch Notifier for a specific channel.")
+                        .addOption(OptionType.STRING, "name", "The Twitch channel name.", true)
+                        .addOption(OptionType.CHANNEL, "channel", "The channel.", true)
+                        .addOption(OptionType.STRING, "message", "Custom announcement message.", false))
+                .addSubcommands(new SubcommandData("remove", "Remove a Twitch Notifier for a specific channel.")
+                        .addOption(OptionType.STRING, "name", "The Twitch channel name of the Notifier.", true));
     }
 }

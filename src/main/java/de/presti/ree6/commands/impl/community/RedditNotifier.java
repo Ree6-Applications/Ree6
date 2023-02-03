@@ -8,7 +8,11 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 /**
  * A Command to activate Reddit Notifications.
@@ -26,8 +30,8 @@ public class RedditNotifier implements ICommand {
             return;
         }
 
-        if (commandEvent.isSlashCommand()) {
-            commandEvent.reply(commandEvent.getResource("command.perform.slashNotSupported"));
+        if (!commandEvent.isSlashCommand()) {
+            commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
             return;
         }
 
@@ -35,61 +39,64 @@ public class RedditNotifier implements ICommand {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MANAGE_WEBHOOKS.getName()));
             return;
         }
-        if(commandEvent.getArguments().length == 1) {
-            if(commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
-                StringBuilder end = new StringBuilder("```\n");
 
-                for(String users : SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits(commandEvent.getGuild().getId())) {
+        String command = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+        OptionMapping nameMapping = commandEvent.getSlashCommandInteractionEvent().getOption("voice");
+        OptionMapping channelMapping = commandEvent.getSlashCommandInteractionEvent().getOption("channel");
+        OptionMapping messageMapping = commandEvent.getSlashCommandInteractionEvent().getOption("message");
+
+        switch (command) {
+            case "list" -> {
+                StringBuilder end = new StringBuilder();
+
+                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits(commandEvent.getGuild().getId())) {
                     end.append(users).append("\n");
                 }
 
-                end.append("```");
-
-                commandEvent.reply(end.toString(), 10);
-
-            } else {
-                commandEvent.reply(commandEvent.getResource("message.default.usage", "redditnotifier list/add/remove"), 5);
+                commandEvent.reply(commandEvent.getResource("message.redditNotifier.list", end.toString()), 10);
             }
-        } else if(commandEvent.getArguments().length == 3) {
+            case "add" -> {
+                if (nameMapping == null || channelMapping == null) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));
+                    return;
+                }
 
-            if (commandEvent.getMessage().getMentions().getChannels().isEmpty() ||
-                    !commandEvent.getMessage().getMentions().getChannels().get(0).getGuild().getId().equals(commandEvent.getGuild().getId())) {
-                commandEvent.reply("Please use " + SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "redditnotifier add/remove Subreddit #Channel", 5);
-                return;
-            }
+                if (!channelMapping.getAsChannel().getGuild().getId().equals(commandEvent.getGuild().getId())) {
+                    commandEvent.reply(commandEvent.getResource("message.default.noMention.channel"), 5);
+                    return;
+                }
 
-            String name = commandEvent.getArguments()[1];
-            if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.getMessage().getMentions().getChannels(GuildMessageChannelUnion.class).get(0)
-                        .asStandardGuildMessageChannel().createWebhook("Ree6-RedditNotifier-" + name).queue(w -> SQLSession.getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name));
-                commandEvent.reply(commandEvent.getResource("message.instagramNotifier.added",name), 5);
+                String name = nameMapping.getAsString();
+                channelMapping.getAsChannel().asStandardGuildMessageChannel().createWebhook("Ree6-RedditNotifier-" + name).queue(w -> {
+                    if (messageMapping != null) {
+                        SQLSession.getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase(), messageMapping.getAsString());
+                    } else {
+                        SQLSession.getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase());
+                    }
+                });
+                commandEvent.reply(commandEvent.getResource("message.redditNotifier.added", name), 5);
 
                 if (!Main.getInstance().getNotifier().isSubredditRegistered(name)) {
                     Main.getInstance().getNotifier().registerSubreddit(name);
                 }
-            } else if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","redditnotifier remove Subreddit"), 5);
-            } else {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","redditnotifier add Subreddit #Channel"), 5);
             }
-        } else if(commandEvent.getArguments().length == 2) {
-            String name = commandEvent.getArguments()[1];
-            if(commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                SQLSession.getSqlConnector().getSqlWorker().removeRedditWebhook(commandEvent.getGuild().getId(), name);
-                commandEvent.reply(commandEvent.getResource("message.instagramNotifier.removed",name), 5);
-
-                if (Main.getInstance().getNotifier().isSubredditRegistered(name)) {
-                    Main.getInstance().getNotifier().unregisterSubreddit(name);
+            case "remove" -> {
+                if (nameMapping == null) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));
+                    return;
                 }
-            } else if (commandEvent.getArguments()[0].equalsIgnoreCase("add")) {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","redditnotifier add Subreddit #Channel"), 5);
-            } else {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","redditnotifier remove Subreddit"), 5);
+
+                String name = nameMapping.getAsString();
+                SQLSession.getSqlConnector().getSqlWorker().removeInstagramWebhook(commandEvent.getGuild().getId(), name);
+                commandEvent.reply(commandEvent.getResource("message.redditNotifier.removed", name), 5);
+
+                if (Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
+                    Main.getInstance().getNotifier().unregisterInstagramUser(name);
+                }
             }
-        } else {
-            commandEvent.reply(commandEvent.getResource("message.default.usage","redditnotifier list/add/remove"), 5);
+
+            default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
         }
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
     /**
@@ -97,7 +104,14 @@ public class RedditNotifier implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return null;
+        return new CommandDataImpl("redditnotifier", "command.description.redditNotifier")
+                .addSubcommands(new SubcommandData("list", "List all subreddits."))
+                .addSubcommands(new SubcommandData("add", "Add a Reddit Notifier for a specific subreddit.")
+                        .addOption(OptionType.STRING, "name", "The subreddit name.", true)
+                        .addOption(OptionType.CHANNEL, "channel", "The channel.", true)
+                        .addOption(OptionType.STRING, "message", "Custom announcement message.", false))
+                .addSubcommands(new SubcommandData("remove", "Remove a Reddit Notifier for a specific subreddit.")
+                        .addOption(OptionType.STRING, "name", "The subreddit name of the Notifier.", true));
     }
 
     /**
