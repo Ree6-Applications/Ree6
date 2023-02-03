@@ -96,7 +96,7 @@ public class AutoRoleHandler {
                 return;
             }
 
-            for (Map.Entry<Integer, String> entry : SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelRewards(guild.getId()).entrySet()) {
+            for (Map.Entry<Long, String> entry : SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelRewards(guild.getId()).entrySet()) {
 
                 if (entry.getKey() <= level) {
 
@@ -151,7 +151,7 @@ public class AutoRoleHandler {
                 return;
             }
 
-            for (Map.Entry<Integer, String> entry : SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(guild.getId()).entrySet()) {
+            for (Map.Entry<Long, String> entry : SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(guild.getId()).entrySet()) {
 
                 if (entry.getKey() <= level) {
                     Role role = guild.getRoleById(entry.getValue());
