@@ -1,7 +1,7 @@
 language:
   name: "English (UK)"
   locale: "en-GB"
-  version: "2.2.2"
+  version: "2.2.3"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **banned.**"
@@ -148,8 +148,8 @@ label:
   setImage: "Set Image"
   ticket: "Ticket"
   overallMembersName: "Overall Members: %s"
-  realMembersName: "Overall Members: %s"
-  botMembersName: "Overall Members: %s"
+  realMembersName: "Real Members: %s"
+  botMembersName: "Bot Members: %s"
   twitchCountName: "Twitch Follower: %s"
   youtubeCountName: "Youtube Subscribers: %s"
   redditCountName: "Subreddit Members: %s"
@@ -474,6 +474,10 @@ message:
     listenerArgument: "You have set the listener to **%s** with the id **%s**"
     noTwitch: "To use this feature we require you to authorize your Twitch! Check out <%s> for it!"
     notFound: "We couldn't find the Stream-Action with the name **%s**"
+  levelRole:
+    added: "We successfully added a Level-Role with the Role **%s** and the Level **%s**"
+    removed: "We successfully removed the Level-Role with the Role **%s** and the Level **%s**"
+    list: "In the files above message you can find a list of all Level-Roles!"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"

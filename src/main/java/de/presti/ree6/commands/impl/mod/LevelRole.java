@@ -60,7 +60,7 @@ public class LevelRole implements ICommand {
                 } else {
                     SQLSession.getSqlConnector().getSqlWorker().addChatLevelReward(commandEvent.getGuild().getId(), role.getId(), level);
                 }
-                commandEvent.reply(commandEvent.getResource("message.levelrole.added", role.getName(), level));
+                commandEvent.reply(commandEvent.getResource("message.levelRole.added", role.getName(), level));
             }
             case "remove" -> {
                 if (voiceMapping.getAsBoolean()) {
@@ -68,13 +68,13 @@ public class LevelRole implements ICommand {
                 } else {
                     SQLSession.getSqlConnector().getSqlWorker().removeChatLevelReward(commandEvent.getGuild().getId(), role.getId(), level);
                 }
-                commandEvent.reply(commandEvent.getResource("message.levelrole.removed", role.getName(), level));
+                commandEvent.reply(commandEvent.getResource("message.levelRole.removed", role.getName(), level));
             }
             case "list" -> {
                 MessageCreateBuilder createBuilder = new MessageCreateBuilder();
                 StringBuilder voiceStringBuilder = new StringBuilder();
                 StringBuilder chatStringBuilder = new StringBuilder();
-                createBuilder.setContent(commandEvent.getResource("message.levelrole.list"));
+                createBuilder.setContent(commandEvent.getResource("message.levelRole.list"));
 
                 SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(commandEvent.getGuild().getId())
                         .forEach((level1, role1) -> voiceStringBuilder.append(level1).append(" -> ").append(role1));
