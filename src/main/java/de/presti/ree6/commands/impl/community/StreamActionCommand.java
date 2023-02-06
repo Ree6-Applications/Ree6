@@ -33,6 +33,8 @@ import java.util.Map;
 @Command(name = "stream-action", description = "command.description.stream-action", category = Category.COMMUNITY)
 public class StreamActionCommand implements ICommand {
 
+    // TODO:: start using sub-commands and sub-command-groups.
+
     /**
      * @inheritDoc
      */
