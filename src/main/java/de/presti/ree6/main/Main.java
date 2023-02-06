@@ -343,7 +343,7 @@ public class Main {
                 // TODO:: add hash check
                 String hash = jsonElement.getAsJsonObject().getAsJsonPrimitive("sha").getAsString();
                 String path = jsonElement.getAsJsonObject().getAsJsonPrimitive("path").getAsString();
-                String download = jsonElement.getAsJsonObject().getAsJsonPrimitive("download_url").getAsString();
+                String download = jsonElement.getAsJsonObject().get("download_url").isJsonNull() ? null : jsonElement.getAsJsonObject().getAsJsonPrimitive("download_url").getAsString();
 
                 boolean isDirectory = download == null;
 
