@@ -646,10 +646,8 @@ public class Notifier {
                                 webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
                                 webhookEmbedBuilder.setColor(Color.RED.getRGB());
 
-                                webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-
                                 webhooks.forEach(webhook -> {
-                                    String message = webhook.getMessage().replace("%name%", playlistItem.getOwnerId())
+                                    String message = webhook.getMessage().replace("%name%", playlistItem.getOwnerName())
                                             .replace("%title%", playlistItem.getTitle())
                                             .replace("%description%", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet())
                                             .replace("%url%", "https://www.youtube.com/watch?v=" + playlistItem.getId());
@@ -944,6 +942,8 @@ public class Notifier {
                                 webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
 
                                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+                                // TODO:: add this with message.
 
                                 webhooks.forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
                             });
