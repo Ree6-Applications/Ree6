@@ -6,10 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -23,6 +23,7 @@ public class AddonLoader {
 
     /**
      * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     *
      * @throws IllegalStateException it is a utility class.
      */
     private AddonLoader() {
@@ -89,8 +90,6 @@ public class AddonLoader {
         // Initialize local Variables to save Information about the Addon.
         String name = null, author = null, version = null, apiVersion = null, classPath = null;
 
-        // Temporal File for information.
-        File file = null;
 
         // Create a ZipInputStream to get every single class inside the JAR. I'm pretty sure there is a faster and more efficient way, but I didn't have the time to find it.
         try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream("addons/" + fileName))) {
@@ -105,25 +104,31 @@ public class AddonLoader {
                     // Check if it is a Directory if so don't do anything and skip.
                     // If it is the addon.yml then get the Data from it.
                     if (!entry.isDirectory() && entryName.equalsIgnoreCase("addon.yml")) {
-                        // Create a temporal File to extract the Data from. I'm pretty sure there is a better way but as I said earlier didn't have the time for it.
-                        file = new File("addons/tmp/temp_" + ArrayUtil.getRandomString(9) + ".yml");
-
+                        String content;
                         // Create a FileOutputStream of the temporal File and write every bite from the File inside the JAR.
-                        try (FileOutputStream os = new FileOutputStream(file)) {
+                        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 
                             for (int c = zipInputStream.read(); c != -1; c = zipInputStream.read()) {
                                 os.write(c);
                             }
+
+                            content = os.toString(StandardCharsets.UTF_8);
+                        }
+
+                        if (content == null) {
+                            log.info("Error while trying to pre-load the Addon {}\nException: {}", fileName, "Content is null");
+                            continue;
                         }
 
                         // Load it as a YAML-Config and fill the Variables.
-                        FileConfiguration conf = YamlConfiguration.loadConfiguration(file);
+                        FileConfiguration conf = YamlConfiguration.loadConfigurationFromString(content);
 
                         name = conf.getString("name");
                         author = conf.getString("author");
                         version = conf.getString("version");
                         apiVersion = conf.getString("api-version");
                         classPath = conf.getString("main");
+                        break;
                     }
                 } catch (Exception e) {
                     log.error("Error while trying to pre-load the Addon {}\nException: {}", fileName, e.getMessage());
@@ -134,16 +139,65 @@ public class AddonLoader {
             }
         }
 
-        // Check if the File isn't null and exists if so delete.
-        if (file != null && file.exists()) {
-            Files.delete(file.toPath());
-        }
-
         // Check if there is any data core data if not throw this error.
         if (name == null && classPath == null) {
             log.error("Error while trying to pre-load the Addon {}, no addon.yml given.", fileName);
         } else {
-            return new Addon(name, author, version, apiVersion, classPath, new File("addons/" + fileName));
+            File addonFile = new File("addons/" + fileName);
+            AddonInterface addonInterface = null;
+            // Try loading the Class with a URL Class Loader.
+            try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{addonFile.toURI().toURL()})) {
+
+                // Get the Addon Class.
+                Class<?> addonClass = getClass(urlClassLoader, classPath);
+
+                // If valid call the onEnable methode.
+                if (addonClass != null) {
+                    log.info("[AddonManager] Loaded {} ({}) by {}", name, version, author);
+                    addonInterface = (AddonInterface) addonClass.getDeclaredConstructor().newInstance();
+                } else {
+                    // If not inform about an invalid Addon.
+                    log.error("[AddonManager] Couldn't load the Addon {}({}) by {}", name, version, author);
+                    log.error("[AddonManager] The given Main class doesn't not implement our AddonInterface!");
+                }
+            } catch (Exception e) {
+                log.error("[AddonManager] Couldn't start the Addon {}({}) by {}", name, version, author);
+                log.error("[AddonManager] Exception: {}", e.getMessage());
+            }
+
+            if (addonInterface == null) {
+                log.error("Error while trying to pre-load the Addon {}\nException: {}", fileName, "AddonInterface is null");
+                return null;
+            }
+
+            return new Addon(addonInterface, name, author, version, apiVersion, classPath, new File("addons/" + fileName));
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the Addon Class from the Class-Loader and its path.
+     *
+     * @param classLoader the Class Loader of the File.
+     * @param classPath   the Path to the Main class.
+     * @return the Main class of the Addon.
+     * @throws ClassNotFoundException if there is no file with the given Path.
+     */
+    private static Class<?> getClass(URLClassLoader classLoader, String classPath) throws ClassNotFoundException {
+        // Class from the loader.
+        Class<?> urlCl = classLoader.loadClass(classPath);
+
+        // Get the Interfaces.
+        Class<?>[] ifs = urlCl.getInterfaces();
+
+        // Check if any of the Interfaces is the AddonInterface.
+        for (Class<?> anIf : ifs) {
+
+            // If it has the AddonInterface mark it as valid.
+            if (anIf.getName().equalsIgnoreCase("de.presti.ree6.addons.AddonInterface")) {
+                return urlCl;
+            }
         }
 
         return null;
