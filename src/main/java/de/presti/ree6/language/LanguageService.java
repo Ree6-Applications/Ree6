@@ -48,8 +48,12 @@ public class LanguageService {
                     continue;
                 }
 
-                Language language = new Language(YamlConfiguration.loadConfiguration(file));
-                loadLanguageFromFile(language.getDiscordLocale());
+                try {
+                    Language language = new Language(YamlConfiguration.loadConfiguration(file));
+                    loadLanguageFromFile(language.getDiscordLocale());
+                } catch (Exception e) {
+                    log.error("Couldn't load the language file {}!", file.getName(), e);
+                }
             }
         } catch (Exception e) {
             log.error("Couldn't load the language files!", e);

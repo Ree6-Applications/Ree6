@@ -22,6 +22,7 @@ import de.presti.ree6.events.MenuEvents;
 import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.impl.musicquiz.util.MusicQuizUtil;
+import de.presti.ree6.language.Language;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.sql.DatabaseTyp;
@@ -38,6 +39,7 @@ import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Config;
 import de.presti.ree6.utils.data.CustomOAuth2Credential;
 import de.presti.ree6.utils.data.CustomOAuth2Util;
+import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
@@ -45,11 +47,16 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import org.apache.commons.io.IOUtils;
+import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -140,6 +147,7 @@ public class Main {
         log.info("Starting preparations of the Bot...");
 
         LanguageService.downloadLanguages();
+        downloadMisc("storage");
 
         log.info("Finished preparations of the Bot!");
 
@@ -322,6 +330,55 @@ public class Main {
         // Inform of how long it took.
         log.info("[Main] Everything has been shut down in {}ms!", System.currentTimeMillis() - start);
         log.info("[Main] Good bye!");
+    }
+
+    /**
+     * Method used to create all the misc.
+     * @param parentPath the path that should be used.
+     */
+    private static void downloadMisc(String parentPath) {
+        try {
+            RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.github.com/repos/Ree6-Applications/Ree6/contents/" + parentPath).build()).getAsJsonArray().forEach(jsonElement -> {
+                String name = jsonElement.getAsJsonObject().getAsJsonPrimitive("name").getAsString();
+                // TODO:: add hash check
+                String hash = jsonElement.getAsJsonObject().getAsJsonPrimitive("sha").getAsString();
+                String path = jsonElement.getAsJsonObject().getAsJsonPrimitive("path").getAsString();
+                String download = jsonElement.getAsJsonObject().getAsJsonPrimitive("download_url").getAsString();
+
+                boolean isDirectory = download == null;
+
+                if (isDirectory) {
+                    downloadMisc(path);
+                    return;
+                }
+
+                Path parentFilePath = Path.of(parentPath);
+                if (!Files.exists(parentFilePath)) {
+                    try {
+                        Files.createDirectories(parentFilePath);
+                    } catch (IOException e) {
+                        log.error("Failed to create directory: {}", parentFilePath);
+                    }
+                }
+
+                Path filePath = Path.of(path);
+                if (Files.exists(filePath)) {
+                    return;
+                }
+
+                log.info("Downloading file {}!", name);
+
+                try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(download).build())) {
+                    if (inputStream == null) return;
+
+                    Files.copy(inputStream, filePath);
+                } catch (IOException exception) {
+                    log.error("An error occurred while downloading the file!", exception);
+                }
+            });
+        } catch (Exception exception) {
+            log.error("An error occurred while downloading the files!", exception);
+        }
     }
 
     /**

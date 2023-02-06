@@ -86,7 +86,7 @@ public class ImageCreationUtility {
         log.debug("Loading and creating Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
         // Generate a 885x211 Image Background.
-        if (rankBackgroundBase == null) rankBackgroundBase = ImageIO.read(new File("images/base.png"));
+        if (rankBackgroundBase == null) rankBackgroundBase = ImageIO.read(new File("storage/images/base.png"));
         BufferedImage base = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_ARGB);
         log.debug("Loaded and created Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
