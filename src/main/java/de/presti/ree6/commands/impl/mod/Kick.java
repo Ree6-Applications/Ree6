@@ -27,7 +27,7 @@ public class Kick implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.KICK_MEMBERS)) {
-            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.KICK_MEMBERS.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.KICK_MEMBERS.name()), 5);
             return;
         }
 

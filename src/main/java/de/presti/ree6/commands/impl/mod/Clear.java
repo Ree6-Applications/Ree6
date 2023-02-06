@@ -27,7 +27,7 @@ public class Clear implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
 
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MESSAGE_MANAGE.name()), 5);
+            commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.MESSAGE_MANAGE.name()), 5);
             return;
         }
 
