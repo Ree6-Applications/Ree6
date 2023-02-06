@@ -39,6 +39,7 @@ import de.presti.ree6.utils.data.DatabaseStorageBackend;
 import de.presti.ree6.utils.others.ThreadUtil;
 import de.presti.wrapper.entities.VideoResult;
 import de.presti.wrapper.entities.channel.ChannelResult;
+import io.sentry.Sentry;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -272,7 +273,10 @@ public class Notifier {
                     }
                 }
             }
-        }, x -> log.error("Failed to run Follower count checker!", x.getCause()), Duration.ofMinutes(5), true, true);
+        }, x -> {
+            log.error("Failed to run Follower count checker!", x.getCause());
+            Sentry.captureException(x);
+        }, Duration.ofMinutes(5), true, true);
     }
 
     //region Twitch
@@ -533,6 +537,7 @@ public class Notifier {
                     @Override
                     public void onException(Exception ex) {
                         log.error("[Notifier] Encountered an error, while trying to get the Status update!", ex);
+                        Sentry.captureException(ex);
                     }
                 })
                 .filter(filterQuery);
@@ -659,8 +664,12 @@ public class Notifier {
                 }
             } catch (Exception e) {
                 log.error("Couldn't get upload data!", e);
+                Sentry.captureException(e);
             }
-        }, x -> log.error("Couldn't start upload Stream!"), Duration.ofMinutes(5), true, true);
+        }, x -> {
+            log.error("Couldn't start upload Stream!");
+            Sentry.captureException(x);
+        }, Duration.ofMinutes(5), true, true);
     }
 
     /**
@@ -793,8 +802,12 @@ public class Notifier {
                 }
             } catch (Exception exception) {
                 log.error("Could not get Reddit Posts!", exception);
+                Sentry.captureException(exception);
             }
-        }, x -> log.error("Couldn't start Reddit Stream!"), Duration.ofMinutes(5), true, true);
+        }, x -> {
+            log.error("Couldn't start Reddit Stream!");
+            Sentry.captureException(x);
+        }, Duration.ofMinutes(5), true, true);
     }
 
     /**
@@ -867,6 +880,8 @@ public class Notifier {
      */
     public void createInstagramPostStream() {
         ThreadUtil.createThread(x -> {
+            if (!instagramClient.isLoggedIn()) return;
+
             for (String username : registeredInstagramUsers) {
 
                 instagramClient.actions().users().findByUsername(username).thenAccept(userAction -> {
@@ -936,10 +951,14 @@ public class Notifier {
                     }
                 }).exceptionally(exception -> {
                     log.error("Could not get Instagram User!", exception);
+                    Sentry.captureException(exception);
                     return null;
                 }).join();
             }
-        }, x -> log.error("Couldn't start Instagram Stream!"), Duration.ofMinutes(5), true, true);
+        }, x -> {
+            log.error("Couldn't start Instagram Stream!");
+            Sentry.captureException(x);
+        }, Duration.ofMinutes(5), true, true);
     }
 
     /**
