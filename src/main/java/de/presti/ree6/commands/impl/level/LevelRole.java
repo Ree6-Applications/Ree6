@@ -50,11 +50,13 @@ public class LevelRole implements ICommand {
             return;
         }
 
-        Role role = roleMapping.getAsRole();
-        long level = levelMapping.getAsLong();
 
         switch (command) {
+
             case "add" -> {
+                Role role = roleMapping.getAsRole();
+                long level = levelMapping.getAsLong();
+
                 if (voiceMapping.getAsBoolean()) {
                     SQLSession.getSqlConnector().getSqlWorker().addVoiceLevelReward(commandEvent.getGuild().getId(), role.getId(), level);
                 } else {
@@ -63,6 +65,9 @@ public class LevelRole implements ICommand {
                 commandEvent.reply(commandEvent.getResource("message.levelRole.added", role.getName(), level));
             }
             case "remove" -> {
+                Role role = roleMapping.getAsRole();
+                long level = levelMapping.getAsLong();
+
                 if (voiceMapping.getAsBoolean()) {
                     SQLSession.getSqlConnector().getSqlWorker().removeVoiceLevelReward(commandEvent.getGuild().getId(), role.getId(), level);
                 } else {
