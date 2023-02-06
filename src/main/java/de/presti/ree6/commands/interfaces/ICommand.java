@@ -2,6 +2,7 @@ package de.presti.ree6.commands.interfaces;
 
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.sql.SQLSession;
+import io.sentry.Sentry;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ public interface ICommand {
             if (!throwable.getMessage().contains("Unknown Message")) {
                 commandEvent.reply(commandEvent.getResource("command.perform.internalError"), 5);
                 log.error("An error occurred while executing the command!", throwable);
+                Sentry.captureException(throwable);
             }
             return null;
         });
