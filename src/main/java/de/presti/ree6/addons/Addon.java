@@ -16,7 +16,6 @@ import java.io.File;
  * @param classPath      Path to the Main-Class in the JAR.
  * @param file           The actual JAR as File.
  */
-@Getter
 public record Addon(AddonInterface addonInterface, String name, String author, String version,
                     String apiVersion, String classPath, File file) {
 
