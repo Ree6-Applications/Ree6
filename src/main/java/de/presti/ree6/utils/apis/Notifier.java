@@ -622,7 +622,8 @@ public class Notifier {
                     List<VideoResult> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
                     if (!playlistItemList.isEmpty()) {
                         for (VideoResult playlistItem : playlistItemList) {
-                            if (playlistItem.getUploadDate() != -1 && playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) {
+                            if (playlistItem.getUploadDate() != -1 && playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()
+                                    && !playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(1).toMillis()))) {
                                 // Create Webhook Message.
                                 WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
@@ -631,7 +632,7 @@ public class Notifier {
 
                                 WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
-                                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(playlistItem.getOwnerId(), null));
+                                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(playlistItem.getOwnerName(), null));
                                 webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("YouTube Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
 
                                 webhookEmbedBuilder.setImageUrl(playlistItem.getThumbnail());

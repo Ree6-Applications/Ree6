@@ -132,7 +132,7 @@
         <dependency>
             <groupId>com.github.DxsSucuk</groupId>
             <artifactId>YoutubeWrapper</artifactId>
-            <version>da0abaaa06</version>
+            <version>8d819776b4</version>
         </dependency>
 
         <!-- Database -->
