@@ -105,11 +105,11 @@ public class LevelRole implements ICommand {
                 LanguageService.getDefault("command.description.levelrole"))
                 .addSubcommands(new SubcommandData("add", "Add a new Level-Role")
                                 .addOptions(new OptionData(OptionType.BOOLEAN, "voice", "True -> Voice-Level and False -> Text-Level").setRequired(true),
-                                        new OptionData(OptionType.NUMBER, "level", "The level that needs to be reached to get the role.").setRequired(true).setMinValue(1),
+                                        new OptionData(OptionType.INTEGER, "level", "The level that needs to be reached to get the role.").setRequired(true).setMinValue(1),
                                         new OptionData(OptionType.ROLE, "role", "The name of the already created action").setRequired(true)),
                         new SubcommandData("remove", "Remove a Level-Role")
                                 .addOptions(new OptionData(OptionType.BOOLEAN, "voice", "True -> Voice-Level and False -> Text-Level").setRequired(true),
-                                        new OptionData(OptionType.NUMBER, "level", "The level that needs to be reached to get the role.").setRequired(true).setMinValue(1),
+                                        new OptionData(OptionType.INTEGER, "level", "The level that needs to be reached to get the role.").setRequired(true).setMinValue(1),
                                         new OptionData(OptionType.ROLE, "role", "The name of the already created action").setRequired(true)),
                         new SubcommandData("list", "List all Level-Roles"));
     }
