@@ -124,7 +124,7 @@ public class StreamActionCommand implements ICommand {
                             commandEvent.reply(commandEvent.getResource("message.stream-action.actionList", stringBuilder.toString()));
                         }
 
-                        case "listen" -> {
+                        case "listener" -> {
                             OptionMapping listener = commandEvent.getSlashCommandInteractionEvent().getOption("listener");
                             String[] values = listener.getAsString().split("\\s+");
 
