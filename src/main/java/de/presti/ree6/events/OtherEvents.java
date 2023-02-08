@@ -265,8 +265,12 @@ public class OtherEvents extends ListenerAdapter {
                 }
 
                 if (voiceChannel.getParentCategory() != null) {
-                    voiceChannel.getParentCategory().createVoiceChannel("Temporal VC #" +
-                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith("Temporal VC")).toList().size() + 1).queue(channel -> {
+                    String preName = LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", "SPLIT");
+                    preName = preName.split("SPLIT")[0];
+
+                    String finalPreName = preName;
+                    voiceChannel.getParentCategory().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName",
+                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)).queue(channel -> {
                         event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
                         ArrayUtil.temporalVoicechannel.add(channel.getId());
                     });
