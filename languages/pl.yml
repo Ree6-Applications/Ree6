@@ -1,8 +1,8 @@
 language:
-  name: "English (UK)"
-  locale: "en-GB"
+  name: "Polish"
+  locale: "pl"
   version: "2.2.5"
-  author: "Presti"
+  author: "Trust"
 logging:
   banned: ":airplane_departure: %s **banned.**"
   unbanned: ":airplane_arriving: %s **unbanned.**"
