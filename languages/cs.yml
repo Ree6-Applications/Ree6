@@ -1,6 +1,6 @@
 language:
   name: "Czech"
-  locale: "cz"
+  locale: "cs"
   version: "2.2.5"
   author: "Pogy__"
 logging:
