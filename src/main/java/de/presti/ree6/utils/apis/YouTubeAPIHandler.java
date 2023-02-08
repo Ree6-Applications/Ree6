@@ -3,6 +3,7 @@ package de.presti.ree6.utils.apis;
 import de.presti.wrapper.YouTubeWrapper;
 import de.presti.wrapper.entities.VideoResult;
 import de.presti.wrapper.entities.channel.ChannelResult;
+import de.presti.wrapper.entities.channel.ChannelShortResult;
 import de.presti.wrapper.entities.channel.ChannelVideoResult;
 import de.presti.wrapper.entities.search.ChannelSearchResult;
 import de.presti.wrapper.entities.search.SearchResult;
@@ -65,7 +66,13 @@ public class YouTubeAPIHandler {
 
             // Convert it to an actual Video instead of a stripped down version.
             for (VideoResult video : channelVideo.getVideos()) {
-                playlistItemList.add(YouTubeWrapper.getVideo(video.getId()));
+                playlistItemList.add(YouTubeWrapper.getVideo(video.getId(), false));
+            }
+
+            ChannelShortResult channelShorts = YouTubeWrapper.getChannelShort(channelId);
+
+            for (VideoResult shorts : channelShorts.getShorts()) {
+                playlistItemList.add(YouTubeWrapper.getVideo(shorts.getId(), true));
             }
         }
 

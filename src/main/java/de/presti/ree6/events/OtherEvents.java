@@ -202,9 +202,12 @@ public class OtherEvents extends ListenerAdapter {
                 }
 
                 if (voiceChannel.getParentCategory() != null) {
+                    String preName = LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", "SPLIT");
+                    preName = preName.split("SPLIT")[0];
+
+                    String finalPreName = preName;
                     voiceChannel.getParentCategory().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName",
-                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", 0)
-                                    .substring(0, LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", 0).length() - 3))).toList().size() + 1)).queue(channel -> {
+                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)).queue(channel -> {
                         event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
                         ArrayUtil.temporalVoicechannel.add(channel.getId());
                     });
@@ -243,9 +246,9 @@ public class OtherEvents extends ListenerAdapter {
             }
 
             if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())
-                    && event.getChannelLeft().getMembers().isEmpty()) {
+                    && (event.getChannelLeft().getMembers().isEmpty() || (event.getChannelLeft().getMembers().size() == 1 &&
+                    event.getChannelLeft().getMembers().get(0).getIdLong() == event.getJDA().getSelfUser().getIdLong()))) {
                 event.getChannelLeft().delete().queue(c -> ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId()));
-                ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId());
             }
         } else {
 
@@ -262,8 +265,12 @@ public class OtherEvents extends ListenerAdapter {
                 }
 
                 if (voiceChannel.getParentCategory() != null) {
-                    voiceChannel.getParentCategory().createVoiceChannel("Temporal VC #" +
-                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith("Temporal VC")).toList().size() + 1).queue(channel -> {
+                    String preName = LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", "SPLIT");
+                    preName = preName.split("SPLIT")[0];
+
+                    String finalPreName = preName;
+                    voiceChannel.getParentCategory().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName",
+                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)).queue(channel -> {
                         event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
                         ArrayUtil.temporalVoicechannel.add(channel.getId());
                     });

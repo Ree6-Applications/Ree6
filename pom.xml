@@ -74,7 +74,7 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
-            <version>6.13.0</version>
+            <version>6.13.1</version>
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>com.github.DxsSucuk</groupId>
             <artifactId>YoutubeWrapper</artifactId>
-            <version>b1ae064e9a</version>
+            <version>8d819776b4</version>
         </dependency>
 
         <!-- Database -->
