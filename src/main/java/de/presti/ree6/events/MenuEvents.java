@@ -5,6 +5,7 @@ import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
+import de.presti.ree6.language.Language;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
@@ -988,9 +989,10 @@ public class MenuEvents extends ListenerAdapter {
 
                 DiscordLocale selectedLocale = DiscordLocale.from(event.getInteraction().getValues().get(0));
 
-                if (selectedLocale != DiscordLocale.UNKNOWN) {
+                if (selectedLocale != DiscordLocale.UNKNOWN && LanguageService.getSupported().contains(selectedLocale)) {
+                    Language language = LanguageService.languageResources.get(selectedLocale);
                     SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_language", selectedLocale.getLocale());
-                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.lang.setupSuccess", selectedLocale.getLanguageName()));
+                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.lang.setupSuccess", language.getName() + " by " + language.getAuthor()));
                     embedBuilder.setColor(Color.GREEN);
                     event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                 } else {
