@@ -18,7 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>dxssucuk</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <version.number>${git.closest.tag.name}.${git.commit.id.abbrev}</version.number>
+        <version>${git.closest.tag.name}.${git.commit.id.abbrev}</version>
     </properties>
 
     <repositories>
@@ -323,6 +323,8 @@
                             <archive>
                                 <manifest>
                                     <mainClass>de.presti.ree6.main.Main</mainClass>
+                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                                 </manifest>
                             </archive>
                         </configuration>
@@ -343,7 +345,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <generateGitPropertiesFile>false</generateGitPropertiesFile>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
                     <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
                     <includeOnlyProperties>
                         <includeOnlyProperty>^git.build.(time|version)$</includeOnlyProperty>

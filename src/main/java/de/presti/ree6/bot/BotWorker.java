@@ -3,6 +3,7 @@ package de.presti.ree6.bot;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -19,6 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Class to store information about the bot.
  */
+@Slf4j
 public class BotWorker {
 
     /**
@@ -66,6 +68,7 @@ public class BotWorker {
      * @param version1 the current Bot Version "typ".
      */
     public static void createBot(BotVersion version1) {
+        log.info("Creating Instance build " + build);
         version = version1;
         token = Main.getInstance().getConfig().getConfiguration().getString(getVersion().getTokenPath());
         state = BotState.INIT;
@@ -189,7 +192,7 @@ public class BotWorker {
      */
     public static String getBuild() {
         if (build == null) {
-            build = Objects.requireNonNullElse(BotWorker.class.getPackage().getImplementationVersion(), "2.2.5");
+            build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(), "2.2.5");
         }
         return build;
     }
