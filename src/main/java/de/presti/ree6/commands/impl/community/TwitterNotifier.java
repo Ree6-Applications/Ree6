@@ -76,8 +76,8 @@ public class TwitterNotifier implements ICommand {
                 });
                 commandEvent.reply(commandEvent.getResource("message.twitterNotifier.added", name), 5);
 
-                if (!Main.getInstance().getNotifier().isSubredditRegistered(name)) {
-                    Main.getInstance().getNotifier().registerSubreddit(name);
+                if (!Main.getInstance().getNotifier().isTwitterRegistered(name)) {
+                    Main.getInstance().getNotifier().registerTwitterUser(name);
                 }
             }
             case "remove" -> {
@@ -87,11 +87,11 @@ public class TwitterNotifier implements ICommand {
                 }
 
                 String name = nameMapping.getAsString();
-                SQLSession.getSqlConnector().getSqlWorker().removeInstagramWebhook(commandEvent.getGuild().getId(), name);
+                SQLSession.getSqlConnector().getSqlWorker().removeTwitterWebhook(commandEvent.getGuild().getId(), name);
                 commandEvent.reply(commandEvent.getResource("message.twitterNotifier.removed", name), 5);
 
-                if (Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
-                    Main.getInstance().getNotifier().unregisterInstagramUser(name);
+                if (Main.getInstance().getNotifier().isTwitterRegistered(name)) {
+                    Main.getInstance().getNotifier().unregisterTwitterUser(name);
                 }
             }
 

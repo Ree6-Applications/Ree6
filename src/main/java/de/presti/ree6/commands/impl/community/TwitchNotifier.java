@@ -76,8 +76,8 @@ public class TwitchNotifier implements ICommand {
                 });
                 commandEvent.reply(commandEvent.getResource("message.twitchNotifier.added", name), 5);
 
-                if (!Main.getInstance().getNotifier().isSubredditRegistered(name)) {
-                    Main.getInstance().getNotifier().registerSubreddit(name);
+                if (!Main.getInstance().getNotifier().isTwitchRegistered(name)) {
+                    Main.getInstance().getNotifier().registerTwitchChannel(name);
                 }
             }
             case "remove" -> {
@@ -87,11 +87,11 @@ public class TwitchNotifier implements ICommand {
                 }
 
                 String name = nameMapping.getAsString();
-                SQLSession.getSqlConnector().getSqlWorker().removeInstagramWebhook(commandEvent.getGuild().getId(), name);
+                SQLSession.getSqlConnector().getSqlWorker().removeTwitchWebhook(commandEvent.getGuild().getId(), name);
                 commandEvent.reply(commandEvent.getResource("message.twitchNotifier.removed", name), 5);
 
-                if (Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
-                    Main.getInstance().getNotifier().unregisterInstagramUser(name);
+                if (Main.getInstance().getNotifier().isTwitchRegistered(name)) {
+                    Main.getInstance().getNotifier().unregisterTwitchChannel(name);
                 }
             }
 

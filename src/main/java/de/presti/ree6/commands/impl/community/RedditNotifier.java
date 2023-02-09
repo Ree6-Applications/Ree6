@@ -87,11 +87,11 @@ public class RedditNotifier implements ICommand {
                 }
 
                 String name = nameMapping.getAsString();
-                SQLSession.getSqlConnector().getSqlWorker().removeInstagramWebhook(commandEvent.getGuild().getId(), name);
+                SQLSession.getSqlConnector().getSqlWorker().removeRedditWebhook(commandEvent.getGuild().getId(), name);
                 commandEvent.reply(commandEvent.getResource("message.redditNotifier.removed", name), 5);
 
-                if (Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
-                    Main.getInstance().getNotifier().unregisterInstagramUser(name);
+                if (Main.getInstance().getNotifier().isSubredditRegistered(name)) {
+                    Main.getInstance().getNotifier().unregisterSubreddit(name);
                 }
             }
 
