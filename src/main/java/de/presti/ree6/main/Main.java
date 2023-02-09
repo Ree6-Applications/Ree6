@@ -334,6 +334,7 @@ public class Main {
 
     /**
      * Method used to create all the misc.
+     *
      * @param parentPath the path that should be used.
      */
     private static void downloadMisc(String parentPath) {
@@ -432,18 +433,16 @@ public class Main {
                 lastDay = new SimpleDateFormat("dd").format(new Date());
             }
 
-            File storageTemp = new File("storage/tmp");
-            if (storageTemp.isDirectory()) {
-                File[] files = storageTemp.listFiles();
-                if (files != null) {
-                    Arrays.stream(files).forEach(f -> {
-                        try {
-                            Files.deleteIfExists(f.toPath());
-                        } catch (IOException e) {
-                            log.error("Couldn't delete file " + f.getName(), e);
-                        }
-                    });
-                }
+            File storageTemp = new File("storage/tmp/");
+            File[] files = storageTemp.listFiles();
+            if (files != null) {
+                Arrays.stream(files).forEach(f -> {
+                    try {
+                        Files.deleteIfExists(f.toPath());
+                    } catch (IOException e) {
+                        log.error("Couldn't delete file " + f.getName(), e);
+                    }
+                });
             }
 
             // Need to load them all.
@@ -454,12 +453,13 @@ public class Main {
 
                 CustomOAuth2Credential credential = CustomOAuth2Util.convert(twitchIntegrations);
 
-                OAuth2Credential originalCredential = new OAuth2Credential("twitch", credential.getAccessToken(), credential.getRefreshToken(),  credential.getUserId(), credential.getUserName(), credential.getExpiresIn(), credential.getScopes());
+                OAuth2Credential originalCredential = new OAuth2Credential("twitch", credential.getAccessToken(), credential.getRefreshToken(), credential.getUserId(), credential.getUserName(), credential.getExpiresIn(), credential.getScopes());
 
                 if (!Main.getInstance().getNotifier().getTwitchSubscription().containsKey(credential.getUserId())) {
-                    PubSubSubscription[] subscriptions = new PubSubSubscription[2];
+                    PubSubSubscription[] subscriptions = new PubSubSubscription[3];
                     subscriptions[0] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(originalCredential, twitchIntegrations.getChannelId());
                     subscriptions[1] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForSubscriptionEvents(originalCredential, twitchIntegrations.getChannelId());
+                    subscriptions[2] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForFollowingEvents(originalCredential, twitchIntegrations.getChannelId());
 
                     Main.getInstance().getNotifier().getTwitchSubscription().put(credential.getUserId(), subscriptions);
                 }

@@ -19,6 +19,8 @@ import com.github.twitch4j.auth.TwitchAuth;
 import com.github.twitch4j.auth.providers.TwitchIdentityProvider;
 import com.github.twitch4j.events.ChannelFollowCountUpdateEvent;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
+import com.github.twitch4j.eventsub.events.ChannelSubscribeEvent;
+import com.github.twitch4j.helix.domain.SubscriptionEvent;
 import com.github.twitch4j.helix.domain.User;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.github.twitch4j.pubsub.events.FollowingEvent;
@@ -164,9 +166,10 @@ public class Notifier {
 
             OAuth2Credential credential = new OAuth2Credential("twitch", twitchIntegrations.getToken());
 
-            PubSubSubscription[] subscriptions = new PubSubSubscription[2];
+            PubSubSubscription[] subscriptions = new PubSubSubscription[3];
             subscriptions[0] = getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(credential, twitchIntegrations.getChannelId());
             subscriptions[1] = getTwitchClient().getPubSub().listenForSubscriptionEvents(credential, twitchIntegrations.getChannelId());
+            subscriptions[2] = getTwitchClient().getPubSub().listenForFollowingEvents(credential, twitchIntegrations.getChannelId());
 
             twitchSubscription.put(credential.getUserId(), subscriptions);
         }
@@ -188,6 +191,15 @@ public class Notifier {
                 if (!event.getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
                 container.runActions(event.getData().getUsername());
+            });
+        });
+
+        twitchClient.getEventManager().onEvent(ChannelSubscribeEvent.class, event -> {
+            List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(2);
+            list.forEach(container -> {
+                if (!event.getBroadcasterUserId().equalsIgnoreCase(container.getTwitchChannelId())) return;
+
+                container.runActions(event.getUserName());
             });
         });
 

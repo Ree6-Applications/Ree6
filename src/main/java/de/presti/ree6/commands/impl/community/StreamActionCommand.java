@@ -133,6 +133,8 @@ public class StreamActionCommand implements ICommand {
                                     streamAction.setListener(0);
                                 } else if (values[0].equalsIgnoreCase("follow")) {
                                     streamAction.setListener(1);
+                                } else if (values[0].equalsIgnoreCase("subscribe")) {
+                                    streamAction.setListener(2);
                                 } else {
                                     commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
                                     return;
