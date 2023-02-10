@@ -10,6 +10,7 @@ import de.presti.ree6.utils.apis.SpotifyAPIHandler;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
+import io.sentry.Sentry;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -103,16 +104,30 @@ public class Play implements ICommand {
 
             if (value.contains("spotify")) {
                 try {
-                    spotiftrackinfos = SpotifyAPIHandler.getInstance().convert(value);
                     isspotify = true;
-                } catch (Exception ignored) {
-
+                    spotiftrackinfos = SpotifyAPIHandler.getInstance().convert(value);
+                } catch (Exception exception) {
+                    Sentry.captureException(exception);
+                } finally {
+                    if (spotiftrackinfos == null) spotiftrackinfos = new ArrayList<>();
                 }
             }
 
             if (!isspotify) {
                 Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), value, commandEvent.getInteractionHook(), false);
             } else {
+                if (spotiftrackinfos.isEmpty()) {
+                    EmbedBuilder em = new EmbedBuilder();
+                    em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                    em.setTitle(commandEvent.getResource("label.musicPlayer"));
+                    em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                    em.setColor(Color.GREEN);
+                    em.setDescription(commandEvent.getResource("message.music.notFound", value));
+                    em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+                    commandEvent.reply(em.build(), 5);
+                    return;
+                }
+
                 ArrayList<String> loadFailed = new ArrayList<>();
 
                 boolean tempBoolean = false;
