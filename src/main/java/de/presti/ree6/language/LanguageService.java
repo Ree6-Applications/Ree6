@@ -48,7 +48,10 @@ public class LanguageService {
                     continue;
                 }
 
+                String content = Files.readString(file.toPath());
+
                 try {
+                    if (content.isEmpty()) continue;
                     Language language = new Language(YamlConfiguration.loadConfiguration(file));
                     loadLanguageFromFile(language.getDiscordLocale());
                 } catch (Exception e) {
@@ -116,7 +119,8 @@ public class LanguageService {
                             log.info("Language file {} is up to date!", language);
                         }
                     } else {
-                        Files.copy(inputStream, languageFile);
+                        Files.writeString(languageFile, content, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+                        log.info("Downloaded Language: {}", language);
                     }
                 } catch (IOException exception) {
                     log.error("An error occurred while downloading the language file!", exception);
