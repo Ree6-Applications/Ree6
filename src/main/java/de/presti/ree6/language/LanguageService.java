@@ -48,10 +48,7 @@ public class LanguageService {
                     continue;
                 }
 
-                String content = Files.readString(file.toPath());
-
                 try {
-                    if (content.isEmpty()) continue;
                     Language language = new Language(YamlConfiguration.loadConfiguration(file));
                     loadLanguageFromFile(language.getDiscordLocale());
                 } catch (Exception e) {
