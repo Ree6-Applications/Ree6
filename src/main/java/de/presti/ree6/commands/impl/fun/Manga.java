@@ -53,7 +53,7 @@ public class Manga implements ICommand {
             builder = new StringBuilder(builder.substring(0, builder.length() - 1));
 
         if (args.length > 0) {
-            sendAnime(commandEvent, message, builder.toString());
+            sendManga(commandEvent, message, builder.toString());
         } else {
             message.editMessage(commandEvent.getResource("message.default.invalidQuery")).queue();
         }
@@ -65,7 +65,7 @@ public class Manga implements ICommand {
      * @param message the Message.
      * @param query the query.
      */
-    public void sendAnime(CommandEvent commandEvent, Message message, String query) {
+    public void sendManga(CommandEvent commandEvent, Message message, String query) {
         RequestUtility.Request request = RequestUtility.Request.builder()
                 .url("https://kitsu.io/api/edge/manga?filter[text]=" + URLEncoder.encode(query, StandardCharsets.UTF_8))
                 .build();
@@ -111,7 +111,7 @@ public class Manga implements ICommand {
             String startDate = attributes.has("startDate") ?
                     attributes.get("startDate").getAsString() : "?";
 
-            String endDate = attributes.has("endDate") ?
+            String endDate = attributes.has("endDate") && attributes.get("endDate").isJsonPrimitive() ?
                     attributes.get("endDate").getAsString() : "?";
 
             String chapters = attributes.has("chapterCount") ?
