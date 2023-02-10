@@ -7,8 +7,10 @@ import de.presti.wrapper.entities.channel.ChannelShortResult;
 import de.presti.wrapper.entities.channel.ChannelVideoResult;
 import de.presti.wrapper.entities.search.ChannelSearchResult;
 import de.presti.wrapper.entities.search.SearchResult;
+import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +60,7 @@ public class YouTubeAPIHandler {
      * @return A list of all Video ids.
      * @throws Exception if something went wrong.
      */
-    public List<VideoResult> getYouTubeUploads(String channelId) throws Exception {
+    public List<VideoResult> getYouTubeUploads(String channelId) throws IOException, InterruptedException, IllegalAccessException {
         List<VideoResult> playlistItemList = new ArrayList<>();
 
         if (isValidChannelId(channelId)) {
@@ -66,13 +68,21 @@ public class YouTubeAPIHandler {
 
             // Convert it to an actual Video instead of a stripped down version.
             for (VideoResult video : channelVideo.getVideos()) {
-                playlistItemList.add(YouTubeWrapper.getVideo(video.getId(), false));
+                try {
+                    playlistItemList.add(YouTubeWrapper.getVideo(video.getId(), false));
+                } catch (Exception exception) {
+                    Sentry.captureException(exception);
+                }
             }
 
             ChannelShortResult channelShorts = YouTubeWrapper.getChannelShort(channelId);
 
             for (VideoResult shorts : channelShorts.getShorts()) {
-                playlistItemList.add(YouTubeWrapper.getVideo(shorts.getId(), true));
+                try {
+                    playlistItemList.add(YouTubeWrapper.getVideo(shorts.getId(), true));
+                } catch (Exception exception) {
+                    Sentry.captureException(exception);
+                }
             }
         }
 
