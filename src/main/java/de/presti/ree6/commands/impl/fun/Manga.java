@@ -95,35 +95,35 @@ public class Manga implements ICommand {
                     attributes.getAsJsonObject("posterImage").has("large") ?
                     attributes.getAsJsonObject("posterImage").get("large").getAsString() : null;
 
-            String description = attributes.has("synopsis") ?
+            String description = attributes.has("synopsis") && attributes.get("synopsis").isJsonPrimitive() ?
                     attributes.get("synopsis").getAsString() : "?";
 
-            String status = attributes.has("status") ?
+            String status = attributes.has("status") && attributes.get("status").isJsonPrimitive()?
                     attributes.get("status").getAsString() : "?";
 
-            String type = attributes.has("mangaType") ?
+            String type = attributes.has("mangaType") && attributes.get("mangaType").isJsonPrimitive() ?
                     attributes.get("mangaType").getAsString() : "?";
 
             String genres = attributes.has("genres") &&
                     attributes.get("genres").isJsonArray() ?
                     attributes.getAsJsonArray("genres").toString() : tryResolvingGenres(data);
 
-            String startDate = attributes.has("startDate") ?
+            String startDate = attributes.has("startDate") && attributes.get("startDate").isJsonPrimitive() ?
                     attributes.get("startDate").getAsString() : "?";
 
             String endDate = attributes.has("endDate") && attributes.get("endDate").isJsonPrimitive() ?
                     attributes.get("endDate").getAsString() : "?";
 
-            String chapters = attributes.has("chapterCount") ?
+            String chapters = attributes.has("chapterCount") && attributes.get("chapterCount").isJsonPrimitive() ?
                     attributes.get("chapterCount").getAsString() : "?";
 
-            String volumes = attributes.has("volumeCount") ?
+            String volumes = attributes.has("volumeCount") && attributes.get("volumeCount").isJsonPrimitive() ?
                     attributes.get("volumeCount").getAsString() : "?";
 
-            String rating = attributes.has("averageRating") ?
+            String rating = attributes.has("averageRating") && attributes.get("averageRating").isJsonPrimitive() ?
                     attributes.get("averageRating").getAsString() : "?";
 
-            String rank = attributes.has("ratingRank") ?
+            String rank = attributes.has("ratingRank") && attributes.get("ratingRank").isJsonPrimitive() ?
                     attributes.get("ratingRank").getAsString() : "?";
 
             EmbedBuilder em = new EmbedBuilder();
