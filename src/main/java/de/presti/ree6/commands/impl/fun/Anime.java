@@ -95,35 +95,35 @@ public class Anime implements ICommand {
                     attributes.getAsJsonObject("posterImage").has("large") ?
                     attributes.getAsJsonObject("posterImage").get("large").getAsString() : null;
 
-            String description = attributes.has("synopsis") ?
+            String description = attributes.has("synopsis") && attributes.get("synopsis").isJsonPrimitive() ?
                     attributes.get("synopsis").getAsString() : "?";
 
-            String status = attributes.has("status") ?
+            String status = attributes.has("status") && attributes.get("status").isJsonPrimitive() ?
                     attributes.get("status").getAsString() : "?";
 
-            String type = attributes.has("showType") ?
+            String type = attributes.has("showType") && attributes.get("showType").isJsonPrimitive() ?
                     attributes.get("showType").getAsString() : "?";
 
             String genres = attributes.has("genres") &&
                     attributes.get("genres").isJsonArray() ?
                     attributes.getAsJsonArray("genres").toString() : "?";
 
-            String startDate = attributes.has("startDate") ?
+            String startDate = attributes.has("startDate") && attributes.get("startDate").isJsonPrimitive() ?
                     attributes.get("startDate").getAsString() : "?";
 
-            String endDate = attributes.has("endDate") ?
+            String endDate = attributes.has("endDate") && attributes.get("endDate").isJsonPrimitive() ?
                     attributes.get("endDate").getAsString() : "?";
 
-            String episodes = attributes.has("episodeCount") ?
+            String episodes = attributes.has("episodeCount") && attributes.get("episodeCount").isJsonPrimitive() ?
                     attributes.get("episodeCount").getAsString() : "?";
 
-            String duration = attributes.has("totalLength") ?
+            String duration = attributes.has("totalLength") && attributes.get("totalLength").isJsonPrimitive() ?
                     attributes.get("totalLength").getAsInt() + " minutes" : "?";
 
-            String rating = attributes.has("averageRating") ?
+            String rating = attributes.has("averageRating") && attributes.get("averageRating").isJsonPrimitive() ?
                     attributes.get("averageRating").getAsString() : "?";
 
-            String rank = attributes.has("ratingRank") ?
+            String rank = attributes.has("ratingRank") && attributes.get("ratingRank").isJsonPrimitive() ?
                     attributes.get("ratingRank").getAsString() : "?";
 
             EmbedBuilder em = new EmbedBuilder();
