@@ -16,7 +16,10 @@ public class Main {
 
     private static final Config config = new Config();
 
-    public static void main(String[] args) throws InterruptedException, MalformedURLException, URISyntaxException {
+    public static void main(String[] args) throws InterruptedException {
+        if (getJavaVersion() < 17) {
+            print("Looks like you are using a version below Java 17!\nRee6 has been developed base on Java 17 you wont be able to run it with " + getJavaVersion() + "!\nYou can still continue with installing everything!");
+        }
         if (Files.exists(Paths.get("config.yml"))) {
             print("We found a config.yml!\nDo you want to update Ree6 or fully configure it? (update/configure)");
 
@@ -38,6 +41,26 @@ public class Main {
         } else {
             config();
         }
+    }
+
+    /**
+     * Returns the Java version as an int value.
+     * @return the Java version as an int value (8, 9, etc.)
+     */
+    public static int getJavaVersion() {
+        String version = System.getProperty("java.version");
+        if (version.startsWith("1.")) {
+            version = version.substring(2);
+        }
+        // Allow these formats:
+        // 1.8.0_72-ea
+        // 9-ea
+        // 9
+        // 9.0.1
+        int dotPos = version.indexOf('.');
+        int dashPos = version.indexOf('-');
+        return Integer.parseInt(version.substring(0,
+                dotPos > -1 ? dotPos : dashPos > -1 ? dashPos : 1));
     }
 
     public static void config() throws InterruptedException {
@@ -198,9 +221,9 @@ public class Main {
 
     public static void setupSQLLite() throws IOException {
         clear();
-        config.getConfiguration().set("hikari.misc.storage", "sqllite");
+        config.getConfiguration().set("hikari.misc.storage", "sqlite");
 
-        print("You selected SQLLite!\nYou dont need to set up anything for this one!");
+        print("You selected SQLite!\nYou dont need to set up anything for this one!");
 
         config.getConfiguration().save();
     }
