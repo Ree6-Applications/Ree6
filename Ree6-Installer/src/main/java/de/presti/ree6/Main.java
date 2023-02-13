@@ -22,7 +22,7 @@ public class Main {
             print("Looks like you are using a version below Java 17!\nRee6 has been developed base on Java 17 you wont be able to run it with " + getJavaVersion() + "!\nYou can still continue with installing everything!");
         }
 
-        if (Arrays.stream(args).anyMatch(c -> c.toLowerCase().equals("update"))) {
+        if (Arrays.stream(args).anyMatch(c -> c.equalsIgnoreCase("update"))) {
             print("Updating Ree6...");
             update();
             return;
