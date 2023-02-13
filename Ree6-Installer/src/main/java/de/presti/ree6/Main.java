@@ -11,6 +11,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 
 public class Main {
 
@@ -20,6 +21,13 @@ public class Main {
         if (getJavaVersion() < 17) {
             print("Looks like you are using a version below Java 17!\nRee6 has been developed base on Java 17 you wont be able to run it with " + getJavaVersion() + "!\nYou can still continue with installing everything!");
         }
+
+        if (Arrays.stream(args).anyMatch(c -> c.toLowerCase().equals("update"))) {
+            print("Updating Ree6...");
+            update();
+            return;
+        }
+
         if (Files.exists(Paths.get("config.yml"))) {
             print("We found a config.yml!\nDo you want to update Ree6 or fully configure it? (update/configure)");
 
