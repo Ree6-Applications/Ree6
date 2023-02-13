@@ -102,12 +102,12 @@ public class Main {
 
     public static void setupStepOne() throws InterruptedException, IOException {
         clear();
-        print("Welcome to the setup System of Ree6!\nLets start by configuration the Config!\nPlease select one of these Database Types: MariaDB, SQLLite, H2");
+        print("Welcome to the setup System of Ree6!\nLets start by configuration the Config!\nPlease select one of these Database Types: MariaDB, SQLite");
 
-        switch (getValueOrDefault("sqllite").toLowerCase()) {
+        switch (getValueOrDefault("sqlite").toLowerCase()) {
             case "mariadb" -> setupMariaDB();
 
-            case "sqllite" -> setupSQLLite();
+            case "sqlite" -> setupSQLite();
 
             default -> {
                 print("Unknown Database Typ!");
@@ -123,50 +123,54 @@ public class Main {
         clear();
         print("The Database configuration looks fine!\nLets continue with our API-Keys!\nKeys marked with * are required!");
 
-        print("Enter your Dagpi.xyz-Key (NONE)");
-        config.getConfiguration().set("dagpi.apitoken", getValueOrDefault(""));
-
-        print("Enter your Sentry DSN (NONE)");
-        config.getConfiguration().set("sentry.dsn", getValueOrDefault(""));
-
-        print("Enter your Spotify Client Id (NONE)");
-        config.getConfiguration().set("spotify.client.id", getValueOrDefault(""));
-
-        print("Enter your Spotify Client Secret (NONE)");
-        config.getConfiguration().set("spotify.client.secret", getValueOrDefaultHidden(""));
-
-        print("Enter your Twitch Client Id (NONE)");
-        config.getConfiguration().set("twitch.client.id", getValueOrDefault(""));
-
-        print("Enter your Twitch Client Secret (NONE)");
-        config.getConfiguration().set("twitch.client.secret", getValueOrDefaultHidden(""));
-
-        print("Enter your Twitter Consumer Id (NONE)");
-        config.getConfiguration().set("twitter.consumer.key", getValueOrDefault(""));
-
-        print("Enter your Twitter Consumer Secret (NONE)");
-        config.getConfiguration().set("twitter.consumer.secret", getValueOrDefaultHidden(""));
-
-        print("Enter your Twitter Access Id (NONE)");
-        config.getConfiguration().set("twitter.access.key", getValueOrDefault(""));
-
-        print("Enter your Twitter Access Secret (NONE)");
-        config.getConfiguration().set("twitter.access.secret", getValueOrDefaultHidden(""));
-
-        print("Enter your Reddit Client Id (NONE)");
-        config.getConfiguration().set("reddit.client.id", getValueOrDefault(""));
-
-        print("Enter your Reddit Client Secret (NONE)");
-        config.getConfiguration().set("reddit.client.secret", getValueOrDefaultHidden(""));
-
-        print("Enter your Instagram Account Name (NONE)");
-        config.getConfiguration().set("instagram.username", getValueOrDefault(""));
-
-        print("Enter your Instagram Account password (NONE)");
-        config.getConfiguration().set("instagram.password", getValueOrDefaultHidden(""));
-
         print("Enter your Discord Bot-Token (*)");
         config.getConfiguration().set("bot.tokens.release", getValueOrDefaultHidden(""));
+
+        print("Do you want to continue configuration not mandatory configs?\nEnter yes if you want to continue if not enter no!");
+
+        if (getValueOrDefault("no").equalsIgnoreCase("yes")) {
+            print("Enter your Dagpi.xyz-Key (NONE)");
+            config.getConfiguration().set("dagpi.apitoken", getValueOrDefault(""));
+
+            print("Enter your Sentry DSN (NONE)");
+            config.getConfiguration().set("sentry.dsn", getValueOrDefault(""));
+
+            print("Enter your Spotify Client Id (NONE)");
+            config.getConfiguration().set("spotify.client.id", getValueOrDefault(""));
+
+            print("Enter your Spotify Client Secret (NONE)");
+            config.getConfiguration().set("spotify.client.secret", getValueOrDefaultHidden(""));
+
+            print("Enter your Twitch Client Id (NONE)");
+            config.getConfiguration().set("twitch.client.id", getValueOrDefault(""));
+
+            print("Enter your Twitch Client Secret (NONE)");
+            config.getConfiguration().set("twitch.client.secret", getValueOrDefaultHidden(""));
+
+            print("Enter your Twitter Consumer Id (NONE)");
+            config.getConfiguration().set("twitter.consumer.key", getValueOrDefault(""));
+
+            print("Enter your Twitter Consumer Secret (NONE)");
+            config.getConfiguration().set("twitter.consumer.secret", getValueOrDefaultHidden(""));
+
+            print("Enter your Twitter Access Id (NONE)");
+            config.getConfiguration().set("twitter.access.key", getValueOrDefault(""));
+
+            print("Enter your Twitter Access Secret (NONE)");
+            config.getConfiguration().set("twitter.access.secret", getValueOrDefaultHidden(""));
+
+            print("Enter your Reddit Client Id (NONE)");
+            config.getConfiguration().set("reddit.client.id", getValueOrDefault(""));
+
+            print("Enter your Reddit Client Secret (NONE)");
+            config.getConfiguration().set("reddit.client.secret", getValueOrDefaultHidden(""));
+
+            print("Enter your Instagram Account Name (NONE)");
+            config.getConfiguration().set("instagram.username", getValueOrDefault(""));
+
+            print("Enter your Instagram Account password (NONE)");
+            config.getConfiguration().set("instagram.password", getValueOrDefaultHidden(""));
+        }
 
         config.getConfiguration().save();
 
@@ -227,7 +231,7 @@ public class Main {
         config.getConfiguration().save();
     }
 
-    public static void setupSQLLite() throws IOException {
+    public static void setupSQLite() throws IOException {
         clear();
         config.getConfiguration().set("hikari.misc.storage", "sqlite");
 
