@@ -6,7 +6,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6-Installer</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 
     <properties>
         <java.version>17</java.version>
