@@ -130,6 +130,7 @@ public class CustomOAuth2Credential extends Credential {
     /**
      * Constructor
      *
+     * @param discordId        Discord User Id
      * @param identityProvider Identity Provider
      * @param accessToken      Authentication Token
      * @param refreshToken     Refresh Token
@@ -152,7 +153,7 @@ public class CustomOAuth2Credential extends Credential {
     /**
      * Constructor.
      *
-     * @param discordId        the Discord ID of the Owner.
+     * @param discordId  the Discord ID of the Owner.
      * @param credential the original credential.
      */
     public CustomOAuth2Credential(long discordId, OAuth2Credential credential) {

@@ -117,6 +117,7 @@ public class MusicWorker {
      * @param trackUrl        the Track URL.
      * @param interactionHook a InteractionHook if it was an SlashCommand.
      * @param silent          if the Bot shouldn't send a Message.
+     * @param force           if the song should be forced or not.
      */
     public void loadAndPlay(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent, boolean force) {
         loadAndPlay(channel.asGuildMessageChannel().getGuild(), channel, audioChannel, trackUrl, interactionHook, silent, force);
@@ -131,6 +132,7 @@ public class MusicWorker {
      * @param trackUrl        the Track URL.
      * @param interactionHook a InteractionHook if it was an SlashCommand.
      * @param silent          if the Bot shouldn't send a Message.
+     * @param force           if the song should be forced or not.
      */
     public void loadAndPlay(final Guild guild, MessageChannelUnion channel, AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent, boolean force) {
         GuildMusicManager musicManager = getGuildAudioPlayer(guild);

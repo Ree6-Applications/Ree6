@@ -97,7 +97,7 @@ public class LevelRole implements ICommand {
     }
 
     /**
-     * @return
+     * @return the command data
      */
     @Override
     public CommandData getCommandData() {
@@ -115,7 +115,7 @@ public class LevelRole implements ICommand {
     }
 
     /**
-     * @return
+     * @return the aliases
      */
     @Override
     public String[] getAlias() {
