@@ -1,7 +1,7 @@
 language:
   name: "Croatian"
   locale: "hr"
-  version: "2.2.5"
+  version: "2.3.0"
   author: "Huza"
 logging:
   banned: ":airplane_departure: %s **banned.**"
@@ -218,18 +218,23 @@ message:
       dateError: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
   instagramNotifier:
     added: "A Instagram Notifier has been created for the User %s!"
+    list: "Here are all Instagram Notifier that have been setup:\n```%s```"
     removed: "A Instagram Notifier has been removed from the User %s!"
   redditNotifier:
     added: "A Reddit Notifier has been created for the Subreddit %s!"
+    list: "Here are all Reddit Notifier that have been setup:\n```%s```"
     removed: "A Reddit Notifier has been removed from the Subreddit %s!"
   twitchNotifier:
     added: "A Twitch-Stream Notifier has been created for the Channel %s!"
+    list: "Here are all Twitch Notifier that have been setup:\n```%s```"
     removed: "A Twitch-Stream Notifier has been removed from the Channel %s!"
   twitterNotifier:
     added: "A Twitter Notifier has been created for the User %s!"
+    list: "Here are all Twitter Notifier that have been setup:\n```%s```"
     removed: "A Twitter Notifier has been removed from the User %s!"
   youtubeNotifier:
     added: "A Youtube-Video Notifier has been created for the Channel %s!"
+    list: "Here are all YouTube Notifier that have been setup:\n```%s```"
     removed: "A Youtube-Video Notifier has been removed from the Channel %s!"
   anime:
     searching: "Searching for Anime..."
@@ -478,6 +483,17 @@ message:
     added: "We successfully added a Level-Role with the Role **%s** and the Level **%s**"
     removed: "We successfully removed the Level-Role with the Role **%s** and the Level **%s**"
     list: "In the files above message you can find a list of all Level-Roles!"
+  warn:
+    punishment:
+      list: "Here is a list of all punishments for this Guild:\n```%s```"
+      deleted: "The Punishment with the ID %s has been deleted."
+      notFound: "There is no punishment with the ID %s for this Guild."
+    success: "You successfully warned %s!\nThe User now has %s warnings!"
+    hierarchySelfError: "You can't warn someone with a higher or equal role than you!"
+    hierarchyBotError: "I can't warn someone with a higher or equal role than me!"
+  infractions:
+    success: "The User %s has %s infractions!"
+    empty: "The User %s has no infractions!"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
@@ -568,6 +584,8 @@ command:
     tickets: "Create a Ticket System to communicate with your community!"
     news: "Configure the receiving of News from Ree6!"
     levelrole: "Manage Auto-Roles for Voice or Text Levels!"
+    warn: "Warn an User and let them be punished automatically."
+    infractions: "Show all the warnings a user has."
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
