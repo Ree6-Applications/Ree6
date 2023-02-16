@@ -1,0 +1,48 @@
+package de.presti.ree6.commands.impl.info;
+
+import de.presti.ree6.commands.Category;
+import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.interfaces.Command;
+import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.Warning;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+
+import java.util.Map;
+
+@Command(name = "infractions", description = "command.description.infractions", category = Category.INFO)
+public class Infractions implements ICommand {
+    @Override
+    public void onPerform(CommandEvent commandEvent) {
+        if (!commandEvent.isSlashCommand()) {
+            commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
+            return;
+        }
+
+        OptionMapping userOption = commandEvent.getSlashCommandInteractionEvent().getOption("user");
+        Member member = userOption.getAsMember();
+
+        Warning warning = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "SELECT * FROM Warning WHERE guildId = :gid AND userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong()));
+
+        if (warning != null) {
+            commandEvent.reply(commandEvent.getResource("message.infractions.success", warning.getWarnings()));
+        } else {
+            commandEvent.reply(commandEvent.getResource("message.infractions.empty"));
+        }
+    }
+
+    @Override
+    public CommandData getCommandData() {
+        return new CommandDataImpl("infractions", "command.description.infractions")
+                .addOption(OptionType.USER, "user", "The user you want to check up upon.", true);
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[0];
+    }
+}
