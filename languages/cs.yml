@@ -1,7 +1,7 @@
 language:
   name: "Czech"
   locale: "cs"
-  version: "2.2.5"
+  version: "2.3.0"
   author: "Pogy__"
 logging:
   banned: ":airplane_departure: %s **zablokován.**"
@@ -218,18 +218,23 @@ message:
       dateError: "Použijte platné datum!\nVezměte prosím na vědomí, že používáme formát dd.MM.yyyy (day.month.year)!"
   instagramNotifier:
     added: "Bylo vytvořeno oznámení Instagram pro uživatele %s!"
+    list: "Here are all Instagram Notifier that have been setup:\n```%s```"
     removed: "Notifikátor Instagram byl odstraněn od uživatele %s!"
   redditNotifier:
     added: "Pro Subreddit %s byl vytvořen Reddit notifikátor!"
+    list: "Here are all Reddit Notifier that have been setup:\n```%s```"
     removed: "Reddit oznámení bylo odebráno ze Subredditu %s!"
   twitchNotifier:
     added: "Pro kanál %s byl vytvořen notifikátor Twitch-Stream!"
+    list: "Here are all Twitch Notifier that have been setup:\n```%s```"
     removed: "Oznamovatel Twitch-Stream byl odstraněn z kanálu %s!"
   twitterNotifier:
     added: "Pro uživatele %s byl vytvořen Twitter notifikace!"
+    list: "Here are all Twitter Notifier that have been setup:\n```%s```"
     removed: "Twitter oznámení bylo odebráno uživateli %s!"
   youtubeNotifier:
     added: "Pro kanál %s byl vytvořen Youtube-Video notifikátor!"
+    list: "Here are all YouTube Notifier that have been setup:\n```%s```"
     removed: "Youtube-Video notifikace byla odstraněna z kanálu %s!"
   anime:
     searching: "Vyhledávání anime..."
@@ -478,6 +483,17 @@ message:
     added: "Úspěšně jsme přidali Levelovou roli s rolí **%s** a úrovní **%s**"
     removed: "Úspěšně jsme odstranili Levelovou roli s rolí **%s** a úrovní **%s**"
     list: "V souborech výše naleznete seznam všech Levelových rolí!"
+  warn:
+    punishment:
+      list: "Here is a list of all punishments for this Guild:\n```%s```"
+      deleted: "The Punishment with the ID %s has been deleted."
+      notFound: "There is no punishment with the ID %s for this Guild."
+    success: "You successfully warned %s!\nThe User now has %s warnings!"
+    hierarchySelfError: "You can't warn someone with a higher or equal role than you!"
+    hierarchyBotError: "I can't warn someone with a higher or equal role than me!"
+  infractions:
+    success: "The User %s has %s infractions!"
+    empty: "The User %s has no infractions!"
 game:
   description:
     blackjack: "Hrajte Blackjack se svými přáteli!"
@@ -568,6 +584,8 @@ command:
     tickets: "Vytvořte systém vstupenek pro komunikaci s vaší komunitou!"
     news: "Nakonfigurujte příjem zpráv od Ree6!"
     levelrole: "Spravujte automatické role pro hlasové nebo textové úrovně!"
+    warn: "Warn an User and let them be punished automatically."
+    infractions: "Show all the warnings a user has."
 category:
   info: "Slouží ke shromažďování informací nebo poskytování informací."
   moderation: "Nástroje pro moderování, které vám mohou pomoci spravovat uživatele nebo zabránit porušení pravidel na serveru."
