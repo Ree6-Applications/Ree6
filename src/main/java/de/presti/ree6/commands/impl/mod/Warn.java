@@ -124,12 +124,13 @@ public class Warn implements ICommand {
                     }
 
                     case "delete" -> {
-                        Punishments punishment = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "SELECT * FROM Punishments WHERE guildId = :gid AND id = :id", Map.of("gid", commandEvent.getGuild().getIdLong(), "id", idMapping.getAsInt()));
+                        int id = idMapping.getAsInt();
+                        Punishments punishment = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "SELECT * FROM Punishments WHERE guildId = :gid AND id = :id", Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id));
                         if (punishment != null) {
                             SQLSession.getSqlConnector().getSqlWorker().deleteEntity(punishment);
-                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.deleted"));
+                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.deleted", id));
                         } else {
-                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.notFound"));
+                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.notFound", id));
                         }
                     }
                 }
@@ -149,7 +150,7 @@ public class Warn implements ICommand {
 
                     SQLSession.getSqlConnector().getSqlWorker().updateEntity(warning);
 
-                    commandEvent.reply(commandEvent.getResource("message.warn.success", warnings));
+                    commandEvent.reply(commandEvent.getResource("message.warn.success", userMapping.getAsMember().getAsMention(), warnings));
                     Punishments punishment = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "SELECT * FROM Punishments WHERE guildId = :gid AND warnings = :amount", Map.of("gid", commandEvent.getGuild().getIdLong(), "amount", warnings));
                     if (punishment != null) {
                         switch (punishment.getAction()) {
