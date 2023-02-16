@@ -218,23 +218,23 @@ message:
       dateError: "Bitte nutze das richtige Datums format! (day.month.year)!"
   instagramNotifier:
     added: "Ein Instagram Notifier wurde für %s erstellt!"
-    list: "Here are all Instagram Notifier that have been setup:\n```%s```"
+    list: "Hier ist eine Liste mit allen Instagram Notifier:\n```%s```"
     removed: "Ein Instagram Notifier für %s wurde entfernt!"
   redditNotifier:
     added: "Ein Reddit Notifier wurde für %s erstellt!"
-    list: "Here are all Reddit Notifier that have been setup:\n```%s```"
+    list: "Hier ist eine Liste mit allen Reddit Notifier:\n```%s```"
     removed: "Ein Reddit Notifier für %s wurde entfernt!"
   twitchNotifier:
     added: "Ein Twitch Notifier wurde für %s erstellt!"
-    list: "Here are all Twitch Notifier that have been setup:\n```%s```"
+    list: "Hier ist eine Liste mit allen Twitch Notifier:\n```%s```"
     removed: "Ein Twitch Notifier für %s wurde entfernt!"
   twitterNotifier:
     added: "Ein Twitter Notifier wurde für %s erstellt!"
-    list: "Here are all Twitter Notifier that have been setup:\n```%s```"
+    list: "Hier ist eine Liste mit allen Twitter Notifier:\n```%s```"
     removed: "Ein Twitter Notifier für %s wurde entfernt!"
   youtubeNotifier:
     added: "Ein YouTube Notifier wurde für %s erstellt!"
-    list: "Here are all YouTube Notifier that have been setup:\n```%s```"
+    list: "Hier ist eine Liste mit allen YouTube Notifier:\n```%s```"
     removed: "Ein YouTube Notifier für %s wurde entfernt!"
   anime:
     searching: "Suche nach den Anime..."
@@ -485,15 +485,15 @@ message:
     list: "In den obigen Dateien finden Sie eine Liste aller Level-Rollen!"
   warn:
     punishment:
-      list: "Here is a list of all punishments for this Guild:\n```%s```"
-      deleted: "The Punishment with the ID %s has been deleted."
-      notFound: "There is no punishment with the ID %s for this Guild."
-    success: "You successfully warned %s!\nThe User now has %s warnings!"
-    hierarchySelfError: "You can't warn someone with a higher or equal role than you!"
-    hierarchyBotError: "I can't warn someone with a higher or equal role than me!"
+      list: "Hier ist eine Liste mit allen Bestrafungen für diesen Server:\n```%s```"
+      deleted: "Die Bestrafung mit der ID %s wurde gelöscht!"
+      notFound: "Die Bestrafung mit der ID %s konnte nicht gefunden werden."
+    success: "%s wurde erfolgreich gewarnt!\nDieser Nutzer hat nun %s Warnungen!"
+    hierarchySelfError: "Du kannst niemand mit einer höheren oder gleichen Rolle wie du verwarnen!"
+    hierarchyBotError: "Ich kann niemand mit einer höheren oder gleichen Rolle warnen!"
   infractions:
-    success: "The User %s has %s infractions!"
-    empty: "The User %s has no infractions!"
+    success: "Der Nutzer %s hat %s Verwarnungen!"
+    empty: "Der Nutzer %s hat keine Verwarnungen!"
 game:
   description:
     blackjack: "Spiele Blackjack mit deinen Freunden!"
@@ -584,8 +584,8 @@ command:
     tickets: "Erstellen Sie ein Ticket-System, um mit Ihrer Community zu kommunizieren!"
     news: "Konfigurieren Sie den Empfang von Nachrichten von Ree6!"
     levelrole: "Konfiguriere Automatische Rollen für Text und Voice Level."
-    warn: "Warn an User and let them be punished automatically."
-    infractions: "Show all the warnings a user has."
+    warn: "Warne einen Nutzer und lass ihn automatisch bestraft werden."
+    infractions: "Zeige alle Verwarnungen eines Nutzers an."
 category:
   info: "Wird verwendet, um Informationen zu sammeln oder Informationen zu geben."
   moderation: "Moderations-Tools, die Ihnen beim Verwalten von Benutzern helfen oder das Missachten von Regeln auf dem Server verhindern können."
