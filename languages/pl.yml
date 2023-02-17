@@ -218,23 +218,23 @@ message:
       dateError: "Proszę użyć poprawnej daty!\nZauważ, że używamy formatu dd.mm.rrrr (dzień.miesiąc.rok)!"
   instagramNotifier:
     added: "Powiadomienie o Instagramie zostało utworzone dla użytkownika %s!"
-    list: "Here are all Instagram Notifier that have been setup:\n```%s```"
+    list: "Tutaj są wszystkie powiadomienia o Instagram'u, które zostały skonfigurowane:\n```%s```"
     removed: "Powiadomienie o Instagramie zostało usunięte dla użytkownika %s!"
   redditNotifier:
     added: "Powiadomienie o Reddicie zostało utworzone dla subreddit'a %s!"
-    list: "Here are all Reddit Notifier that have been setup:\n```%s```"
+    list: "Tutaj są wszystkie powiadomienia o Reddicie, które zostały skonfigurowane:\n```%s```"
     removed: "Powiadomienie o Reddicie zostało usunięte dla subreddit'a %s!"
   twitchNotifier:
     added: "Powiadomienie o Twitch stream'ie zostało utworzone dla kanału %s!"
-    list: "Here are all Twitch Notifier that have been setup:\n```%s```"
+    list: "Tutaj są wszystkie powiadomienia o Twitchie, które zostały skonfigurowane:\n```%s```"
     removed: "Powiadomienie o Twitch stream'ie zostało usunięte dla kanału %s!"
   twitterNotifier:
     added: "Powiadomienie o Twitterze zostało utworzone dla użytkownika %s!"
-    list: "Here are all Twitter Notifier that have been setup:\n```%s```"
+    list: "Tutaj są wszystkie powiadomienia o Twitterze, które zostały skonfigurowane:\n```%s```"
     removed: "Powiadomienie o Twitterze zostało usunięte dla użytkownika %s!"
   youtubeNotifier:
     added: "Powiadomienie o wideo na YouTube'ie zostało utworzone dla kanału %s!"
-    list: "Here are all YouTube Notifier that have been setup:\n```%s```"
+    list: "Tutaj są wszystkie powiadomienia o YouTubie, które zostały skonfigurowane:\n```%s```"
     removed: "Powiadomienie o wideo na YouTube'ie zostało usunięte dla kanału %s!"
   anime:
     searching: "Wyszukiwanie Anime..."
@@ -485,15 +485,15 @@ message:
     list: "W powyższej wiadomości możesz znaleźć listę wszystkich plik z wszystkimi rolami poziomu!"
   warn:
     punishment:
-      list: "Here is a list of all punishments for this Guild:\n```%s```"
-      deleted: "The Punishment with the ID %s has been deleted."
-      notFound: "There is no punishment with the ID %s for this Guild."
-    success: "You successfully warned %s!\nThe User now has %s warnings!"
-    hierarchySelfError: "You can't warn someone with a higher or equal role than you!"
-    hierarchyBotError: "I can't warn someone with a higher or equal role than me!"
+      list: "Oto lista wszystkich kar dla tej Gildii:\n```%s ``` `"
+      deleted: "Kara o ID %s została usunięta."
+      notFound: "Nie ma kary o ID %s dla tej Gildii."
+    success: "Udało Ci się ostrzec %s!\nUżytkownik ma teraz %s ostrzeżeń!"
+    hierarchySelfError: "Nie możesz ostrzec kogoś o wyższej lub równej roli w porównaniu z tobą!"
+    hierarchyBotError: "Nie mogę ostrzec kogoś o wyższej lub równej roli w porównaniu ze mną!"
   infractions:
-    success: "The User %s has %s infractions!"
-    empty: "The User %s has no infractions!"
+    success: "Użytkownik %s ma %s infrakcji!"
+    empty: "Użytkownik %s nie ma żadnych infrakcji!"
 game:
   description:
     blackjack: "Zagraj w Blackjack z przyjaciółmi!"
@@ -584,8 +584,8 @@ command:
     tickets: "Stwórz system zgłoszeń, aby komunikować się ze swoją społecznością!"
     news: "Skonfiguruj otrzymywanie aktualności od Ree6!"
     levelrole: "Zarządzaj automatycznymi rolami dla poziomów głosu lub tekstu!"
-    warn: "Warn an User and let them be punished automatically."
-    infractions: "Show all the warnings a user has."
+    warn: "Ostrzegaj użytkownika i pozwól im być karani automatycznie."
+    infractions: "Pokaż wszystkie ostrzeżenia użytkownika."
 category:
   info: "Wykorzystywane do gromadzenia informacji lub przekazywania informacji."
   moderation: "Narzędzia moderacyjne, które mogą pomóc ci zarządzać użytkownikami lub zapobiec łamania zasad na serwerze."
