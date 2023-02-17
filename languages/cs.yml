@@ -485,6 +485,7 @@ message:
     list: "V souborech výše naleznete seznam všech Levelových rolí!"
   warn:
     punishment:
+      created: "You successfully created a punishment!"
       list: "Zde je seznam všech trestů pro tento server:\n```%s```"
       deleted: "Trest s ID %s byl odstraněn."
       notFound: "Pro tento server neexistuje žádný trest s ID %s."
