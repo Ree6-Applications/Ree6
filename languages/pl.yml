@@ -485,6 +485,7 @@ message:
     list: "W powyższej wiadomości możesz znaleźć listę wszystkich plik z wszystkimi rolami poziomu!"
   warn:
     punishment:
+      created: "You successfully created a punishment!"
       list: "Oto lista wszystkich kar dla tej Gildii:\n```%s ``` `"
       deleted: "Kara o ID %s została usunięta."
       notFound: "Nie ma kary o ID %s dla tej Gildii."
