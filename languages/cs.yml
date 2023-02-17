@@ -218,23 +218,23 @@ message:
       dateError: "Použijte platné datum!\nVezměte prosím na vědomí, že používáme formát dd.MM.yyyy (day.month.year)!"
   instagramNotifier:
     added: "Bylo vytvořeno oznámení Instagram pro uživatele %s!"
-    list: "Here are all Instagram Notifier that have been setup:\n```%s```"
+    list: "Zde jsou všechny Instagram oznámení které byly nastaveny:\n```%s```"
     removed: "Notifikátor Instagram byl odstraněn od uživatele %s!"
   redditNotifier:
     added: "Pro Subreddit %s byl vytvořen Reddit notifikátor!"
-    list: "Here are all Reddit Notifier that have been setup:\n```%s```"
+    list: "Zde jsou všechny Reddit notifikace, které byly nastaveny:\n```%s```"
     removed: "Reddit oznámení bylo odebráno ze Subredditu %s!"
   twitchNotifier:
     added: "Pro kanál %s byl vytvořen notifikátor Twitch-Stream!"
-    list: "Here are all Twitch Notifier that have been setup:\n```%s```"
+    list: "Zde jsou všechny Twitch notifikace, které byly nastaveny:\n```%s```"
     removed: "Oznamovatel Twitch-Stream byl odstraněn z kanálu %s!"
   twitterNotifier:
     added: "Pro uživatele %s byl vytvořen Twitter notifikace!"
-    list: "Here are all Twitter Notifier that have been setup:\n```%s```"
+    list: "Zde jsou všechny Twitter notifikace, které byly nastaveny:\n```%s```"
     removed: "Twitter oznámení bylo odebráno uživateli %s!"
   youtubeNotifier:
     added: "Pro kanál %s byl vytvořen Youtube-Video notifikátor!"
-    list: "Here are all YouTube Notifier that have been setup:\n```%s```"
+    list: "Zde jsou všechny YouTube notifikace, které byly nastaveny:\n```%s```"
     removed: "Youtube-Video notifikace byla odstraněna z kanálu %s!"
   anime:
     searching: "Vyhledávání anime..."
@@ -485,15 +485,15 @@ message:
     list: "V souborech výše naleznete seznam všech Levelových rolí!"
   warn:
     punishment:
-      list: "Here is a list of all punishments for this Guild:\n```%s```"
-      deleted: "The Punishment with the ID %s has been deleted."
-      notFound: "There is no punishment with the ID %s for this Guild."
-    success: "You successfully warned %s!\nThe User now has %s warnings!"
-    hierarchySelfError: "You can't warn someone with a higher or equal role than you!"
-    hierarchyBotError: "I can't warn someone with a higher or equal role than me!"
+      list: "Zde je seznam všech trestů pro tento server:\n```%s```"
+      deleted: "Trest s ID %s byl odstraněn."
+      notFound: "Pro tento server neexistuje žádný trest s ID %s."
+    success: "Úspěšně jste varovali %s!\nUživatel má nyní %s varování!"
+    hierarchySelfError: "Nemůžete varovat někoho, kdo má vyšší nebo stejnou roli!"
+    hierarchyBotError: "Nemohu varovat někoho s vyšší nebo stejnou rolí než já!"
   infractions:
-    success: "The User %s has %s infractions!"
-    empty: "The User %s has no infractions!"
+    success: "Uživatel %s má %s přestupků!"
+    empty: "Uživatel %s nema žádné přestupky!"
 game:
   description:
     blackjack: "Hrajte Blackjack se svými přáteli!"
@@ -584,8 +584,8 @@ command:
     tickets: "Vytvořte systém vstupenek pro komunikaci s vaší komunitou!"
     news: "Nakonfigurujte příjem zpráv od Ree6!"
     levelrole: "Spravujte automatické role pro hlasové nebo textové úrovně!"
-    warn: "Warn an User and let them be punished automatically."
-    infractions: "Show all the warnings a user has."
+    warn: "Upozornit uživatele a nechat je potrestat automaticky."
+    infractions: "Zobrazit všechna varování uživatele."
 category:
   info: "Slouží ke shromažďování informací nebo poskytování informací."
   moderation: "Nástroje pro moderování, které vám mohou pomoci spravovat uživatele nebo zabránit porušení pravidel na serveru."
