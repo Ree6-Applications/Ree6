@@ -485,6 +485,7 @@ message:
     list: "In the files above message you can find a list of all Level-Roles!"
   warn:
     punishment:
+      created: "You successfully created a punishment!"
       list: "Here is a list of all punishments for this Guild:\n```%s```"
       deleted: "The Punishment with the ID %s has been deleted."
       notFound: "There is no punishment with the ID %s for this Guild."
