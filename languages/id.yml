@@ -218,23 +218,23 @@ message:
       dateError: "Harap gunakan tanggal yang valid!\nPerhatikan bahwa kami menggunakan format dd.MM.yyyy (day.month.year)!"
   instagramNotifier:
     added: "Pemberitahuan Instagram telah dibuat untuk %s!"
-    list: "Here are all Instagram Notifier that have been setup:\n```%s```"
+    list: "Dibawah ini daftar Notifier Instagram yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Instagram dari %s telah dihapus!"
   redditNotifier:
     added: "Pemberitahuan Reddit telah dibuat untuk Subreddit %s!"
-    list: "Here are all Reddit Notifier that have been setup:\n```%s```"
+    list: "Dibawah ini daftar Notifier Reddit yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Reddit untuk Subreddit %s telah dihapus!"
   twitchNotifier:
     added: "Pemberitahuan Siaran Twitch telah dibuat untuk Channel %s!"
-    list: "Here are all Twitch Notifier that have been setup:\n```%s```"
+    list: "Dibawah ini daftar Notifier Twitch yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Siaran Twitch untuk Channel %s telah dihapus!"
   twitterNotifier:
     added: "Pemberitahuan Twitter telah dibuat untuk User %s!"
-    list: "Here are all Twitter Notifier that have been setup:\n```%s```"
+    list: "Dibawah ini daftar Notifier Twitter yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Twitter untuk User %s telah dihapus!"
   youtubeNotifier:
     added: "Pemberitahuan Video Youtube telah dibuat untuk Channel %s!"
-    list: "Here are all YouTube Notifier that have been setup:\n```%s```"
+    list: "Dibawah ini daftar Notifier Youtube yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Video Youtube untuk Channel %s telah dihapus!"
   anime:
     searching: "Mencari Anime..."
@@ -485,15 +485,15 @@ message:
     list: "Di file diatas pesan, kamu bisa mencari daftar dari semua Level-Roles!"
   warn:
     punishment:
-      list: "Here is a list of all punishments for this Guild:\n```%s```"
-      deleted: "The Punishment with the ID %s has been deleted."
-      notFound: "There is no punishment with the ID %s for this Guild."
-    success: "You successfully warned %s!\nThe User now has %s warnings!"
-    hierarchySelfError: "You can't warn someone with a higher or equal role than you!"
-    hierarchyBotError: "I can't warn someone with a higher or equal role than me!"
+      list: "Dibawah ini daftar hukuman di Guild ini:\n```%s```"
+      deleted: "Hukuman dengan ID %s telah dihapus."
+      notFound: "Tidak ada hukuman dengan ID %s di Guild ini."
+    success: "Kamu sukses memperingati %s!\nUser %s sekarang telah diperingati!"
+    hierarchySelfError: "Kamu tidak bisa memperingati seseorang yang mempunyai role setara atau lebih tinggi dari kamu!"
+    hierarchyBotError: "Aku tidak bisa memperingati seseorang yang mempunyai role setara atau lebih tinggi dari aku!"
   infractions:
-    success: "The User %s has %s infractions!"
-    empty: "The User %s has no infractions!"
+    success: "User %s memiliki %s pelanggaran!"
+    empty: "User %s tidak memiliki pelanggaran!"
 game:
   description:
     blackjack: "Mainkan Blackjack dengan temanmu!"
@@ -584,8 +584,8 @@ command:
     tickets: "Buat sebuah sistem tiket untuk berkomunikasi dengan komunitas mu!"
     news: "Konfigurasi berita dari Ree6!"
     levelrole: "Atur AutoRoles untuk Voice atau Text levels!"
-    warn: "Warn an User and let them be punished automatically."
-    infractions: "Show all the warnings a user has."
+    warn: "Peringati user dan biarkan dia dihukum otomatis."
+    infractions: "Tampilkan semua peringatan yang dimiliki user."
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"
