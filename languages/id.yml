@@ -485,6 +485,7 @@ message:
     list: "Di file diatas pesan, kamu bisa mencari daftar dari semua Level-Roles!"
   warn:
     punishment:
+      created: "You successfully created a punishment!"
       list: "Dibawah ini daftar hukuman di Guild ini:\n```%s```"
       deleted: "Hukuman dengan ID %s telah dihapus."
       notFound: "Tidak ada hukuman dengan ID %s di Guild ini."
