@@ -485,7 +485,7 @@ message:
     list: "In den obigen Dateien finden Sie eine Liste aller Level-Rollen!"
   warn:
     punishment:
-      created: "You successfully created a punishment!"
+      created: "Eine Bestrafung wurde erfolgreich hinzugefügt!"
       list: "Hier ist eine Liste mit allen Bestrafungen für diesen Server:\n```%s```"
       deleted: "Die Bestrafung mit der ID %s wurde gelöscht!"
       notFound: "Die Bestrafung mit der ID %s konnte nicht gefunden werden."
