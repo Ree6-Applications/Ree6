@@ -31,12 +31,7 @@ public class Import implements ICommand {
             return;
         }
 
-        if (commandEvent.isSlashCommand()) {
-            OptionMapping optionMapping = commandEvent.getSlashCommandInteractionEvent().getOption("bot");
-            commandEvent.getArguments()[0] = optionMapping.getAsString();
-        }
-
-        if (commandEvent.getArguments().length == 1) {
+        if (commandEvent.getArguments(true).length == 1) {
             switch (commandEvent.getArguments()[0]) {
                 case "mee6" -> importFromMee6(commandEvent);
 
