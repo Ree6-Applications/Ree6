@@ -215,7 +215,8 @@ public class Warn implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("warn", "command.description.warn")
-                .addOption(OptionType.USER, "user", "The user that should be warned.", true)
+                .addSubcommands(new SubcommandData("target", "Warn a specific player!")
+                        .addOption(OptionType.USER, "user", "The user that should be warned.", true))
                 .addSubcommandGroups(new SubcommandGroupData("punishments", "Set up the punishments for these warnings.")
                         .addSubcommands(new SubcommandData("timeout", "A Timeout punishment.")
                                 .addOption(OptionType.INTEGER, "warnings", "The needed warning amounts.", true)
