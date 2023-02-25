@@ -587,6 +587,7 @@ command:
     levelrole: "Atur AutoRoles untuk Voice atau Text levels!"
     warn: "Peringati user dan biarkan dia dihukum otomatis."
     infractions: "Tampilkan semua peringatan yang dimiliki user."
+    musicquiz: "Play with your friends a game of Music Quiz!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"
