@@ -587,7 +587,7 @@ command:
     levelrole: "Zarządzaj automatycznymi rolami dla poziomów głosu lub tekstu!"
     warn: "Ostrzegaj użytkownika i pozwól im być karani automatycznie."
     infractions: "Pokaż wszystkie ostrzeżenia użytkownika."
-    musicquiz: "Play with your friends a game of Music Quiz!"
+    musicquiz: "Zagraj z przyjaciółmi grę w Quiz!"
 category:
   info: "Wykorzystywane do gromadzenia informacji lub przekazywania informacji."
   moderation: "Narzędzia moderacyjne, które mogą pomóc ci zarządzać użytkownikami lub zapobiec łamania zasad na serwerze."
