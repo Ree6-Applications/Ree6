@@ -587,6 +587,7 @@ command:
     levelrole: "Spravujte automatické role pro hlasové nebo textové úrovně!"
     warn: "Upozornit uživatele a nechat je potrestat automaticky."
     infractions: "Zobrazit všechna varování uživatele."
+    musicquiz: "Play with your friends a game of Music Quiz!"
 category:
   info: "Slouží ke shromažďování informací nebo poskytování informací."
   moderation: "Nástroje pro moderování, které vám mohou pomoci spravovat uživatele nebo zabránit porušení pravidel na serveru."
