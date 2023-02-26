@@ -90,6 +90,7 @@ public class MenuEvents extends ListenerAdapter {
                         }
 
                         category.createTextChannel("ticket-" + event.getUser().getName())
+                                .setTopic(event.getUser().getId())
                                 .syncPermissionOverrides()
                                 .addPermissionOverride(event.getMember(), List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS), List.of())
                                 .queue(channel -> {
@@ -131,8 +132,15 @@ public class MenuEvents extends ListenerAdapter {
                                 .append(" ")
                                 .append("->")
                                 .append(" ")
-                                .append(message.getContentRaw())
-                                .append("\n");
+                                .append(message.getContentRaw());
+
+                        if (!message.getAttachments().isEmpty()) {
+                            for (Message.Attachment attachment : message.getAttachments()) {
+                                stringBuilder.append("\n").append(attachment.getUrl());
+                            }
+                        }
+
+                        stringBuilder.append("\n");
                     }
 
                     stringBuilder.append("\n").append("Closed by").append(" ").append(event.getUser().getAsTag());
