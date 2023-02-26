@@ -1,5 +1,7 @@
 package de.presti.ree6.events;
 
+import club.minnced.discord.webhook.send.WebhookEmbed;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.audio.AudioPlayerReceiveHandler;
 import de.presti.ree6.bot.BotWorker;
@@ -10,10 +12,12 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.ReactionRole;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
+import de.presti.ree6.sql.entities.Tickets;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.utils.data.ArrayUtil;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.data.ImageCreationUtility;
 import de.presti.ree6.utils.others.*;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +26,8 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -42,7 +48,12 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -176,6 +187,64 @@ public class OtherEvents extends ListenerAdapter {
                     }
                 }
             });
+        }
+
+        Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GID=:gid", Map.of("gid", event.getGuild().getIdLong()));
+        if (tickets != null) {
+            Category category = event.getGuild().getCategoryById(tickets.getTicketCategory());
+
+            if (category != null) {
+                List<TextChannel> channels = category.getTextChannels().stream().filter(c -> c.getTopic() != null && c.getTopic().equalsIgnoreCase(event.getUser().getId())).toList();
+                if (!channels.isEmpty()) {
+                    TextChannel channel = channels.get(0);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append("Ree6 Ticket transcript")
+                            .append(" ")
+                            .append(ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)))
+                            .append("\n")
+                            .append("\n");
+
+
+                    for (Message message : channel.getIterableHistory().reverse()) {
+                        stringBuilder
+                                .append("[")
+                                .append(message.getTimeCreated().toZonedDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
+                                .append("]")
+                                .append(" ")
+                                .append(message.getAuthor().getAsTag())
+                                .append(" ")
+                                .append("->")
+                                .append(" ")
+                                .append(message.getContentRaw());
+
+                        if (!message.getAttachments().isEmpty()) {
+                            for (Message.Attachment attachment : message.getAttachments()) {
+                                stringBuilder.append("\n").append(attachment.getUrl());
+                            }
+                        }
+
+                        stringBuilder.append("\n");
+                    }
+
+                    stringBuilder.append("\n").append("Closed by").append(" ").append(event.getUser().getAsTag());
+
+                    WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+                    webhookMessageBuilder.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
+                    webhookMessageBuilder.setUsername("Ree6-Tickets");
+
+                    WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                    webhookEmbedBuilder.setDescription("Here is the transcript of the ticket " + tickets.getTicketCount() + "!");
+                    webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
+                    webhookEmbedBuilder.setColor(BotWorker.randomEmbedColor().getRGB());
+
+                    webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+                    webhookMessageBuilder.addFile(tickets.getTicketCount() + "_transcript.txt", stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
+
+                    WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), tickets.getLogChannelId(), tickets.getLogChannelWebhookToken(), false);
+                    channel.delete().queue();
+                }
+            }
         }
     }
 
