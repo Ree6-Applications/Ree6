@@ -189,7 +189,7 @@ public class OtherEvents extends ListenerAdapter {
             });
         }
 
-        Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GID=:gid", Map.of("gid", event.getGuild().getIdLong()));
+        Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GUILDID=:gid", Map.of("gid", event.getGuild().getIdLong()));
         if (tickets != null) {
             Category category = event.getGuild().getCategoryById(tickets.getTicketCategory());
 

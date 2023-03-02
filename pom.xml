@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>2.3.2</version>
+    <version>2.3.5</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -31,6 +31,11 @@
             <url>https://jcenter.bintray.com</url>
         </repository>
         <repository>
+            <id>dv8tion</id>
+            <name>m2-dv8tion</name>
+            <url>https://m2.dv8tion.net/releases</url>
+        </repository>
+        <repository>
             <id>twitter4j.org</id>
             <name>twitter4j.org Repository</name>
             <url>https://twitter4j.org/maven2</url>
@@ -40,19 +45,14 @@
             <name>Maven Central</name>
             <url>https://repo.maven.apache.org/maven2/</url>
         </repository>
-        <repository>
-            <id>dv8tion</id>
-            <name>m2-dv8tion</name>
-            <url>https://m2.dv8tion.net/releases</url>
-        </repository>
     </repositories>
 
     <dependencies>
         <!-- Discord -->
         <dependency>
-            <groupId>com.github.DV8FromTheWorld</groupId>
+            <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>v5.0.0-beta.4</version>
+            <version>5.0.0-beta.5</version>
         </dependency>
         <dependency>
             <groupId>com.github.walkyst</groupId>
