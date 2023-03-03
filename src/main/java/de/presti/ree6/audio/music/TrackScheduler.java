@@ -224,7 +224,7 @@ public class TrackScheduler extends AudioEventAdapter {
      */
     public void nextTrack(MessageChannelUnion textChannel, int position, boolean silent) {
         if (loop) {
-            player.startTrack(player.getPlayingTrack(), true);
+            player.startTrack(player.getPlayingTrack().makeClone(), true);
             return;
         }
 
@@ -232,11 +232,16 @@ public class TrackScheduler extends AudioEventAdapter {
 
         AudioTrack track = null;
 
-        for (int currentPosition = 0; currentPosition < position; currentPosition++) {
-            track = queue.poll();
+
+        if (!queue.isEmpty() && queue.size() >= (position + 1)) {
+            for (int currentPosition = 0; currentPosition < position; currentPosition++) {
+                track = queue.poll();
+            }
         }
 
         if (track != null) {
+            // TODO:: Really stupid workaround for https://github.com/Ree6-Applications/Ree6/issues/299! This should be rechecked later if it even worked.
+            if (track == player.getPlayingTrack()) track = player.getPlayingTrack().makeClone();
             if (!silent)
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
