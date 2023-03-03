@@ -22,8 +22,15 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A command to warn users and let them be punished if they reached a specific warn amount.
+ */
 @Command(name = "warn", description = "command.description.warn", category = Category.MOD)
 public class Warn implements ICommand {
+
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.isSlashCommand()) {
@@ -53,6 +60,11 @@ public class Warn implements ICommand {
 
         switch (subCommandGroup) {
             case "punishments" -> {
+                if (!commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+                    commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.ADMINISTRATOR.name()), 5);
+                    return;
+                }
+
                 switch (subCommand) {
                     case "roleadd" -> {
                         Punishments punishments = new Punishments();
@@ -111,11 +123,16 @@ public class Warn implements ICommand {
                             stringBuilder.append(punishments.getId()).append(" - ").append(punishments.getWarnings()).append(" -> ");
 
                             switch (action) {
-                                case 1 -> stringBuilder.append("Timeout").append(" for ").append(Duration.ofMillis(punishments.getTimeoutTime()).toSeconds()).append("seconds");
-                                case 2 -> stringBuilder.append("Role-Add").append(" for ").append("<@").append(punishments.getRoleId()).append(">");
-                                case 3 -> stringBuilder.append("Role-Remove").append(" for ").append("<@").append(punishments.getRoleId()).append(">");
-                                case 4 -> stringBuilder.append("Kick").append(" ").append("with").append(" ").append("reason").append(" ").append(punishments.getReason());
-                                case 5 -> stringBuilder.append("Ban").append(" ").append("with").append(" ").append("reason").append(" ").append(punishments.getReason());
+                                case 1 ->
+                                        stringBuilder.append("Timeout").append(" for ").append(Duration.ofMillis(punishments.getTimeoutTime()).toSeconds()).append("seconds");
+                                case 2 ->
+                                        stringBuilder.append("Role-Add").append(" for ").append("<@").append(punishments.getRoleId()).append(">");
+                                case 3 ->
+                                        stringBuilder.append("Role-Remove").append(" for ").append("<@").append(punishments.getRoleId()).append(">");
+                                case 4 ->
+                                        stringBuilder.append("Kick").append(" ").append("with").append(" ").append("reason").append(" ").append(punishments.getReason());
+                                case 5 ->
+                                        stringBuilder.append("Ban").append(" ").append("with").append(" ").append("reason").append(" ").append(punishments.getReason());
                             }
 
                             stringBuilder.append("\n");
@@ -192,10 +209,14 @@ public class Warn implements ICommand {
 
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("warn", "command.description.warn")
-                .addOption(OptionType.USER, "user", "The user that should be warned.", true)
+                .addSubcommands(new SubcommandData("target", "Warn a specific player!")
+                        .addOption(OptionType.USER, "user", "The user that should be warned.", true))
                 .addSubcommandGroups(new SubcommandGroupData("punishments", "Set up the punishments for these warnings.")
                         .addSubcommands(new SubcommandData("timeout", "A Timeout punishment.")
                                 .addOption(OptionType.INTEGER, "warnings", "The needed warning amounts.", true)
@@ -217,6 +238,9 @@ public class Warn implements ICommand {
                                 .addOptions(new OptionData(OptionType.INTEGER, "id", "The Punishment Id.", true).setMinValue(0))));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

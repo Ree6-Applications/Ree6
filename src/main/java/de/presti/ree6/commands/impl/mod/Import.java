@@ -10,7 +10,6 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
@@ -31,12 +30,7 @@ public class Import implements ICommand {
             return;
         }
 
-        if (commandEvent.isSlashCommand()) {
-            OptionMapping optionMapping = commandEvent.getSlashCommandInteractionEvent().getOption("bot");
-            commandEvent.getArguments()[0] = optionMapping.getAsString();
-        }
-
-        if (commandEvent.getArguments().length == 1) {
+        if (commandEvent.getArguments(true).length == 1) {
             switch (commandEvent.getArguments()[0]) {
                 case "mee6" -> importFromMee6(commandEvent);
 

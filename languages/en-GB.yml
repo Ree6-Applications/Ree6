@@ -485,6 +485,7 @@ message:
     list: "In the files above message you can find a list of all Level-Roles!"
   warn:
     punishment:
+      created: "You successfully created a punishment!"
       list: "Here is a list of all punishments for this Guild:\n```%s```"
       deleted: "The Punishment with the ID %s has been deleted."
       notFound: "There is no punishment with the ID %s for this Guild."
@@ -586,6 +587,7 @@ command:
     levelrole: "Manage Auto-Roles for Voice or Text Levels!"
     warn: "Warn an User and let them be punished automatically."
     infractions: "Show all the warnings a user has."
+    musicquiz: "Play with your friends a game of Music Quiz!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."

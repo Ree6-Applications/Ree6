@@ -1,7 +1,7 @@
 language:
   name: "Indonesia"
   locale: "id"
-  version: "2.2.5"
+  version: "2.3.0"
   author: "Gorengan_Hunter, SpyCat"
 logging:
   banned: ":airplane_departure: %s **telah diban.**"
@@ -218,18 +218,23 @@ message:
       dateError: "Harap gunakan tanggal yang valid!\nPerhatikan bahwa kami menggunakan format dd.MM.yyyy (day.month.year)!"
   instagramNotifier:
     added: "Pemberitahuan Instagram telah dibuat untuk %s!"
+    list: "Dibawah ini daftar Notifier Instagram yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Instagram dari %s telah dihapus!"
   redditNotifier:
     added: "Pemberitahuan Reddit telah dibuat untuk Subreddit %s!"
+    list: "Dibawah ini daftar Notifier Reddit yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Reddit untuk Subreddit %s telah dihapus!"
   twitchNotifier:
     added: "Pemberitahuan Siaran Twitch telah dibuat untuk Channel %s!"
+    list: "Dibawah ini daftar Notifier Twitch yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Siaran Twitch untuk Channel %s telah dihapus!"
   twitterNotifier:
     added: "Pemberitahuan Twitter telah dibuat untuk User %s!"
+    list: "Dibawah ini daftar Notifier Twitter yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Twitter untuk User %s telah dihapus!"
   youtubeNotifier:
     added: "Pemberitahuan Video Youtube telah dibuat untuk Channel %s!"
+    list: "Dibawah ini daftar Notifier Youtube yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Video Youtube untuk Channel %s telah dihapus!"
   anime:
     searching: "Mencari Anime..."
@@ -478,6 +483,18 @@ message:
     added: "Kita telah menambahkan Level-Role dengan Role **%s** dan level **%s**"
     removed: "Kita telah menghapus Level-Role dengan Role **%s** dan level **%s**"
     list: "Di file diatas pesan, kamu bisa mencari daftar dari semua Level-Roles!"
+  warn:
+    punishment:
+      created: "Sukses membuat hukuman!"
+      list: "Dibawah ini daftar hukuman di Guild ini:\n```%s```"
+      deleted: "Hukuman dengan ID %s telah dihapus."
+      notFound: "Tidak ada hukuman dengan ID %s di Guild ini."
+    success: "Kamu sukses memperingati %s!\nUser %s sekarang telah diperingati!"
+    hierarchySelfError: "Kamu tidak bisa memperingati seseorang yang mempunyai role setara atau lebih tinggi dari kamu!"
+    hierarchyBotError: "Aku tidak bisa memperingati seseorang yang mempunyai role setara atau lebih tinggi dari aku!"
+  infractions:
+    success: "User %s memiliki %s pelanggaran!"
+    empty: "User %s tidak memiliki pelanggaran!"
 game:
   description:
     blackjack: "Mainkan Blackjack dengan temanmu!"
@@ -568,6 +585,9 @@ command:
     tickets: "Buat sebuah sistem tiket untuk berkomunikasi dengan komunitas mu!"
     news: "Konfigurasi berita dari Ree6!"
     levelrole: "Atur AutoRoles untuk Voice atau Text levels!"
+    warn: "Peringati user dan biarkan dia dihukum otomatis."
+    infractions: "Tampilkan semua peringatan yang dimiliki user."
+    musicquiz: "Mainkan Kuis Musik dengan teman anda!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"

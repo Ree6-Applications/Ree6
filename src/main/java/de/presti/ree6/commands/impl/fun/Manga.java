@@ -132,7 +132,7 @@ public class Manga implements ICommand {
             em.setThumbnail(thumbnailUrl);
             em.setDescription(description);
             em.addField(":hourglass_flowing_sand: **" + commandEvent.getResource("label.status") + "**", status, true);
-            em.addField(":dividers: **" + commandEvent.getResource("label.type") + "**", type, true);
+            em.addField(":dividers: **" + commandEvent.getResource("label.typ") + "**", type, true);
             em.addField(":arrow_right: **" + commandEvent.getResource("label.genres") + "**", genres, false);
             em.addField(":calendar: **" + commandEvent.getResource("label.published") + "**", "from **" + startDate + "** to **" + endDate + "**", false);
             em.addField(":newspaper: **" + commandEvent.getResource("label.chapters") + "**", chapters, true);

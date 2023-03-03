@@ -14,8 +14,15 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.util.Map;
 
+/**
+ * A command that allows users to see how many warnings/infractions they have.
+ */
 @Command(name = "infractions", description = "command.description.infractions", category = Category.INFO)
 public class Infractions implements ICommand {
+
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.isSlashCommand()) {
@@ -35,12 +42,18 @@ public class Infractions implements ICommand {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("infractions", "command.description.infractions")
                 .addOption(OptionType.USER, "user", "The user you want to check up upon.", true);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

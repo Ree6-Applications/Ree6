@@ -39,7 +39,7 @@ public class Loop implements ICommand {
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(Color.GREEN);
         em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().loop() ?
-                commandEvent.getResource("message.music.loop.enable") :
+                commandEvent.getResource("message.music.loop.enabled") :
                 commandEvent.getResource("message.music.loop.disabled"));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 

@@ -78,7 +78,7 @@ public class BotWorker {
                 .setShardsTotal(getVersion().getShards())
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_INVITES, GatewayIntent.DIRECT_MESSAGES,
                         GatewayIntent.GUILD_INVITES, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.MESSAGE_CONTENT,
-                        GatewayIntent.GUILD_WEBHOOKS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_BANS)
+                        GatewayIntent.GUILD_WEBHOOKS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MODERATION)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .disableCache(CacheFlag.EMOJI, CacheFlag.ACTIVITY)
                 .build();
