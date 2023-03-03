@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>2.3.5</version>
+    <version>2.3.6</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -307,6 +307,7 @@
                     </includeOnlyProperties>
                     <commitIdGenerationMode>full</commitIdGenerationMode>
                     <dateFormat>ddMMyyyy</dateFormat>
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
                 </configuration>
             </plugin>
             <plugin>
