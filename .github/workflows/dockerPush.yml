@@ -28,6 +28,14 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Content list
+      # You may pin to the exact commit or the version.
+      # uses: enricomarino/actions@cc077a8a196155a9d5dc6ebcd3ff2c8a8679506f
+        uses: enricomarino/actions@v2
+        with:
+        # The folder to inspect
+          source: /
+      
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4.3.0
@@ -41,6 +49,7 @@ jobs:
         with:
         # The folder to inspect
           source: /
+      
       - name: Build and push Docker image
         uses: docker/build-push-action@v4.0.0
         with:
