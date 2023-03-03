@@ -20,8 +20,13 @@ public class Cringe implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        commandEvent.getChannel().getHistoryBefore(commandEvent.getChannel().getLatestMessageId(), 1).complete().getRetrievedHistory().get(0).reply("https://images.ree6.de/cringe.gif").queue();
-        if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).queue();
+        if (commandEvent.isSlashCommand()) {
+            commandEvent.getChannel().getHistoryBefore(commandEvent.getChannel().getLatestMessageId(), 1).complete().getRetrievedHistory().get(0).reply("https://images.ree6.de/cringe.gif").queue();
+            commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).queue();
+        } else {
+            commandEvent.getChannel().getHistoryBefore(commandEvent.getMessage().getIdLong(), 1).complete().getRetrievedHistory().get(0).reply("https://images.ree6.de/cringe.gif").queue();
+        }
+
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
     }
 
