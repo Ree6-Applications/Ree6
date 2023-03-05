@@ -52,8 +52,9 @@ public class Help implements ICommand {
 
     /**
      * Sends the help information to the user.
+     *
      * @param categoryString The category to show the help for.
-     * @param commandEvent The command event.
+     * @param commandEvent   The command event.
      */
     public void sendHelpInformation(String categoryString, CommandEvent commandEvent) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
@@ -92,6 +93,7 @@ public class Help implements ICommand {
             }
         }
 
+        // TODO:: translate these Labels.
         messageCreateBuilder
                 .addActionRow(
                         Button.of(ButtonStyle.LINK, "https://invite.ree6.de", "Invite",
@@ -99,11 +101,12 @@ public class Help implements ICommand {
                         Button.of(ButtonStyle.LINK, "https://support.ree6.de", "Support",
                                 Emoji.fromCustom("re_icon_help", 1019234684745564170L, false)),
                         Button.of(ButtonStyle.LINK, "https://github.ree6.de", "Github",
-                                Emoji.fromCustom("re_icon_github", 492259724079792138L, false))
-                        );
+                                Emoji.fromCustom("re_icon_github", 492259724079792138L, false)),
+                        Button.of(ButtonStyle.LINK, "re_feedback", "Feedback",
+                                Emoji.fromCustom("kiss", 1012765976951009361L, true))
+                );
 
-        messageCreateBuilder.setEmbeds(em.build());
-        commandEvent.reply(messageCreateBuilder.build());
+        commandEvent.reply(messageCreateBuilder.setEmbeds(em.build()).build());
     }
 
     /**
@@ -125,6 +128,7 @@ public class Help implements ICommand {
 
     /**
      * Check if a String is a valid category.
+     *
      * @param arg The String to check.
      * @return True if the String is a valid category.
      */
@@ -142,6 +146,7 @@ public class Help implements ICommand {
 
     /**
      * Get the Category from a String.
+     *
      * @param arg The String to use.
      * @return The Category.
      */

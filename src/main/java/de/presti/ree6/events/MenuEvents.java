@@ -70,6 +70,13 @@ public class MenuEvents extends ListenerAdapter {
         super.onButtonInteraction(event);
 
         switch (event.getComponentId()) {
+            case "re_feedback" -> {
+                // TODO:: translate labels.
+                Modal.Builder builder = Modal.create("re_feedback_modal", "Feedback");
+                builder.addActionRow(TextInput.create("re_feedback_text", "Feedback", TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
+                event.replyModal(builder.build()).queue();
+            }
+
             case "re_suggestion" -> {
                 Modal.Builder builder = Modal.create("re_suggestion_modal", LanguageService.getByGuild(event.getGuild(), "label.suggestion"));
                 builder.addActionRow(TextInput.create("re_suggestion_text", LanguageService.getByGuild(event.getGuild(), "label.suggestion"), TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
@@ -177,6 +184,10 @@ public class MenuEvents extends ListenerAdapter {
 
 
         switch (event.getModalId()) {
+            case "re_feedback_modal" -> {
+                // TODO:: decide if this is going to be send via webhook or stored in the database.
+            }
+
             case "re_suggestion_modal" -> {
                 Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "SELECT * FROM Suggestions WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
 
