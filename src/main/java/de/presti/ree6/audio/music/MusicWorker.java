@@ -33,8 +33,6 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-//TODO:: translate
-
 /**
  * Wrapper class that handles most Music related stuff.
  */
@@ -186,6 +184,7 @@ public class MusicWorker {
                             .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
+                            // TODO:: translate
                             .setDescription("The Song ``" + FormatUtil.filter(track.getInfo().title) + "`` has been added to the Queue!")
                             .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl()), 5, messageChannel, interactionHook);
 
@@ -211,6 +210,7 @@ public class MusicWorker {
                             .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
+                            // TODO:: translate
                             .setDescription("The Song ``" + FormatUtil.filter(firstTrack.getInfo().title) + "`` has been added to the Queue! (The first Song of the Playlist: " + FormatUtil.filter(playlist.getName()) + ")")
                             .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl()), 5, messageChannel, interactionHook);
 
@@ -234,6 +234,7 @@ public class MusicWorker {
                             .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
+                            // TODO:: translate
                             .setDescription("A Song with the URL ``" + FormatUtil.filter(trackUrl) + "`` couldn't be found!")
                             .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl()), 5, messageChannel, interactionHook);
             }
@@ -249,6 +250,7 @@ public class MusicWorker {
                             .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
+                            // TODO:: translate
                             .setDescription("Error while playing: " + exception.getMessage())
                             .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl()), 5, messageChannel, interactionHook);
             }
@@ -304,6 +306,7 @@ public class MusicWorker {
                     .setTitle(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(), "label.musicPlayer"))
                     .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                     .setColor(Color.GREEN)
+                    // TODO:: translate
                     .setDescription("Skipping to the next Song!")
                     .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
         }
@@ -384,11 +387,13 @@ public class MusicWorker {
      */
     public boolean checkInteractPermission(CommandEvent commandEvent) {
         if (commandEvent.getMember().getVoiceState() == null || !commandEvent.getMember().getVoiceState().inAudioChannel()) {
+            // TODO:: translate
             Main.getInstance().getCommandManager().sendMessage("Please join a Channel!", commandEvent.getChannel(), commandEvent.getInteractionHook());
             return false;
         }
 
         if (commandEvent.getGuild().getSelfMember().getVoiceState() != null && commandEvent.getGuild().getSelfMember().getVoiceState().inAudioChannel() && commandEvent.getGuild().getSelfMember().getVoiceState().getChannel() != null && commandEvent.getMember().getVoiceState().getChannel() != null && !commandEvent.getGuild().getSelfMember().getVoiceState().getChannel().getId().equalsIgnoreCase(commandEvent.getMember().getVoiceState().getChannel().getId())) {
+            // TODO:: translate
             Main.getInstance().getCommandManager().sendMessage("You have to be in the same Channel as me!", commandEvent.getChannel(), commandEvent.getInteractionHook());
             return false;
         }
