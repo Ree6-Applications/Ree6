@@ -1,7 +1,7 @@
 language:
   name: "Indonesia"
   locale: "id"
-  version: "2.3.0"
+  version: "2.3.7"
   author: "Gorengan_Hunter, SpyCat"
 logging:
   banned: ":airplane_departure: %s **telah diban.**"
@@ -180,6 +180,8 @@ label:
   skip: "Skip"
   musicQuiz: "Kuis Musik"
   position: "Posisi %s"
+  feedback: "Feedback"
+  github: "Github"
 message:
   default:
     usage: "Penggunaan {guild_prefix}%s."
@@ -194,6 +196,7 @@ message:
     checkBelow: "Periksa dibawah!"
     retrievalError: "Terjadi kesalahan saat mengambil data!"
     notInVoiceChannel: "Anda tidak ada di Voice-Channel!"
+    notInSameVoiceChannel: "You are not in the same Voice-Channel!"
     alreadyInVoiceChannel: "Anda sudah di Voice-Channel!"
     image:
       needed: "Gambar diperlukan!"
@@ -341,6 +344,7 @@ message:
     lyrics:
       notFound: "Tidak dapat mencari lirik untuk %s."
       foundUnlikely: "Lirik untuk %s ditemukan, tetapi liriknya sepertinya kurang betul: %s"
+    stop: "The player has been stopped!"
     pause: "Pemutar telah di pause!"
     resume: "Pemutar telah di ditemukan!"
     shuffle: "Antrian telah diacak!"
@@ -353,6 +357,18 @@ message:
     notFound: "Tidak dapat menemukan lagu ``%s``!"
     notFoundMultiple: "Tidak dapat menemukan ``%s`` lagu!"
     searchFailed: "Terjadi error ketika mencari lagu, coba lagi dalam beberapa menit!"
+    searchUrlFailed: "A Song with the URL ``%s`` couldn't be found!"
+    songNext: "Next Song!\nSong:``%s``"
+    songQueueReachedEnd: "There is no new Song!"
+    seek:
+      success: "Seeked to ``%s``!"
+      failed: "You can't seek to a position that is longer than the song!"
+    failedPlaying: "Error while playing: ``%s``\nError : %s"
+    failedLoading: "Error while loading a song: %s"
+    queueAdded:
+      default: "The Song ``%s`` has been added to the Queue!"
+      firstOfList: "The Song ``%s`` has been added to the Queue! (The first Song of the Playlist: %s)"
+    skip: "Skipping to the next Song in the Queue!"
   nsfw:
     searching: "Sedang mencari konten NSFW ..."
     notAllowed: "Konten yang telah kamu cari tidak dibolehkan! Contoh: loli hentai"
@@ -466,6 +482,7 @@ message:
   news:
     enabled: "Telah menyalakan pemberian berita!"
     disabled: "Telah mematikan pemberian berita!"
+    notice: "To disable the receiving of news use /news"
   stream-action:
     added: "Kita telah menambahkan Stream-action dengan nama **%s**"
     addedLine: "Kita telah menambahkan Stream-action dengan nama **%s**"
@@ -501,6 +518,7 @@ game:
 command:
   perform:
     cooldown: "Kamu masih di jeda!"
+    missingCommand: "Please provide a Command!"
     error: "Ada error ketika mengeksekusi command ini!"
     errorWithException: "Ada error ketika mengeksekusi command ini!\nPengecualian: %s"
     internalError: "Sebuah error telah muncul ketika melakukan command ini!\nKalau masalah ini tetap lanjut mohon hubungi support kami!\n<https://support.ree6.de>"
