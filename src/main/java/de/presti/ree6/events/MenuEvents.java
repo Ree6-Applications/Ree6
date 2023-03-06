@@ -184,7 +184,16 @@ public class MenuEvents extends ListenerAdapter {
 
         switch (event.getModalId()) {
             case "re_feedback_modal" -> {
-                // TODO:: decide if this is going to be send via webhook or stored in the database.
+                EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .setTitle(LanguageService.getByGuild(event.getGuild(), "label.feedback"))
+                        .setColor(Color.GREEN)
+                        .setThumbnail(event.getUser().getEffectiveAvatarUrl())
+                        .setDescription("```" + event.getValue("re_feedback_text").getAsString() + "```")
+                        .setFooter("By " + event.getUser().getAsTag() + "(" + event.getUser().getId() + ")", event.getUser().getAvatarUrl())
+                        .setTimestamp(Instant.now());
+
+                Main.getInstance().getCommandManager().sendMessage(embedBuilder, BotWorker.getShardManager().getTextChannelById(1082266502738231336L));
+                Main.getInstance().getCommandManager().sendMessage("Thank you!", null, event.getInteraction().getHook());
             }
 
             case "re_suggestion_modal" -> {
@@ -197,13 +206,14 @@ public class MenuEvents extends ListenerAdapter {
 
                     if (messageChannel == null) return;
 
-                    EmbedBuilder embedBuilder = new EmbedBuilder();
-                    embedBuilder.setTitle(LanguageService.getByGuild(event.getGuild(), "label.suggestion"));
-                    embedBuilder.setColor(Color.ORANGE);
-                    embedBuilder.setThumbnail(event.getUser().getEffectiveAvatarUrl());
-                    embedBuilder.setDescription("```" + event.getValue("re_suggestion_text").getAsString() + "```");
-                    embedBuilder.setFooter(LanguageService.getByGuild(event.getGuild(), "message.suggestion.footer", event.getUser().getAsTag()), event.getUser().getAvatarUrl());
-                    embedBuilder.setTimestamp(Instant.now());
+                    EmbedBuilder embedBuilder = new EmbedBuilder()
+                            .setTitle(LanguageService.getByGuild(event.getGuild(), "label.suggestion"))
+                            .setColor(Color.ORANGE)
+                            .setThumbnail(event.getUser().getEffectiveAvatarUrl())
+                            .setDescription("```" + event.getValue("re_suggestion_text").getAsString() + "```")
+                            .setFooter(LanguageService.getByGuild(event.getGuild(), "message.suggestion.footer", event.getUser().getAsTag()), event.getUser().getAvatarUrl())
+                            .setTimestamp(Instant.now());
+
                     Main.getInstance().getCommandManager().sendMessage(embedBuilder, messageChannel);
                     Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.suggestion.sent"), null, event.getInteraction().getHook());
                 } else {
