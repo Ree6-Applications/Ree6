@@ -79,7 +79,7 @@ public class Setup implements ICommand {
             optionList.add(SelectOption.of(commandEvent.getResource("label.welcomeChannel"), "welcome"));
             optionList.add(SelectOption.of(commandEvent.getResource("label.autoRole"), "autorole"));
             optionList.add(SelectOption.of(commandEvent.getResource("label.temporalVoice"), "tempvoice"));
-            optionList.add(SelectOption.of(commandEvent.getResource("statistics"), "statistics"));
+            optionList.add(SelectOption.of(commandEvent.getResource("label.statistics"), "statistics"));
             optionList.add(SelectOption.of(commandEvent.getResource("label.ticketSystem"), "tickets"));
 
             SelectMenu selectMenu = new StringSelectMenuImpl("setupActionMenu", commandEvent.getResource("message.setup.setupMenuPlaceholder"), 1, 1, false, optionList);

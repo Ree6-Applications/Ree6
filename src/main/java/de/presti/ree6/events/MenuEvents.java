@@ -221,12 +221,12 @@ public class MenuEvents extends ListenerAdapter {
 
                 String twitchUsername = modalMapping.getAsString();
 
-                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "statistics"), true);
+                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics"), true);
 
                 Category category;
 
                 if (categories.isEmpty()) {
-                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "statistics")).complete();
+                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistics")).complete();
                 } else {
                     category = categories.get(0);
                 }
@@ -284,7 +284,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 String youtubeChannelName = modalMapping.getAsString();
 
-                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "statistics"), true);
+                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics"), true);
 
                 Category category;
 
@@ -295,7 +295,7 @@ public class MenuEvents extends ListenerAdapter {
                         .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.youtubeSuccess"));
 
                 if (categories.isEmpty()) {
-                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "statistics")).complete();
+                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistics")).complete();
                 } else {
                     category = categories.get(0);
                 }
@@ -379,7 +379,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 String subredditName = modalMapping.getAsString();
 
-                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "statistics"), true);
+                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics"), true);
 
                 Category category;
 
@@ -390,7 +390,7 @@ public class MenuEvents extends ListenerAdapter {
                         .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.redditSuccess"));
 
                 if (categories.isEmpty()) {
-                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "statistics")).complete();
+                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistics")).complete();
                 } else {
                     category = categories.get(0);
                 }
@@ -460,7 +460,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 String twitterName = modalMapping.getAsString();
 
-                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "statistics"), true);
+                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics"), true);
 
                 Category category;
 
@@ -471,7 +471,7 @@ public class MenuEvents extends ListenerAdapter {
                         .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.twitterSuccess"));
 
                 if (categories.isEmpty()) {
-                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "statistics")).complete();
+                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistics")).complete();
                 } else {
                     category = categories.get(0);
                 }
@@ -541,7 +541,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 String instagramName = modalMapping.getAsString();
 
-                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "statistics"), true);
+                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics"), true);
 
                 Category category;
 
@@ -552,7 +552,7 @@ public class MenuEvents extends ListenerAdapter {
                         .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.instagramSuccess"));
 
                 if (categories.isEmpty()) {
-                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "statistics")).complete();
+                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistics")).complete();
                 } else {
                     category = categories.get(0);
                 }
@@ -764,12 +764,12 @@ public class MenuEvents extends ListenerAdapter {
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.memberSuccess"));
                         embedBuilder.setColor(Color.GREEN);
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
-                        java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "statistics"), true);
+                        java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics"), true);
 
                         Category category;
 
                         if (categories.isEmpty()) {
-                            category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "statistics")).complete();
+                            category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistics")).complete();
                         } else {
                             category = categories.get(0);
                         }
@@ -1253,7 +1253,7 @@ public class MenuEvents extends ListenerAdapter {
         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.welcomeChannel"), "welcome"));
         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.autoRole"), "autorole"));
         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.temporalVoice"), "tempvoice"));
-        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "statistics"), "statistics"));
+        optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.statistics"), "statistics"));
         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.ticketSystem"), "tickets"));
 
         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.setup.setupMenu"));
