@@ -180,7 +180,7 @@ label:
   skip: "Přeskočit"
   musicQuiz: "Hudební kvíz"
   position: "Pozice %s"
-  feedback: "Feedback"
+  feedback: "Zpětná vazba"
   github: "Github"
 message:
   default:
@@ -196,7 +196,7 @@ message:
     checkBelow: "Zkontrolujte níže!"
     retrievalError: "Při načítání dat došlo k chybě!"
     notInVoiceChannel: "Nejste v hlasovém kanálu!"
-    notInSameVoiceChannel: "You are not in the same Voice-Channel!"
+    notInSameVoiceChannel: "Nejste ve stejném hlasovém kanálu!"
     alreadyInVoiceChannel: "Už jsem v hlasovém kanálu!"
     image:
       needed: "Je potřeba obrázek!"
@@ -344,7 +344,7 @@ message:
     lyrics:
       notFound: "Texty pro %s se nepodařilo najít."
       foundUnlikely: "Texty pro %s byly nalezeny, ale je nepravděpodobné, že budou správné: %s"
-    stop: "The player has been stopped!"
+    stop: "Přehrávač byl zastaven!"
     pause: "Hra byla spuštěna!"
     resume: "Hráč byl obnoven!"
     shuffle: "Fronta byla zamíchána!"
@@ -357,18 +357,18 @@ message:
     notFound: "Nepodařilo se najít skladbu ``%s``!"
     notFoundMultiple: "Nelze najít ``%s`` skladby!"
     searchFailed: "Při hledání skladby došlo k chybě, zkuste to prosím znovu po několika minutách!"
-    searchUrlFailed: "A Song with the URL ``%s`` couldn't be found!"
-    songNext: "Next Song!\nSong:``%s``"
-    songQueueReachedEnd: "There is no new Song!"
+    searchUrlFailed: "Skladba s URL ``%s`` nebyla nalezena!"
+    songNext: "Další skladba!\nSkladba: ``%s``"
+    songQueueReachedEnd: "Žádná nová skladba!"
     seek:
-      success: "Seeked to ``%s``!"
-      failed: "You can't seek to a position that is longer than the song!"
-    failedPlaying: "Error while playing: ``%s``\nError : %s"
-    failedLoading: "Error while loading a song: %s"
+      success: "Hledal jsi ``%s``!"
+      failed: "Nemůžete hledat pozici delší než je píseň!"
+    failedPlaying: "Chyba při přehrávání: ``%s``\nChyba: %s"
+    failedLoading: "Chyba při načítání skladby: %s"
     queueAdded:
-      default: "The Song ``%s`` has been added to the Queue!"
-      firstOfList: "The Song ``%s`` has been added to the Queue! (The first Song of the Playlist: %s)"
-    skip: "Skipping to the next Song in the Queue!"
+      default: "Skladba ``%s`` byla přidána do fronty!"
+      firstOfList: "Skladba ``%s`` byla přidána do fronty! (První skladba seznamu skladeb: %s)"
+    skip: "Přeskočit na další skladbu ve frontě!"
   nsfw:
     searching: "Hledání NSFW obsahu..."
     notAllowed: "Hledaný obsah není povolen! Příklad: loli hentai"
@@ -482,7 +482,7 @@ message:
   news:
     enabled: "Přijetí novinek bylo úspěšně povoleno!"
     disabled: "Přijetí novinek bylo úspěšně zakázáno!"
-    notice: "To disable the receiving of news use /news"
+    notice: "Pro vypnutí přijímání zpráv použijte /news"
   stream-action:
     added: "Akce streamu s názvem **%s ** byla úspěšně přidána"
     addedLine: "Akce streamu s názvem **%s ** byla úspěšně přidána"
@@ -518,7 +518,7 @@ game:
 command:
   perform:
     cooldown: "Jste na ochlazení!"
-    missingCommand: "Please provide a Command!"
+    missingCommand: "Zadejte prosím příkaz!"
     error: "Při provádění příkazu došlo k chybě!"
     errorWithException: "Při provádění příkazu došlo k chybě!\nVýjimka: %s"
     internalError: "Při provádění příkazu došlo k chybě!\nPokud se to bude opakovat, kontaktujte naši podporu!\n<https://support.ree6.de>"
