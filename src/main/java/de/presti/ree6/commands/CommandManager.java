@@ -280,8 +280,7 @@ public class CommandManager {
         String[] arguments = messageContent.split(" ");
 
         if (arguments.length == 0 || arguments[0].isBlank()) {
-            // TODO:: translate
-            sendMessage("Please provide a command!", 5, textChannel, null);
+            sendMessage(LanguageService.getByGuild(guild, "command.perform.missingCommand"), 5, textChannel, null);
             return false;
         }
 

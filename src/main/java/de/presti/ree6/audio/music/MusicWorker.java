@@ -184,8 +184,7 @@ public class MusicWorker {
                             .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
-                            // TODO:: translate
-                            .setDescription("The Song ``" + FormatUtil.filter(track.getInfo().title) + "`` has been added to the Queue!")
+                            .setDescription(LanguageService.getByGuild(guild, "message.music.queueAdded.default", FormatUtil.filter(track.getInfo().title)))
                             .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl()), 5, messageChannel, interactionHook);
 
                 play(finalAudioChannel, musicManager, track, force);
@@ -210,8 +209,7 @@ public class MusicWorker {
                             .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
-                            // TODO:: translate
-                            .setDescription("The Song ``" + FormatUtil.filter(firstTrack.getInfo().title) + "`` has been added to the Queue! (The first Song of the Playlist: " + FormatUtil.filter(playlist.getName()) + ")")
+                            .setDescription(LanguageService.getByGuild(guild, "message.music.queueAdded.firstOfList", FormatUtil.filter(firstTrack.getInfo().title), FormatUtil.filter(playlist.getName())))
                             .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl()), 5, messageChannel, interactionHook);
 
                 play(finalAudioChannel, musicManager, firstTrack, force);
@@ -234,8 +232,7 @@ public class MusicWorker {
                             .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
-                            // TODO:: translate
-                            .setDescription("A Song with the URL ``" + FormatUtil.filter(trackUrl) + "`` couldn't be found!")
+                            .setDescription(LanguageService.getByGuild(guild, "message.music.searchUrlFailed", FormatUtil.filter(trackUrl)))
                             .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl()), 5, messageChannel, interactionHook);
             }
 
@@ -250,8 +247,7 @@ public class MusicWorker {
                             .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
-                            // TODO:: translate
-                            .setDescription("Error while playing: " + exception.getMessage())
+                            .setDescription(LanguageService.getByGuild(guild, "message.music.failedLoading", exception.getMessage()))
                             .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl()), 5, messageChannel, interactionHook);
             }
         });
@@ -306,8 +302,7 @@ public class MusicWorker {
                     .setTitle(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(), "label.musicPlayer"))
                     .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                     .setColor(Color.GREEN)
-                    // TODO:: translate
-                    .setDescription("Skipping to the next Song!")
+                    .setDescription(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(), "message.music.skip"))
                     .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + Data.ADVERTISEMENT, channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
         }
 
@@ -387,14 +382,12 @@ public class MusicWorker {
      */
     public boolean checkInteractPermission(CommandEvent commandEvent) {
         if (commandEvent.getMember().getVoiceState() == null || !commandEvent.getMember().getVoiceState().inAudioChannel()) {
-            // TODO:: translate
-            Main.getInstance().getCommandManager().sendMessage("Please join a Channel!", commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("message.default.notInVoiceChannel"));
             return false;
         }
 
         if (commandEvent.getGuild().getSelfMember().getVoiceState() != null && commandEvent.getGuild().getSelfMember().getVoiceState().inAudioChannel() && commandEvent.getGuild().getSelfMember().getVoiceState().getChannel() != null && commandEvent.getMember().getVoiceState().getChannel() != null && !commandEvent.getGuild().getSelfMember().getVoiceState().getChannel().getId().equalsIgnoreCase(commandEvent.getMember().getVoiceState().getChannel().getId())) {
-            // TODO:: translate
-            Main.getInstance().getCommandManager().sendMessage("You have to be in the same Channel as me!", commandEvent.getChannel(), commandEvent.getInteractionHook());
+            commandEvent.reply(commandEvent.getResource("message.default.notInSameVoiceChannel"));
             return false;
         }
 

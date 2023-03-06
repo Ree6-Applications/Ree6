@@ -180,6 +180,8 @@ label:
   skip: "Skip"
   musicQuiz: "Music Quiz"
   position: "Position %s"
+  feedback: "Feedback"
+  github: "Github"
 message:
   default:
     usage: "Usage {guild_prefix}%s."
@@ -194,6 +196,7 @@ message:
     checkBelow: "Check below!"
     retrievalError: "There was an error while retrieving the data!"
     notInVoiceChannel: "You are not in a Voice-Channel!"
+    notInSameVoiceChannel: "You are not in the same Voice-Channel!"
     alreadyInVoiceChannel: "I am already in a Voice-Channel!"
     image:
       needed: "A Image is needed!"
@@ -354,12 +357,18 @@ message:
     notFound: "Couldn't find the Song ``%s``!"
     notFoundMultiple: "Couldn't find ``%s`` Songs!"
     searchFailed: "An error occurred while searching for the Song, please try again after a few minutes!"
+    searchUrlFailed: "A Song with the URL ``%s`` couldn't be found!"
     songNext: "Next Song!\nSong:``%s``"
     songQueueReachedEnd: "There is no new Song!"
     seek:
       success: "Seeked to ``%s``!"
       failed: "You can't seek to a position that is longer than the song!"
     failedPlaying: "Error while playing: ``%s``\nError : %s"
+    failedLoading: "Error while loading a song: %s"
+    queueAdded:
+      default: "The Song ``%s`` has been added to the Queue!"
+      firstOfList: "The Song ``%s`` has been added to the Queue! (The first Song of the Playlist: %s)"
+    skip: "Skipping to the next Song in the Queue!"
   nsfw:
     searching: "Searching for NSFW Content ..."
     notAllowed: "The Content you are searching for is not allowed! Example: loli hentai"
@@ -473,6 +482,7 @@ message:
   news:
     enabled: "Successfully enabled the receiving of News!"
     disabled: "Successfully disabled the receiving of News!"
+    notice: "To disable the receiving of news use /news"
   stream-action:
     added: "We successfully added the Stream-action with the name **%s**"
     addedLine: "We successfully added the Stream-action with the name **%s**"
@@ -508,6 +518,7 @@ game:
 command:
   perform:
     cooldown: "You are on cooldown!"
+    missingCommand: "Please provide a Command!"
     error: "There was an error while executing the Command!"
     errorWithException: "There was an error while executing the Command!\nException: %s"
     internalError: "An error occurred while performing the Command!\nIf this continues to happen please contact our support!\n<https://support.ree6.de>"

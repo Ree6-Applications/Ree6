@@ -71,9 +71,8 @@ public class MenuEvents extends ListenerAdapter {
 
         switch (event.getComponentId()) {
             case "re_feedback" -> {
-                // TODO:: translate labels.
-                Modal.Builder builder = Modal.create("re_feedback_modal", "Feedback");
-                builder.addActionRow(TextInput.create("re_feedback_text", "Feedback", TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
+                Modal.Builder builder = Modal.create("re_feedback_modal", LanguageService.getByGuild(event.getGuild(), "label.feedback"));
+                builder.addActionRow(TextInput.create("re_feedback_text", LanguageService.getByGuild(event.getGuild(), "label.feedback"), TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
                 event.replyModal(builder.build()).queue();
             }
 
