@@ -1,7 +1,7 @@
 language:
   name: "German"
   locale: "de"
-  version: "2.3.0"
+  version: "2.3.7"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **gebannt.**"
@@ -180,6 +180,8 @@ label:
   skip: "Überspringen"
   musicQuiz: "Music Quiz"
   position: "Position %s"
+  feedback: "Feedback"
+  github: "Github"
 message:
   default:
     usage: "Nutzung {guild_prefix}%s."
@@ -194,6 +196,7 @@ message:
     checkBelow: "Schau unter der Nachricht nach!"
     retrievalError: "Es gab einen Fehler bei daten beziehen!"
     notInVoiceChannel: "Du bist in keinem Voice-Channel!"
+    notInSameVoiceChannel: "You are not in the same Voice-Channel!"
     alreadyInVoiceChannel: "Ich bin schon in einem anderen Voice-Channel!"
     image:
       needed: "Ein Bild ist nötig!"
@@ -341,6 +344,7 @@ message:
     lyrics:
       notFound: "Ich konnte leider keinen Songtext für %s finden."
       foundUnlikely: "Ein Songtext für %s wurde gefunden, dieser ist aber mit einer hohen Wahrscheinlichkeit inkorrekt: %s"
+    stop: "The player has been stopped!"
     pause: "Der Musikspieler wurde pausiert!"
     resume: "Der Musikspieler wurde fortgesetzt!"
     shuffle: "Die Songliste wurde gemischt!"
@@ -353,6 +357,18 @@ message:
     notFound: "Es konnte kein Song unter dem Namen ``%s`` gefunden!"
     notFoundMultiple: "Es konnten insgesamt ``%s`` Songs aus der gegebenen Liste nicht gefunden werden!"
     searchFailed: "Es gab einen Fehler bei der Suche des Songs bitte versuche es später erneut!"
+    searchUrlFailed: "A Song with the URL ``%s`` couldn't be found!"
+    songNext: "Next Song!\nSong:``%s``"
+    songQueueReachedEnd: "There is no new Song!"
+    seek:
+      success: "Seeked to ``%s``!"
+      failed: "You can't seek to a position that is longer than the song!"
+    failedPlaying: "Error while playing: ``%s``\nError : %s"
+    failedLoading: "Error while loading a song: %s"
+    queueAdded:
+      default: "The Song ``%s`` has been added to the Queue!"
+      firstOfList: "The Song ``%s`` has been added to the Queue! (The first Song of the Playlist: %s)"
+    skip: "Skipping to the next Song in the Queue!"
   nsfw:
     searching: "Suche nach NSFW Inhalten ..."
     notAllowed: "Der Inhalt nach dem du suchst ist nicht erlaubt! Beispiel: loli hentai"
@@ -466,6 +482,7 @@ message:
   news:
     enabled: "Du wirst nun News erhalten!"
     disabled: "Du wirst nun keine News mehr erhalten!"
+    notice: "To disable the receiving of news use /news"
   stream-action:
     added: "Du hast mit Erfolg die Stream-action **%s** erstellt."
     addedLine: "Du hast mit Erfolg die action **%s** hinzugefügt."
@@ -501,6 +518,7 @@ game:
 command:
   perform:
     cooldown: "Warte bitte bevor du weiter machst!"
+    missingCommand: "Please provide a Command!"
     error: "Beim Ausführen des Befehls ist ein Fehler aufgetaucht!"
     errorWithException: "Beim Ausführen des Befehls ist ein Fehler aufgetaucht!\nException: %s"
     internalError: "Beim Ausführen des Befehls ist ein schwerer Fehler aufgetaucht!\nFalls dies weiterhin geschieht, kontaktiere den support!\n<https://support.ree6.de>"
