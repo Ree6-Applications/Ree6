@@ -180,7 +180,7 @@ label:
   skip: "Skip"
   musicQuiz: "Kuis Musik"
   position: "Posisi %s"
-  feedback: "Feedback"
+  feedback: "Masukan"
   github: "Github"
 message:
   default:
@@ -196,7 +196,7 @@ message:
     checkBelow: "Periksa dibawah!"
     retrievalError: "Terjadi kesalahan saat mengambil data!"
     notInVoiceChannel: "Anda tidak ada di Voice-Channel!"
-    notInSameVoiceChannel: "You are not in the same Voice-Channel!"
+    notInSameVoiceChannel: "Kamu berada di Voice-Channel yang tidak sama!"
     alreadyInVoiceChannel: "Anda sudah di Voice-Channel!"
     image:
       needed: "Gambar diperlukan!"
@@ -344,7 +344,7 @@ message:
     lyrics:
       notFound: "Tidak dapat mencari lirik untuk %s."
       foundUnlikely: "Lirik untuk %s ditemukan, tetapi liriknya sepertinya kurang betul: %s"
-    stop: "The player has been stopped!"
+    stop: "Pemulai telah dihentikan!"
     pause: "Pemutar telah di pause!"
     resume: "Pemutar telah di ditemukan!"
     shuffle: "Antrian telah diacak!"
@@ -357,18 +357,18 @@ message:
     notFound: "Tidak dapat menemukan lagu ``%s``!"
     notFoundMultiple: "Tidak dapat menemukan ``%s`` lagu!"
     searchFailed: "Terjadi error ketika mencari lagu, coba lagi dalam beberapa menit!"
-    searchUrlFailed: "A Song with the URL ``%s`` couldn't be found!"
-    songNext: "Next Song!\nSong:``%s``"
-    songQueueReachedEnd: "There is no new Song!"
+    searchUrlFailed: "Lagu dengan URL ``%s`` tidak bisa ditemukan!"
+    songNext: "Lagu selanjutnya!\nLagu:``%s``"
+    songQueueReachedEnd: "Tidak ada lagu baru!"
     seek:
-      success: "Seeked to ``%s``!"
-      failed: "You can't seek to a position that is longer than the song!"
-    failedPlaying: "Error while playing: ``%s``\nError : %s"
-    failedLoading: "Error while loading a song: %s"
+      success: "Dicari ke ``%s``!"
+      failed: "Kamu tidak bisa mencari ke posisi yang lebih panjang dari lagunya!"
+    failedPlaying: "Ada error ketika memulai: ``%s``\nError:%s"
+    failedLoading: "Ada error ketika memuat lagu: %s"
     queueAdded:
-      default: "The Song ``%s`` has been added to the Queue!"
-      firstOfList: "The Song ``%s`` has been added to the Queue! (The first Song of the Playlist: %s)"
-    skip: "Skipping to the next Song in the Queue!"
+      default: "Lagu ``%s`` telah ditambahkan ke antrian!"
+      firstOfList: "Lagu ``%s`` telah ditambahkan ke antrian! (Lagu pertama di Playlist: %s)"
+    skip: "Melompati lagu di antrian!"
   nsfw:
     searching: "Sedang mencari konten NSFW ..."
     notAllowed: "Konten yang telah kamu cari tidak dibolehkan! Contoh: loli hentai"
@@ -482,7 +482,7 @@ message:
   news:
     enabled: "Telah menyalakan pemberian berita!"
     disabled: "Telah mematikan pemberian berita!"
-    notice: "To disable the receiving of news use /news"
+    notice: "Untuk mematikan berita yang diterima pakai /news"
   stream-action:
     added: "Kita telah menambahkan Stream-action dengan nama **%s**"
     addedLine: "Kita telah menambahkan Stream-action dengan nama **%s**"
@@ -518,7 +518,7 @@ game:
 command:
   perform:
     cooldown: "Kamu masih di jeda!"
-    missingCommand: "Please provide a Command!"
+    missingCommand: "Tolong sediakan Command!"
     error: "Ada error ketika mengeksekusi command ini!"
     errorWithException: "Ada error ketika mengeksekusi command ini!\nPengecualian: %s"
     internalError: "Sebuah error telah muncul ketika melakukan command ini!\nKalau masalah ini tetap lanjut mohon hubungi support kami!\n<https://support.ree6.de>"
