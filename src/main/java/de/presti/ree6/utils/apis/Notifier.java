@@ -63,7 +63,7 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.Callable;
 
-//TODO:: translate
+// TODO:: translate
 
 /**
  * Utility class used for Event Notifiers. Such as Twitch Livestream, YouTube Upload or Twitter Tweet.
@@ -607,6 +607,7 @@ public class Notifier {
                         try {
                             youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(channel);
                         } catch (IOException e) {
+                            Sentry.captureException(e);
                             return;
                         }
 

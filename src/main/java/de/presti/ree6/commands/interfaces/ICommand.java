@@ -1,8 +1,15 @@
 package de.presti.ree6.commands.interfaces;
 
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.language.LanguageService;
+import de.presti.ree6.main.Main;
+import de.presti.ree6.news.AnnouncementManager;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +42,19 @@ public interface ICommand {
         });
         // Update Stats.
         SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getId(), commandEvent.getCommand());
+        if (SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "configuration_news").getBooleanValue()) {
+            ThreadUtil.createThread(x -> AnnouncementManager.getAnnouncementList().forEach(a -> {
+                if (!AnnouncementManager.hasReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id())) {
+                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setTitle(a.title())
+                            .setAuthor("Ree6-Info")
+                            .setDescription(a.content().replace("\\n", "\n") + "\n\n" + LanguageService.getByGuild(commandEvent.getGuild(), "message.news.notice"))
+                            .setFooter(Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl())
+                            .setColor(BotWorker.randomEmbedColor()), 15, commandEvent.getChannel());
+
+                    AnnouncementManager.addReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id());
+                }
+            }), null);
+        }
     }
 
     /**

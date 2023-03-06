@@ -1,10 +1,12 @@
 package de.presti.ree6.utils.apis;
 
 import de.presti.ree6.main.Main;
+import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.ParseException;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.exceptions.detailed.UnauthorizedException;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
 import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
@@ -73,7 +75,16 @@ public class SpotifyAPIHandler {
      * @throws IOException            if there was a network error.
      */
     public Track getTrack(String trackId) throws ParseException, SpotifyWebApiException, IOException {
-        return spotifyApi.getTrack(trackId).build().execute();
+        try {
+            return spotifyApi.getTrack(trackId).build().execute();
+        } catch (UnauthorizedException unauthorizedException) {
+            if (spotifyApi.getClientId() != null) {
+                initSpotify();
+                return getTrack(trackId);
+            } else {
+                throw unauthorizedException;
+            }
+        }
     }
 
     /**
@@ -91,6 +102,19 @@ public class SpotifyAPIHandler {
 
             for (PlaylistTrack track : playlistTracks.getItems()) {
                 tracks.add(getTrack(track.getTrack().getId()));
+            }
+        } catch (UnauthorizedException unauthorizedException) {
+            if (spotifyApi.getClientId() != null) {
+
+                try {
+                    initSpotify();
+                } catch (Exception exception) {
+                    Sentry.captureException(exception);
+                }
+
+                return getTracks(playlistId);
+            } else {
+                log.error("Couldn't get Tracks from Playlist", unauthorizedException);
             }
         } catch (ParseException | SpotifyWebApiException | IOException e) {
             log.error("Couldn't get Tracks from Playlist", e);
@@ -168,6 +192,7 @@ public class SpotifyAPIHandler {
 
     /**
      * Get the Spotify API.
+     *
      * @return The Spotify API.
      */
     public static SpotifyAPIHandler getInstance() {

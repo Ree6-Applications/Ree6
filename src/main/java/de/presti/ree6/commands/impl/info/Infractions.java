@@ -38,7 +38,7 @@ public class Infractions implements ICommand {
         if (warning != null) {
             commandEvent.reply(commandEvent.getResource("message.infractions.success", member.getAsMention(), warning.getWarnings()));
         } else {
-            commandEvent.reply(commandEvent.getResource("message.infractions.empty"));
+            commandEvent.reply(commandEvent.getResource("message.infractions.empty", member.getAsMention()));
         }
     }
 

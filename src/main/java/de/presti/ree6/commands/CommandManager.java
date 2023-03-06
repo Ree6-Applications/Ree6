@@ -117,6 +117,8 @@ public class CommandManager {
                     commandData1.setDescription(description);
                 }
 
+                // TODO:: add the same language check to option names/description and add a translation to it. Also for the love of god Imma need to optimize this.
+
                 if (commandAnnotation.category() == Category.MOD && commandData.getDefaultPermissions() == DefaultMemberPermissions.ENABLED) {
                     commandData1.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
                 }
@@ -265,32 +267,20 @@ public class CommandManager {
             return false;
         }
 
+        String currentPrefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase();
+
         // Check if the message starts with the prefix.
-        if (!messageContent.toLowerCase().startsWith(SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase()))
+        if (!messageContent.toLowerCase().startsWith(currentPrefix))
             return false;
 
-        if (SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "configuration_news").getBooleanValue()) {
-            ThreadUtil.createThread(x -> AnnouncementManager.getAnnouncementList().forEach(a -> {
-                if (!AnnouncementManager.hasReceivedAnnouncement(guild.getIdLong(), a.id())) {
-                    sendMessage(new EmbedBuilder().setTitle(a.title())
-                            .setAuthor("Ree6-Info")
-                            .setDescription(a.content().replace("\\n", "\n") + "\n\nTo disable the receiving of news use /news")
-                            .setFooter(Data.ADVERTISEMENT, guild.getIconUrl())
-                            .setColor(BotWorker.randomEmbedColor()), 15, textChannel);
-
-                    AnnouncementManager.addReceivedAnnouncement(guild.getIdLong(), a.id());
-                }
-            }), null);
-        }
-
         // Parse the Message and remove the prefix from it.
-        messageContent = messageContent.substring(SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().length());
+        messageContent = messageContent.substring(currentPrefix.length());
 
         // Split all Arguments.
         String[] arguments = messageContent.split(" ");
 
         if (arguments.length == 0 || arguments[0].isBlank()) {
-            sendMessage("Please provide a command!", 5, textChannel, null);
+            sendMessage(LanguageService.getByGuild(guild, "command.perform.missingCommand"), 5, textChannel, null);
             return false;
         }
 
@@ -334,20 +324,6 @@ public class CommandManager {
         if (command == null || slashCommandInteractionEvent.getGuild() == null || slashCommandInteractionEvent.getMember() == null) {
             sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.notFound"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
             return false;
-        }
-
-        if (SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getId(), "configuration_news").getBooleanValue()) {
-            ThreadUtil.createThread(x -> AnnouncementManager.getAnnouncementList().forEach(a -> {
-                if (!AnnouncementManager.hasReceivedAnnouncement(textChannel.asTextChannel().getGuild().getIdLong(), a.id())) {
-                    sendMessage(new EmbedBuilder().setTitle(a.title())
-                            .setAuthor("Ree6-Info")
-                            .setDescription(a.content().replace("\\n", "\n") + "\n\nTo disable the receiving of news use /news")
-                            .setFooter(Data.ADVERTISEMENT, textChannel.asTextChannel().getGuild().getIconUrl())
-                            .setColor(BotWorker.randomEmbedColor()), 15, textChannel);
-
-                    AnnouncementManager.addReceivedAnnouncement(textChannel.asTextChannel().getGuild().getIdLong(), a.id());
-                }
-            }), null);
         }
 
         // Check if the command is blocked or not.

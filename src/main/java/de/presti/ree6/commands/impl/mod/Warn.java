@@ -56,7 +56,6 @@ public class Warn implements ICommand {
         OptionMapping secondsMapping = commandEvent.getSlashCommandInteractionEvent().getOption("seconds");
         OptionMapping reasonMapping = commandEvent.getSlashCommandInteractionEvent().getOption("reason");
         OptionMapping idMapping = commandEvent.getSlashCommandInteractionEvent().getOption("id");
-        Member member = userMapping.getAsMember();
 
         switch (subCommandGroup) {
             case "punishments" -> {
@@ -154,6 +153,7 @@ public class Warn implements ICommand {
             }
 
             default -> {
+                Member member = userMapping.getAsMember();
                 if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
                     Warning warning = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "SELECT * FROM Warning WHERE guildId = :gid AND userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong()));
                     int warnings = warning != null ? warning.getWarnings() + 1 : 1;

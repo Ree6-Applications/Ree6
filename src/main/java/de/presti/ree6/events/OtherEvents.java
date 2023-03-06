@@ -407,10 +407,9 @@ public class OtherEvents extends ListenerAdapter {
                 ArrayUtil.messageIDwithUser.put(event.getMessageId(), event.getAuthor());
             }
 
-
             if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
-
                 if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
+                    // TODO:: change this to something funnier.
                     event.getChannel().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.default.usage", "help")).queue();
                 }
 

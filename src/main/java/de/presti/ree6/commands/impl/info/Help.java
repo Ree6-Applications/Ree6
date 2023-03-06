@@ -52,8 +52,9 @@ public class Help implements ICommand {
 
     /**
      * Sends the help information to the user.
+     *
      * @param categoryString The category to show the help for.
-     * @param commandEvent The command event.
+     * @param commandEvent   The command event.
      */
     public void sendHelpInformation(String categoryString, CommandEvent commandEvent) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
@@ -65,10 +66,11 @@ public class Help implements ICommand {
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
         if (categoryString == null) {
+            String prefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue();
             for (Category cat : Category.values()) {
                 if (cat != Category.HIDDEN) {
                     String formattedName = cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase();
-                    em.addField("**" + formattedName + "**", SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue() + "help " + cat.name().toLowerCase(), true);
+                    em.addField("**" + formattedName + "**", prefix + "help " + cat.name().toLowerCase(), true);
                 }
             }
         } else {
@@ -76,9 +78,12 @@ public class Help implements ICommand {
                 StringBuilder end = new StringBuilder();
 
                 Category category = getCategoryFromString(categoryString);
+
+                String prefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue();
+
                 for (ICommand cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).category() == category).toList()) {
                     end.append("``")
-                            .append(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue())
+                            .append(prefix)
                             .append(cmd.getClass().getAnnotation(Command.class).name())
                             .append("``\n")
                             .append(commandEvent.getResource(cmd.getClass().getAnnotation(Command.class).description()))
@@ -94,16 +99,17 @@ public class Help implements ICommand {
 
         messageCreateBuilder
                 .addActionRow(
-                        Button.of(ButtonStyle.LINK, "https://invite.ree6.de", "Invite",
+                        Button.of(ButtonStyle.LINK, "https://invite.ree6.de", commandEvent.getResource("label.invite"),
                                 Emoji.fromCustom("re_icon_invite", 1019234807844175945L, false)),
-                        Button.of(ButtonStyle.LINK, "https://support.ree6.de", "Support",
+                        Button.of(ButtonStyle.LINK, "https://support.ree6.de", commandEvent.getResource("label.support"),
                                 Emoji.fromCustom("re_icon_help", 1019234684745564170L, false)),
-                        Button.of(ButtonStyle.LINK, "https://github.ree6.de", "Github",
-                                Emoji.fromCustom("re_icon_github", 492259724079792138L, false))
-                        );
+                        Button.of(ButtonStyle.LINK, "https://github.ree6.de", commandEvent.getResource("label.github"),
+                                Emoji.fromCustom("re_icon_github", 492259724079792138L, false)),
+                        Button.of(ButtonStyle.LINK, "re_feedback", commandEvent.getResource("label.feedback"),
+                                Emoji.fromCustom("kiss", 1012765976951009361L, true))
+                );
 
-        messageCreateBuilder.setEmbeds(em.build());
-        commandEvent.reply(messageCreateBuilder.build());
+        commandEvent.reply(messageCreateBuilder.setEmbeds(em.build()).build());
     }
 
     /**
@@ -125,6 +131,7 @@ public class Help implements ICommand {
 
     /**
      * Check if a String is a valid category.
+     *
      * @param arg The String to check.
      * @return True if the String is a valid category.
      */
@@ -142,6 +149,7 @@ public class Help implements ICommand {
 
     /**
      * Get the Category from a String.
+     *
      * @param arg The String to use.
      * @return The Category.
      */

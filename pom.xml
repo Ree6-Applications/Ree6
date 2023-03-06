@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>2.3.5</version>
+    <version>2.3.7</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>com.github.walkyst</groupId>
             <artifactId>lavaplayer-fork</artifactId>
-            <version>1.3.99.2</version>
+            <version>1.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
-            <version>6.14.0</version>
+            <version>6.15.0</version>
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
@@ -132,14 +132,14 @@
         <dependency>
             <groupId>com.github.DxsSucuk</groupId>
             <artifactId>YoutubeWrapper</artifactId>
-            <version>c903fc138d</version>
+            <version>abe46731b0</version>
         </dependency>
 
         <!-- Database -->
         <dependency>
             <groupId>com.github.Ree6-Applications</groupId>
             <artifactId>Ree6-SQL</artifactId>
-            <version>1.4.7</version>
+            <version>1.4.8</version>
         </dependency>
 
         <!-- Logging -->
@@ -307,12 +307,13 @@
                     </includeOnlyProperties>
                     <commitIdGenerationMode>full</commitIdGenerationMode>
                     <dateFormat>ddMMyyyy</dateFormat>
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

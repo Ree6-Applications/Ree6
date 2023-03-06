@@ -70,6 +70,12 @@ public class MenuEvents extends ListenerAdapter {
         super.onButtonInteraction(event);
 
         switch (event.getComponentId()) {
+            case "re_feedback" -> {
+                Modal.Builder builder = Modal.create("re_feedback_modal", LanguageService.getByGuild(event.getGuild(), "label.feedback"));
+                builder.addActionRow(TextInput.create("re_feedback_text", LanguageService.getByGuild(event.getGuild(), "label.feedback"), TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
+                event.replyModal(builder.build()).queue();
+            }
+
             case "re_suggestion" -> {
                 Modal.Builder builder = Modal.create("re_suggestion_modal", LanguageService.getByGuild(event.getGuild(), "label.suggestion"));
                 builder.addActionRow(TextInput.create("re_suggestion_text", LanguageService.getByGuild(event.getGuild(), "label.suggestion"), TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
@@ -177,6 +183,10 @@ public class MenuEvents extends ListenerAdapter {
 
 
         switch (event.getModalId()) {
+            case "re_feedback_modal" -> {
+                // TODO:: decide if this is going to be send via webhook or stored in the database.
+            }
+
             case "re_suggestion_modal" -> {
                 Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "SELECT * FROM Suggestions WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
 
@@ -210,12 +220,12 @@ public class MenuEvents extends ListenerAdapter {
 
                 String twitchUsername = modalMapping.getAsString();
 
-                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistic"), true);
+                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics"), true);
 
                 Category category;
 
                 if (categories.isEmpty()) {
-                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistic")).complete();
+                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistics")).complete();
                 } else {
                     category = categories.get(0);
                 }
@@ -273,7 +283,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 String youtubeChannelName = modalMapping.getAsString();
 
-                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistic"), true);
+                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics"), true);
 
                 Category category;
 
@@ -284,7 +294,7 @@ public class MenuEvents extends ListenerAdapter {
                         .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.youtubeSuccess"));
 
                 if (categories.isEmpty()) {
-                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistic")).complete();
+                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistics")).complete();
                 } else {
                     category = categories.get(0);
                 }
@@ -297,7 +307,7 @@ public class MenuEvents extends ListenerAdapter {
                         youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(youtubeChannelName);
                     }
                 } catch (Exception e) {
-                    embedBuilder = embedBuilder
+                    embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu"))
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
@@ -368,7 +378,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 String subredditName = modalMapping.getAsString();
 
-                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistic"), true);
+                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics"), true);
 
                 Category category;
 
@@ -379,7 +389,7 @@ public class MenuEvents extends ListenerAdapter {
                         .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.redditSuccess"));
 
                 if (categories.isEmpty()) {
-                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistic")).complete();
+                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistics")).complete();
                 } else {
                     category = categories.get(0);
                 }
@@ -388,7 +398,7 @@ public class MenuEvents extends ListenerAdapter {
                 try {
                     subreddit = Main.getInstance().getNotifier().getSubreddit(subredditName);
                 } catch (IOException | InterruptedException e) {
-                    embedBuilder = embedBuilder
+                    embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu"))
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
@@ -449,7 +459,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 String twitterName = modalMapping.getAsString();
 
-                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistic"), true);
+                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics"), true);
 
                 Category category;
 
@@ -460,7 +470,7 @@ public class MenuEvents extends ListenerAdapter {
                         .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.twitterSuccess"));
 
                 if (categories.isEmpty()) {
-                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistic")).complete();
+                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistics")).complete();
                 } else {
                     category = categories.get(0);
                 }
@@ -469,7 +479,7 @@ public class MenuEvents extends ListenerAdapter {
                 try {
                     twitterUser = Main.getInstance().getNotifier().getTwitterClient().showUser(twitterName);
                 } catch (TwitterException e) {
-                    embedBuilder = embedBuilder
+                    embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu"))
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
@@ -530,7 +540,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 String instagramName = modalMapping.getAsString();
 
-                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistic"), true);
+                java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics"), true);
 
                 Category category;
 
@@ -541,7 +551,7 @@ public class MenuEvents extends ListenerAdapter {
                         .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.instagramSuccess"));
 
                 if (categories.isEmpty()) {
-                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistic")).complete();
+                    category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistics")).complete();
                 } else {
                     category = categories.get(0);
                 }
@@ -550,7 +560,7 @@ public class MenuEvents extends ListenerAdapter {
                 try {
                     instagramUser = Main.getInstance().getNotifier().getInstagramClient().getActions().users().findByUsername(instagramName).get().getUser();
                 } catch (ExecutionException | InterruptedException e) {
-                    embedBuilder = embedBuilder
+                    embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu"))
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
@@ -753,12 +763,12 @@ public class MenuEvents extends ListenerAdapter {
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.memberSuccess"));
                         embedBuilder.setColor(Color.GREEN);
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
-                        java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistic"), true);
+                        java.util.List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics"), true);
 
                         Category category;
 
                         if (categories.isEmpty()) {
-                            category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistic")).complete();
+                            category = event.getGuild().createCategory(LanguageService.getByGuild(event.getGuild(), "label.statistics")).complete();
                         } else {
                             category = categories.get(0);
                         }
@@ -767,7 +777,7 @@ public class MenuEvents extends ListenerAdapter {
                             voiceChannel.getManager().setUserLimit(0).queue();
                             event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.realMembersName", members.stream().filter(member -> !member.getUser().isBot()).count()), category).queue(voiceChannel1 -> {
                                 voiceChannel1.getManager().setUserLimit(0).queue();
-                                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.botMemberName", members.stream().filter(member -> member.getUser().isBot()).count()), category).queue(voiceChannel2 -> {
+                                event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.botMembersName", members.stream().filter(member -> member.getUser().isBot()).count()), category).queue(voiceChannel2 -> {
                                     voiceChannel2.getManager().setUserLimit(0).queue();
                                     ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "SELECT * FROM ChannelStats WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
                                     if (channelStats != null) {

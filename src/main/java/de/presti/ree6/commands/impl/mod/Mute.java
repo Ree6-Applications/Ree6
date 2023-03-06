@@ -112,6 +112,10 @@ public class Mute implements ICommand {
      * @param commandEvent The CommandEvent.
      */
     public void muteMember(Member executor, Member member, Duration duration, String reason, CommandEvent commandEvent) {
+        if (duration.toDays() > 28) {
+            commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));
+            return;
+        }
 
         if (executor.canInteract(member) && commandEvent.getGuild().getSelfMember().canInteract(member)) {
             member.timeoutFor(duration).reason(reason).onErrorFlatMap(throwable -> {
