@@ -341,6 +341,7 @@ message:
     lyrics:
       notFound: "Couldn't find the Lyrics for %s."
       foundUnlikely: "Lyrics for %s found, but they are unlikely to be correct: %s"
+    stop: "The player has been stopped!"
     pause: "The Player has been paused!"
     resume: "The Player has been resumed!"
     shuffle: "The Queue has been shuffled!"
@@ -353,6 +354,12 @@ message:
     notFound: "Couldn't find the Song ``%s``!"
     notFoundMultiple: "Couldn't find ``%s`` Songs!"
     searchFailed: "An error occurred while searching for the Song, please try again after a few minutes!"
+    songNext: "Next Song!\nSong:``%s``"
+    songQueueReachedEnd: "There is no new Song!"
+    seek:
+      success: "Seeked to ``%s``!"
+      failed: "You can't seek to a position that is longer than the song!"
+    failedPlaying: "Error while playing: ``%s``\nError : %s"
   nsfw:
     searching: "Searching for NSFW Content ..."
     notAllowed: "The Content you are searching for is not allowed! Example: loli hentai"
