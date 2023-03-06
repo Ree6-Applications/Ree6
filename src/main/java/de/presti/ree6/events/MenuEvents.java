@@ -308,7 +308,7 @@ public class MenuEvents extends ListenerAdapter {
                         youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(youtubeChannelName);
                     }
                 } catch (Exception e) {
-                    embedBuilder = embedBuilder
+                    embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu"))
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
@@ -399,7 +399,7 @@ public class MenuEvents extends ListenerAdapter {
                 try {
                     subreddit = Main.getInstance().getNotifier().getSubreddit(subredditName);
                 } catch (IOException | InterruptedException e) {
-                    embedBuilder = embedBuilder
+                    embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu"))
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
@@ -480,7 +480,7 @@ public class MenuEvents extends ListenerAdapter {
                 try {
                     twitterUser = Main.getInstance().getNotifier().getTwitterClient().showUser(twitterName);
                 } catch (TwitterException e) {
-                    embedBuilder = embedBuilder
+                    embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu"))
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
@@ -561,7 +561,7 @@ public class MenuEvents extends ListenerAdapter {
                 try {
                     instagramUser = Main.getInstance().getNotifier().getInstagramClient().getActions().users().findByUsername(instagramName).get().getUser();
                 } catch (ExecutionException | InterruptedException e) {
-                    embedBuilder = embedBuilder
+                    embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu"))
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
                             .setColor(Color.RED)
