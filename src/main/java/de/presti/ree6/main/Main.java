@@ -1,10 +1,7 @@
 package de.presti.ree6.main;
 
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
-import com.github.philippheuer.events4j.api.domain.IEventSubscription;
-import com.github.twitch4j.common.events.TwitchEvent;
 import com.github.twitch4j.pubsub.PubSubSubscription;
-import com.github.twitch4j.pubsub.events.ChannelPointsRedemptionEvent;
 import com.google.gson.JsonObject;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
@@ -22,7 +19,6 @@ import de.presti.ree6.events.MenuEvents;
 import de.presti.ree6.events.OtherEvents;
 import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.impl.musicquiz.util.MusicQuizUtil;
-import de.presti.ree6.language.Language;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.sql.DatabaseTyp;
@@ -47,16 +43,12 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import org.apache.commons.io.IOUtils;
-import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -341,8 +333,6 @@ public class Main {
         try {
             RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.github.com/repos/Ree6-Applications/Ree6/contents/" + parentPath).build()).getAsJsonArray().forEach(jsonElement -> {
                 String name = jsonElement.getAsJsonObject().getAsJsonPrimitive("name").getAsString();
-                // TODO:: add hash check
-                String hash = jsonElement.getAsJsonObject().getAsJsonPrimitive("sha").getAsString();
                 String path = jsonElement.getAsJsonObject().getAsJsonPrimitive("path").getAsString();
                 String download = jsonElement.getAsJsonObject().get("download_url").isJsonNull() ? null : jsonElement.getAsJsonObject().getAsJsonPrimitive("download_url").getAsString();
 
