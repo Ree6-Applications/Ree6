@@ -289,7 +289,7 @@ public class Blackjack implements IGame {
         if (winner == null) {
             embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.end.draw"));
         } else {
-            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.end.win", winner.getRelatedUser().getAsMention()));
+            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.end.win", winner.getRelatedUser().getAsMention(), winner.getHandValue(true)));
         }
 
         embedBuilder.addField(LanguageService.getByGuild(session.getGuild(), "label.userCards", currentPlayer.getRelatedUser().getAsTag()), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", currentPlayer.getHandAsString(true), currentPlayer.getHandValue(true)), true);
