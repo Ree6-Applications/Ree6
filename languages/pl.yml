@@ -1,7 +1,7 @@
 language:
   name: "Polish"
   locale: "pl"
-  version: "2.3.0"
+  version: "2.3.7"
   author: "Trust"
 logging:
   banned: ":airplane_departure: %s **zbanowany/a.**"
@@ -180,6 +180,8 @@ label:
   skip: "Pomiń"
   musicQuiz: "Quiz muzyczny"
   position: "Pozycja %s"
+  feedback: "Feedback"
+  github: "Github"
 message:
   default:
     usage: "Użycie {guild_prefix}%s."
@@ -194,6 +196,7 @@ message:
     checkBelow: "Sprawdź poniżej!"
     retrievalError: "Wystąpił błąd podczas pobierania danych!"
     notInVoiceChannel: "Nie jesteś na kanale głosowym!"
+    notInSameVoiceChannel: "You are not in the same Voice-Channel!"
     alreadyInVoiceChannel: "Jestem już w kanale głosowym!"
     image:
       needed: "Potrzebny jest obraz!"
@@ -341,6 +344,7 @@ message:
     lyrics:
       notFound: "Nie mogłem znaleźć tekstu dla %s."
       foundUnlikely: "Znaleziono tekst dla %s, ale prawdopodobnie nie jest poprawny: %s"
+    stop: "The player has been stopped!"
     pause: "Odtwarzacz został zatrzymany!"
     resume: "Odtwarzacz został wznowiony!"
     shuffle: "Kolejka została zlosowana!"
@@ -353,6 +357,18 @@ message:
     notFound: "Nie mogłem znaleźć pieśni ``%s``!"
     notFoundMultiple: "Nie mogłem znaleźć pieśni ``%s``!"
     searchFailed: "Wystąpił błąd podczas wyszukiwania pieśni, spróbuj ponownie za kilka minut!"
+    searchUrlFailed: "A Song with the URL ``%s`` couldn't be found!"
+    songNext: "Next Song!\nSong:``%s``"
+    songQueueReachedEnd: "There is no new Song!"
+    seek:
+      success: "Seeked to ``%s``!"
+      failed: "You can't seek to a position that is longer than the song!"
+    failedPlaying: "Error while playing: ``%s``\nError : %s"
+    failedLoading: "Error while loading a song: %s"
+    queueAdded:
+      default: "The Song ``%s`` has been added to the Queue!"
+      firstOfList: "The Song ``%s`` has been added to the Queue! (The first Song of the Playlist: %s)"
+    skip: "Skipping to the next Song in the Queue!"
   nsfw:
     searching: "Wyszukiwanie kontent NSFW..."
     notAllowed: "Kontent, który szukasz, jest niedozwolony! Przykład: loli hentai"
@@ -466,6 +482,7 @@ message:
   news:
     enabled: "Włączono odbieranie aktualności!"
     disabled: "Wyłączono odbieranie aktualności!"
+    notice: "To disable the receiving of news use /news"
   stream-action:
     added: "Włączyliśmy akcję strumienia o nazwie **%s**"
     addedLine: "Włączyliśmy akcję strumienia o nazwie **%s**"
@@ -501,6 +518,7 @@ game:
 command:
   perform:
     cooldown: "Masz się ostudzić!"
+    missingCommand: "Please provide a Command!"
     error: "Wystąpił błąd podczas wykonywania polecenia!"
     errorWithException: "Wystąpił błąd podczas wykonywania polecenia!\nWyjątek: %s"
     internalError: "Wystąpił błąd podczas wykonywania polecenia!\nJak to nie zmieni się, skontaktuj się z naszym działem wsparcia!\n<https://support.ree6.de>"
