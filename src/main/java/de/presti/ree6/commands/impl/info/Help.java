@@ -105,7 +105,7 @@ public class Help implements ICommand {
                                 Emoji.fromCustom("re_icon_help", 1019234684745564170L, false)),
                         Button.of(ButtonStyle.LINK, "https://github.ree6.de", commandEvent.getResource("label.github"),
                                 Emoji.fromCustom("re_icon_github", 492259724079792138L, false)),
-                        Button.of(ButtonStyle.LINK, "re_feedback", commandEvent.getResource("label.feedback"),
+                        Button.of(ButtonStyle.SECONDARY, "re_feedback", commandEvent.getResource("label.feedback"),
                                 Emoji.fromCustom("kiss", 1012765976951009361L, true))
                 );
 
