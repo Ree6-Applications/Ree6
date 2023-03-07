@@ -184,12 +184,14 @@ public class MenuEvents extends ListenerAdapter {
 
         switch (event.getModalId()) {
             case "re_feedback_modal" -> {
+                event.deferReply(true).queue();
+
                 EmbedBuilder embedBuilder = new EmbedBuilder()
                         .setTitle(LanguageService.getByGuild(event.getGuild(), "label.feedback"))
                         .setColor(Color.GREEN)
                         .setThumbnail(event.getUser().getEffectiveAvatarUrl())
                         .setDescription("```" + event.getValue("re_feedback_text").getAsString() + "```")
-                        .setFooter("By " + event.getUser().getAsTag() + "(" + event.getUser().getId() + ")", event.getUser().getAvatarUrl())
+                        .setFooter("By " + event.getUser().getAsTag() + " (" + event.getUser().getId() + ")", event.getUser().getAvatarUrl())
                         .setTimestamp(Instant.now());
 
                 Main.getInstance().getCommandManager().sendMessage(embedBuilder, BotWorker.getShardManager().getTextChannelById(1082266502738231336L));
