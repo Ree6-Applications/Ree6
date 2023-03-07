@@ -1,6 +1,11 @@
 package de.presti.ree6.commands.impl.mod;
 
 import com.google.gson.JsonElement;
+import de.presti.amari4j.entities.Leaderboard;
+import de.presti.amari4j.exception.InvalidAPIKeyException;
+import de.presti.amari4j.exception.InvalidGuildException;
+import de.presti.amari4j.exception.InvalidServerResponseException;
+import de.presti.amari4j.exception.RateLimitException;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
@@ -8,7 +13,9 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
+import de.presti.ree6.utils.apis.AmariAPI;
 import de.presti.ree6.utils.external.RequestUtility;
+import io.sentry.Sentry;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -34,7 +41,7 @@ public class Import implements ICommand {
             switch (commandEvent.getArguments()[0]) {
                 case "mee6" -> importFromMee6(commandEvent);
 
-                case "amari" -> commandEvent.reply("We are awaiting approval for the Amari API.");
+                case "amari" -> importFromAmari(commandEvent);
 
                 default -> commandEvent.reply(commandEvent.getResource("message.import.unknownBot"), 5);
             }
@@ -64,15 +71,13 @@ public class Import implements ICommand {
                         JsonElement xp = player.getAsJsonObject().get("xp");
 
                         if (id.isJsonPrimitive() && xp.isJsonPrimitive()) {
-                            ChatUserLevel chatUserLevel;
-                            if (SQLSession.getSqlConnector().getSqlWorker().existsInChatLevel(commandEvent.getGuild().getId(), id.getAsString())) {
-                                chatUserLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), id.getAsString());
-                                if (chatUserLevel.getExperience() > xp.getAsLong()) {
-                                    return;
-                                }
-                            } else {
-                                chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getId(), id.getAsString(), xp.getAsLong());
+                            ChatUserLevel chatUserLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), id.getAsString());
+
+                            if (chatUserLevel != null && chatUserLevel.getExperience() > xp.getAsLong()) {
+                                return;
                             }
+
+                            chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getId(), id.getAsString(), xp.getAsLong());
 
                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel);
                         }
@@ -96,6 +101,36 @@ public class Import implements ICommand {
                             code == 401 ?
                                     "message.import.error.visibility" :
                                     "message.import.error.unknown", reason), 5);
+        }
+    }
+
+    /**
+     * Sends a request to an API to get the data from Amari.
+     *
+     * @param commandEvent The CommandEvent.
+     */
+    public void importFromAmari(CommandEvent commandEvent) {
+        try {
+            Leaderboard leaderboard = AmariAPI.getAmari4J().getRawLeaderboard(commandEvent.getGuild().getId(), Integer.MIN_VALUE);
+
+            leaderboard.getMembers().forEach(member -> {
+                ChatUserLevel chatUserLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getUserid());
+
+                if (chatUserLevel != null && chatUserLevel.getExperience() > member.getExperience()) {
+                    return;
+                }
+
+                chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getId(), member.getUserid(), member.getExperience());
+
+                SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel);
+            });
+            commandEvent.reply(commandEvent.getResource("message.import.success", leaderboard.getCount()), 5);
+        } catch (InvalidAPIKeyException | InvalidServerResponseException | RateLimitException e) {
+            // TODO:: make some extra stuff for the rate-limit.
+            commandEvent.reply(commandEvent.getResource("command.perform.error"), 5);
+            Sentry.captureException(e);
+        } catch (InvalidGuildException e) {
+            commandEvent.reply(commandEvent.getResource("message.import.error.noData"), 5);
         }
     }
 
