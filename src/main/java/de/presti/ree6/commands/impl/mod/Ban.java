@@ -37,12 +37,13 @@ public class Ban implements ICommand {
             if (commandEvent.isSlashCommand()) {
                 OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
                 OptionMapping reasonOption = commandEvent.getSlashCommandInteractionEvent().getOption("reason");
+                OptionMapping deleteDaysOption = commandEvent.getSlashCommandInteractionEvent().getOption("del_days");
 
                 if (targetOption != null) {
                     if (reasonOption != null) {
-                        banMember(targetOption.getAsMember(), reasonOption.getAsString(), commandEvent);
+                        banMember(targetOption.getAsMember(), reasonOption.getAsString(), (deleteDaysOption != null ? deleteDaysOption.getAsInt() : 0), commandEvent);
                     } else {
-                        banMember(targetOption.getAsMember(), null, commandEvent);
+                        banMember(targetOption.getAsMember(), null, (deleteDaysOption != null ? deleteDaysOption.getAsInt() : 0), commandEvent);
                     }
                 } else {
                     commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
@@ -54,14 +55,14 @@ public class Ban implements ICommand {
                         commandEvent.reply(commandEvent.getResource("message.default.usage","ban @user"), 5);
                     } else {
                         if (commandEvent.getArguments().length == 1) {
-                            banMember(commandEvent.getMessage().getMentions().getMembers().get(0), null, commandEvent);
+                            banMember(commandEvent.getMessage().getMentions().getMembers().get(0), null, 7, commandEvent);
                         } else {
                             StringBuilder reason = new StringBuilder();
                             for (int i = 1; i < commandEvent.getArguments().length; i++) {
                                 reason.append(commandEvent.getArguments()[i]).append(" ");
                             }
 
-                            banMember(commandEvent.getMessage().getMentions().getMembers().get(0), reason.toString(), commandEvent);
+                            banMember(commandEvent.getMessage().getMentions().getMembers().get(0), reason.toString(), 7, commandEvent);
                         }
                     }
                 } else {
@@ -82,10 +83,10 @@ public class Ban implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("ban", LanguageService.getDefault("command.description.ban"))
-                .addOptions(new OptionData(OptionType.USER, "target", "Which User should be banned.").setRequired(true))
+                .addOptions(new OptionData(OptionType.USER, "target", "Which User should be banned.", true))
                 .addOptions(new OptionData(OptionType.INTEGER, "del_days", "Delete messages from the past days.")
                         .setRequiredRange(0, 7))
-                .addOptions(new OptionData(OptionType.STRING, "reason", "Why do you want to ban this User?").setRequired(false))
+                .addOptions(new OptionData(OptionType.STRING, "reason", "Why do you want to ban this User?"))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS));
     }
 
@@ -104,10 +105,15 @@ public class Ban implements ICommand {
      * @param reason The reason why the user should be banned.
      * @param commandEvent The command event.
      */
-    public void banMember(Member member, String reason, CommandEvent commandEvent) {
+    public void banMember(Member member, String reason, int deleteTime, CommandEvent commandEvent) {
+        if (member == null) {
+            commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));
+            return;
+        }
+
         if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
             commandEvent.reply(commandEvent.getResource("message.ban.success", member.getUser().getAsTag()), 5);
-            commandEvent.getGuild().ban(member, 7, TimeUnit.DAYS).reason(reason).queue();
+            commandEvent.getGuild().ban(member, deleteTime, TimeUnit.DAYS).reason(reason).queue();
         } else {
             if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
                 commandEvent.reply(commandEvent.getResource("message.ban.hierarchySelfError"), 5);
