@@ -33,7 +33,7 @@ public class Config {
                     #                              #
                     ################################
                     """);
-            yamlFile.addDefault("config.version", "2.1.0");
+            yamlFile.addDefault("config.version", "2.2.0");
             yamlFile.addDefault("config.creation", System.currentTimeMillis());
             yamlFile.addDefault("hikari.sql.user", "root");
             yamlFile.addDefault("hikari.sql.db", "root");
@@ -43,7 +43,8 @@ public class Config {
             yamlFile.addDefault("hikari.misc.storage", "sqlite");
             yamlFile.addDefault("hikari.misc.storageFile", "storage/Ree6.db");
             yamlFile.addDefault("hikari.misc.poolSize", 10);
-            yamlFile.addDefault("dagpi.apitoken", "yourdagpixyztokenhere");
+            yamlFile.addDefault("dagpi.apitoken", "DAGPI.xyz API-Token");
+            yamlFile.addDefault("amari.apitoken", "Amari API-Token");
             yamlFile.addDefault("sentry.dsn", "yourSentryDSNHere");
             yamlFile.addDefault("spotify.client.id", "yourspotifyclientid");
             yamlFile.addDefault("spotify.client.secret", "yourspotifyclientsecret");
@@ -77,11 +78,14 @@ public class Config {
     }
 
     /**
-     * Migrate from 1.10.0 config to 2.0.0 config.
+     * Migrate configs to newer versions
      */
     public void migrateOldConfig() {
-        if (yamlFile.getString("config.version") == null) {
-            Map<String, Object> resources = yamlFile.getValues(true);
+        String configVersion = yamlFile.getString("config.version");
+
+        Map<String, Object> resources = yamlFile.getValues(true);
+        if (configVersion == null) {
+            // Migrating 1.10.0
             if (getFile().delete()) {
                 init();
 
@@ -103,7 +107,55 @@ public class Config {
                     exception.printStackTrace();
                 }
             }
+        } else {
+            // Migrate from 2.0.0
+            if (getFile().delete()) {
+                init();
+
+                for (Map.Entry<String, Object> entry : resources.entrySet()) {
+                    if (compareVersion("2.2.0", configVersion)) {
+                        String key = entry.getKey();
+
+                        if (key.startsWith("youtube"))
+                            continue;
+
+                        yamlFile.set(key, entry.getValue());
+                    }
+                }
+
+                try {
+                    yamlFile.save(getFile());
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }
         }
+    }
+
+    /**
+     * Compare two version that are based on the x.y.z format.
+     * @param versionA the base version.
+     * @param versionB the version that should be tested against versionA.
+     * @return True if versionA is above versionB.
+     */
+    public boolean compareVersion(String versionA, String versionB) {
+        if (versionA == null) return false;
+        if (versionB == null) return true;
+
+        String[] split = versionA.split("\\.");
+
+        int mayor = Integer.parseInt(split[0]);
+        int minor = Integer.parseInt(split[1]);
+        int patch = Integer.parseInt(split[2]);
+
+        String[] split2 = versionB.split("\\.");
+        int otherMayor = Integer.parseInt(split2[0]);
+        int otherMinor = Integer.parseInt(split2[1]);
+        int otherPatch = Integer.parseInt(split2[2]);
+
+        if (mayor > otherMayor) return true;
+        if (mayor == otherMayor && minor > otherMinor) return true;
+        return mayor == otherMayor && minor == otherMinor && patch > otherPatch;
     }
 
     /**

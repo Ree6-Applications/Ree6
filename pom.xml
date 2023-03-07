@@ -134,6 +134,11 @@
             <artifactId>YoutubeWrapper</artifactId>
             <version>abe46731b0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.DxsSucuk</groupId>
+            <artifactId>Amari4Java</artifactId>
+            <version>63f49f783b</version>
+        </dependency>
 
         <!-- Database -->
         <dependency>
