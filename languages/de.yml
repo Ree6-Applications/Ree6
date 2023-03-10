@@ -182,6 +182,7 @@ label:
   position: "Position %s"
   feedback: "Feedback"
   github: "Github"
+  queueAdd: "Add to Queue"
 message:
   default:
     usage: "Nutzung {guild_prefix}%s."
@@ -349,6 +350,7 @@ message:
     resume: "Der Musikspieler wurde fortgesetzt!"
     shuffle: "Die Songliste wurde gemischt!"
     songInfo: "**Song:**```%s von %s```\n%s `[%s/%s]` %s"
+    songInfoSlim: "%s by %s"
     songQueueEmpty: "Die Songliste ist leer!"
     songQueue: "Die Songliste enthält diese Songs: %s"
     volume:
@@ -606,6 +608,8 @@ command:
     warn: "Warne einen Nutzer und lass ihn automatisch bestraft werden."
     infractions: "Zeige alle Verwarnungen eines Nutzers an."
     musicquiz: "Spiele mit deinen Freunden eine Runde Musik Quiz!"
+    musicpanel: "Access a simple UI to manage the Music System!"
+    schedule: "Schedule messages for later or for a repeated time!"
 category:
   info: "Wird verwendet, um Informationen zu sammeln oder Informationen zu geben."
   moderation: "Moderations-Tools, die Ihnen beim Verwalten von Benutzern helfen oder das Missachten von Regeln auf dem Server verhindern können."
