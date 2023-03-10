@@ -15,8 +15,12 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.apis.SpotifyAPIHandler;
+import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
+import io.sentry.Sentry;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
@@ -30,12 +34,15 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Wrapper class that handles most Music related stuff.
  */
+@Slf4j
 public class MusicWorker {
 
     /**
@@ -275,6 +282,134 @@ public class MusicWorker {
     public void play(AudioChannel audioChannel, GuildMusicManager musicManager, AudioTrack track, boolean force) {
         connectToAudioChannel(musicManager.getGuild().getAudioManager(), audioChannel);
         musicManager.getScheduler().queue(track, force);
+    }
+
+    /**
+     * Play a specific song.
+     * @param value The song name or url.
+     * @param commandEvent The command event.
+     */
+    public void playSong(String value, CommandEvent commandEvent) {
+        if (!commandEvent.isSlashCommand()) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String argument : commandEvent.getArguments()) {
+                stringBuilder.append(argument).append(" ");
+            }
+
+            playSong(stringBuilder.toString(), commandEvent.getGuild(), commandEvent.getMember(), commandEvent.getChannel(), commandEvent.getInteractionHook());
+        } else {
+            playSong(value, commandEvent.getGuild(), commandEvent.getMember(), commandEvent.getChannel(), commandEvent.getInteractionHook());
+        }
+    }
+
+    /**
+     * Play a specific song.
+     *
+     * @param value           The song name or url.
+     * @param guild           The Guild this command has been executed on.
+     * @param member          The Member that has executed this.
+     * @param channel         The channel it has been executed in.
+     * @param interactionHook The Interaction-Hook of the member
+     */
+    public void playSong(String value, Guild guild, Member member, MessageChannelUnion channel, InteractionHook interactionHook) {
+        if (FormatUtil.isUrl(value)) {
+            boolean isspotify = false;
+            ArrayList<String> spotiftrackinfos = null;
+
+            if (value.contains("spotify")) {
+                try {
+                    isspotify = true;
+                    spotiftrackinfos = SpotifyAPIHandler.getInstance().convert(value);
+                } catch (Exception exception) {
+                    Sentry.captureException(exception);
+                } finally {
+                    if (spotiftrackinfos == null) spotiftrackinfos = new ArrayList<>();
+                }
+            }
+
+            if (!isspotify) {
+                loadAndPlay(channel, Objects.requireNonNull(member.getVoiceState()).getChannel(), value, interactionHook, false);
+            } else {
+                if (spotiftrackinfos.isEmpty()) {
+                    EmbedBuilder em = new EmbedBuilder()
+                            .setAuthor(guild.getJDA().getSelfUser().getName(),
+                                    Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
+                            .setTitle(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "label.musicPlayer"))
+                            .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
+                            .setColor(Color.GREEN)
+                            .setDescription(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "message.music.notFound", value))
+                            .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl());
+                    Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
+                    return;
+                }
+
+                ArrayList<String> loadFailed = new ArrayList<>();
+
+                boolean addedFirst = false;
+
+                for (String search : spotiftrackinfos) {
+                    String result = null;
+                    try {
+                        result = YouTubeAPIHandler.getInstance().searchYoutube(search);
+                    } catch (Exception exception) {
+                        log.error("Error while searching for " + search + " on YouTube", exception);
+                    }
+
+                    if (result == null) {
+                        loadFailed.add(search);
+                    } else {
+                        if (!addedFirst) {
+                            loadAndPlay(channel, Objects.requireNonNull(member.getVoiceState()).getChannel(), result, interactionHook, false);
+                            addedFirst = true;
+                        } else {
+                            loadAndPlaySilence(channel, Objects.requireNonNull(member.getVoiceState()).getChannel(), result, interactionHook);
+                        }
+                    }
+                }
+
+                if (!loadFailed.isEmpty()) {
+                    EmbedBuilder em = new EmbedBuilder()
+                            .setAuthor(guild.getJDA().getSelfUser().getName(),
+                                    Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
+                            .setTitle(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "label.musicPlayer"))
+                            .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
+                            .setColor(Color.GREEN)
+                            .setDescription(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "message.music.notFoundMultiple", loadFailed.size()))
+                            .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl());
+                    Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
+                }
+            }
+        } else {
+            String ytResult;
+
+            try {
+                ytResult = YouTubeAPIHandler.getInstance().searchYoutube(value);
+            } catch (Exception exception) {
+                EmbedBuilder em = new EmbedBuilder()
+                        .setAuthor(guild.getJDA().getSelfUser().getName(), Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
+                        .setTitle(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "label.musicPlayer"))
+                        .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
+                        .setColor(Color.RED)
+                        .setDescription(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "message.music.searchFailed"))
+                        .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl());
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
+                log.error("Error while searching for " + value + " on YouTube", exception);
+                return;
+            }
+
+            if (ytResult == null) {
+                EmbedBuilder em = new EmbedBuilder()
+                        .setAuthor(guild.getJDA().getSelfUser().getName(), Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
+                        .setTitle(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "label.musicPlayer"))
+                        .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
+                        .setColor(Color.YELLOW)
+                        .setDescription(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "message.music.notFound", FormatUtil.filter(value)))
+                        .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl());
+                Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
+            } else {
+                loadAndPlay(channel, Objects.requireNonNull(member.getVoiceState()).getChannel(), ytResult, interactionHook, false);
+            }
+        }
     }
 
     /**

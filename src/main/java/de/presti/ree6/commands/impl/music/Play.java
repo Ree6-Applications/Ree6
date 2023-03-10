@@ -45,7 +45,7 @@ public class Play implements ICommand {
             OptionMapping valueOption = commandEvent.getSlashCommandInteractionEvent().getOption("name");
 
             if (valueOption != null) {
-                playSong(valueOption.getAsString(), commandEvent);
+                Main.getInstance().getMusicWorker().playSong(valueOption.getAsString(), commandEvent);
             } else {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
@@ -70,7 +70,7 @@ public class Play implements ICommand {
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
                 commandEvent.reply(em.build(), 5);
             } else {
-                playSong(commandEvent.getArguments()[0], commandEvent);
+                Main.getInstance().getMusicWorker().playSong(commandEvent.getArguments()[0], commandEvent);
             }
         }
 
@@ -90,133 +90,5 @@ public class Play implements ICommand {
     @Override
     public String[] getAlias() {
         return new String[]{"p", "music"};
-    }
-
-    /**
-     * Play a specific song.
-     * @param value The song name or url.
-     * @param commandEvent The command event.
-     */
-    public void playSong(String value, CommandEvent commandEvent) {
-        if (isUrl(value)) {
-            boolean isspotify = false;
-            ArrayList<String> spotiftrackinfos = null;
-
-            if (value.contains("spotify")) {
-                try {
-                    isspotify = true;
-                    spotiftrackinfos = SpotifyAPIHandler.getInstance().convert(value);
-                } catch (Exception exception) {
-                    Sentry.captureException(exception);
-                } finally {
-                    if (spotiftrackinfos == null) spotiftrackinfos = new ArrayList<>();
-                }
-            }
-
-            if (!isspotify) {
-                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), value, commandEvent.getInteractionHook(), false);
-            } else {
-                if (spotiftrackinfos.isEmpty()) {
-                    EmbedBuilder em = new EmbedBuilder();
-                    em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                    em.setTitle(commandEvent.getResource("label.musicPlayer"));
-                    em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                    em.setColor(Color.GREEN);
-                    em.setDescription(commandEvent.getResource("message.music.notFound", value));
-                    em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                    commandEvent.reply(em.build(), 5);
-                    return;
-                }
-
-                ArrayList<String> loadFailed = new ArrayList<>();
-
-                boolean tempBoolean = false;
-
-                for (String search : spotiftrackinfos) {
-                    String result = null;
-                    try {
-                        result = YouTubeAPIHandler.getInstance().searchYoutube(search);
-                    } catch (Exception exception) {
-                        log.error("Error while searching for " + search + " on YouTube", exception);
-                    }
-
-                    if (result == null) {
-                        loadFailed.add(search);
-                    } else {
-                        if (!tempBoolean) {
-                            Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), result, commandEvent.getInteractionHook(), false);
-                            tempBoolean = true;
-                        } else {
-                            Main.getInstance().getMusicWorker().loadAndPlaySilence(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), result, commandEvent.getInteractionHook());
-                        }
-                    }
-                }
-
-                if (!loadFailed.isEmpty()) {
-                    EmbedBuilder em = new EmbedBuilder();
-                    em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                    em.setTitle(commandEvent.getResource("label.musicPlayer"));
-                    em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                    em.setColor(Color.GREEN);
-                    em.setDescription(commandEvent.getResource("message.music.notFoundMultiple", loadFailed.size()));
-                    em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                    commandEvent.reply(em.build(), 5);
-                }
-            }
-        } else {
-            StringBuilder search = new StringBuilder();
-
-            if (commandEvent.isSlashCommand()) {
-                search.append(value);
-            } else {
-                for (String i : commandEvent.getArguments()) {
-                    search.append(i).append(" ");
-                }
-            }
-
-            String ytResult;
-
-            try {
-                ytResult = YouTubeAPIHandler.getInstance().searchYoutube(search.toString());
-            } catch (Exception exception) {
-                EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle(commandEvent.getResource("label.musicPlayer"));
-                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setColor(Color.RED);
-                em.setDescription(commandEvent.getResource("message.music.searchFailed"));
-                em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                commandEvent.reply(em.build(), 5);
-                log.error("Error while searching for " + search + " on YouTube", exception);
-                return;
-            }
-
-            if (ytResult == null) {
-                EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE, commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setTitle(commandEvent.getResource("label.musicPlayer"));
-                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-                em.setColor(Color.YELLOW);
-                em.setDescription(commandEvent.getResource("message.music.notFound", FormatUtil.filter(search.toString())));
-                em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
-                commandEvent.reply(em.build(), 5);
-            } else {
-                Main.getInstance().getMusicWorker().loadAndPlay(commandEvent.getChannel(), Objects.requireNonNull(commandEvent.getMember().getVoiceState()).getChannel(), ytResult, commandEvent.getInteractionHook(), false);
-            }
-        }
-    }
-
-    /**
-     * Check if the given string is an url.
-     * @param input The string to check.
-     * @return True if the string is an url.
-     */
-    private boolean isUrl(String input) {
-        try {
-            new URL(input);
-            return true;
-        } catch (MalformedURLException e) {
-            return false;
-        }
     }
 }
