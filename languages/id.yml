@@ -183,7 +183,9 @@ label:
   feedback: "Masukan"
   github: "Github"
   queueAdd: "Add to Queue"
-  label: "Song"
+  song: "Song"
+  shuffle: "Shuffle"
+  loop: "Loop"
 message:
   default:
     usage: "Penggunaan {guild_prefix}%s."
