@@ -212,6 +212,10 @@ message:
     invalidOptionChannel: "Daný kanál neexistuje, jak jej vybrat? Jste průvodce?"
     missingOption: "Musíte zadat hodnotu pro možnost %s!"
     nameChangeFailed: "Nelze změnit mou vlastní přezdívku!"
+    time:
+      date: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
+      time: "Please use a valid Time!\\Note that we use the format HH/mm (hour/minute (24-hour))"
+      notEnough: "The entered time is not enough!"
   birthday:
     added:
       self: "Vaše narozeniny byly přidány!"
@@ -221,8 +225,6 @@ message:
       self: "Vaše narozeniny byly odstraněny!"
       other: "Narozeniny %s byly odstraněny!"
       noPerms: "Nemáte oprávnění k odstranění narozenin!"
-    other:
-      dateError: "Použijte platné datum!\nVezměte prosím na vědomí, že používáme formát dd.MM.yyyy (day.month.year)!"
   instagramNotifier:
     added: "Bylo vytvořeno oznámení Instagram pro uživatele %s!"
     list: "Zde jsou všechny Instagram oznámení které byly nastaveny:\n```%s```"
