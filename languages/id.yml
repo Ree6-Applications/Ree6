@@ -212,6 +212,10 @@ message:
     invalidOptionChannel: "Channel yang diberikan tidak ada, bagaimana kamu memilih ini? Apakah kamu seorang penyihir?"
     missingOption: "Kamu perlu memberikan nilai untuk opsi %s!"
     nameChangeFailed: "Tidak dapat mengganti nickname ku!"
+    time:
+      date: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
+      time: "Please use a valid Time!\\Note that we use the format HH/mm (hour/minute (24-hour))"
+      notEnough: "The entered time is not enough!"
   birthday:
     added:
       self: "Ulang Tahun mu telah ditambahkan!"
@@ -221,8 +225,6 @@ message:
       self: "Ulang Tahun mu telah dihapus!"
       other: "Ulang Tahun %s telah dihapus!"
       noPerms: "Kamu tidak punya izin untuk menghapus Ulang Tahun!"
-    other:
-      dateError: "Harap gunakan tanggal yang valid!\nPerhatikan bahwa kami menggunakan format dd.MM.yyyy (day.month.year)!"
   instagramNotifier:
     added: "Pemberitahuan Instagram telah dibuat untuk %s!"
     list: "Dibawah ini daftar Notifier Instagram yang telah disetup:\n```%s```"
