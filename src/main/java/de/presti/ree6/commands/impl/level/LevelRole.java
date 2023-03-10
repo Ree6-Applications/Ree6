@@ -41,9 +41,9 @@ public class LevelRole implements ICommand {
         }
 
         String command = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
-        OptionMapping voiceMapping = commandEvent.getSlashCommandInteractionEvent().getOption("voice");
-        OptionMapping levelMapping = commandEvent.getSlashCommandInteractionEvent().getOption("level");
-        OptionMapping roleMapping = commandEvent.getSlashCommandInteractionEvent().getOption("role");
+        OptionMapping voiceMapping = commandEvent.getOption("voice");
+        OptionMapping levelMapping = commandEvent.getOption("level");
+        OptionMapping roleMapping = commandEvent.getOption("role");
 
         if (command == null || (!command.equalsIgnoreCase("list") && (voiceMapping == null || levelMapping == null || roleMapping == null))) {
             commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));

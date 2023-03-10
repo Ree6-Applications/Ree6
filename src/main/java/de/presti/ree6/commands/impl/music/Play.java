@@ -42,7 +42,7 @@ public class Play implements ICommand {
 
         if (commandEvent.isSlashCommand()) {
 
-            OptionMapping valueOption = commandEvent.getSlashCommandInteractionEvent().getOption("name");
+            OptionMapping valueOption = commandEvent.getOption("name");
 
             if (valueOption != null) {
                 Main.getInstance().getMusicWorker().playSong(valueOption.getAsString(), commandEvent);

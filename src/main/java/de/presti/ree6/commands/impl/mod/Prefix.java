@@ -29,7 +29,7 @@ public class Prefix implements ICommand {
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR) && commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
 
             if (commandEvent.isSlashCommand()) {
-                OptionMapping prefixOption = commandEvent.getSlashCommandInteractionEvent().getOption("new-prefix");
+                OptionMapping prefixOption = commandEvent.getOption("new-prefix");
 
                 if (prefixOption != null) {
                     SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", prefixOption.getAsString());

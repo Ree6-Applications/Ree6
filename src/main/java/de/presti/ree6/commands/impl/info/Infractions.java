@@ -30,7 +30,7 @@ public class Infractions implements ICommand {
             return;
         }
 
-        OptionMapping userOption = commandEvent.getSlashCommandInteractionEvent().getOption("user");
+        OptionMapping userOption = commandEvent.getOption("user");
         Member member = userOption.getAsMember();
 
         Warning warning = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "SELECT * FROM Warning WHERE guildId = :gid AND userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong()));

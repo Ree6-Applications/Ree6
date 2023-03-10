@@ -4,31 +4,100 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.sql.entities.ScheduledMessage;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+import java.time.Duration;
+
+/**
+ * Schedule a message to a specific time or a repeating time.
+ */
 @Command(name = "schedule", description = "command.description.schedule", category = Category.COMMUNITY)
 public class Schedule implements ICommand {
+
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
+        if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
+            commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
+            return;
+        }
 
+        if (!commandEvent.isSlashCommand()) {
+            commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
+            return;
+        }
+
+        if (!commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MANAGE_SERVER.name()), 5);
+            return;
+        }
+
+        OptionMapping repeat = commandEvent.getOption("repeat");
+
+        String subCommand = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+
+        switch (subCommand) {
+            case "time" -> {
+                OptionMapping month = commandEvent.getOption("month");
+                OptionMapping day = commandEvent.getOption("day");
+                OptionMapping hour = commandEvent.getOption("hour");
+                OptionMapping minute = commandEvent.getOption("minute");
+
+                long fullTime = 0;
+                if (month != null) fullTime += Duration.ofDays(31 * month.getAsLong()).toMillis();
+                if (day != null) fullTime += Duration.ofDays(day.getAsLong()).toMillis();
+                if (hour != null) fullTime += Duration.ofHours(hour.getAsLong()).toMillis();
+                if (minute != null) fullTime += Duration.ofMinutes(minute.getAsLong()).toMillis();
+
+                if (fullTime < Duration.ofMinutes(1).toDays()) {
+                    // TODO:: return since this isn't allowed.
+                    return;
+                }
+
+                // TODO:: check for webhook and use existing one.
+                ScheduledMessage scheduledMessage = new ScheduledMessage();
+                scheduledMessage.setDelayAmount(fullTime);
+                scheduledMessage.setRepeated(repeat.getAsBoolean());
+            }
+
+            case "date" -> {
+
+            }
+
+            default -> {
+                commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
+            }
+        }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("schedule", "command.description.schedule")
-                .addSubcommands(new SubcommandData("in", "Send a scheduled message in x time.")
-                                .addOption(OptionType.INTEGER, "hour", "The hours of the delay.")
-                                .addOption(OptionType.INTEGER, "minute", "The minutes of the delay.")
-                                .addOption(OptionType.BOOLEAN, "repeat", "If the schedule should be repeated."),
-                        new SubcommandData("at", "Send a scheduled message at x.")
-                                .addOption(OptionType.STRING, "date", "The date in dd.MM.yyyy format.")
-                                .addOption(OptionType.STRING, "time", "The time in the hh/mm 24(hour)-format.")
-                                .addOption(OptionType.INTEGER, "repeat", "If the schedule should be repeated."));
+                .addSubcommands(new SubcommandData("time", "Send a scheduled message in x time.")
+                                .addOption(OptionType.INTEGER, "month", "The months of the delay.", false)
+                                .addOption(OptionType.INTEGER, "day", "The days of the delay.", false)
+                                .addOption(OptionType.INTEGER, "hour", "The hours of the delay.", false)
+                                .addOption(OptionType.INTEGER, "minute", "The minutes of the delay.", false)
+                                .addOption(OptionType.BOOLEAN, "repeat", "If the schedule should be repeated.", true),
+                        new SubcommandData("date", "Send a scheduled message at x.")
+                                .addOption(OptionType.STRING, "datetime", "The datetime in \"dd.MM.yyyy hh/MM\"(24h time) format.", true)
+                                .addOption(OptionType.INTEGER, "repeat", "If the schedule should be repeated.", true));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

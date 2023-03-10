@@ -34,8 +34,8 @@ public class Game implements ICommand {
             return;
         }
 
-        OptionMapping action = commandEvent.getSlashCommandInteractionEvent().getOption("action");
-        OptionMapping value = commandEvent.getSlashCommandInteractionEvent().getOption("value");
+        OptionMapping action = commandEvent.getOption("action");
+        OptionMapping value = commandEvent.getOption("value");
 
         if (action == null) {
             commandEvent.reply(commandEvent.getResource("message.game.actionNeeded"));

@@ -56,7 +56,7 @@ public class StreamActionCommand implements ICommand {
             return;
         }
 
-        OptionMapping name = commandEvent.getSlashCommandInteractionEvent().getOption("name");
+        OptionMapping name = commandEvent.getOption("name");
 
         String subCommandGroup = commandEvent.getSlashCommandInteractionEvent().getSubcommandGroup();
         String subCommand = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
@@ -72,7 +72,7 @@ public class StreamActionCommand implements ICommand {
                 if (streamAction != null) {
                     switch (subCommand) {
                         case "create" -> {
-                            OptionMapping action = commandEvent.getSlashCommandInteractionEvent().getOption("action");
+                            OptionMapping action = commandEvent.getOption("action");
 
                             String[] values = action.getAsString().split("\\s+");
 
@@ -97,7 +97,7 @@ public class StreamActionCommand implements ICommand {
 
                         case "delete" -> {
                             try {
-                                OptionMapping line = commandEvent.getSlashCommandInteractionEvent().getOption("line");
+                                OptionMapping line = commandEvent.getOption("line");
                                 int value = line.getAsInt();
                                 if (streamAction.getActions().getAsJsonArray().size() >= value && value > 0) {
                                     streamAction.getActions().getAsJsonArray().remove(value - 1);
@@ -125,7 +125,7 @@ public class StreamActionCommand implements ICommand {
                         }
 
                         case "listener" -> {
-                            OptionMapping listener = commandEvent.getSlashCommandInteractionEvent().getOption("listener");
+                            OptionMapping listener = commandEvent.getOption("listener");
                             String[] values = listener.getAsString().split("\\s+");
 
                             if (values.length >= 1) {

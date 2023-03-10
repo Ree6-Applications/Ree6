@@ -37,9 +37,9 @@ public class Announcement implements ICommand {
             return;
         }
 
-        OptionMapping title = commandEvent.getSlashCommandInteractionEvent().getOption("title");
-        OptionMapping content = commandEvent.getSlashCommandInteractionEvent().getOption("content");
-        OptionMapping toDeleteId = commandEvent.getSlashCommandInteractionEvent().getOption("id");
+        OptionMapping title = commandEvent.getOption("title");
+        OptionMapping content = commandEvent.getOption("content");
+        OptionMapping toDeleteId = commandEvent.getOption("id");
 
         if (title != null && content != null) {
             de.presti.ree6.news.Announcement announcement =

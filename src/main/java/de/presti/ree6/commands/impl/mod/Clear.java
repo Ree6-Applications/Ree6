@@ -33,7 +33,7 @@ public class Clear implements ICommand {
 
         if (commandEvent.getMember().hasPermission(Permission.MESSAGE_MANAGE)) {
             if (commandEvent.isSlashCommand()) {
-                OptionMapping amountOption = commandEvent.getSlashCommandInteractionEvent().getOption("amount");
+                OptionMapping amountOption = commandEvent.getOption("amount");
 
                 if (amountOption != null) {
                     deleteMessages(commandEvent, (int) amountOption.getAsDouble());

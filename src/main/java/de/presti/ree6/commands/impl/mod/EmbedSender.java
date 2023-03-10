@@ -37,18 +37,18 @@ public class EmbedSender implements ICommand {
             return;
         }
 
-        OptionMapping title = commandEvent.getSlashCommandInteractionEvent().getOption("title");
-        OptionMapping description = commandEvent.getSlashCommandInteractionEvent().getOption("description");
-        OptionMapping color = commandEvent.getSlashCommandInteractionEvent().getOption("color");
-        OptionMapping footer = commandEvent.getSlashCommandInteractionEvent().getOption("footer");
-        OptionMapping footerIcon = commandEvent.getSlashCommandInteractionEvent().getOption("footer_icon");
-        OptionMapping image = commandEvent.getSlashCommandInteractionEvent().getOption("image");
-        OptionMapping thumbnail = commandEvent.getSlashCommandInteractionEvent().getOption("thumbnail");
-        OptionMapping author = commandEvent.getSlashCommandInteractionEvent().getOption("author");
-        OptionMapping authorUrl = commandEvent.getSlashCommandInteractionEvent().getOption("author_url");
-        OptionMapping authorIcon = commandEvent.getSlashCommandInteractionEvent().getOption("author_icon");
-        OptionMapping url = commandEvent.getSlashCommandInteractionEvent().getOption("url");
-        OptionMapping timestamp = commandEvent.getSlashCommandInteractionEvent().getOption("timestamp");
+        OptionMapping title = commandEvent.getOption("title");
+        OptionMapping description = commandEvent.getOption("description");
+        OptionMapping color = commandEvent.getOption("color");
+        OptionMapping footer = commandEvent.getOption("footer");
+        OptionMapping footerIcon = commandEvent.getOption("footer_icon");
+        OptionMapping image = commandEvent.getOption("image");
+        OptionMapping thumbnail = commandEvent.getOption("thumbnail");
+        OptionMapping author = commandEvent.getOption("author");
+        OptionMapping authorUrl = commandEvent.getOption("author_url");
+        OptionMapping authorIcon = commandEvent.getOption("author_icon");
+        OptionMapping url = commandEvent.getOption("url");
+        OptionMapping timestamp = commandEvent.getOption("timestamp");
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
 

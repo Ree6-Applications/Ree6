@@ -35,8 +35,8 @@ public class Kick implements ICommand {
 
             if (commandEvent.isSlashCommand()) {
 
-                OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
-                OptionMapping reasonOption = commandEvent.getSlashCommandInteractionEvent().getOption("reason");
+                OptionMapping targetOption = commandEvent.getOption("target");
+                OptionMapping reasonOption = commandEvent.getOption("reason");
 
                 if (targetOption != null) {
                     kickMember(targetOption.getAsMember(), (reasonOption != null ? reasonOption.getAsString() : "No Reason given!"), commandEvent);

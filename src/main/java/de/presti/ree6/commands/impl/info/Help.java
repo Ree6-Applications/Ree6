@@ -33,7 +33,7 @@ public class Help implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping categoryOption = commandEvent.getSlashCommandInteractionEvent().getOption("category");
+            OptionMapping categoryOption = commandEvent.getOption("category");
 
             if (categoryOption != null) {
                 sendHelpInformation(categoryOption.getAsString(), commandEvent);

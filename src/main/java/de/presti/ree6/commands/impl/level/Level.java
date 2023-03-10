@@ -31,8 +31,8 @@ Level implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
-            OptionMapping levelType = commandEvent.getSlashCommandInteractionEvent().getOption("typ");
+            OptionMapping targetOption = commandEvent.getOption("target");
+            OptionMapping levelType = commandEvent.getOption("typ");
 
             if (targetOption != null && targetOption.getAsMember() != null && levelType != null) {
                 sendLevel(targetOption.getAsMember(), commandEvent, levelType.getAsString());

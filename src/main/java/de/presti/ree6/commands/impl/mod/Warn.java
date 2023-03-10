@@ -50,12 +50,12 @@ public class Warn implements ICommand {
 
         String subCommandGroup = commandEvent.getSlashCommandInteractionEvent().getSubcommandGroup();
         String subCommand = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
-        OptionMapping userMapping = commandEvent.getSlashCommandInteractionEvent().getOption("user");
-        OptionMapping warningMapping = commandEvent.getSlashCommandInteractionEvent().getOption("warnings");
-        OptionMapping roleMapping = commandEvent.getSlashCommandInteractionEvent().getOption("role");
-        OptionMapping secondsMapping = commandEvent.getSlashCommandInteractionEvent().getOption("seconds");
-        OptionMapping reasonMapping = commandEvent.getSlashCommandInteractionEvent().getOption("reason");
-        OptionMapping idMapping = commandEvent.getSlashCommandInteractionEvent().getOption("id");
+        OptionMapping userMapping = commandEvent.getOption("user");
+        OptionMapping warningMapping = commandEvent.getOption("warnings");
+        OptionMapping roleMapping = commandEvent.getOption("role");
+        OptionMapping secondsMapping = commandEvent.getOption("seconds");
+        OptionMapping reasonMapping = commandEvent.getOption("reason");
+        OptionMapping idMapping = commandEvent.getOption("id");
 
         switch (subCommandGroup) {
             case "punishments" -> {

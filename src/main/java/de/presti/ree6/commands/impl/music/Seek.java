@@ -26,7 +26,7 @@ public class Seek implements ICommand {
         int seekAmountInSeconds = 1;
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping optionMapping = commandEvent.getSlashCommandInteractionEvent().getOption("seconds");
+            OptionMapping optionMapping = commandEvent.getOption("seconds");
             if (optionMapping != null) {
                 seekAmountInSeconds = optionMapping.getAsInt();
             }
