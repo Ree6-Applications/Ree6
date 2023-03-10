@@ -10,6 +10,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -47,11 +48,11 @@ public class MusicPanel implements ICommand {
         messageCreateBuilder.setEmbeds(embedBuilder.build());
 
         // TODO:: use icons
-        messageCreateBuilder.addActionRow(Button.of(ButtonStyle.SECONDARY, "re_music_play", "Play"),
-                Button.of(ButtonStyle.SECONDARY, "re_music_pause", "Pause"),
-                Button.of(ButtonStyle.SECONDARY, "re_music_skip", "Skip"),
-                Button.of(ButtonStyle.SECONDARY, "re_music_loop", "Loop"),
-                Button.of(ButtonStyle.SECONDARY, "re_music_shuffle", "Shuffle"),
+        messageCreateBuilder.addActionRow(Button.of(ButtonStyle.SECONDARY, "re_music_play", FormatUtil.PLAY_EMOJI),
+                Button.of(ButtonStyle.SECONDARY, "re_music_pause", FormatUtil.PAUSE_EMOJI),
+                Button.of(ButtonStyle.SECONDARY, "re_music_skip", FormatUtil.PLAY_EMOJI + FormatUtil.PLAY_EMOJI),
+                Button.of(ButtonStyle.SECONDARY, "re_music_loop", commandEvent.getResource("label.loop")),
+                Button.of(ButtonStyle.SECONDARY, "re_music_shuffle", commandEvent.getResource("label.shuffle")),
                 Button.success("re_music_add", commandEvent.getResource("label.queueAdd")));
 
 
