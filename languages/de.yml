@@ -212,6 +212,10 @@ message:
     invalidOptionChannel: "Dieser Channel ist nicht bekannt. Kannst du zaubern?"
     missingOption: "Du musst einen Wert für die Option %s angeben!"
     nameChangeFailed: "Ich konnte meinen eigenen Nickname nicht bearbeiten!"
+    time:
+      date: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
+      time: "Please use a valid Time!\\Note that we use the format HH/mm (hour/minute (24-hour))"
+      notEnough: "The entered time is not enough!"
   birthday:
     added:
       self: "Dein Geburtstag wurde hinzugefügt!"
@@ -221,8 +225,6 @@ message:
       self: "Dein Geburtstag wurde entfernt!"
       other: "Der Geburtstag von %s wurde entfernt!"
       noPerms: "Du hast keine Berechtigung um Geburtstage zu entfernen!"
-    other:
-      dateError: "Bitte nutze das richtige Datums format! (day.month.year)!"
   instagramNotifier:
     added: "Ein Instagram Notifier wurde für %s erstellt!"
     list: "Hier ist eine Liste mit allen Instagram Notifier:\n```%s```"
