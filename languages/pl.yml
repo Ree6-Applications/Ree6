@@ -183,7 +183,9 @@ label:
   feedback: "Informacja do producenta"
   github: "GitHub"
   queueAdd: "Add to Queue"
-  label: "Song"
+  song: "Song"
+  shuffle: "Shuffle"
+  loop: "Loop"
 message:
   default:
     usage: "Użycie {guild_prefix}%s."
