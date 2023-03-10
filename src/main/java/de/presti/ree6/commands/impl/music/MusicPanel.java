@@ -1,7 +1,5 @@
 package de.presti.ree6.commands.impl.music;
 
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import de.presti.ree6.audio.music.GuildMusicManager;
 import de.presti.ree6.commands.Category;
@@ -20,9 +18,15 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 import java.awt.*;
 
+/**
+ * Creates a small typeof UI to control music in a channel.
+ */
 @Command(name = "musicpanel", description = "command.description.musicpanel", category = Category.MUSIC)
-
 public class MusicPanel implements ICommand {
+
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.getMember().hasPermission(Permission.MANAGE_SERVER)) {
@@ -59,11 +63,17 @@ public class MusicPanel implements ICommand {
         commandEvent.reply(messageCreateBuilder.build());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return null;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];
