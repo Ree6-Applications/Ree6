@@ -203,7 +203,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
         AudioTrack track = null;
 
-        if (position > 0 && !queue.isEmpty() && queue.size() >= (position + 1)) {
+        if (position > 0 && !queue.isEmpty() && queue.size() >= position) {
             for (int currentPosition = 0; currentPosition < position; currentPosition++) {
                 track = queue.poll();
             }
