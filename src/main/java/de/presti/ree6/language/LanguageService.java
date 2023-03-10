@@ -181,6 +181,24 @@ public class LanguageService {
         return getByGuild(commandEvent.getGuild(), key, parameter);
     }
 
+
+    /**
+     * Called to get a specific String from the Language file.
+     *
+     * @param guild       The Guild to receive the locale from.
+     * @param interaction The Interaction to receive the locale from.
+     * @param key         The key of the String.
+     * @param parameter   The Parameters to replace placeholders in the String.
+     * @return The String.
+     */
+    public static @NotNull String getByGuildOrInteraction(Guild guild, Interaction interaction, @NotNull String key, @Nullable Object... parameter) {
+        if (interaction != null) {
+            return getByInteraction(interaction, key, parameter);
+        } else {
+            return getByGuild(guild, key, parameter);
+        }
+    }
+
     /**
      * Called to get a specific String from the Language file.
      *
@@ -218,7 +236,7 @@ public class LanguageService {
     }
 
     /**
-     * Called to get a specific String from the default Language file.
+     * Called to get a specific String from the Language file.
      *
      * @param interaction The Interaction to receive the locale from.
      * @param key         The key of the String.
@@ -274,6 +292,7 @@ public class LanguageService {
 
     /**
      * Called to retrieve all supported Locals.
+     *
      * @return The supported Locals.
      */
     public static Set<DiscordLocale> getSupported() {

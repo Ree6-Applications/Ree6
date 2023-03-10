@@ -298,10 +298,7 @@ public class MenuEvents extends ListenerAdapter {
             case "re_music_add_modal" -> {
                 event.deferReply(true).queue();
 
-                String song = event.getValue("re_music_add_modal_song").getAsString();
-
-                // TODO:: find a way to run the play command or remove all the utility from the
-                //  play command and put it into the MusicWorker to allow usage of these methods without any copy pasting.
+                Main.getInstance().getMusicWorker().playSong(event.getValue("re_music_add_modal_song").getAsString(), event.getGuild(), event.getMember(), event.getChannel(), event.getInteraction().getHook());
             }
 
             case "statisticsSetupTwitchModal" -> {
