@@ -144,7 +144,7 @@
         <dependency>
             <groupId>com.github.Ree6-Applications</groupId>
             <artifactId>Ree6-SQL</artifactId>
-            <version>1.4.8</version>
+            <version>1b00250427</version>
         </dependency>
 
         <!-- Logging -->
