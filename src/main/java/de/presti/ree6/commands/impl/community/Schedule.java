@@ -11,8 +11,14 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import org.apache.commons.validator.GenericValidator;
+import org.apache.commons.validator.routines.DateValidator;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Schedule a message to a specific time or a repeating time.
@@ -42,40 +48,27 @@ public class Schedule implements ICommand {
 
         OptionMapping repeat = commandEvent.getOption("repeat");
 
-        String subCommand = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+        OptionMapping month = commandEvent.getOption("month");
+        OptionMapping day = commandEvent.getOption("day");
+        OptionMapping hour = commandEvent.getOption("hour");
+        OptionMapping minute = commandEvent.getOption("minute");
 
-        switch (subCommand) {
-            case "time" -> {
-                OptionMapping month = commandEvent.getOption("month");
-                OptionMapping day = commandEvent.getOption("day");
-                OptionMapping hour = commandEvent.getOption("hour");
-                OptionMapping minute = commandEvent.getOption("minute");
+        long fullTime = 0;
+        if (month != null) fullTime += Duration.ofDays(31 * month.getAsLong()).toMillis();
+        if (day != null) fullTime += Duration.ofDays(day.getAsLong()).toMillis();
+        if (hour != null) fullTime += Duration.ofHours(hour.getAsLong()).toMillis();
+        if (minute != null) fullTime += Duration.ofMinutes(minute.getAsLong()).toMillis();
 
-                long fullTime = 0;
-                if (month != null) fullTime += Duration.ofDays(31 * month.getAsLong()).toMillis();
-                if (day != null) fullTime += Duration.ofDays(day.getAsLong()).toMillis();
-                if (hour != null) fullTime += Duration.ofHours(hour.getAsLong()).toMillis();
-                if (minute != null) fullTime += Duration.ofMinutes(minute.getAsLong()).toMillis();
-
-                if (fullTime < Duration.ofMinutes(1).toDays()) {
-                    // TODO:: return since this isn't allowed.
-                    return;
-                }
-
-                // TODO:: check for webhook and use existing one.
-                ScheduledMessage scheduledMessage = new ScheduledMessage();
-                scheduledMessage.setDelayAmount(fullTime);
-                scheduledMessage.setRepeated(repeat.getAsBoolean());
-            }
-
-            case "date" -> {
-
-            }
-
-            default -> {
-                commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
-            }
+        if (fullTime < Duration.ofMinutes(1).toDays()) {
+            commandEvent.reply(commandEvent.getResource("message.default.dateError.notEnough"));
+            return;
         }
+
+        // TODO:: check for webhook and use existing one.
+        ScheduledMessage scheduledMessage = new ScheduledMessage();
+        scheduledMessage.setDelayAmount(fullTime);
+        scheduledMessage.setRepeated(repeat.getAsBoolean());
+        // TODO:: add success message.
     }
 
     /**
@@ -84,15 +77,11 @@ public class Schedule implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("schedule", "command.description.schedule")
-                .addSubcommands(new SubcommandData("time", "Send a scheduled message in x time.")
                                 .addOption(OptionType.INTEGER, "month", "The months of the delay.", false)
                                 .addOption(OptionType.INTEGER, "day", "The days of the delay.", false)
                                 .addOption(OptionType.INTEGER, "hour", "The hours of the delay.", false)
                                 .addOption(OptionType.INTEGER, "minute", "The minutes of the delay.", false)
-                                .addOption(OptionType.BOOLEAN, "repeat", "If the schedule should be repeated.", true),
-                        new SubcommandData("date", "Send a scheduled message at x.")
-                                .addOption(OptionType.STRING, "datetime", "The datetime in \"dd.MM.yyyy hh/MM\"(24h time) format.", true)
-                                .addOption(OptionType.INTEGER, "repeat", "If the schedule should be repeated.", true));
+                                .addOption(OptionType.BOOLEAN, "repeat", "If the schedule should be repeated.", true);
     }
 
     /**
