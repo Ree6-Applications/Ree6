@@ -3,6 +3,7 @@ package de.presti.ree6.events;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import de.presti.ree6.audio.music.GuildMusicManager;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.language.Language;
@@ -149,6 +150,8 @@ public class MenuEvents extends ListenerAdapter {
                         stringBuilder.append("\n");
                     }
 
+                    // TODO:: translate and fix the date being shown as UTC+1 and instead use the current server region.
+
                     stringBuilder.append("\n").append("Closed by").append(" ").append(event.getUser().getAsTag());
 
                     WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
@@ -169,6 +172,75 @@ public class MenuEvents extends ListenerAdapter {
                     event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.close")).queue();
                     event.getChannel().delete().delay(2, TimeUnit.SECONDS).queue();
                 }
+            }
+
+            case "re_music_play" -> {
+                event.deferReply(true).queue();
+                GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild());
+
+                if (guildMusicManager != null) guildMusicManager.getPlayer().setPaused(false);
+            }
+
+            case "re_music_pause" -> {
+                event.deferReply(true).queue();
+                GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild());
+
+                if (guildMusicManager != null) guildMusicManager.getPlayer().setPaused(true);
+            }
+
+            case "re_music_skip" -> {
+                event.deferReply(true).queue();
+                GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild());
+
+                if (guildMusicManager != null) guildMusicManager.getScheduler().nextTrack(event.getChannel(), true);
+            }
+
+            case "re_music_loop" -> {
+                event.deferReply(true).queue();
+                GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild());
+
+                if (guildMusicManager != null) {
+                    EmbedBuilder em = new EmbedBuilder();
+
+                    em.setAuthor(event.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                            event.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                    em.setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer"));
+                    em.setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                    em.setColor(Color.GREEN);
+                    em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild()).getScheduler().loop() ?
+                            LanguageService.getByGuild(event.getGuild(),"message.music.loop.enabled") :
+                            LanguageService.getByGuild(event.getGuild(),"message.music.loop.disabled"));
+                    em.setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl());
+
+                    Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
+                }
+            }
+
+            case "re_music_shuffle" -> {
+                event.deferReply(true).queue();
+                GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild());
+
+                if (guildMusicManager != null) {
+                    EmbedBuilder em = new EmbedBuilder();
+
+                    guildMusicManager.getScheduler().shuffle();
+
+                    em.setAuthor(event.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                            event.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                    em.setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer"));
+                    em.setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                    em.setColor(Color.GREEN);
+                    em.setDescription(LanguageService.getByGuild(event.getGuild(), "message.music.shuffle"));
+                    em.setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl());
+
+                    Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
+                }
+            }
+
+            case "re_music_add" -> {
+                Modal.Builder builder = Modal.create("re_music_add_modal", LanguageService.getByGuild(event.getGuild(), "label.queueAdd"));
+                builder.addActionRow(TextInput.create("re_music_add_modal_song", LanguageService.getByGuild(event.getGuild(), "label.song"), TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(512).setMinLength(8).build());
+                event.replyModal(builder.build()).queue();
             }
         }
     }
@@ -221,6 +293,15 @@ public class MenuEvents extends ListenerAdapter {
                 } else {
                     Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.suggestion.notSetup"), null, event.getInteraction().getHook());
                 }
+            }
+
+            case "re_music_add_modal" -> {
+                event.deferReply(true).queue();
+
+                String song = event.getValue("re_music_add_modal_song").getAsString();
+
+                // TODO:: find a way to run the play command or remove all the utility from the
+                //  play command and put it into the MusicWorker to allow usage of these methods without any copy pasting.
             }
 
             case "statisticsSetupTwitchModal" -> {

@@ -39,7 +39,7 @@ public class MusicPanel implements ICommand {
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setColor(Color.MAGENTA)
-                .setImage("")
+                .setImage("https://images.unsplash.com/photo-1546977463-943d58b78c19")
                 .setTitle("**" + (audioTrackInfo != null ? commandEvent.getResource("message.music.songInfoSlim", audioTrackInfo.title, audioTrackInfo.author)
                         : commandEvent.getResource("message.music.notPlaying")) + "**")
                 .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
@@ -48,11 +48,12 @@ public class MusicPanel implements ICommand {
 
         // TODO:: use icons
         messageCreateBuilder.addActionRow(Button.of(ButtonStyle.SECONDARY, "re_music_play", "Play"),
-                Button.of(ButtonStyle.SECONDARY, "re_music_stop", "Stop"),
+                Button.of(ButtonStyle.SECONDARY, "re_music_pause", "Pause"),
                 Button.of(ButtonStyle.SECONDARY, "re_music_skip", "Skip"),
                 Button.of(ButtonStyle.SECONDARY, "re_music_loop", "Loop"),
                 Button.of(ButtonStyle.SECONDARY, "re_music_shuffle", "Shuffle"),
                 Button.success("re_music_add", commandEvent.getResource("label.queueAdd")));
+
 
         commandEvent.reply(messageCreateBuilder.build());
     }
