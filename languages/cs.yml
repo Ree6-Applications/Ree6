@@ -183,6 +183,7 @@ label:
   feedback: "Zpětná vazba"
   github: "Github"
   queueAdd: "Add to Queue"
+  label: "Song"
 message:
   default:
     usage: "Použití {guild_prefix}%s."
