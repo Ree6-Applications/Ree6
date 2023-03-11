@@ -33,19 +33,8 @@ public class PlayTTSStreamAction implements IStreamAction {
 
         if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return;
 
-        String text = String.join(" ", arguments);
-
-        RequestUtility.Request request = RequestUtility.Request.builder()
-                .url("https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8))
-                .GET().build();
-        byte[] tts = RequestUtility.requestBytes(request);
-
-        Path filePath = Path.of("storage/tmp/", RandomUtils.randomString(16, false) + ".mp3");
-
-        try {
-            Files.write(filePath, tts);
-            Main.getInstance().getMusicWorker().loadAndPlay(guild, null, null, filePath.toAbsolutePath().toString(), null, true, false);
-        } catch (Exception ignore) {
-        }
+        Main.getInstance().getMusicWorker().loadAndPlay(guild, null, null,
+                "https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=" + URLEncoder.encode(String.join(" ", arguments), StandardCharsets.UTF_8),
+                null, true, false);
     }
 }

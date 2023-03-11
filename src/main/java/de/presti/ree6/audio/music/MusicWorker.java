@@ -12,6 +12,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import de.presti.ree6.audio.music.source.RestrictedHttpAudioSourceManager;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
@@ -66,7 +67,7 @@ public class MusicWorker {
         playerManager.registerSourceManager(new VimeoAudioSourceManager());
         playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
         playerManager.registerSourceManager(new YoutubeAudioSourceManager());
-        playerManager.registerSourceManager(new LocalAudioSourceManager());
+        playerManager.registerSourceManager(new RestrictedHttpAudioSourceManager());
     }
 
     /**

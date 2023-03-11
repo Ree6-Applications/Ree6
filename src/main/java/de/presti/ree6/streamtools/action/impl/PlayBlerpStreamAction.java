@@ -2,6 +2,7 @@ package de.presti.ree6.streamtools.action.impl;
 
 import com.github.twitch4j.common.events.TwitchEvent;
 import com.github.twitch4j.pubsub.events.RewardRedeemedEvent;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.streamtools.action.IStreamAction;
 import de.presti.ree6.streamtools.action.StreamActionInfo;
 import de.presti.ree6.utils.external.RequestUtility;
@@ -9,6 +10,8 @@ import lombok.NoArgsConstructor;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +49,8 @@ public class PlayBlerpStreamAction implements IStreamAction {
     public void runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
         if (twitchEvent == null) return;
 
+        if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return;
+
         if (twitchEvent instanceof RewardRedeemedEvent rewardRedeemedEvent) {
             String prompt = rewardRedeemedEvent.getRedemption().getReward().getPrompt().toLowerCase();
             Matcher matcher = blerpPattern.matcher(prompt);
@@ -56,8 +61,8 @@ public class PlayBlerpStreamAction implements IStreamAction {
 
                 Matcher pageMatcher = blerpPagePattern.matcher(blerpPageResponse);
                 if (matcher.find()) {
-                    String cdnUrl = pageMatcher.group(1);
-                    // TODO:: find a way to do this without playing it via cdn or make a custom audiomanager which allows http audio only to specific websites.
+                    Main.getInstance().getMusicWorker().loadAndPlay(guild, null, null,
+                            pageMatcher.group(1),null, true, false);
                 }
             }
         }
