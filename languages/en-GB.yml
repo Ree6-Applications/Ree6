@@ -214,7 +214,7 @@ message:
     nameChangeFailed: "Could not change the my own nickname!"
     time:
       date: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
-      time: "Please use a valid Time!\Note that we use the format HH/mm (hour/minute (24-hour))"
+      time: "Please use a valid Time!\nNote that we use the format HH/mm (hour/minute (24-hour))!"
       notEnough: "The entered time is not enough!"
   birthday:
     added:
