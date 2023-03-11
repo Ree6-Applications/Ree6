@@ -37,9 +37,9 @@ public class Mute implements ICommand {
 
             if (commandEvent.isSlashCommand()) {
 
-                OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
-                OptionMapping timeOption = commandEvent.getSlashCommandInteractionEvent().getOption("time");
-                OptionMapping reasonOption = commandEvent.getSlashCommandInteractionEvent().getOption("reason");
+                OptionMapping targetOption = commandEvent.getOption("target");
+                OptionMapping timeOption = commandEvent.getOption("time");
+                OptionMapping reasonOption = commandEvent.getOption("reason");
 
                 if (targetOption != null && timeOption != null) {
                     long time;

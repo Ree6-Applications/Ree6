@@ -31,7 +31,7 @@ public class Unban implements ICommand {
 
             if (commandEvent.isSlashCommand()) {
 
-                OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("id");
+                OptionMapping targetOption = commandEvent.getOption("id");
 
                 if (targetOption != null) {
                     try {

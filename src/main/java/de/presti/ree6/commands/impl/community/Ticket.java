@@ -51,8 +51,8 @@ public class Ticket implements ICommand {
             return;
         }
 
-        OptionMapping ticketChannel = commandEvent.getSlashCommandInteractionEvent().getOption("supportchannel");
-        OptionMapping logChannel = commandEvent.getSlashCommandInteractionEvent().getOption("logchannel");
+        OptionMapping ticketChannel = commandEvent.getOption("supportchannel");
+        OptionMapping logChannel = commandEvent.getOption("logchannel");
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
 

@@ -28,7 +28,7 @@ public class Kiss implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.isSlashCommand()) {
-            OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
+            OptionMapping targetOption = commandEvent.getOption("target");
 
             if (targetOption != null && targetOption.getAsMember() != null) {
                 sendKiss(targetOption.getAsMember(), commandEvent);

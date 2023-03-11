@@ -39,7 +39,7 @@ public class Anime implements ICommand {
         String[] args = commandEvent.getArguments();
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping searchQueryMapping = commandEvent.getSlashCommandInteractionEvent().getOption("search");
+            OptionMapping searchQueryMapping = commandEvent.getOption("search");
             if (searchQueryMapping != null)
                 args = searchQueryMapping.getAsString().split(" ");
         }

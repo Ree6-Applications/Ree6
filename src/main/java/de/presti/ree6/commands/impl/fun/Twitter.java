@@ -35,8 +35,8 @@ public class Twitter implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
-            OptionMapping contentOption = commandEvent.getSlashCommandInteractionEvent().getOption("content");
+            OptionMapping targetOption = commandEvent.getOption("target");
+            OptionMapping contentOption = commandEvent.getOption("content");
 
             if (targetOption != null && contentOption != null) {
                 sendTwitterTweet(targetOption.getAsMember(), contentOption.getAsString(), commandEvent);

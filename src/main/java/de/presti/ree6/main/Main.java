@@ -1,5 +1,6 @@
 package de.presti.ree6.main;
 
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.google.gson.JsonObject;
@@ -7,6 +8,7 @@ import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
 import de.presti.ree6.audio.music.MusicWorker;
 import de.presti.ree6.bot.BotWorker;
+import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.Category;
@@ -23,6 +25,7 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.sql.DatabaseTyp;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.ScheduledMessage;
 import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
@@ -49,8 +52,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -433,6 +438,48 @@ public class Main {
                         log.error("Couldn't delete file " + f.getName(), e);
                     }
                 });
+            }
+
+            for (ScheduledMessage scheduledMessage : SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ScheduledMessage(), "SELECT * FROM ScheduledMessage", null)) {
+                if (!scheduledMessage.isRepeated()) {
+                    if (scheduledMessage.getLastExecute() == null) {
+                        if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
+
+                            WebhookUtil.sendWebhook(null, new WebhookMessageBuilder()
+                                    .setUsername("Ree6-Scheduler")
+                                    .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
+                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), false);
+
+                            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
+                        }
+                    } else {
+                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
+                    }
+                } else {
+                    if (scheduledMessage.getLastUpdated() == null) {
+                        if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
+
+                            WebhookUtil.sendWebhook(null, new WebhookMessageBuilder()
+                                    .setUsername("Ree6-Scheduler")
+                                    .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
+                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), false);
+
+                            scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
+                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
+                        }
+                    } else {
+                        if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
+
+                            WebhookUtil.sendWebhook(null, new WebhookMessageBuilder()
+                                    .setUsername("Ree6-Scheduler")
+                                    .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
+                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), false);
+
+                            scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
+                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
+                        }
+                    }
+                }
             }
 
             // Need to load them all.

@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackState;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
@@ -182,35 +183,7 @@ public class TrackScheduler extends AudioEventAdapter {
      * @param silent      should the bot send a message or not?
      */
     public void nextTrack(MessageChannelUnion textChannel, boolean silent) {
-        if (loop) {
-            player.startTrack(player.getPlayingTrack(), true);
-            return;
-        }
-
-        setChannel(textChannel);
-
-        AudioTrack track = queue.poll();
-
-        if (track != null) {
-            if (!silent)
-                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                        .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
-                        .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                        .setColor(Color.GREEN)
-                        .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.songNext", FormatUtil.filter(track.getInfo().title)))
-                        .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
-            player.startTrack(track, false);
-        } else {
-            if (!silent)
-                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                        .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
-                        .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                        .setColor(Color.RED)
-                        .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.songQueueReachedEnd"))
-                        .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
-        }
+        nextTrack(textChannel, 0, silent);
     }
 
     /**
@@ -230,16 +203,16 @@ public class TrackScheduler extends AudioEventAdapter {
 
         AudioTrack track = null;
 
-
-        if (!queue.isEmpty() && queue.size() >= (position + 1)) {
+        if (position > 0 && !queue.isEmpty() && queue.size() >= position) {
             for (int currentPosition = 0; currentPosition < position; currentPosition++) {
                 track = queue.poll();
             }
+        } else if (position == 0) {
+            track = queue.poll();
         }
 
         if (track != null) {
             // TODO:: Really stupid workaround for https://github.com/Ree6-Applications/Ree6/issues/299! This should be rechecked later if it even worked.
-            if (track == player.getPlayingTrack()) track = player.getPlayingTrack().makeClone();
             if (!silent)
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
@@ -248,7 +221,7 @@ public class TrackScheduler extends AudioEventAdapter {
                         .setColor(Color.GREEN)
                         .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.songNext", FormatUtil.filter(track.getInfo().title)))
                         .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
-            player.startTrack(track, false);
+            player.startTrack(track.getState() == AudioTrackState.FINISHED ? track.makeClone() : track, false);
         } else {
             if (!silent)
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()

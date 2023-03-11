@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -168,5 +170,19 @@ public class FormatUtil {
                 .replace("@everyone", "@\u0435veryone") // cyrillic letter e
                 .replace("@here", "@h\u0435re") // cyrillic letter e
                 .trim();
+    }
+
+    /**
+     * Check if the given string is an url.
+     * @param input The string to check.
+     * @return True if the string is an url.
+     */
+    public static boolean isUrl(String input) {
+        try {
+            new URL(input);
+            return true;
+        } catch (MalformedURLException e) {
+            return false;
+        }
     }
 }

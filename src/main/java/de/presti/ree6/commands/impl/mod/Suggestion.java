@@ -41,8 +41,8 @@ public class Suggestion implements ICommand {
         }
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping channel = commandEvent.getSlashCommandInteractionEvent().getOption("target");
-            OptionMapping messageChannel = commandEvent.getSlashCommandInteractionEvent().getOption("messagetarget");
+            OptionMapping channel = commandEvent.getOption("target");
+            OptionMapping messageChannel = commandEvent.getOption("messagetarget");
 
             if (channel == null || messageChannel == null) {
                 commandEvent.reply(commandEvent.getResource("message.default.noMention.channel"), 5);

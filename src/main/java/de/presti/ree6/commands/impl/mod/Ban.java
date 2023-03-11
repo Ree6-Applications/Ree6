@@ -35,9 +35,9 @@ public class Ban implements ICommand {
 
         if (commandEvent.getMember().hasPermission(Permission.BAN_MEMBERS)) {
             if (commandEvent.isSlashCommand()) {
-                OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
-                OptionMapping reasonOption = commandEvent.getSlashCommandInteractionEvent().getOption("reason");
-                OptionMapping deleteDaysOption = commandEvent.getSlashCommandInteractionEvent().getOption("del_days");
+                OptionMapping targetOption = commandEvent.getOption("target");
+                OptionMapping reasonOption = commandEvent.getOption("reason");
+                OptionMapping deleteDaysOption = commandEvent.getOption("del_days");
 
                 if (targetOption != null) {
                     if (reasonOption != null) {
