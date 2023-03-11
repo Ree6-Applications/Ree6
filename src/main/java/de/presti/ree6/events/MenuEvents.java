@@ -178,21 +178,36 @@ public class MenuEvents extends ListenerAdapter {
                 event.deferReply(true).queue();
                 GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild());
 
-                if (guildMusicManager != null) guildMusicManager.getPlayer().setPaused(false);
+                if (guildMusicManager != null) {
+                    guildMusicManager.getPlayer().setPaused(false);
+                } else {
+                    Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.music.notConnected"),
+                            event.getChannel(), event.getHook());
+                }
             }
 
             case "re_music_pause" -> {
                 event.deferReply(true).queue();
                 GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild());
 
-                if (guildMusicManager != null) guildMusicManager.getPlayer().setPaused(true);
+                if (guildMusicManager != null) {
+                    guildMusicManager.getPlayer().setPaused(true);
+                } else {
+                    Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.music.notConnected"),
+                            event.getChannel(), event.getHook());
+                }
             }
 
             case "re_music_skip" -> {
                 event.deferReply(true).queue();
                 GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild());
 
-                if (guildMusicManager != null) guildMusicManager.getScheduler().nextTrack(event.getChannel(), true);
+                if (guildMusicManager != null) {
+                    Main.getInstance().getMusicWorker().skipTrack(event.getChannel(), event.getHook(),1,true);
+                } else {
+                    Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.music.notConnected"),
+                            event.getChannel(), event.getHook());
+                }
             }
 
             case "re_music_loop" -> {
@@ -213,6 +228,9 @@ public class MenuEvents extends ListenerAdapter {
                     em.setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl());
 
                     Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
+                } else {
+                    Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.music.notConnected"),
+                            event.getChannel(), event.getHook());
                 }
             }
 
@@ -234,6 +252,9 @@ public class MenuEvents extends ListenerAdapter {
                     em.setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl());
 
                     Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
+                } else {
+                    Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.music.notConnected"),
+                            event.getChannel(), event.getHook());
                 }
             }
 
@@ -297,8 +318,8 @@ public class MenuEvents extends ListenerAdapter {
 
             case "re_music_add_modal" -> {
                 event.deferReply(true).queue();
-
-                Main.getInstance().getMusicWorker().playSong(event.getValue("re_music_add_modal_song").getAsString(), event.getGuild(), event.getMember(), event.getChannel(), event.getInteraction().getHook());
+                Main.getInstance().getMusicWorker().playSong(event.getValue("re_music_add_modal_song").getAsString(),
+                        event.getGuild(), event.getMember(), event.getChannel(), event.getInteraction().getHook());
             }
 
             case "statisticsSetupTwitchModal" -> {
