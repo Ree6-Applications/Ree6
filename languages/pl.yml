@@ -1,7 +1,7 @@
 language:
   name: "Polish"
   locale: "pl"
-  version: "2.3.7"
+  version: "2.4.0"
   author: "Trust"
 logging:
   banned: ":airplane_departure: %s **zbanowany/a.**"
@@ -182,10 +182,10 @@ label:
   position: "Pozycja %s"
   feedback: "Informacja do producenta"
   github: "GitHub"
-  queueAdd: "Add to Queue"
-  song: "Song"
-  shuffle: "Shuffle"
-  loop: "Loop"
+  queueAdd: "Dodaj do kolejki"
+  song: "Pieśń"
+  shuffle: "Losuj"
+  loop: "Pętla"
 message:
   default:
     usage: "Użycie {guild_prefix}%s."
@@ -213,9 +213,9 @@ message:
     missingOption: "Musisz podać wartość dla opcji %s!"
     nameChangeFailed: "Nie mogłem zmienić swoje imię!"
     time:
-      date: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
-      time: "Please use a valid Time!\\Note that we use the format HH/mm (hour/minute (24-hour))"
-      notEnough: "The entered time is not enough!"
+      date: "Proszę użyć poprawnej daty!\nZauważ, że używamy formatu dd.mm.rrrr (dzień.miesiąc.rok)!"
+      time: "Please use a valid Time!\nNote that we use the format HH/mm (hour/minute (24-hour))!"
+      notEnough: "Wprowadzony czas nie wystarczy!"
   birthday:
     added:
       self: "Twoje urodziny zostały dodane!"
@@ -355,7 +355,7 @@ message:
     resume: "Odtwarzacz został wznowiony!"
     shuffle: "Kolejka została zlosowana!"
     songInfo: "**Pieśń:**```%s autorstwa %s```\n%s `[%s/%s]` %s"
-    songInfoSlim: "%s by %s"
+    songInfoSlim: "%s autorstwa %s"
     songQueueEmpty: "Kolejka jest pusta!"
     songQueue: "Kolejka zawiera następujące pieśni: %s"
     volume:
@@ -519,6 +519,12 @@ message:
   infractions:
     success: "Użytkownik %s ma %s infrakcji!"
     empty: "Użytkownik %s nie ma żadnych infrakcji!"
+  schedule:
+    added: "Harmonogram został utworzony!"
+    delete:
+      success: "Harmonogram został usunięty!"
+      failed: "Podany harmonogram nie istnieje!"
+    list: "Oto lista wszystkich harmonogramów: ```%s```"
 game:
   description:
     blackjack: "Zagraj w Blackjack z przyjaciółmi!"
@@ -613,8 +619,8 @@ command:
     warn: "Ostrzegaj użytkownika i pozwól im być karani automatycznie."
     infractions: "Pokaż wszystkie ostrzeżenia użytkownika."
     musicquiz: "Zagraj z przyjaciółmi grę w Quiz!"
-    musicpanel: "Access a simple UI to manage the Music System!"
-    schedule: "Schedule messages for later or for a repeated time!"
+    musicpanel: "Uzyskaj dostęp do prostego interfejsu użytkownika, aby zarządzać systemem muzycznym!"
+    schedule: "Zaplanuj wiadomości na później lub na powtarzający się czas!"
 category:
   info: "Wykorzystywane do gromadzenia informacji lub przekazywania informacji."
   moderation: "Narzędzia moderacyjne, które mogą pomóc ci zarządzać użytkownikami lub zapobiec łamania zasad na serwerze."
