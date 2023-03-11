@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +17,7 @@ import java.util.regex.Pattern;
  * StreamAction used to play a blerp sound that is bound to a specific channel reward.
  */
 @NoArgsConstructor
-@StreamActionInfo(name = "PlayBlerp", command = "play-blerp", description = "Plays the blerp audio of the reward.", introduced = "2.4.0")
+@StreamActionInfo(name = "PlayBlerp", command = "play-blerp", description = "Plays the blerp audio of a reward.", introduced = "2.4.0")
 public class PlayBlerpStreamAction implements IStreamAction {
 
     /**
