@@ -59,7 +59,7 @@ public class Rule34 implements ICommand {
         String[] args = commandEvent.getArguments();
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping tagsMapping = commandEvent.getSlashCommandInteractionEvent().getOption("tags");
+            OptionMapping tagsMapping = commandEvent.getOption("tags");
             if (tagsMapping != null)
                 args = tagsMapping.getAsString().split(" ");
         }

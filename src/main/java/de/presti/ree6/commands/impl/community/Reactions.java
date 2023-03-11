@@ -33,9 +33,9 @@ public class Reactions implements ICommand {
         }
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping action = commandEvent.getSlashCommandInteractionEvent().getOption("action");
-            OptionMapping message = commandEvent.getSlashCommandInteractionEvent().getOption("message");
-            OptionMapping role = commandEvent.getSlashCommandInteractionEvent().getOption("role");
+            OptionMapping action = commandEvent.getOption("action");
+            OptionMapping message = commandEvent.getOption("message");
+            OptionMapping role = commandEvent.getOption("role");
 
             switch (action.getAsString()) {
                 case "add" -> {

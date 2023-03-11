@@ -26,7 +26,7 @@ public class Skip implements ICommand {
         int skipAmount = 1;
 
         if (commandEvent.isSlashCommand()) {
-            OptionMapping optionMapping = commandEvent.getSlashCommandInteractionEvent().getOption("amount");
+            OptionMapping optionMapping = commandEvent.getOption("amount");
             if (optionMapping != null) {
                 skipAmount = optionMapping.getAsInt();
             }

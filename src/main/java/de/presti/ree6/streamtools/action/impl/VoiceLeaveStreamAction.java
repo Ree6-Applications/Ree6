@@ -1,5 +1,6 @@
 package de.presti.ree6.streamtools.action.impl;
 
+import com.github.twitch4j.common.events.TwitchEvent;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.streamtools.action.StreamActionInfo;
 import de.presti.ree6.streamtools.action.IStreamAction;
@@ -18,7 +19,7 @@ public class VoiceLeaveStreamAction implements IStreamAction {
      * @inheritDoc
      */
     @Override
-    public void runAction(@NotNull Guild guild, String[] arguments) {
+    public void runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
         if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return;
 
         Main.getInstance().getMusicWorker().disconnect(guild);

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
@@ -249,6 +250,17 @@ public class CommandEvent {
      */
     public @Nullable SlashCommandInteractionEvent getSlashCommandInteractionEvent() {
         return slashCommandInteractionEvent;
+    }
+
+    /**
+     * Get an option from the slash command!
+     * @param name The option name.
+     * @return the {@link OptionMapping} of the option | or null.
+     */
+    public @Nullable OptionMapping getOption(String name) {
+        if (!isSlashCommand()) return null;
+
+        return slashCommandInteractionEvent.getOption(name);
     }
 
     /**

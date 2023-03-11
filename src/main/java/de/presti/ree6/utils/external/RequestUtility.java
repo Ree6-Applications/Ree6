@@ -15,6 +15,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 /**
  * Utility used to work with HTTP Requests.
@@ -150,6 +152,38 @@ public class RequestUtility {
         }
 
         return new byte[0];
+    }
+
+    /**
+     * Send a Request.
+     * @param request the Request.
+     * @return a {@link String}
+     */
+    public static String requestString(Request request) {
+        try (InputStream httpResponse = request(request)) {
+
+            if (httpResponse == null) {
+                return "";
+            }
+
+            try {
+                Scanner scanner = new Scanner(httpResponse);
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while(scanner.hasNext()){
+                    stringBuilder.append(scanner.nextLine());
+                }
+
+                return stringBuilder.toString();
+            } catch (Exception ex) {
+                log.error("Couldn't send a Request!", ex);
+            }
+        } catch (IOException e) {
+            log.error("Couldn't send a Request!", e);
+            return "";
+        }
+
+        return "";
     }
 
     /**

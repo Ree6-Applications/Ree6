@@ -41,9 +41,9 @@ public class TwitchNotifier implements ICommand {
         }
 
         String command = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
-        OptionMapping nameMapping = commandEvent.getSlashCommandInteractionEvent().getOption("voice");
-        OptionMapping channelMapping = commandEvent.getSlashCommandInteractionEvent().getOption("channel");
-        OptionMapping messageMapping = commandEvent.getSlashCommandInteractionEvent().getOption("message");
+        OptionMapping nameMapping = commandEvent.getOption("voice");
+        OptionMapping channelMapping = commandEvent.getOption("channel");
+        OptionMapping messageMapping = commandEvent.getOption("message");
 
         switch (command) {
             case "list" -> {

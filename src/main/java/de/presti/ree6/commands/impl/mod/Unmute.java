@@ -35,7 +35,7 @@ public class Unmute implements ICommand {
 
             if (commandEvent.isSlashCommand()) {
 
-                OptionMapping targetOption = commandEvent.getSlashCommandInteractionEvent().getOption("target");
+                OptionMapping targetOption = commandEvent.getOption("target");
 
                 if (targetOption != null) {
                     unmuteMember(commandEvent.getMember(), targetOption.getAsMember(), commandEvent);

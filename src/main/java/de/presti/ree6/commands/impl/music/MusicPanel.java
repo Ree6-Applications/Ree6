@@ -59,7 +59,6 @@ public class MusicPanel implements ICommand {
                 Button.of(ButtonStyle.SECONDARY, "re_music_shuffle", commandEvent.getResource("label.shuffle")),
                 Button.success("re_music_add", commandEvent.getResource("label.queueAdd")));
 
-
         commandEvent.reply(messageCreateBuilder.build());
     }
 

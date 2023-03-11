@@ -44,7 +44,7 @@ public class Volume implements ICommand {
 
         if (commandEvent.isSlashCommand()) {
 
-            OptionMapping volumeOption = commandEvent.getSlashCommandInteractionEvent().getOption("amount");
+            OptionMapping volumeOption = commandEvent.getOption("amount");
 
             if (volumeOption != null) {
                 int volume = (int)volumeOption.getAsDouble();

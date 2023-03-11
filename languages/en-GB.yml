@@ -1,7 +1,7 @@
 language:
   name: "English (UK)"
   locale: "en-GB"
-  version: "2.3.7"
+  version: "2.4.0"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **banned.**"
@@ -212,6 +212,10 @@ message:
     invalidOptionChannel: "The given Channel doesn't exists, how did you select it? Are you a Wizard?"
     missingOption: "You need to provide a value for the option %s!"
     nameChangeFailed: "Could not change the my own nickname!"
+    time:
+      date: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
+      time: "Please use a valid Time!\Note that we use the format HH/mm (hour/minute (24-hour))"
+      notEnough: "The entered time is not enough!"
   birthday:
     added:
       self: "Your Birthday has been added!"
@@ -221,8 +225,6 @@ message:
       self: "Your Birthday has been removed!"
       other: "The Birthday of %s has been removed!"
       noPerms: "You don't have the permission to remove a Birthday!"
-    other:
-      dateError: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
   instagramNotifier:
     added: "A Instagram Notifier has been created for the User %s!"
     list: "Here are all Instagram Notifier that have been setup:\n```%s```"
@@ -517,6 +519,12 @@ message:
   infractions:
     success: "The User %s has %s infractions!"
     empty: "The User %s has no infractions!"
+  schedule:
+    added: "The schedule has been successfully created!"
+    delete:
+      success: "The schedule has been successfully deleted!"
+      failed: "The given schedule does not exist!"
+    list: "Here is a list of all schedules: ```%s```"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
