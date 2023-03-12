@@ -214,7 +214,7 @@ message:
     nameChangeFailed: "Nelze změnit mou vlastní přezdívku!"
     time:
       date: "Použijte platné datum!\nVezměte prosím na vědomí, že používáme formát dd.MM.yyyy (day.month.year)!"
-      time: "Please use a valid Time!\nNote that we use the format HH/mm (hour/minute (24-hour))!"
+      time: "Použijte prosím platný čas!\\nPamatuj, že používáme formát HH/mm (hodina/minuta)!"
       notEnough: "Zadaný čas nestačí!"
   birthday:
     added:
