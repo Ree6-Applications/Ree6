@@ -214,7 +214,7 @@ message:
     nameChangeFailed: "Tidak dapat mengganti nickname ku!"
     time:
       date: "Harap gunakan tanggal yang valid!\nPerhatikan bahwa kami menggunakan format dd.MM.yyyy (day.month.year)!"
-      time: "Please use a valid Time!\nNote that we use the format HH/mm (hour/minute (24-hour))!"
+      time: "Harap gunakan waktu yang valid!\nPerhatikan bahwa kami menggunakan format HH/mm (jam/menit (24-jam))!"
       notEnough: "Waktu yang dimasukkan tidak cukup!"
   birthday:
     added:
