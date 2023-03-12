@@ -520,11 +520,11 @@ message:
     success: "User %s memiliki %s pelanggaran!"
     empty: "User %s tidak memiliki pelanggaran!"
   schedule:
-    added: "The schedule has been successfully created!"
+    added: "Jadwal telah berhasil dibuat!"
     delete:
-      success: "The schedule has been successfully deleted!"
-      failed: "The given schedule does not exist!"
-    list: "Here is a list of all schedules: ```%s```"
+      success: "Jadwal telah berhasil dihapus!"
+      failed: "Jadwal yang diberikan tidak ada!"
+    list: "Ini daftar dari semua jadwal: ```%s```"
 game:
   description:
     blackjack: "Mainkan Blackjack dengan temanmu!"
