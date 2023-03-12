@@ -182,6 +182,10 @@ label:
   position: "Pozice %s"
   feedback: "Zpětná vazba"
   github: "Github"
+  queueAdd: "Add to Queue"
+  song: "Song"
+  shuffle: "Shuffle"
+  loop: "Loop"
 message:
   default:
     usage: "Použití {guild_prefix}%s."
@@ -208,6 +212,10 @@ message:
     invalidOptionChannel: "Daný kanál neexistuje, jak jej vybrat? Jste průvodce?"
     missingOption: "Musíte zadat hodnotu pro možnost %s!"
     nameChangeFailed: "Nelze změnit mou vlastní přezdívku!"
+    time:
+      date: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
+      time: "Please use a valid Time!\\Note that we use the format HH/mm (hour/minute (24-hour))"
+      notEnough: "The entered time is not enough!"
   birthday:
     added:
       self: "Vaše narozeniny byly přidány!"
@@ -217,8 +225,6 @@ message:
       self: "Vaše narozeniny byly odstraněny!"
       other: "Narozeniny %s byly odstraněny!"
       noPerms: "Nemáte oprávnění k odstranění narozenin!"
-    other:
-      dateError: "Použijte platné datum!\nVezměte prosím na vědomí, že používáme formát dd.MM.yyyy (day.month.year)!"
   instagramNotifier:
     added: "Bylo vytvořeno oznámení Instagram pro uživatele %s!"
     list: "Zde jsou všechny Instagram oznámení které byly nastaveny:\n```%s```"
@@ -349,6 +355,7 @@ message:
     resume: "Hráč byl obnoven!"
     shuffle: "Fronta byla zamíchána!"
     songInfo: "**Skladba:**```%s od %s```\n%s `[%s/%s]` %s"
+    songInfoSlim: "%s by %s"
     songQueueEmpty: "Fronta je prázdná!"
     songQueue: "Fronta obsahuje následující skladby: %s"
     volume:
@@ -606,6 +613,8 @@ command:
     warn: "Upozornit uživatele a nechat je potrestat automaticky."
     infractions: "Zobrazit všechna varování uživatele."
     musicquiz: "Zahrajte si s přáteli hudební kvíz!"
+    musicpanel: "Access a simple UI to manage the Music System!"
+    schedule: "Schedule messages for later or for a repeated time!"
 category:
   info: "Slouží ke shromažďování informací nebo poskytování informací."
   moderation: "Nástroje pro moderování, které vám mohou pomoci spravovat uživatele nebo zabránit porušení pravidel na serveru."

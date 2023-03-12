@@ -182,6 +182,10 @@ label:
   position: "Pozycja %s"
   feedback: "Informacja do producenta"
   github: "GitHub"
+  queueAdd: "Add to Queue"
+  song: "Song"
+  shuffle: "Shuffle"
+  loop: "Loop"
 message:
   default:
     usage: "Użycie {guild_prefix}%s."
@@ -208,6 +212,10 @@ message:
     invalidOptionChannel: "Podany kanał nie istnieje, jak go wybrałeś? Czy jesteś Czarodziejem?"
     missingOption: "Musisz podać wartość dla opcji %s!"
     nameChangeFailed: "Nie mogłem zmienić swoje imię!"
+    time:
+      date: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
+      time: "Please use a valid Time!\\Note that we use the format HH/mm (hour/minute (24-hour))"
+      notEnough: "The entered time is not enough!"
   birthday:
     added:
       self: "Twoje urodziny zostały dodane!"
@@ -217,8 +225,6 @@ message:
       self: "Twoje urodziny zostały usunięte!"
       other: "Urodziny %s zostały usunięte!"
       noPerms: "Nie masz uprawnień do usunięcia urodzin!"
-    other:
-      dateError: "Proszę użyć poprawnej daty!\nZauważ, że używamy formatu dd.mm.rrrr (dzień.miesiąc.rok)!"
   instagramNotifier:
     added: "Powiadomienie o Instagramie zostało utworzone dla użytkownika %s!"
     list: "Tutaj są wszystkie powiadomienia o Instagram'u, które zostały skonfigurowane:\n```%s```"
@@ -349,6 +355,7 @@ message:
     resume: "Odtwarzacz został wznowiony!"
     shuffle: "Kolejka została zlosowana!"
     songInfo: "**Pieśń:**```%s autorstwa %s```\n%s `[%s/%s]` %s"
+    songInfoSlim: "%s by %s"
     songQueueEmpty: "Kolejka jest pusta!"
     songQueue: "Kolejka zawiera następujące pieśni: %s"
     volume:
@@ -606,6 +613,8 @@ command:
     warn: "Ostrzegaj użytkownika i pozwól im być karani automatycznie."
     infractions: "Pokaż wszystkie ostrzeżenia użytkownika."
     musicquiz: "Zagraj z przyjaciółmi grę w Quiz!"
+    musicpanel: "Access a simple UI to manage the Music System!"
+    schedule: "Schedule messages for later or for a repeated time!"
 category:
   info: "Wykorzystywane do gromadzenia informacji lub przekazywania informacji."
   moderation: "Narzędzia moderacyjne, które mogą pomóc ci zarządzać użytkownikami lub zapobiec łamania zasad na serwerze."
