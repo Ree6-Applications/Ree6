@@ -520,11 +520,11 @@ message:
     success: "Uživatel %s má %s přestupků!"
     empty: "Uživatel %s nema žádné přestupky!"
   schedule:
-    added: "The schedule has been successfully created!"
+    added: "Naplánovaná zpráva byl úspěšně vytvořen!"
     delete:
-      success: "The schedule has been successfully deleted!"
-      failed: "The given schedule does not exist!"
-    list: "Here is a list of all schedules: ```%s```"
+      success: "Naplánovaná zpráva byl úspěšně odstraněn!"
+      failed: "Uvedený rozvrh neexistuje!"
+    list: "Zde je seznam všech rozvrhů: ```%s```"
 game:
   description:
     blackjack: "Hrajte Blackjack se svými přáteli!"
