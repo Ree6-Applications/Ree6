@@ -214,7 +214,7 @@ message:
     nameChangeFailed: "Ich konnte meinen eigenen Nickname nicht bearbeiten!"
     time:
       date: "Bitte gebe ein richtiges Datum an!\nTipp wir nutzen das dd.MM.yyy (tag.monat.jahr) Format!"
-      time: "Please use a valid Time!\nNote that we use the format HH/mm (hour/minute (24-hour))!"
+      time: "Bitte gebe eine richtige Zeit an!\nTipp wir nutzen das HH/mm (stunde/minute (24-stunden)) Format!"
       notEnough: "Die angegebene Zeit ist nicht genügend!"
   birthday:
     added:
