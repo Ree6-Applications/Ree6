@@ -136,12 +136,12 @@ public class Schedule implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("schedule", "command.description.schedule")
                 .addSubcommands(new SubcommandData("create", "Create a new scheduled Message.")
+                        .addOption(OptionType.CHANNEL, "channel", "The channel it should be sent to.", true)
+                        .addOption(OptionType.BOOLEAN, "repeat", "If the schedule should be repeated.", true)
                                 .addOption(OptionType.INTEGER, "month", "The months of the delay.", false)
                                 .addOption(OptionType.INTEGER, "day", "The days of the delay.", false)
                                 .addOption(OptionType.INTEGER, "hour", "The hours of the delay.", false)
-                                .addOption(OptionType.INTEGER, "minute", "The minutes of the delay.", false)
-                                .addOption(OptionType.CHANNEL, "channel", "The channel it should be sent to.", true)
-                                .addOption(OptionType.BOOLEAN, "repeat", "If the schedule should be repeated.", true),
+                                .addOption(OptionType.INTEGER, "minute", "The minutes of the delay.", false),
                         new SubcommandData("list", "List all scheduled Messages."),
                         new SubcommandData("delete", "Delete a scheduled Message.")
                                 .addOptions(new OptionData(OptionType.INTEGER, "id", "The ID of the scheduled Message", true).setMinValue(1)));
