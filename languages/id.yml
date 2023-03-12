@@ -1,7 +1,7 @@
 language:
   name: "Indonesia"
   locale: "id"
-  version: "2.3.7"
+  version: "2.4.0"
   author: "Gorengan_Hunter, SpyCat"
 logging:
   banned: ":airplane_departure: %s **telah diban.**"
@@ -182,10 +182,10 @@ label:
   position: "Posisi %s"
   feedback: "Masukan"
   github: "Github"
-  queueAdd: "Add to Queue"
-  song: "Song"
-  shuffle: "Shuffle"
-  loop: "Loop"
+  queueAdd: "Tambahkan ke antrian"
+  song: "Lagu"
+  shuffle: "Acak"
+  loop: "Ulang"
 message:
   default:
     usage: "Penggunaan {guild_prefix}%s."
@@ -213,9 +213,9 @@ message:
     missingOption: "Kamu perlu memberikan nilai untuk opsi %s!"
     nameChangeFailed: "Tidak dapat mengganti nickname ku!"
     time:
-      date: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
-      time: "Please use a valid Time!\\Note that we use the format HH/mm (hour/minute (24-hour))"
-      notEnough: "The entered time is not enough!"
+      date: "Harap gunakan tanggal yang valid!\nPerhatikan bahwa kami menggunakan format dd.MM.yyyy (day.month.year)!"
+      time: "Harap gunakan waktu yang valid!\nPerhatikan bahwa kami menggunakan format HH/mm (jam/menit (24-jam))!"
+      notEnough: "Waktu yang dimasukkan tidak cukup!"
   birthday:
     added:
       self: "Ulang Tahun mu telah ditambahkan!"
@@ -355,7 +355,7 @@ message:
     resume: "Pemutar telah di ditemukan!"
     shuffle: "Antrian telah diacak!"
     songInfo: "**Lagu:**```%s oleh %s```\n%s `[%s/%s]` %s"
-    songInfoSlim: "%s by %s"
+    songInfoSlim: "%s oleh %s"
     songQueueEmpty: "Antrian kosong!"
     songQueue: "Di antrian terdapat musik berikut: %s"
     volume:
@@ -519,6 +519,12 @@ message:
   infractions:
     success: "User %s memiliki %s pelanggaran!"
     empty: "User %s tidak memiliki pelanggaran!"
+  schedule:
+    added: "The schedule has been successfully created!"
+    delete:
+      success: "The schedule has been successfully deleted!"
+      failed: "The given schedule does not exist!"
+    list: "Here is a list of all schedules: ```%s```"
 game:
   description:
     blackjack: "Mainkan Blackjack dengan temanmu!"
@@ -613,8 +619,8 @@ command:
     warn: "Peringati user dan biarkan dia dihukum otomatis."
     infractions: "Tampilkan semua peringatan yang dimiliki user."
     musicquiz: "Mainkan Kuis Musik dengan teman anda!"
-    musicpanel: "Access a simple UI to manage the Music System!"
-    schedule: "Schedule messages for later or for a repeated time!"
+    musicpanel: "Akses UI sederhana untuk mengelola Sistem Musik!"
+    schedule: "Jadwalkan pesan untuk nanti atau untuk diulang!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"
