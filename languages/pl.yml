@@ -214,7 +214,7 @@ message:
     nameChangeFailed: "Nie mogłem zmienić swoje imię!"
     time:
       date: "Proszę użyć poprawnej daty!\nZauważ, że używamy formatu dd.mm.rrrr (dzień.miesiąc.rok)!"
-      time: "Please use a valid Time!\nNote that we use the format HH/mm (hour/minute (24-hour))!"
+      time: "Proszę użyć poprawnego czasu!\nPamiętaj, że używamy formatu HH/mm (godzina/minuta (24-godziny))!"
       notEnough: "Wprowadzony czas nie wystarczy!"
   birthday:
     added:
