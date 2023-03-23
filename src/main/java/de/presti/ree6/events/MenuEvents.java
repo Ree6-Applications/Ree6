@@ -178,7 +178,13 @@ public class MenuEvents extends ListenerAdapter {
                 event.deferReply(true).queue();
                 GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild());
 
-                if (guildMusicManager != null) guildMusicManager.getPlayer().setPaused(false);
+                if (guildMusicManager != null) {
+                    if (guildMusicManager.getPlayer().isPaused()) {
+                        guildMusicManager.getPlayer().setPaused(false);
+                    } else {
+                        guildMusicManager.getPlayer().setPaused(true);
+                    }
+                }
             }
 
             case "re_music_pause" -> {
