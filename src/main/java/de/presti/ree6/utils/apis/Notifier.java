@@ -180,7 +180,7 @@ public class Notifier {
                 if (!event.getRedemption().getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
                 if (container.getExtraArgument() == null || event.getRedemption().getReward().getId().equals(container.getExtraArgument())) {
-                    container.runActions(event.getRedemption().getUserInput());
+                    container.runActions(event, event.getRedemption().getUserInput());
                 }
             });
         });
@@ -190,7 +190,7 @@ public class Notifier {
             list.forEach(container -> {
                 if (!event.getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
-                container.runActions(event.getData().getUsername());
+                container.runActions(event, event.getData().getUsername());
             });
         });
 
@@ -199,7 +199,7 @@ public class Notifier {
             list.forEach(container -> {
                 if (!event.getBroadcasterUserId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
-                container.runActions(event.getUserName());
+                container.runActions(null, event.getUserName());
             });
         });
 

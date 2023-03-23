@@ -1,5 +1,6 @@
 package de.presti.ree6.streamtools;
 
+import com.github.twitch4j.common.events.TwitchEvent;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -86,9 +87,10 @@ public class StreamActionContainer {
     /**
      * Run all Actions.
      *
+     * @param twitchEvent The related Twitch event.
      * @param userInput The User Input.
      */
-    public void runActions(String userInput) {
+    public void runActions(TwitchEvent twitchEvent, String userInput) {
         actions.forEach((run) -> {
 
             String[] args = run.getArguments();
@@ -100,7 +102,7 @@ public class StreamActionContainer {
                 }
             }
 
-            run.getAction().runAction(guild, args);
+            run.getAction().runAction(guild, twitchEvent, args);
         });
     }
 }

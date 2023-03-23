@@ -6,22 +6,21 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.ScheduledMessage;
+import de.presti.ree6.sql.entities.webhook.WebhookScheduledMessage;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
-import org.apache.commons.validator.GenericValidator;
-import org.apache.commons.validator.routines.DateValidator;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Map;
 
 /**
@@ -66,7 +65,8 @@ public class Schedule implements ICommand {
                             .append(Instant.ofEpochMilli(scheduledMessage.getDelayAmount())
                                     .atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH/mm")));
                 }
-                // TODO:: list response message.
+
+                commandEvent.reply(commandEvent.getResource("message.schedule.list"));
             }
 
             case "delete" -> {
@@ -77,19 +77,20 @@ public class Schedule implements ICommand {
                                 Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id.getAsLong()));
 
                 if (scheduledMessage != null) {
-                    // TODO:: add success message.
                     SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
+                    commandEvent.reply(commandEvent.getResource("message.schedule.delete.success"));
                 } else {
-                    // TODO:: add failed message.
+                    commandEvent.reply(commandEvent.getResource("message.schedule.delete.failed"));
                 }
             }
 
             case "create" -> {
-                OptionMapping repeat = commandEvent.getOption("repeat");
                 OptionMapping month = commandEvent.getOption("month");
                 OptionMapping day = commandEvent.getOption("day");
                 OptionMapping hour = commandEvent.getOption("hour");
                 OptionMapping minute = commandEvent.getOption("minute");
+                OptionMapping channel = commandEvent.getOption("channel");
+                OptionMapping repeat = commandEvent.getOption("repeat");
 
                 long fullTime = 0;
                 if (month != null) fullTime += Duration.ofDays(31 * month.getAsLong()).toMillis();
@@ -102,11 +103,26 @@ public class Schedule implements ICommand {
                     return;
                 }
 
-                // TODO:: check for webhook and use existing one.
+                GuildChannelUnion guildChannel = channel.getAsChannel();
+
                 ScheduledMessage scheduledMessage = new ScheduledMessage();
+
+                WebhookScheduledMessage webhookScheduledMessage =
+                        SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookScheduledMessage(),
+                                "SELECT * FROM ScheduledMessageWebhooks WHERE gid = :gid AND actualChannelId = :channel",
+                                Map.of("gid", commandEvent.getGuild().getId(),"channel", guildChannel.getIdLong()));
+
+                if (webhookScheduledMessage == null) {
+                    Webhook webhook = guildChannel.asStandardGuildMessageChannel().createWebhook("Ree6-Schedule").complete();
+
+                    webhookScheduledMessage = SQLSession.getSqlConnector().getSqlWorker()
+                            .updateEntity(new WebhookScheduledMessage(commandEvent.getGuild().getId(), webhook.getId(), webhook.getToken(), guildChannel.getIdLong()));
+                }
+
+                scheduledMessage.setScheduledMessageWebhook(webhookScheduledMessage);
                 scheduledMessage.setDelayAmount(fullTime);
                 scheduledMessage.setRepeated(repeat.getAsBoolean());
-                // TODO:: add success message.
+                commandEvent.reply(commandEvent.getResource("message.schedule.added"));
             }
 
             default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
@@ -120,12 +136,13 @@ public class Schedule implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("schedule", "command.description.schedule")
                 .addSubcommands(new SubcommandData("create", "Create a new scheduled Message.")
-                        .addOption(OptionType.INTEGER, "month", "The months of the delay.", false)
-                        .addOption(OptionType.INTEGER, "day", "The days of the delay.", false)
-                        .addOption(OptionType.INTEGER, "hour", "The hours of the delay.", false)
-                        .addOption(OptionType.INTEGER, "minute", "The minutes of the delay.", false)
-                        .addOption(OptionType.BOOLEAN, "repeat", "If the schedule should be repeated.", true),
-                    new SubcommandData("list", "List all scheduled Messages."),
+                        .addOption(OptionType.CHANNEL, "channel", "The channel it should be sent to.", true)
+                        .addOption(OptionType.BOOLEAN, "repeat", "If the schedule should be repeated.", true)
+                                .addOption(OptionType.INTEGER, "month", "The months of the delay.", false)
+                                .addOption(OptionType.INTEGER, "day", "The days of the delay.", false)
+                                .addOption(OptionType.INTEGER, "hour", "The hours of the delay.", false)
+                                .addOption(OptionType.INTEGER, "minute", "The minutes of the delay.", false),
+                        new SubcommandData("list", "List all scheduled Messages."),
                         new SubcommandData("delete", "Delete a scheduled Message.")
                                 .addOptions(new OptionData(OptionType.INTEGER, "id", "The ID of the scheduled Message", true).setMinValue(1)));
     }

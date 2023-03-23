@@ -1,7 +1,7 @@
 language:
   name: "German"
   locale: "de"
-  version: "2.3.7"
+  version: "2.4.0"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **gebannt.**"
@@ -182,6 +182,10 @@ label:
   position: "Position %s"
   feedback: "Feedback"
   github: "Github"
+  queueAdd: "Zur Song-Liste hinzufügen"
+  song: "Song"
+  shuffle: "Mischen"
+  loop: "Song-Schleife"
 message:
   default:
     usage: "Nutzung {guild_prefix}%s."
@@ -208,6 +212,10 @@ message:
     invalidOptionChannel: "Dieser Channel ist nicht bekannt. Kannst du zaubern?"
     missingOption: "Du musst einen Wert für die Option %s angeben!"
     nameChangeFailed: "Ich konnte meinen eigenen Nickname nicht bearbeiten!"
+    time:
+      date: "Bitte gebe ein richtiges Datum an!\nTipp wir nutzen das dd.MM.yyy (tag.monat.jahr) Format!"
+      time: "Bitte gebe eine richtige Zeit an!\nTipp wir nutzen das HH/mm (stunde/minute (24-stunden)) Format!"
+      notEnough: "Die angegebene Zeit ist nicht genügend!"
   birthday:
     added:
       self: "Dein Geburtstag wurde hinzugefügt!"
@@ -217,8 +225,6 @@ message:
       self: "Dein Geburtstag wurde entfernt!"
       other: "Der Geburtstag von %s wurde entfernt!"
       noPerms: "Du hast keine Berechtigung um Geburtstage zu entfernen!"
-    other:
-      dateError: "Bitte nutze das richtige Datums format! (day.month.year)!"
   instagramNotifier:
     added: "Ein Instagram Notifier wurde für %s erstellt!"
     list: "Hier ist eine Liste mit allen Instagram Notifier:\n```%s```"
@@ -349,6 +355,7 @@ message:
     resume: "Der Musikspieler wurde fortgesetzt!"
     shuffle: "Die Songliste wurde gemischt!"
     songInfo: "**Song:**```%s von %s```\n%s `[%s/%s]` %s"
+    songInfoSlim: "%s von %s"
     songQueueEmpty: "Die Songliste ist leer!"
     songQueue: "Die Songliste enthält diese Songs: %s"
     volume:
@@ -512,6 +519,12 @@ message:
   infractions:
     success: "Der Nutzer %s hat %s Verwarnungen!"
     empty: "Der Nutzer %s hat keine Verwarnungen!"
+  schedule:
+    added: "Eine geplante Nachricht wurde erfolgreich erstellt!"
+    delete:
+      success: "Eine geplante Nachricht wurde erfolgreich gelöscht!"
+      failed: "Die angegebene geplante Nachricht existiert nicht!"
+    list: "Hier ist eine Liste aller geplanten Nachrichten: ```%s```"
 game:
   description:
     blackjack: "Spiele Blackjack mit deinen Freunden!"
@@ -606,6 +619,8 @@ command:
     warn: "Warne einen Nutzer und lass ihn automatisch bestraft werden."
     infractions: "Zeige alle Verwarnungen eines Nutzers an."
     musicquiz: "Spiele mit deinen Freunden eine Runde Musik Quiz!"
+    musicpanel: "Ein simples UI zum Nutzen vom Musik System!"
+    schedule: "Plane Nachrichten für später und für eine wiederholte Zeit!"
 category:
   info: "Wird verwendet, um Informationen zu sammeln oder Informationen zu geben."
   moderation: "Moderations-Tools, die Ihnen beim Verwalten von Benutzern helfen oder das Missachten von Regeln auf dem Server verhindern können."

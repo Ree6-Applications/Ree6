@@ -68,7 +68,7 @@ public class Ticket implements ICommand {
 
         Tickets finalTickets = tickets;
 
-        logChannel.getAsChannel().asTextChannel().createWebhook("Ticket-Log").queue(webhook -> {
+        logChannel.getAsChannel().asStandardGuildMessageChannel().createWebhook("Ticket-Log").queue(webhook -> {
             finalTickets.setLogChannelId(webhook.getIdLong());
             finalTickets.setLogChannelWebhookToken(webhook.getToken());
             commandEvent.getGuild().createCategory("Tickets").addPermissionOverride(commandEvent.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
