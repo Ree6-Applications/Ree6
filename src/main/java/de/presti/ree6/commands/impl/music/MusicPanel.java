@@ -53,7 +53,7 @@ public class MusicPanel implements ICommand {
 
         // TODO:: use icons
         messageCreateBuilder.addActionRow(Button.of(ButtonStyle.SECONDARY, "re_music_play", FormatUtil.PLAY_EMOJI),
-                Button.of(ButtonStyle.SECONDARY, "re_music_pause", FormatUtil.PAUSE_EMOJI),
+                // Button.of(ButtonStyle.SECONDARY, "re_music_pause", FormatUtil.PAUSE_EMOJI),
                 Button.of(ButtonStyle.SECONDARY, "re_music_skip", FormatUtil.PLAY_EMOJI + FormatUtil.PLAY_EMOJI),
                 Button.of(ButtonStyle.SECONDARY, "re_music_loop", commandEvent.getResource("label.loop")),
                 Button.of(ButtonStyle.SECONDARY, "re_music_shuffle", commandEvent.getResource("label.shuffle")),
