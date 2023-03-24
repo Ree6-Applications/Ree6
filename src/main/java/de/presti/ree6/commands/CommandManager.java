@@ -82,13 +82,13 @@ public class CommandManager {
         for (ICommand command : getCommands()) {
             Command commandAnnotation = command.getClass().getAnnotation(Command.class);
 
-            if (commandAnnotation.category() == Category.HIDDEN) continue;
-
             CommandData commandData;
 
             if (command.getCommandData() != null) {
                 commandData = command.getCommandData();
             } else {
+                if (commandAnnotation.category() == Category.HIDDEN) continue;
+
                 commandData = new CommandDataImpl(command.getClass().getAnnotation(Command.class).name(), command.getClass().getAnnotation(Command.class).description());
             }
 
