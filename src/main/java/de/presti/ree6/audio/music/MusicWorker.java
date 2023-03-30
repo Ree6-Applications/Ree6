@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.managers.AudioManager;
 
@@ -312,6 +313,7 @@ public class MusicWorker {
      * @param interactionHook The Interaction-Hook of the member
      */
     public void playSong(String value, Guild guild, Member member, MessageChannelUnion channel, InteractionHook interactionHook) {
+        Interaction interaction = interactionHook != null ? interactionHook.getInteraction() : null;
         if (FormatUtil.isUrl(value)) {
             boolean isspotify = false;
             ArrayList<String> spotiftrackinfos = null;
@@ -334,10 +336,10 @@ public class MusicWorker {
                     EmbedBuilder em = new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(),
                                     Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
-                            .setTitle(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "label.musicPlayer"))
+                            .setTitle(LanguageService.getByGuildOrInteraction(guild, interaction, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
-                            .setDescription(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "message.music.notFound", value))
+                            .setDescription(LanguageService.getByGuildOrInteraction(guild, interaction, "message.music.notFound", value))
                             .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl());
                     Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
                     return;
@@ -371,10 +373,10 @@ public class MusicWorker {
                     EmbedBuilder em = new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(),
                                     Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
-                            .setTitle(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "label.musicPlayer"))
+                            .setTitle(LanguageService.getByGuildOrInteraction(guild, interaction, "label.musicPlayer"))
                             .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
-                            .setDescription(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "message.music.notFoundMultiple", loadFailed.size()))
+                            .setDescription(LanguageService.getByGuildOrInteraction(guild, interaction, "message.music.notFoundMultiple", loadFailed.size()))
                             .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl());
                     Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
                 }
@@ -387,10 +389,10 @@ public class MusicWorker {
             } catch (Exception exception) {
                 EmbedBuilder em = new EmbedBuilder()
                         .setAuthor(guild.getJDA().getSelfUser().getName(), Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "label.musicPlayer"))
+                        .setTitle(LanguageService.getByGuildOrInteraction(guild, interaction, "label.musicPlayer"))
                         .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.RED)
-                        .setDescription(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "message.music.searchFailed"))
+                        .setDescription(LanguageService.getByGuildOrInteraction(guild, interaction, "message.music.searchFailed"))
                         .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl());
                 Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
                 log.error("Error while searching for " + value + " on YouTube", exception);
@@ -400,10 +402,10 @@ public class MusicWorker {
             if (ytResult == null) {
                 EmbedBuilder em = new EmbedBuilder()
                         .setAuthor(guild.getJDA().getSelfUser().getName(), Data.WEBSITE, guild.getJDA().getSelfUser().getAvatarUrl())
-                        .setTitle(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "label.musicPlayer"))
+                        .setTitle(LanguageService.getByGuildOrInteraction(guild, interaction, "label.musicPlayer"))
                         .setThumbnail(guild.getJDA().getSelfUser().getAvatarUrl())
                         .setColor(Color.YELLOW)
-                        .setDescription(LanguageService.getByGuildOrInteraction(guild, interactionHook.getInteraction(), "message.music.notFound", FormatUtil.filter(value)))
+                        .setDescription(LanguageService.getByGuildOrInteraction(guild, interaction, "message.music.notFound", FormatUtil.filter(value)))
                         .setFooter(guild.getName() + " - " + Data.ADVERTISEMENT, guild.getIconUrl());
                 Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
             } else {
