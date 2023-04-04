@@ -142,7 +142,11 @@ public class Config {
     public void migrateOldConfig() {
         String configVersion = yamlFile.getString("config.version", "1.9.0");
 
+        if (configVersion.equals("2.4.3"))
+            return;
+
         Map<String, Object> resources = yamlFile.getValues(true);
+
         // Migrate configs
         if (getFile().delete()) {
             init();
@@ -173,6 +177,10 @@ public class Config {
 
                     yamlFile.set(key, entry.getValue());
                 }
+            }
+
+            if (compareVersion("2.2.0", configVersion)) {
+                yamlFile.remove("youtube");
             }
 
             try {
