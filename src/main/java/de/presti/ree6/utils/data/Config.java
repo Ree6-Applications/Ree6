@@ -175,10 +175,6 @@ public class Config {
                 }
             }
 
-            if (compareVersion("2.2.0", configVersion)) {
-                yamlFile.remove("youtube");
-            }
-
             try {
                 yamlFile.save(getFile());
             } catch (Exception exception) {
