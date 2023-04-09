@@ -3,6 +3,8 @@ package de.presti.ree6;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -22,6 +24,19 @@ public class Config {
 
         yamlFile = createConfiguration();
 
+        try {
+            Path storage = Path.of("storage");
+            Path storageTemp = Path.of("storage/tmp");
+
+            if (!Files.exists(storage))
+                Files.createDirectory(storage);
+
+            if (!Files.exists(storageTemp))
+                Files.createDirectory(storageTemp);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+
         if (!getFile().exists()) {
             yamlFile.options().copyHeader();
             yamlFile.options().copyDefaults();
@@ -33,34 +48,76 @@ public class Config {
                     #                              #
                     ################################
                     """);
-            yamlFile.addDefault("config.version", "2.2.0");
-            yamlFile.addDefault("config.creation", System.currentTimeMillis());
-            yamlFile.addDefault("hikari.sql.user", "root");
-            yamlFile.addDefault("hikari.sql.db", "root");
-            yamlFile.addDefault("hikari.sql.pw", "yourpw");
-            yamlFile.addDefault("hikari.sql.host", "localhost");
-            yamlFile.addDefault("hikari.sql.port", 3306);
-            yamlFile.addDefault("hikari.misc.storage", "sqlite");
-            yamlFile.addDefault("hikari.misc.storageFile", "storage/Ree6.db");
-            yamlFile.addDefault("hikari.misc.poolSize", 10);
-            yamlFile.addDefault("dagpi.apitoken", "DAGPI.xyz API-Token");
-            yamlFile.addDefault("amari.apitoken", "Amari API-Token");
-            yamlFile.addDefault("sentry.dsn", "yourSentryDSNHere");
-            yamlFile.addDefault("spotify.client.id", "yourspotifyclientid");
-            yamlFile.addDefault("spotify.client.secret", "yourspotifyclientsecret");
-            yamlFile.addDefault("twitch.client.id", "yourtwitchclientidhere");
-            yamlFile.addDefault("twitch.client.secret", "yourtwitchclientsecrethere");
-            yamlFile.addDefault("twitter.consumer.key", "yourTwitterConsumerKey");
-            yamlFile.addDefault("twitter.consumer.secret", "yourTwitterConsumerSecret");
-            yamlFile.addDefault("twitter.access.key", "yourTwitterAccessKey");
-            yamlFile.addDefault("twitter.access.secret", "yourTwitterAccessSecret");
-            yamlFile.addDefault("reddit.client.id", "yourredditclientid");
-            yamlFile.addDefault("reddit.client.secret", "yourredditclientsecret");
-            yamlFile.addDefault("instagram.username", "yourInstagramUsername");
-            yamlFile.addDefault("instagram.password", "yourInstagramPassword");
-            yamlFile.addDefault("bot.tokens.release", "ReleaseTokenhere");
-            yamlFile.addDefault("bot.tokens.beta", "BetaTokenhere");
-            yamlFile.addDefault("bot.tokens.dev", "DevTokenhere");
+            yamlFile.path("config")
+                    .comment("Do not change this!")
+                    .path("version").addDefault("2.4.3")
+                    .parent().path("creation").addDefault(System.currentTimeMillis());
+
+            yamlFile.path("hikari")
+                    .comment("HikariCP Configuration").blankLine()
+                    .path("sql").comment("SQL Configuration").blankLine()
+                    .path("user").addDefault("root")
+                    .parent().path("db").addDefault("root")
+                    .parent().path("pw").addDefault("yourpw")
+                    .parent().path("host").addDefault("localhost")
+                    .parent().path("port").addDefault(3306)
+                    .parent().parent().path("misc").comment("Misc Configuration").blankLine()
+                    .path("storage").addDefault("sqlite")
+                    .parent().path("storageFile").addDefault("storage/Ree6.db")
+                    .parent().path("poolSize").addDefault(10);
+
+            yamlFile.path("heartbeat")
+                    .comment("Heartbeat Configuration, for status reporting").blankLine()
+                    .path("url").addDefault("none").commentSide("The URL to the Heartbeat-Server")
+                    .parent().path("interval").addDefault(60);
+
+            yamlFile.path("dagpi").path("apitoken").commentSide("Your Dagpi.xyz API-Token, for tweet image generation!")
+                    .addDefault("DAGPI.xyz API-Token");
+
+            yamlFile.setBlankLine("dagpi");
+
+            yamlFile.path("amari").path("apitoken").commentSide("Your Amari API-Token, for Amari Level imports!")
+                    .addDefault("Amari API-Token");
+
+            yamlFile.setBlankLine("amari");
+
+            yamlFile.path("sentry").path("dsn").commentSide("Your Sentry DSN, for error reporting!")
+                    .addDefault("yourSentryDSNHere");
+
+            yamlFile.setBlankLine("sentry");
+
+            yamlFile.path("spotify")
+                    .comment("Spotify Application Configuration, used to parse Spotify Tracks/Playlists to YouTube search queries.").blankLine()
+                    .path("client").path("id").addDefault("yourspotifyclientid")
+                    .parent().path("secret").addDefault("yourspotifyclientsecret");
+
+            yamlFile.path("twitch")
+                    .comment("Twitch Application Configuration, used for the StreamTools and Twitch Notifications.").blankLine()
+                    .path("client").path("id").addDefault("yourtwitchclientidhere")
+                    .parent().path("secret").addDefault("yourtwitchclientsecrethere");
+
+            yamlFile.path("twitter")
+                    .comment("Twitter Application Configuration, used for the Twitter Notifications.").blankLine()
+                    .path("consumer").path("key").addDefault("yourTwitterConsumerKey")
+                    .parent().path("secret").addDefault("yourTwitterConsumerSecret")
+                    .parent().parent().path("access").path("key").addDefault("yourTwitterAccessKey")
+                    .parent().path("secret").addDefault("yourTwitterAccessSecret");
+
+            yamlFile.path("reddit")
+                    .comment("Reddit Application Configuration, used for the Reddit Notification.").blankLine()
+                    .path("client").path("id").addDefault("yourredditclientid")
+                    .parent().path("secret").addDefault("yourredditclientsecret");
+
+            yamlFile.path("instagram")
+                    .comment("Instagram Application Configuration, used for the Instagram Notification.").blankLine()
+                    .path("username").addDefault("yourInstagramUsername")
+                    .parent().path("password").addDefault("yourInstagramPassword");
+
+            yamlFile.path("bot")
+                    .comment("Discord Application Configuration, used for OAuth and Bot Authentication.").blankLine()
+                    .path("tokens").path("release").addDefault("ReleaseTokenhere").commentSide("Token used when set to release build.")
+                    .parent().path("beta").addDefault("BetaTokenhere").commentSide("Token used when set to beta build.")
+                    .parent().path("dev").addDefault("DevTokenhere").commentSide("Token used when set to dev build.");
 
             try {
                 yamlFile.save(getFile());
@@ -81,16 +138,25 @@ public class Config {
      * Migrate configs to newer versions
      */
     public void migrateOldConfig() {
-        String configVersion = yamlFile.getString("config.version");
+        String configVersion = yamlFile.getString("config.version", "1.9.0");
+
+        if (configVersion.equals("2.4.3"))
+            return;
 
         Map<String, Object> resources = yamlFile.getValues(true);
-        if (configVersion == null) {
-            // Migrating 1.10.0
-            if (getFile().delete()) {
-                init();
 
-                for (Map.Entry<String, Object> entry : resources.entrySet()) {
-                    String key = entry.getKey();
+        // Migrate configs
+        if (getFile().delete()) {
+            init();
+
+            for (Map.Entry<String, Object> entry : resources.entrySet()) {
+                String key = entry.getKey();
+
+                if (key.startsWith("config"))
+                    continue;
+
+                // Migrate to 1.10.0
+                if (compareVersion("1.10.0", configVersion)) {
 
                     if (key.startsWith("mysql"))
                         key = key.replace("mysql", "hikari.sql");
@@ -101,39 +167,32 @@ public class Config {
                     yamlFile.set(key, entry.getValue());
                 }
 
-                try {
-                    yamlFile.save(getFile());
-                } catch (Exception exception) {
-                    exception.printStackTrace();
+                // Migrate to 2.2.0
+                if (compareVersion("2.2.0", configVersion)) {
+
+                    if (key.startsWith("youtube"))
+                        continue;
+
+                    yamlFile.set(key, entry.getValue());
                 }
             }
-        } else {
-            // Migrate from 2.0.0
-            if (getFile().delete()) {
-                init();
 
-                for (Map.Entry<String, Object> entry : resources.entrySet()) {
-                    if (compareVersion("2.2.0", configVersion)) {
-                        String key = entry.getKey();
+            if (compareVersion("2.2.0", configVersion)) {
+                yamlFile.remove("youtube");
+            }
 
-                        if (key.startsWith("youtube"))
-                            continue;
-
-                        yamlFile.set(key, entry.getValue());
-                    }
-                }
-
-                try {
-                    yamlFile.save(getFile());
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                }
+            try {
+                yamlFile.save(getFile());
+            } catch (Exception exception) {
+                exception.printStackTrace();
             }
         }
+
     }
 
     /**
      * Compare two version that are based on the x.y.z format.
+     *
      * @param versionA the base version.
      * @param versionB the version that should be tested against versionA.
      * @return True if versionA is above versionB.
@@ -160,6 +219,7 @@ public class Config {
 
     /**
      * Create a new Configuration.
+     *
      * @return The Configuration as {@link YamlFile}.
      */
     public YamlFile createConfiguration() {
@@ -172,6 +232,7 @@ public class Config {
 
     /**
      * Get the Configuration.
+     *
      * @return The Configuration as {@link YamlFile}.
      */
     public YamlFile getConfiguration() {
@@ -184,6 +245,7 @@ public class Config {
 
     /**
      * Get the Configuration File.
+     *
      * @return The Configuration File as {@link File}.
      */
     public File getFile() {
