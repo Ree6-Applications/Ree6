@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.data;
 
+import de.presti.ree6.bot.BotWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.file.YamlFile;
 
@@ -52,7 +53,7 @@ public class Config {
                     """);
             yamlFile.path("config")
                     .comment("Do not change this!")
-                    .path("version").addDefault("2.4.3")
+                    .path("version").addDefault(BotWorker.getBuild())
                     .parent().path("creation").addDefault(System.currentTimeMillis());
 
             yamlFile.path("hikari")
@@ -142,7 +143,7 @@ public class Config {
     public void migrateOldConfig() {
         String configVersion = yamlFile.getString("config.version", "1.9.0");
 
-        if (configVersion.equals("2.4.3"))
+        if (configVersion.equals(BotWorker.getBuild()))
             return;
 
         Map<String, Object> resources = yamlFile.getValues(true);
