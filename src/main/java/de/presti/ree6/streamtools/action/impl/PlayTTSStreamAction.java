@@ -26,15 +26,16 @@ public class PlayTTSStreamAction implements IStreamAction {
      * @inheritDoc
      */
     @Override
-    public void runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
+    public boolean runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
         if (arguments == null || arguments.length == 0) {
-            return;
+            return false;
         }
 
-        if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return;
+        if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return false;
 
         Main.getInstance().getMusicWorker().loadAndPlay(guild, null, null,
                 "https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=" + URLEncoder.encode(String.join(" ", arguments), StandardCharsets.UTF_8),
                 null, true, false);
+        return true;
     }
 }

@@ -20,9 +20,9 @@ public class SayStreamAction implements IStreamAction {
      * @inheritDoc
      */
     @Override
-    public void runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
+    public boolean runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
         if (arguments == null || arguments.length == 0) {
-            return;
+            return false;
         }
 
         String channelId = arguments[0];
@@ -36,9 +36,10 @@ public class SayStreamAction implements IStreamAction {
         TextChannel textChannel = guild.getTextChannelById(channelId);
 
         if (textChannel == null) {
-            return;
+            return false;
         }
 
         Main.getInstance().getCommandManager().sendMessage(message.substring(channelId.length()), textChannel);
+        return true;
     }
 }
