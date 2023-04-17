@@ -143,7 +143,7 @@ public class Config {
     public void migrateOldConfig() {
         String configVersion = yamlFile.getString("config.version", "1.9.0");
 
-        if (configVersion.equals(BotWorker.getBuild()))
+        if (compareVersion(configVersion, BotWorker.getBuild()) || configVersion.equals(BotWorker.getBuild()))
             return;
 
         Map<String, Object> resources = yamlFile.getValues(true);
