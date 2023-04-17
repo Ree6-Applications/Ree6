@@ -140,7 +140,7 @@ public class Config {
     public void migrateOldConfig() {
         String configVersion = yamlFile.getString("config.version", "1.9.0");
 
-        if (configVersion.equals("2.4.3"))
+        if (compareVersion(configVersion, "2.4.3") || configVersion.equals("2.4.3"))
             return;
 
         Map<String, Object> resources = yamlFile.getValues(true);
