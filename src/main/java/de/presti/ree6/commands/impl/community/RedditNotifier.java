@@ -41,7 +41,7 @@ public class RedditNotifier implements ICommand {
         }
 
         String command = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
-        OptionMapping nameMapping = commandEvent.getOption("voice");
+        OptionMapping nameMapping = commandEvent.getOption("name");
         OptionMapping channelMapping = commandEvent.getOption("channel");
         OptionMapping messageMapping = commandEvent.getOption("message");
 
