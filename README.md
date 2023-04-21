@@ -39,3 +39,7 @@ and <a href="https://www.yourkit.com/youmonitor/">YourKit YouMonitor</a>.
 <a href="https://github.com/Ree6-Applications/Ree6/graphs/contributors">
 	<img src="https://contrib.rocks/image?repo=Ree6-Applications/Ree6" />
 </a>
+
+# Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Ree6-Applications/Ree6&type=Date)](https://star-history.com/#Ree6-Applications/Ree6&Date)
