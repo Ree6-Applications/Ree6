@@ -20,9 +20,6 @@ import java.awt.*;
 @Command(name = "pickupline", description = "command.description.pickupline", category = Category.FUN)
 public class PickUpLine implements ICommand {
 
-    // Private variable which stores the response for convenience
-    private String response;
-
     /**
      * @inheritDoc
      */
@@ -43,15 +40,12 @@ public class PickUpLine implements ICommand {
             return;
         }
 
-        // Check if the response contains any NSFW stuff and appends a warning before if so
         if(jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean()) {
-            response += ":red_circle: **NSFW**\n";
+            commandEvent.reply(commandEvent.getResource("message.pickupline.responseNsfw", jsonObject.get("joke").getAsString()));
+        } else {
+            commandEvent.reply(commandEvent.getResource("message.pickupline.response", jsonObject.get("joke").getAsString()));
         }
 
-        // Give the actual response or fail
-        response += (jsonObject.has("category"))
-                ? commandEvent.getResource("pickupline.response", jsonObject.get("joke").getAsString())
-                : commandEvent.getResource("pickupline.no_response");
     }
 
     /**
