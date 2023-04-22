@@ -20,6 +20,9 @@ import java.awt.*;
 @Command(name = "pickupline", description = "command.description.pickupline", category = Category.FUN)
 public class PickUpLine implements ICommand {
 
+    // Private variable which stores the response for convenience
+    private String response;
+
     /**
      * @inheritDoc
      */
@@ -29,9 +32,8 @@ public class PickUpLine implements ICommand {
                 .bearerAuth(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken")).build()).getAsJsonObject();
 
         EmbedBuilder em = new EmbedBuilder();
-        StringBuilder response = new StringBuilder();
-        String emoji = ":speaking_head:";
 
+        // Check if there is no "category" in the JSON. If so, output the error.
         if (!jsonObject.has("category")) {
             em.setTitle("Error!");
             em.setColor(Color.RED);
@@ -41,14 +43,15 @@ public class PickUpLine implements ICommand {
             return;
         }
 
+        // Check if the response contains any NSFW stuff and appends a warning before if so
         if(jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean()) {
-            response.append(commandEvent.getResource("pickupline.emojis.nsfw", ":red_circle:")).append('\n');
+            response += ":red_circle: **NSFW**\n";
         }
 
-        commandEvent.reply(response.append((jsonObject.has("category")
-                ? response.append(emoji).append(" ").append(jsonObject.get("joke").getAsString()).toString()
-                : commandEvent.getResource("pickupline.no_response"))).toString());
-
+        // Give the actual response or fail
+        response += (jsonObject.has("category"))
+                ? commandEvent.getResource("pickupline.response", jsonObject.get("joke").getAsString())
+                : commandEvent.getResource("pickupline.no_response");
     }
 
     /**

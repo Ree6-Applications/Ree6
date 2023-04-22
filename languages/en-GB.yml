@@ -633,5 +633,4 @@ category:
   hidden: "Hidden Commands that are only visible to the Owner of the Bot."
 pickupline:
   no_response: "I can't come up with a response right now."
-  emojis:
-    nsfw: "%s **NSFW**"
+  response: ":speaking_head: %s"
