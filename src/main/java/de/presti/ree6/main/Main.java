@@ -32,6 +32,7 @@ import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.streamtools.StreamActionContainerCreator;
+import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
 import de.presti.ree6.utils.data.ArrayUtil;
@@ -93,6 +94,11 @@ public class Main {
      * Instance of the MusicWorker used to manage the Music-Player.
      */
     MusicWorker musicWorker;
+
+    /**
+     * Instance of the ChatGPT API used for making the setup process easier and give people a better experience.
+     */
+    ChatGPTAPI chatGPTAPI;
 
     /**
      * Instance of the Config System.
@@ -205,6 +211,9 @@ public class Main {
             System.exit(0);
             return;
         }
+
+        log.info("Loading ChatGPTAPI");
+        new ChatGPTAPI();
 
         log.info("Loading SpotifyAPI");
         new SpotifyAPIHandler();

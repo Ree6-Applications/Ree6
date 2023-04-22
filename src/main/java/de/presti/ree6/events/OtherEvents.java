@@ -16,6 +16,7 @@ import de.presti.ree6.sql.entities.Tickets;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
+import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.data.ImageCreationUtility;
@@ -53,6 +54,7 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -408,9 +410,10 @@ public class OtherEvents extends ListenerAdapter {
             }
 
             if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
+
                 if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
-                    // TODO:: change this to something funnier.
-                    event.getChannel().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.default.usage", "help")).queue();
+                    Main.getInstance().getCommandManager().sendMessage(ChatGPTAPI.getResponse(event.getMember(),
+                            event.getMessage().getContentDisplay()), event.getChannel());
                 }
 
                 if (!ArrayUtil.timeout.contains(event.getMember())) {

@@ -50,7 +50,7 @@ public class Config {
                     """);
             yamlFile.path("config")
                     .comment("Do not change this!")
-                    .path("version").addDefault("2.4.3")
+                    .path("version").addDefault("3.0.0")
                     .parent().path("creation").addDefault(System.currentTimeMillis());
 
             yamlFile.path("hikari")
@@ -79,7 +79,10 @@ public class Config {
             yamlFile.path("amari").path("apitoken").commentSide("Your Amari API-Token, for Amari Level imports!")
                     .addDefault("Amari API-Token");
 
-            yamlFile.setBlankLine("amari");
+            yamlFile.path("openai").path("apitoken").commentSide("Your OpenAI API-Token, for ChatGPT!")
+                    .addDefault("OpenAI API-Token");
+
+            yamlFile.setBlankLine("openai");
 
             yamlFile.path("sentry").path("dsn").commentSide("Your Sentry DSN, for error reporting!")
                     .addDefault("yourSentryDSNHere");
@@ -140,7 +143,7 @@ public class Config {
     public void migrateOldConfig() {
         String configVersion = yamlFile.getString("config.version", "1.9.0");
 
-        if (compareVersion(configVersion, "2.4.3") || configVersion.equals("2.4.3"))
+        if (compareVersion(configVersion, "3.0.0") || configVersion.equals("3.0.0"))
             return;
 
         Map<String, Object> resources = yamlFile.getValues(true);

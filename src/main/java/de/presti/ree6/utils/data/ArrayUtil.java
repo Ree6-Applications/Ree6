@@ -27,6 +27,14 @@ public class ArrayUtil {
     }
 
     /**
+     * HashMap used to store conversations between the user and the Chat-GPT implementation.
+     * These are being stored guild specific so Ree6 will not continue a conversation in another guild.
+     * While at the same time we store them in memory to protect users privacy, since there is no actual
+     * reason for us to keep these longer then the current application uptime.
+     */
+    public static final Map<long[], List<com.lilittlecat.chatgpt.offical.entity.Message>> chatGPTMessages = new HashMap<>();
+
+    /**
      * HashMap used to store message contents and their IDs, to show the content when the message gets deleted.
      */
     public static final Map<String, Message> messageIDwithMessage = new HashMap<>();

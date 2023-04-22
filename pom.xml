@@ -139,6 +139,11 @@
             <artifactId>Amari4Java</artifactId>
             <version>63f49f783b</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.DxsSucuk</groupId>
+            <artifactId>chatgpt</artifactId>
+            <version>bc1e2efc18</version>
+        </dependency>
 
         <!-- Database -->
         <dependency>
