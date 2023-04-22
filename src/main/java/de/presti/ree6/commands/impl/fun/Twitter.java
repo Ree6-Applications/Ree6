@@ -100,7 +100,7 @@ public class Twitter implements ICommand {
             HttpResponse response = httpClient.execute(request);
 
             MessageCreateBuilder createBuilder = new MessageCreateBuilder();
-            createBuilder.addFiles(FileUpload.fromData(response.getEntity().getContent(), "twitter.png"));
+            createBuilder.addFiles(FileUpload.fromData(response.getEntity().getContent().readAllBytes(), "twitter.png"));
 
             commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
 
