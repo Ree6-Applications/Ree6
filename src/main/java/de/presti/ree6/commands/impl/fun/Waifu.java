@@ -49,7 +49,7 @@ public class Waifu implements ICommand {
                 ? jsonObject1.get("name").getAsString()
                 : commandEvent.getResource("message.default.retrievalError")) + "``", true);
 
-        if((jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean())) {
+        if(jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean()) {
             em.addField("**NSFW**", "", true);
         }
         em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());

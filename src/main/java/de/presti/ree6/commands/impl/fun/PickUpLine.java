@@ -29,6 +29,7 @@ public class PickUpLine implements ICommand {
                 .bearerAuth(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken")).build()).getAsJsonObject();
 
         EmbedBuilder em = new EmbedBuilder();
+        StringBuilder response = new StringBuilder();
 
         if (!jsonObject.has("category")) {
             em.setTitle("Error!");
@@ -39,9 +40,15 @@ public class PickUpLine implements ICommand {
             return;
         }
 
-        commandEvent.reply(":speaking_head:" + ' ' + (jsonObject.has("category")
+        if(jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean()) {
+            response.append(commandEvent.getResource("pickupline.emojis.nsfw")).append('\n');
+        }
+
+        response.append(commandEvent.getResource("pickupline.emojis.speaking_head")).append(' ');
+
+        commandEvent.reply(response.append((jsonObject.has("category")
                 ? jsonObject.get("joke").getAsString()
-                : "I cannot think of a response right now..."));
+                : commandEvent.getResource("pickupline.no_response"))).toString());
 
     }
 
