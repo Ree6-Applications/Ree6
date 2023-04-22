@@ -634,4 +634,4 @@ category:
 pickupline:
   no_response: "I can't come up with a response right now."
   response: ":speaking_head: %s"
-  responseNsfw: ":red_circle: **NSFW**"
+  responseNsfw: ":red_circle: ||%s|| **NSFW**"
