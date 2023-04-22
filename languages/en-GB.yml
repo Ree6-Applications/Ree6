@@ -540,6 +540,7 @@ command:
     slashNotSupported: "This Command doesn't support Slash Commands yet!"
     onlySlashSupported: "This Command only supports Slash-Commands!"
   description:
+    pickupline: "You need a pickup line? We got you."
     birthday: "Let the bot remember your Birthday."
     instagramNotifier: "Manage your Instagram-Notifier!"
     redditNotifier: "Manage your Reddit-Notifier!"
