@@ -634,5 +634,4 @@ category:
 pickupline:
   no_response: "I can't come up with a response right now."
   emojis:
-    nsfw: ":red_circle: **NSFW**"
-    speaking_head: ":speaking_head:"
+    nsfw: "%s **NSFW**"

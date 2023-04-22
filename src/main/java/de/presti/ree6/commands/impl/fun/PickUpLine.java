@@ -30,6 +30,7 @@ public class PickUpLine implements ICommand {
 
         EmbedBuilder em = new EmbedBuilder();
         StringBuilder response = new StringBuilder();
+        String emoji = ":speaking_head:";
 
         if (!jsonObject.has("category")) {
             em.setTitle("Error!");
@@ -41,13 +42,11 @@ public class PickUpLine implements ICommand {
         }
 
         if(jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean()) {
-            response.append(commandEvent.getResource("pickupline.emojis.nsfw")).append('\n');
+            response.append(commandEvent.getResource("pickupline.emojis.nsfw", ":red_circle:")).append('\n');
         }
 
-        response.append(commandEvent.getResource("pickupline.emojis.speaking_head")).append(' ');
-
         commandEvent.reply(response.append((jsonObject.has("category")
-                ? jsonObject.get("joke").getAsString()
+                ? response.append(emoji).append(" ").append(jsonObject.get("joke").getAsString()).toString()
                 : commandEvent.getResource("pickupline.no_response"))).toString());
 
     }
