@@ -41,9 +41,9 @@ public class PickUpLine implements ICommand {
         }
 
         if(jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean()) {
-            commandEvent.reply(commandEvent.getResource("message.pickupline.responseNsfw", jsonObject.get("joke").getAsString()));
+            commandEvent.reply(commandEvent.getResource("pickupline.responseNsfw", jsonObject.get("joke").getAsString()));
         } else {
-            commandEvent.reply(commandEvent.getResource("message.pickupline.response", jsonObject.get("joke").getAsString()));
+            commandEvent.reply(commandEvent.getResource("pickupline.response", jsonObject.get("joke").getAsString()));
         }
 
     }
