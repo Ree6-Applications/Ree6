@@ -29,7 +29,7 @@ public class Waifu implements ICommand {
         EmbedBuilder em = new EmbedBuilder();
 
         if (!jsonObject.has("series")) {
-            em.setTitle("Error!");
+            em.setTitle(commandEvent.getResource("label.error"));
             em.setColor(Color.RED);
             em.setDescription(commandEvent.getResource("message.default.retrievalError"));
             em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
@@ -43,7 +43,7 @@ public class Waifu implements ICommand {
         em.addField("**" + commandEvent.getResource("label.character") + "**", "``" + (jsonObject.has("name") ? jsonObject.get("name").getAsString() : commandEvent.getResource("message.default.retrievalError")) + "``", true);
         em.addField("**"  + commandEvent.getResource("label.from") + "**", "``" + (jsonObject1.has("name") ? jsonObject1.get("name").getAsString() : commandEvent.getResource("message.default.retrievalError")) + "``", true);
         if((jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean())) {
-            em.addField("**NSFW**", "", true);
+            em.addField("**" + commandEvent.getResource("label.nsfw") + "**", "", true);
         }
         em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
 

@@ -12,8 +12,9 @@ import de.presti.ree6.sql.entities.stats.GuildCommandStats;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.TimeUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,45 +25,53 @@ import java.util.Date;
 @Command(name = "stats", description = "command.description.stats", category = Category.INFO)
 public class Stats implements ICommand {
 
+    boolean firstBoot;
+
     /**
      * @inheritDoc
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
+        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+
         long start = System.currentTimeMillis();
 
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        Message message = null;
+        if (commandEvent.isSlashCommand()) {
+            message = commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("label.loading")).complete();
+        } else {
+            message = commandEvent.getChannel().sendMessage(commandEvent.getResource("label.loading")).complete();
+        }
+
+        long ping = System.currentTimeMillis() - start;
 
         EmbedBuilder em = new EmbedBuilder();
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
-        em.setTitle("Stats!");
+        em.setTitle(commandEvent.getResource("label.statistics"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setColor(BotWorker.randomEmbedColor());
 
-        int i = 0;
-
-        for (Guild guild : BotWorker.getShardManager().getGuilds()) {
-            i += guild.getMemberCount();
-        }
+        long memberCount = firstBoot ? BotWorker.getShardManager().getUsers().size() : BotWorker.getShardManager().getUserCache().size();
+        firstBoot = true;
 
         em.addField("**" + commandEvent.getResource("label.serverStats") + ":**", "", true);
         em.addField("**" + commandEvent.getResource("label.guilds") + "**", BotWorker.getShardManager().getGuilds().size() + "", true);
-        em.addField("**" + commandEvent.getResource("label.users") + "**", i + "", true);
+        em.addField("**" + commandEvent.getResource("label.users") + "**", memberCount + "", true);
 
         em.addField("**" + commandEvent.getResource("label.botStats") + ":**", "", true);
         em.addField("**" + commandEvent.getResource("label.version") + "**", BotWorker.getBuild() + "-" + BotWorker.getVersion().name().toUpperCase(), true);
         em.addField("**" + commandEvent.getResource("label.uptime") + "**", TimeUtil.getTime(BotWorker.getStartTime()), true);
 
-        em.addField("**" + commandEvent.getResource("label.networkStats") + ":**", "", true);
-        em.addField("**" + commandEvent.getResource("label.responseTime") + "**", (Integer.parseInt((System.currentTimeMillis() - start) + "")) + "ms", true);
-        em.addField("**" + commandEvent.getResource("label.systemDate") + "**", new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
-
         em.addField("**" + commandEvent.getResource("label.discordStats") + ":**", "", true);
         em.addField("**" + commandEvent.getResource("label.gatewayTime") + "**", BotWorker.getShardManager().getAverageGatewayPing() + "ms", true);
         em.addField("**" + commandEvent.getResource("label.shardAmount") + "**", BotWorker.getShardManager().getShards().size() + " "  + commandEvent.getResource("label.shards"), true);
+
+        em.addField("**" + commandEvent.getResource("label.networkStats") + ":**", "", true);
+        em.addField("**" + commandEvent.getResource("label.responseTime") + "**", (Integer.parseInt((ping) + "")) + "ms", true);
+        em.addField("**" + commandEvent.getResource("label.systemDate") + "**", new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), true);
 
         StringBuilder end = new StringBuilder();
 
@@ -82,7 +91,11 @@ public class Stats implements ICommand {
 
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
 
-        commandEvent.reply(em.build());
+        MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
+
+        messageEditBuilder.setEmbeds(em.build());
+
+        commandEvent.update(message, messageEditBuilder.build());
     }
 
     /**
