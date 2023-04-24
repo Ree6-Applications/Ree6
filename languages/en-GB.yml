@@ -186,6 +186,7 @@ label:
   song: "Song"
   shuffle: "Shuffle"
   loop: "Loop"
+  loading: "Loading"
 message:
   default:
     usage: "Usage {guild_prefix}%s."
