@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
-import org.jetbrains.annotations.NotNull;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -150,6 +150,21 @@ public class CommandEvent {
     }
 
     /**
+     * Update a Message that has been sent.
+     * @param message the Message that has been sent.
+     * @param messageEditData the Message Edit that is being used to update the message.
+     */
+    public void update(@Nullable Message message, MessageEditData messageEditData) {
+        if (isSlashCommand()) {
+            getInteractionHook().editOriginal(messageEditData).queue();
+        } else {
+            if (message == null) return;
+
+            message.editMessage(messageEditData).queue();
+        }
+    }
+
+    /**
      * Get a Message from the Guild specific Language Setting.
      *
      * @param key        the Key of the Message.
@@ -165,7 +180,7 @@ public class CommandEvent {
      *
      * @return the {@link User} Entity.
      */
-    public @NotNull User getUser() {
+    public @Nonnull User getUser() {
         if (isSlashCommand()) {
             return getSlashCommandInteractionEvent().getUser();
         } else {
@@ -178,7 +193,7 @@ public class CommandEvent {
      *
      * @return the {@link Member} Entity.
      */
-    public @NotNull Member getMember() {
+    public @Nonnull Member getMember() {
         return member;
     }
 
@@ -187,7 +202,7 @@ public class CommandEvent {
      *
      * @return the {@link Guild} Entity.
      */
-    public @NotNull Guild getGuild() {
+    public @Nonnull Guild getGuild() {
         return guild;
     }
 
@@ -205,7 +220,7 @@ public class CommandEvent {
      *
      * @return the {@link TextChannel} Entity.
      */
-    public @NotNull MessageChannelUnion getChannel() {
+    public @Nonnull MessageChannelUnion getChannel() {
         return channel;
     }
 
