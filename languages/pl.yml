@@ -186,6 +186,7 @@ label:
   song: "Pieśń"
   shuffle: "Losuj"
   loop: "Pętla"
+  loading: "Loading"
 message:
   default:
     usage: "Użycie {guild_prefix}%s."
@@ -511,11 +512,18 @@ message:
     punishment:
       created: "Udało ci się stworzyć karę!"
       list: "Oto lista wszystkich kar dla tej Gildii:\n```%s ``` `"
+      listEntry:
+        timeout: "Timeout for %s seconds"
+        roleAdd: "Role-Add for %s"
+        roleRemove: "Role-Remove for %s"
+        kick: "Kick with reason %s"
+        ban: "Ban with reason %s"
       deleted: "Kara o ID %s została usunięta."
       notFound: "Nie ma kary o ID %s dla tej Gildii."
     success: "Udało Ci się ostrzec %s!\nUżytkownik ma teraz %s ostrzeżeń!"
     hierarchySelfError: "Nie możesz ostrzec kogoś o wyższej lub równej roli w porównaniu z tobą!"
     hierarchyBotError: "Nie mogę ostrzec kogoś o wyższej lub równej roli w porównaniu ze mną!"
+    reachedWarnings: "Reached %s warnings!"
   infractions:
     success: "Użytkownik %s ma %s infrakcji!"
     empty: "Użytkownik %s nie ma żadnych infrakcji!"
@@ -525,6 +533,9 @@ message:
       success: "Harmonogram został usunięty!"
       failed: "Podany harmonogram nie istnieje!"
     list: "Oto lista wszystkich harmonogramów: ```%s```"
+  pickupline:
+    response: ":speaking_head: %s"
+    responseNsfw: ":red_circle: ||%s|| **NSFW**"
 game:
   description:
     blackjack: "Zagraj w Blackjack z przyjaciółmi!"
@@ -540,6 +551,7 @@ command:
     slashNotSupported: "Ta komenda jeszcze nie obsługuje komend typu Slash!"
     onlySlashSupported: "Ta komenda obsługuje tylko komendy typu Slash!"
   description:
+    pickupline: "You need a pickup line? We got you."
     birthday: "Pozwól botowi znać twoje urodziny."
     instagramNotifier: "Zarządzaj swoimi powiadomieniami Instagram!"
     redditNotifier: "Zarządzaj swoimi powiadomieniami Reddit!"
