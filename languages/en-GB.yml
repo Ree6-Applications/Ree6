@@ -526,6 +526,9 @@ message:
       success: "The schedule has been successfully deleted!"
       failed: "The given schedule does not exist!"
     list: "Here is a list of all schedules: ```%s```"
+  pickupline:
+    response: ":speaking_head: %s"
+    responseNsfw: ":red_circle: ||%s|| **NSFW**"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
@@ -632,6 +635,3 @@ category:
   community: "Community Tools that allow you to interact with your community."
   nsfw: "NSFW stuff that you can only use in NSFW Channels."
   hidden: "Hidden Commands that are only visible to the Owner of the Bot."
-pickupline:
-  response: ":speaking_head: %s"
-  responseNsfw: ":red_circle: ||%s|| **NSFW**"
