@@ -44,10 +44,10 @@ public class PlayBlerpStreamAction implements IStreamAction {
      * @inheritDoc
      */
     @Override
-    public void runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
-        if (twitchEvent == null) return;
+    public boolean runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
+        if (twitchEvent == null) return false;
 
-        if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return;
+        if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return false;
 
         if (twitchEvent instanceof RewardRedeemedEvent rewardRedeemedEvent) {
             String prompt = rewardRedeemedEvent.getRedemption().getReward().getPrompt().toLowerCase();
@@ -61,8 +61,11 @@ public class PlayBlerpStreamAction implements IStreamAction {
                 if (matcher.find()) {
                     Main.getInstance().getMusicWorker().loadAndPlay(guild, null, null,
                             pageMatcher.group(1),null, true, false);
+                    return true;
                 }
             }
         }
+
+        return false;
     }
 }

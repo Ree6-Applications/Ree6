@@ -12,7 +12,6 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.StreamAction;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.streamtools.StreamActionContainer;
-import de.presti.ree6.streamtools.action.IStreamAction;
 import de.presti.ree6.streamtools.action.StreamActionInfo;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;

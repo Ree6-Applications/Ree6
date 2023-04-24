@@ -21,23 +21,28 @@ public class VoiceJoinStreamAction implements IStreamAction {
      * @inheritDoc
      */
     @Override
-    public void runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
+    public boolean runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
         if (arguments == null || arguments.length == 0) {
-            return;
+            return false;
         }
 
         try {
             VoiceChannel voiceChannel = guild.getVoiceChannelById(arguments[0]);
-            if (voiceChannel == null) return;
+            if (voiceChannel == null) return false;
 
             if (Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) {
-                if (guild.getSelfMember().getVoiceState().getChannel().getIdLong() == voiceChannel.getIdLong()) return;
+                if (guild.getSelfMember().getVoiceState().getChannel().getIdLong() == voiceChannel.getIdLong())
+                    return true;
                 guild.moveVoiceMember(guild.getSelfMember(), voiceChannel).queue();
             } else {
                 Main.getInstance().getMusicWorker().connectToAudioChannel(guild.getAudioManager(), voiceChannel);
             }
+
+            return true;
         } catch (Exception exception) {
             Sentry.captureMessage("Invalid Voice Channel ID! Related guild: " + guild.getIdLong());
         }
+
+        return false;
     }
 }

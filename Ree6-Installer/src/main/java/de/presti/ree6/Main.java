@@ -128,9 +128,13 @@ public class Main {
 
         print("Do you want to continue configuration not mandatory configs?\nEnter yes if you want to continue if not enter no!");
 
-        if (getValueOrDefault("no").equalsIgnoreCase("yes")) {
+        if (getValueOrDefault("no").toLowerCase().startsWith("y")) {
+
             print("Enter your Dagpi.xyz-Key (NONE)");
             config.getConfiguration().set("dagpi.apitoken", getValueOrDefault(""));
+
+            print("Enter your AmariBot-Key (NONE)");
+            config.getConfiguration().set("amari.apitoken", getValueOrDefault(""));
 
             print("Enter your Sentry DSN (NONE)");
             config.getConfiguration().set("sentry.dsn", getValueOrDefault(""));
@@ -174,10 +178,15 @@ public class Main {
 
         config.getConfiguration().save();
 
-        print("Great, we finished setting up everything!\nGive me a second to download the newest JAR!");
+        print("Great, we finished setting up everything!\nDo you want me to download the latest version?\nEnter yes if you want to continue if not enter no!");
+        if (getValueOrDefault("no").toLowerCase().startsWith("y")) {
+            print("Understood!\nDownloading latest version...");
+            update();
+        }
     }
 
     public static void update() {
+        print("Requesting version list from Github...");
         JSONArray jsonObject = new JSONArray(RequestUtility.request("https://api.github.com/repos/Ree6-Applications/Ree6/releases"));
 
         JSONObject jsonObject1 = jsonObject.getJSONObject(0);
@@ -186,17 +195,20 @@ public class Main {
 
         String tagName = jsonObject1.getString("tag_name");
 
+        print("Found " + jsonObject.length() + " versions!\nSearching for latest version...");
+
         for (Object o : assets) {
             JSONObject asset = (JSONObject) o;
             if (asset.getString("name").contains("-jar-with-dependencies.jar")) {
                 String downloadUrl = asset.getString("browser_download_url");
 
                 try {
+                    print("Found Ree6 version " + tagName + "!\nDownloading it...");
                     InputStream in = new URL(downloadUrl).openStream();
                     Files.copy(in, Paths.get("Ree6.jar"), StandardCopyOption.REPLACE_EXISTING);
-                    print("We downloaded the newest Ree6 version! (" + tagName + ")");
+                    print("We downloaded the latest Ree6 version! (" + tagName + ")");
                 } catch (Exception exception) {
-                    print("We could not download the newest Ree6 version!\nManually download it over " + downloadUrl);
+                    print("We could not download the latest Ree6 version!\nManually download it over " + downloadUrl);
                     exception.printStackTrace();
                 }
                 break;

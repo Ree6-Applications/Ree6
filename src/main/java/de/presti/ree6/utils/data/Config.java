@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.data;
 
+import de.presti.ree6.bot.BotWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.file.YamlFile;
 
@@ -142,7 +143,8 @@ public class Config {
     public void migrateOldConfig() {
         String configVersion = yamlFile.getString("config.version", "1.9.0");
 
-        if (configVersion.equals("2.4.3"))
+        if (compareVersion(configVersion, BotWorker.getBuild()) || configVersion.equals(BotWorker.getBuild()) ||
+                configVersion.equals("2.4.3"))
             return;
 
         Map<String, Object> resources = yamlFile.getValues(true);
