@@ -158,6 +158,8 @@ public class CommandEvent {
         if (isSlashCommand()) {
             getInteractionHook().editOriginal(messageEditData).queue();
         } else {
+            if (message == null) return;
+
             message.editMessage(messageEditData).queue();
         }
     }
