@@ -140,9 +140,9 @@
             <version>63f49f783b</version>
         </dependency>
         <dependency>
-            <groupId>com.github.DxsSucuk</groupId>
+            <groupId>com.lilittlecat</groupId>
             <artifactId>chatgpt</artifactId>
-            <version>bc1e2efc18</version>
+            <version>1.0.2</version>
         </dependency>
 
         <!-- Database -->

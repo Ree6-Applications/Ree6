@@ -91,7 +91,7 @@ public class ChatGPTAPI {
             newMessageList.addAll(messages);
             messages = newMessageList;
         }
-        // TODO:: wait till merge pulled.
+
         return chatGPT.ask(Model.GPT_3_5_TURBO, messages);
     }
 }
