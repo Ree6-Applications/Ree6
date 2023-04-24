@@ -123,15 +123,15 @@ public class Warn implements ICommand {
 
                             switch (action) {
                                 case 1 ->
-                                        stringBuilder.append("Timeout").append(" for ").append(Duration.ofMillis(punishments.getTimeoutTime()).toSeconds()).append("seconds");
+                                        stringBuilder.append(commandEvent.getResource("message.warn.listEntry.timeout", Duration.ofMillis(punishments.getTimeoutTime()).toSeconds()));
                                 case 2 ->
-                                        stringBuilder.append("Role-Add").append(" for ").append("<@").append(punishments.getRoleId()).append(">");
+                                        stringBuilder.append(commandEvent.getResource("message.warn.listEntry.roleAdd", punishments.getRoleId()));
                                 case 3 ->
-                                        stringBuilder.append("Role-Remove").append(" for ").append("<@").append(punishments.getRoleId()).append(">");
+                                        stringBuilder.append(commandEvent.getResource("message.warn.listEntry.roleRemove", punishments.getRoleId()));
                                 case 4 ->
-                                        stringBuilder.append("Kick").append(" ").append("with").append(" ").append("reason").append(" ").append(punishments.getReason());
+                                        stringBuilder.append(commandEvent.getResource("message.warn.listEntry.kick", punishments.getReason()));
                                 case 5 ->
-                                        stringBuilder.append("Ban").append(" ").append("with").append(" ").append("reason").append(" ").append(punishments.getReason());
+                                        stringBuilder.append(commandEvent.getResource("message.warn.listEntry.ban", punishments.getReason()));
                             }
 
                             stringBuilder.append("\n");
@@ -171,9 +171,7 @@ public class Warn implements ICommand {
                     Punishments punishment = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "SELECT * FROM Punishments WHERE guildId = :gid AND warnings = :amount", Map.of("gid", commandEvent.getGuild().getIdLong(), "amount", warnings));
                     if (punishment != null) {
                         switch (punishment.getAction()) {
-                            case 1 -> {
-                                member.timeoutFor(Duration.ofMillis(punishment.getTimeoutTime())).reason("Reached " + warnings + " warnings!").queue();
-                            }
+                            case 1 -> member.timeoutFor(Duration.ofMillis(punishment.getTimeoutTime())).reason(commandEvent.getResource("message.warn.reachedWarnings", warnings)).queue();
                             case 2 -> {
                                 Role role = commandEvent.getGuild().getRoleById(punishment.getRoleId());
                                 if (role == null) {
@@ -181,7 +179,7 @@ public class Warn implements ICommand {
                                     return;
                                 }
 
-                                commandEvent.getGuild().addRoleToMember(member, role).reason("Reached " + warnings + " warnings!").queue();
+                                commandEvent.getGuild().addRoleToMember(member, role).reason(commandEvent.getResource("message.warn.reachedWarnings", warnings)).queue();
                             }
                             case 3 -> {
                                 Role role = commandEvent.getGuild().getRoleById(punishment.getRoleId());
@@ -190,7 +188,7 @@ public class Warn implements ICommand {
                                     return;
                                 }
 
-                                commandEvent.getGuild().removeRoleFromMember(member, role).reason("Reached " + warnings + " warnings!").queue();
+                                commandEvent.getGuild().removeRoleFromMember(member, role).reason(commandEvent.getResource("message.warn.reachedWarnings", warnings)).queue();
                             }
                             case 4 -> member.kick().reason(punishment.getReason()).queue();
                             case 5 -> member.ban(0, TimeUnit.DAYS).reason(punishment.getReason()).queue();
