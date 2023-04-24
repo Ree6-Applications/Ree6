@@ -186,6 +186,7 @@ label:
   song: "Skladba"
   shuffle: "Zamíchat"
   loop: "Smyčka"
+  loading: "Loading"
 message:
   default:
     usage: "Použití {guild_prefix}%s."
@@ -511,11 +512,18 @@ message:
     punishment:
       created: "Úspěšně jsi vytvořil trest!"
       list: "Zde je seznam všech trestů pro tento server:\n```%s```"
+      listEntry:
+        timeout: "Timeout for %s seconds"
+        roleAdd: "Role-Add for %s"
+        roleRemove: "Role-Remove for %s"
+        kick: "Kick with reason %s"
+        ban: "Ban with reason %s"
       deleted: "Trest s ID %s byl odstraněn."
       notFound: "Pro tento server neexistuje žádný trest s ID %s."
     success: "Úspěšně jste varovali %s!\nUživatel má nyní %s varování!"
     hierarchySelfError: "Nemůžete varovat někoho, kdo má vyšší nebo stejnou roli!"
     hierarchyBotError: "Nemohu varovat někoho s vyšší nebo stejnou rolí než já!"
+    reachedWarnings: "Reached %s warnings!"
   infractions:
     success: "Uživatel %s má %s přestupků!"
     empty: "Uživatel %s nema žádné přestupky!"
@@ -525,6 +533,9 @@ message:
       success: "Naplánovaná zpráva byl úspěšně odstraněn!"
       failed: "Uvedený rozvrh neexistuje!"
     list: "Zde je seznam všech rozvrhů: ```%s```"
+  pickupline:
+    response: ":speaking_head: %s"
+    responseNsfw: ":red_circle: ||%s|| **NSFW**"
 game:
   description:
     blackjack: "Hrajte Blackjack se svými přáteli!"
@@ -540,6 +551,7 @@ command:
     slashNotSupported: "Tento příkaz zatím nepodporuje lomítko!"
     onlySlashSupported: "Tento příkaz podporuje pouze Slash-Commands!"
   description:
+    pickupline: "You need a pickup line? We got you."
     birthday: "Ať si robot zapamatuje vaše narozeniny."
     instagramNotifier: "Spravujte svůj Instagram-Notifier!"
     redditNotifier: "Spravujte svůj Reddit-Notifier!"
