@@ -41,6 +41,7 @@ public class Waifu implements ICommand {
         JsonObject jsonObject1 = jsonObject.get("series").getAsJsonObject();
 
         em.setImage((jsonObject.has("display_picture") ? jsonObject.get("display_picture").getAsString() : "https://images.ree6.de/notfound.png"));
+        
         em.addField("**" + commandEvent.getResource("label.character") + "**", "``" + (jsonObject.has("name")
                 ? jsonObject.get("name").getAsString()
                 : commandEvent.getResource("message.default.retrievalError")) + "``", true);
