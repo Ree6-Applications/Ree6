@@ -186,7 +186,7 @@ label:
   song: "Pieśń"
   shuffle: "Losuj"
   loop: "Pętla"
-  loading: "Loading"
+  loading: "Ładowanie"
 message:
   default:
     usage: "Użycie {guild_prefix}%s."
@@ -513,17 +513,17 @@ message:
       created: "Udało ci się stworzyć karę!"
       list: "Oto lista wszystkich kar dla tej Gildii:\n```%s ``` `"
       listEntry:
-        timeout: "Timeout for %s seconds"
-        roleAdd: "Role-Add for %s"
-        roleRemove: "Role-Remove for %s"
-        kick: "Kick with reason %s"
-        ban: "Ban with reason %s"
+        timeout: "Przerwa na %s sekund"
+        roleAdd: "Dodanie roli dla %s"
+        roleRemove: "Usuwanie roli dla %s"
+        kick: "Wyrzucić z powodu %s"
+        ban: "Ban z powodu %s"
       deleted: "Kara o ID %s została usunięta."
       notFound: "Nie ma kary o ID %s dla tej Gildii."
     success: "Udało Ci się ostrzec %s!\nUżytkownik ma teraz %s ostrzeżeń!"
     hierarchySelfError: "Nie możesz ostrzec kogoś o wyższej lub równej roli w porównaniu z tobą!"
     hierarchyBotError: "Nie mogę ostrzec kogoś o wyższej lub równej roli w porównaniu ze mną!"
-    reachedWarnings: "Reached %s warnings!"
+    reachedWarnings: "Osiągnięto %s ostrzeżeń!"
   infractions:
     success: "Użytkownik %s ma %s infrakcji!"
     empty: "Użytkownik %s nie ma żadnych infrakcji!"
@@ -551,7 +551,7 @@ command:
     slashNotSupported: "Ta komenda jeszcze nie obsługuje komend typu Slash!"
     onlySlashSupported: "Ta komenda obsługuje tylko komendy typu Slash!"
   description:
-    pickupline: "You need a pickup line? We got you."
+    pickupline: "Potrzebujesz linii odbiorczej? Zdobyliśmy cię."
     birthday: "Pozwól botowi znać twoje urodziny."
     instagramNotifier: "Zarządzaj swoimi powiadomieniami Instagram!"
     redditNotifier: "Zarządzaj swoimi powiadomieniami Reddit!"
