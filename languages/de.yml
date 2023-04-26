@@ -186,7 +186,7 @@ label:
   song: "Song"
   shuffle: "Mischen"
   loop: "Song-Schleife"
-  loading: "Loading"
+  loading: "Lädt"
 message:
   default:
     usage: "Nutzung {guild_prefix}%s."
@@ -513,7 +513,7 @@ message:
       created: "Eine Bestrafung wurde erfolgreich hinzugefügt!"
       list: "Hier ist eine Liste mit allen Bestrafungen für diesen Server:\n```%s```"
       listEntry:
-        timeout: "Timeout for %s seconds"
+        timeout: "Timeout für %s sekunden"
         roleAdd: "Role-Add for %s"
         roleRemove: "Role-Remove for %s"
         kick: "Kick with reason %s"
