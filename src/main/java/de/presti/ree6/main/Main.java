@@ -520,9 +520,9 @@ public class Main {
         ThreadUtil.createThread(x -> {
             String formattedUrl = heartbeatUrl.replace("%ping%", "" + BotWorker.getShardManager().getAverageGatewayPing());
             try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(formattedUrl).GET().build())) {
-                log.info("Heartbeat sent!");
+                log.debug("Heartbeat sent!");
             } catch (Exception exception) {
-                log.info("Heartbeat failed! Reporting to Sentry...");
+                log.warn("Heartbeat failed! Reporting to Sentry...");
                 Sentry.captureException(exception);
             }
         }, Sentry::captureException,
