@@ -513,8 +513,8 @@ message:
       created: "Úspěšně jsi vytvořil trest!"
       list: "Zde je seznam všech trestů pro tento server:\n```%s```"
       listEntry:
-        timeout: "Timeout for %s seconds"
-        roleAdd: "Role-Add for %s"
+        timeout: "Časový limit %s sekund"
+        roleAdd: "Přidat roli  pro %s"
         roleRemove: "Role-Remove for %s"
         kick: "Kick with reason %s"
         ban: "Ban with reason %s"
