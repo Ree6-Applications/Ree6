@@ -515,15 +515,15 @@ message:
       listEntry:
         timeout: "Časový limit %s sekund"
         roleAdd: "Přidat roli  pro %s"
-        roleRemove: "Role-Remove for %s"
-        kick: "Kick with reason %s"
-        ban: "Ban with reason %s"
+        roleRemove: "Odebrat roli pro %s"
+        kick: "Vyhození s důvodem %s"
+        ban: "Ban s důvodem %s"
       deleted: "Trest s ID %s byl odstraněn."
       notFound: "Pro tento server neexistuje žádný trest s ID %s."
     success: "Úspěšně jste varovali %s!\nUživatel má nyní %s varování!"
     hierarchySelfError: "Nemůžete varovat někoho, kdo má vyšší nebo stejnou roli!"
     hierarchyBotError: "Nemohu varovat někoho s vyšší nebo stejnou rolí než já!"
-    reachedWarnings: "Reached %s warnings!"
+    reachedWarnings: "Dosáhl jsi %s varování!"
   infractions:
     success: "Uživatel %s má %s přestupků!"
     empty: "Uživatel %s nema žádné přestupky!"
@@ -535,7 +535,7 @@ message:
     list: "Zde je seznam všech rozvrhů: ```%s```"
   pickupline:
     response: ":speaking_head: %s"
-    responseNsfw: ":red_circle: ||%s|| **NSFW**"
+    responseNsfw: "red_circle: ||%s|| **NSFW**"
 game:
   description:
     blackjack: "Hrajte Blackjack se svými přáteli!"
@@ -551,7 +551,7 @@ command:
     slashNotSupported: "Tento příkaz zatím nepodporuje lomítko!"
     onlySlashSupported: "Tento příkaz podporuje pouze Slash-Commands!"
   description:
-    pickupline: "You need a pickup line? We got you."
+    pickupline: "Potřebuješ balící hlášku? Ree6 ti poradí."
     birthday: "Ať si robot zapamatuje vaše narozeniny."
     instagramNotifier: "Spravujte svůj Instagram-Notifier!"
     redditNotifier: "Spravujte svůj Reddit-Notifier!"
