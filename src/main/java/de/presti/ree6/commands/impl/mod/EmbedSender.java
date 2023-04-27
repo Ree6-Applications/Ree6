@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import org.apache.commons.validator.GenericValidator;
 
 import java.awt.*;
 import java.time.Instant;
@@ -52,7 +53,7 @@ public class EmbedSender implements ICommand {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
 
-        embedBuilder.setTitle(title != null ? title.getAsString() : commandEvent.getResource("label.title"), url != null ? url.getAsString() : null);
+        embedBuilder.setTitle(title != null ? title.getAsString() : commandEvent.getResource("label.title"), url != null ? GenericValidator.isUrl(url.getAsString()) ? url.getAsString() : null : null);
         embedBuilder.setDescription(description != null ? description.getAsString() : commandEvent.getResource("label.description"));
 
         if (color != null) {
@@ -60,19 +61,21 @@ public class EmbedSender implements ICommand {
         }
 
         if (footer != null) {
-            embedBuilder.setFooter(footer.getAsString(), footerIcon != null ? footerIcon.getAsString() : null);
+            embedBuilder.setFooter(footer.getAsString(), footerIcon != null ? GenericValidator.isUrl(footerIcon.getAsString()) ? footerIcon.getAsString() : null : null);
         }
 
-        if (image != null) {
+        if (image != null && GenericValidator.isUrl(image.getAsString())) {
             embedBuilder.setImage(image.getAsString());
         }
 
-        if (thumbnail != null) {
+        if (thumbnail != null && GenericValidator.isUrl(thumbnail.getAsString())) {
             embedBuilder.setThumbnail(thumbnail.getAsString());
         }
 
         if (author != null) {
-            embedBuilder.setAuthor(author.getAsString(), authorUrl != null ? authorUrl.getAsString() : null, authorIcon != null ? authorIcon.getAsString() : null);
+            embedBuilder.setAuthor(author.getAsString(), authorUrl != null ?
+                            GenericValidator.isUrl(authorUrl.getAsString()) ? authorUrl.getAsString() : null : null,
+                    authorIcon != null ? GenericValidator.isUrl(authorIcon.getAsString()) ? authorIcon.getAsString() : null : null);
         }
 
         if (timestamp != null) {
