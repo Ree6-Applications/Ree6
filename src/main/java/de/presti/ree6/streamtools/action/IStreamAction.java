@@ -15,6 +15,8 @@ public interface IStreamAction {
      * @param guild The guild where the action should be executed.
      * @param twitchEvent The twitch event that was fired.
      * @param arguments Arguments for the action. (Can be null)
+     *
+     * @return True if the action was executed successfully.
      */
-    void runAction(@NotNull Guild guild, @Nullable TwitchEvent twitchEvent, @Nullable String[] arguments);
+    boolean runAction(@NotNull Guild guild, @Nullable TwitchEvent twitchEvent, @Nullable String[] arguments);
 }

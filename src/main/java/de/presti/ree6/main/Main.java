@@ -268,6 +268,9 @@ public class Main {
 
         // Create checker Thread.
         instance.createCheckerThread();
+
+        // Create Heartbeat Thread.
+        instance.createHeartbeatThread();
     }
 
     /**
@@ -502,6 +505,28 @@ public class Main {
                 }
             }
         }, null, Duration.ofMinutes(1), true, false);
+    }
+
+    /**
+     * Method creates a Thread which sends a heartbeat to a URL in an x seconds interval.
+     */
+    public void createHeartbeatThread() {
+        String heartbeatUrl = instance.config.getConfiguration().getString("heartbeat.url", null);
+
+
+        if (heartbeatUrl == null || heartbeatUrl.isBlank() || heartbeatUrl.equalsIgnoreCase("none"))
+            return;
+
+        ThreadUtil.createThread(x -> {
+            String formattedUrl = heartbeatUrl.replace("%ping%", "" + BotWorker.getShardManager().getAverageGatewayPing());
+            try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(formattedUrl).GET().build())) {
+                log.info("Heartbeat sent!");
+            } catch (Exception exception) {
+                log.info("Heartbeat failed! Reporting to Sentry...");
+                Sentry.captureException(exception);
+            }
+        }, Sentry::captureException,
+                Duration.ofSeconds(instance.config.getConfiguration().getInt("heartbeat.interval", 60)), true, true);
     }
 
     /**

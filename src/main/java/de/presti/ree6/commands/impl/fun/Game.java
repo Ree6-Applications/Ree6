@@ -51,6 +51,15 @@ public class Game implements ICommand {
                     return;
                 }
 
+                if (GameManager.getGames().stream().noneMatch(c -> c.getName().equalsIgnoreCase(value.getAsString().trim()))) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append(commandEvent.getResource("message.game.availableGames")).append("```");
+                    GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append("- ").append(LanguageService.getByEvent(commandEvent,entryValue.getAnnotation(GameInfo.class).description())));
+                    stringBuilder.append("```");
+                    commandEvent.reply(stringBuilder.toString());
+                    return;
+                }
+
                 ArrayList<User> participants = new ArrayList<>();
                 participants.add(commandEvent.getSlashCommandInteractionEvent().getUser());
 

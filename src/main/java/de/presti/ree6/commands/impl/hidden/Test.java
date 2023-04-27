@@ -17,7 +17,12 @@ public class Test implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        // Nothing to test rn.
+        if (!commandEvent.getMember().getUser().getId().equalsIgnoreCase("321580743488831490")) {
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", "BE DEVELOPER"), 5);
+            return;
+        }
+
+        commandEvent.reply("Nothing to test rn.");
     }
 
     /**

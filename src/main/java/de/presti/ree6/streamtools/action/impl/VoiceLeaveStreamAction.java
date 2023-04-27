@@ -19,10 +19,11 @@ public class VoiceLeaveStreamAction implements IStreamAction {
      * @inheritDoc
      */
     @Override
-    public void runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
-        if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return;
+    public boolean runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
+        if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return false;
 
         Main.getInstance().getMusicWorker().disconnect(guild);
+        return true;
     }
 
 }

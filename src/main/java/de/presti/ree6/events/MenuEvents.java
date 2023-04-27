@@ -179,7 +179,11 @@ public class MenuEvents extends ListenerAdapter {
                 GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild());
 
                 if (guildMusicManager != null) {
-                    guildMusicManager.getPlayer().setPaused(false);
+                    if (guildMusicManager.getPlayer().isPaused()) {
+                        guildMusicManager.getPlayer().setPaused(false);
+                    } else {
+                        guildMusicManager.getPlayer().setPaused(true);
+                    }
                 } else {
                     Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.music.notConnected"),
                             event.getChannel(), event.getHook());

@@ -97,7 +97,13 @@ public class YouTubeAPIHandler {
      * @throws Exception if something went wrong.
      */
     public ChannelResult getYouTubeChannelBySearch(String channelName) throws Exception {
-        ChannelSearchResult channelSearchResult = (ChannelSearchResult) YouTubeWrapper.search(channelName, SearchResult.FILTER.CHANNEL).get(0);
+        List<SearchResult> searchResults = YouTubeWrapper.search(channelName, SearchResult.FILTER.CHANNEL);
+
+        if (searchResults.isEmpty()) {
+            return null;
+        }
+
+        ChannelSearchResult channelSearchResult = (ChannelSearchResult)searchResults.get(0);
 
         if (channelSearchResult == null) {
             return null;
