@@ -1,7 +1,7 @@
 language:
   name: "Indonesia"
   locale: "id"
-  version: "2.4.0"
+  version: "2.4.6"
   author: "Gorengan_Hunter, SpyCat"
 logging:
   banned: ":airplane_departure: %s **telah diban.**"
