@@ -186,7 +186,7 @@ label:
   song: "Skladba"
   shuffle: "Zamíchat"
   loop: "Smyčka"
-  loading: "Loading"
+  loading: "Načítání"
 message:
   default:
     usage: "Použití {guild_prefix}%s."
