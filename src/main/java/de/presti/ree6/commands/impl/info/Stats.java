@@ -93,6 +93,7 @@ public class Stats implements ICommand {
 
         MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
 
+        messageEditBuilder.setContent("");
         messageEditBuilder.setEmbeds(em.build());
 
         commandEvent.update(message, messageEditBuilder.build());

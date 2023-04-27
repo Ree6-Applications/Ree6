@@ -20,7 +20,6 @@ import com.github.twitch4j.auth.providers.TwitchIdentityProvider;
 import com.github.twitch4j.events.ChannelFollowCountUpdateEvent;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.eventsub.events.ChannelSubscribeEvent;
-import com.github.twitch4j.helix.domain.SubscriptionEvent;
 import com.github.twitch4j.helix.domain.User;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.github.twitch4j.pubsub.events.FollowingEvent;
@@ -46,6 +45,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import masecla.reddit4j.client.Reddit4J;
+import masecla.reddit4j.exceptions.AuthenticationException;
 import masecla.reddit4j.objects.Sorting;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -148,7 +148,7 @@ public class Notifier {
 
         TwitchAuth.registerIdentityProvider(credentialManager, Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"),
                 Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"),
-                (BotWorker.getVersion() != BotVersion.DEVELOPMENT_BUILD ? "https://cp.ree6.de" : "http://localhost:8888") + "/twitch/auth/callback");
+                (BotWorker.getVersion() != BotVersion.DEVELOPMENT ? "https://cp.ree6.de" : "http://localhost:8888") + "/twitch/auth/callback");
 
         twitchIdentityProvider = (TwitchIdentityProvider) credentialManager.getIdentityProviderByName("twitch").orElse(null);
 
@@ -228,7 +228,11 @@ public class Notifier {
             redditClient.userlessConnect();
             createRedditPostStream();
         } catch (Exception exception) {
-            log.error("Failed to connect to Reddit API.", exception);
+            if (exception instanceof AuthenticationException) {
+                log.warn("Reddit Credentials are invalid, you can ignore this if you don't use Reddit.");
+            } else {
+                log.error("Failed to connect to Reddit API.", exception);
+            }
         }
 
         log.info("Initializing Instagram Client...");
@@ -250,7 +254,7 @@ public class Notifier {
                 .password(Main.getInstance().getConfig().getConfiguration().getString("instagram.password"))
                 .onChallenge(challengeHandler).build();
         instagramClient.sendLoginRequest().exceptionally(throwable -> {
-            log.error("Failed to login to Instagram API.", throwable);
+            log.error("Failed to login to Instagram API, you can ignore this if you don't use Instagram.", throwable);
             return null;
         });
         createInstagramPostStream();

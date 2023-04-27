@@ -65,7 +65,7 @@ public class Config {
                     .parent().path("host").addDefault("localhost")
                     .parent().path("port").addDefault(3306)
                     .parent().parent().path("misc").comment("Misc Configuration").blankLine()
-                    .path("storage").addDefault("sqlite")
+                    .path("storage").addDefault("sqlite").commentSide("Either use sqlite or mariadb.")
                     .parent().path("storageFile").addDefault("storage/Ree6.db")
                     .parent().path("poolSize").addDefault(10);
 

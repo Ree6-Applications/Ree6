@@ -189,11 +189,11 @@ public class Main {
             List<String> argList = Arrays.stream(args).map(String::toLowerCase).toList();
 
             if (argList.contains("--dev")) {
-                BotWorker.createBot(BotVersion.DEVELOPMENT_BUILD);
+                BotWorker.createBot(BotVersion.DEVELOPMENT);
             } else if (argList.contains("--prod")) {
                 BotWorker.createBot(BotVersion.RELEASE);
             } else if (argList.contains("--beta")) {
-                BotWorker.createBot(BotVersion.BETA_BUILD);
+                BotWorker.createBot(BotVersion.BETA);
             } else {
                 BotWorker.createBot(BotVersion.RELEASE);
             }
