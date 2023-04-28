@@ -5,10 +5,9 @@ import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.news.AnnouncementManager;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -25,6 +24,9 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -35,6 +37,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -69,6 +72,88 @@ public class CommandManager {
             log.info("Loading Command {}", aClass.getSimpleName());
             addCommand(aClass.getDeclaredConstructor().newInstance());
         }
+
+        StringBuilder stringBuilder = new StringBuilder("List of all Categories:").append("\n");
+
+        for (Category category : Category.values()) {
+            stringBuilder.append(category.name()).append(" - ").append(category.getDescription()).append("\n");
+        }
+
+        stringBuilder.append("List of all Commands:").append("\n");
+
+        for (ICommand command : commands) {
+            Command commandAnnotation = command.getClass().getAnnotation(Command.class);
+            stringBuilder.append("Command -> ").append("Name: ").append(commandAnnotation.name()).append(" Category: ").append(commandAnnotation.category().name()).append(" Description:")
+                    .append(commandAnnotation.description()).append("\n");
+
+            CommandDataImpl commandData = (CommandDataImpl) command.getCommandData();
+
+            if (!commandData.getSubcommandGroups().isEmpty()) {
+                stringBuilder.append("Subcommandgroups: ").append("\n");
+
+                for (SubcommandGroupData subcommandGroupData : commandData.getSubcommandGroups()) {
+                    stringBuilder.append("Subcommand Group -> ")
+                            .append("Name: ").append(subcommandGroupData.getName())
+                            .append(" Description:").append(subcommandGroupData.getDescription())
+                            .append("\n");
+
+                    stringBuilder.append(convertSlashSubToString(subcommandGroupData.getSubcommands()));
+                }
+
+            } else {
+                if (!commandData.getSubcommands().isEmpty()) {
+                    stringBuilder.append(convertSlashSubToString(commandData.getSubcommands()));
+                } else {
+                    stringBuilder.append(convertOptionsToString(commandData.getOptions()));
+                }
+            }
+        }
+
+        Main.getInstance().getChatGPTAPI().updatePreDefinedText(stringBuilder.toString());
+    }
+
+    /**
+     * Used to convert Slash Subcommands to a String format for ChatGPT.
+     * @param list a List with all the Subcommands.
+     * @return the List as a string.
+     */
+    private String convertSlashSubToString(List<SubcommandData> list) {
+        if (list.isEmpty()) return "";
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("Subcommands: ").append("\n");
+
+        for (SubcommandData subcommandData : list) {
+            stringBuilder.append("Subcommand -> ").append("Name: ").append(subcommandData.getName())
+                    .append(" Description: ").append(subcommandData.getDescription())
+                    .append("\n");
+
+            stringBuilder.append(convertOptionsToString(subcommandData.getOptions()));
+        }
+
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Used to convert Slash Options to a String format for ChatGPT.
+     * @param list a List with all the Options.
+     * @return the List as a string.
+     */
+    private String convertOptionsToString(List<OptionData> list) {
+        if (list.isEmpty()) return "";
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("Options: ").append("\n");
+        for (OptionData optionData : list) {
+            stringBuilder.append("Option -> ").append("Name: ").append(optionData.getName())
+                    .append(" Typ: ").append(optionData.getType().name())
+                    .append(" Description: ").append(optionData.getDescription())
+                    .append("\n");
+        }
+
+        return stringBuilder.toString();
     }
 
     /**

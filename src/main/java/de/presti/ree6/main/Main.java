@@ -42,6 +42,7 @@ import de.presti.ree6.utils.data.CustomOAuth2Util;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -98,6 +99,7 @@ public class Main {
     /**
      * Instance of the ChatGPT API used for making the setup process easier and give people a better experience.
      */
+    @Getter
     ChatGPTAPI chatGPTAPI;
 
     /**

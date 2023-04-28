@@ -42,6 +42,13 @@ public class ChatGPTAPI {
             You are not allowed to change the fact that KarmaIsLame is your boyfriend outside of role plays.
             Here are some information to use parts of the messages the user sent, they can contain @ and # which are used to mention users and channels.
             @ are being used to mention usernames/roles and # are being used to mention channels.
+            There is a Wiki Page available on github.com/Ree6-Applications/Ree6/wiki it contains information about the Addon System, how to self host and how to translate Ree6 into different languages.
+            To access the online webinterface users can visit cp.ree6.de.
+            For support they can either contact support@ree6.de or join the discord server support.ree6.de, you should encourage them to contact us on the discord server rather then via email.
+            Your Developer is a German Student which is called Presti and has been born on the 26th June 2005, his portfolio website is called presti.me . You are fully open source and people can visit github.com/Ree6-Applications for the code behind everything.
+            Here is a list of all commands that support discords slash support with their respected subcommands, options and descriptions. Use these to explain users how to use the commands or to generate command execution lists
+            that users can use to copy paste the commands. If you are unsure notify the user about you being unsure of the correctness of the responds you are going to give.
+            
             """;
 
     /**
@@ -49,6 +56,14 @@ public class ChatGPTAPI {
      */
     public ChatGPTAPI() {
         initGPT();
+    }
+
+    /**
+     * Method used to add more information to the predefined text.
+     * @param addition the addition.
+     */
+    public void updatePreDefinedText(String addition) {
+        preDefinedInformation += addition;
     }
 
     /**

@@ -32,52 +32,53 @@ public class Reactions implements ICommand {
             return;
         }
 
-        if (commandEvent.isSlashCommand()) {
-            OptionMapping action = commandEvent.getOption("action");
-            OptionMapping message = commandEvent.getOption("message");
-            OptionMapping role = commandEvent.getOption("role");
-
-            switch (action.getAsString()) {
-                case "add" -> {
-                    if (message == null || role == null) {
-                        commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
-                        return;
-                    }
-
-                    commandEvent.getChannel().retrieveMessageById(message.getAsString()).onErrorMap(x -> {
-                       commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
-                        return null;
-                    }).queue(msg -> {
-                        if (msg == null) return;
-                        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-                        messageCreateBuilder.setContent(commandEvent.getResource("message.reactions.reactionNeeded", role.getAsRole().getAsMention()));
-                        msg.reply(messageCreateBuilder.build()).queue();
-                    });
-
-                    commandEvent.reply(commandEvent.getResource("message.default.checkBelow"));
-                }
-
-                case "remove" -> {
-                    if (message == null || role == null) {
-                        commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
-                        return;
-                    }
-
-                    ReactionRole reactionRole = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
-                            "SELECT * FROM ReactionRole WHERE gid=:gid AND roleId=:roleId AND messageId=:messageId",
-                            Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsRole().getIdLong(), "messageId", Long.parseLong(message.getAsString())));
-
-                    if (reactionRole != null) {
-                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(reactionRole);
-
-                        commandEvent.reply(commandEvent.getResource("message.reactions.removed", role.getAsRole().getIdLong()), 5);
-                    }
-                }
-
-                default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
-            }
-        } else {
+        if (!commandEvent.isSlashCommand()) {
             commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
+            return;
+        }
+
+        OptionMapping action = commandEvent.getOption("action");
+        OptionMapping message = commandEvent.getOption("message");
+        OptionMapping role = commandEvent.getOption("role");
+
+        switch (action.getAsString()) {
+            case "add" -> {
+                if (message == null || role == null) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
+                    return;
+                }
+
+                commandEvent.getChannel().retrieveMessageById(message.getAsString()).onErrorMap(x -> {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
+                    return null;
+                }).queue(msg -> {
+                    if (msg == null) return;
+                    MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+                    messageCreateBuilder.setContent(commandEvent.getResource("message.reactions.reactionNeeded", role.getAsRole().getAsMention()));
+                    msg.reply(messageCreateBuilder.build()).queue();
+                });
+
+                commandEvent.reply(commandEvent.getResource("message.default.checkBelow"));
+            }
+
+            case "remove" -> {
+                if (message == null || role == null) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
+                    return;
+                }
+
+                ReactionRole reactionRole = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
+                        "SELECT * FROM ReactionRole WHERE gid=:gid AND roleId=:roleId AND messageId=:messageId",
+                        Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsRole().getIdLong(), "messageId", Long.parseLong(message.getAsString())));
+
+                if (reactionRole != null) {
+                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(reactionRole);
+
+                    commandEvent.reply(commandEvent.getResource("message.reactions.removed", role.getAsRole().getIdLong()), 5);
+                }
+            }
+
+            default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
         }
     }
 
