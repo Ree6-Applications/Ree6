@@ -8,11 +8,11 @@ public enum BotVersion {
     /**
      * Version for Development tests.
      */
-    DEVELOPMENT_BUILD("bot.tokens.dev", 1, true),
+    DEVELOPMENT("bot.tokens.dev", 1, true),
     /**
      * Version for a not yet fully stable release.
      */
-    BETA_BUILD("bot.tokens.beta", 5, false),
+    BETA("bot.tokens.beta", 5, false),
     /**
      * Version for a stable release.
      */

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.ParseException;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.exceptions.detailed.BadRequestException;
 import se.michaelthelin.spotify.exceptions.detailed.UnauthorizedException;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
 import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
@@ -60,9 +61,18 @@ public class SpotifyAPIHandler {
     public void initSpotify() throws ParseException, SpotifyWebApiException, IOException {
         this.spotifyApi = new SpotifyApi.Builder().setClientId(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.id")).setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.secret")).build();
 
-        ClientCredentialsRequest.Builder request = new ClientCredentialsRequest.Builder(spotifyApi.getClientId(), spotifyApi.getClientSecret());
-        ClientCredentials credentials = request.grant_type("client_credentials").build().execute();
-        spotifyApi.setAccessToken(credentials.getAccessToken());
+        try {
+            ClientCredentialsRequest.Builder request = new ClientCredentialsRequest.Builder(spotifyApi.getClientId(), spotifyApi.getClientSecret());
+            ClientCredentials credentials = request.grant_type("client_credentials").build().execute();
+            spotifyApi.setAccessToken(credentials.getAccessToken());
+        } catch (Exception exception) {
+            if (exception.getMessage().equalsIgnoreCase("Invalid client")) {
+                log.warn("Spotify Credentials are invalid, you can ignore this if you don't use Spotify.");
+            } else {
+                throw exception;
+            }
+        }
+
     }
 
     /**

@@ -1,7 +1,7 @@
 language:
   name: "German"
   locale: "de"
-  version: "2.4.0"
+  version: "2.4.6"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **gebannt.**"
@@ -186,6 +186,7 @@ label:
   song: "Song"
   shuffle: "Mischen"
   loop: "Song-Schleife"
+  loading: "Lädt"
 message:
   default:
     usage: "Nutzung {guild_prefix}%s."
@@ -511,11 +512,18 @@ message:
     punishment:
       created: "Eine Bestrafung wurde erfolgreich hinzugefügt!"
       list: "Hier ist eine Liste mit allen Bestrafungen für diesen Server:\n```%s```"
+      listEntry:
+        timeout: "Timeout für %s sekunden"
+        roleAdd: "Role-Add für %s"
+        roleRemove: "Role-Remove für %s"
+        kick: "Kick mit dem Grund %s"
+        ban: "Ban mit dem Grund %s"
       deleted: "Die Bestrafung mit der ID %s wurde gelöscht!"
       notFound: "Die Bestrafung mit der ID %s konnte nicht gefunden werden."
     success: "%s wurde erfolgreich gewarnt!\nDieser Nutzer hat nun %s Warnungen!"
     hierarchySelfError: "Du kannst niemand mit einer höheren oder gleichen Rolle wie du verwarnen!"
     hierarchyBotError: "Ich kann niemand mit einer höheren oder gleichen Rolle warnen!"
+    reachedWarnings: "%s Warnungen erreicht!"
   infractions:
     success: "Der Nutzer %s hat %s Verwarnungen!"
     empty: "Der Nutzer %s hat keine Verwarnungen!"
@@ -525,6 +533,9 @@ message:
       success: "Eine geplante Nachricht wurde erfolgreich gelöscht!"
       failed: "Die angegebene geplante Nachricht existiert nicht!"
     list: "Hier ist eine Liste aller geplanten Nachrichten: ```%s```"
+  pickupline:
+    response: ":speaking_head: %s"
+    responseNsfw: ":red_circle: ||%s|| **NSFW**"
 game:
   description:
     blackjack: "Spiele Blackjack mit deinen Freunden!"
@@ -540,6 +551,7 @@ command:
     slashNotSupported: "Dieser Befehl unterstützt kein Slash!"
     onlySlashSupported: "Dieser Befehl unterstützt nur Slash!"
   description:
+    pickupline: "Du brauchst eine pickup line? Wir haben welche."
     birthday: "Lass den Bot sich an dein Geburtstag erinnern."
     instagramNotifier: "Manage dein Instagram-Notifier!"
     redditNotifier: "Manage dein Reddit-Notifier!"

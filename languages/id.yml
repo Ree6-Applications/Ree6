@@ -1,7 +1,7 @@
 language:
   name: "Indonesia"
   locale: "id"
-  version: "2.4.0"
+  version: "2.4.6"
   author: "Gorengan_Hunter, SpyCat"
 logging:
   banned: ":airplane_departure: %s **telah diban.**"
@@ -186,6 +186,7 @@ label:
   song: "Lagu"
   shuffle: "Acak"
   loop: "Ulang"
+  loading: "Loading"
 message:
   default:
     usage: "Penggunaan {guild_prefix}%s."
@@ -511,20 +512,30 @@ message:
     punishment:
       created: "Sukses membuat hukuman!"
       list: "Dibawah ini daftar hukuman di Guild ini:\n```%s```"
+      listEntry:
+        timeout: "Timeout untuk %s detik"
+        roleAdd: "Role-Add untuk %s"
+        roleRemove: "Role-Remove untuk %s"
+        kick: "Kick dengan alasan %s"
+        ban: "Ban dengan alasan %s"
       deleted: "Hukuman dengan ID %s telah dihapus."
       notFound: "Tidak ada hukuman dengan ID %s di Guild ini."
     success: "Kamu sukses memperingati %s!\nUser %s sekarang telah diperingati!"
     hierarchySelfError: "Kamu tidak bisa memperingati seseorang yang mempunyai role setara atau lebih tinggi dari kamu!"
     hierarchyBotError: "Aku tidak bisa memperingati seseorang yang mempunyai role setara atau lebih tinggi dari aku!"
+    reachedWarnings: "Telah mencapai %s warnings!"
   infractions:
     success: "User %s memiliki %s pelanggaran!"
     empty: "User %s tidak memiliki pelanggaran!"
   schedule:
-    added: "The schedule has been successfully created!"
+    added: "Jadwal telah berhasil dibuat!"
     delete:
-      success: "The schedule has been successfully deleted!"
-      failed: "The given schedule does not exist!"
-    list: "Here is a list of all schedules: ```%s```"
+      success: "Jadwal telah berhasil dihapus!"
+      failed: "Jadwal yang diberikan tidak ada!"
+    list: "Ini daftar dari semua jadwal: ```%s```"
+  pickupline:
+    response: ":speaking_head: %s"
+    responseNsfw: ":red_circle: ||%s|| **NSFW**"
 game:
   description:
     blackjack: "Mainkan Blackjack dengan temanmu!"
@@ -540,6 +551,7 @@ command:
     slashNotSupported: "Command ini tidak mendukung Command Slash!"
     onlySlashSupported: "Command ini hanya mendukung Slash-Commands!"
   description:
+    pickupline: "Kamu butuh \"pickup line\"? Kita mengerti."
     birthday: "Biarkan bot menghafal hari ulang tahun mu."
     instagramNotifier: "Atur Instragram-Notifier mu!"
     redditNotifier: "Atur Reddit-Notifier mu!"
