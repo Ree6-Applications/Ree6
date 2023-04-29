@@ -32,7 +32,7 @@ public class ArrayUtil {
      * While at the same time we store them in memory to protect users privacy, since there is no actual
      * reason for us to keep these longer then the current application uptime.
      */
-    public static final Map<long[], List<com.lilittlecat.chatgpt.offical.entity.Message>> chatGPTMessages = new HashMap<>();
+    public static final Map<String, List<com.lilittlecat.chatgpt.offical.entity.Message>> chatGPTMessages = new HashMap<>();
 
     /**
      * HashMap used to store message contents and their IDs, to show the content when the message gets deleted.

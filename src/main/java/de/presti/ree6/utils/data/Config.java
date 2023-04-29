@@ -100,8 +100,11 @@ public class Config {
             yamlFile.path("amari").path("apitoken").commentSide("Your Amari API-Token, for Amari Level imports!")
                     .addDefault("Amari API-Token");
 
-            yamlFile.path("openai").path("apitoken").commentSide("Your OpenAI API-Token, for ChatGPT!")
-                    .addDefault("OpenAI API-Token");
+            yamlFile.setBlankLine("amari");
+
+            yamlFile.path("openai").path("apiToken").commentSide("Your OpenAI API-Token, for ChatGPT!")
+                    .addDefault("OpenAI API-Token")
+                    .parent().path("apiUrl").addDefault("https://api.openai.com/v1/chat/completions").commentSide("The URL to the OpenAI API.");
 
             yamlFile.setBlankLine("openai");
 

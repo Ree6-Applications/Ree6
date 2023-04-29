@@ -73,17 +73,17 @@ public class CommandManager {
             addCommand(aClass.getDeclaredConstructor().newInstance());
         }
 
-        StringBuilder stringBuilder = new StringBuilder("List of all Categories:").append("\n");
+        StringBuilder stringBuilder = new StringBuilder("Categories:").append("\n");
 
         for (Category category : Category.values()) {
             stringBuilder.append(category.name()).append(" - ").append(category.getDescription()).append("\n");
         }
 
-        stringBuilder.append("List of all Commands:").append("\n");
+        stringBuilder.append("Commands:").append("\n");
 
         for (ICommand command : commands) {
             Command commandAnnotation = command.getClass().getAnnotation(Command.class);
-            stringBuilder.append("Command -> ").append("Name: ").append(commandAnnotation.name()).append(" Category: ").append(commandAnnotation.category().name()).append(" Description:")
+            stringBuilder.append("Command ").append("Name:").append(commandAnnotation.name()).append(" Category:").append(commandAnnotation.category().name()).append(" Description:")
                     .append(commandAnnotation.description()).append("\n");
 
             CommandDataImpl commandData = (CommandDataImpl) command.getCommandData();
@@ -99,8 +99,8 @@ public class CommandManager {
                 stringBuilder.append("Subcommandgroups: ").append("\n");
 
                 for (SubcommandGroupData subcommandGroupData : commandData.getSubcommandGroups()) {
-                    stringBuilder.append("Subcommand Group -> ")
-                            .append("Name: ").append(subcommandGroupData.getName())
+                    stringBuilder.append("Subcommand Group ")
+                            .append("Name:").append(subcommandGroupData.getName())
                             .append(" Description:").append(subcommandGroupData.getDescription())
                             .append("\n");
 
@@ -132,8 +132,8 @@ public class CommandManager {
         stringBuilder.append("Subcommands: ").append("\n");
 
         for (SubcommandData subcommandData : list) {
-            stringBuilder.append("Subcommand -> ").append("Name: ").append(subcommandData.getName())
-                    .append(" Description: ").append(subcommandData.getDescription())
+            stringBuilder.append("Subcommand ").append("Name:").append(subcommandData.getName())
+                    .append(" Description:").append(subcommandData.getDescription())
                     .append("\n");
 
             stringBuilder.append(convertOptionsToString(subcommandData.getOptions()));
@@ -154,9 +154,9 @@ public class CommandManager {
 
         stringBuilder.append("Options: ").append("\n");
         for (OptionData optionData : list) {
-            stringBuilder.append("Option -> ").append("Name: ").append(optionData.getName())
-                    .append(" Typ: ").append(optionData.getType().name())
-                    .append(" Description: ").append(optionData.getDescription())
+            stringBuilder.append("Option ").append("Name:").append(optionData.getName())
+                    .append(" Typ:").append(optionData.getType().name())
+                    .append(" Description:").append(optionData.getDescription())
                     .append("\n");
         }
 

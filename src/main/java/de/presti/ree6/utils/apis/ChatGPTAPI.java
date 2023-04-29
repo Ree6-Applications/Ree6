@@ -48,7 +48,8 @@ public class ChatGPTAPI {
      */
     public void initGPT() {
         preDefinedInformation = Main.getInstance().getConfig().getConfiguration().getString("bot.misc.predefineInformation");
-        chatGPT = ChatGPT.builder().apiKey(Main.getInstance().getConfig().getConfiguration().getString("openai.apitoken")).build();
+        chatGPT = new ChatGPT(Main.getInstance().getConfig().getConfiguration().getString("openai.apiUrl","https://api.openai.com/v1/chat/completions"),
+                Main.getInstance().getConfig().getConfiguration().getString("openai.apiToken"));
     }
 
     /**
@@ -58,18 +59,22 @@ public class ChatGPTAPI {
      * @return the response by the Model.
      */
     public static String getResponse(Member member, String message) {
-        long[] ids = new long[] { member.getGuild().getIdLong(), member.getIdLong() };
+        String ids = "%s-%s".formatted(member.getGuild().getIdLong(), member.getIdLong());
 
         List<Message> messages = new ArrayList<>();
 
         if (ArrayUtil.chatGPTMessages.containsKey(ids)) {
             messages = ArrayUtil.chatGPTMessages.get(ids);
+        } else {
+            messages.add(new Message("system", preDefinedInformation));
         }
 
         messages.add(new Message("user", message));
 
+        String response = getResponse(messages);
+        messages.add(new Message("assistant", response));
         ArrayUtil.chatGPTMessages.put(ids, messages);
-        return getResponse(messages);
+        return response;
     }
 
     /**
