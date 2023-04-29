@@ -161,6 +161,9 @@ public class Config {
                 if (key.startsWith("config"))
                     continue;
 
+                if (!key.contains("."))
+                    continue;
+
                 // Migrate to 1.10.0
                 if (compareVersion("1.10.0", configVersion)) {
 
