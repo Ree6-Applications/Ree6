@@ -20,9 +20,9 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -B package --file pom.xml && mvn -B package --file Ree6-Installer/pom.xml
     - name: Copy Artifacts
-      run: mkdir staging && cp target/*.jar staging
+      run: mkdir staging && cp target/*.jar staging && cp Ree6-Installer/target/*.jar staging
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
