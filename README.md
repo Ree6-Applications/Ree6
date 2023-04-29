@@ -16,6 +16,37 @@ Ree6 is an all-in-one Discord Bot maintained by Presti, which started as an alte
 As of right now Ree6 has the ability to play Music freely from YouTube, Spotify and Soundcloud.
 As well as the "default" moderation ability such as ban, kick etc., Ree6 also provides its own implementation of the Audit-Logger.
 We also provide an **open-Source** Webinterface, Twitch and Twitter Notification, a Leveling System, a public Rest-API and more!
+<details close>
+<summary>Features ⭐</summary>
+<ul>
+   <li>Import Levels from Amari and Mee6</li>
+   <li>Voice recordings (up to 5 minutes)</li>
+   <li>Music Player (YT, Spotify, Vimeo, Bandcamp, Twitch, Soundcloud)</li>
+   <li>Music Panel (To manage music)</li>
+   <li>Games (Blackjack, MusicQuiz)</li>
+   <li>Multilanguage Support</li>
+   <li>Advanced Audit-Logging</li>
+   <li>Stream-Tools</li>
+   <li>Notifiers (YT, Twitch, Twitter, Instagram)</li>
+   <li>Temporal Voicechannels</li>
+   <li>Schedules Messages</li>
+   <li>Birthday Reminder</li>
+   <li>Simple Ticket</li>
+   <li>Reaction Roles</li>
+   <li>Fun Commands (Kiss, Slap, Waifu, Ping)</li>
+   <li>Warn System</li>
+   <li>Data Opt-out feature</li>
+   <li>Server Stats command</li>
+   <li>Level System</li>
+   <li>Autoroles</li>
+   <li>Level autoroles</li>
+   <li>Embed Sender</li>
+   <li>Simple Suggestion</li>
+   <li>Statistics channels</li>
+   <li>Custom Welcome Message (with images)</li>
+   <li>NSFW Commands</li>
+</ul>
+</details>
 
 # Discord
 Ree6 has its own support Discord that you can join to help us reach the Partner status on Discord and you to get help!
