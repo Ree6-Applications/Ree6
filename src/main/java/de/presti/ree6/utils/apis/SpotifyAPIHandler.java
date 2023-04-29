@@ -2,6 +2,7 @@ package de.presti.ree6.utils.apis;
 
 import de.presti.ree6.main.Main;
 import io.sentry.Sentry;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.ParseException;
 import se.michaelthelin.spotify.SpotifyApi;
@@ -40,6 +41,12 @@ public class SpotifyAPIHandler {
     public static SpotifyAPIHandler instance;
 
     /**
+     * If spotify is connected.
+     */
+    @Getter
+    private boolean isSpotifyConnected = false;
+
+    /**
      * Constructor.
      */
     public SpotifyAPIHandler() {
@@ -59,6 +66,8 @@ public class SpotifyAPIHandler {
      * @throws IOException            if there was a network error.
      */
     public void initSpotify() throws ParseException, SpotifyWebApiException, IOException {
+        if (!isSpotifyConnected) return;
+
         this.spotifyApi = new SpotifyApi.Builder().setClientId(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.id")).setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.secret")).build();
 
         try {
@@ -68,6 +77,7 @@ public class SpotifyAPIHandler {
         } catch (Exception exception) {
             if (exception.getMessage().equalsIgnoreCase("Invalid client")) {
                 log.warn("Spotify Credentials are invalid, you can ignore this if you don't use Spotify.");
+                isSpotifyConnected = false;
             } else {
                 throw exception;
             }
@@ -85,6 +95,8 @@ public class SpotifyAPIHandler {
      * @throws IOException            if there was a network error.
      */
     public Track getTrack(String trackId) throws ParseException, SpotifyWebApiException, IOException {
+        if (!isSpotifyConnected) return null;
+
         try {
             return spotifyApi.getTrack(trackId).build().execute();
         } catch (UnauthorizedException unauthorizedException) {
@@ -104,6 +116,7 @@ public class SpotifyAPIHandler {
      * @return a {@link java.util.List} of {@link Track} Objects.
      */
     public ArrayList<Track> getTracks(String playlistId) {
+        if (!isSpotifyConnected) return new ArrayList<>();
         ArrayList<Track> tracks = new ArrayList<>();
         GetPlaylistRequest request = spotifyApi.getPlaylist(playlistId).build();
         try {
@@ -142,6 +155,7 @@ public class SpotifyAPIHandler {
      * @throws IOException            if there was a network error.
      */
     public String getArtistAndName(String trackID) throws ParseException, SpotifyWebApiException, IOException {
+        if (!isSpotifyConnected) return "";
         StringBuilder artistNameAndTrackName;
         Track track = getTrack(trackID);
         artistNameAndTrackName = new StringBuilder(track.getName() + " - ");
@@ -164,6 +178,7 @@ public class SpotifyAPIHandler {
      * @throws IOException            if there was a network error.
      */
     public ArrayList<String> convert(String link) throws ParseException, SpotifyWebApiException, IOException {
+        if (!isSpotifyConnected) return new ArrayList<>();
         String[] firstSplit = link.split("/");
         String[] secondSplit;
 
