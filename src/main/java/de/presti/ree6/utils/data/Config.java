@@ -156,6 +156,8 @@ public class Config {
             for (Map.Entry<String, Object> entry : resources.entrySet()) {
                 String key = entry.getKey();
 
+                boolean modified = false;
+
                 if (key.startsWith("config"))
                     continue;
 
@@ -169,6 +171,7 @@ public class Config {
                         key = key.replace(".rel", ".release");
 
                     yamlFile.set(key, entry.getValue());
+                    modified = true;
                 }
 
                 // Migrate to 2.2.0
@@ -177,6 +180,11 @@ public class Config {
                     if (key.startsWith("youtube"))
                         continue;
 
+                    yamlFile.set(key, entry.getValue());
+                    modified = true;
+                }
+
+                if (!modified) {
                     yamlFile.set(key, entry.getValue());
                 }
             }
@@ -191,7 +199,6 @@ public class Config {
                 exception.printStackTrace();
             }
         }
-
     }
 
     /**
