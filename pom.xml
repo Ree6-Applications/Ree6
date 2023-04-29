@@ -74,7 +74,7 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
-            <version>6.18.0</version>
+            <version>6.18.1</version>
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
@@ -149,7 +149,7 @@
         <dependency>
             <groupId>com.github.Ree6-Applications</groupId>
             <artifactId>Ree6-SQL</artifactId>
-            <version>4a29bd55d7</version>
+            <version>1.5.1</version>
         </dependency>
 
         <!-- Logging -->
