@@ -41,6 +41,8 @@ public class MusicQuizUtil {
         instance = this;
 
         ThreadUtil.createThread(x -> {
+            if (!SpotifyAPIHandler.getInstance().isSpotifyConnected()) return;
+
             // Spotify "just hits" Playlist.
             SpotifyAPIHandler.getInstance().getTracks("37i9dQZF1DXcRXFNfZr7Tp").forEach(track -> {
                 ArtistSimplified[] artistSimplified = track.getArtists();
