@@ -88,6 +88,13 @@ public class CommandManager {
 
             CommandDataImpl commandData = (CommandDataImpl) command.getCommandData();
 
+            if (commandData == null) {
+                if (commandAnnotation.category() == Category.HIDDEN) continue;
+
+                commandData = new CommandDataImpl(command.getClass().getAnnotation(Command.class).name(), command.getClass().getAnnotation(Command.class).description());
+            }
+
+
             if (!commandData.getSubcommandGroups().isEmpty()) {
                 stringBuilder.append("Subcommandgroups: ").append("\n");
 

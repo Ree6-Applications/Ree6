@@ -97,8 +97,8 @@ public class Birthday implements ICommand {
                 .addSubcommands(new SubcommandData("remove", "Remove a Birthday entry!")
                                 .addOptions(new OptionData(OptionType.USER, "user", "The User which should get their birthday entry removed.", false)),
                         new SubcommandData("add", "Add a Birthday entry!")
-                                .addOptions(new OptionData(OptionType.USER, "user", "The User which should get their birthday entry added.", false),
-                                        new OptionData(OptionType.STRING, "birthday", "The Birthday that should be added. Format -> day.month.year", true)));
+                                .addOptions(new OptionData(OptionType.STRING, "birthday", "The Birthday that should be added. Format -> day.month.year", true),
+                                        new OptionData(OptionType.USER, "user", "The User which should get their birthday entry added.", false)));
     }
 
     /**

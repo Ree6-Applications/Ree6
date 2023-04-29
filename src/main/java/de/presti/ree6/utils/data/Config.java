@@ -69,6 +69,24 @@ public class Config {
                     .parent().path("storageFile").addDefault("storage/Ree6.db")
                     .parent().path("poolSize").addDefault(10);
 
+            yamlFile.path("bot")
+                    .comment("Discord Application Configuration, used for OAuth and Bot Authentication.").blankLine()
+                    .path("tokens").path("release").addDefault("ReleaseTokenhere").commentSide("Token used when set to release build.")
+                    .parent().path("beta").addDefault("BetaTokenhere").commentSide("Token used when set to beta build.")
+                    .parent().path("dev").addDefault("DevTokenhere").commentSide("Token used when set to dev build.")
+                    .parent().parent().path("misc").comment("Configuration for the Bot itself.").blankLine()
+                    .path("status").addDefault("ree6.de | %guilds% Servers. (%shard%)").commentSide("The Status of the Bot.")
+                    .parent().path("feedbackChannelId").addDefault(0L).commentSide("The Channel used for Feedback.")
+                    .parent().path("ownerId").addDefault(321580743488831490L).commentSide("The ID of the Bot Owner. Change this to yours!")
+                    .parent().path("predefineInformation").addDefault("""
+                            You are Ree6 a Discord bot.
+                            """).commentSide("Predefined Information for the AI.")
+                    .parent().path("invite").addDefault("https://invite.ree6.de").commentSide("The Invite Link of the Bot.")
+                    .parent().path("support").addDefault("https://support.ree6.de").commentSide("The Support Server Link of the Bot.")
+                    .parent().path("github").addDefault("https://github.ree6.de").commentSide("The GitHub Link of the Bot.")
+                    .parent().path("website").addDefault("https://ree6.de").commentSide("The Website Link of the Bot.")
+                    .parent().path("advertisement").addDefault("powered by Tube-hosting").commentSide("The Advertisement in Embed Footers and the rest.");
+
             yamlFile.path("heartbeat")
                     .comment("Heartbeat Configuration, for status reporting").blankLine()
                     .path("url").addDefault("none").commentSide("The URL to the Heartbeat-Server")
@@ -118,12 +136,6 @@ public class Config {
                     .comment("Instagram Application Configuration, used for the Instagram Notification.").blankLine()
                     .path("username").addDefault("yourInstagramUsername")
                     .parent().path("password").addDefault("yourInstagramPassword");
-
-            yamlFile.path("bot")
-                    .comment("Discord Application Configuration, used for OAuth and Bot Authentication.").blankLine()
-                    .path("tokens").path("release").addDefault("ReleaseTokenhere").commentSide("Token used when set to release build.")
-                    .parent().path("beta").addDefault("BetaTokenhere").commentSide("Token used when set to beta build.")
-                    .parent().path("dev").addDefault("DevTokenhere").commentSide("Token used when set to dev build.");
 
             try {
                 yamlFile.save(getFile());
@@ -194,7 +206,6 @@ public class Config {
                 exception.printStackTrace();
             }
         }
-
     }
 
     /**

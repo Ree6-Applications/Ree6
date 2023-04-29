@@ -192,7 +192,7 @@ public class BotWorker {
      */
     public static String getBuild() {
         if (build == null) {
-            build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(), "2.2.5");
+            build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(), "3.0.0");
         }
         return build;
     }

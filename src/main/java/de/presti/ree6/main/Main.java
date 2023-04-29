@@ -172,6 +172,9 @@ public class Main {
                 instance.config.getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
                 instance.config.getConfiguration().getInt("hikari.misc.poolSize"));
 
+        log.info("Loading ChatGPTAPI");
+        instance.chatGPTAPI = new ChatGPTAPI();
+
         try {
             // Create the Command-Manager instance.
             instance.commandManager = new CommandManager();
@@ -213,9 +216,6 @@ public class Main {
             System.exit(0);
             return;
         }
-
-        log.info("Loading ChatGPTAPI");
-        new ChatGPTAPI();
 
         log.info("Loading SpotifyAPI");
         new SpotifyAPIHandler();
@@ -529,7 +529,7 @@ public class Main {
             return;
 
         ThreadUtil.createThread(x -> {
-            String formattedUrl = heartbeatUrl.replace("%ping%", "" + BotWorker.getShardManager().getAverageGatewayPing());
+            String formattedUrl = heartbeatUrl.replace("%ping%", String.valueOf(BotWorker.getShardManager().getAverageGatewayPing()));
             try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(formattedUrl).GET().build())) {
                 log.debug("Heartbeat sent!");
             } catch (Exception exception) {

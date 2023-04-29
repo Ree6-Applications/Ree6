@@ -73,8 +73,8 @@ public class ImageCreationUtility {
 
         formattedExperience = userLevel.getFormattedExperience();
         formattedMaxExperience = userLevel.getFormattedExperience(userLevel.getTotalExperienceForNextLevel());
-        level = userLevel.getLevel() + "";
-        rank = userLevel.getRank() + "";
+        level = String.valueOf(userLevel.getLevel());
+        rank = String.valueOf(userLevel.getRank());
         progress = userLevel.getProgress();
 
         log.debug("Starting actual creation. ({}ms)", System.currentTimeMillis() - actionPerformance);
@@ -166,7 +166,7 @@ public class ImageCreationUtility {
         // Draw The current Experience and needed Experience for the next Level.
         graphics2D.setColor(Color.LIGHT_GRAY);
         graphics2D.setFont(verdana40);
-        graphics2D.drawString(formattedExperience + "", (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + formattedMaxExperience)) - 5 - graphics2D.getFontMetrics().stringWidth(formattedExperience + ""), 675);
+        graphics2D.drawString(formattedExperience, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + formattedMaxExperience)) - 5 - graphics2D.getFontMetrics().stringWidth(formattedExperience + ""), 675);
         graphics2D.setColor(Color.GRAY);
         graphics2D.drawString("/" + formattedMaxExperience, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + formattedMaxExperience)), 675);
 
