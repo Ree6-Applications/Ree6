@@ -40,7 +40,7 @@ public class LevelRole implements ICommand {
             return;
         }
 
-        String command = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+        String command = commandEvent.getSubcommand();
         OptionMapping voiceMapping = commandEvent.getOption("voice");
         OptionMapping levelMapping = commandEvent.getOption("level");
         OptionMapping roleMapping = commandEvent.getOption("role");

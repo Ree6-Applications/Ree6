@@ -48,8 +48,8 @@ public class Warn implements ICommand {
             return;
         }
 
-        String subCommandGroup = commandEvent.getSlashCommandInteractionEvent().getSubcommandGroup();
-        String subCommand = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+        String subCommandGroup = commandEvent.getSubcommandGroup();
+        String subCommand = commandEvent.getSubcommand();
         OptionMapping userMapping = commandEvent.getOption("user");
         OptionMapping warningMapping = commandEvent.getOption("warnings");
         OptionMapping roleMapping = commandEvent.getOption("role");

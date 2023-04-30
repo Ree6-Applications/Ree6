@@ -49,7 +49,7 @@ public class Schedule implements ICommand {
             return;
         }
 
-        String subCommand = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+        String subCommand = commandEvent.getSubcommand();
 
         switch (subCommand) {
 

@@ -181,8 +181,25 @@ public class MenuEvents extends ListenerAdapter {
                 if (guildMusicManager != null) {
                     if (guildMusicManager.getPlayer().isPaused()) {
                         guildMusicManager.getPlayer().setPaused(false);
+                        EmbedBuilder em = new EmbedBuilder()
+                                .setAuthor(event.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                                        event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                                .setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer"))
+                                .setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                                .setColor(Color.GREEN)
+                                .setDescription(LanguageService.getByGuild(event.getGuild(), "message.music.resume"))
+                                .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl());
+                        Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
                     } else {
-                        guildMusicManager.getPlayer().setPaused(true);
+                        EmbedBuilder em = new EmbedBuilder()
+                                .setAuthor(event.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                                        event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                                .setTitle(LanguageService.getByGuild(event.getGuild(),"label.musicPlayer"))
+                                .setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                                .setColor(Color.GREEN)
+                                .setDescription(LanguageService.getByGuild(event.getGuild(),"message.music.pause"))
+                                .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl());
+                        Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
                     }
                 } else {
                     Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.music.notConnected"),
@@ -196,6 +213,15 @@ public class MenuEvents extends ListenerAdapter {
 
                 if (guildMusicManager != null) {
                     guildMusicManager.getPlayer().setPaused(true);
+                    EmbedBuilder em = new EmbedBuilder()
+                            .setAuthor(event.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                            event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                            .setTitle(LanguageService.getByGuild(event.getGuild(),"label.musicPlayer"))
+                            .setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                            .setColor(Color.GREEN)
+                            .setDescription(LanguageService.getByGuild(event.getGuild(),"message.music.pause"))
+                            .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl());
+                    Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
                 } else {
                     Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.music.notConnected"),
                             event.getChannel(), event.getHook());
