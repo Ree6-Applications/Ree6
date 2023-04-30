@@ -59,6 +59,13 @@ public interface IGame {
     }
 
     /**
+     * Called when a User should be rewarded.
+     * @param player The Player who should be rewarded.
+     * @param parameter Any additional Parameter.
+     */
+    void rewardPlayer(GamePlayer player, Object parameter);
+
+    /**
      * Called when the Game is stopped.
      */
     void stopGame();

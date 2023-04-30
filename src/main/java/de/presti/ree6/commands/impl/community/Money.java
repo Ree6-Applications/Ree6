@@ -27,7 +27,7 @@ public class Money implements ICommand {
         OptionMapping amount = commandEvent.getOption("amount");
         OptionMapping user = commandEvent.getOption("user");
 
-        String subcommand = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+        String subcommand = commandEvent.getSubcommand();
 
         switch (subcommand) {
             case "withdraw" -> {
@@ -77,7 +77,7 @@ public class Money implements ICommand {
                     moneyHolder.setBankAmount(moneyHolder.getBankAmount() + depositAmount);
                     moneyHolder.setAmount(moneyHolder.getAmount() - depositAmount);
                     SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder);
-                    commandEvent.reply(commandEvent.getResource("message.money.withdraw", depositAmount), 5);
+                    commandEvent.reply(commandEvent.getResource("message.money.deposit", depositAmount), 5);
                 } else {
                     commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
                 }

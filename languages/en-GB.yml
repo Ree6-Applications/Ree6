@@ -536,6 +536,11 @@ message:
   pickupline:
     response: ":speaking_head: %s"
     responseNsfw: ":red_circle: ||%s|| **NSFW**"
+  money:
+    notEnoughMoney: "You don't have enough money for this action!"
+    withdraw: "You have successfully withdrawn %s$!"
+    deposit: "You have successfully deposited %s$!"
+    send: "You have successfully sent %s$ to %s!"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"

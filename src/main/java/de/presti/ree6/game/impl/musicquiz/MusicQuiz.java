@@ -13,6 +13,8 @@ import de.presti.ree6.game.impl.musicquiz.entities.MusicQuizPlayer;
 import de.presti.ree6.game.impl.musicquiz.util.MusicQuizUtil;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.economy.MoneyHolder;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -27,6 +29,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -210,18 +213,21 @@ public class MusicQuiz implements IGame {
 
         if (currentEntry.checkTitle(messageContent)) {
             musicQuizPlayer.addPoints(1);
+            rewardPlayer(musicQuizPlayer,25.0);
             messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundTitle", currentEntry.getTitle())).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
             messageReceivedEvent.getMessage().delete().queue();
         }
 
         if (currentEntry.checkArtist(messageContent)) {
             musicQuizPlayer.addPoints(2);
+            rewardPlayer(musicQuizPlayer,50.0);
             messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundArtists", currentEntry.getArtist())).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
             messageReceivedEvent.getMessage().delete().queue();
         }
 
         if (currentEntry.checkFeatures(messageContent)) {
             musicQuizPlayer.addPoints(3);
+            rewardPlayer(musicQuizPlayer,100.0);
             messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundFeature", String.join(",", currentEntry.getFeatures()))).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
             messageReceivedEvent.getMessage().delete().queue();
         }
@@ -232,6 +238,7 @@ public class MusicQuiz implements IGame {
         }
     }
 
+
     /**
      * @inheritDoc
      */
@@ -241,6 +248,25 @@ public class MusicQuiz implements IGame {
         if (buttonInteractionEvent.getComponentId().equalsIgnoreCase("game_musicquiz_skip")) {
             Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.skipSong"), 5, session.getChannel());
             selectNextSong();
+        }
+    }
+
+    @Override
+    public void rewardPlayer(GamePlayer player, Object parameter) {
+        // TODO:: make the parameter configurable.
+        if (parameter instanceof Double money) {
+            MoneyHolder moneyHolder =
+                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new MoneyHolder(), "SELECT * FROM Money_Holder WHERE guildId = :gid AND userId = :uid",
+                            Map.of("gid", session.getGuild().getId(), "uid", player.getRelatedUserId()));
+
+            if (moneyHolder == null) {
+                moneyHolder = new MoneyHolder();
+                moneyHolder.setGuildId(session.getGuild().getIdLong());
+                moneyHolder.setUserId(player.getRelatedUserId());
+            }
+
+            moneyHolder.setBankAmount(moneyHolder.getAmount() + money);
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder);
         }
     }
 
@@ -266,6 +292,8 @@ public class MusicQuiz implements IGame {
         messageCreateBuilder.setEmbeds(embedBuilder.build());
         menuMessage.delete().queue();
         session.getChannel().sendMessage(messageCreateBuilder.build()).queue();
+
+        rewardPlayer(sortedList.get(0), 200.0);
 
         Main.getInstance().getMusicWorker().disconnect(session.getGuild());
     }
