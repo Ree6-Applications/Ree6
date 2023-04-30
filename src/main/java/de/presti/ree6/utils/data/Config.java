@@ -2,6 +2,7 @@ package de.presti.ree6.utils.data;
 
 import de.presti.ree6.bot.BotWorker;
 import lombok.extern.slf4j.Slf4j;
+import org.simpleyaml.configuration.MemorySection;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
@@ -161,7 +162,7 @@ public class Config {
                 if (key.startsWith("config"))
                     continue;
 
-                if (!key.contains("."))
+                if (entry.getValue() instanceof MemorySection)
                     continue;
 
                 // Migrate to 1.10.0
