@@ -6,11 +6,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.apis.SpotifyAPIHandler;
-import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.data.Data;
-import de.presti.ree6.utils.others.FormatUtil;
-import io.sentry.Sentry;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -19,10 +15,6 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.awt.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Play a Song.
@@ -48,26 +40,26 @@ public class Play implements ICommand {
                 Main.getInstance().getMusicWorker().playSong(valueOption.getAsString(), commandEvent);
             } else {
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription(commandEvent.getResource("message.default.usage","play (Url)"));
-                em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+                em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
                 commandEvent.reply(em.build(), 5);
             }
 
         } else {
             if (commandEvent.getArguments().length < 1) {
                 EmbedBuilder em = new EmbedBuilder();
-                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription(commandEvent.getResource("message.default.usage","play (Url)"));
-                em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+                em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
                 commandEvent.reply(em.build(), 5);
             } else {
                 Main.getInstance().getMusicWorker().playSong(commandEvent.getArguments()[0], commandEvent);

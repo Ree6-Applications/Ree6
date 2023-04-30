@@ -69,7 +69,7 @@ public class Setup implements ICommand {
 
             EmbedBuilder embedBuilder = new EmbedBuilder()
                     .setTitle(commandEvent.getResource("label.setup"))
-                    .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl())
+                    .setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl())
                     .setColor(Color.cyan)
                     .setDescription(commandEvent.getResource("message.setup.setupMenu"));
 

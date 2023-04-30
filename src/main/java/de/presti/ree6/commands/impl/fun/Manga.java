@@ -139,7 +139,7 @@ public class Manga implements ICommand {
             em.addField(":books: **" + commandEvent.getResource("label.volumes") + "**", volumes + "", true);
             em.addField(":star: **" + commandEvent.getResource("label.averageRating") + "**", " **" + rating + "/100**", true);
             em.addField(":trophy: **" + commandEvent.getResource("label.rank") + "**", "**TOP " + rank + "**", true);
-            em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
+            em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.getAdvertisement(), commandEvent.getMember().getUser().getAvatarUrl());
 
             if (commandEvent.isSlashCommand()) {
                 message.editMessage(commandEvent.getResource("message.manga.found")).queue();

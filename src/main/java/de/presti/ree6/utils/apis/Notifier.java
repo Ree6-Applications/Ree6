@@ -314,7 +314,7 @@ public class Notifier {
             WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
             wmb.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
-            wmb.setUsername("Ree6");
+            wmb.setUsername(Data.getBotName());
 
             WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
@@ -332,7 +332,7 @@ public class Notifier {
             webhookEmbedBuilder.setDescription(channelGoLiveEvent.getStream().getTitle());
             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Game**", channelGoLiveEvent.getStream().getGameName()));
             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Viewer**", "" + channelGoLiveEvent.getStream().getViewerCount()));
-            webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+            webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
             webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
 
             wmb.addEmbeds(webhookEmbedBuilder.build());
@@ -481,7 +481,7 @@ public class Notifier {
 
                         WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
-                        webhookMessageBuilder.setUsername("Ree6");
+                        webhookMessageBuilder.setUsername(Data.getBotName());
                         webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
 
                         WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
@@ -494,7 +494,7 @@ public class Notifier {
                             webhookEmbedBuilder.setImageUrl(status.getMediaEntities()[0].getMediaURLHttps());
                         }
 
-                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
                         webhookEmbedBuilder.setTimestamp(Instant.now());
                         webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
 
@@ -645,7 +645,7 @@ public class Notifier {
                                 WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
                                 webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
-                                webhookMessageBuilder.setUsername("Ree6");
+                                webhookMessageBuilder.setUsername(Data.getBotName());
 
                                 WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
@@ -661,7 +661,7 @@ public class Notifier {
                                 if (playlistItem.getUploadDate() != -1)
                                     webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", TimeFormat.DATE_TIME_SHORT.format(playlistItem.getUploadDate())));
 
-                                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
                                 webhookEmbedBuilder.setColor(Color.RED.getRGB());
 
                                 webhooks.forEach(webhook -> {
@@ -784,7 +784,7 @@ public class Notifier {
                         WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
                         webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
-                        webhookMessageBuilder.setUsername("Ree6");
+                        webhookMessageBuilder.setUsername(Data.getBotName());
 
                         WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
@@ -799,7 +799,7 @@ public class Notifier {
                         webhookEmbedBuilder.setDescription(URLDecoder.decode(redditPost.getSelftext(), StandardCharsets.UTF_8));
                         webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Author**", redditPost.getAuthor()));
                         webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Subreddit**", redditPost.getSubreddit()));
-                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
 
                         webhookEmbedBuilder.setColor(Color.ORANGE.getRGB());
 
@@ -938,7 +938,7 @@ public class Notifier {
                                 WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
                                 webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
-                                webhookMessageBuilder.setUsername("Ree6");
+                                webhookMessageBuilder.setUsername(Data.getBotName());
 
                                 WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
@@ -955,7 +955,7 @@ public class Notifier {
                                     webhookEmbedBuilder.setDescription(user.getUsername() + " just posted something new on Instagram!");
                                 }
 
-                                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
 
                                 webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
 

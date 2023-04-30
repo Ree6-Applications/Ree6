@@ -85,7 +85,8 @@ public class Config {
                     .parent().path("support").addDefault("https://support.ree6.de").commentSide("The Support Server Link of the Bot.")
                     .parent().path("github").addDefault("https://github.ree6.de").commentSide("The GitHub Link of the Bot.")
                     .parent().path("website").addDefault("https://ree6.de").commentSide("The Website Link of the Bot.")
-                    .parent().path("advertisement").addDefault("powered by Tube-hosting").commentSide("The Advertisement in Embed Footers and the rest.");
+                    .parent().path("advertisement").addDefault("powered by Tube-hosting").commentSide("The Advertisement in Embed Footers and the rest.")
+                    .parent().path("name").addDefault("Ree6").commentSide("The Name of the Bot.");
 
             yamlFile.path("heartbeat")
                     .comment("Heartbeat Configuration, for status reporting").blankLine()

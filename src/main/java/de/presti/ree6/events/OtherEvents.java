@@ -200,7 +200,7 @@ public class OtherEvents extends ListenerAdapter {
                 if (!channels.isEmpty()) {
                     TextChannel channel = channels.get(0);
                     StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.append("Ree6 Ticket transcript")
+                    stringBuilder.append(Data.getBotName() + " Ticket transcript")
                             .append(" ")
                             .append(ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)))
                             .append("\n")
@@ -232,12 +232,12 @@ public class OtherEvents extends ListenerAdapter {
 
                     WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
                     webhookMessageBuilder.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-                    webhookMessageBuilder.setUsername("Ree6-Tickets");
+                    webhookMessageBuilder.setUsername(Data.getBotName() + "-Tickets");
 
                     WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
                     webhookEmbedBuilder.setDescription("Here is the transcript of the ticket " + tickets.getTicketCount() + "!");
-                    webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " " + Data.ADVERTISEMENT, event.getGuild().getIconUrl()));
+                    webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
                     webhookEmbedBuilder.setColor(BotWorker.randomEmbedColor().getRGB());
 
                     webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());

@@ -32,13 +32,13 @@ public class Disconnect implements ICommand {
         } else {
             EmbedBuilder em = new EmbedBuilder();
 
-            em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+            em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
                     commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
             em.setTitle(commandEvent.getResource("label.musicPlayer"));
             em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
             em.setColor(Color.RED);
             em.setDescription(commandEvent.getResource("message.music.notPlaying"));
-            em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+            em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
 
             commandEvent.reply(em.build(), 5);
         }

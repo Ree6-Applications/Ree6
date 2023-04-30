@@ -35,7 +35,7 @@ public class PickUpLine implements ICommand {
             em.setTitle("Error!");
             em.setColor(Color.RED);
             em.setDescription(commandEvent.getResource("message.default.retrievalError"));
-            em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
+            em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.getAdvertisement(), commandEvent.getMember().getUser().getAvatarUrl());
             commandEvent.reply(em.build());
             return;
         }

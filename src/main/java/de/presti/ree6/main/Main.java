@@ -35,10 +35,7 @@ import de.presti.ree6.streamtools.StreamActionContainerCreator;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
-import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.utils.data.Config;
-import de.presti.ree6.utils.data.CustomOAuth2Credential;
-import de.presti.ree6.utils.data.CustomOAuth2Util;
+import de.presti.ree6.utils.data.*;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
@@ -460,7 +457,7 @@ public class Main {
                         if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
                             WebhookUtil.sendWebhook(null, new WebhookMessageBuilder()
-                                    .setUsername("Ree6-Scheduler")
+                                    .setUsername(Data.getBotName() + "-Scheduler")
                                     .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
                                     .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), false);
 
@@ -474,7 +471,7 @@ public class Main {
                         if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
                             WebhookUtil.sendWebhook(null, new WebhookMessageBuilder()
-                                    .setUsername("Ree6-Scheduler")
+                                    .setUsername(Data.getBotName() + "-Scheduler")
                                     .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
                                     .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), false);
 
@@ -485,7 +482,7 @@ public class Main {
                         if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
                             WebhookUtil.sendWebhook(null, new WebhookMessageBuilder()
-                                    .setUsername("Ree6-Scheduler")
+                                    .setUsername(Data.getBotName() + "-Scheduler")
                                     .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
                                     .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), false);
 

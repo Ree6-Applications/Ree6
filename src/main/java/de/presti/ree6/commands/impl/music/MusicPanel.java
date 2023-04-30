@@ -47,7 +47,7 @@ public class MusicPanel implements ICommand {
                 .setImage("https://images.unsplash.com/photo-1546977463-943d58b78c19")
                 .setTitle("**" + (audioTrackInfo != null ? commandEvent.getResource("message.music.songInfoSlim", audioTrackInfo.title, audioTrackInfo.author)
                         : commandEvent.getResource("message.music.notPlaying")) + "**")
-                .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+                .setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
 

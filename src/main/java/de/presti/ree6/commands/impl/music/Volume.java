@@ -51,14 +51,14 @@ public class Volume implements ICommand {
 
                 player.setVolume(volume);
 
-                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription(commandEvent.getResource("message.music.volume.success", volume));
             } else {
-                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
@@ -79,14 +79,14 @@ public class Volume implements ICommand {
 
                 player.setVolume(vol);
 
-                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription(commandEvent.getResource("message.music.volume.success", vol));
             } else {
-                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+                em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
                         commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
@@ -95,7 +95,7 @@ public class Volume implements ICommand {
             }
         }
 
-        em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+        em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
 
         commandEvent.reply(em.build(), 5);
     }

@@ -30,7 +30,7 @@ public class ShibaImage implements ICommand {
         em.setTitle(commandEvent.getResource("label.randomShibaImage"));
         em.setColor(BotWorker.randomEmbedColor());
         em.setImage(js.get(0).getAsString());
-        em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
+        em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.getAdvertisement(), commandEvent.getMember().getUser().getAvatarUrl());
 
         Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), commandEvent.getInteractionHook());
     }

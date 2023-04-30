@@ -7,6 +7,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.ScheduledMessage;
 import de.presti.ree6.sql.entities.webhook.WebhookScheduledMessage;
+import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
@@ -113,7 +114,7 @@ public class Schedule implements ICommand {
                                 Map.of("gid", commandEvent.getGuild().getId(),"channel", guildChannel.getIdLong()));
 
                 if (webhookScheduledMessage == null) {
-                    Webhook webhook = guildChannel.asStandardGuildMessageChannel().createWebhook("Ree6-Schedule").complete();
+                    Webhook webhook = guildChannel.asStandardGuildMessageChannel().createWebhook(Data.getBotName() + "-Schedule").complete();
 
                     webhookScheduledMessage = SQLSession.getSqlConnector().getSqlWorker()
                             .updateEntity(new WebhookScheduledMessage(commandEvent.getGuild().getId(), webhook.getId(), webhook.getToken(), guildChannel.getIdLong()));

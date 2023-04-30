@@ -39,7 +39,7 @@ public class Server implements ICommand {
             em.addField(":busts_in_silhouette: **" + commandEvent.getResource("label.members") + " (" + commandEvent.getGuild().getMemberCount() + ")**", "**" + (commandEvent.getGuild().getMemberCount() - (commandEvent.getGuild().getMembers().stream().filter(member -> !member.getUser().isBot())).count()) + "** User\n**" + commandEvent.getGuild().getBoostCount() + "** Boosts :sparkles:", true);
             em.addField(":speech_balloon: **" + commandEvent.getResource("label.channels") + " (" + (commandEvent.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.TEXT)).count() + commandEvent.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.VOICE)).count()) + ")**", "**" + commandEvent.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.TEXT)).count() + "** Text | **" + commandEvent.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.VOICE)).count() + "** Voicechannel", true);
             em.addField(":earth_africa: **" + commandEvent.getResource("label.other") + "**", "**" + commandEvent.getResource("label.verificationLevel") + ":** " + commandEvent.getGuild().getVerificationLevel().getKey(), true);
-            em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+            em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
 
             commandEvent.reply(em.build());
         } else

@@ -104,7 +104,7 @@ public class Rule34 implements ICommand {
                     if (object.has("sample_url")) {
                         EmbedBuilder em = new EmbedBuilder();
                         em.setImage(object.get("sample_url").getAsString());
-                        em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
+                        em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.getAdvertisement(), commandEvent.getMember().getUser().getAvatarUrl());
 
                         if (commandEvent.isSlashCommand()) {
                             message.editMessage(commandEvent.getResource("message.default.checkBelow")).queue();

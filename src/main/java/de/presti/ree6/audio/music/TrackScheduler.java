@@ -215,22 +215,22 @@ public class TrackScheduler extends AudioEventAdapter {
             // TODO:: Really stupid workaround for https://github.com/Ree6-Applications/Ree6/issues/299! This should be rechecked later if it even worked.
             if (!silent)
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                        .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                         .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                         .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                         .setColor(Color.GREEN)
                         .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.songNext", FormatUtil.filter(track.getInfo().title)))
-                        .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+                        .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
             player.startTrack(track.getState() == AudioTrackState.FINISHED ? track.makeClone() : track, false);
         } else {
             if (!silent)
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                        .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                        .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                         .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                         .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                         .setColor(Color.RED)
                         .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.songQueueReachedEnd"))
-                        .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+                        .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
         }
     }
 
@@ -243,23 +243,23 @@ public class TrackScheduler extends AudioEventAdapter {
     public void seekPosition(MessageChannelUnion channel, int seekAmountInSeconds) {
         if (player.getPlayingTrack() == null) {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                    .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                    .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                     .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                     .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                     .setColor(Color.RED)
                     .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.notPlaying"))
-                    .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+                    .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
             return;
         }
 
         if (player.getPlayingTrack().getPosition() / 1000 + seekAmountInSeconds > player.getPlayingTrack().getDuration() / 1000) {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                    .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                    .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                     .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                     .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                     .setColor(Color.RED)
                     .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.seek.failed"))
-                    .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+                    .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
             return;
         }
 
@@ -271,12 +271,12 @@ public class TrackScheduler extends AudioEventAdapter {
         }
 
         Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                 .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                 .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                 .setColor(Color.GREEN)
                 .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.seek.success", FormatUtil.formatTime(player.getPlayingTrack().getPosition())))
-                .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+                .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
     }
 
     /**
@@ -302,12 +302,12 @@ public class TrackScheduler extends AudioEventAdapter {
                 } else {
                     if (getChannel() != null) {
                         Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                                .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                                .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                                 .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                                 .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                                 .setColor(Color.RED)
                                 .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.failedPlaying", FormatUtil.filter(track.getInfo().title), "Track does not exist (Internally?)"))
-                                .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+                                .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
                     }
 
                     nextTrack(getChannel(), track.getSourceManager() instanceof LocalAudioSourceManager);
@@ -316,12 +316,12 @@ public class TrackScheduler extends AudioEventAdapter {
             } else if (endReason == AudioTrackEndReason.LOAD_FAILED) {
                 if (getChannel() != null) {
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                            .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                            .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                             .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                             .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                             .setColor(Color.RED)
                             .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.failedPlaying", FormatUtil.filter(track.getInfo().title), endReason.name()))
-                            .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+                            .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
                 }
 
                 nextTrack(getChannel(), track.getSourceManager() instanceof LocalAudioSourceManager);
@@ -336,12 +336,12 @@ public class TrackScheduler extends AudioEventAdapter {
                 // check if there was an error on the current song if so inform user.
                 if (endReason == AudioTrackEndReason.LOAD_FAILED && getChannel() != null) {
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
-                            .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                            .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                             .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
                             .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                             .setColor(Color.RED)
                             .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.failedPlaying", FormatUtil.filter(track.getInfo().title), endReason.name()))
-                            .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+                            .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
                 }
                 nextTrack(getChannel(), track.getSourceManager() instanceof LocalAudioSourceManager);
             }
@@ -363,20 +363,20 @@ public class TrackScheduler extends AudioEventAdapter {
             guildMusicManager.getScheduler().clearQueue();
 
             Main.getInstance().getMusicWorker().disconnect(guildMusicManager.getGuild());
-            em.setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());
+            em.setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());
             em.setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"));
             em.setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());
             em.setColor(Color.GREEN);
             em.setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.stop"));
         } else {
-            em.setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.WEBSITE, guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());
+            em.setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());
             em.setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"));
             em.setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());
             em.setColor(Color.RED);
             em.setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.notPlaying"));
         }
 
-        em.setFooter(Data.ADVERTISEMENT);
+        em.setFooter(Data.getAdvertisement());
         Main.getInstance().getCommandManager().sendMessage(em, 5, getChannel(), interactionHook);
     }
 }

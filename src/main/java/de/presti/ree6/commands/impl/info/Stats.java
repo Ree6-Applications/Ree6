@@ -48,7 +48,7 @@ public class Stats implements ICommand {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.WEBSITE,
+        em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
                 commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
         em.setTitle(commandEvent.getResource("label.statistics"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
@@ -89,7 +89,7 @@ public class Stats implements ICommand {
         em.addField("**" + commandEvent.getResource("label.topCommands") + "**", end.toString(), true);
         em.addField("**" + commandEvent.getResource("label.overallTopCommands") + "**", end2.toString(), true);
 
-        em.setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl());
+        em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
 
         MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
 

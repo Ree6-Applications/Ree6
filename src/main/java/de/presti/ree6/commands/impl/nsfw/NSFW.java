@@ -88,7 +88,7 @@ public class NSFW implements ICommand {
                 EmbedBuilder em = new EmbedBuilder();
 
                 em.setImage(randomUrl);
-                em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
+                em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.getAdvertisement(), commandEvent.getMember().getUser().getAvatarUrl());
 
                 if (commandEvent.isSlashCommand()) {
                     message.editMessage(commandEvent.getResource("message.default.checkBelow")).queue();

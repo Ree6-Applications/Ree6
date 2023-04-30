@@ -6,6 +6,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -66,7 +67,7 @@ public class InstagramNotifier implements ICommand {
                 }
 
                 String name = nameMapping.getAsString();
-                channelMapping.getAsChannel().asStandardGuildMessageChannel().createWebhook("Ree6-InstagramNotifier-" + name).queue(w -> {
+                channelMapping.getAsChannel().asStandardGuildMessageChannel().createWebhook(Data.getBotName() + "-InstagramNotifier-" + name).queue(w -> {
                     if (messageMapping != null) {
                         SQLSession.getSqlConnector().getSqlWorker().addInstagramWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase(), messageMapping.getAsString());
                     } else {

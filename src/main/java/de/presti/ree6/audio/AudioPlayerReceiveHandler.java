@@ -85,7 +85,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
         message = voiceChannel.sendMessageEmbeds(new EmbedBuilder()
                 .setDescription(LanguageService.getByGuild(member.getGuild(), "message.recording.started"))
                 .setColor(Color.YELLOW)
-                .setFooter("Requested by " + member.getUser().getAsTag() + " - " + Data.ADVERTISEMENT, member.getUser().getAvatarUrl())
+                .setFooter("Requested by " + member.getUser().getAsTag() + " - " + Data.getAdvertisement(), member.getUser().getAvatarUrl())
                 .setTitle(LanguageService.getByGuild(member.getGuild(), "label.recording.start"))
                 .build()).complete();
     }
@@ -176,7 +176,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 message.editMessageEmbeds(new EmbedBuilder()
                         .setDescription(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.stopped"))
                         .setColor(Color.GREEN)
-                        .setFooter(Data.ADVERTISEMENT, voiceChannel.getGuild().getIconUrl())
+                        .setFooter(Data.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
                         .setTitle(LanguageService.getByGuild(voiceChannel.getGuild(), "label.recording.finished"))
                         .build()).setActionRow(new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(voiceChannel.getGuild(), "label.download"), ButtonStyle.LINK,
                         "https://cp.ree6.de/recording?recordId=" + recording.getIdentifier(), false, Emoji.fromCustom("shiba", 941219375535509504L, true))).complete();
@@ -187,7 +187,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 message.editMessageEmbeds(new EmbedBuilder()
                         .setDescription(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.error", ex.getMessage()))
                         .setColor(Color.RED)
-                        .setFooter(Data.ADVERTISEMENT, voiceChannel.getGuild().getIconUrl())
+                        .setFooter(Data.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
                         .setTitle(LanguageService.getByGuild(voiceChannel.getGuild(), "label.error"))
                         .build()).complete();
             }

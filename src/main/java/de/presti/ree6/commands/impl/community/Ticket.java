@@ -81,7 +81,7 @@ public class Ticket implements ICommand {
                         .setDescription(LanguageService.getByGuild(commandEvent.getGuild(), "message.ticket.menuDescription"))
                         .setColor(0x55ff00)
                         .setThumbnail(commandEvent.getGuild().getIconUrl())
-                        .setFooter(commandEvent.getGuild().getName() + " - " + Data.ADVERTISEMENT, commandEvent.getGuild().getIconUrl())
+                        .setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl())
                         .build());
                 messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket"), Emoji.fromUnicode("U+1F4E9")));
                 Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), ticketChannel.getAsChannel().asTextChannel());

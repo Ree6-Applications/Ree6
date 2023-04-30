@@ -36,7 +36,7 @@ public class MemeImage implements ICommand {
             em.setDescription(commandEvent.getResource("message.default.retrievalError"));
         }
 
-        em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.ADVERTISEMENT, commandEvent.getMember().getUser().getAvatarUrl());
+        em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.getAdvertisement(), commandEvent.getMember().getUser().getAvatarUrl());
         commandEvent.reply(em.build());
 
     }
