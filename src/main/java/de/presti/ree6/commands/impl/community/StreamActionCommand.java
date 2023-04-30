@@ -57,8 +57,8 @@ public class StreamActionCommand implements ICommand {
 
         OptionMapping name = commandEvent.getOption("name");
 
-        String subCommandGroup = commandEvent.getSlashCommandInteractionEvent().getSubcommandGroup();
-        String subCommand = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+        String subCommandGroup = commandEvent.getSubcommandGroup();
+        String subCommand = commandEvent.getSubcommand();
 
         subCommandGroup = subCommandGroup == null ? "" : subCommandGroup;
 

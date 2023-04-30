@@ -35,7 +35,7 @@ public class Addon implements ICommand {
             return;
         }
 
-        String subcommand = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+        String subcommand = commandEvent.getSubcommand();
 
         switch (subcommand) {
             case "reload" -> {

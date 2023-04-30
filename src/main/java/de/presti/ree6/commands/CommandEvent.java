@@ -279,6 +279,26 @@ public class CommandEvent {
     }
 
     /**
+     * Get the Subcommand of the Slash Command.
+     * @return the Subcommand.
+     */
+    public String getSubcommand() {
+        if (!isSlashCommand()) return "";
+
+        return slashCommandInteractionEvent.getSubcommandName();
+    }
+
+    /**
+     * Get the Subcommand Group of the Slash Command.
+     * @return the Subcommand Group.
+     */
+    public String getSubcommandGroup() {
+        if (!isSlashCommand()) return "";
+
+        return slashCommandInteractionEvent.getSubcommandGroup();
+    }
+
+    /**
      * Check if the Command Execution is a Slash Command or not.
      *
      * @return true, if it is a Slash Command Execution. | false, if not.

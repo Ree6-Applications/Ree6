@@ -39,7 +39,7 @@ public class InstagramNotifier implements ICommand {
             return;
         }
 
-        String command = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+        String command = commandEvent.getSubcommand();
         OptionMapping nameMapping = commandEvent.getOption("name");
         OptionMapping channelMapping = commandEvent.getOption("channel");
         OptionMapping messageMapping = commandEvent.getOption("message");
