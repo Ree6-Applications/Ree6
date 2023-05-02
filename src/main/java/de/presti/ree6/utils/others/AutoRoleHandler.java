@@ -37,7 +37,7 @@ public class AutoRoleHandler {
         ThreadUtil.createThread(x -> {
             if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
                 log.error("[AutoRole] Failed to give a role, when someone joined the Guild!");
-                log.error("[AutoRole] Server: {}", guild.getName());
+                log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
 
                 if (guild.getOwner() != null)
                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
@@ -86,7 +86,7 @@ public class AutoRoleHandler {
 
             if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
                 log.error("[AutoRole] Failed to give a role, when someone leveled up in Voice!");
-                log.error("[AutoRole] Server: {}", guild.getName());
+                log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
 
                 if (guild.getOwner() != null)
                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
@@ -141,7 +141,7 @@ public class AutoRoleHandler {
 
             if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
                 log.error("[AutoRole] Failed to give a Role, when someone leveled up in Chat!");
-                log.error("[AutoRole] Server: {}", guild.getName());
+                log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
 
                 if (guild.getOwner() != null)
                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
@@ -192,7 +192,7 @@ public class AutoRoleHandler {
             }
         } else {
             log.error("[AutoRole] Failed to give a Role!");
-            log.error("[AutoRole] Server: {}", guild.getName());
+            log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
             if (guild.getOwner() != null)
                 guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
                         privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))

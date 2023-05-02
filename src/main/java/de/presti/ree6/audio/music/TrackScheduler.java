@@ -194,7 +194,7 @@ public class TrackScheduler extends AudioEventAdapter {
      * @param silent      should the bot send a message or not?
      */
     public void nextTrack(MessageChannelUnion textChannel, int position, boolean silent) {
-        if (loop) {
+        if (loop && player.getPlayingTrack() != null) {
             player.startTrack(player.getPlayingTrack().makeClone(), true);
             return;
         }
