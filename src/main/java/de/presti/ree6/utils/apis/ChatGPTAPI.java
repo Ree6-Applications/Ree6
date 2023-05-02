@@ -3,6 +3,7 @@ package de.presti.ree6.utils.apis;
 import com.lilittlecat.chatgpt.offical.ChatGPT;
 import com.lilittlecat.chatgpt.offical.entity.Message;
 import com.lilittlecat.chatgpt.offical.entity.Model;
+import com.lilittlecat.chatgpt.offical.exception.BizException;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
 import net.dv8tion.jda.api.entities.Member;
@@ -71,7 +72,15 @@ public class ChatGPTAPI {
 
         messages.add(new Message("user", message));
 
-        String response = getResponse(messages);
+        String response;
+        try {
+            response = getResponse(messages);
+        } catch (BizException e) {
+            messages.clear();
+            ArrayUtil.chatGPTMessages.remove(ids);
+            return getResponse(member, message);
+        }
+
         messages.add(new Message("assistant", response));
         ArrayUtil.chatGPTMessages.put(ids, messages);
         return response;

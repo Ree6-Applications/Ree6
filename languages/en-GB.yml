@@ -638,6 +638,7 @@ command:
     musicquiz: "Play with your friends a game of Music Quiz!"
     musicpanel: "Access a simple UI to manage the Music System!"
     schedule: "Schedule messages for later or for a repeated time!"
+    money: "Manage your money!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
