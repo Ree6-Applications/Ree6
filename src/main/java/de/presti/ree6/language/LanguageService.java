@@ -229,7 +229,7 @@ public class LanguageService {
 
         if (guildId != -1 && resource.contains("{guild_prefix}")) {
             resource = resource
-                    .replace("{guild_prefix}", SQLSession.getSqlConnector().getSqlWorker().getSetting(guildId + "", "chatprefix").getStringValue());
+                    .replace("{guild_prefix}", SQLSession.getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "chatprefix").getStringValue());
         }
 
         return resource;

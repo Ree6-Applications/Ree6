@@ -98,7 +98,7 @@ public class InviteContainerManager {
         ArrayList<InviteContainer> cachedInvites = getInvites(guild.getId());
 
         // Every Invite from the Guild.
-        List<Invite> guildInvites = guild.retrieveInvites().complete();
+        ArrayList<Invite> guildInvites = new ArrayList<>(guild.retrieveInvites().complete());
 
         Invite vanityInvite = convertVanityInvite(guild);
         if (vanityInvite != null) guildInvites.add(vanityInvite);
