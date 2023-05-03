@@ -1,4 +1,5 @@
 HELP.md
+*.db
 *.creds
 *.jar
 *.mp3
