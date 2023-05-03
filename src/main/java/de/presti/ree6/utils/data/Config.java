@@ -152,7 +152,7 @@ public class Config {
 
         // Migrate configs
         try {
-            Files.move(getFile().toPath(), new File("config-old.yml").toPath());
+            Files.copy(getFile().toPath(), new File("config-old.yml").toPath());
         } catch (Exception ignore) {
             log.warn("Could not move the old configuration file to config-old.yml!");
             log.warn("This means the config file is not backed up by us!");
