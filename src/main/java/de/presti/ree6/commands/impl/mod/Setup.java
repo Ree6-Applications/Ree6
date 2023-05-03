@@ -81,6 +81,7 @@ public class Setup implements ICommand {
             optionList.add(SelectOption.of(commandEvent.getResource("label.temporalVoice"), "tempvoice"));
             optionList.add(SelectOption.of(commandEvent.getResource("label.statistics"), "statistics"));
             optionList.add(SelectOption.of(commandEvent.getResource("label.ticketSystem"), "tickets"));
+            optionList.add(SelectOption.of(commandEvent.getResource("label.rewards"), "rewards"));
 
             SelectMenu selectMenu = new StringSelectMenuImpl("setupActionMenu", commandEvent.getResource("message.setup.setupMenuPlaceholder"), 1, 1, false, optionList);
 

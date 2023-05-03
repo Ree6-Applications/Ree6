@@ -7,7 +7,6 @@ import de.presti.ree6.main.Main;
  */
 public class Data {
 
-
     /**
      * Constructor for the Data Utility class.
      */

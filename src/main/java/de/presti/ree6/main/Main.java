@@ -184,6 +184,17 @@ public class Main {
                 SettingsManager.getSettings().add(new Setting("-1",
                         "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase(), true));
             }
+
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "configuration_rewards_blackjack_win", 200.0));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "configuration_rewards_musicquiz_win", 200.0));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "configuration_rewards_musicquiz_feature", 100.0));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "configuration_rewards_musicquiz_artist", 50.0));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "configuration_rewards_musicquiz_title", 25.0));
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);

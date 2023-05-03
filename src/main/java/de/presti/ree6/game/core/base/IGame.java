@@ -1,8 +1,13 @@
 package de.presti.ree6.game.core.base;
 
+import de.presti.ree6.game.core.GameSession;
+import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.economy.MoneyHolder;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
+
+import java.util.Map;
 
 /**
  * Interface for Games to implement.
@@ -60,10 +65,31 @@ public interface IGame {
 
     /**
      * Called when a User should be rewarded.
+     * @param gameSession The current Session.
      * @param player The Player who should be rewarded.
      * @param parameter Any additional Parameter.
      */
-    void rewardPlayer(GamePlayer player, Object parameter);
+    default void rewardPlayer(GameSession gameSession, GamePlayer player, Object parameter) {
+        if (parameter instanceof String parameterString) {
+            try {
+                parameter = Double.parseDouble(parameterString.replace(",", "."));
+            } catch (Exception ignore) {}
+        }
+        if (parameter instanceof Double money) {
+            MoneyHolder moneyHolder =
+                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new MoneyHolder(), "SELECT * FROM Money_Holder WHERE guildId = :gid AND userId = :uid",
+                            Map.of("gid", gameSession.getGuild().getId(), "uid", player.getRelatedUserId()));
+
+            if (moneyHolder == null) {
+                moneyHolder = new MoneyHolder();
+                moneyHolder.setGuildId(gameSession.getGuild().getIdLong());
+                moneyHolder.setUserId(player.getRelatedUserId());
+            }
+
+            moneyHolder.setBankAmount(moneyHolder.getAmount() + money);
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder);
+        }
+    }
 
     /**
      * Called when the Game is stopped.

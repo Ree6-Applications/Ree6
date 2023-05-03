@@ -72,6 +72,8 @@ public class ChatGPTAPI {
 
         messages.add(new Message("user", message));
 
+        //List<Message> messages = new ArrayList<>(List.of(new Message("system", preDefinedInformation), new Message("user", message)));
+
         String response;
         try {
             response = getResponse(messages);

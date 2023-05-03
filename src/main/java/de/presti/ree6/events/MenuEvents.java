@@ -305,6 +305,44 @@ public class MenuEvents extends ListenerAdapter {
 
 
         switch (event.getModalId()) {
+            case "re_rewards_modal" -> {
+                // TODO:: translate
+                event.deferReply(true).queue();
+                String blackJackString = event.getValue("re_rewards_BlackJackWin").getAsString();
+                String musicQuizWinString = event.getValue("re_rewards_MusicQuizWin").getAsString();
+                String musicQuizFeatureString = event.getValue("re_rewards_MusicQuizFeature").getAsString();
+                String musicQuizArtistString = event.getValue("re_rewards_MusicQuizArtist").getAsString();
+                String musicQuizTitleString = event.getValue("re_rewards_MusicQuizTitle").getAsString();
+
+                double blackJackAmount = 0, musicWinAmount = 0, musicFeatureAmount = 0, musicArtistAmount = 0, musicTitleAmount = 0;
+
+                try {
+                    blackJackAmount = Double.parseDouble(blackJackString);
+                    musicWinAmount = Double.parseDouble(musicQuizWinString);
+                    musicFeatureAmount = Double.parseDouble(musicQuizFeatureString);
+                    musicArtistAmount = Double.parseDouble(musicQuizArtistString);
+                    musicTitleAmount = Double.parseDouble(musicQuizTitleString);
+                } catch (Exception exception) {
+                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                            .setTitle(LanguageService.getByGuild(event.getGuild(), "label.rewards"))
+                            .setColor(Color.RED)
+                            .setDescription("Please enter a correct number values!")
+                            .setFooter(Data.getAdvertisement(), event.getGuild().getIconUrl()), null, event.getInteraction().getHook());
+                }
+
+                SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_rewards_blackjack_win", blackJackAmount);
+                SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_win", musicWinAmount);
+                SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_feature", musicFeatureAmount);
+                SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_artist", musicArtistAmount);
+                SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_title", musicTitleAmount);
+
+                Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
+                        .setTitle(LanguageService.getByGuild(event.getGuild(), "label.rewards"))
+                        .setColor(Color.GREEN)
+                        .setDescription("Successfully updated the rewards!")
+                        .setFooter(Data.getAdvertisement(), event.getGuild().getIconUrl()), null, event.getInteraction().getHook());
+            }
+
             case "re_feedback_modal" -> {
                 event.deferReply(true).queue();
 
@@ -794,6 +832,17 @@ public class MenuEvents extends ListenerAdapter {
                 java.util.List<SelectOption> optionList = new ArrayList<>();
 
                 switch (event.getInteraction().getValues().get(0)) {
+
+                    case "rewards" -> {
+                        // TODO:: translate.
+                        TextInput blackJackWin = TextInput.create("re_rewards_BlackJackWin", "BlackJack Win", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
+                        TextInput musicQuizWin = TextInput.create("re_rewards_MusicQuizWin", "MusicQuiz Win", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
+                        TextInput musicQuizFeature = TextInput.create("re_rewards_MusicQuizFeature", "MusicQuiz Feature Guess", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
+                        TextInput musicQuizArtist = TextInput.create("re_rewards_MusicQuizArtist", "MusicQuiz Artist Guess", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
+                        TextInput musicQuizTitle = TextInput.create("re_rewards_MusicQuizTitle", "MusicQuiz Title Guess", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
+                        Modal.create("re_rewards_modal", "Rewards").addActionRow(blackJackWin, musicQuizWin, musicQuizFeature, musicQuizArtist, musicQuizTitle);
+                    }
+
                     case "lang" -> {
 
                         for (DiscordLocale locale : LanguageService.getSupported()) {

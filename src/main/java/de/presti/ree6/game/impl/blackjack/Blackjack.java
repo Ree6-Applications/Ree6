@@ -13,7 +13,7 @@ import de.presti.ree6.game.impl.blackjack.util.BlackJackCardUtility;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.economy.MoneyHolder;
+import de.presti.ree6.sql.entities.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -218,25 +218,6 @@ public class Blackjack implements IGame {
         }
     }
 
-    @Override
-    public void rewardPlayer(GamePlayer player, Object parameter) {
-        // TODO:: make the parameter configurable.
-        if (parameter instanceof Double money) {
-            MoneyHolder moneyHolder =
-                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new MoneyHolder(), "SELECT * FROM Money_Holder WHERE guildId = :gid AND userId = :uid",
-                            Map.of("gid", session.getGuild().getId(), "uid", player.getRelatedUserId()));
-
-            if (moneyHolder == null) {
-                moneyHolder = new MoneyHolder();
-                moneyHolder.setGuildId(session.getGuild().getIdLong());
-                moneyHolder.setUserId(player.getRelatedUserId());
-            }
-
-            moneyHolder.setBankAmount(moneyHolder.getAmount() + money);
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder);
-        }
-    }
-
     /**
      * Get a random card from the basic Deck, but check if the card is already a players hand.
      * @return The random card.
@@ -323,7 +304,8 @@ public class Blackjack implements IGame {
         nextPlayer.getInteractionHook().editOriginalComponents(new ArrayList<>()).queue();
 
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), session.getChannel());
-        rewardPlayer(winner, 200.0);
+        rewardPlayer(session, winner, SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "SELECT * FROM Settings WHERE GID=:gid AND NAME=:name",
+                Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_blackjack_win")).getValue());
         stopGame();
     }
 

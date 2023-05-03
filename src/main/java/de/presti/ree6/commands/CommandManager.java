@@ -80,6 +80,9 @@ public class CommandManager {
 
         for (ICommand command : commands) {
             Command commandAnnotation = command.getClass().getAnnotation(Command.class);
+
+            if (commandAnnotation.category() == Category.HIDDEN) continue;
+
             stringBuilder.append("Command ").append("Name ").append(commandAnnotation.name()).append(" Desc ")
                     .append(commandAnnotation.description()).append("\n");
 
