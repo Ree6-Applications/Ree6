@@ -27,7 +27,7 @@ public class Loop implements ICommand {
             return;
         }
 
-        if (Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
+        if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
             return;
         }
 
