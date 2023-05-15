@@ -70,7 +70,13 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildUpdateVanityCode(@NotNull GuildUpdateVanityCodeEvent event) {
         super.onGuildUpdateVanityCode(event);
-        Invite invite = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Invite(), "SELECT * FROM Invites WHERE GID = :gid AND CODE = :code", Map.of("gid", event.getGuild().getId(), "code", event.getOldVanityCode()));
+
+        if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER)) return;
+
+        Invite invite = event.getOldVanityCode() != null ?
+                SQLSession.getSqlConnector().getSqlWorker().getEntity(new Invite(), "SELECT * FROM Invites WHERE GID = :gid AND CODE = :code",
+                        Map.of("gid", event.getGuild().getId(), "code", event.getOldVanityCode()))
+                : null;
 
         if (invite != null) {
             invite.setCode(event.getNewVanityCode());
