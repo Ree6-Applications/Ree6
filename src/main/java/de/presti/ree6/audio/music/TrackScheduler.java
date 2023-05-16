@@ -221,7 +221,7 @@ public class TrackScheduler extends AudioEventAdapter {
                         .setColor(Color.GREEN)
                         .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.songNext", FormatUtil.filter(track.getInfo().title)))
                         .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.ADVERTISEMENT, guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
-            player.startTrack(track.getState() == AudioTrackState.FINISHED ? track.makeClone() : track, false);
+            player.startTrack(track.makeClone(), false);
         } else {
             if (!silent)
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
