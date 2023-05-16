@@ -9,6 +9,8 @@ import de.presti.ree6.sql.entities.webhook.Webhook;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 
+import java.util.Map;
+
 /**
  * Class to handle Webhook sends.
  */
@@ -64,6 +66,14 @@ public class WebhookUtil {
             wcl.send(message).exceptionally(throwable -> {
                 // If the error 404 comes that means that the webhook is invalid.
                 if (throwable.getMessage().contains("failure 404")) {
+
+                    // TODO:: check the functionality of this new code. Since it would allow use to do all this in one line.
+
+                    // SQLSession.getSqlConnector().getSqlWorker().getEntityList(new Webhook("", "", ""),
+                    // "from Webhook where cid =:cid and token=:token",
+                    // Map.of("cid", webhookId,"token", webhookToken))
+                    // .forEach(webhook -> deleteWebhook(webhook.getGuildId(), webhook));
+
                     // Inform and delete invalid webhook.
                     if (isLog) {
                         SQLSession.getSqlConnector().getSqlWorker().deleteLogWebhook(webhookId, webhookToken);

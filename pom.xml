@@ -132,7 +132,7 @@
         <dependency>
             <groupId>com.github.DxsSucuk</groupId>
             <artifactId>YoutubeWrapper</artifactId>
-            <version>43b4d39e39</version>
+            <version>89c8445366</version>
         </dependency>
         <dependency>
             <groupId>com.github.DxsSucuk</groupId>
@@ -147,9 +147,9 @@
 
         <!-- Database -->
         <dependency>
-            <groupId>com.github.Ree6-Applications</groupId>
+            <groupId>de.ree6</groupId>
             <artifactId>Ree6-SQL</artifactId>
-            <version>7f4afb43f7</version>
+            <version>7c7199a4ba</version>
         </dependency>
 
         <!-- Logging -->
