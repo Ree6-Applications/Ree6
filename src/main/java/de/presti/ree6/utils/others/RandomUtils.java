@@ -1,5 +1,7 @@
 package de.presti.ree6.utils.others;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
@@ -124,5 +126,19 @@ public final class RandomUtils {
         byte[] randomBytes = new byte[length];
         secureRandom.nextBytes(randomBytes);
         return Base64.getUrlEncoder().encodeToString(randomBytes);
+    }
+
+    /**
+     * Round a double.
+     * @param value the double to round.
+     * @param places the fixed decimal points.
+     * @return the round double.
+     */
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }

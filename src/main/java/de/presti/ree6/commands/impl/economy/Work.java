@@ -29,7 +29,7 @@ public class Work implements ICommand {
                 Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_delay")).getValue());
 
         if (workTimeout.contains(entryString)) {
-            commandEvent.reply(commandEvent.getResource("message.work.cooldown"));
+            commandEvent.reply(commandEvent.getResource("message.work.cooldown", delay));
             return;
         }
 
@@ -39,11 +39,11 @@ public class Work implements ICommand {
         double max = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "SELECT * FROM Settings WHERE GID=:gid AND NAME=:name",
                 Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_max")).getValue());
 
-        double amount = RandomUtils.nextDouble(min, max);
+        double amount = RandomUtils.round(RandomUtils.nextDouble(min, max), 2);
 
         if (EconomyUtil.pay(null, EconomyUtil.getMoneyHolder(commandEvent.getMember()), amount, false, false, true)) {
             // TODO:: add more variation messages.
-            commandEvent.reply(commandEvent.getResource("message.work.success", amount));
+            commandEvent.reply(commandEvent.getResource("message.work.success", EconomyUtil.formatMoney(amount)));
         } else {
             commandEvent.reply(commandEvent.getResource("message.work.fail"));
         }

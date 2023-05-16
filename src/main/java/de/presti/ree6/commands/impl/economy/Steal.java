@@ -12,7 +12,9 @@ import de.presti.ree6.utils.others.RandomUtils;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public class Steal implements ICommand {
                 Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_steal_delay")).getValue());
 
         if (stealTimeout.contains(entryString)) {
-            commandEvent.reply(commandEvent.getResource("message.steal.cooldown"));
+            commandEvent.reply(commandEvent.getResource("message.steal.cooldown", delay));
             return;
         }
 
@@ -58,16 +60,16 @@ public class Steal implements ICommand {
 
         // Leave them poor people alone ong.
         if (!EconomyUtil.hasCash(targetHolder) || targetHolder.getAmount() <= 50) {
-            commandEvent.reply(commandEvent.getResource("message.steal.notEnoughMoney"), 5);
+            commandEvent.reply(commandEvent.getResource("message.steal.notEnoughMoney", member.getAsMention()), 5);
             return;
         }
 
-        double stealAmount = targetHolder.getAmount() * RandomUtils.nextDouble(0.01, 0.25);
+        double stealAmount = RandomUtils.round(targetHolder.getAmount() * RandomUtils.nextDouble(0.01, 0.25), 2);
         if (EconomyUtil.pay(targetHolder, EconomyUtil.getMoneyHolder(commandEvent.getMember()), stealAmount, false, false)) {
             // TODO:: more variation in the messages.
-            commandEvent.reply(commandEvent.getResource("message.steal.success", stealAmount, member.getAsMention()), 5);
+            commandEvent.reply(commandEvent.getResource("message.steal.success", EconomyUtil.formatMoney(stealAmount), member.getAsMention()), 5);
         } else {
-            commandEvent.reply(commandEvent.getResource("message.steal.failed", stealAmount, member.getAsMention()), 5);
+            commandEvent.reply(commandEvent.getResource("message.steal.failed", EconomyUtil.formatMoney(stealAmount), member.getAsMention()), 5);
         }
 
         stealTimeout.add(entryString);
@@ -76,7 +78,8 @@ public class Steal implements ICommand {
 
     @Override
     public CommandData getCommandData() {
-        return null;
+        return new CommandDataImpl("steal", "command.description.steal")
+                .addOption(OptionType.USER, "user", "The user you want to steal money from.", true);
     }
 
     @Override

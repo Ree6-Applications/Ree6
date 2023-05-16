@@ -139,9 +139,13 @@ public class EconomyUtil {
             SQLSession.getSqlConnector().getSqlWorker().updateEntity(sender);
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new MoneyTransaction(0L, isSystem, sender.getGuildId(), receiver, receiver, toBank, fromBank, amount, Timestamp.from(Instant.now())));
+        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new MoneyTransaction(0L, isSystem, isSystem ? receiver.getGuildId(): sender.getGuildId(), receiver, receiver, toBank, fromBank, amount, Timestamp.from(Instant.now())));
 
         return true;
+    }
+
+    public static String formatMoney(double amount) {
+        return String.format("%,.2f", amount);
     }
 
 }

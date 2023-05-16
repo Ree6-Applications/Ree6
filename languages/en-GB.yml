@@ -541,15 +541,16 @@ message:
     withdraw: "You have successfully withdrawn %s$!"
     deposit: "You have successfully deposited %s$!"
     send: "You have successfully sent %s$ to %s!"
+    balance: "The Balance of %s contains %s$ in cash and %s$ on the Bank!"
   steal:
     success: "You have successfully stolen %s$ from %s!"
     failed: "You have failed to steal %s$ from %s!"
-    cooldown: "You are on cooldown! You can steal again in %s"
+    cooldown: "You are on cooldown! You can steal again in about %s seconds."
     self: "You can't steal from yourself!"
     notEnoughMoney: "%s doesn't have enough money!"
   work:
     success: "You have successfully worked and earned %s$!"
-    cooldown: "You are on cooldown! You can work again in %s"
+    cooldown: "You are on cooldown! You can work again in about %s seconds."
     failed: "You have failed to work!"
 game:
   description:
