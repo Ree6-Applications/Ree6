@@ -195,6 +195,14 @@ public class Main {
                     "configuration_rewards_musicquiz_artist", 50.0));
             SettingsManager.getSettings().add(new Setting("-1",
                     "configuration_rewards_musicquiz_title", 25.0));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "configuration_work_min", 10.0));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "configuration_work_max", 50.0));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "configuration_work_delay", 5L));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "configuration_steal_delay", 5L));
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);

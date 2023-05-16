@@ -5,21 +5,38 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.economy.MoneyHolder;
 import de.presti.ree6.utils.data.EconomyUtil;
 import de.presti.ree6.utils.others.RandomUtils;
+import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Map;
 
 @Command(name = "steal", description = "command.description.steal", category = Category.ECONOMY)
 public class Steal implements ICommand {
+
+    ArrayList<String> stealTimeout = new ArrayList<>();
+
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.isSlashCommand()) {
             commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
+            return;
+        }
+
+        String entryString = commandEvent.getGuild().getIdLong() + "-" + commandEvent.getMember().getIdLong();
+
+        long delay = Long.parseLong((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "SELECT * FROM Settings WHERE GID=:gid AND NAME=:name",
+                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_steal_delay")).getValue());
+
+        if (stealTimeout.contains(entryString)) {
+            commandEvent.reply(commandEvent.getResource("message.steal.cooldown"));
             return;
         }
 
@@ -32,6 +49,11 @@ public class Steal implements ICommand {
 
         Member member = user.getAsMember();
 
+        if (member.getIdLong() == commandEvent.getMember().getIdLong()) {
+            commandEvent.reply(commandEvent.getResource("message.steal.self"), 5);
+            return;
+        }
+
         MoneyHolder targetHolder = EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), member.getIdLong(), false);
 
         // Leave them poor people alone ong.
@@ -43,10 +65,13 @@ public class Steal implements ICommand {
         double stealAmount = targetHolder.getAmount() * RandomUtils.nextDouble(0.01, 0.25);
         if (EconomyUtil.pay(targetHolder, EconomyUtil.getMoneyHolder(commandEvent.getMember()), stealAmount, false, false)) {
             // TODO:: more variation in the messages.
-            commandEvent.reply(commandEvent.getResource("message.steal.success", stealAmount), 5);
+            commandEvent.reply(commandEvent.getResource("message.steal.success", stealAmount, member.getAsMention()), 5);
         } else {
-            commandEvent.reply(commandEvent.getResource("message.steal.failed"), 5);
+            commandEvent.reply(commandEvent.getResource("message.steal.failed", stealAmount, member.getAsMention()), 5);
         }
+
+        stealTimeout.add(entryString);
+        ThreadUtil.createThread(x -> stealTimeout.remove(entryString), Duration.ofSeconds(delay), false, false);
     }
 
     @Override

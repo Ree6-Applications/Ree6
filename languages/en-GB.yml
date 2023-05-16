@@ -1,7 +1,7 @@
 language:
   name: "English (UK)"
   locale: "en-GB"
-  version: "2.4.6"
+  version: "3.0.0"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **banned.**"
@@ -541,6 +541,16 @@ message:
     withdraw: "You have successfully withdrawn %s$!"
     deposit: "You have successfully deposited %s$!"
     send: "You have successfully sent %s$ to %s!"
+  steal:
+    success: "You have successfully stolen %s$ from %s!"
+    failed: "You have failed to steal %s$ from %s!"
+    cooldown: "You are on cooldown! You can steal again in %s"
+    self: "You can't steal from yourself!"
+    notEnoughMoney: "%s doesn't have enough money!"
+  work:
+    success: "You have successfully worked and earned %s$!"
+    cooldown: "You are on cooldown! You can work again in %s"
+    failed: "You have failed to work!"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
@@ -639,6 +649,8 @@ command:
     musicpanel: "Access a simple UI to manage the Music System!"
     schedule: "Schedule messages for later or for a repeated time!"
     money: "Manage your money!"
+    steal: "Steal money from other users!"
+    daily: "Get your own money from doing work!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
@@ -646,5 +658,6 @@ category:
   fun: "Fun utilities that give you the power to do dumb stuff because you can!"
   level: "Leveling Tools that allow you to keep track of progress on the Server."
   community: "Community Tools that allow you to interact with your community."
+  economy: "Economy Tools that allow you to manage your money."
   nsfw: "NSFW stuff that you can only use in NSFW Channels."
   hidden: "Hidden Commands that are only visible to the Owner of the Bot."

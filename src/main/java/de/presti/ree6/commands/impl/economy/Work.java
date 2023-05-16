@@ -25,31 +25,31 @@ public class Work implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         String entryString = commandEvent.getGuild().getIdLong() + "-" + commandEvent.getMember().getIdLong();
 
-        long delay = (long) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "SELECT * FROM Settings WHERE GID=:gid AND NAME=:name",
-                Map.of("gid", commandEvent.getGuild().getIdLong(), "name", "configuration_work_delay")).getValue();
+        long delay = Long.parseLong((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "SELECT * FROM Settings WHERE GID=:gid AND NAME=:name",
+                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_delay")).getValue());
 
         if (workTimeout.contains(entryString)) {
-            commandEvent.reply(commandEvent.getResource("message.work.timeout"));
+            commandEvent.reply(commandEvent.getResource("message.work.cooldown"));
             return;
         }
 
-        double min = (double) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "SELECT * FROM Settings WHERE GID=:gid AND NAME=:name",
-                Map.of("gid", commandEvent.getGuild().getIdLong(), "name", "configuration_work_min")).getValue();
+        double min = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "SELECT * FROM Settings WHERE GID=:gid AND NAME=:name",
+                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_min")).getValue());
 
-        double max = (double) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "SELECT * FROM Settings WHERE GID=:gid AND NAME=:name",
-                Map.of("gid", commandEvent.getGuild().getIdLong(), "name", "configuration_work_max")).getValue();
+        double max = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "SELECT * FROM Settings WHERE GID=:gid AND NAME=:name",
+                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_max")).getValue());
 
         double amount = RandomUtils.nextDouble(min, max);
 
         if (EconomyUtil.pay(null, EconomyUtil.getMoneyHolder(commandEvent.getMember()), amount, false, false, true)) {
             // TODO:: add more variation messages.
             commandEvent.reply(commandEvent.getResource("message.work.success", amount));
-
-            ThreadUtil.createThread(x -> workTimeout.remove(entryString), Duration.ofSeconds(delay), false, false);
         } else {
             commandEvent.reply(commandEvent.getResource("message.work.fail"));
         }
 
+        workTimeout.add(entryString);
+        ThreadUtil.createThread(x -> workTimeout.remove(entryString), Duration.ofSeconds(delay), false, false);
     }
 
     @Override
