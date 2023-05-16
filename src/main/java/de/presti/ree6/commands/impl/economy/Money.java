@@ -1,4 +1,4 @@
-package de.presti.ree6.commands.impl.community;
+package de.presti.ree6.commands.impl.economy;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
@@ -6,6 +6,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.economy.MoneyHolder;
+import de.presti.ree6.utils.data.EconomyUtil;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -15,8 +16,12 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.util.Map;
 
-@Command(name = "money", description = "command.description.money", category = Category.COMMUNITY)
+/**
+ * Command to manage the player specific economy.
+ */
+@Command(name = "money", description = "command.description.money", category = Category.ECONOMY)
 public class Money implements ICommand {
+
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.isSlashCommand()) {
@@ -38,19 +43,10 @@ public class Money implements ICommand {
 
                 double withdrawAmount = amount.getAsDouble();
 
-                MoneyHolder moneyHolder =
-                        SQLSession.getSqlConnector().getSqlWorker().getEntity(new MoneyHolder(), "SELECT * FROM Money_Holder WHERE guildId = :gid AND userId = :uid",
-                                Map.of("gid", commandEvent.getGuild().getId(), "uid", commandEvent.getMember().getId()));
+                MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong());
 
-                if (moneyHolder != null) {
-                    if (moneyHolder.getBankAmount() < withdrawAmount) {
-                        commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
-                        return;
-                    }
-
-                    moneyHolder.setBankAmount(moneyHolder.getBankAmount() - withdrawAmount);
-                    moneyHolder.setAmount(moneyHolder.getAmount() + withdrawAmount);
-                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder);
+                if (EconomyUtil.hasEnoughMoney(moneyHolder, withdrawAmount, true)) {
+                    EconomyUtil.pay(moneyHolder, moneyHolder, withdrawAmount, true, false);
                     commandEvent.reply(commandEvent.getResource("message.money.withdraw", withdrawAmount), 5);
                 } else {
                     commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
@@ -64,19 +60,10 @@ public class Money implements ICommand {
 
                 double depositAmount = amount.getAsDouble();
 
-                MoneyHolder moneyHolder =
-                        SQLSession.getSqlConnector().getSqlWorker().getEntity(new MoneyHolder(), "SELECT * FROM Money_Holder WHERE guildId = :gid AND userId = :uid",
-                                Map.of("gid", commandEvent.getGuild().getId(), "uid", commandEvent.getMember().getId()));
+                MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong());
 
-                if (moneyHolder != null) {
-                    if (moneyHolder.getAmount() < depositAmount) {
-                        commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
-                        return;
-                    }
-
-                    moneyHolder.setBankAmount(moneyHolder.getBankAmount() + depositAmount);
-                    moneyHolder.setAmount(moneyHolder.getAmount() - depositAmount);
-                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder);
+                if (EconomyUtil.hasEnoughMoney(moneyHolder, depositAmount, false)) {
+                    EconomyUtil.pay(moneyHolder, moneyHolder, depositAmount, false, true);
                     commandEvent.reply(commandEvent.getResource("message.money.deposit", depositAmount), 5);
                 } else {
                     commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
@@ -93,7 +80,14 @@ public class Money implements ICommand {
                 Member member = user.getAsMember();
                 double sendAmount = amount.getAsDouble();
 
-                commandEvent.reply(commandEvent.getResource("message.money.send", sendAmount, member.getAsMention()));
+                MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong());
+                MoneyHolder target = EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), member.getIdLong());
+
+                if (EconomyUtil.pay(moneyHolder, target, sendAmount, true, true)) {
+                    commandEvent.reply(commandEvent.getResource("message.money.send", sendAmount, member.getAsMention()));
+                } else {
+                    commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
+                }
             }
         }
     }

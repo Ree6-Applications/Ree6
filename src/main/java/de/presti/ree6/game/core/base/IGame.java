@@ -3,6 +3,7 @@ package de.presti.ree6.game.core.base;
 import de.presti.ree6.game.core.GameSession;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.economy.MoneyHolder;
+import de.presti.ree6.utils.data.EconomyUtil;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
@@ -76,18 +77,8 @@ public interface IGame {
             } catch (Exception ignore) {}
         }
         if (parameter instanceof Double money) {
-            MoneyHolder moneyHolder =
-                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new MoneyHolder(), "SELECT * FROM Money_Holder WHERE guildId = :gid AND userId = :uid",
-                            Map.of("gid", gameSession.getGuild().getId(), "uid", player.getRelatedUserId()));
-
-            if (moneyHolder == null) {
-                moneyHolder = new MoneyHolder();
-                moneyHolder.setGuildId(gameSession.getGuild().getIdLong());
-                moneyHolder.setUserId(player.getRelatedUserId());
-            }
-
-            moneyHolder.setBankAmount(moneyHolder.getAmount() + money);
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder);
+            EconomyUtil.pay(null, EconomyUtil.getMoneyHolder(gameSession.getGuild().getIdLong(), player.getRelatedUserId(), true),
+                    money, false, false, true);
         }
     }
 
