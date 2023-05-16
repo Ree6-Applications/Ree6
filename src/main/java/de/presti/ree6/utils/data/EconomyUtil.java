@@ -3,6 +3,7 @@ package de.presti.ree6.utils.data;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.economy.MoneyHolder;
 import de.presti.ree6.sql.entities.economy.MoneyTransaction;
+import net.dv8tion.jda.api.entities.Member;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -12,6 +13,15 @@ import java.util.Map;
  * Utility class for Economy related stuff.
  */
 public class EconomyUtil {
+
+    /**
+     * Check if a MoneyHolder has any cash.
+     * @param member The Member.
+     * @return If the MoneyHolder has any cash.
+     */
+    public static boolean hasCash(Member member) {
+        return hasCash(member.getGuild().getIdLong(), member.getIdLong());
+    }
 
     /**
      * Check if a MoneyHolder has any cash.
@@ -30,6 +40,15 @@ public class EconomyUtil {
      */
     public static boolean hasCash(MoneyHolder moneyHolder) {
         return moneyHolder != null && moneyHolder.getAmount() > 0;
+    }
+
+    /**
+     * Retrieve a MoneyHolder from the Database.
+     * @param member The Member.
+     * @return The MoneyHolder.
+     */
+    public static MoneyHolder getMoneyHolder(Member member) {
+        return getMoneyHolder(member.getGuild().getIdLong(), member.getIdLong());
     }
 
     /**
@@ -120,7 +139,7 @@ public class EconomyUtil {
             SQLSession.getSqlConnector().getSqlWorker().updateEntity(sender);
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new MoneyTransaction(0L, sender.getGuildId(), receiver, receiver, toBank, fromBank, amount, Timestamp.from(Instant.now())));
+        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new MoneyTransaction(0L, isSystem, sender.getGuildId(), receiver, receiver, toBank, fromBank, amount, Timestamp.from(Instant.now())));
 
         return true;
     }

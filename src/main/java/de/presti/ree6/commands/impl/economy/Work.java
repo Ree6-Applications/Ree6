@@ -41,7 +41,7 @@ public class Work implements ICommand {
 
         double amount = RandomUtils.nextDouble(min, max);
 
-        if (EconomyUtil.pay(null, EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong(), true), amount, false, false, true)) {
+        if (EconomyUtil.pay(null, EconomyUtil.getMoneyHolder(commandEvent.getMember()), amount, false, false, true)) {
             // TODO:: add more variation messages.
             commandEvent.reply(commandEvent.getResource("message.work.success", amount));
 

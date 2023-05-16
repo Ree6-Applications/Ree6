@@ -43,7 +43,7 @@ public class Money implements ICommand {
 
                 double withdrawAmount = amount.getAsDouble();
 
-                MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong());
+                MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getMember());
 
                 if (EconomyUtil.hasEnoughMoney(moneyHolder, withdrawAmount, true)) {
                     EconomyUtil.pay(moneyHolder, moneyHolder, withdrawAmount, true, false);
@@ -60,7 +60,7 @@ public class Money implements ICommand {
 
                 double depositAmount = amount.getAsDouble();
 
-                MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong());
+                MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getMember());
 
                 if (EconomyUtil.hasEnoughMoney(moneyHolder, depositAmount, false)) {
                     EconomyUtil.pay(moneyHolder, moneyHolder, depositAmount, false, true);
@@ -80,8 +80,8 @@ public class Money implements ICommand {
                 Member member = user.getAsMember();
                 double sendAmount = amount.getAsDouble();
 
-                MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong());
-                MoneyHolder target = EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), member.getIdLong());
+                MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getMember());
+                MoneyHolder target = EconomyUtil.getMoneyHolder(member);
 
                 if (EconomyUtil.pay(moneyHolder, target, sendAmount, true, true)) {
                     commandEvent.reply(commandEvent.getResource("message.money.send", sendAmount, member.getAsMention()));
