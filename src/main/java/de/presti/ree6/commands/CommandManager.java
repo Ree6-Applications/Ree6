@@ -7,6 +7,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.CustomCommand;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.others.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -35,10 +36,7 @@ import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -125,6 +123,7 @@ public class CommandManager {
 
     /**
      * Used to convert Slash Subcommands to a String format for ChatGPT.
+     *
      * @param list a List with all the Subcommands.
      * @return the List as a string.
      */
@@ -148,6 +147,7 @@ public class CommandManager {
 
     /**
      * Used to convert Slash Options to a String format for ChatGPT.
+     *
      * @param list a List with all the Options.
      * @return the List as a string.
      */
@@ -384,6 +384,27 @@ public class CommandManager {
 
         // Check if there is even a Command with that name.
         if (command == null) {
+            CustomCommand customCommand = SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "SELECT * FROM CustomCommand WHERE GID=:gid AND COMMAND=:command", Map.of("gid", guild.getId(), "command", arguments[0].toLowerCase()));
+            if (customCommand != null) {
+                MessageChannelUnion messageChannelUnion = textChannel;
+
+                if (customCommand.getChannelId() != -1) {
+                    messageChannelUnion = guild.getChannelById(MessageChannelUnion.class, customCommand.getChannelId());
+                }
+
+                if (customCommand.getMessageResponse() != null) {
+                    sendMessage(customCommand.getMessageResponse(), 5, messageChannelUnion, null);
+                }
+
+                if (customCommand.getEmbedResponse() != null) {
+                    // TODO:: parse the Embed from JSON in to a EmbedBuilder to sent.
+                    EmbedBuilder embedBuilder = new EmbedBuilder();
+                    sendMessage(embedBuilder, 5, messageChannelUnion, null);
+                }
+
+                return true;
+            }
+
             sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound"), 5, textChannel, null);
             return false;
         }

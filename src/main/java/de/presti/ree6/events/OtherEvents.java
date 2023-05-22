@@ -10,6 +10,7 @@ import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.CustomCommand;
 import de.presti.ree6.sql.entities.ReactionRole;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.Tickets;
@@ -370,6 +371,9 @@ public class OtherEvents extends ListenerAdapter {
         super.onMessageReceived(event);
 
         if (event.isFromGuild() && (event.isFromType(ChannelType.TEXT) || event.isFromType(ChannelType.VOICE)) && event.getMember() != null) {
+
+            if (event.getAuthor().isBot()) return;
+
             if (ModerationUtil.shouldModerate(event.getGuild().getId())) {
                 if (ModerationUtil.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
                     Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
@@ -398,8 +402,6 @@ public class OtherEvents extends ListenerAdapter {
                     }
                 } */
             }
-
-            if (event.getAuthor().isBot()) return;
 
             if (!ArrayUtil.messageIDwithMessage.containsKey(event.getMessageId())) {
                 ArrayUtil.messageIDwithMessage.put(event.getMessageId(), event.getMessage());
