@@ -14,6 +14,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 /**
  * StreamAction used to play a text-to-speech messages.
@@ -31,11 +32,18 @@ public class PlayTTSStreamAction implements IStreamAction {
             return false;
         }
 
+        boolean useTTSMonster = Arrays.stream(arguments).anyMatch(s -> s.startsWith("--ttsmonster:"));
+
         if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return false;
 
+        String ttsMessage = String.join(" ", arguments).split("--ttsmonster:")[0];
+
+        String baseUrl = useTTSMonster ? "NOT YET IMPLEMENTED" : "https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=";
+
         Main.getInstance().getMusicWorker().loadAndPlay(guild, null, null,
-                "https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=" + URLEncoder.encode(String.join(" ", arguments), StandardCharsets.UTF_8),
+                baseUrl + URLEncoder.encode(ttsMessage, StandardCharsets.UTF_8),
                 null, true, false);
+
         return true;
     }
 }
