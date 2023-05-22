@@ -40,6 +40,9 @@ import de.presti.ree6.utils.data.DatabaseStorageBackend;
 import de.presti.ree6.utils.others.ThreadUtil;
 import de.presti.wrapper.entities.VideoResult;
 import de.presti.wrapper.entities.channel.ChannelResult;
+import io.github.redouane59.twitter.TwitterClient;
+import io.github.redouane59.twitter.dto.user.UserV2;
+import io.github.redouane59.twitter.signature.TwitterCredentials;
 import io.sentry.Sentry;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -50,8 +53,6 @@ import masecla.reddit4j.objects.Sorting;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.utils.TimeFormat;
-import twitter4j.*;
-import twitter4j.conf.ConfigurationBuilder;
 
 import java.awt.*;
 import java.io.IOException;
@@ -64,6 +65,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 // TODO:: translate
+// TODO:: fix the Twitter Stream handler, wait for responses via https://github.com/redouane59/twittered/issues/447
 
 /**
  * Utility class used for Event Notifiers. Such as Twitch Livestream, YouTube Upload or Twitter Tweet.
@@ -93,7 +95,7 @@ public class Notifier {
      * Instance of the Twitter API Client.
      */
     @Getter(AccessLevel.PUBLIC)
-    private final Twitter twitterClient;
+    private final TwitterClient twitterClient;
 
     /**
      * Instance of the Reddit API Client.
@@ -205,16 +207,12 @@ public class Notifier {
 
         log.info("Initializing Twitter Client...");
 
-        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 
-        configurationBuilder
-                .setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key"))
-                .setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret"))
-                .setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
-                .setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
-                .setDebugEnabled(BotWorker.getVersion().isDebug());
-
-        twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
+        twitterClient = new TwitterClient(TwitterCredentials.builder()
+                .accessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
+                .accessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
+                .apiSecretKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
+                .apiKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key")).build());
 
         log.info("Initializing Reddit Client...");
 
@@ -232,6 +230,7 @@ public class Notifier {
                 log.warn("Reddit Credentials are invalid, you can ignore this if you don't use Reddit.");
             } else {
                 log.error("Failed to connect to Reddit API.", exception);
+                Sentry.captureException(exception);
             }
         }
 
@@ -266,10 +265,10 @@ public class Notifier {
             for (String twitterName : registeredTwitterUsers.keySet()) {
                 List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats WHERE twitterFollowerChannelUsername=:name", Map.of("name", twitterName));
                 if (!channelStats.isEmpty()) {
-                    twitter4j.User twitterUser;
+                    UserV2 twitterUser;
                     try {
-                        twitterUser = Main.getInstance().getNotifier().getTwitterClient().showUser(twitterName);
-                    } catch (TwitterException e) {
+                        twitterUser = Main.getInstance().getNotifier().getTwitterClient().getUserFromUserName(twitterName);
+                    } catch (NoSuchElementException e) {
                         continue;
                     }
 
@@ -452,14 +451,15 @@ public class Notifier {
 
         twitterUser = twitterUser.toLowerCase();
 
-        twitter4j.User user;
+        UserV2 user;
 
         try {
-            user = getTwitterClient().showUser(twitterUser);
-            if (user.isProtected()) return;
+            user = getTwitterClient().getUserFromUserName(twitterUser);
+            if (user.isProtectedAccount()) return;
         } catch (Exception ignore) {
             return;
         }
+
 
         FilterQuery filterQuery = new FilterQuery();
         filterQuery.follow(user.getId());
