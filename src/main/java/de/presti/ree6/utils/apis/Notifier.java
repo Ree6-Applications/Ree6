@@ -41,6 +41,7 @@ import de.presti.ree6.utils.others.ThreadUtil;
 import de.presti.wrapper.entities.VideoResult;
 import de.presti.wrapper.entities.channel.ChannelResult;
 import io.github.redouane59.twitter.TwitterClient;
+import io.github.redouane59.twitter.dto.tweet.TweetType;
 import io.github.redouane59.twitter.dto.user.UserV2;
 import io.github.redouane59.twitter.signature.TwitterCredentials;
 import io.sentry.Sentry;
@@ -432,6 +433,49 @@ public class Notifier {
 
     //region Twitter
 
+    public void registerTwitterEventHandler() {
+        twitterClient.startFilteredStream(x -> {
+            List<WebhookTwitter> webhooks = SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(x.getUser().getDisplayedName());
+
+            if (webhooks.isEmpty()) return;
+
+            WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+
+            webhookMessageBuilder.setUsername("Ree6");
+            webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+
+            WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+            webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(x.getUser().getDisplayedName() + " (@" + x.getUser().getName() + ")", x.getUser().getProfileImageUrl(), null));
+
+            webhookEmbedBuilder.setDescription(x.getTweetType() == TweetType.QUOTED ?
+                    "**Quoted  " + x.getQuotedStatus().getUser().getScreenName() + "**: " + x.getText() + "\n" :
+                    x.getInReplyToScreenName() != null ?
+                            "**Reply to " + x.getInReplyToUserId() + "**: " + x.getText() + "\n" :
+                            x.getTweetType() == TweetType.RETWEETED ?
+                                    "**Retweeted from " + x.getRetweetedStatus().getUser().getScreenName() + "**: " + x.getText().split(": ")[1] + "\n" :
+                                    x.getText() + "\n");
+
+            if (x.getMedia().size() > 0 && x.getMedia().get(0).getType().equalsIgnoreCase("photo")) {
+                webhookEmbedBuilder.setImageUrl(x.getMedia().get(0).getMediaUrl());
+            }
+
+            webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+            webhookEmbedBuilder.setTimestamp(Instant.now());
+            webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
+
+            webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+            webhooks.forEach(webhook -> {
+                String message = webhook.getMessage()
+                        .replace("%name%", x.getUser().getDisplayedName())
+                        .replace("%url%", "https://twitter.com/" + x.getUser().getName() + "/status/" + x.getId());
+                webhookMessageBuilder.setContent(message);
+                WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false);
+            });
+        });
+    }
+
     /**
      * Used to Register a Tweet Event for the given Twitter Users
      *
@@ -460,103 +504,6 @@ public class Notifier {
             return;
         }
 
-
-        FilterQuery filterQuery = new FilterQuery();
-        filterQuery.follow(user.getId());
-
-        twitter4j.User finalUser = user;
-        TwitterStream twitterStream = new TwitterStreamFactory(getTwitterClient().getConfiguration())
-                .getInstance()
-                .addListener(new StatusListener() {
-
-                    /**
-                     * Override the onStatus method to inform about a new status.
-                     * @param status the new Status.
-                     */
-                    @Override
-                    public void onStatus(Status status) {
-                        List<WebhookTwitter> webhooks = SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName());
-
-                        if (webhooks.isEmpty()) return;
-
-                        WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
-
-                        webhookMessageBuilder.setUsername("Ree6");
-                        webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
-
-                        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
-
-                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(status.getUser().getName() + " (@" + status.getUser().getScreenName() + ")", status.getUser().getBiggerProfileImageURLHttps(), null));
-
-                        webhookEmbedBuilder.setDescription(status.getQuotedStatus() != null && !status.isRetweet() ? "**Quoted  " + status.getQuotedStatus().getUser().getScreenName() + "**: " + status.getText() + "\n" : status.getInReplyToScreenName() != null ? "**Reply to " + status.getInReplyToScreenName() + "**: " + status.getText() + "\n" : status.isRetweet() ? "**Retweeted from " + status.getRetweetedStatus().getUser().getScreenName() + "**: " + status.getText().split(": ")[1] + "\n" : status.getText() + "\n");
-
-                        if (status.getMediaEntities().length > 0 && status.getMediaEntities()[0].getType().equalsIgnoreCase("photo")) {
-                            webhookEmbedBuilder.setImageUrl(status.getMediaEntities()[0].getMediaURLHttps());
-                        }
-
-                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
-                        webhookEmbedBuilder.setTimestamp(Instant.now());
-                        webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
-
-                        webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-
-                        webhooks.forEach(webhook -> {
-                            String message = webhook.getMessage()
-                                    .replace("%name%", status.getUser().getName())
-                                    .replace("%url%", "https://twitter.com/" + status.getUser().getScreenName() + "/status/" + status.getId());
-                            webhookMessageBuilder.setContent(message);
-                            WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false);
-                        });
-                    }
-
-                    /**
-                     * No need for this, so just ignore it.
-                     * @param statusDeletionNotice Data Object.
-                     */
-                    @Override
-                    public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-                        // Unused
-                    }
-
-                    /**
-                     * No need for this, so just ignore it.
-                     * @param numberOfLimitedStatuses Data Object.
-                     */
-                    @Override
-                    public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-                        // Unused
-                    }
-
-                    /**
-                     * No need for this, so just ignore it.
-                     * @param userId Data Object.
-                     * @param upToStatusId Data Object.
-                     */
-                    @Override
-                    public void onScrubGeo(long userId, long upToStatusId) {
-                        // Unused
-                    }
-
-                    /**
-                     * No need for this, so just ignore it.
-                     * @param warning Data Object.
-                     */
-                    @Override
-                    public void onStallWarning(StallWarning warning) {
-                        // Unused
-                    }
-
-                    /**
-                     * Inform about an exception.
-                     * @param ex the Exception
-                     */
-                    @Override
-                    public void onException(Exception ex) {
-                        log.error("[Notifier] Encountered an error, while trying to get the Status update!", ex);
-                        Sentry.captureException(ex);
-                    }
-                })
-                .filter(filterQuery);
 
         if (!isTwitterRegistered(twitterUser)) registeredTwitterUsers.put(twitterUser, twitterStream);
     }
