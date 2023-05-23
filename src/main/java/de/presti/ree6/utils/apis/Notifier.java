@@ -41,6 +41,8 @@ import de.presti.ree6.utils.others.ThreadUtil;
 import de.presti.wrapper.entities.VideoResult;
 import de.presti.wrapper.entities.channel.ChannelResult;
 import io.github.redouane59.twitter.TwitterClient;
+import io.github.redouane59.twitter.dto.rules.FilteredStreamRulePredicate;
+import io.github.redouane59.twitter.dto.stream.StreamRules;
 import io.github.redouane59.twitter.dto.tweet.TweetType;
 import io.github.redouane59.twitter.dto.user.UserV2;
 import io.github.redouane59.twitter.signature.TwitterCredentials;
@@ -111,6 +113,12 @@ public class Notifier {
     private final IGClient instagramClient;
 
     /**
+     * Instance of the current applied stream rule.
+     */
+    @Getter(AccessLevel.PUBLIC)
+    private StreamRules.StreamRule streamRule;
+
+    /**
      * Local list of registered Twitch Channels.
      */
     private final ArrayList<String> registeredTwitchChannels = new ArrayList<>();
@@ -128,7 +136,7 @@ public class Notifier {
     /**
      * Local list of registered Twitter Users.
      */
-    private final Map<String, TwitterStream> registeredTwitterUsers = new HashMap<>();
+    private final ArrayList<String> registeredTwitterUsers = new ArrayList<>();
 
     /**
      * Local list of registered Subreddits.
@@ -215,6 +223,8 @@ public class Notifier {
                 .apiSecretKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
                 .apiKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key")).build());
 
+        registerTwitterEventHandler();
+
         log.info("Initializing Reddit Client...");
 
         redditClient = Reddit4J
@@ -263,7 +273,7 @@ public class Notifier {
         createUploadStream();
 
         ThreadUtil.createThread(x -> {
-            for (String twitterName : registeredTwitterUsers.keySet()) {
+            for (String twitterName : registeredTwitterUsers) {
                 List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats WHERE twitterFollowerChannelUsername=:name", Map.of("name", twitterName));
                 if (!channelStats.isEmpty()) {
                     UserV2 twitterUser;
@@ -448,13 +458,11 @@ public class Notifier {
 
             webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(x.getUser().getDisplayedName() + " (@" + x.getUser().getName() + ")", x.getUser().getProfileImageUrl(), null));
 
-            webhookEmbedBuilder.setDescription(x.getTweetType() == TweetType.QUOTED ?
-                    "**Quoted  " + x.getQuotedStatus().getUser().getScreenName() + "**: " + x.getText() + "\n" :
-                    x.getInReplyToScreenName() != null ?
-                            "**Reply to " + x.getInReplyToUserId() + "**: " + x.getText() + "\n" :
-                            x.getTweetType() == TweetType.RETWEETED ?
-                                    "**Retweeted from " + x.getRetweetedStatus().getUser().getScreenName() + "**: " + x.getText().split(": ")[1] + "\n" :
-                                    x.getText() + "\n");
+            switch (x.getTweetType()) {
+                case QUOTED -> webhookEmbedBuilder.setDescription("**Quoted  " + x.getAuthorId() + "**: " + x.getText() + "\n");
+                case RETWEETED -> webhookEmbedBuilder.setDescription("**Retweeted from " + x.getAuthorId() + "**: " + x.getText().split(": ")[1] + "\n");
+                default -> webhookEmbedBuilder.setDescription(x.getText() + "\n");
+            }
 
             if (x.getMedia().size() > 0 && x.getMedia().get(0).getType().equalsIgnoreCase("photo")) {
                 webhookEmbedBuilder.setImageUrl(x.getMedia().get(0).getMediaUrl());
@@ -505,7 +513,17 @@ public class Notifier {
         }
 
 
-        if (!isTwitterRegistered(twitterUser)) registeredTwitterUsers.put(twitterUser, twitterStream);
+        if (!isTwitterRegistered(twitterUser)) {
+            registeredTwitterUsers.add(twitterUser);
+            if (streamRule == null) {
+                streamRule = getTwitterClient().addFilteredStreamRule("from:" + twitterUser,"");
+            } else {
+                String value = streamRule.getValue();
+                getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
+                streamRule = getTwitterClient().addFilteredStreamRule(value + " or from:" + twitterUser,"");
+            }
+
+        }
     }
 
     /**
@@ -523,8 +541,10 @@ public class Notifier {
             return;
 
         if (isTwitterRegistered(twitterUser)) {
+            String value = streamRule.getValue();
 
-            registeredTwitterUsers.get(twitterUser).cleanUp();
+            getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
+            streamRule = getTwitterClient().addFilteredStreamRule(value.replace(" or from:" + twitterUser,""),"");
 
             registeredTwitterUsers.remove(twitterUser);
         }
@@ -537,7 +557,7 @@ public class Notifier {
      * @return true, if there is an Event for the User | false, if there isn't an Event for the User.
      */
     public boolean isTwitterRegistered(String twitterUser) {
-        return registeredTwitterUsers.containsKey(twitterUser.toLowerCase());
+        return registeredTwitterUsers.contains(twitterUser.toLowerCase());
     }
 
     //endregion
