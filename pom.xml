@@ -36,11 +36,6 @@
             <url>https://m2.dv8tion.net/releases</url>
         </repository>
         <repository>
-            <id>twitter4j.org</id>
-            <name>twitter4j.org Repository</name>
-            <url>https://twitter4j.org/maven2</url>
-        </repository>
-        <repository>
             <id>maven_central</id>
             <name>Maven Central</name>
             <url>https://repo.maven.apache.org/maven2/</url>

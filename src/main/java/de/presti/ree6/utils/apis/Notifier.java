@@ -13,6 +13,7 @@ import com.github.instagram4j.instagram4j.utils.IGChallengeUtils;
 import com.github.philippheuer.credentialmanager.CredentialManager;
 import com.github.philippheuer.credentialmanager.CredentialManagerBuilder;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
+import com.github.scribejava.core.model.Response;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.auth.TwitchAuth;
@@ -41,9 +42,7 @@ import de.presti.ree6.utils.others.ThreadUtil;
 import de.presti.wrapper.entities.VideoResult;
 import de.presti.wrapper.entities.channel.ChannelResult;
 import io.github.redouane59.twitter.TwitterClient;
-import io.github.redouane59.twitter.dto.rules.FilteredStreamRulePredicate;
 import io.github.redouane59.twitter.dto.stream.StreamRules;
-import io.github.redouane59.twitter.dto.tweet.TweetType;
 import io.github.redouane59.twitter.dto.user.UserV2;
 import io.github.redouane59.twitter.signature.TwitterCredentials;
 import io.sentry.Sentry;
@@ -66,6 +65,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 // TODO:: translate
 // TODO:: fix the Twitter Stream handler, wait for responses via https://github.com/redouane59/twittered/issues/447
@@ -115,8 +115,15 @@ public class Notifier {
     /**
      * Instance of the current applied stream rule.
      */
-    @Getter(AccessLevel.PUBLIC)
+    @Getter(AccessLevel.PRIVATE)
     private StreamRules.StreamRule streamRule;
+
+
+    /**
+     * Instance of the filtered stream.
+     */
+    @Getter(AccessLevel.PRIVATE)
+    Future<Response> filteredStream;
 
     /**
      * Local list of registered Twitch Channels.
@@ -127,7 +134,7 @@ public class Notifier {
      * A list with all the Twitch Subscription for the Streaming Tools.
      */
     @Getter(AccessLevel.PUBLIC)
-    private final HashMap<String, PubSubSubscription[]> twitchSubscription = new HashMap();
+    private final HashMap<String, PubSubSubscription[]> twitchSubscription = new HashMap<>();
 
     /**
      * Local list of registered YouTube Channels.
@@ -218,12 +225,16 @@ public class Notifier {
 
 
         twitterClient = new TwitterClient(TwitterCredentials.builder()
-                .accessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
+                /*.accessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
                 .accessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
                 .apiSecretKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
-                .apiKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key")).build());
+                .apiKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))*/
+                .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
 
-        registerTwitterEventHandler();
+        twitterClient.retrieveFilteredStreamRules().forEach(x -> {
+            twitterClient.deleteFilteredStreamRuleId(x.getId());
+        });
+
 
         log.info("Initializing Reddit Client...");
 
@@ -341,7 +352,7 @@ public class Notifier {
             // Set rest of the Information.
             webhookEmbedBuilder.setDescription(channelGoLiveEvent.getStream().getTitle());
             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Game**", channelGoLiveEvent.getStream().getGameName()));
-            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Viewer**", "" + channelGoLiveEvent.getStream().getViewerCount()));
+            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Viewer**", String.valueOf(channelGoLiveEvent.getStream().getViewerCount())));
             webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.ADVERTISEMENT, BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
             webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
 
@@ -443,8 +454,12 @@ public class Notifier {
 
     //region Twitter
 
-    public void registerTwitterEventHandler() {
-        twitterClient.startFilteredStream(x -> {
+    /**
+     * Register a EventHandler for the Twitter Tweet Event.
+     * @return the Future of the Event Handler for later use.
+     */
+    public Future<Response> registerTwitterEventHandler() {
+        return twitterClient.startFilteredStream(x -> {
             List<WebhookTwitter> webhooks = SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(x.getUser().getDisplayedName());
 
             if (webhooks.isEmpty()) return;
@@ -507,6 +522,7 @@ public class Notifier {
 
         try {
             user = getTwitterClient().getUserFromUserName(twitterUser);
+            if (user.getData() == null) return;
             if (user.isProtectedAccount()) return;
         } catch (Exception ignore) {
             return;
@@ -516,13 +532,19 @@ public class Notifier {
         if (!isTwitterRegistered(twitterUser)) {
             registeredTwitterUsers.add(twitterUser);
             if (streamRule == null) {
-                streamRule = getTwitterClient().addFilteredStreamRule("from:" + twitterUser,"");
+                streamRule = getTwitterClient().addFilteredStreamRule("zeus from:" + twitterUser, "Notification");
+                getTwitterClient().stopFilteredStream(getFilteredStream());
             } else {
                 String value = streamRule.getValue();
                 getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
-                streamRule = getTwitterClient().addFilteredStreamRule(value + " or from:" + twitterUser,"");
+                streamRule = getTwitterClient().addFilteredStreamRule(value + " or from:" + twitterUser, "Notification");
             }
 
+            if (getFilteredStream() != null) {
+                getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
+            }
+
+            filteredStream = registerTwitterEventHandler();
         }
     }
 
@@ -544,7 +566,7 @@ public class Notifier {
             String value = streamRule.getValue();
 
             getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
-            streamRule = getTwitterClient().addFilteredStreamRule(value.replace(" or from:" + twitterUser,""),"");
+            streamRule = getTwitterClient().addFilteredStreamRule(value.replace(" or from:" + twitterUser, ""),"Notification");
 
             registeredTwitterUsers.remove(twitterUser);
         }
