@@ -18,6 +18,7 @@ import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.data.Data;
 import de.presti.wrapper.entities.channel.ChannelResult;
+import io.github.redouane59.twitter.dto.user.UserV2;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -41,7 +42,6 @@ import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.component.StringSelectMenuImpl;
 import org.jetbrains.annotations.NotNull;
-import twitter4j.TwitterException;
 
 import java.awt.*;
 import java.io.IOException;
@@ -50,10 +50,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -615,10 +613,10 @@ public class MenuEvents extends ListenerAdapter {
                     category = categories.get(0);
                 }
 
-                twitter4j.User twitterUser;
+                UserV2 twitterUser;
                 try {
-                    twitterUser = Main.getInstance().getNotifier().getTwitterClient().showUser(twitterName);
-                } catch (TwitterException e) {
+                    twitterUser = Main.getInstance().getNotifier().getTwitterClient().getUserFromUserName(twitterName);
+                } catch (NoSuchElementException e) {
                     embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu"))
                             .setFooter(event.getGuild().getName() + " - " + Data.ADVERTISEMENT, event.getGuild().getIconUrl())
