@@ -13,6 +13,7 @@ import com.github.instagram4j.instagram4j.utils.IGChallengeUtils;
 import com.github.philippheuer.credentialmanager.CredentialManager;
 import com.github.philippheuer.credentialmanager.CredentialManagerBuilder;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
+import com.github.scribejava.core.model.Response;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.auth.TwitchAuth;
@@ -40,6 +41,10 @@ import de.presti.ree6.utils.data.DatabaseStorageBackend;
 import de.presti.ree6.utils.others.ThreadUtil;
 import de.presti.wrapper.entities.VideoResult;
 import de.presti.wrapper.entities.channel.ChannelResult;
+import io.github.redouane59.twitter.TwitterClient;
+import io.github.redouane59.twitter.dto.stream.StreamRules;
+import io.github.redouane59.twitter.dto.user.UserV2;
+import io.github.redouane59.twitter.signature.TwitterCredentials;
 import io.sentry.Sentry;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -50,8 +55,6 @@ import masecla.reddit4j.objects.Sorting;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.utils.TimeFormat;
-import twitter4j.*;
-import twitter4j.conf.ConfigurationBuilder;
 
 import java.awt.*;
 import java.io.IOException;
@@ -62,8 +65,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 // TODO:: translate
+// TODO:: fix the Twitter Stream handler, wait for responses via https://github.com/redouane59/twittered/issues/447
 
 /**
  * Utility class used for Event Notifiers. Such as Twitch Livestream, YouTube Upload or Twitter Tweet.
@@ -93,7 +98,7 @@ public class Notifier {
      * Instance of the Twitter API Client.
      */
     @Getter(AccessLevel.PUBLIC)
-    private final Twitter twitterClient;
+    private final TwitterClient twitterClient;
 
     /**
      * Instance of the Reddit API Client.
@@ -108,6 +113,19 @@ public class Notifier {
     private final IGClient instagramClient;
 
     /**
+     * Instance of the current applied stream rule.
+     */
+    @Getter(AccessLevel.PRIVATE)
+    private StreamRules.StreamRule streamRule;
+
+
+    /**
+     * Instance of the filtered stream.
+     */
+    @Getter(AccessLevel.PRIVATE)
+    Future<Response> filteredStream;
+
+    /**
      * Local list of registered Twitch Channels.
      */
     private final ArrayList<String> registeredTwitchChannels = new ArrayList<>();
@@ -116,7 +134,7 @@ public class Notifier {
      * A list with all the Twitch Subscription for the Streaming Tools.
      */
     @Getter(AccessLevel.PUBLIC)
-    private final HashMap<String, PubSubSubscription[]> twitchSubscription = new HashMap();
+    private final HashMap<String, PubSubSubscription[]> twitchSubscription = new HashMap<>();
 
     /**
      * Local list of registered YouTube Channels.
@@ -125,7 +143,7 @@ public class Notifier {
     /**
      * Local list of registered Twitter Users.
      */
-    private final Map<String, TwitterStream> registeredTwitterUsers = new HashMap<>();
+    private final ArrayList<String> registeredTwitterUsers = new ArrayList<>();
 
     /**
      * Local list of registered Subreddits.
@@ -205,16 +223,18 @@ public class Notifier {
 
         log.info("Initializing Twitter Client...");
 
-        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 
-        configurationBuilder
-                .setOAuthConsumerKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.key"))
-                .setOAuthConsumerSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.consumer.secret"))
-                .setOAuthAccessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
-                .setOAuthAccessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
-                .setDebugEnabled(BotWorker.getVersion().isDebug());
+        twitterClient = new TwitterClient(TwitterCredentials.builder()
+                /*.accessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
+                .accessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
+                .apiSecretKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
+                .apiKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))*/
+                .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
 
-        twitterClient = new TwitterFactory(configurationBuilder.build()).getInstance();
+        twitterClient.retrieveFilteredStreamRules().forEach(x -> {
+            twitterClient.deleteFilteredStreamRuleId(x.getId());
+        });
+
 
         log.info("Initializing Reddit Client...");
 
@@ -232,6 +252,7 @@ public class Notifier {
                 log.warn("Reddit Credentials are invalid, you can ignore this if you don't use Reddit.");
             } else {
                 log.error("Failed to connect to Reddit API.", exception);
+                Sentry.captureException(exception);
             }
         }
 
@@ -263,13 +284,13 @@ public class Notifier {
         createUploadStream();
 
         ThreadUtil.createThread(x -> {
-            for (String twitterName : registeredTwitterUsers.keySet()) {
+            for (String twitterName : registeredTwitterUsers) {
                 List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats WHERE twitterFollowerChannelUsername=:name", Map.of("name", twitterName));
                 if (!channelStats.isEmpty()) {
-                    twitter4j.User twitterUser;
+                    UserV2 twitterUser;
                     try {
-                        twitterUser = Main.getInstance().getNotifier().getTwitterClient().showUser(twitterName);
-                    } catch (TwitterException e) {
+                        twitterUser = Main.getInstance().getNotifier().getTwitterClient().getUserFromUserName(twitterName);
+                    } catch (NoSuchElementException e) {
                         continue;
                     }
 
@@ -331,7 +352,7 @@ public class Notifier {
             // Set rest of the Information.
             webhookEmbedBuilder.setDescription(channelGoLiveEvent.getStream().getTitle());
             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Game**", channelGoLiveEvent.getStream().getGameName()));
-            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Viewer**", "" + channelGoLiveEvent.getStream().getViewerCount()));
+            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Viewer**", String.valueOf(channelGoLiveEvent.getStream().getViewerCount())));
             webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
             webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
 
@@ -434,6 +455,51 @@ public class Notifier {
     //region Twitter
 
     /**
+     * Register a EventHandler for the Twitter Tweet Event.
+     * @return the Future of the Event Handler for later use.
+     */
+    public Future<Response> registerTwitterEventHandler() {
+        return twitterClient.startFilteredStream(x -> {
+            List<WebhookTwitter> webhooks = SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(x.getUser().getDisplayedName());
+
+            if (webhooks.isEmpty()) return;
+
+            WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+
+            webhookMessageBuilder.setUsername(Data.getBotName());
+            webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+
+            WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+            webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(x.getUser().getDisplayedName() + " (@" + x.getUser().getName() + ")", x.getUser().getProfileImageUrl(), null));
+
+            switch (x.getTweetType()) {
+                case QUOTED -> webhookEmbedBuilder.setDescription("**Quoted  " + x.getAuthorId() + "**: " + x.getText() + "\n");
+                case RETWEETED -> webhookEmbedBuilder.setDescription("**Retweeted from " + x.getAuthorId() + "**: " + x.getText().split(": ")[1] + "\n");
+                default -> webhookEmbedBuilder.setDescription(x.getText() + "\n");
+            }
+
+            if (x.getMedia().size() > 0 && x.getMedia().get(0).getType().equalsIgnoreCase("photo")) {
+                webhookEmbedBuilder.setImageUrl(x.getMedia().get(0).getMediaUrl());
+            }
+
+                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                        webhookEmbedBuilder.setTimestamp(Instant.now());
+                        webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
+
+            webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+            webhooks.forEach(webhook -> {
+                String message = webhook.getMessage()
+                        .replace("%name%", x.getUser().getDisplayedName())
+                        .replace("%url%", "https://twitter.com/" + x.getUser().getName() + "/status/" + x.getId());
+                webhookMessageBuilder.setContent(message);
+                WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false);
+            });
+        });
+    }
+
+    /**
      * Used to Register a Tweet Event for the given Twitter Users
      *
      * @param twitterUsers the Names of the Twitter Users.
@@ -452,113 +518,34 @@ public class Notifier {
 
         twitterUser = twitterUser.toLowerCase();
 
-        twitter4j.User user;
+        UserV2 user;
 
         try {
-            user = getTwitterClient().showUser(twitterUser);
-            if (user.isProtected()) return;
+            user = getTwitterClient().getUserFromUserName(twitterUser);
+            if (user.getData() == null) return;
+            if (user.isProtectedAccount()) return;
         } catch (Exception ignore) {
             return;
         }
 
-        FilterQuery filterQuery = new FilterQuery();
-        filterQuery.follow(user.getId());
 
-        twitter4j.User finalUser = user;
-        TwitterStream twitterStream = new TwitterStreamFactory(getTwitterClient().getConfiguration())
-                .getInstance()
-                .addListener(new StatusListener() {
+        if (!isTwitterRegistered(twitterUser)) {
+            registeredTwitterUsers.add(twitterUser);
+            if (streamRule == null) {
+                streamRule = getTwitterClient().addFilteredStreamRule("zeus from:" + twitterUser, "Notification");
+                getTwitterClient().stopFilteredStream(getFilteredStream());
+            } else {
+                String value = streamRule.getValue();
+                getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
+                streamRule = getTwitterClient().addFilteredStreamRule(value + " or from:" + twitterUser, "Notification");
+            }
 
-                    /**
-                     * Override the onStatus method to inform about a new status.
-                     * @param status the new Status.
-                     */
-                    @Override
-                    public void onStatus(Status status) {
-                        List<WebhookTwitter> webhooks = SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(finalUser.getScreenName());
+            if (getFilteredStream() != null) {
+                getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
+            }
 
-                        if (webhooks.isEmpty()) return;
-
-                        WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
-
-                        webhookMessageBuilder.setUsername(Data.getBotName());
-                        webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
-
-                        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
-
-                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(status.getUser().getName() + " (@" + status.getUser().getScreenName() + ")", status.getUser().getBiggerProfileImageURLHttps(), null));
-
-                        webhookEmbedBuilder.setDescription(status.getQuotedStatus() != null && !status.isRetweet() ? "**Quoted  " + status.getQuotedStatus().getUser().getScreenName() + "**: " + status.getText() + "\n" : status.getInReplyToScreenName() != null ? "**Reply to " + status.getInReplyToScreenName() + "**: " + status.getText() + "\n" : status.isRetweet() ? "**Retweeted from " + status.getRetweetedStatus().getUser().getScreenName() + "**: " + status.getText().split(": ")[1] + "\n" : status.getText() + "\n");
-
-                        if (status.getMediaEntities().length > 0 && status.getMediaEntities()[0].getType().equalsIgnoreCase("photo")) {
-                            webhookEmbedBuilder.setImageUrl(status.getMediaEntities()[0].getMediaURLHttps());
-                        }
-
-                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
-                        webhookEmbedBuilder.setTimestamp(Instant.now());
-                        webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
-
-                        webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-
-                        webhooks.forEach(webhook -> {
-                            String message = webhook.getMessage()
-                                    .replace("%name%", status.getUser().getName())
-                                    .replace("%url%", "https://twitter.com/" + status.getUser().getScreenName() + "/status/" + status.getId());
-                            webhookMessageBuilder.setContent(message);
-                            WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false);
-                        });
-                    }
-
-                    /**
-                     * No need for this, so just ignore it.
-                     * @param statusDeletionNotice Data Object.
-                     */
-                    @Override
-                    public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-                        // Unused
-                    }
-
-                    /**
-                     * No need for this, so just ignore it.
-                     * @param numberOfLimitedStatuses Data Object.
-                     */
-                    @Override
-                    public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-                        // Unused
-                    }
-
-                    /**
-                     * No need for this, so just ignore it.
-                     * @param userId Data Object.
-                     * @param upToStatusId Data Object.
-                     */
-                    @Override
-                    public void onScrubGeo(long userId, long upToStatusId) {
-                        // Unused
-                    }
-
-                    /**
-                     * No need for this, so just ignore it.
-                     * @param warning Data Object.
-                     */
-                    @Override
-                    public void onStallWarning(StallWarning warning) {
-                        // Unused
-                    }
-
-                    /**
-                     * Inform about an exception.
-                     * @param ex the Exception
-                     */
-                    @Override
-                    public void onException(Exception ex) {
-                        log.error("[Notifier] Encountered an error, while trying to get the Status update!", ex);
-                        Sentry.captureException(ex);
-                    }
-                })
-                .filter(filterQuery);
-
-        if (!isTwitterRegistered(twitterUser)) registeredTwitterUsers.put(twitterUser, twitterStream);
+            filteredStream = registerTwitterEventHandler();
+        }
     }
 
     /**
@@ -576,8 +563,10 @@ public class Notifier {
             return;
 
         if (isTwitterRegistered(twitterUser)) {
+            String value = streamRule.getValue();
 
-            registeredTwitterUsers.get(twitterUser).cleanUp();
+            getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
+            streamRule = getTwitterClient().addFilteredStreamRule(value.replace(" or from:" + twitterUser, ""),"Notification");
 
             registeredTwitterUsers.remove(twitterUser);
         }
@@ -590,7 +579,7 @@ public class Notifier {
      * @return true, if there is an Event for the User | false, if there isn't an Event for the User.
      */
     public boolean isTwitterRegistered(String twitterUser) {
-        return registeredTwitterUsers.containsKey(twitterUser.toLowerCase());
+        return registeredTwitterUsers.contains(twitterUser.toLowerCase());
     }
 
     //endregion

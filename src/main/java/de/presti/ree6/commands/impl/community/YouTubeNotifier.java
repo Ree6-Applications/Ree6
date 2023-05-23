@@ -49,7 +49,7 @@ public class YouTubeNotifier implements ICommand {
             case "list" -> {
                 StringBuilder end = new StringBuilder();
 
-                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames(commandEvent.getGuild().getId())) {
+                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels(commandEvent.getGuild().getId())) {
                     end.append(users).append("\n");
                 }
 

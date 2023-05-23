@@ -127,10 +127,7 @@ public class Config {
 
             yamlFile.path("twitter")
                     .comment("Twitter Application Configuration, used for the Twitter Notifications.").blankLine()
-                    .path("consumer").path("key").addDefault("yourTwitterConsumerKey")
-                    .parent().path("secret").addDefault("yourTwitterConsumerSecret")
-                    .parent().parent().path("access").path("key").addDefault("yourTwitterAccessKey")
-                    .parent().path("secret").addDefault("yourTwitterAccessSecret");
+                    .path("bearer").addDefault("yourTwitterBearerToken");
 
             yamlFile.path("reddit")
                     .comment("Reddit Application Configuration, used for the Reddit Notification.").blankLine()
@@ -212,6 +209,12 @@ public class Config {
 
                     yamlFile.set(key, entry.getValue());
                     modified = true;
+                }
+
+
+                // Migrate to 2.4.10
+                if (compareVersion("2.4.10", configVersion)) {
+                    if (key.startsWith("twitter") && !key.endsWith("bearer")) continue;
                 }
 
                 if (!modified) {
