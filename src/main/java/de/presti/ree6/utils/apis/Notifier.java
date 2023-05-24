@@ -231,9 +231,7 @@ public class Notifier {
                 .apiKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))*/
                 .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
 
-        twitterClient.retrieveFilteredStreamRules().forEach(x -> {
-            twitterClient.deleteFilteredStreamRuleId(x.getId());
-        });
+        twitterClient.retrieveFilteredStreamRules().forEach(x -> twitterClient.deleteFilteredStreamRuleId(x.getId()));
 
 
         log.info("Initializing Reddit Client...");
@@ -460,7 +458,7 @@ public class Notifier {
      */
     public Future<Response> registerTwitterEventHandler() {
         return twitterClient.startFilteredStream(x -> {
-            List<WebhookTwitter> webhooks = SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(x.getUser().getDisplayedName());
+            List<WebhookTwitter> webhooks = SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(x.getUser().getName());
 
             if (webhooks.isEmpty()) return;
 
@@ -474,12 +472,15 @@ public class Notifier {
             webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(x.getUser().getDisplayedName() + " (@" + x.getUser().getName() + ")", x.getUser().getProfileImageUrl(), null));
 
             switch (x.getTweetType()) {
-                case QUOTED -> webhookEmbedBuilder.setDescription("**Quoted  " + x.getAuthorId() + "**: " + x.getText() + "\n");
-                case RETWEETED -> webhookEmbedBuilder.setDescription("**Retweeted from " + x.getAuthorId() + "**: " + x.getText().split(": ")[1] + "\n");
+                case QUOTED -> {
+                    String url = "https://" + x.getText().split("https://")[1];
+                    webhookEmbedBuilder.setDescription("**Quoted Tweet**: " + x.getText().replace(url, "") + "\n" + url + "\n");
+                }
+                case RETWEETED -> webhookEmbedBuilder.setDescription(x.getText().replace("RT", "**Retweet from").replace(":", ":**") + "\n");
                 default -> webhookEmbedBuilder.setDescription(x.getText() + "\n");
             }
 
-            if (x.getMedia().size() > 0 && x.getMedia().get(0).getType().equalsIgnoreCase("photo")) {
+            if (x.getMedia() != null && !x.getMedia().isEmpty() && x.getMedia().get(0).getType().equalsIgnoreCase("photo")) {
                 webhookEmbedBuilder.setImageUrl(x.getMedia().get(0).getMediaUrl());
             }
 
@@ -532,8 +533,7 @@ public class Notifier {
         if (!isTwitterRegistered(twitterUser)) {
             registeredTwitterUsers.add(twitterUser);
             if (streamRule == null) {
-                streamRule = getTwitterClient().addFilteredStreamRule("zeus from:" + twitterUser, "Notification");
-                getTwitterClient().stopFilteredStream(getFilteredStream());
+                streamRule = getTwitterClient().addFilteredStreamRule("from:" + twitterUser, "Notification");
             } else {
                 String value = streamRule.getValue();
                 getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
@@ -541,7 +541,7 @@ public class Notifier {
             }
 
             if (getFilteredStream() != null) {
-                getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
+                getTwitterClient().stopFilteredStream(getFilteredStream());
             }
 
             filteredStream = registerTwitterEventHandler();
