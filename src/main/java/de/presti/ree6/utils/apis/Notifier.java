@@ -99,7 +99,7 @@ public class Notifier {
      * Instance of the Twitter API Client.
      */
     @Getter(AccessLevel.PUBLIC)
-    private final TwitterClient twitterClient;
+    private TwitterClient twitterClient;
 
     /**
      * Instance of the Reddit API Client.
@@ -225,15 +225,22 @@ public class Notifier {
         log.info("Initializing Twitter Client...");
 
 
-        twitterClient = new TwitterClient(TwitterCredentials.builder()
-                /*.accessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
-                .accessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
-                .apiSecretKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
-                .apiKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))*/
-                .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
+        try {
+            twitterClient = new TwitterClient(TwitterCredentials.builder()
+                    /*.accessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
+                    .accessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
+                    .apiSecretKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
+                    .apiKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))*/
+                    .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
 
-        twitterClient.retrieveFilteredStreamRules().forEach(x -> twitterClient.deleteFilteredStreamRuleId(x.getId()));
+            List<StreamRules.StreamRule> rules = twitterClient.retrieveFilteredStreamRules();
 
+            if (rules != null && !rules.isEmpty()) {
+                rules.forEach(x -> twitterClient.deleteFilteredStreamRuleId(x.getId()));
+            }
+        } catch (Exception exception) {
+            log.error("Failed to create Twitter Client and deleting pre set rules.", exception);
+        }
 
         log.info("Initializing Reddit Client...");
 
