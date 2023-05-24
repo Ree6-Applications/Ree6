@@ -38,6 +38,7 @@ import de.presti.ree6.streamtools.StreamActionContainer;
 import de.presti.ree6.streamtools.StreamActionContainerCreator;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.data.DatabaseStorageBackend;
+import de.presti.ree6.utils.others.RandomUtils;
 import de.presti.ree6.utils.others.ThreadUtil;
 import de.presti.wrapper.entities.VideoResult;
 import de.presti.wrapper.entities.channel.ChannelResult;
@@ -533,11 +534,11 @@ public class Notifier {
         if (!isTwitterRegistered(twitterUser)) {
             registeredTwitterUsers.add(twitterUser);
             if (streamRule == null) {
-                streamRule = getTwitterClient().addFilteredStreamRule("from:" + twitterUser, "Notification");
+                streamRule = getTwitterClient().addFilteredStreamRule("from:" + twitterUser, RandomUtils.randomString(5, false));
             } else {
                 String value = streamRule.getValue();
                 getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
-                streamRule = getTwitterClient().addFilteredStreamRule(value + " or from:" + twitterUser, "Notification");
+                streamRule = getTwitterClient().addFilteredStreamRule(value + " or from:" + twitterUser, RandomUtils.randomString(5, false));
             }
 
             if (getFilteredStream() != null) {
@@ -566,7 +567,7 @@ public class Notifier {
             String value = streamRule.getValue();
 
             getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
-            streamRule = getTwitterClient().addFilteredStreamRule(value.replace(" or from:" + twitterUser, ""),"Notification");
+            streamRule = getTwitterClient().addFilteredStreamRule(value.replace(" or from:" + twitterUser, ""),RandomUtils.randomString(5, false));
 
             registeredTwitterUsers.remove(twitterUser);
         }
