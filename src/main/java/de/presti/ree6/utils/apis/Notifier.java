@@ -569,7 +569,7 @@ public class Notifier {
             String value = streamRule.getValue();
 
             getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
-            streamRule = getTwitterClient().addFilteredStreamRule(value.replace(" or from:" + twitterUser, ""),RandomUtils.randomString(5, false));
+            streamRule = getTwitterClient().addFilteredStreamRule(value.replace(" or from:" + twitterUser, ""), "Notification");
 
             registeredTwitterUsers.remove(twitterUser);
         }
