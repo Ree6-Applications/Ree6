@@ -237,6 +237,8 @@ public class Notifier {
             if (rules != null && !rules.isEmpty()) {
                 rules.forEach(x -> twitterClient.deleteFilteredStreamRuleId(x.getId()));
             }
+
+            filteredStream = registerTwitterEventHandler();
         } catch (Exception exception) {
             log.error("Failed to create Twitter Client and deleting pre-set rules.", exception);
         }
@@ -540,18 +542,12 @@ public class Notifier {
         if (!isTwitterRegistered(twitterUser)) {
             registeredTwitterUsers.add(twitterUser);
             if (streamRule == null) {
-                streamRule = getTwitterClient().addFilteredStreamRule("from:" + twitterUser, RandomUtils.randomString(5, false));
+                streamRule = getTwitterClient().addFilteredStreamRule("from:" + twitterUser, "Notification");
             } else {
                 String value = streamRule.getValue();
                 getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
-                streamRule = getTwitterClient().addFilteredStreamRule(value + " or from:" + twitterUser, RandomUtils.randomString(5, false));
+                streamRule = getTwitterClient().addFilteredStreamRule(value + " or from:" + twitterUser, "Notification");
             }
-
-            if (getFilteredStream() != null) {
-                getTwitterClient().stopFilteredStream(getFilteredStream());
-            }
-
-            filteredStream = registerTwitterEventHandler();
         }
     }
 
