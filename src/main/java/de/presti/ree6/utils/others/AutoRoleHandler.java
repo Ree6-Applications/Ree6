@@ -3,6 +3,7 @@ package de.presti.ree6.utils.others;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -53,7 +54,9 @@ public class AutoRoleHandler {
                 if (role != null && !guild.getSelfMember().canInteract(role)) {
                     if (guild.getOwner() != null)
                         guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))
+                                privateChannel.sendMessage(LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
+                                                "message.brs.autoRole.hierarchy"
+                                                : "message.brs.autoRole.missingPermission", role.getName()))
                                         .queue());
                     return;
                 } else if (role == null) {
@@ -107,7 +110,9 @@ public class AutoRoleHandler {
                     if (role != null && !guild.getSelfMember().canInteract(role)) {
                         if (guild.getOwner() != null)
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                    privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))
+                                    privateChannel.sendMessage(LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
+                                                    "message.brs.autoRole.hierarchy"
+                                                    : "message.brs.autoRole.missingPermission", role.getName()))
                                             .queue());
                         return;
                     } else if (role == null) {
@@ -162,7 +167,9 @@ public class AutoRoleHandler {
                     if (role != null && !guild.getSelfMember().canInteract(role)) {
                         if (guild.getOwner() != null)
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                    privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))
+                                    privateChannel.sendMessage(LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
+                                                    "message.brs.autoRole.hierarchy"
+                                                    : "message.brs.autoRole.missingPermission", role.getName()))
                                             .queue());
                     } else if (role == null) {
                         if (guild.getOwner() != null)
@@ -198,7 +205,9 @@ public class AutoRoleHandler {
             log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
             if (guild.getOwner() != null)
                 guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                        privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))
+                        privateChannel.sendMessage(LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
+                                        "message.brs.autoRole.hierarchy"
+                                        : "message.brs.autoRole.missingPermission", role.getName()))
                                 .queue());
         }
     }
