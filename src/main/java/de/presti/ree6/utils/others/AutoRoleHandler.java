@@ -35,8 +35,10 @@ public class AutoRoleHandler {
 
         if (!SQLSession.getSqlConnector().getSqlWorker().isAutoRoleSetup(guild.getId())) return;
 
+        if (member.getIdLong() == guild.getOwnerIdLong()) return;
+
         ThreadUtil.createThread(x -> {
-            if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
+            if (!guild.getSelfMember().canInteract(member)) {
                 log.error("[AutoRole] Failed to give a role, when someone joined the Guild!");
                 log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
                 log.error("[AutoRole] Member: {} ({})", member.getUser().getName(), member.getId());
@@ -85,10 +87,12 @@ public class AutoRoleHandler {
         if (!SQLSession.getSqlConnector().getSqlWorker().isVoiceLevelRewardSetup(guild.getId()))
             return;
 
+        if (member.getIdLong() == guild.getOwnerIdLong()) return;
+
         ThreadUtil.createThread(x -> {
             long level = SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(guild.getId(), member.getUser().getId()).getLevel();
 
-            if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
+            if (!guild.getSelfMember().canInteract(member)) {
                 log.error("[AutoRole] Failed to give a role, when someone leveled up in Voice!");
                 log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
                 log.error("[AutoRole] Member: {} ({})", member.getUser().getName(), member.getId());
@@ -142,11 +146,13 @@ public class AutoRoleHandler {
         if (!SQLSession.getSqlConnector().getSqlWorker().isChatLevelRewardSetup(guild.getId()))
             return;
 
+        if (member.getIdLong() == guild.getOwnerIdLong()) return;
+
         ThreadUtil.createThread(x -> {
 
             long level = (SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(guild.getId(), member.getUser().getId()).getLevel());
 
-            if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
+            if (!guild.getSelfMember().canInteract(member)) {
                 log.error("[AutoRole] Failed to give a Role, when someone leveled up in Chat!");
                 log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
                 log.error("[AutoRole] Member: {} ({})", member.getUser().getName(), member.getId());
