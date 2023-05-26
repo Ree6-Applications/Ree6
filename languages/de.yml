@@ -423,8 +423,9 @@ message:
       20: "Ich bezweifle es."
   brs:
     autoRole:
-      hierarchy: "Ree6-BRS (Bug-Report-System))\nWir haben bemerkt das ich nicht genügend Berechtigungen haben die angegebenen Rollen Nutzern zuzuweisen!\nBitte setze meine Rolle über diese angegebenen Rollen!\n``%s``"
-      deleted: "Ree6-BRS (Bug-Report-System))\nWir haben bemerkt das ich eine bestimmte Rolle nicht Nutzern zuweisen kann da diese nicht mehr existiert!\nWir haben diese nun entfernt!"
+      missingPermission: "Ree6-BRS (Bug-Report-System)\nWe detected that I am not allowed to AutoRole people since I am missing the ``Manage Roles`` Permission!\nI am require this Permission to give out role to users!\nThe role that I couldn't give is ``%s``!"
+      hierarchy: "Ree6-BRS (Bug-Report-System)\nWe detected that Im not allowed to AutoRole people since my role is below the AutoRole-Role!\nPlease move my role above the AutoRole-Role!\nThe role that causes the Issue is ``%s``!"
+      deleted: "Ree6-BRS (Bug-Report-System)\nWe detected that I can not AutoRole people since the AutoRole-Role has been deleted!\nWe now removed the given Role!"
   ticket:
     created: "Wir haben ein Ticket für dich geöffnet! Guck hier %s"
     alreadyOpen: "Du hast bereits ein offenes Ticket!"
