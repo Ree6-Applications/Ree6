@@ -69,7 +69,7 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
-            <version>6.19.1</version>
+            <version>6.20.0</version>
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
