@@ -3,6 +3,7 @@ package de.presti.ree6.utils.others;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -34,8 +35,10 @@ public class AutoRoleHandler {
 
         if (!SQLSession.getSqlConnector().getSqlWorker().isAutoRoleSetup(guild.getId())) return;
 
+        if (member.getIdLong() == guild.getOwnerIdLong()) return;
+
         ThreadUtil.createThread(x -> {
-            if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
+            if (!guild.getSelfMember().canInteract(member)) {
                 log.error("[AutoRole] Failed to give a role, when someone joined the Guild!");
                 log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
                 log.error("[AutoRole] Member: {} ({})", member.getUser().getName(), member.getId());
@@ -53,7 +56,9 @@ public class AutoRoleHandler {
                 if (role != null && !guild.getSelfMember().canInteract(role)) {
                     if (guild.getOwner() != null)
                         guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))
+                                privateChannel.sendMessage(LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
+                                                "message.brs.autoRole.hierarchy"
+                                                : "message.brs.autoRole.missingPermission", role.getName()))
                                         .queue());
                     return;
                 } else if (role == null) {
@@ -82,10 +87,12 @@ public class AutoRoleHandler {
         if (!SQLSession.getSqlConnector().getSqlWorker().isVoiceLevelRewardSetup(guild.getId()))
             return;
 
+        if (member.getIdLong() == guild.getOwnerIdLong()) return;
+
         ThreadUtil.createThread(x -> {
             long level = SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(guild.getId(), member.getUser().getId()).getLevel();
 
-            if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
+            if (!guild.getSelfMember().canInteract(member)) {
                 log.error("[AutoRole] Failed to give a role, when someone leveled up in Voice!");
                 log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
                 log.error("[AutoRole] Member: {} ({})", member.getUser().getName(), member.getId());
@@ -107,7 +114,9 @@ public class AutoRoleHandler {
                     if (role != null && !guild.getSelfMember().canInteract(role)) {
                         if (guild.getOwner() != null)
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                    privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))
+                                    privateChannel.sendMessage(LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
+                                                    "message.brs.autoRole.hierarchy"
+                                                    : "message.brs.autoRole.missingPermission", role.getName()))
                                             .queue());
                         return;
                     } else if (role == null) {
@@ -137,11 +146,13 @@ public class AutoRoleHandler {
         if (!SQLSession.getSqlConnector().getSqlWorker().isChatLevelRewardSetup(guild.getId()))
             return;
 
+        if (member.getIdLong() == guild.getOwnerIdLong()) return;
+
         ThreadUtil.createThread(x -> {
 
             long level = (SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(guild.getId(), member.getUser().getId()).getLevel());
 
-            if (!guild.getSelfMember().canInteract(member) && member.getIdLong() != guild.getOwnerIdLong()) {
+            if (!guild.getSelfMember().canInteract(member)) {
                 log.error("[AutoRole] Failed to give a Role, when someone leveled up in Chat!");
                 log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
                 log.error("[AutoRole] Member: {} ({})", member.getUser().getName(), member.getId());
@@ -162,7 +173,9 @@ public class AutoRoleHandler {
                     if (role != null && !guild.getSelfMember().canInteract(role)) {
                         if (guild.getOwner() != null)
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                    privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))
+                                    privateChannel.sendMessage(LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
+                                                    "message.brs.autoRole.hierarchy"
+                                                    : "message.brs.autoRole.missingPermission", role.getName()))
                                             .queue());
                     } else if (role == null) {
                         if (guild.getOwner() != null)
@@ -198,7 +211,9 @@ public class AutoRoleHandler {
             log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
             if (guild.getOwner() != null)
                 guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                        privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", role.getName()))
+                        privateChannel.sendMessage(LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
+                                        "message.brs.autoRole.hierarchy"
+                                        : "message.brs.autoRole.missingPermission", role.getName()))
                                 .queue());
         }
     }

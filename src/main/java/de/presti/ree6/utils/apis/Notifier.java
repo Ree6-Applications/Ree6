@@ -38,6 +38,7 @@ import de.presti.ree6.streamtools.StreamActionContainer;
 import de.presti.ree6.streamtools.StreamActionContainerCreator;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.data.DatabaseStorageBackend;
+import de.presti.ree6.utils.others.RandomUtils;
 import de.presti.ree6.utils.others.ThreadUtil;
 import de.presti.wrapper.entities.VideoResult;
 import de.presti.wrapper.entities.channel.ChannelResult;
@@ -223,7 +224,6 @@ public class Notifier {
 
         log.info("Initializing Twitter Client...");
 
-
         twitterClient = new TwitterClient(TwitterCredentials.builder()
                 /*.accessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
                 .accessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
@@ -231,8 +231,17 @@ public class Notifier {
                 .apiKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))*/
                 .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
 
-        twitterClient.retrieveFilteredStreamRules().forEach(x -> twitterClient.deleteFilteredStreamRuleId(x.getId()));
+        try {
+            List<StreamRules.StreamRule> rules = twitterClient.retrieveFilteredStreamRules();
 
+            if (rules != null && !rules.isEmpty()) {
+                rules.forEach(x -> twitterClient.deleteFilteredStreamRuleId(x.getId()));
+            }
+
+            filteredStream = registerTwitterEventHandler();
+        } catch (Exception exception) {
+            log.error("Failed to create Twitter Client and deleting pre-set rules.", exception);
+        }
 
         log.info("Initializing Reddit Client...");
 
@@ -539,12 +548,6 @@ public class Notifier {
                 getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
                 streamRule = getTwitterClient().addFilteredStreamRule(value + " or from:" + twitterUser, "Notification");
             }
-
-            if (getFilteredStream() != null) {
-                getTwitterClient().stopFilteredStream(getFilteredStream());
-            }
-
-            filteredStream = registerTwitterEventHandler();
         }
     }
 
@@ -566,7 +569,7 @@ public class Notifier {
             String value = streamRule.getValue();
 
             getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
-            streamRule = getTwitterClient().addFilteredStreamRule(value.replace(" or from:" + twitterUser, ""),"Notification");
+            streamRule = getTwitterClient().addFilteredStreamRule(value.replace(" or from:" + twitterUser, ""), "Notification");
 
             registeredTwitterUsers.remove(twitterUser);
         }

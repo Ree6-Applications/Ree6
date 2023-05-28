@@ -212,8 +212,8 @@ public class Config {
                 }
 
 
-                // Migrate to 2.4.10
-                if (compareVersion("2.4.10", configVersion)) {
+                // Migrate to 2.4.11
+                if (compareVersion("2.4.11", configVersion)) {
                     if (key.startsWith("twitter") && !key.endsWith("bearer")) continue;
                 }
 
