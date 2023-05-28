@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
@@ -37,11 +38,10 @@ public class Reactions implements ICommand {
             return;
         }
 
-        OptionMapping action = commandEvent.getOption("action");
         OptionMapping message = commandEvent.getOption("message");
         OptionMapping role = commandEvent.getOption("role");
 
-        switch (action.getAsString()) {
+        switch (commandEvent.getSubcommand()) {
             case "add" -> {
                 if (message == null || role == null) {
                     commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
@@ -88,9 +88,12 @@ public class Reactions implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("reactions", LanguageService.getDefault("command.description.reactions"))
-                .addOption(OptionType.STRING, "action", "The current action that should be performed.", true)
-                .addOption(OptionType.STRING, "message", "The ID of the Message.", true)
-                .addOption(OptionType.ROLE, "role", "The Role to be given.", true);
+                .addSubcommands(new SubcommandData("remove", "Remove a reaction role.")
+                                .addOption(OptionType.STRING, "message", "The ID of the Message.", true)
+                                .addOption(OptionType.ROLE, "role", "The Role to be given.", true),
+                        new SubcommandData("add", "Add a reaction role.")
+                                .addOption(OptionType.STRING, "message", "The ID of the Message.", true)
+                                .addOption(OptionType.ROLE, "role", "The Role to be given.", true));
     }
 
     /**
