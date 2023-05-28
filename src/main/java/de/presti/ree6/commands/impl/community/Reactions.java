@@ -48,13 +48,22 @@ public class Reactions implements ICommand {
                     return;
                 }
 
-                commandEvent.getChannel().retrieveMessageById(message.getAsLong()).onErrorMap(x -> {
+                long messageId;
+
+                try {
+                    messageId = message.getAsLong();
+                } catch (NumberFormatException e) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
+                    return;
+                }
+
+                commandEvent.getChannel().retrieveMessageById(messageId).onErrorMap(x -> {
                     commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
                     return null;
                 }).queue(msg -> {
                     if (msg == null) return;
                     MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-                    messageCreateBuilder.setContent(commandEvent.getResource("message.reactions.reactionNeeded", role.getAsRole().getAsMention()));
+                    messageCreateBuilder.setContent(LanguageService.getByGuild(commandEvent.getGuild(), "message.reactions.reactionNeeded", role.getAsRole().getAsMention()));
                     msg.reply(messageCreateBuilder.build()).queue();
                 });
 
@@ -67,9 +76,18 @@ public class Reactions implements ICommand {
                     return;
                 }
 
+                long messageId;
+
+                try {
+                    messageId = message.getAsLong();
+                } catch (NumberFormatException e) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
+                    return;
+                }
+
                 ReactionRole reactionRole = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
                         "SELECT * FROM ReactionRole WHERE gid=:gid AND roleId=:roleId AND messageId=:messageId",
-                        Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsRole().getIdLong(), "messageId", message.getAsLong()));
+                        Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsRole().getIdLong(), "messageId", messageId));
 
                 if (reactionRole != null) {
                     SQLSession.getSqlConnector().getSqlWorker().deleteEntity(reactionRole);
@@ -89,10 +107,10 @@ public class Reactions implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("reactions", LanguageService.getDefault("command.description.reactions"))
                 .addSubcommands(new SubcommandData("remove", "Remove a reaction role.")
-                                .addOption(OptionType.INTEGER, "message", "The ID of the Message.", true)
+                                .addOption(OptionType.STRING,"message", "The ID of the Message.", true)
                                 .addOption(OptionType.ROLE, "role", "The Role to be given.", true),
                         new SubcommandData("add", "Add a reaction role.")
-                                .addOption(OptionType.INTEGER, "message", "The ID of the Message.", true)
+                                .addOption(OptionType.STRING, "message", "The ID of the Message.", true)
                                 .addOption(OptionType.ROLE, "role", "The Role to be given.", true));
     }
 
