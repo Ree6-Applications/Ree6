@@ -139,7 +139,7 @@
         <dependency>
             <groupId>de.ree6</groupId>
             <artifactId>Ree6-SQL</artifactId>
-            <version>413e935ebb</version>
+            <version>4562635ac4</version>
         </dependency>
 
         <!-- Logging -->

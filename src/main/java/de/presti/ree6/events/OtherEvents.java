@@ -10,7 +10,7 @@ import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.CustomCommand;
+import de.presti.ree6.sql.entities.custom.CustomCommand;
 import de.presti.ree6.sql.entities.ReactionRole;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.Tickets;

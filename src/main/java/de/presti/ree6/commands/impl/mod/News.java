@@ -28,7 +28,7 @@ public class News implements ICommand {
         Setting setting = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "configuration_news");
 
         if (setting == null) {
-            SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "configuration_news", true);
+            SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "configuration_news", "Receive News", true);
             commandEvent.reply(commandEvent.getResource("message.news.enabled"), 5);
             return;
         }

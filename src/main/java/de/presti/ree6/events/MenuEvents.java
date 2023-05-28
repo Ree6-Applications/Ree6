@@ -328,11 +328,20 @@ public class MenuEvents extends ListenerAdapter {
                             .setFooter(Data.getAdvertisement(), event.getGuild().getIconUrl()), null, event.getInteraction().getHook());
                 }
 
-                SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_rewards_blackjack_win", blackJackAmount);
-                SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_win", musicWinAmount);
-                SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_feature", musicFeatureAmount);
-                SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_artist", musicArtistAmount);
-                SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_title", musicTitleAmount);
+                SQLSession.getSqlConnector().getSqlWorker()
+                        .setSetting(event.getGuild().getId(), "configuration_rewards_blackjack_win", "Payment Amount on BlacJack win", blackJackAmount);
+
+                SQLSession.getSqlConnector().getSqlWorker()
+                        .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_win", "Payment Amount on Music Quiz win", musicWinAmount);
+
+                SQLSession.getSqlConnector().getSqlWorker()
+                        .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_feature", "Payment Amount on Music Quiz Feature guess", musicFeatureAmount);
+
+                SQLSession.getSqlConnector().getSqlWorker()
+                        .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_artist","Payment Amount on Music Quiz Artist guess",  musicArtistAmount);
+
+                SQLSession.getSqlConnector().getSqlWorker()
+                        .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_title","Payment Amount on Music Quiz Title guess",  musicTitleAmount);
 
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setTitle(LanguageService.getByGuild(event.getGuild(), "label.rewards"))
@@ -1196,7 +1205,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 if (selectedLocale != DiscordLocale.UNKNOWN && LanguageService.getSupported().contains(selectedLocale)) {
                     Language language = LanguageService.languageResources.get(selectedLocale);
-                    SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_language", selectedLocale.getLocale());
+                    SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_language", "Language", selectedLocale.getLocale());
                     embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.lang.setupSuccess", language.getName() + " by " + language.getAuthor()));
                     embedBuilder.setColor(Color.GREEN);
                     event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();

@@ -178,31 +178,33 @@ public class Main {
             // Create Command Settings.
             for (ICommand command : getInstance().getCommandManager().getCommands()) {
 
+                Command commandAnnotation = command.getClass().getAnnotation(Command.class);
+
                 // Skip the hidden Commands.
-                if (command.getClass().getAnnotation(Command.class).category() == Category.HIDDEN) continue;
+                if (commandAnnotation.category() == Category.HIDDEN) continue;
 
                 SettingsManager.getSettings().add(new Setting("-1",
-                        "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase(), true));
+                        "command_" + commandAnnotation.name().toLowerCase(), commandAnnotation.name(), true));
             }
 
             SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_rewards_blackjack_win", 200.0));
+                    "configuration_rewards_blackjack_win", "Payment Amount on BlacJack win", 200.0));
             SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_rewards_musicquiz_win", 200.0));
+                    "configuration_rewards_musicquiz_win", "Payment Amount on Music Quiz win", 200.0));
             SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_rewards_musicquiz_feature", 100.0));
+                    "configuration_rewards_musicquiz_feature", "Payment Amount on Music Quiz Feature guess", 100.0));
             SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_rewards_musicquiz_artist", 50.0));
+                    "configuration_rewards_musicquiz_artist", "Payment Amount on Music Quiz Feature guess", 50.0));
             SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_rewards_musicquiz_title", 25.0));
+                    "configuration_rewards_musicquiz_title", "Payment Amount on Music Quiz Title guess", 25.0));
             SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_work_min", 10.0));
+                    "configuration_work_min", "Minimum received Payment for work", 10.0));
             SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_work_max", 50.0));
+                    "configuration_work_max", "Maximum received Payment for work", 50.0));
             SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_work_delay", 5L));
+                    "configuration_work_delay", "Delay between each work", 5L));
             SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_steal_delay", 5L));
+                    "configuration_steal_delay", "Delay between each steal", 5L));
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
@@ -545,14 +547,14 @@ public class Main {
             return;
 
         ThreadUtil.createThread(x -> {
-            String formattedUrl = heartbeatUrl.replace("%ping%", String.valueOf(BotWorker.getShardManager().getAverageGatewayPing()));
-            try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(formattedUrl).GET().build())) {
-                log.debug("Heartbeat sent!");
-            } catch (Exception exception) {
-                log.warn("Heartbeat failed! Reporting to Sentry...");
-                Sentry.captureException(exception);
-            }
-        }, Sentry::captureException,
+                    String formattedUrl = heartbeatUrl.replace("%ping%", String.valueOf(BotWorker.getShardManager().getAverageGatewayPing()));
+                    try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(formattedUrl).GET().build())) {
+                        log.debug("Heartbeat sent!");
+                    } catch (Exception exception) {
+                        log.warn("Heartbeat failed! Reporting to Sentry...");
+                        Sentry.captureException(exception);
+                    }
+                }, Sentry::captureException,
                 Duration.ofSeconds(instance.config.getConfiguration().getInt("heartbeat.interval", 60)), true, true);
     }
 

@@ -7,7 +7,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.CustomCommand;
+import de.presti.ree6.sql.entities.custom.CustomCommand;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.others.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
