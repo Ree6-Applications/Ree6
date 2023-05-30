@@ -157,6 +157,12 @@ public class Main {
         switch (getInstance().getConfig().getConfiguration().getString("hikari.misc.storage").toLowerCase()) {
             case "mariadb" -> databaseTyp = DatabaseTyp.MariaDB;
 
+            case "h2" -> databaseTyp = DatabaseTyp.H2;
+
+            case "h2-server", "h2_server" -> databaseTyp = DatabaseTyp.H2_Server;
+
+            case "postgresql", "postgres" -> databaseTyp = DatabaseTyp.PostgreSQL;
+
             default -> databaseTyp = DatabaseTyp.SQLite;
         }
 
@@ -164,7 +170,8 @@ public class Main {
                 instance.config.getConfiguration().getString("hikari.sql.db"), instance.config.getConfiguration().getString("hikari.sql.pw"),
                 instance.config.getConfiguration().getString("hikari.sql.host"), instance.config.getConfiguration().getInt("hikari.sql.port"),
                 instance.config.getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
-                instance.config.getConfiguration().getInt("hikari.misc.poolSize"));
+                instance.config.getConfiguration().getInt("hikari.misc.poolSize"),
+                instance.config.getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"));
 
         log.info("Loading ChatGPTAPI");
         instance.chatGPTAPI = new ChatGPTAPI();

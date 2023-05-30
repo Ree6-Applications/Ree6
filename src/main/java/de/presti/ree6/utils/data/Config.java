@@ -66,8 +66,9 @@ public class Config {
                     .parent().path("host").addDefault("localhost")
                     .parent().path("port").addDefault(3306)
                     .parent().parent().path("misc").comment("Misc Configuration").blankLine()
-                    .path("storage").addDefault("sqlite").commentSide("Either use sqlite or mariadb.")
+                    .path("storage").addDefault("sqlite").commentSide("Possible entries: sqlite, mariadb, postgresql, h2, h2-server")
                     .parent().path("storageFile").addDefault("storage/Ree6.db")
+                    .parent().path("createEmbeddedServer").addDefault(false).commentSide("Should a instance of a embedded Server be created? Only used for H2-Server.")
                     .parent().path("poolSize").addDefault(10);
 
             yamlFile.path("bot")
