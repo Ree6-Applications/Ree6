@@ -15,10 +15,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.events.GameEvents;
-import de.presti.ree6.events.LoggingEvents;
-import de.presti.ree6.events.MenuEvents;
-import de.presti.ree6.events.OtherEvents;
+import de.presti.ree6.events.*;
 import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.impl.musicquiz.util.MusicQuizUtil;
 import de.presti.ree6.language.LanguageService;
@@ -307,6 +304,7 @@ public class Main {
      */
     private void addEvents() {
         BotWorker.addEvent(new GameEvents(), new LoggingEvents(), new MenuEvents(), new OtherEvents());
+        BotWorker.getShardManager().addEventListener(new CustomEvents());
     }
 
     /**
