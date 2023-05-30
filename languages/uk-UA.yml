@@ -423,9 +423,9 @@ message:
       20: "Дуже сумнівно."
   brs:
     autoRole:
-      missingPermission: "Ree6-BRS (Bug-Report-System)\nWe detected that I am not allowed to AutoRole people since I am missing the ``Manage Roles`` Permission!\nI am require this Permission to give out role to users!\nThe role that I couldn't give is ``%s``!"
-      hierarchy: "Ree6-BRS (Bug-Report-System)\nWe detected that Im not allowed to AutoRole people since my role is below the AutoRole-Role!\nPlease move my role above the AutoRole-Role!\nThe role that causes the Issue is ``%s``!"
-      deleted: "Ree6-BRS (Bug-Report-System)\nWe detected that I can not AutoRole people since the AutoRole-Role has been deleted!\nWe now removed the given Role!"
+      missingPermission: "Ree6-BRS (Bug-Report-System)\nМи виявили, що мені не дозволено авторолі людям, оскільки у мене немає прав на управління ролями!\nМені потрібен цей дозвіл, щоб видавати роль користувачам!\nРоль, яку я не можу дати - ``%s``!"
+      hierarchy: "Ree6-BRS (Bug-Report-System)\nМи виявили, що для людей авторолей, оскільки моя роль нижче ролі авторолі!\nБудь ласка, перемістіть мою роль вище авторолі!\nРоль, що спричиняє проблему``%s``!"
+      deleted: "Ree6-BRS (Bug-Report-System)\nМи виявили, що я не можу додавати автоматичні ролі після видалення автоматичної ролі!\nМи видалили дану роль!"
   ticket:
     created: "Ми відкрили тікет для вас! Перевірте це %s"
     alreadyOpen: "У вас вже є відкритий тікет!"
