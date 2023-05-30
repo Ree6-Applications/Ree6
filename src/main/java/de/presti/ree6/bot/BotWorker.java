@@ -3,6 +3,8 @@ package de.presti.ree6.bot;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.main.Main;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
@@ -35,6 +37,8 @@ public class BotWorker {
     /**
      * Current Bot state.
      */
+    @Getter
+    @Setter
     private static BotState state;
 
     /**
@@ -60,6 +64,8 @@ public class BotWorker {
     /**
      * Bot start time.
      */
+    @Setter
+    @Getter
     private static long startTime;
 
 
@@ -96,8 +102,8 @@ public class BotWorker {
         // If the Bot Instance is null, if not set.
         if (shardManager != null)
             shardManager.setActivity(Activity.of(activityType,
-                    message.replace("%shards%", shardManager.getShardsTotal() + "")
-                            .replace("%guilds%", shardManager.getGuilds().size() + "")));
+                    message.replace("%shards%", String.valueOf(shardManager.getShardsTotal()))
+                            .replace("%guilds%", String.valueOf(shardManager.getGuilds().size()))));
     }
 
     /**
@@ -111,10 +117,10 @@ public class BotWorker {
         // If the Bot Instance is null, if not set.
         if (jda != null)
             jda.getPresence().setActivity(Activity.of(activityType,
-                    message.replace("%shards%", shardManager.getShardsTotal() + "")
-                            .replace("%shard%", "" + jda.getShardInfo().getShardId())
-                            .replace("%guilds%", shardManager.getGuilds().size() + "")
-                            .replace("%shard_guilds%", jda.getGuilds().size() + "")));
+                    message.replace("%shards%", String.valueOf(shardManager.getShardsTotal()))
+                            .replace("%shard%", String.valueOf(jda.getShardInfo().getShardId()))
+                            .replace("%guilds%", String.valueOf(shardManager.getGuilds().size()))
+                            .replace("%shard_guilds%", String.valueOf(jda.getGuilds().size()))));
     }
 
     /**
@@ -151,24 +157,6 @@ public class BotWorker {
     }
 
     /**
-     * Change the current Bot State.
-     *
-     * @param botState the new {@link BotState}
-     */
-    public static void setState(BotState botState) {
-        state = botState;
-    }
-
-    /**
-     * Get the current Bot State.
-     *
-     * @return the {@link BotState}.
-     */
-    public static BotState getState() {
-        return state;
-    }
-
-    /**
      * Get the current Bot Version.
      *
      * @return the {@link BotVersion}
@@ -197,23 +185,5 @@ public class BotWorker {
             build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(), "3.0.0");
         }
         return build;
-    }
-
-    /**
-     * Set the start Time of the Bot.
-     *
-     * @param startTime1 the new start Time.
-     */
-    public static void setStartTime(long startTime1) {
-        startTime = startTime1;
-    }
-
-    /**
-     * Get the start Time of the Bot.
-     *
-     * @return the start Time.
-     */
-    public static long getStartTime() {
-        return startTime;
     }
 }
