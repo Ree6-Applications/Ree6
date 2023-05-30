@@ -132,7 +132,7 @@ public class MenuEvents extends ListenerAdapter {
                                 .append(message.getTimeCreated().toZonedDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
                                 .append("]")
                                 .append(" ")
-                                .append(message.getAuthor().getAsTag())
+                                .append(message.getAuthor().getName())
                                 .append(" ")
                                 .append("->")
                                 .append(" ")

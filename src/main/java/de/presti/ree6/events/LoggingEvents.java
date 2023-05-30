@@ -927,7 +927,7 @@ public class LoggingEvents extends ListenerAdapter {
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
-            we.setAuthor(new WebhookEmbed.EmbedAuthor(user.getAsTag(), user.getAvatarUrl(), null));
+            we.setAuthor(new WebhookEmbed.EmbedAuthor(user.getName(), user.getEffectiveAvatarUrl(), null));
             we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
