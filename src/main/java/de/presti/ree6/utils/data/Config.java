@@ -68,7 +68,7 @@ public class Config {
                     .parent().parent().path("misc").comment("Misc Configuration").blankLine()
                     .path("storage").addDefault("sqlite").commentSide("Possible entries: sqlite, mariadb, postgresql, h2, h2-server")
                     .parent().path("storageFile").addDefault("storage/Ree6.db")
-                    .parent().path("createEmbeddedServer").addDefault(false).commentSide("Should a instance of a embedded Server be created? Only used for H2-Server.")
+                    .parent().path("createEmbeddedServer").addDefault(false).commentSide("Should an instance of an embedded Server be created? Only used for H2-Server.")
                     .parent().path("poolSize").addDefault(10);
 
             yamlFile.path("bot")
