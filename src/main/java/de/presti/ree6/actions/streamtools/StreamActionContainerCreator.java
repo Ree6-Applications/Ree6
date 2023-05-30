@@ -1,10 +1,9 @@
-package de.presti.ree6.streamtools;
+package de.presti.ree6.actions.streamtools;
 
+import de.presti.ree6.actions.ActionInfo;
+import de.presti.ree6.actions.streamtools.action.*;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.StreamAction;
-import de.presti.ree6.streamtools.action.IStreamAction;
-import de.presti.ree6.streamtools.action.StreamActionInfo;
-import de.presti.ree6.streamtools.action.impl.*;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
@@ -22,7 +21,7 @@ public class StreamActionContainerCreator {
     /**
      * A Cache for all StreamActions.
      */
-    private static HashMap<String, Class<? extends IStreamAction>> cachedActions = new HashMap<>();
+    private static final HashMap<String, Class<? extends IStreamAction>> cachedActions = new HashMap<>();
 
     /**
      * Load all actions.
@@ -52,7 +51,7 @@ public class StreamActionContainerCreator {
         Set<Class<? extends IStreamAction>> classes = reflections.getSubTypesOf(IStreamAction.class);
 
         for (Class<? extends IStreamAction> aClass : classes) {
-            if (aClass.isAnnotationPresent(StreamActionInfo.class) && aClass.getAnnotation(StreamActionInfo.class).name().trim().equalsIgnoreCase(action)) {
+            if (aClass.isAnnotationPresent(ActionInfo.class) && aClass.getAnnotation(ActionInfo.class).name().trim().equalsIgnoreCase(action)) {
                 if (!cachedActions.containsKey(action)) {
                     cachedActions.put(action, aClass);
                 }

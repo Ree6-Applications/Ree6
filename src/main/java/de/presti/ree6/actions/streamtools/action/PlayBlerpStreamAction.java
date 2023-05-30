@@ -1,13 +1,12 @@
-package de.presti.ree6.streamtools.action.impl;
+package de.presti.ree6.actions.streamtools.action;
 
-import com.github.twitch4j.common.events.TwitchEvent;
 import com.github.twitch4j.pubsub.events.RewardRedeemedEvent;
+import de.presti.ree6.actions.ActionInfo;
+import de.presti.ree6.actions.streamtools.IStreamAction;
+import de.presti.ree6.actions.streamtools.StreamActionEvent;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.streamtools.action.IStreamAction;
-import de.presti.ree6.streamtools.action.StreamActionInfo;
 import de.presti.ree6.utils.external.RequestUtility;
 import lombok.NoArgsConstructor;
-import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
@@ -17,7 +16,7 @@ import java.util.regex.Pattern;
  * StreamAction used to play a blerp sound that is bound to a specific channel reward.
  */
 @NoArgsConstructor
-@StreamActionInfo(name = "PlayBlerp", command = "play-blerp", description = "Plays the blerp audio of a reward.", introduced = "2.4.0")
+@ActionInfo(name = "PlayBlerp", command = "play-blerp", description = "Plays the blerp audio of a reward.", introduced = "2.4.0")
 public class PlayBlerpStreamAction implements IStreamAction {
 
     /**
@@ -44,12 +43,12 @@ public class PlayBlerpStreamAction implements IStreamAction {
      * @inheritDoc
      */
     @Override
-    public boolean runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
-        if (twitchEvent == null) return false;
+    public boolean runAction(@NotNull StreamActionEvent event) {
+        if (event.getTwitchEvent() == null) return false;
 
-        if (!Main.getInstance().getMusicWorker().isConnectedMember(guild.getSelfMember())) return false;
+        if (!Main.getInstance().getMusicWorker().isConnectedMember(event.getGuild().getSelfMember())) return false;
 
-        if (twitchEvent instanceof RewardRedeemedEvent rewardRedeemedEvent) {
+        if (event.getTwitchEvent() instanceof RewardRedeemedEvent rewardRedeemedEvent) {
             String prompt = rewardRedeemedEvent.getRedemption().getReward().getPrompt().toLowerCase();
             Matcher matcher = blerpPattern.matcher(prompt);
             if (matcher.find()) {
@@ -59,7 +58,7 @@ public class PlayBlerpStreamAction implements IStreamAction {
 
                 Matcher pageMatcher = blerpPagePattern.matcher(blerpPageResponse);
                 if (matcher.find()) {
-                    Main.getInstance().getMusicWorker().loadAndPlay(guild, null, null,
+                    Main.getInstance().getMusicWorker().loadAndPlay(event.getGuild(), null, null,
                             pageMatcher.group(1),null, true, false);
                     return true;
                 }

@@ -1,20 +1,19 @@
-package de.presti.ree6.streamtools;
+package de.presti.ree6.actions.streamtools;
 
 import com.github.twitch4j.common.events.TwitchEvent;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import de.presti.ree6.actions.IAction;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.sql.entities.StreamAction;
-import de.presti.ree6.streamtools.action.IStreamAction;
+import de.presti.ree6.actions.streamtools.IStreamAction;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -102,7 +101,7 @@ public class StreamActionContainer {
                 }
             }
 
-            run.getAction().runAction(guild, twitchEvent, args);
+            run.getAction().runAction(new StreamActionEvent(guild, twitchEvent, args));
         });
     }
 }

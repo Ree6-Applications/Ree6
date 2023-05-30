@@ -1,6 +1,6 @@
-package de.presti.ree6.streamtools;
+package de.presti.ree6.actions.streamtools;
 
-import de.presti.ree6.streamtools.action.IStreamAction;
+import de.presti.ree6.actions.IAction;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ public class StreamActionRun {
      * The Action to run.
      */
     @Getter(AccessLevel.PUBLIC)
-    IStreamAction action;
+    IAction action;
 
     /**
      * The Arguments for the Action.

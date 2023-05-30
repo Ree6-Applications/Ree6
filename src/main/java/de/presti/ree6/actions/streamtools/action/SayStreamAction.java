@@ -1,11 +1,10 @@
-package de.presti.ree6.streamtools.action.impl;
+package de.presti.ree6.actions.streamtools.action;
 
-import com.github.twitch4j.common.events.TwitchEvent;
+import de.presti.ree6.actions.ActionInfo;
+import de.presti.ree6.actions.streamtools.IStreamAction;
+import de.presti.ree6.actions.streamtools.StreamActionEvent;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.streamtools.action.StreamActionInfo;
-import de.presti.ree6.streamtools.action.IStreamAction;
 import lombok.NoArgsConstructor;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,27 +12,27 @@ import org.jetbrains.annotations.NotNull;
  * StreamAction used to say a message.
  */
 @NoArgsConstructor
-@StreamActionInfo(name = "Say", command = "say", description = "Says a message.", introduced = "2.2.0")
+@ActionInfo(name = "Say", command = "say", description = "Says a message.", introduced = "2.2.0")
 public class SayStreamAction implements IStreamAction {
 
     /**
      * @inheritDoc
      */
     @Override
-    public boolean runAction(@NotNull Guild guild, TwitchEvent twitchEvent, String[] arguments) {
-        if (arguments == null || arguments.length == 0) {
+    public boolean runAction(@NotNull StreamActionEvent event) {
+        if (event.getArguments() == null || event.getArguments().length == 0) {
             return false;
         }
 
-        String channelId = arguments[0];
+        String channelId = event.getArguments()[0];
 
         StringBuilder message = new StringBuilder();
 
-        for (String arg : arguments) {
+        for (String arg : event.getArguments()) {
             message.append(arg).append(" ");
         }
 
-        TextChannel textChannel = guild.getTextChannelById(channelId);
+        TextChannel textChannel = event.getGuild().getTextChannelById(channelId);
 
         if (textChannel == null) {
             return false;

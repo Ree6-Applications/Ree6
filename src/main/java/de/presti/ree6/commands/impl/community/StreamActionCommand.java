@@ -11,8 +11,8 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.StreamAction;
 import de.presti.ree6.sql.entities.TwitchIntegration;
-import de.presti.ree6.streamtools.StreamActionContainer;
-import de.presti.ree6.streamtools.action.StreamActionInfo;
+import de.presti.ree6.actions.streamtools.StreamActionContainer;
+import de.presti.ree6.actions.ActionInfo;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -116,7 +116,7 @@ public class StreamActionCommand implements ICommand {
                             StringBuilder stringBuilder = new StringBuilder();
                             streamActionContainer.getActions()
                                     .forEach(actionRun ->
-                                            stringBuilder.append(actionRun.getAction().getClass().getAnnotation(StreamActionInfo.class).name())
+                                            stringBuilder.append(actionRun.getAction().getClass().getAnnotation(ActionInfo.class).name())
                                                     .append(" -> ")
                                                     .append(String.join(" ", actionRun.getArguments())).append("\n"));
 
