@@ -192,7 +192,7 @@ public class Main {
             }
 
             SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_rewards_blackjack_win", "Payment Amount on BlacJack win", 200.0));
+                    "configuration_rewards_blackjack_win", "Payment Amount on BlackJack win", 200.0));
             SettingsManager.getSettings().add(new Setting("-1",
                     "configuration_rewards_musicquiz_win", "Payment Amount on Music Quiz win", 200.0));
             SettingsManager.getSettings().add(new Setting("-1",
