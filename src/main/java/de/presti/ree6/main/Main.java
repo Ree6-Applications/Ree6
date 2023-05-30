@@ -28,7 +28,7 @@ import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.sql.util.SettingsManager;
-import de.presti.ree6.actions.streamtools.StreamActionContainerCreator;
+import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;

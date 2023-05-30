@@ -1,6 +1,7 @@
-package de.presti.ree6.actions.streamtools;
+package de.presti.ree6.actions.streamtools.container;
 
 import de.presti.ree6.actions.ActionInfo;
+import de.presti.ree6.actions.streamtools.IStreamAction;
 import de.presti.ree6.actions.streamtools.action.*;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.StreamAction;
