@@ -77,7 +77,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
         this.creatorId = member.getId();
         this.voiceChannel = voiceChannel;
         if (voiceChannel.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_CHANGE)) {
-            voiceChannel.getGuild().getSelfMember().modifyNickname(LanguageService.getByGuild(member.getGuild(), "label.recording.name")).reason(LanguageService.getByGuild(member.getGuild(), "message.recording.startReason", member.getUser().getAsTag())).onErrorMap(throwable -> {
+            voiceChannel.getGuild().getSelfMember().modifyNickname(LanguageService.getByGuild(member.getGuild(), "label.recording.name")).reason(LanguageService.getByGuild(member.getGuild(), "message.recording.startReason", member.getUser().getName())).onErrorMap(throwable -> {
                 if (voiceChannel.canTalk()) voiceChannel.sendMessage(LanguageService.getByGuild(member.getGuild(), "message.default.nameChangeFailed")).queue();
                 return null;
             }).queue();
@@ -85,7 +85,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
         message = voiceChannel.sendMessageEmbeds(new EmbedBuilder()
                 .setDescription(LanguageService.getByGuild(member.getGuild(), "message.recording.started"))
                 .setColor(Color.YELLOW)
-                .setFooter("Requested by " + member.getUser().getAsTag() + " - " + Data.getAdvertisement(), member.getUser().getAvatarUrl())
+                .setFooter("Requested by " + member.getEffectiveName() + " - " + Data.getAdvertisement(), member.getEffectiveAvatarUrl())
                 .setTitle(LanguageService.getByGuild(member.getGuild(), "label.recording.start"))
                 .build()).complete();
     }

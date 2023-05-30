@@ -149,7 +149,7 @@ public class MenuEvents extends ListenerAdapter {
 
                     // TODO:: translate and fix the date being shown as UTC+1 and instead use the current server region.
 
-                    stringBuilder.append("\n").append("Closed by").append(" ").append(event.getUser().getAsTag());
+                    stringBuilder.append("\n").append("Closed by").append(" ").append(event.getUser().getName());
 
                     WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
                     webhookMessageBuilder.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
@@ -358,7 +358,7 @@ public class MenuEvents extends ListenerAdapter {
                         .setColor(Color.GREEN)
                         .setThumbnail(event.getUser().getEffectiveAvatarUrl())
                         .setDescription("```" + event.getValue("re_feedback_text").getAsString() + "```")
-                        .setFooter("By " + event.getUser().getAsTag() + " (" + event.getUser().getId() + ")", event.getUser().getAvatarUrl())
+                        .setFooter("By " + event.getUser().getEffectiveName() + " (" + event.getUser().getId() + ")", event.getUser().getEffectiveAvatarUrl())
                         .setTimestamp(Instant.now());
 
                 Main.getInstance().getCommandManager().sendMessage(embedBuilder, BotWorker.getShardManager().getTextChannelById(Data.getFeedbackChannel()));
@@ -380,7 +380,7 @@ public class MenuEvents extends ListenerAdapter {
                             .setColor(Color.ORANGE)
                             .setThumbnail(event.getUser().getEffectiveAvatarUrl())
                             .setDescription("```" + event.getValue("re_suggestion_text").getAsString() + "```")
-                            .setFooter(LanguageService.getByGuild(event.getGuild(), "message.suggestion.footer", event.getUser().getAsTag()), event.getUser().getAvatarUrl())
+                            .setFooter(LanguageService.getByGuild(event.getGuild(), "message.suggestion.footer", event.getUser().getEffectiveName()), event.getUser().getEffectiveAvatarUrl())
                             .setTimestamp(Instant.now());
 
                     Main.getInstance().getCommandManager().sendMessage(embedBuilder, messageChannel);

@@ -95,7 +95,7 @@ public class Twitter implements ICommand {
         String text = URLEncoder.encode(content, StandardCharsets.UTF_8);
 
         try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
-            HttpGet request = new HttpGet("https://api.dagpi.xyz/image/tweet/?url=" + member.getUser().getAvatarUrl() + "&username=" + name + "&text=" + text);
+            HttpGet request = new HttpGet("https://api.dagpi.xyz/image/tweet/?url=" + member.getEffectiveAvatarUrl() + "&username=" + name + "&text=" + text);
             request.setHeader("Authorization", Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken"));
             HttpResponse response = httpClient.execute(request);
 

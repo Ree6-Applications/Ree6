@@ -33,7 +33,7 @@ public class Waifu implements ICommand {
             em.setTitle(commandEvent.getResource("label.error"));
             em.setColor(Color.RED);
             em.setDescription(commandEvent.getResource("message.default.retrievalError"));
-            em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.getAdvertisement(), commandEvent.getMember().getUser().getAvatarUrl());
+            em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + Data.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
             commandEvent.reply(em.build());
             return;
         }
@@ -53,7 +53,7 @@ public class Waifu implements ICommand {
         if(jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean()) {
             em.addField("**" + commandEvent.getResource("label.nsfw") + "**", "", true);
         }
-        em.setFooter(commandEvent.getMember().getUser().getAsTag() + " - " + Data.getAdvertisement(), commandEvent.getMember().getUser().getAvatarUrl());
+        em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + Data.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
 
         commandEvent.reply(em.build());
     }

@@ -229,7 +229,7 @@ public class OtherEvents extends ListenerAdapter {
                         stringBuilder.append("\n");
                     }
 
-                    stringBuilder.append("\n").append("Closed by").append(" ").append(event.getUser().getAsTag());
+                    stringBuilder.append("\n").append("Closed by").append(" ").append(event.getUser().getEffectiveName());
 
                     WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
                     webhookMessageBuilder.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());

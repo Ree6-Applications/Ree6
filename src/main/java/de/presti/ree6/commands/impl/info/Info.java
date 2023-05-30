@@ -76,14 +76,14 @@ public class Info implements ICommand {
     public void sendInfo(Member member, CommandEvent commandEvent) {
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setTitle(member.getUser().getAsTag(), member.getUser().getAvatarUrl());
-        em.setThumbnail(member.getUser().getAvatarUrl());
+        em.setTitle(member.getEffectiveName(), member.getEffectiveAvatarUrl());
+        em.setThumbnail(member.getEffectiveAvatarUrl());
 
         em.addField("**UserTag**", member.getUser().getAsTag(), true);
         em.addField("**Created Date**", member.getTimeCreated().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
         em.addField("**Joined Date**", member.getTimeJoined().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
 
-        em.setFooter("Requested by " + commandEvent.getMember().getUser().getAsTag() + " - " + Data.getAdvertisement(), commandEvent.getMember().getUser().getAvatarUrl());
+        em.setFooter("Requested by " + commandEvent.getMember().getEffectiveName() + " - " + Data.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
 
         commandEvent.reply(em.build());
     }
