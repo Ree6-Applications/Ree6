@@ -99,7 +99,7 @@ public class Notifier {
      * Instance of the Twitter API Client.
      */
     @Getter(AccessLevel.PUBLIC)
-    private final TwitterClient twitterClient;
+    private TwitterClient twitterClient;
 
     /**
      * Instance of the Reddit API Client.
@@ -224,14 +224,14 @@ public class Notifier {
 
         log.info("Initializing Twitter Client...");
 
-        twitterClient = new TwitterClient(TwitterCredentials.builder()
-                /*.accessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
-                .accessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
-                .apiSecretKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
-                .apiKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))*/
-                .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
-
         try {
+            twitterClient = new TwitterClient(TwitterCredentials.builder()
+                    /*.accessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
+                    .accessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
+                    .apiSecretKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
+                    .apiKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))*/
+                    .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
+
             List<StreamRules.StreamRule> rules = twitterClient.retrieveFilteredStreamRules();
 
             if (rules != null && !rules.isEmpty()) {
@@ -463,6 +463,7 @@ public class Notifier {
 
     /**
      * Register a EventHandler for the Twitter Tweet Event.
+     *
      * @return the Future of the Event Handler for later use.
      */
     public Future<Response> registerTwitterEventHandler() {
@@ -485,7 +486,8 @@ public class Notifier {
                     String url = "https://" + x.getText().split("https://")[1];
                     webhookEmbedBuilder.setDescription("**Quoted Tweet**: " + x.getText().replace(url, "") + "\n" + url + "\n");
                 }
-                case RETWEETED -> webhookEmbedBuilder.setDescription(x.getText().replace("RT", "**Retweet from").replace(":", ":**") + "\n");
+                case RETWEETED ->
+                        webhookEmbedBuilder.setDescription(x.getText().replace("RT", "**Retweet from").replace(":", ":**") + "\n");
                 default -> webhookEmbedBuilder.setDescription(x.getText() + "\n");
             }
 
