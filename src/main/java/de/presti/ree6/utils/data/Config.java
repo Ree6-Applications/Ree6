@@ -88,7 +88,8 @@ public class Config {
                     .parent().path("github").addDefault("https://github.ree6.de").commentSide("The GitHub Link of the Bot.")
                     .parent().path("website").addDefault("https://ree6.de").commentSide("The Website Link of the Bot.")
                     .parent().path("advertisement").addDefault("powered by Tube-hosting").commentSide("The Advertisement in Embed Footers and the rest.")
-                    .parent().path("name").addDefault("Ree6").commentSide("The Name of the Bot.");
+                    .parent().path("name").addDefault("Ree6").commentSide("The Name of the Bot.")
+                    .parent().path("shards").addDefault(1).commentSide("The shard amount of the Bot. Check out https://anidiots.guide/understanding/sharding/#sharding for more information.");
 
             yamlFile.path("heartbeat")
                     .comment("Heartbeat Configuration, for status reporting").blankLine()

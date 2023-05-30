@@ -221,15 +221,17 @@ public class Main {
         try {
             List<String> argList = Arrays.stream(args).map(String::toLowerCase).toList();
 
+            int shards = instance.config.getConfiguration().getInt("bot.misc.shards", 1);
+
+            BotVersion version = BotVersion.RELEASE;
+
             if (argList.contains("--dev")) {
-                BotWorker.createBot(BotVersion.DEVELOPMENT);
-            } else if (argList.contains("--prod")) {
-                BotWorker.createBot(BotVersion.RELEASE);
+                version = BotVersion.DEVELOPMENT;
             } else if (argList.contains("--beta")) {
-                BotWorker.createBot(BotVersion.BETA);
-            } else {
-                BotWorker.createBot(BotVersion.RELEASE);
+                version = BotVersion.BETA;
             }
+
+            BotWorker.createBot(version, shards);
 
             instance.musicWorker = new MusicWorker();
             instance.addEvents();
