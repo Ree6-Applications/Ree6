@@ -2,7 +2,6 @@ package de.presti.ree6.actions.customevents;
 
 import de.presti.ree6.actions.ActionEvent;
 import de.presti.ree6.actions.IAction;
-import de.presti.ree6.actions.streamtools.StreamActionEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**

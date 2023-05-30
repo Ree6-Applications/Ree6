@@ -1,6 +1,5 @@
-package de.presti.ree6.actions.streamtools;
+package de.presti.ree6.actions;
 
-import de.presti.ree6.actions.IAction;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +8,7 @@ import lombok.Getter;
  * A Container class containing the needed Information to run a StreamAction.
  */
 @AllArgsConstructor
-public class StreamActionRun {
+public class ActionRunContainer {
 
     /**
      * The Action to run.

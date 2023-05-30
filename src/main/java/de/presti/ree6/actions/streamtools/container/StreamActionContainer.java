@@ -5,7 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import de.presti.ree6.actions.streamtools.StreamActionEvent;
-import de.presti.ree6.actions.streamtools.StreamActionRun;
+import de.presti.ree6.actions.ActionRunContainer;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.sql.entities.StreamAction;
 import de.presti.ree6.actions.streamtools.IStreamAction;
@@ -45,7 +45,7 @@ public class StreamActionContainer {
      * The Actions.
      */
     @Getter(AccessLevel.PUBLIC)
-    List<StreamActionRun> actions = new ArrayList<>();
+    List<ActionRunContainer> actions = new ArrayList<>();
 
     /**
      * Create a new StreamActionContainer.
@@ -74,7 +74,7 @@ public class StreamActionContainer {
                     if (actionClass != null) {
                         try {
                             IStreamAction streamAction1 = actionClass.getConstructor().newInstance();
-                            actions.add(new StreamActionRun(streamAction1, args));
+                            actions.add(new ActionRunContainer(streamAction1, args));
                         } catch (Exception e) {
                             log.error("Couldn't parse Stream-action!", e);
                         }
@@ -91,7 +91,7 @@ public class StreamActionContainer {
      * @param userInput The User Input.
      */
     public void runActions(TwitchEvent twitchEvent, String userInput) {
-        actions.forEach((run) -> {
+        actions.forEach(run -> {
 
             String[] args = run.getArguments();
 
