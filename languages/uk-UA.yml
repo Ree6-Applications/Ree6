@@ -423,7 +423,7 @@ message:
       20: "Дуже сумнівно."
   brs:
     autoRole:
-      missingPermission: "Ree6-BRS (Bug-Report-System)\nМи виявили, що мені не дозволено авторолі людям, оскільки у мене немає прав на управління ролями!\nМені потрібен цей дозвіл, щоб видавати роль користувачам!\nРоль, яку я не можу дати - ``%s``!"
+      missingPermission: "Ree6-BRS (Bug-Report-System)\nWe detected that I am not allowed to AutoRole people since I am missing the ``Manage Roles`` Permission!\nI require this Permission to give out roles to users!\nThe role that I couldn't give is ``%s``!"
       hierarchy: "Ree6-BRS (Bug-Report-System)\nМи виявили, що для людей авторолей, оскільки моя роль нижче ролі авторолі!\nБудь ласка, перемістіть мою роль вище авторолі!\nРоль, що спричиняє проблему``%s``!"
       deleted: "Ree6-BRS (Bug-Report-System)\nМи виявили, що я не можу додавати автоматичні ролі після видалення автоматичної ролі!\nМи видалили дану роль!"
   ticket:
