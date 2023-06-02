@@ -414,8 +414,12 @@ public class OtherEvents extends ListenerAdapter {
             if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
 
                 if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
-                    Main.getInstance().getCommandManager().sendMessage(ChatGPTAPI.getResponse(event.getMember(),
-                            event.getMessage().getContentDisplay()), event.getChannel());
+                    try {
+                        Main.getInstance().getCommandManager().sendMessage(ChatGPTAPI.getResponse(event.getMember(),
+                                event.getMessage().getContentDisplay()), event.getChannel());
+                    } catch (Exception e) {
+                        // TODO:: add error message
+                    }
                 }
 
                 if (!ArrayUtil.timeout.contains(event.getMember())) {

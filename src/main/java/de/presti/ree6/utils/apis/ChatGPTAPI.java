@@ -2,7 +2,6 @@ package de.presti.ree6.utils.apis;
 
 import com.lilittlecat.chatgpt.offical.ChatGPT;
 import com.lilittlecat.chatgpt.offical.entity.Message;
-import com.lilittlecat.chatgpt.offical.entity.Model;
 import com.lilittlecat.chatgpt.offical.exception.BizException;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
@@ -64,21 +63,16 @@ public class ChatGPTAPI {
 
         if (ArrayUtil.chatGPTMessages.containsKey(ids)) {
             messages = ArrayUtil.chatGPTMessages.get(ids);
-        } else {
-            messages.add(new Message("system", preDefinedInformation));
         }
 
         messages.add(new Message("user", message));
-
-        //List<Message> messages = new ArrayList<>(List.of(new Message("system", preDefinedInformation), new Message("user", message)));
 
         String response;
         try {
             response = getResponse(messages);
         } catch (BizException e) {
-            messages.clear();
-            ArrayUtil.chatGPTMessages.remove(ids);
-            return getResponse(member, message);
+            // TODO:: make Language Text
+            return "Failed to create response: " + e.getMessage();
         }
 
         messages.add(new Message("assistant", response));
@@ -92,13 +86,6 @@ public class ChatGPTAPI {
      * @return the response by the Model.
      */
     public static String getResponse(List<Message> messages) {
-        if (messages.isEmpty() || !messages.get(0).content.equals(preDefinedInformation)) {
-            List<Message> newMessageList = new ArrayList<>();
-            newMessageList.add(new Message("system", preDefinedInformation));
-            newMessageList.addAll(messages);
-            messages = newMessageList;
-        }
-
-        return chatGPT.ask(Model.GPT_3_5_TURBO, messages);
+        return chatGPT.ask("ggml-gpt4all-j", messages);
     }
 }
