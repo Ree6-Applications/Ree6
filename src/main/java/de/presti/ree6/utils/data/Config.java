@@ -72,7 +72,7 @@ public class Config {
                     .parent().path("poolSize").addDefault(10);
 
             yamlFile.path("bot")
-                    .comment("Discord Application Configuration, used for OAuth and Bot Authentication.").blankLine()
+                    .comment("Discord Application and overall Bot Configuration, used for OAuth, Bot Authentication and customization.").blankLine()
                     .path("tokens").path("release").addDefault("ReleaseTokenhere").commentSide("Token used when set to release build.")
                     .parent().path("beta").addDefault("BetaTokenhere").commentSide("Token used when set to beta build.")
                     .parent().path("dev").addDefault("DevTokenhere").commentSide("Token used when set to dev build.")
@@ -89,7 +89,23 @@ public class Config {
                     .parent().path("website").addDefault("https://ree6.de").commentSide("The Website Link of the Bot.")
                     .parent().path("advertisement").addDefault("powered by Tube-hosting").commentSide("The Advertisement in Embed Footers and the rest.")
                     .parent().path("name").addDefault("Ree6").commentSide("The Name of the Bot.")
-                    .parent().path("shards").addDefault(1).commentSide("The shard amount of the Bot. Check out https://anidiots.guide/understanding/sharding/#sharding for more information.");
+                    .parent().path("shards").addDefault(1).commentSide("The shard amount of the Bot. Check out https://anidiots.guide/understanding/sharding/#sharding for more information.")
+                    .parent().path("modules").comment("Customize the active modules in Ree6.").blankLine()
+                    .path("moderation").addDefault(true).commentSide("Enable the moderation module.")
+                    .parent().path("music").addDefault(true).commentSide("Enable the music module.")
+                    .parent().path("fun").addDefault(true).commentSide("Enable the fun commands.")
+                    .parent().path("community").addDefault(true).commentSide("Enable the community commands.")
+                    .parent().path("economy").addDefault(true).commentSide("Enable the economy commands.")
+                    .parent().path("level").addDefault(true).commentSide("Enable the level module.")
+                    .parent().path("nsfw").addDefault(true).commentSide("Enable the nsfw module.")
+                    .parent().path("logging").addDefault(true).commentSide("Enable the logging module.")
+                    .parent().path("notifier").addDefault(true).commentSide("Enable the notifier module.")
+                    .parent().path("streamtools").addDefault(true).commentSide("Enable the streamtools module.")
+                    .parent().path("customcommands").addDefault(true).commentSide("Enable the custom Commands module.")
+                    .parent().path("customevents").addDefault(true).commentSide("Enable the custom Events module.")
+                    .parent().path("ai").addDefault(true).commentSide("Enable the AI module.")
+                    .parent().path("addons").addDefault(false).commentSide("Enable the Addons module.")
+                    .parent().path("news").addDefault(true).commentSide("Enable the news command/module.");
 
             yamlFile.path("heartbeat")
                     .comment("Heartbeat Configuration, for status reporting").blankLine()
