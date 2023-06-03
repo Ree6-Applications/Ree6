@@ -77,7 +77,11 @@ public class Import implements ICommand {
                                 return;
                             }
 
-                            chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getId(), id.getAsString(), xp.getAsLong());
+                            if (chatUserLevel == null) {
+                                chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getId(), id.getAsString(), xp.getAsLong());
+                            } else {
+                                chatUserLevel.setExperience(xp.getAsLong());
+                            }
 
                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel);
                         }
@@ -120,7 +124,11 @@ public class Import implements ICommand {
                     return;
                 }
 
-                chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getId(), member.getUserid(), member.getExperience());
+                if (chatUserLevel == null) {
+                    chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getId(), member.getUserid(), member.getExperience());
+                } else {
+                    chatUserLevel.setExperience(member.getExperience());
+                }
 
                 SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel);
             });
