@@ -303,7 +303,7 @@ message:
     unknownBot: "Neznámý bot!"
     success: "Data %s uživatelů byla úspěšně importována!"
     error:
-      unknown: "Došlo k neznámé chybě! ({})"
+      unknown: "An unknown error occurred! (%s)"
       noData: "Nenalezena žádná data!"
       visibility: "Nemůžete importovat data od Bota, který není viditelný pro všechny!"
   kick:
