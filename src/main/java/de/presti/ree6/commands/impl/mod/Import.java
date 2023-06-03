@@ -16,6 +16,7 @@ import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.utils.apis.AmariAPI;
 import de.presti.ree6.utils.external.RequestUtility;
 import io.sentry.Sentry;
+import io.sentry.SentryLevel;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -92,8 +93,12 @@ public class Import implements ICommand {
                     jsonElement.getAsJsonObject().get("status_code").isJsonPrimitive() ? jsonElement.getAsJsonObject().get("status_code").getAsInt() : 0;
 
             String reason = jsonElement.isJsonObject() && jsonElement.getAsJsonObject().has("error") &&
-                    jsonElement.getAsJsonObject().get("error").isJsonObject() && jsonElement.getAsJsonObject().get("error").getAsJsonObject().has("message") ?
-                    jsonElement.getAsJsonObject().get("error").getAsJsonObject().get("message").getAsString() : commandEvent.getResource("label.unknown");
+                    jsonElement.getAsJsonObject().get("error").isJsonObject() && jsonElement.getAsJsonObject().getAsJsonObject("error").has("message") ?
+                    jsonElement.getAsJsonObject().getAsJsonObject("error").getAsJsonPrimitive("message").getAsString() : commandEvent.getResource("label.unknown");
+
+            if (code != 404 && code != 401) {
+                Sentry.captureMessage("Import from Mee6 failed with code " + code + " and reason " + reason + ", JsonObject: " + jsonElement, SentryLevel.ERROR);
+            }
 
             commandEvent.reply(
                     commandEvent.getResource(code == 404 ?
