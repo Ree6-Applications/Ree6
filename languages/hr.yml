@@ -1,7 +1,7 @@
 language:
   name: "Croatian"
   locale: "hr"
-  version: "2.4.6"
+  version: "2.4.12"
   author: "Huza"
 logging:
   banned: ":airplane_departure: %s **banned.**"
