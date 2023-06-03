@@ -1,6 +1,7 @@
 package de.presti.ree6.utils.others;
 
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.utils.data.Data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +50,7 @@ public class ModerationUtil {
      * @return true, if there is a blacklisted for contained.
      */
     public static boolean checkBlacklist(String guildId, String word) {
-        return getBlacklist(guildId).contains(word);
+        return SQLSession.getSqlConnector().getSqlWorker().isChatProtectorSetup(guildId, word);
     }
 
     /**
@@ -59,7 +60,7 @@ public class ModerationUtil {
      * @return true, if the Server should be moderated.
      */
     public static boolean shouldModerate(String guildId) {
-        return SQLSession.getSqlConnector().getSqlWorker().isChatProtectorSetup(guildId);
+        return Data.isModuleActive("moderation") && SQLSession.getSqlConnector().getSqlWorker().isChatProtectorSetup(guildId);
     }
 
     /**
@@ -69,7 +70,7 @@ public class ModerationUtil {
      * @param word    the Word you want to blacklist.
      */
     public static void blacklist(String guildId, String word) {
-        if (!getBlacklist(guildId).contains(word)) {
+        if (!checkBlacklist(guildId, word)) {
             SQLSession.getSqlConnector().getSqlWorker().addChatProtectorWord(guildId, word);
         }
     }
@@ -91,9 +92,7 @@ public class ModerationUtil {
      * @param word    the Word that should be removed from the Blacklist.
      */
     public static void removeBlacklist(String guildId, String word) {
-        if (getBlacklist(guildId).contains(word)) {
-            SQLSession.getSqlConnector().getSqlWorker().removeChatProtectorWord(guildId, word);
-        }
+        SQLSession.getSqlConnector().getSqlWorker().removeChatProtectorWord(guildId, word);
     }
 
     /**

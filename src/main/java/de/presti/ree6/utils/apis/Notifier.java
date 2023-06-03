@@ -80,7 +80,7 @@ public class Notifier {
      * Instance of the Twitch API Client.
      */
     @Getter(AccessLevel.PUBLIC)
-    private final TwitchClient twitchClient;
+    private TwitchClient twitchClient;
 
     /**
      * Twitch Credential Manager instance.
@@ -104,13 +104,13 @@ public class Notifier {
      * Instance of the Reddit API Client.
      */
     @Getter(AccessLevel.PUBLIC)
-    private final Reddit4J redditClient;
+    private Reddit4J redditClient;
 
     /**
      * Instance of the Instagram API Client.
      */
     @Getter(AccessLevel.PUBLIC)
-    private final IGClient instagramClient;
+    private IGClient instagramClient;
 
     /**
      * Instance of the current applied stream rule.
@@ -159,6 +159,8 @@ public class Notifier {
      * Constructor used to created instance of the API Clients.
      */
     public Notifier() {
+        if (!Data.isModuleActive("addons")) return;
+
         log.info("Initializing Twitch Client...");
         credentialManager = CredentialManagerBuilder.builder()
                 .withStorageBackend(new DatabaseStorageBackend())

@@ -98,14 +98,20 @@ public class Config {
                     .parent().path("economy").addDefault(true).commentSide("Enable the economy commands.")
                     .parent().path("level").addDefault(true).commentSide("Enable the level module.")
                     .parent().path("nsfw").addDefault(true).commentSide("Enable the nsfw module.")
+                    .parent().path("info").addDefault(true).commentSide("Enable the info commands.")
+                    .parent().path("hidden").addDefault(true).commentSide("Enable the hidden commands.")
                     .parent().path("logging").addDefault(true).commentSide("Enable the logging module.")
                     .parent().path("notifier").addDefault(true).commentSide("Enable the notifier module.")
-                    .parent().path("streamtools").addDefault(true).commentSide("Enable the streamtools module.")
+                    .parent().path("streamtools").addDefault(true).commentSide("Enable the Stream-tools module.")
+                    .parent().path("temporalvoice").addDefault(true).commentSide("Enable the Temporal-voice module.")
+                    .parent().path("tickets").addDefault(true).commentSide("Enable the tickets module.")
+                    .parent().path("suggestions").addDefault(true).commentSide("Enable the suggestions module.")
                     .parent().path("customcommands").addDefault(true).commentSide("Enable the custom Commands module.")
                     .parent().path("customevents").addDefault(true).commentSide("Enable the custom Events module.")
                     .parent().path("ai").addDefault(true).commentSide("Enable the AI module.")
                     .parent().path("addons").addDefault(false).commentSide("Enable the Addons module.")
-                    .parent().path("news").addDefault(true).commentSide("Enable the news command/module.");
+                    .parent().path("news").addDefault(true).commentSide("Enable the news command/module.")
+                    .parent().path("games").addDefault(true).commentSide("Enable the games module.");
 
             yamlFile.path("heartbeat")
                     .comment("Heartbeat Configuration, for status reporting").blankLine()

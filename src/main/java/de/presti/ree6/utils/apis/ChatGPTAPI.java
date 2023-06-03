@@ -5,6 +5,7 @@ import com.lilittlecat.chatgpt.offical.entity.Message;
 import com.lilittlecat.chatgpt.offical.exception.BizException;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
+import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class ChatGPTAPI {
 
     /**
      * Method used to add more information to the predefined text.
+     *
      * @param addition the addition.
      */
     public void updatePreDefinedText(String addition) {
@@ -45,14 +47,17 @@ public class ChatGPTAPI {
      * Method to initialise and create the API Wrapper Instance.
      */
     public void initGPT() {
-        preDefinedInformation = Main.getInstance().getConfig().getConfiguration().getString("bot.misc.predefineInformation");
-        chatGPT = new ChatGPT(Main.getInstance().getConfig().getConfiguration().getString("openai.apiUrl","https://api.openai.com/v1/chat/completions"),
-                Main.getInstance().getConfig().getConfiguration().getString("openai.apiToken"));
+        if (Data.isModuleActive("ai")) {
+            preDefinedInformation = Main.getInstance().getConfig().getConfiguration().getString("bot.misc.predefineInformation");
+            chatGPT = new ChatGPT(Main.getInstance().getConfig().getConfiguration().getString("openai.apiUrl", "https://api.openai.com/v1/chat/completions"),
+                    Main.getInstance().getConfig().getConfiguration().getString("openai.apiToken"));
+        }
     }
 
     /**
      * Method used to get a response from the AI and storing the message in the in-memory List.
-     * @param member the Member who send it.
+     *
+     * @param member  the Member who send it.
      * @param message the Message of the Member.
      * @return the response by the Model.
      */
@@ -82,10 +87,13 @@ public class ChatGPTAPI {
 
     /**
      * Get a response based on a list of messages.
+     *
      * @param messages the messages.
      * @return the response by the Model.
      */
     public static String getResponse(List<Message> messages) {
+        if (!Data.isModuleActive("ai")) return "AI Module has been disabled!";
+
         return chatGPT.ask("ggml-gpt4all-j", messages);
     }
 }

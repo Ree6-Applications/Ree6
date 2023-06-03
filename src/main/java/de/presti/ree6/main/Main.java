@@ -36,7 +36,9 @@ import de.presti.ree6.utils.data.*;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -59,10 +61,13 @@ import java.util.*;
  * Main Application class, used to store Instances of System Relevant classes.
  */
 @Slf4j
+@Getter
+@Setter(AccessLevel.PRIVATE)
 public class Main {
     /**
      * An Instance of the class itself.
      */
+    
     static Main instance;
 
     /**
@@ -93,7 +98,6 @@ public class Main {
     /**
      * Instance of the ChatGPT API used for making the setup process easier and give people a better experience.
      */
-    @Getter
     ChatGPTAPI chatGPTAPI;
 
     /**
@@ -120,19 +124,19 @@ public class Main {
         instance = new Main();
 
         // Create the LoggerQueue Instance.
-        instance.loggerQueue = new LoggerQueue();
+        getInstance().setLoggerQueue(new LoggerQueue());
 
         // Create the Config System Instance.
-        instance.config = new Config();
+        getInstance().setConfig(new Config());
 
         // Initialize the Config.
-        instance.config.init();
+        getInstance().getConfig().init();
 
         log.info("Creating Sentry Instance.");
 
         // Create a Sentry Instance to send Exception to an external Service for bug fixing.
         Sentry.init(options -> {
-            String dsn = instance.config.getConfiguration().getString("sentry.dsn");
+            String dsn = getInstance().getConfig().getConfiguration().getString("sentry.dsn");
             options.setDsn((dsn == null || dsn.equalsIgnoreCase("yourSentryDSNHere")) ? "" : dsn);
             // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
             // We recommend adjusting this value in production.
@@ -166,19 +170,19 @@ public class Main {
             default -> databaseTyp = DatabaseTyp.SQLite;
         }
 
-        new SQLSession(instance.config.getConfiguration().getString("hikari.sql.user"),
-                instance.config.getConfiguration().getString("hikari.sql.db"), instance.config.getConfiguration().getString("hikari.sql.pw"),
-                instance.config.getConfiguration().getString("hikari.sql.host"), instance.config.getConfiguration().getInt("hikari.sql.port"),
-                instance.config.getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
-                instance.config.getConfiguration().getInt("hikari.misc.poolSize"),
-                instance.config.getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"));
+        new SQLSession(getInstance().getConfig().getConfiguration().getString("hikari.sql.user"),
+                getInstance().getConfig().getConfiguration().getString("hikari.sql.db"), getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"),
+                getInstance().getConfig().getConfiguration().getString("hikari.sql.host"), getInstance().getConfig().getConfiguration().getInt("hikari.sql.port"),
+                getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
+                getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"),
+                getInstance().getConfig().getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"));
 
         log.info("Loading ChatGPTAPI");
-        instance.chatGPTAPI = new ChatGPTAPI();
+        getInstance().setChatGPTAPI(new ChatGPTAPI());
 
         try {
             // Create the Command-Manager instance.
-            instance.commandManager = new CommandManager();
+            getInstance().setCommandManager(new CommandManager());
             // Create Command Settings.
             for (ICommand command : getInstance().getCommandManager().getCommands()) {
 
@@ -221,7 +225,7 @@ public class Main {
         try {
             List<String> argList = Arrays.stream(args).map(String::toLowerCase).toList();
 
-            int shards = instance.config.getConfiguration().getInt("bot.misc.shards", 1);
+            int shards = getInstance().getConfig().getConfiguration().getInt("bot.misc.shards", 1);
 
             BotVersion version = BotVersion.RELEASE;
 
@@ -233,87 +237,108 @@ public class Main {
 
             BotWorker.createBot(version, shards);
 
-            instance.musicWorker = new MusicWorker();
-            instance.addEvents();
+            getInstance().setMusicWorker(new MusicWorker());
+            getInstance().addEvents();
         } catch (Exception ex) {
             log.error("[Main] Error while init: " + ex.getMessage());
             System.exit(0);
             return;
         }
 
-        log.info("Loading SpotifyAPI");
-        new SpotifyAPIHandler();
+        if (Data.isModuleActive("music")) {
+            log.info("Loading SpotifyAPI");
+            new SpotifyAPIHandler();
+        }
 
-        log.info("Loading MusicQuizUtil");
-        new MusicQuizUtil();
+        if (Data.isModuleActive("games")) {
 
-        log.info("Loading GameManager");
-        GameManager.loadAllGames();
+            if (Data.isModuleActive("music")) {
+                log.info("Loading MusicQuizUtil");
+                new MusicQuizUtil();
+            }
 
-        log.info("Loading Stream-actions");
-        StreamActionContainerCreator.loadAll();
+            log.info("Loading GameManager");
+            GameManager.loadAllGames();
+        }
+
+        if (Data.isModuleActive("streamtools")) {
+            log.info("Loading Stream-actions");
+            StreamActionContainerCreator.loadAll();
+        }
 
         log.info("Creating Notifier.");
 
         // Create the Notifier-Manager instance.
-        instance.notifier = new Notifier();
+        getInstance().setNotifier(new Notifier());
 
-        ThreadUtil.createThread(x -> {
-            log.info("Loading Notifier data.");
-            List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats", null);
+        if (Data.isModuleActive("notifier")) {
+            ThreadUtil.createThread(x -> {
+                log.info("Loading Notifier data.");
+                List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats", null);
 
-            // Register all Twitch Channels.
-            instance.notifier.registerTwitchChannel(SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames());
-            instance.notifier.registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).toList());
+                // Register all Twitch Channels.
+                getInstance().getNotifier().registerTwitchChannel(SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames());
+                getInstance().getNotifier().registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).toList());
 
-            // Register the Event-handler.
-            instance.notifier.registerTwitchEventHandler();
+                // Register the Event-handler.
+                getInstance().getNotifier().registerTwitchEventHandler();
 
-            // Register all Twitter Users.
-            instance.notifier.registerTwitterUser(SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames());
-            instance.notifier.registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).filter(Objects::nonNull).toList());
+                // Register all Twitter Users.
+                getInstance().getNotifier().registerTwitterUser(SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames());
+                getInstance().getNotifier().registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).filter(Objects::nonNull).toList());
 
-            // Register all YouTube channels.
-            instance.notifier.registerYouTubeChannel(SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels());
-            instance.notifier.registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).filter(Objects::nonNull).toList());
+                // Register all YouTube channels.
+                getInstance().getNotifier().registerYouTubeChannel(SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels());
+                getInstance().getNotifier().registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).filter(Objects::nonNull).toList());
 
-            // Register all Reddit Subreddits.
-            instance.notifier.registerSubreddit(SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits());
-            instance.notifier.registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).filter(Objects::nonNull).toList());
+                // Register all Reddit Subreddits.
+                getInstance().getNotifier().registerSubreddit(SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits());
+                getInstance().getNotifier().registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).filter(Objects::nonNull).toList());
 
-            // Register all Instagram Users.
-            instance.notifier.registerInstagramUser(SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers());
-            instance.notifier.registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
-        }, t -> Sentry.captureException(t.getCause()));
+                // Register all Instagram Users.
+                getInstance().getNotifier().registerInstagramUser(SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers());
+                getInstance().getNotifier().registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
+            }, t -> Sentry.captureException(t.getCause()));
+        }
 
         // Add the Runtime-hooks.
-        instance.addHooks();
+        getInstance().addHooks();
 
         // Set the start Time for stats.
         BotWorker.setStartTime(System.currentTimeMillis());
 
         // Initialize the Addon-Manager.
-        instance.addonManager = new AddonManager();
+        getInstance().setAddonManager(new AddonManager());
 
-        // Initialize the Addon-Loader.
-        AddonLoader.loadAllAddons();
+        if (Data.isModuleActive("addons")) {
+            // Initialize the Addon-Loader.
+            AddonLoader.loadAllAddons();
 
-        // Start all Addons.
-        instance.addonManager.startAddons();
+            // Start all Addons.
+            getInstance().getAddonManager().startAddons();
+        }
 
         // Create checker Thread.
-        instance.createCheckerThread();
+        getInstance().createCheckerThread();
 
         // Create Heartbeat Thread.
-        instance.createHeartbeatThread();
+        getInstance().createHeartbeatThread();
     }
 
     /**
      * Called to add all Events.
      */
     private void addEvents() {
-        BotWorker.addEvent(new GameEvents(), new LoggingEvents(), new MenuEvents(), new OtherEvents());
-        BotWorker.getShardManager().addEventListener(new CustomEvents());
+        BotWorker.addEvent(new MenuEvents(), new OtherEvents());
+
+        if (Data.isModuleActive("logging"))
+            BotWorker.addEvent(new LoggingEvents());
+
+        if (Data.isModuleActive("games"))
+            BotWorker.addEvent(new GameEvents());
+
+        if (Data.isModuleActive("customevents"))
+            BotWorker.getShardManager().addEventListener(new CustomEvents());
     }
 
     /**
@@ -332,12 +357,14 @@ public class Main {
         log.info("[Main] Shutdown init. !");
         BotWorker.setState(BotState.STOPPED);
 
-        // Deleting every temporal voicechannel.
-        for (String voiceIds : ArrayUtil.temporalVoicechannel) {
-            VoiceChannel voiceChannel = BotWorker.getShardManager().getVoiceChannelById(voiceIds);
+        if (Data.isModuleActive("temporalvoice")) {
+            // Deleting every temporal voicechannel.
+            for (String voiceIds : ArrayUtil.temporalVoicechannel) {
+                VoiceChannel voiceChannel = BotWorker.getShardManager().getVoiceChannelById(voiceIds);
 
-            if (voiceChannel != null) {
-                voiceChannel.delete().complete();
+                if (voiceChannel != null) {
+                    voiceChannel.delete().complete();
+                }
             }
         }
 
@@ -348,15 +375,19 @@ public class Main {
             log.info("[Main] Closed Database Connection!");
         }
 
-        // Shutdown every Addon.
-        log.info("[Main] Disabling every Addon!");
-        getAddonManager().stopAddons();
-        log.info("[Main] Every Addon has been disabled!");
+        if (Data.isModuleActive("addons")) {
+            // Shutdown every Addon.
+            log.info("[Main] Disabling every Addon!");
+            getAddonManager().stopAddons();
+            log.info("[Main] Every Addon has been disabled!");
+        }
 
-        // Close the Twitch-Client
-        log.info("[Main] Closing Twitch API Instance!");
-        getNotifier().getTwitchClient().close();
-        log.info("[Main] Twitch API Instance closed!");
+        if (Data.isModuleActive("notifier")) {
+            // Close the Twitch-Client
+            log.info("[Main] Closing Twitch API Instance!");
+            getNotifier().getTwitchClient().close();
+            log.info("[Main] Twitch API Instance closed!");
+        }
 
         // Shutdown the Bot instance.
         log.info("[Main] JDA Instance shutdown init. !");
@@ -547,7 +578,7 @@ public class Main {
      * Method creates a Thread which sends a heartbeat to a URL in an x seconds interval.
      */
     public void createHeartbeatThread() {
-        String heartbeatUrl = instance.config.getConfiguration().getString("heartbeat.url", null);
+        String heartbeatUrl = getInstance().getConfig().getConfiguration().getString("heartbeat.url", null);
 
 
         if (heartbeatUrl == null || heartbeatUrl.isBlank() || heartbeatUrl.equalsIgnoreCase("none"))
@@ -562,7 +593,7 @@ public class Main {
                         Sentry.captureException(exception);
                     }
                 }, Sentry::captureException,
-                Duration.ofSeconds(instance.config.getConfiguration().getInt("heartbeat.interval", 60)), true, true);
+                Duration.ofSeconds(getInstance().getConfig().getConfiguration().getInt("heartbeat.interval", 60)), true, true);
     }
 
     /**
@@ -576,59 +607,5 @@ public class Main {
         }
 
         return instance;
-    }
-
-    /**
-     * Retrieve the Instance of the Notifier.
-     *
-     * @return {@link Notifier} Instance of the Notifier.
-     */
-    public Notifier getNotifier() {
-        return notifier;
-    }
-
-    /**
-     * Retrieve the Instance of the CommandManager.
-     *
-     * @return {@link CommandManager} Instance of the CommandManager.
-     */
-    public CommandManager getCommandManager() {
-        return commandManager;
-    }
-
-    /**
-     * Retrieve the Instance of the AddonManager.
-     *
-     * @return {@link AddonManager} Instance of the AddonManager.
-     */
-    public AddonManager getAddonManager() {
-        return addonManager;
-    }
-
-    /**
-     * Retrieve the Instance of the LoggerQueue.
-     *
-     * @return {@link LoggerQueue} Instance of the LoggerQueue.
-     */
-    public LoggerQueue getLoggerQueue() {
-        return loggerQueue;
-    }
-
-    /**
-     * Retrieve the Instance of the Music-Worker.
-     *
-     * @return {@link MusicWorker} Instance of the Music-Worker.
-     */
-    public MusicWorker getMusicWorker() {
-        return musicWorker;
-    }
-
-    /**
-     * Retrieve the Instance of the Config.
-     *
-     * @return {@link Config} Instance of the Config.
-     */
-    public Config getConfig() {
-        return config;
     }
 }

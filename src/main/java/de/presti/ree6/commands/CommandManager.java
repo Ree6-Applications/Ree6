@@ -9,6 +9,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.custom.CustomCommand;
 import de.presti.ree6.utils.data.ArrayUtil;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -68,8 +69,18 @@ public class CommandManager {
 
         for (Class<? extends ICommand> aClass : classes) {
             log.info("Loading Command {}", aClass.getSimpleName());
+            Command commandAnnotation = aClass.getAnnotation(Command.class);
+
+            if (Objects.requireNonNull(commandAnnotation.category()) == Category.MOD) {
+                if (!Data.isModuleActive("moderation")) continue;
+            } else {
+                if (!Data.isModuleActive(commandAnnotation.category().name().toLowerCase())) continue;
+            }
+
             addCommand(aClass.getDeclaredConstructor().newInstance());
         }
+
+        if (!Data.isModuleActive("ai")) return;
 
         StringBuilder stringBuilder = new StringBuilder();
 

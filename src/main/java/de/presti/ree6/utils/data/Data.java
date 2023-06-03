@@ -85,5 +85,9 @@ public class Data {
     public static String getBotName() {
         return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.name", "Ree6");
     }
+
+    public static boolean isModuleActive(String moduleName) {
+        return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.modules." + moduleName, true);
+    }
 }
 
