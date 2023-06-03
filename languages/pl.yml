@@ -303,7 +303,7 @@ message:
     unknownBot: "Nieznany bot!"
     success: "Zaimportowano dane z %s użytkowników!"
     error:
-      unknown: "An unknown error occurred! (%s)"
+      unknown: "Wystąpił nieznany błąd! (%s)"
       noData: "Nie znaleziono danych!"
       visibility: "Nie możesz zaimportować danych z bota, który nie jest widoczny dla wszystkich!"
   kick:
@@ -423,7 +423,7 @@ message:
       20: "Bardzo wątpliwie."
   brs:
     autoRole:
-      missingPermission: "Ree6-BRS (Bug-Report-System)\nWe detected that I am not allowed to AutoRole people since I am missing the ``Manage Roles`` Permission!\nI require this Permission to give out roles to users!\nThe role that I couldn't give is ``%s``!"
+      missingPermission: "Ree6-BRS (ang. \"Bug Report System\", pol. \"System Zgłoszenia Błędów\")\nWykryliśmy, że nie mam uprawnień do ludzi z automatycznymi rolami, ponieważ brakuje mi uprawnień ``Zarządzenia rolami``!\nWymagam tego uprawnienia do nadania roli użytkownikom!\nRola, której nie mogłem wydać, to ``%s``!"
       hierarchy: "Ree6-BRS (ang. \"Bug Report System\", pol. \"System Zgłoszenia Błędów\")\nWykryliśmy, że nie mam uprawnień do wydawania automatycznych roli, ponieważ moja rola znajduje się poniżej roli automatycznej!\nProszę przenieść moją rolę nad rolą automatyczną!\nRolą, która powoduje problem to ``%s``!"
       deleted: "Ree6-BRS (ang. \"Bug Report System\", pol. \"System Zgłoszenia Błędów\")\nWykryliśmy, że nie mogę wydawać roli automatyczne, ponieważ rola automatyczna została usunięta!\nUsunęliśmy daną rolę!"
   ticket:
