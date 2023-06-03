@@ -1,5 +1,6 @@
 package de.presti.ree6.news;
 
+import de.presti.ree6.utils.data.Data;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class AnnouncementManager {
      * @param announcement Announcement to add.
      */
     public static void addAnnouncement(Announcement announcement) {
+        if (!Data.isModuleActive("news")) return;
         announcementList.add(announcement);
     }
 
@@ -40,6 +42,8 @@ public class AnnouncementManager {
      * @return True if the Guild already received the announcement.
      */
     public static boolean hasReceivedAnnouncement(long guildId, String announcementId) {
+        if (!Data.isModuleActive("news")) return true;
+
         if (receivedAnnouncements.containsKey(guildId)) {
             return receivedAnnouncements.get(guildId).contains(announcementId);
         }
@@ -65,6 +69,7 @@ public class AnnouncementManager {
 
     /**
      * Method used to remove announcements from the list.
+     *
      * @param id The ID of the announcement to remove.
      */
     public static void removeAnnouncement(String id) {

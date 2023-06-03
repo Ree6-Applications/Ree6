@@ -394,7 +394,7 @@ public class CommandManager {
         ICommand command = getCommandByName(arguments[0]);
 
         // Check if there is even a Command with that name.
-        if (command == null) {
+        if (command == null && Data.isModuleActive("customcommands")) {
             CustomCommand customCommand = SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "SELECT * FROM CustomCommand WHERE GID=:gid AND COMMAND=:command", Map.of("gid", guild.getId(), "command", arguments[0].toLowerCase()));
             if (customCommand != null) {
                 MessageChannelUnion messageChannelUnion = textChannel;
@@ -416,6 +416,9 @@ public class CommandManager {
                 return true;
             }
 
+            sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound"), 5, textChannel, null);
+            return false;
+        } else if (command == null) {
             sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound"), 5, textChannel, null);
             return false;
         }
