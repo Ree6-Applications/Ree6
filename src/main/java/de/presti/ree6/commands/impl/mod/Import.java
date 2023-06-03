@@ -38,7 +38,7 @@ public class Import implements ICommand {
         }
 
         if (commandEvent.getArguments(true).length == 1) {
-            switch (commandEvent.getArguments()[0]) {
+            switch (commandEvent.getArguments()[0].toLowerCase()) {
                 case "mee6" -> importFromMee6(commandEvent);
 
                 case "amari" -> importFromAmari(commandEvent);
