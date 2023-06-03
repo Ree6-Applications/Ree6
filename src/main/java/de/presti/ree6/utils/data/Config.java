@@ -104,14 +104,14 @@ public class Config {
                     .parent().path("notifier").addDefault(true).commentSide("Enable the notifier module.")
                     .parent().path("streamtools").addDefault(true).commentSide("Enable the Stream-tools module.")
                     .parent().path("temporalvoice").addDefault(true).commentSide("Enable the Temporal-voice module.")
-                    .parent().path("tickets").addDefault(true).commentSide("Enable the tickets module.")
+                    .parent().path("tickets").addDefault(true).commentSide("Enable the Tickets module.")
                     .parent().path("suggestions").addDefault(true).commentSide("Enable the suggestions module.")
                     .parent().path("customcommands").addDefault(true).commentSide("Enable the custom Commands module.")
                     .parent().path("customevents").addDefault(true).commentSide("Enable the custom Events module.")
                     .parent().path("ai").addDefault(true).commentSide("Enable the AI module.")
                     .parent().path("addons").addDefault(false).commentSide("Enable the Addons module.")
                     .parent().path("news").addDefault(true).commentSide("Enable the news command/module.")
-                    .parent().path("games").addDefault(true).commentSide("Enable the games module.")
+                    .parent().path("games").addDefault(true).commentSide("Enable the Games module.")
                     .parent().path("reactionroles").addDefault(true).commentSide("Enable the reaction-roles module.")
                     .parent().path("slashcommands").addDefault(true).commentSide("Enable the slash-commands support.");
 
