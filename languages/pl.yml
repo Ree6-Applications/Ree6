@@ -303,7 +303,7 @@ message:
     unknownBot: "Nieznany bot!"
     success: "Zaimportowano dane z %s użytkowników!"
     error:
-      unknown: "Wystąpił nieznany błąd! ({})"
+      unknown: "An unknown error occurred! (%s)"
       noData: "Nie znaleziono danych!"
       visibility: "Nie możesz zaimportować danych z bota, który nie jest widoczny dla wszystkich!"
   kick:
