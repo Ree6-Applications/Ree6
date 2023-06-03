@@ -1,7 +1,7 @@
 language:
   name: "Ukrainian"
   locale: "uk"
-  version: "2.4.6"
+  version: "2.4.12"
   author: "xlanyleeet"
 logging:
   banned: ":airplane_departure: %s **заблоковано.**"
