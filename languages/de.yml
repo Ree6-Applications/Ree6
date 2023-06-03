@@ -1,7 +1,7 @@
 language:
   name: "German"
   locale: "de"
-  version: "2.4.6"
+  version: "2.4.12"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **gebannt.**"
@@ -303,7 +303,7 @@ message:
     unknownBot: "Unbekannter Bot!"
     success: "Erfolgreich daten von %s Nutzern importiert!"
     error:
-      unknown: "An unknown error occurred! (%s)"
+      unknown: "Ein unbekannter Fehler ist beim Importieren aufgetreten! (%s)"
       noData: "Keine Daten gefunden!"
       visibility: "Du kannst keine Daten von einem Bot importieren welche nicht öffentlich sind."
   kick:
@@ -423,7 +423,7 @@ message:
       20: "Ich bezweifle es."
   brs:
     autoRole:
-      missingPermission: "Ree6-BRS (Bug-Report-System)\nWe detected that I am not allowed to AutoRole people since I am missing the ``Manage Roles`` Permission!\nI require this Permission to give out roles to users!\nThe role that I couldn't give is ``%s``!"
+      missingPermission: "Ree6-BRS (Bug-Report-System)\nWir haben erkannt das ich keine Rollen verteilen kann, da mir die Berechtigung ``Manage Roles`` fehlt!\nIch benötige diese, um Rollen an Nutzern zu verteilen!\nDie Rolle welche ich nicht zuteilen konnte: ``%s``!"
       hierarchy: "Ree6-BRS (Bug-Report-System)\nWir haben bemerkt, dass ich nicht genügend Berechtigungen habe, um die angegebene Rolle Nutzern zuzuweisen!\nBitte setze meine Rolle über diese angegebenen Rolle!\n``%s``"
       deleted: "Ree6-BRS (Bug-Report-System)\nWir haben bemerkt, dass eine bestimmte Rolle Nutzern nicht mehr zugewiesen werden kann.\nDa diese nicht mehr existiert, sie wurde aus dem System entfernt!"
   ticket:
