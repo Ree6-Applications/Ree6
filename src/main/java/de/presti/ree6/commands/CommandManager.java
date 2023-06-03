@@ -183,6 +183,8 @@ public class CommandManager {
      * @param jda Instance of the Bot.
      */
     public void addSlashCommand(JDA jda) {
+        if (!Data.isModuleActive("slashcommands")) return;
+
         CommandListUpdateAction listUpdateAction = jda.updateCommands();
 
         for (ICommand command : getCommands()) {
@@ -333,6 +335,7 @@ public class CommandManager {
 
         // Check if it is a Slash Command.
         if (slashCommandInteractionEvent != null) {
+            if (!Data.isModuleActive("slashcommands")) return false;
             if (!performSlashCommand(textChannel, slashCommandInteractionEvent)) {
                 return false;
             }

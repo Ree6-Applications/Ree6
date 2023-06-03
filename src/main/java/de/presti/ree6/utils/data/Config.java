@@ -111,7 +111,9 @@ public class Config {
                     .parent().path("ai").addDefault(true).commentSide("Enable the AI module.")
                     .parent().path("addons").addDefault(false).commentSide("Enable the Addons module.")
                     .parent().path("news").addDefault(true).commentSide("Enable the news command/module.")
-                    .parent().path("games").addDefault(true).commentSide("Enable the games module.");
+                    .parent().path("games").addDefault(true).commentSide("Enable the games module.")
+                    .parent().path("reactionroles").addDefault(true).commentSide("Enable the reaction-roles module.")
+                    .parent().path("slashcommands").addDefault(true).commentSide("Enable the slash-commands support.");
 
             yamlFile.path("heartbeat")
                     .comment("Heartbeat Configuration, for status reporting").blankLine()

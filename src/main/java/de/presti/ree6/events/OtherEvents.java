@@ -10,7 +10,6 @@ import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.custom.CustomCommand;
 import de.presti.ree6.sql.entities.ReactionRole;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.Tickets;
@@ -55,7 +54,6 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -192,60 +190,63 @@ public class OtherEvents extends ListenerAdapter {
             });
         }
 
-        Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GUILDID=:gid", Map.of("gid", event.getGuild().getIdLong()));
-        if (tickets != null) {
-            Category category = event.getGuild().getCategoryById(tickets.getTicketCategory());
+        if (Data.isModuleActive("tickets")) {
+            Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GUILDID=:gid", Map.of("gid", event.getGuild().getIdLong()));
+            if (tickets != null) {
+                Category category = event.getGuild().getCategoryById(tickets.getTicketCategory());
 
-            if (category != null) {
-                List<TextChannel> channels = category.getTextChannels().stream().filter(c -> c.getTopic() != null && c.getTopic().equalsIgnoreCase(event.getUser().getId())).toList();
-                if (!channels.isEmpty()) {
-                    TextChannel channel = channels.get(0);
-                    StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.append(Data.getBotName() + " Ticket transcript")
-                            .append(" ")
-                            .append(ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)))
-                            .append("\n")
-                            .append("\n");
-
-
-                    for (Message message : channel.getIterableHistory().reverse()) {
-                        stringBuilder
-                                .append("[")
-                                .append(message.getTimeCreated().toZonedDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
-                                .append("]")
+                if (category != null) {
+                    List<TextChannel> channels = category.getTextChannels().stream().filter(c -> c.getTopic() != null && c.getTopic().equalsIgnoreCase(event.getUser().getId())).toList();
+                    if (!channels.isEmpty()) {
+                        TextChannel channel = channels.get(0);
+                        StringBuilder stringBuilder = new StringBuilder();
+                        stringBuilder.append(Data.getBotName())
+                                .append(" Ticket transcript")
                                 .append(" ")
-                                .append(message.getAuthor().getAsTag())
-                                .append(" ")
-                                .append("->")
-                                .append(" ")
-                                .append(message.getContentRaw());
+                                .append(ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)))
+                                .append("\n")
+                                .append("\n");
 
-                        if (!message.getAttachments().isEmpty()) {
-                            for (Message.Attachment attachment : message.getAttachments()) {
-                                stringBuilder.append("\n").append(attachment.getUrl());
+
+                        for (Message message : channel.getIterableHistory().reverse()) {
+                            stringBuilder
+                                    .append("[")
+                                    .append(message.getTimeCreated().toZonedDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
+                                    .append("]")
+                                    .append(" ")
+                                    .append(message.getAuthor().getAsTag())
+                                    .append(" ")
+                                    .append("->")
+                                    .append(" ")
+                                    .append(message.getContentRaw());
+
+                            if (!message.getAttachments().isEmpty()) {
+                                for (Message.Attachment attachment : message.getAttachments()) {
+                                    stringBuilder.append("\n").append(attachment.getUrl());
+                                }
                             }
+
+                            stringBuilder.append("\n");
                         }
 
-                        stringBuilder.append("\n");
+                        stringBuilder.append("\n").append("Closed by").append(" ").append(event.getUser().getEffectiveName());
+
+                        WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+                        webhookMessageBuilder.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
+                        webhookMessageBuilder.setUsername(Data.getBotName() + "-Tickets");
+
+                        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                        webhookEmbedBuilder.setDescription("Here is the transcript of the ticket " + tickets.getTicketCount() + "!");
+                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+                        webhookEmbedBuilder.setColor(BotWorker.randomEmbedColor().getRGB());
+
+                        webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+                        webhookMessageBuilder.addFile(tickets.getTicketCount() + "_transcript.txt", stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
+
+                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), tickets.getLogChannelId(), tickets.getLogChannelWebhookToken(), false);
+                        channel.delete().queue();
                     }
-
-                    stringBuilder.append("\n").append("Closed by").append(" ").append(event.getUser().getEffectiveName());
-
-                    WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
-                    webhookMessageBuilder.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-                    webhookMessageBuilder.setUsername(Data.getBotName() + "-Tickets");
-
-                    WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
-
-                    webhookEmbedBuilder.setDescription("Here is the transcript of the ticket " + tickets.getTicketCount() + "!");
-                    webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
-                    webhookEmbedBuilder.setColor(BotWorker.randomEmbedColor().getRGB());
-
-                    webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-                    webhookMessageBuilder.addFile(tickets.getTicketCount() + "_transcript.txt", stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
-
-                    WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), tickets.getLogChannelId(), tickets.getLogChannelWebhookToken(), false);
-                    channel.delete().queue();
                 }
             }
         }
@@ -261,28 +262,30 @@ public class OtherEvents extends ListenerAdapter {
                 ArrayUtil.voiceJoined.put(event.getMember().getUser(), System.currentTimeMillis());
             }
 
-            TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "SELECT * FROM TemporalVoicechannel WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
+            if (Data.isModuleActive("temporalvoice")) {
+                TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "SELECT * FROM TemporalVoicechannel WHERE GID=:gid", Map.of("gid", event.getGuild().getId()));
 
-            if (temporalVoicechannel != null) {
-                VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
+                if (temporalVoicechannel != null) {
+                    VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
 
-                if (voiceChannel == null)
-                    return;
+                    if (voiceChannel == null)
+                        return;
 
-                if (!temporalVoicechannel.getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
-                    return;
-                }
+                    if (!temporalVoicechannel.getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
+                        return;
+                    }
 
-                if (voiceChannel.getParentCategory() != null) {
-                    String preName = LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", "SPLIT");
-                    preName = preName.split("SPLIT")[0];
+                    if (voiceChannel.getParentCategory() != null) {
+                        String preName = LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", "SPLIT");
+                        preName = preName.split("SPLIT")[0];
 
-                    String finalPreName = preName;
-                    voiceChannel.getParentCategory().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName",
-                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)).queue(channel -> {
-                        event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
-                        ArrayUtil.temporalVoicechannel.add(channel.getId());
-                    });
+                        String finalPreName = preName;
+                        voiceChannel.getParentCategory().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName",
+                                event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)).queue(channel -> {
+                            event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
+                            ArrayUtil.temporalVoicechannel.add(channel.getId());
+                        });
+                    }
                 }
             }
         } else if (event.getChannelJoined() == null) {
@@ -317,10 +320,12 @@ public class OtherEvents extends ListenerAdapter {
                 Main.getInstance().getMusicWorker().disconnect(event.getGuild());
             }
 
-            if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())
-                    && (event.getChannelLeft().getMembers().isEmpty() || (event.getChannelLeft().getMembers().size() == 1 &&
-                    event.getChannelLeft().getMembers().get(0).getIdLong() == event.getJDA().getSelfUser().getIdLong()))) {
-                event.getChannelLeft().delete().queue(c -> ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId()));
+            if (Data.isModuleActive("temporalvoice")) {
+                if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())
+                        && (event.getChannelLeft().getMembers().isEmpty() || (event.getChannelLeft().getMembers().size() == 1 &&
+                        event.getChannelLeft().getMembers().get(0).getIdLong() == event.getJDA().getSelfUser().getIdLong()))) {
+                    event.getChannelLeft().delete().queue(c -> ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId()));
+                }
             }
         } else {
 
@@ -422,24 +427,26 @@ public class OtherEvents extends ListenerAdapter {
                     }
                 }
 
-                if (!ArrayUtil.timeout.contains(event.getMember())) {
+                if (Data.isModuleActive("level")) {
+                    if (!ArrayUtil.timeout.contains(event.getMember())) {
 
-                    ChatUserLevel userLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
+                        ChatUserLevel userLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
 
-                    if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) {
-                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(),
-                                "message.levelUp", userLevel.getLevel(), LanguageService.getByGuild(event.getGuild(), "label.chat")
-                                , event.getMember().getAsMention()), event.getChannel());
+                        if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) {
+                            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(),
+                                    "message.levelUp", userLevel.getLevel(), LanguageService.getByGuild(event.getGuild(), "label.chat")
+                                    , event.getMember().getAsMention()), event.getChannel());
+                        }
+
+                        SQLSession.getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), userLevel);
+
+                        ArrayUtil.timeout.add(event.getMember());
+
+                        ThreadUtil.createThread(x -> ArrayUtil.timeout.remove(event.getMember()), null, Duration.ofSeconds(30), false, false);
                     }
 
-                    SQLSession.getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), userLevel);
-
-                    ArrayUtil.timeout.add(event.getMember());
-
-                    ThreadUtil.createThread(x -> ArrayUtil.timeout.remove(event.getMember()), null, Duration.ofSeconds(30), false, false);
+                    AutoRoleHandler.handleChatLevelReward(event.getGuild(), event.getMember());
                 }
-
-                AutoRoleHandler.handleChatLevelReward(event.getGuild(), event.getMember());
             }
         }
     }
@@ -449,6 +456,8 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+        if (!Data.isModuleActive("reactionRoles")) return;
+
         if (event.getMember() == null) return;
 
         event.retrieveMessage().queue(message -> {
@@ -509,6 +518,7 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
+        if (!Data.isModuleActive("reactionRoles")) return;
         if (event.getMember() == null) return;
 
         String reactionCode = event.getReaction().getEmoji().getAsReactionCode();
@@ -537,7 +547,9 @@ public class OtherEvents extends ListenerAdapter {
      * @inheritDoc
      */
     @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        if (!Data.isModuleActive("slashcommands")) return;
+
         // Only accept commands from guilds
         if (!event.isFromGuild() && event.getMember() != null) return;
 

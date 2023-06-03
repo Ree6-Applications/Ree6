@@ -35,6 +35,11 @@ public class Suggestion implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
+        if (!Data.isModuleActive("suggestions")) {
+            commandEvent.reply("Suggestions module disabled!", 5);
+            return;
+        }
+
         if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.ADMINISTRATOR)) {
             commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.ADMINISTRATOR.name()), 5);
             return;
