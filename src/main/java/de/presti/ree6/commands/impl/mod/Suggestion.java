@@ -76,7 +76,7 @@ public class Suggestion implements ICommand {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle(commandEvent.getResource("label.suggestionMenu"));
         embedBuilder.setColor(Color.ORANGE);
-        embedBuilder.setDescription(commandEvent.getResource("message.suggestion.suggestionMenu"));
+        embedBuilder.setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "message_suggestion_menu").getStringValue());
         embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
         messageCreateBuilder.setEmbeds(embedBuilder.build());
         messageCreateBuilder.setActionRow(Button.primary("re_suggestion", commandEvent.getResource("message.suggestion.suggestionMenuPlaceholder")));

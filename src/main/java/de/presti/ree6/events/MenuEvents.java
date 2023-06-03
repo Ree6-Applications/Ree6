@@ -99,7 +99,9 @@ public class MenuEvents extends ListenerAdapter {
                                 .addPermissionOverride(event.getMember(), List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS), List.of())
                                 .queue(channel -> {
                                     MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-                                    messageCreateBuilder.setEmbeds(new EmbedBuilder().setTitle(LanguageService.getByGuild(event.getGuild(), "label.ticket")).setDescription("Welcome to your Ticket!").setThumbnail(event.getMember().getEffectiveAvatarUrl()).setColor(Color.GREEN).setTimestamp(Instant.now()).build());
+                                    messageCreateBuilder.setEmbeds(new EmbedBuilder().setTitle(LanguageService.getByGuild(event.getGuild(), "label.ticket"))
+                                            .setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_ticket_open").getStringValue())
+                                            .setThumbnail(event.getMember().getEffectiveAvatarUrl()).setColor(Color.GREEN).setTimestamp(Instant.now()).build());
                                     messageCreateBuilder.addActionRow(Button.primary("re_ticket_close", LanguageService.getByGuild(event.getGuild(), "label.closeTicket")));
                                     Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), channel);
                                     event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.created", channel.getAsMention())).queue();

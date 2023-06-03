@@ -213,6 +213,12 @@ public class Main {
                     "configuration_work_delay", "Delay between each work", 5L));
             SettingsManager.getSettings().add(new Setting("-1",
                     "configuration_steal_delay", "Delay between each steal", 5L));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "message_ticket_menu", "Message that should display in the Ticket Menu.", "By clicking on the Button below you can open a Ticket!"));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "message_ticket_open", "Message that should display when a Ticket is opened.", "Welcome to your Ticket!"));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "message_suggestion_menu", "Message that should display in the Suggestion Menu.", "Suggest something"));
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
@@ -492,6 +498,7 @@ public class Main {
                             TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
 
                             if (textChannel != null && textChannel.canTalk())
+                                // TODO:: translate.
                                 textChannel.sendMessage("Happy birthday to <@" + birthday.getUserId() + ">!").queue();
                         });
 
