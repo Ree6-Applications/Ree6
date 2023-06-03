@@ -1,7 +1,7 @@
 language:
   name: "Polish"
   locale: "pl"
-  version: "2.4.6"
+  version: "2.4.12"
   author: "Trust"
 logging:
   banned: ":airplane_departure: %s **zbanowany/a.**"
