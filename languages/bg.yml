@@ -303,7 +303,7 @@ message:
     unknownBot: "Непознат бот!"
     success: "Успешно импортиране на данни от %s потребители!"
     error:
-      unknown: "Появи се непозната грешка! ({})"
+      unknown: "An unknown error occurred! (%s)"
       noData: "Не бяха открити никакви данни!"
       visibility: "Не можеш да импортираш данни от бот, който не е видим за всички!"
   kick:
