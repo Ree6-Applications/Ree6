@@ -1,7 +1,7 @@
 language:
   name: "Bulgarian"
   locale: "bg"
-  version: "2.4.6"
+  version: "2.4.12"
   author: "D3Y4N"
 logging:
   banned: ":airplane_departure: %s **блокиран.**"
