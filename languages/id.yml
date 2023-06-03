@@ -303,7 +303,7 @@ message:
     unknownBot: "Bot Tidak Diketahui!"
     success: "Berhasil mengimpor data dari %s User!"
     error:
-      unknown: "Terjadi error yang tidak diketahui! ({})"
+      unknown: "An unknown error occurred! (%s)"
       noData: "Tidak ada Data yang dtemukan!"
       visibility: "Kamu tidak dapat mengimpor data dari Bot yang tidak dapat dilihat oleh semua orang!"
   kick:
