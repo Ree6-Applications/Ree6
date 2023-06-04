@@ -1,7 +1,7 @@
 language:
   name: "Indonesia"
   locale: "id"
-  version: "2.4.12"
+  version: "3.0.0"
   author: "Gorengan_Hunter, SpyCat"
 logging:
   banned: ":airplane_departure: %s **telah diban.**"
@@ -469,7 +469,7 @@ message:
     error: "Sesuatu ada yang salah saat membenarkan audiomu!\nAlasan: %s"
   reactions:
     roleAssign: "Kamu telah menambahkan Role %s ke Reaction!"
-    reactionNeeded: "Kamu harus reaksi ke pesanya dengan reaksi yang kamu mau tambahkan %s!"
+    reactionNeeded: "You need to react to this message with the reaction you want to assign %s to!"
     roleNotFound: "Role yang kamu mau tambahkan tidak ada!"
     removed: "Telah menghapuskan Reaction-Role untuk role %s!"
     roleAdded: "Kamu telah mendapatkan role %s!"
@@ -537,6 +537,22 @@ message:
   pickupline:
     response: ":speaking_head: %s"
     responseNsfw: ":red_circle: ||%s|| **NSFW**"
+  money:
+    notEnoughMoney: "You don't have enough money for this action!"
+    withdraw: "You have successfully withdrawn %s$!"
+    deposit: "You have successfully deposited %s$!"
+    send: "You have successfully sent %s$ to %s!"
+    balance: "The Balance of %s contains %s$ in cash and %s$ on the Bank!"
+  steal:
+    success: "You have successfully stolen %s$ from %s!"
+    failed: "You have failed to steal %s$ from %s!"
+    cooldown: "You are on cooldown! You can steal again in about %s seconds."
+    self: "You can't steal from yourself!"
+    notEnoughMoney: "%s doesn't have enough money!"
+  work:
+    success: "You have successfully worked and earned %s$!"
+    cooldown: "You are on cooldown! You can work again in about %s seconds."
+    failed: "You have failed to work!"
 game:
   description:
     blackjack: "Mainkan Blackjack dengan temanmu!"
@@ -634,6 +650,9 @@ command:
     musicquiz: "Mainkan Kuis Musik dengan teman anda!"
     musicpanel: "Akses UI sederhana untuk mengelola Sistem Musik!"
     schedule: "Jadwalkan pesan untuk nanti atau untuk diulang!"
+    money: "Manage your money!"
+    steal: "Steal money from other users!"
+    daily: "Get your own money from doing work!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"
@@ -641,5 +660,6 @@ category:
   fun: "Utilitas seru yang bisa memberi kamu kekuatan untuk melakukan hal yang bodoh karena kamu bisa!"
   level: "Alat level untuk mengetahui progress kamu di server."
   community: "Alat komunitas yang bisa dipakai untuk interaksi dengan komunitas kamu."
+  economy: "Economy Tools that allow you to manage your money."
   nsfw: "NSFW-NSFW yang hanya bisa digunakan di channel NSFW."
   hidden: "Command rahasia yang hanya bisa terlihat untuk Pemilik Bot ini."
