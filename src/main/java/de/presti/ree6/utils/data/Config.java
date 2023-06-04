@@ -132,7 +132,8 @@ public class Config {
 
             yamlFile.path("openai").path("apiToken").commentSide("Your OpenAI API-Token, for ChatGPT!")
                     .addDefault("OpenAI API-Token")
-                    .parent().path("apiUrl").addDefault("https://api.openai.com/v1/chat/completions").commentSide("The URL to the OpenAI API.");
+                    .parent().path("apiUrl").addDefault("https://api.openai.com/v1/chat/completions").commentSide("The URL to the OpenAI API.")
+                    .parent().path("model").addDefault("gpt-3.5-turbo-0301").commentSide("The Model used for the OpenAI API.");
 
             yamlFile.setBlankLine("openai");
 

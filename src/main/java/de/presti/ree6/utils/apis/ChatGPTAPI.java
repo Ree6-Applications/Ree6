@@ -94,6 +94,6 @@ public class ChatGPTAPI {
     public static String getResponse(List<Message> messages) {
         if (!Data.isModuleActive("ai")) return "AI Module has been disabled!";
 
-        return chatGPT.ask("ggml-gpt4all-j", messages);
+        return chatGPT.ask(Main.getInstance().getConfig().getConfiguration().getString("openai.model", "gpt-3.5-turbo-0301"), messages);
     }
 }
