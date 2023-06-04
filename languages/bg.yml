@@ -1,7 +1,7 @@
 language:
   name: "Bulgarian"
   locale: "bg"
-  version: "2.4.12"
+  version: "3.0.0"
   author: "D3Y4N"
 logging:
   banned: ":airplane_departure: %s **блокиран.**"
@@ -469,7 +469,7 @@ message:
     error: "Нещо се е объркало при конвертирането на вашето аудио!\nПричина: %s"
   reactions:
     roleAssign: "Възложили сте ролята %s на реакцията!"
-    reactionNeeded: "Трябва да реагирате на съобщението с реакцията, на която искате да присвоите %s!"
+    reactionNeeded: "You need to react to this message with the reaction you want to assign %s to!"
     roleNotFound: "Ролята, която искате да присвоите на реакцията, не е намерена!"
     removed: "Успешно премахване на Reaction-Role за ролята %s!"
     roleAdded: "Ти получи ролята %s!"
@@ -537,6 +537,22 @@ message:
   pickupline:
     response: ":speaking_head: %s"
     responseNsfw: ":red_circle: ||%s|| **NSFW**"
+  money:
+    notEnoughMoney: "You don't have enough money for this action!"
+    withdraw: "You have successfully withdrawn %s$!"
+    deposit: "You have successfully deposited %s$!"
+    send: "You have successfully sent %s$ to %s!"
+    balance: "The Balance of %s contains %s$ in cash and %s$ on the Bank!"
+  steal:
+    success: "You have successfully stolen %s$ from %s!"
+    failed: "You have failed to steal %s$ from %s!"
+    cooldown: "You are on cooldown! You can steal again in about %s seconds."
+    self: "You can't steal from yourself!"
+    notEnoughMoney: "%s doesn't have enough money!"
+  work:
+    success: "You have successfully worked and earned %s$!"
+    cooldown: "You are on cooldown! You can work again in about %s seconds."
+    failed: "You have failed to work!"
 game:
   description:
     blackjack: "Играй Блекджек с приятелите си!"
@@ -634,6 +650,9 @@ command:
     musicquiz: "Играйте с приятелите си музикална викторина!"
     musicpanel: "Достъп до прост потребителски интерфейс за управление на музикалната система!"
     schedule: "Планиране на съобщенията за по-късно или за повторно време!"
+    money: "Manage your money!"
+    steal: "Steal money from other users!"
+    daily: "Get your own money from doing work!"
 category:
   info: "Използва се за събиране на информация или предоставяне на информация."
   moderation: "Инструменти за модериране, които могат да ви помогнат да управлявате потребители или да предотвратите нарушаване на правилата на сървъра."
@@ -641,5 +660,6 @@ category:
   fun: "Забавни помощни програми, които ви дават възможност да правите глупости, защото можете!"
   level: "Инструменти за повишаване на нивото, които ви позволяват да следите напредъка на сървъра.."
   community: "Инструменти, които ви позволяват да взаимодействате с общността си."
+  economy: "Economy Tools that allow you to manage your money."
   nsfw: "NSFW неща, които може да ползвате само в NSFW канали."
   hidden: "Скрити команди, които са видими само за притежателя на бота."
