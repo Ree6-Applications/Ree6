@@ -303,7 +303,7 @@ message:
     unknownBot: "Bot Tidak Diketahui!"
     success: "Berhasil mengimpor data dari %s User!"
     error:
-      unknown: "An unknown error occurred! (%s)"
+      unknown: "Terjadi error yang tidak diketahui! (%s)"
       noData: "Tidak ada Data yang dtemukan!"
       visibility: "Kamu tidak dapat mengimpor data dari Bot yang tidak dapat dilihat oleh semua orang!"
   kick:
@@ -423,9 +423,9 @@ message:
       20: "sangat diragukan."
   brs:
     autoRole:
-      missingPermission: "Ree6-BRS (Bug-Report-System)\nWe detected that I am not allowed to AutoRole people since I am missing the ``Manage Roles`` Permission!\nI require this Permission to give out roles to users!\nThe role that I couldn't give is ``%s``!"
-      hierarchy: "Ree6-BRS (Bug-Report-System)\nWe detected that Im not allowed to AutoRole people since my role is below the AutoRole-Role!\nPlease move my role above the AutoRole-Role!\nThe role that causes the Issue is ``%s``!"
-      deleted: "Ree6-BRS (Bug-Report-System)\nWe detected that I can not AutoRole people since the AutoRole-Role has been deleted!\nWe now removed the given Role!"
+      missingPermission: "Ree6-BRS (Bug-Report-System)\nKami telah mendeteksi  kalau kami tidak punya izin untuk AutoRole seseorang, aku kehilangan izin ``Manage Roles``!\nKami butuh izin ini untuk memeberikan role ke orang lain!\nRole yang tidak bisa aku beri adalah ``%s``!"
+      hierarchy: "Ree6-BRS (Bug-Report-System)\nKami telah mendeteksi  kalau kami tidak punya izin untuk AutoRole seseorang karena role kita dibawah AutoRole!\nMohon pindahkan role kita diatas AutoRole!\nRole yang menyebabkan masalah adalah ``%s``!"
+      deleted: "Ree6-BRS (Bug-Report-System)\nKami telah mendeteksi  kalau kami tidak punya izin untuk AutoRole seseorang karena role AutoRole telah dihapus!\nKita telah mengambil lagi role yang diberikan!"
   ticket:
     created: "Tiket telah dibuka untuk kamu! Coba lihat %s"
     alreadyOpen: "Kamu sudah ada tiket yang telah dibuka!"
