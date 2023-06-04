@@ -1,7 +1,7 @@
 language:
   name: "Czech"
   locale: "cs"
-  version: "2.4.6"
+  version: "2.4.12"
   author: "Pogy__"
 logging:
   banned: ":airplane_departure: %s **zablokován.**"
@@ -303,7 +303,7 @@ message:
     unknownBot: "Neznámý bot!"
     success: "Data %s uživatelů byla úspěšně importována!"
     error:
-      unknown: "Došlo k neznámé chybě! ({})"
+      unknown: "Došlo k neznámé chybě! (%s)"
       noData: "Nenalezena žádná data!"
       visibility: "Nemůžete importovat data od Bota, který není viditelný pro všechny!"
   kick:
@@ -423,8 +423,9 @@ message:
       20: "Velmi pochybné."
   brs:
     autoRole:
-      hierarchy: "Ree6-BRS (Bug-Report-System))\nZjistili jsme, že autoRole není lidem povolena, protože moje role je pod AutoRole-Role!\nPřesuňte mou roli nad AutoRole-Role!\nRole způsobující problém je ``%s``!"
-      deleted: "Ree6-BRS (Bug-Report-System))\nZjistili jsme, že nemohu automatické Role od smazání AutoRole-Role uživatele!\nNyní jsme odstranili danou roli!"
+      missingPermission: "Ree6-BRS (Bug-Report-System)\nZjistili jsme, že nemohu automaticky přidělovat role lidem, protože mi chybí oprávnění ``Správa rolí``!\nToto Oprávnění potřebuji, abych mohl uživatelům přidělovat role!\nRole, kterou jsem nemohl přidělit, je ``%s``!"
+      hierarchy: "Ree6-BRS (Bug-Report-System)\nZjistili jsme, že nemohu automaticky přidělovat role lidem, protože moje role je pod rolí AutoRole-Role!\nProsím, přesuňte mou roli nad AutoRole-Role!\nRole, která způsobuje problém, je ``%s``!"
+      deleted: "Ree6-BRS (Bug-Report-System)\nZjistili jsme, že nemohu AutoRole lidí, protože AutoRole-Role byla smazána!\nNyní jsme danou Roli odstranili!"
   ticket:
     created: "Otevřeli jsme vám tiket! Podívejte se na to %s"
     alreadyOpen: "Již máte otevřený tiket!"

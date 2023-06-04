@@ -1,7 +1,7 @@
 language:
   name: "Polish"
   locale: "pl"
-  version: "2.4.6"
+  version: "2.4.12"
   author: "Trust"
 logging:
   banned: ":airplane_departure: %s **zbanowany/a.**"
@@ -303,7 +303,7 @@ message:
     unknownBot: "Nieznany bot!"
     success: "Zaimportowano dane z %s użytkowników!"
     error:
-      unknown: "Wystąpił nieznany błąd! ({})"
+      unknown: "Wystąpił nieznany błąd! (%s)"
       noData: "Nie znaleziono danych!"
       visibility: "Nie możesz zaimportować danych z bota, który nie jest widoczny dla wszystkich!"
   kick:
@@ -423,6 +423,7 @@ message:
       20: "Bardzo wątpliwie."
   brs:
     autoRole:
+      missingPermission: "Ree6-BRS (ang. \"Bug Report System\", pol. \"System Zgłoszenia Błędów\")\nWykryliśmy, że nie mam uprawnień do ludzi z automatycznymi rolami, ponieważ brakuje mi uprawnień ``Zarządzenia rolami``!\nWymagam tego uprawnienia do nadania roli użytkownikom!\nRola, której nie mogłem wydać, to ``%s``!"
       hierarchy: "Ree6-BRS (ang. \"Bug Report System\", pol. \"System Zgłoszenia Błędów\")\nWykryliśmy, że nie mam uprawnień do wydawania automatycznych roli, ponieważ moja rola znajduje się poniżej roli automatycznej!\nProszę przenieść moją rolę nad rolą automatyczną!\nRolą, która powoduje problem to ``%s``!"
       deleted: "Ree6-BRS (ang. \"Bug Report System\", pol. \"System Zgłoszenia Błędów\")\nWykryliśmy, że nie mogę wydawać roli automatyczne, ponieważ rola automatyczna została usunięta!\nUsunęliśmy daną rolę!"
   ticket:

@@ -1,7 +1,7 @@
 language:
   name: "German"
   locale: "de"
-  version: "2.4.6"
+  version: "2.4.12"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **gebannt.**"
@@ -303,7 +303,7 @@ message:
     unknownBot: "Unbekannter Bot!"
     success: "Erfolgreich daten von %s Nutzern importiert!"
     error:
-      unknown: "Ein Fehler hat statt gefunden! ({})"
+      unknown: "Ein unbekannter Fehler ist beim Importieren aufgetreten! (%s)"
       noData: "Keine Daten gefunden!"
       visibility: "Du kannst keine Daten von einem Bot importieren welche nicht öffentlich sind."
   kick:
@@ -423,8 +423,9 @@ message:
       20: "Ich bezweifle es."
   brs:
     autoRole:
-      hierarchy: "Ree6-BRS (Bug-Report-System))\nWir haben bemerkt das ich nicht genügend Berechtigungen haben die angegebenen Rollen Nutzern zuzuweisen!\nBitte setze meine Rolle über diese angegebenen Rollen!\n``%s``"
-      deleted: "Ree6-BRS (Bug-Report-System))\nWir haben bemerkt das ich eine bestimmte Rolle nicht Nutzern zuweisen kann da diese nicht mehr existiert!\nWir haben diese nun entfernt!"
+      missingPermission: "Ree6-BRS (Bug-Report-System)\nWir haben erkannt das ich keine Rollen verteilen kann, da mir die Berechtigung ``Manage Roles`` fehlt!\nIch benötige diese, um Rollen an Nutzern zu verteilen!\nDie Rolle welche ich nicht zuteilen konnte: ``%s``!"
+      hierarchy: "Ree6-BRS (Bug-Report-System)\nWir haben bemerkt, dass ich nicht genügend Berechtigungen habe, um die angegebene Rolle Nutzern zuzuweisen!\nBitte setze meine Rolle über diese angegebenen Rolle!\n``%s``"
+      deleted: "Ree6-BRS (Bug-Report-System)\nWir haben bemerkt, dass eine bestimmte Rolle Nutzern nicht mehr zugewiesen werden kann.\nDa diese nicht mehr existiert, sie wurde aus dem System entfernt!"
   ticket:
     created: "Wir haben ein Ticket für dich geöffnet! Guck hier %s"
     alreadyOpen: "Du hast bereits ein offenes Ticket!"

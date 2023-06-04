@@ -45,14 +45,14 @@
     <dependencies>
         <!-- Discord -->
         <dependency>
-            <groupId>com.github.DV8FromTheWorld</groupId>
+            <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>2e2653e411</version>
+            <version>5.0.0-beta.10</version>
         </dependency>
         <dependency>
             <groupId>com.github.walkyst</groupId>
             <artifactId>lavaplayer-fork</artifactId>
-            <version>1.4.1</version>
+            <version>1.4.2</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
