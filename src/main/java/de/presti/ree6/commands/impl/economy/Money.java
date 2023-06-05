@@ -74,6 +74,12 @@ public class Money implements ICommand {
                 }
 
                 Member member = user.getAsMember();
+
+                if (member == null) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
+                    return;
+                }
+
                 double sendAmount = RandomUtils.round(amount.getAsDouble(), 2);
 
                 MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getMember());
@@ -88,6 +94,12 @@ public class Money implements ICommand {
             case "balance" -> {
                 if (user != null) {
                     Member member = user.getAsMember();
+
+                    if (member == null) {
+                        commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
+                        return;
+                    }
+
                     MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(member);
                     commandEvent.reply(commandEvent.getResource("message.money.balance", member.getAsMention(), EconomyUtil.formatMoney(moneyHolder.getAmount()), EconomyUtil.formatMoney(moneyHolder.getBankAmount())));
                 } else {

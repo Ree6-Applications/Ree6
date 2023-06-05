@@ -51,6 +51,11 @@ public class Steal implements ICommand {
 
         Member member = user.getAsMember();
 
+        if (member == null) {
+            commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
+            return;
+        }
+
         if (member.getIdLong() == commandEvent.getMember().getIdLong()) {
             commandEvent.reply(commandEvent.getResource("message.steal.self"), 5);
             return;
