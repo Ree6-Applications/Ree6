@@ -8,6 +8,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -67,11 +68,12 @@ public class RedditNotifier implements ICommand {
                 }
 
                 String name = nameMapping.getAsString();
-                channelMapping.getAsChannel().asStandardGuildMessageChannel().createWebhook(Data.getBotName() + "-RedditNotifier-" + name).queue(w -> {
+                StandardGuildMessageChannel channel = channelMapping.getAsChannel().asStandardGuildMessageChannel();
+                channel.createWebhook(Data.getBotName() + "-RedditNotifier-" + name).queue(w -> {
                     if (messageMapping != null) {
-                        SQLSession.getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase(), messageMapping.getAsString());
+                        SQLSession.getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), name.toLowerCase(), messageMapping.getAsString());
                     } else {
-                        SQLSession.getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), w.getId(), w.getToken(), name.toLowerCase());
+                        SQLSession.getSqlConnector().getSqlWorker().addRedditWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), name.toLowerCase());
                     }
                 });
                 commandEvent.reply(commandEvent.getResource("message.redditNotifier.added", name), 5);

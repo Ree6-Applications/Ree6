@@ -1307,7 +1307,7 @@ public class MenuEvents extends ListenerAdapter {
                             WebhookUtil.deleteWebhook(event.getGuild().getId(), SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId()));
                         }
 
-                        SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
+                        SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getId(), textChannel.getIdLong(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupSuccess"));
                         embedBuilder.setColor(Color.GREEN);
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
@@ -1413,7 +1413,7 @@ public class MenuEvents extends ListenerAdapter {
                             WebhookUtil.deleteWebhook(event.getGuild().getId(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()));
                         }
 
-                        SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
+                        SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getId(), textChannel.getIdLong(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.setupSuccess"));
                         embedBuilder.setColor(Color.GREEN);
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();

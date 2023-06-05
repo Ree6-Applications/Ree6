@@ -35,7 +35,7 @@ public class WebhookUtil {
      * @param isLog         is the Webhook Message a Log-Message?
      */
     public static void sendWebhook(LogMessage loggerMessage, WebhookMessage message, Webhook webhook, boolean isLog) {
-        sendWebhook(loggerMessage, message, Long.parseLong(webhook.getChannelId()), webhook.getToken(), isLog);
+        sendWebhook(loggerMessage, message, Long.parseLong(webhook.getWebhookId()), webhook.getToken(), isLog);
     }
 
 
@@ -72,7 +72,7 @@ public class WebhookUtil {
 
                     // TODO:: check the functionality of this new code. Since it would allow use to do all this in one line.
 
-                    SQLSession.getSqlConnector().getSqlWorker().getEntityList(new Webhook("", "", ""),
+                    SQLSession.getSqlConnector().getSqlWorker().getEntityList(new Webhook(),
                                     "from Webhook where cid =:cid and token=:token",
                                     Map.of("cid", webhookId, "token", webhookToken))
                             .forEach(webhook -> deleteWebhook(webhook.getGuildId(), webhook));
@@ -111,7 +111,7 @@ public class WebhookUtil {
             // Delete the existing Webhook.
             guild.retrieveWebhooks()
                     .queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null)
-                            .filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) &&
+                            .filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getWebhookId()) &&
                                     webhook.getToken().equalsIgnoreCase(webhookEntity.getToken()))
                             .forEach(webhook -> webhook.delete().queue()));
         }

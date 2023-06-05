@@ -117,7 +117,7 @@ public class Schedule implements ICommand {
                     Webhook webhook = guildChannel.asStandardGuildMessageChannel().createWebhook(Data.getBotName() + "-Schedule").complete();
 
                     webhookScheduledMessage = SQLSession.getSqlConnector().getSqlWorker()
-                            .updateEntity(new WebhookScheduledMessage(commandEvent.getGuild().getId(), webhook.getId(), webhook.getToken(), guildChannel.getIdLong()));
+                            .updateEntity(new WebhookScheduledMessage(commandEvent.getGuild().getId(), guildChannel.getIdLong(), webhook.getId(), webhook.getToken()));
                 }
 
                 scheduledMessage.setScheduledMessageWebhook(webhookScheduledMessage);

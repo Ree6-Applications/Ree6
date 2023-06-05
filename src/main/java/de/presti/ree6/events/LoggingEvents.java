@@ -118,7 +118,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
+        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
     }
 
     /**
@@ -152,7 +152,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_UNBAN, event.getUser()));
+        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_UNBAN, event.getUser()));
     }
 
     //endregion
@@ -185,7 +185,7 @@ public class LoggingEvents extends ListenerAdapter {
             we.setDescription(LanguageService.getByEvent(event, "logging.joined.default", event.getUser().getAsMention(), TimeFormat.DATE_TIME_SHORT.format(event.getUser().getTimeCreated()), TimeFormat.RELATIVE.format(event.getUser().getTimeCreated())));
 
             wm.addEmbeds(we.build());
-            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.SERVER_JOIN, event.getUser()));
+            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.SERVER_JOIN, event.getUser()));
         }
 
         if (event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER) && SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_invite").getBooleanValue()) {
@@ -229,7 +229,7 @@ public class LoggingEvents extends ListenerAdapter {
                 }
             }
 
-            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm2.build(), event.getGuild(), LogTyp.SERVER_INVITE, event.getUser()));
+            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm2.build(), event.getGuild(), LogTyp.SERVER_INVITE, event.getUser()));
         }
     }
 
@@ -269,7 +269,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.SERVER_LEAVE, event.getUser()));
+        Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.SERVER_LEAVE, event.getUser()));
     }
 
     /**
@@ -318,7 +318,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ELSE, event.getMember()));
+        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ELSE, event.getMember()));
     }
 
     /**
@@ -358,7 +358,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.NICKNAME_CHANGE, event.getEntity(), event.getOldNickname(), event.getNewNickname()));
+        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.NICKNAME_CHANGE, event.getEntity(), event.getOldNickname(), event.getNewNickname()));
     }
 
     //endregion
@@ -393,7 +393,7 @@ public class LoggingEvents extends ListenerAdapter {
             wm.addEmbeds(we.build());
 
             Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-            Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_JOIN, event.getEntity(), event.getChannelJoined()));
+            Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_JOIN, event.getEntity(), event.getChannelJoined()));
         } else if (event.getChannelJoined() == null) {
             if (!SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
                     !SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_voiceleave").getBooleanValue())
@@ -419,7 +419,7 @@ public class LoggingEvents extends ListenerAdapter {
             wm.addEmbeds(we.build());
 
             Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-            Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_LEAVE, event.getEntity(), event.getChannelLeft()));
+            Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_LEAVE, event.getEntity(), event.getChannelLeft()));
         } else {
             if (!SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
                     !SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_voicemove").getBooleanValue())
@@ -445,7 +445,7 @@ public class LoggingEvents extends ListenerAdapter {
             wm.addEmbeds(we.build());
 
             Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-            Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_MOVE, event.getEntity(), event.getChannelLeft(), event.getChannelJoined()));
+            Main.getInstance().getLoggerQueue().add(new LogMessageVoice(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.VC_MOVE, event.getEntity(), event.getChannelLeft(), event.getChannelJoined()));
         }
     }
 
@@ -502,7 +502,7 @@ public class LoggingEvents extends ListenerAdapter {
             wm.addEmbeds(we.build());
 
             Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-            Main.getInstance().getLoggerQueue().add(new LogMessage(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.CHANNELDATA_CHANGE));
+            Main.getInstance().getLoggerQueue().add(new LogMessage(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.CHANNELDATA_CHANGE));
         } else if (event.getChannelType().isMessage()) {
             if (!SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()) ||
                     !SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_textchannel").getBooleanValue())
@@ -552,7 +552,7 @@ public class LoggingEvents extends ListenerAdapter {
             wm.addEmbeds(we.build());
 
             Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-            Main.getInstance().getLoggerQueue().add(new LogMessage(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.CHANNELDATA_CHANGE));
+            Main.getInstance().getLoggerQueue().add(new LogMessage(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.CHANNELDATA_CHANGE));
 
         }
     }
@@ -600,7 +600,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), null, new ArrayList<>(event.getRoles())));
+        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), null, new ArrayList<>(event.getRoles())));
     }
 
     /**
@@ -640,7 +640,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), new ArrayList<>(event.getRoles()), null));
+        Main.getInstance().getLoggerQueue().add(new LogMessageMember(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MEMBERROLE_CHANGE, event.getMember(), new ArrayList<>(event.getRoles()), null));
     }
 
     /**
@@ -672,7 +672,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), true, false, false, false));
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), true, false, false, false));
     }
 
     /**
@@ -704,7 +704,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, true, false, false));
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, true, false, false));
     }
 
     /**
@@ -738,7 +738,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getOldName(), event.getNewName()));
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getOldName(), event.getNewName()));
     }
 
     /**
@@ -772,7 +772,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, false, false, true));
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, false, false, true));
     }
 
     /**
@@ -806,7 +806,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, false, true, false));
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getRole().getName(), false, false, true, false));
     }
 
     /**
@@ -865,7 +865,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getOldPermissions(), event.getNewPermissions()));
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), event.getOldPermissions(), event.getNewPermissions()));
     }
 
     /**
@@ -900,7 +900,7 @@ public class LoggingEvents extends ListenerAdapter {
         wm.addEmbeds(we.build());
 
         Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), (event.getOldColor() != null ? event.getOldColor() : Color.gray), (event.getNewColor() != null ? event.getNewColor() : Color.gray)));
+        Main.getInstance().getLoggerQueue().add(new LogMessageRole(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.ROLEDATA_CHANGE, event.getRole().getIdLong(), (event.getOldColor() != null ? event.getOldColor() : Color.gray), (event.getNewColor() != null ? event.getNewColor() : Color.gray)));
     }
 
     //endregion
@@ -964,7 +964,7 @@ public class LoggingEvents extends ListenerAdapter {
             wm.addEmbeds(we.build());
 
             Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
-            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getChannelId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MESSAGE_DELETE, user));
+            Main.getInstance().getLoggerQueue().add(new LogMessageUser(Long.parseLong(webhook.getWebhookId()), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.MESSAGE_DELETE, user));
         }
     }
 
