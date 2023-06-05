@@ -119,7 +119,7 @@ public class Import implements ICommand {
      */
     public void importFromAmari(CommandEvent commandEvent) {
         try {
-            Leaderboard leaderboard = AmariAPI.getAmari4J().getRawLeaderboard(commandEvent.getGuild().getId(), Integer.MIN_VALUE);
+            Leaderboard leaderboard = AmariAPI.getAmari4J().getRawLeaderboard(commandEvent.getGuild().getId(), Integer.MAX_VALUE);
 
             leaderboard.getMembers().forEach(member -> {
                 ChatUserLevel chatUserLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getUserid());
