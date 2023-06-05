@@ -22,6 +22,9 @@ import java.util.List;
 @Slf4j
 public class CustomEventContainer {
 
+    @Getter(AccessLevel.PUBLIC)
+    long id;
+
     /**
      * The Guild.
      */
@@ -47,6 +50,7 @@ public class CustomEventContainer {
      */
     public CustomEventContainer(CustomEventAction customEventAction) {
         guild = BotWorker.getShardManager().getGuildById(customEventAction.getGuildId());
+        id = customEventAction.getId();
 
         if (customEventAction.getActions() != null && customEventAction.getActions().isJsonArray()) {
             JsonArray jsonArray = customEventAction.getActions().getAsJsonArray();

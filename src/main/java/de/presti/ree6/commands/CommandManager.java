@@ -411,7 +411,7 @@ public class CommandManager {
                 }
 
                 if (customCommand.getEmbedResponse() != null) {
-                    // TODO:: parse the Embed from JSON in to a EmbedBuilder to sent.
+                    // TODO:: parse the Embed from JSON in to a EmbedBuilder to sent. (https://github.com/DV8FromTheWorld/JDA/pull/2471)
                     EmbedBuilder embedBuilder = new EmbedBuilder();
                     sendMessage(embedBuilder, 5, messageChannelUnion, null);
                 }
