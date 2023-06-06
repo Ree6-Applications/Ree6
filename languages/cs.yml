@@ -556,6 +556,7 @@ message:
 game:
   description:
     blackjack: "Hrajte Blackjack se svými přáteli!"
+    musicquiz: "Play a Quiz game based on Music with your friends!"
 command:
   perform:
     cooldown: "Jste na ochlazení!"
@@ -647,7 +648,6 @@ command:
     levelrole: "Spravujte automatické role pro hlasové nebo textové úrovně!"
     warn: "Upozornit uživatele a nechat je potrestat automaticky."
     infractions: "Zobrazit všechna varování uživatele."
-    musicquiz: "Zahrajte si s přáteli hudební kvíz!"
     musicpanel: "Přístup k jednoduchému uživatelskému rozhraní pro správu hudebního systému!"
     schedule: "Naplánovat zprávy na později nebo na opakovaný čas!"
     money: "Manage your money!"
