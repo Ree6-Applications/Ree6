@@ -556,6 +556,7 @@ message:
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
+    musicquiz: "Play a Quiz game based on Music with your friends!"
 command:
   perform:
     cooldown: "You are on cooldown!"
@@ -647,7 +648,6 @@ command:
     levelrole: "Manage Auto-Roles for Voice or Text Levels!"
     warn: "Warn an User and let them be punished automatically."
     infractions: "Show all the warnings a user has."
-    musicquiz: "Play with your friends a game of Music Quiz!"
     musicpanel: "Access a simple UI to manage the Music System!"
     schedule: "Schedule messages for later or for a repeated time!"
     money: "Manage your money!"
