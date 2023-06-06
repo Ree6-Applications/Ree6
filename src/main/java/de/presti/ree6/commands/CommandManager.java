@@ -340,6 +340,7 @@ public class CommandManager {
                 return false;
             }
         } else {
+            if (!Data.isModuleActive("messagecommands")) return false;
             if (!performMessageCommand(member, guild, messageContent, message, textChannel)) {
                 return false;
             }

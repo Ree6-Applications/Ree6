@@ -113,7 +113,8 @@ public class Config {
                     .parent().path("news").addDefault(true).commentSide("Enable the news command/module.")
                     .parent().path("games").addDefault(true).commentSide("Enable the Games module.")
                     .parent().path("reactionroles").addDefault(true).commentSide("Enable the reaction-roles module.")
-                    .parent().path("slashcommands").addDefault(true).commentSide("Enable the slash-commands support.");
+                    .parent().path("slashcommands").addDefault(true).commentSide("Enable the slash-commands support.")
+                    .parent().path("messagecommands").addDefault(true).commentSide("Enable the message-commands support.");
 
             yamlFile.path("heartbeat")
                     .comment("Heartbeat Configuration, for status reporting").blankLine()

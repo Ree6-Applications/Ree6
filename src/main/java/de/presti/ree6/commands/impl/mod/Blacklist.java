@@ -17,6 +17,8 @@ import java.util.ArrayList;
 @Command(name = "blacklist", description = "command.description.blacklist", category = Category.MOD)
 public class Blacklist implements ICommand {
 
+    // TODO:: add or switch to slash commands.
+
     /**
      * @inheritDoc
      */
