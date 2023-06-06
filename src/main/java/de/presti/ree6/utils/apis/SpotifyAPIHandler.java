@@ -45,7 +45,7 @@ public class SpotifyAPIHandler {
     /**
      * The Regex for Spotify Links.
      */
-    private static final String REGEX = "^(https?://(?:open\\.)?spotify\\.com/(?:embed|track|album|playlist|artist)/(\\w+))";
+    private static final String REGEX = "^(https?://(?:open\\.)?spotify\\.com/(embed|track|album|playlist|artist)/(\\w+)).*";
 
     /**
      * The Pattern for Spotify Links.
@@ -225,7 +225,7 @@ public class SpotifyAPIHandler {
         Matcher matcher = pattern.matcher(spotifyURL);
 
         if (matcher.matches()) {
-            return new String[]{matcher.group(1), matcher.group(2)};
+            return new String[]{matcher.group(2), matcher.group(3)};
         }
 
         return new String[]{"None", "None"};
