@@ -556,6 +556,7 @@ message:
 game:
   description:
     blackjack: "Spiele Blackjack mit deinen Freunden!"
+    musicquiz: "Play a Quiz game based on Music with your friends!"
 command:
   perform:
     cooldown: "Warte bitte bevor du weiter machst!"
@@ -647,7 +648,6 @@ command:
     levelrole: "Konfiguriere Automatische Rollen für Text und Voice Level."
     warn: "Warne einen Nutzer und lass ihn automatisch bestraft werden."
     infractions: "Zeige alle Verwarnungen eines Nutzers an."
-    musicquiz: "Spiele mit deinen Freunden eine Runde Musik Quiz!"
     musicpanel: "Ein simples UI zum Nutzen vom Musik System!"
     schedule: "Plane Nachrichten für später und für eine wiederholte Zeit!"
     money: "Verwalten dein Geld!"
