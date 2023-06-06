@@ -285,7 +285,9 @@ public class CommandEvent {
     public String getSubcommand() {
         if (!isSlashCommand()) return "";
 
-        return slashCommandInteractionEvent.getSubcommandName();
+        String name = slashCommandInteractionEvent.getSubcommandName();
+
+        return name == null ? "" : name;
     }
 
     /**
@@ -295,7 +297,9 @@ public class CommandEvent {
     public String getSubcommandGroup() {
         if (!isSlashCommand()) return "";
 
-        return slashCommandInteractionEvent.getSubcommandGroup();
+        String group = slashCommandInteractionEvent.getSubcommandGroup();
+
+        return group == null ? "" : group;
     }
 
     /**
