@@ -556,7 +556,7 @@ message:
 game:
   description:
     blackjack: "Zagraj w Blackjack z przyjaciółmi!"
-    musicquiz: "Play a Quiz game based on Music with your friends!"
+    musicquiz: "Zagraj w Quiz oparty na muzyce z przyjaciółmi!"
 command:
   perform:
     cooldown: "Masz się ostudzić!"
