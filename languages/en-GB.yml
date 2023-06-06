@@ -556,6 +556,7 @@ message:
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
+    musicquiz: "Play a Quiz game based on Music with your friends!"
 command:
   perform:
     cooldown: "You are on cooldown!"
