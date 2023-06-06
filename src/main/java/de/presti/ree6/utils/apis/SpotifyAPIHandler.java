@@ -21,6 +21,8 @@ import se.michaelthelin.spotify.requests.data.tracks.GetTrackRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * SpotifyAPIHandler.
@@ -39,6 +41,16 @@ public class SpotifyAPIHandler {
      * The Spotify API-Handler.
      */
     public static SpotifyAPIHandler instance;
+
+    /**
+     * The Regex for Spotify Links.
+     */
+    private static final String REGEX = "^(https?://(?:open\\.)?spotify\\.com/(?:embed|track|album|playlist|artist)/(\\w+))";
+
+    /**
+     * The Pattern for Spotify Links.
+     */
+    private static final Pattern pattern = Pattern.compile(REGEX);
 
     /**
      * If spotify is connected.
@@ -179,18 +191,12 @@ public class SpotifyAPIHandler {
      */
     public ArrayList<String> convert(String link) throws ParseException, SpotifyWebApiException, IOException {
         if (!isSpotifyConnected) return new ArrayList<>();
-        String[] firstSplit = link.split("/");
-        String[] secondSplit;
 
-        String type;
-        if (firstSplit.length > 5) {
-            secondSplit = firstSplit[6].split("\\?");
-            type = firstSplit[5];
-        } else {
-            secondSplit = firstSplit[4].split("\\?");
-            type = firstSplit[3];
-        }
-        String id = secondSplit[0];
+        String[] extraction = parseSpotifyURL(link);
+
+        String type = extraction[0];
+        String id = extraction[1];
+
         ArrayList<String> listOfTracks = new ArrayList<>();
 
         if (type.contentEquals("track")) {
@@ -213,6 +219,16 @@ public class SpotifyAPIHandler {
         }
 
         return new ArrayList<>();
+    }
+
+    public static String[] parseSpotifyURL(String spotifyURL) {
+        Matcher matcher = pattern.matcher(spotifyURL);
+
+        if (matcher.matches()) {
+            return new String[]{matcher.group(1), matcher.group(2)};
+        }
+
+        return new String[]{"None", "None"};
     }
 
     /**
