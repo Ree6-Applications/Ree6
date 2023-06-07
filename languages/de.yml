@@ -187,6 +187,12 @@ label:
   shuffle: "Mischen"
   loop: "Song-Schleife"
   loading: "Lädt"
+  blackJackWin: "BlackJack Win"
+  musicQuizWin: "Musik Quiz Win"
+  musicQuizFeatureGuess: "Musik Quiz Feature erraten"
+  musicQuizArtistGuess: "Musik Quiz Artist erraten"
+  musicQuizTitleGuess: "Musik Quiz Title erraten"
+  rewards: "Belohnungen"
 message:
   default:
     usage: "Nutzung {guild_prefix}%s."
@@ -217,6 +223,7 @@ message:
       date: "Bitte gebe ein richtiges Datum an!\nTipp wir nutzen das dd.MM.yyy (tag.monat.jahr) Format!"
       time: "Bitte gebe eine richtige Zeit an!\nTipp wir nutzen das HH/mm (stunde/minute (24-stunden)) Format!"
       notEnough: "Die angegebene Zeit ist nicht genügend!"
+    incorrectNumbers: "Bitte gebe korrekte nummern ein"
   birthday:
     added:
       self: "Dein Geburtstag wurde hinzugefügt!"
@@ -226,6 +233,7 @@ message:
       self: "Dein Geburtstag wurde entfernt!"
       other: "Der Geburtstag von %s wurde entfernt!"
       noPerms: "Du hast keine Berechtigung um Geburtstage zu entfernen!"
+    wish: "Herzlichen Glückwunsch zum Geburtstag <@%s>!"
   instagramNotifier:
     added: "Ein Instagram Notifier wurde für %s erstellt!"
     list: "Hier ist eine Liste mit allen Instagram Notifier:\n```%s```"
@@ -553,6 +561,8 @@ message:
     success: "Du hast erfolgreich gearbeitet und %s$ verdient!"
     cooldown: "Du kannst noch nicht arbeiten! Warte %s sekunden."
     failed: "Du konntest nicht Arbeiten!"
+  rewards:
+    success: "Belohnungen wurden erfolgreich aktualisiert!"
 game:
   description:
     blackjack: "Spiele Blackjack mit deinen Freunden!"
