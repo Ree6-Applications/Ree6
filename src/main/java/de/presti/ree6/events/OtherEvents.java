@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -462,7 +463,9 @@ public class OtherEvents extends ListenerAdapter {
 
         event.retrieveMessage().queue(message -> {
 
-            String reactionCode = event.getReaction().getEmoji().getAsReactionCode();
+            EmojiUnion emojiUnion = event.getReaction().getEmoji();
+
+            String reactionCode = emojiUnion.getAsReactionCode();
 
             long emojiId;
             if (event.getReaction().getEmoji().getType() == Emoji.Type.CUSTOM) {
@@ -488,7 +491,7 @@ public class OtherEvents extends ListenerAdapter {
                             return;
                         }
 
-                        ReactionRole reactionRole = new ReactionRole(event.getGuild().getIdLong(), emojiId, role.getIdLong(), message.getMessageReference().getMessageIdLong());
+                        ReactionRole reactionRole = new ReactionRole(event.getGuild().getIdLong(), emojiId, emojiUnion.getFormatted(), role.getIdLong(), message.getMessageReference().getMessageIdLong());
                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole);
 
                         if (message.getMessageReference().getMessage() != null) {
