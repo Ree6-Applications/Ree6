@@ -123,15 +123,15 @@ public class Warn implements ICommand {
 
                             switch (action) {
                                 case 1 ->
-                                        stringBuilder.append(commandEvent.getResource("message.warn.listEntry.timeout", Duration.ofMillis(punishments.getTimeoutTime()).toSeconds()));
+                                        stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.timeout", Duration.ofMillis(punishments.getTimeoutTime()).toSeconds()));
                                 case 2 ->
-                                        stringBuilder.append(commandEvent.getResource("message.warn.listEntry.roleAdd", punishments.getRoleId()));
+                                        stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.roleAdd", punishments.getRoleId()));
                                 case 3 ->
-                                        stringBuilder.append(commandEvent.getResource("message.warn.listEntry.roleRemove", punishments.getRoleId()));
+                                        stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.roleRemove", punishments.getRoleId()));
                                 case 4 ->
-                                        stringBuilder.append(commandEvent.getResource("message.warn.listEntry.kick", punishments.getReason()));
+                                        stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.kick", punishments.getReason()));
                                 case 5 ->
-                                        stringBuilder.append(commandEvent.getResource("message.warn.listEntry.ban", punishments.getReason()));
+                                        stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.ban", punishments.getReason()));
                             }
 
                             stringBuilder.append("\n");
