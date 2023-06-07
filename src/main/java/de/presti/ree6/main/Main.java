@@ -465,7 +465,7 @@ public class Main {
                 ArrayUtil.messageIDwithUser.clear();
 
                 BotWorker.getShardManager().getShards().forEach(jda ->
-                        BotWorker.setActivity(jda, "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING));
+                        BotWorker.setActivity(jda, Data.getStatus(), Activity.ActivityType.PLAYING));
 
                 log.info("[Stats] ");
                 log.info("[Stats] Today's Stats:");
