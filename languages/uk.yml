@@ -187,6 +187,12 @@ label:
   shuffle: "Перемішати"
   loop: "Повтор"
   loading: "Завантаження"
+  blackJackWin: "BlackJack Win"
+  musicQuizWin: "MusicQuiz Win"
+  musicQuizFeatureGuess: "MusicQuiz Feature Guess"
+  musicQuizArtistGuess: "MusicQuiz Artist Guess"
+  musicQuizTitleGuess: "MusicQuiz Title Guess"
+  rewards: "Rewards"
 message:
   default:
     usage: "Використання {guild_prefix}%s."
@@ -217,6 +223,7 @@ message:
       date: "Будь ласка, використовуйте правильну дату!\nЗауважте, що ми використовуємо формат dd.MM.yyyy (day.month.year)!"
       time: "Будь ласка, використайте припустимий час!\nЗауважте, що ми використовуємо формат HH/mm (години/хвилини (24-години))!"
       notEnough: "Введеного часу недостатньо!"
+    incorrectNumbers: "Please enter correct number values"
   birthday:
     added:
       self: "Ваш день народження додано!"
@@ -226,6 +233,7 @@ message:
       self: "Ваш день народження видалено!"
       other: "День народження %s було видалено!"
       noPerms: "Ви не маєте права видаляти день народження!"
+    wish: "Happy birthday to <@%s>!"
   instagramNotifier:
     added: "Для користувача %s створено сповіщення в Instagram!"
     list: "Ось всі параметри Instagram сповіщення, які були встановлені:\n```%s```"
@@ -553,6 +561,8 @@ message:
     success: "Ви успішно попрацювали і заробили %s$!"
     cooldown: "Заспокойтесь! Ви можете знову працювати приблизно через %s секунд."
     failed: "Ви не змогли працювали!"
+  rewards:
+    success: "Successfully updated the rewards!"
 game:
   description:
     blackjack: "Грайте Blackjack з друзями!"
