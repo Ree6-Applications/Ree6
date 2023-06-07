@@ -21,6 +21,7 @@ import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.data.ImageCreationUtility;
 import de.presti.ree6.utils.others.*;
+import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
@@ -424,7 +425,8 @@ public class OtherEvents extends ListenerAdapter {
                         Main.getInstance().getCommandManager().sendMessage(ChatGPTAPI.getResponse(event.getMember(),
                                 event.getMessage().getContentDisplay()), event.getChannel());
                     } catch (Exception e) {
-                        // TODO:: add error message
+                        Sentry.captureException(e);
+                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.default.retrievalError"), event.getChannel());
                     }
                 }
 

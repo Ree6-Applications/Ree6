@@ -498,8 +498,7 @@ public class Main {
                             TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
 
                             if (textChannel != null && textChannel.canTalk())
-                                // TODO:: translate.
-                                textChannel.sendMessage("Happy birthday to <@" + birthday.getUserId() + ">!").queue();
+                                textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish",birthday.getUserId())).queue();
                         });
 
                 lastDay = new SimpleDateFormat("dd").format(new Date());
