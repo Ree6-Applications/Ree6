@@ -187,12 +187,12 @@ label:
   shuffle: "Losuj"
   loop: "Pętla"
   loading: "Ładowanie"
-  blackJackWin: "BlackJack Win"
-  musicQuizWin: "MusicQuiz Win"
-  musicQuizFeatureGuess: "MusicQuiz Feature Guess"
-  musicQuizArtistGuess: "MusicQuiz Artist Guess"
-  musicQuizTitleGuess: "MusicQuiz Title Guess"
-  rewards: "Rewards"
+  blackJackWin: "Wygrana BlackJack"
+  musicQuizWin: "Wygrana MusicQuiz"
+  musicQuizFeatureGuess: "Funkcja Odgadnięcia MusicQuiz"
+  musicQuizArtistGuess: "Odgadanie artysty MusicQuizu"
+  musicQuizTitleGuess: "Odgadnięcie tytułu MusicQuiz"
+  rewards: "Nagrody"
 message:
   default:
     usage: "Użycie {guild_prefix}%s."
@@ -223,7 +223,7 @@ message:
       date: "Proszę użyć poprawnej daty!\nZauważ, że używamy formatu dd.mm.rrrr (dzień.miesiąc.rok)!"
       time: "Proszę użyć poprawnego czasu!\nPamiętaj, że używamy formatu HH/mm (godzina/minuta (24-godziny))!"
       notEnough: "Wprowadzony czas nie wystarczy!"
-    incorrectNumbers: "Please enter correct number values"
+    incorrectNumbers: "Wprowadź poprawne wartości liczbowe"
   birthday:
     added:
       self: "Twoje urodziny zostały dodane!"
@@ -233,7 +233,7 @@ message:
       self: "Twoje urodziny zostały usunięte!"
       other: "Urodziny %s zostały usunięte!"
       noPerms: "Nie masz uprawnień do usunięcia urodzin!"
-    wish: "Happy birthday to <@%s>!"
+    wish: "Wszystkiego najlepszego z okazji urodzin, <@%s>!"
   instagramNotifier:
     added: "Powiadomienie o Instagramie zostało utworzone dla użytkownika %s!"
     list: "Tutaj są wszystkie powiadomienia o Instagram'u, które zostały skonfigurowane:\n```%s```"
@@ -562,7 +562,7 @@ message:
     cooldown: "Masz czas schłodzenia! Możesz pracować ponownie za %s sekund."
     failed: "Nie udało Ci się pracować!"
   rewards:
-    success: "Successfully updated the rewards!"
+    success: "Zaktualizowano nagrody!"
 game:
   description:
     blackjack: "Zagraj w Blackjack z przyjaciółmi!"
