@@ -662,7 +662,7 @@ command:
     schedule: "Naplánovat zprávy na později nebo na opakovaný čas!"
     money: "Spravujte své peníze!"
     steal: "Krást peníze ostatním uživatelům!"
-    work: "Získejte vlastní peníze z práce!"
+    work: "Get your own money from doing work!"
 category:
   info: "Slouží ke shromažďování informací nebo poskytování informací."
   moderation: "Nástroje pro moderování, které vám mohou pomoci spravovat uživatele nebo zabránit porušení pravidel na serveru."
