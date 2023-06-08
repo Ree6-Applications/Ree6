@@ -187,12 +187,12 @@ label:
   shuffle: "Acak"
   loop: "Ulang"
   loading: "Loading"
-  blackJackWin: "BlackJack Win"
-  musicQuizWin: "MusicQuiz Win"
-  musicQuizFeatureGuess: "MusicQuiz Feature Guess"
-  musicQuizArtistGuess: "MusicQuiz Artist Guess"
-  musicQuizTitleGuess: "MusicQuiz Title Guess"
-  rewards: "Rewards"
+  blackJackWin: "Menang BlackJack"
+  musicQuizWin: "Menang MusicQuiz"
+  musicQuizFeatureGuess: "Menebak Fitur MusicQuiz"
+  musicQuizArtistGuess: "Menebak Artis MusicQuiz"
+  musicQuizTitleGuess: "Menebak Judul MusicQuiz"
+  rewards: "Hadiah"
 message:
   default:
     usage: "Penggunaan {guild_prefix}%s."
@@ -223,7 +223,7 @@ message:
       date: "Harap gunakan tanggal yang valid!\nPerhatikan bahwa kami menggunakan format dd.MM.yyyy (day.month.year)!"
       time: "Harap gunakan waktu yang valid!\nPerhatikan bahwa kami menggunakan format HH/mm (jam/menit (24-jam))!"
       notEnough: "Waktu yang dimasukkan tidak cukup!"
-    incorrectNumbers: "Please enter correct number values"
+    incorrectNumbers: "Tolong masukkan angka yang benar"
   birthday:
     added:
       self: "Ulang Tahun mu telah ditambahkan!"
@@ -233,7 +233,7 @@ message:
       self: "Ulang Tahun mu telah dihapus!"
       other: "Ulang Tahun %s telah dihapus!"
       noPerms: "Kamu tidak punya izin untuk menghapus Ulang Tahun!"
-    wish: "Happy birthday to <@%s>!"
+    wish: "Selamat ulang tahun  <@%s>!"
   instagramNotifier:
     added: "Pemberitahuan Instagram telah dibuat untuk %s!"
     list: "Dibawah ini daftar Notifier Instagram yang telah disetup:\n```%s```"
@@ -477,7 +477,7 @@ message:
     error: "Sesuatu ada yang salah saat membenarkan audiomu!\nAlasan: %s"
   reactions:
     roleAssign: "Kamu telah menambahkan Role %s ke Reaction!"
-    reactionNeeded: "You need to react to this message with the reaction you want to assign %s to!"
+    reactionNeeded: "Kamu harus react ke message ini dengan reaction yang kamu mau berikan ke %s!"
     roleNotFound: "Role yang kamu mau tambahkan tidak ada!"
     removed: "Telah menghapuskan Reaction-Role untuk role %s!"
     roleAdded: "Kamu telah mendapatkan role %s!"
@@ -546,27 +546,27 @@ message:
     response: ":speaking_head: %s"
     responseNsfw: ":red_circle: ||%s|| **NSFW**"
   money:
-    notEnoughMoney: "You don't have enough money for this action!"
-    withdraw: "You have successfully withdrawn %s$!"
-    deposit: "You have successfully deposited %s$!"
-    send: "You have successfully sent %s$ to %s!"
-    balance: "The Balance of %s contains %s$ in cash and %s$ on the Bank!"
+    notEnoughMoney: "Kamu tidak punya uang untuk ini!"
+    withdraw: "Kamu telah berhasil menarik %s$!"
+    deposit: "Kamu telah berhasil menyimpan %s$!"
+    send: "Kamu telah berhasil memberikan %s$ ke %s!"
+    balance: "Saldo %s berisi %s$ berupa tunai dan %s$ di bank!"
   steal:
-    success: "You have successfully stolen %s$ from %s!"
-    failed: "You have failed to steal %s$ from %s!"
-    cooldown: "You are on cooldown! You can steal again in about %s seconds."
-    self: "You can't steal from yourself!"
-    notEnoughMoney: "%s doesn't have enough money!"
+    success: "Kamu telah berhasil mencuri %s$ dari %s!"
+    failed: "Kamu tidak berhasil untuk mencuri %s$ dari %s!"
+    cooldown: "Kamu masih ada cooldown! Kamu bisa mencuri lagi sekitar %s detik."
+    self: "Kamu tidak bisa mencuri barang kamu sendiri!"
+    notEnoughMoney: "%s tidak mempunyai uang cukup!"
   work:
-    success: "You have successfully worked and earned %s$!"
-    cooldown: "You are on cooldown! You can work again in about %s seconds."
-    failed: "You have failed to work!"
+    success: "Kamu telah berhasil bekerja dan mendapatkan %s$!"
+    cooldown: "Kamu masih ada cooldown! Kamu bisa bekerja lagi sekitar %s detik."
+    failed: "Kamu tidak berhasil kerja!"
   rewards:
-    success: "Successfully updated the rewards!"
+    success: "Berhasil merubah hadiah!"
 game:
   description:
     blackjack: "Mainkan Blackjack dengan temanmu!"
-    musicquiz: "Play a Quiz game based on Music with your friends!"
+    musicquiz: "Main quiz dari musik dengan temanmu!"
 command:
   perform:
     cooldown: "Kamu masih di jeda!"
@@ -660,9 +660,9 @@ command:
     infractions: "Tampilkan semua peringatan yang dimiliki user."
     musicpanel: "Akses UI sederhana untuk mengelola Sistem Musik!"
     schedule: "Jadwalkan pesan untuk nanti atau untuk diulang!"
-    money: "Manage your money!"
-    steal: "Steal money from other users!"
-    daily: "Get your own money from doing work!"
+    money: "Mengelola uangmu!"
+    steal: "Mencuri uang dari orang lain!"
+    daily: "Dapatkan uangmu dari bekerja!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"
@@ -670,6 +670,6 @@ category:
   fun: "Utilitas seru yang bisa memberi kamu kekuatan untuk melakukan hal yang bodoh karena kamu bisa!"
   level: "Alat level untuk mengetahui progress kamu di server."
   community: "Alat komunitas yang bisa dipakai untuk interaksi dengan komunitas kamu."
-  economy: "Economy Tools that allow you to manage your money."
+  economy: "Alat Ekonomi untuk mengelola uangmu."
   nsfw: "NSFW-NSFW yang hanya bisa digunakan di channel NSFW."
   hidden: "Command rahasia yang hanya bisa terlihat untuk Pemilik Bot ini."
