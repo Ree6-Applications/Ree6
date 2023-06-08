@@ -3,9 +3,11 @@ package de.presti.ree6.utils.apis;
 import com.lilittlecat.chatgpt.offical.ChatGPT;
 import com.lilittlecat.chatgpt.offical.entity.Message;
 import com.lilittlecat.chatgpt.offical.exception.BizException;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
+import io.sentry.Sentry;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.util.ArrayList;
@@ -76,8 +78,8 @@ public class ChatGPTAPI {
         try {
             response = getResponse(messages);
         } catch (BizException e) {
-            // TODO:: make Language Text
-            return "Failed to create response: " + e.getMessage();
+            Sentry.captureException(e);
+            return LanguageService.getByGuild(member.getGuild(), "message.default.retrievalError");
         }
 
         messages.add(new Message("assistant", response));

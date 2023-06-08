@@ -306,7 +306,6 @@ public class MenuEvents extends ListenerAdapter {
 
         switch (event.getModalId()) {
             case "re_rewards_modal" -> {
-                // TODO:: translate
                 event.deferReply(true).queue();
                 String blackJackString = event.getValue("re_rewards_BlackJackWin").getAsString();
                 String musicQuizWinString = event.getValue("re_rewards_MusicQuizWin").getAsString();
@@ -326,12 +325,12 @@ public class MenuEvents extends ListenerAdapter {
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.rewards"))
                             .setColor(Color.RED)
-                            .setDescription("Please enter a correct number values!")
+                            .setDescription(LanguageService.getByGuild(event.getGuild(), "message.default.incorrectNumbers"))
                             .setFooter(Data.getAdvertisement(), event.getGuild().getIconUrl()), null, event.getInteraction().getHook());
                 }
 
                 SQLSession.getSqlConnector().getSqlWorker()
-                        .setSetting(event.getGuild().getId(), "configuration_rewards_blackjack_win", "Payment Amount on BlacJack win", blackJackAmount);
+                        .setSetting(event.getGuild().getId(), "configuration_rewards_blackjack_win", "Payment Amount on BlackJack win", blackJackAmount);
 
                 SQLSession.getSqlConnector().getSqlWorker()
                         .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_win", "Payment Amount on Music Quiz win", musicWinAmount);
@@ -348,7 +347,7 @@ public class MenuEvents extends ListenerAdapter {
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setTitle(LanguageService.getByGuild(event.getGuild(), "label.rewards"))
                         .setColor(Color.GREEN)
-                        .setDescription("Successfully updated the rewards!")
+                        .setDescription(LanguageService.getByGuild(event.getGuild(), "message.rewards.success"))
                         .setFooter(Data.getAdvertisement(), event.getGuild().getIconUrl()), null, event.getInteraction().getHook());
             }
 
@@ -843,13 +842,12 @@ public class MenuEvents extends ListenerAdapter {
                 switch (event.getInteraction().getValues().get(0)) {
 
                     case "rewards" -> {
-                        // TODO:: translate.
-                        TextInput blackJackWin = TextInput.create("re_rewards_BlackJackWin", "BlackJack Win", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
-                        TextInput musicQuizWin = TextInput.create("re_rewards_MusicQuizWin", "MusicQuiz Win", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
-                        TextInput musicQuizFeature = TextInput.create("re_rewards_MusicQuizFeature", "MusicQuiz Feature Guess", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
-                        TextInput musicQuizArtist = TextInput.create("re_rewards_MusicQuizArtist", "MusicQuiz Artist Guess", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
-                        TextInput musicQuizTitle = TextInput.create("re_rewards_MusicQuizTitle", "MusicQuiz Title Guess", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
-                        Modal.create("re_rewards_modal", "Rewards").addActionRow(blackJackWin, musicQuizWin, musicQuizFeature, musicQuizArtist, musicQuizTitle);
+                        TextInput blackJackWin = TextInput.create("re_rewards_BlackJackWin", LanguageService.getByGuild(event.getGuild(), "label.blackJackWin"), TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
+                        TextInput musicQuizWin = TextInput.create("re_rewards_MusicQuizWin", LanguageService.getByGuild(event.getGuild(), "label.musicQuizWin"), TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
+                        TextInput musicQuizFeature = TextInput.create("re_rewards_MusicQuizFeature", LanguageService.getByGuild(event.getGuild(), "label.musicQuizFeatureGuess"), TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
+                        TextInput musicQuizArtist = TextInput.create("re_rewards_MusicQuizArtist", LanguageService.getByGuild(event.getGuild(), "label.musicQuizArtistGuess"), TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
+                        TextInput musicQuizTitle = TextInput.create("re_rewards_MusicQuizTitle", LanguageService.getByGuild(event.getGuild(), "label.musicQuizTitleGuess"), TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
+                        Modal.create("re_rewards_modal", LanguageService.getByGuild(event.getGuild(), "label.rewards")).addActionRow(blackJackWin, musicQuizWin, musicQuizFeature, musicQuizArtist, musicQuizTitle);
                     }
 
                     case "lang" -> {
@@ -894,7 +892,7 @@ public class MenuEvents extends ListenerAdapter {
                     case "autorole" -> {
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.setup.steps.autoRole"));
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(Button.link("https://cp.ree6.de", "Webinterface")).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(Button.link(Data.getWebinterface(), "Webinterface")).queue();
                     }
 
                     case "tempvoice" -> {
@@ -1307,7 +1305,7 @@ public class MenuEvents extends ListenerAdapter {
                             WebhookUtil.deleteWebhook(event.getGuild().getId(), SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId()));
                         }
 
-                        SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
+                        SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getId(), textChannel.getIdLong(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupSuccess"));
                         embedBuilder.setColor(Color.GREEN);
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
@@ -1413,7 +1411,7 @@ public class MenuEvents extends ListenerAdapter {
                             WebhookUtil.deleteWebhook(event.getGuild().getId(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()));
                         }
 
-                        SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getId(), webhook.getId(), webhook.getToken());
+                        SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getId(), textChannel.getIdLong(), webhook.getId(), webhook.getToken());
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.setupSuccess"));
                         embedBuilder.setColor(Color.GREEN);
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();

@@ -1,5 +1,6 @@
 package de.presti.ree6;
 
+import org.simpleyaml.configuration.MemorySection;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
@@ -62,9 +63,58 @@ public class Config {
                     .parent().path("host").addDefault("localhost")
                     .parent().path("port").addDefault(3306)
                     .parent().parent().path("misc").comment("Misc Configuration").blankLine()
-                    .path("storage").addDefault("sqlite")
+                    .path("storage").addDefault("sqlite").commentSide("Possible entries: sqlite, mariadb, postgresql, h2, h2-server")
                     .parent().path("storageFile").addDefault("storage/Ree6.db")
+                    .parent().path("createEmbeddedServer").addDefault(false).commentSide("Should an instance of an embedded Server be created? Only used for H2-Server.")
                     .parent().path("poolSize").addDefault(10);
+
+            yamlFile.path("bot")
+                    .comment("Discord Application and overall Bot Configuration, used for OAuth, Bot Authentication and customization.").blankLine()
+                    .path("tokens").path("release").addDefault("ReleaseTokenhere").commentSide("Token used when set to release build.")
+                    .parent().path("beta").addDefault("BetaTokenhere").commentSide("Token used when set to beta build.")
+                    .parent().path("dev").addDefault("DevTokenhere").commentSide("Token used when set to dev build.")
+                    .parent().parent().path("misc").comment("Configuration for the Bot itself.").blankLine()
+                    .path("status").addDefault("ree6.de | %guilds% Servers. (%shard%)").commentSide("The Status of the Bot.")
+                    .parent().path("feedbackChannelId").addDefault(0L).commentSide("The Channel used for Feedback.")
+                    .parent().path("ownerId").addDefault(321580743488831490L).commentSide("The ID of the Bot Owner. Change this to yours!")
+                    .parent().path("predefineInformation").addDefault("""
+                            You are Ree6 a Discord bot.
+                            """).commentSide("Predefined Information for the AI.")
+                    .parent().path("invite").addDefault("https://invite.ree6.de").commentSide("The Invite Link of the Bot.")
+                    .parent().path("support").addDefault("https://support.ree6.de").commentSide("The Support Server Link of the Bot.")
+                    .parent().path("github").addDefault("https://github.ree6.de").commentSide("The GitHub Link of the Bot.")
+                    .parent().path("website").addDefault("https://ree6.de").commentSide("The Website Link of the Bot.")
+                    .parent().path("webinterface").addDefault("https://cp.ree6.de").commentSide("The Webinterface Link of the Bot.")
+                    .parent().path("recording").addDefault("https://cp.ree6.de/external/recording").commentSide("The Recording Link of the Bot.")
+                    .parent().path("twitchAuth").addDefault("https://cp.ree6.de/external/twitch").commentSide("The Twitch Authentication Link of the Bot.")
+                    .parent().path("advertisement").addDefault("powered by Tube-hosting").commentSide("The Advertisement in Embed Footers and the rest.")
+                    .parent().path("name").addDefault("Ree6").commentSide("The Name of the Bot.")
+                    .parent().path("shards").addDefault(1).commentSide("The shard amount of the Bot. Check out https://anidiots.guide/understanding/sharding/#sharding for more information.")
+                    .parent().path("modules").comment("Customize the active modules in Ree6.").blankLine()
+                    .path("moderation").addDefault(true).commentSide("Enable the moderation module.")
+                    .parent().path("music").addDefault(true).commentSide("Enable the music module.")
+                    .parent().path("fun").addDefault(true).commentSide("Enable the fun commands.")
+                    .parent().path("community").addDefault(true).commentSide("Enable the community commands.")
+                    .parent().path("economy").addDefault(true).commentSide("Enable the economy commands.")
+                    .parent().path("level").addDefault(true).commentSide("Enable the level module.")
+                    .parent().path("nsfw").addDefault(true).commentSide("Enable the nsfw module.")
+                    .parent().path("info").addDefault(true).commentSide("Enable the info commands.")
+                    .parent().path("hidden").addDefault(true).commentSide("Enable the hidden commands.")
+                    .parent().path("logging").addDefault(true).commentSide("Enable the logging module.")
+                    .parent().path("notifier").addDefault(true).commentSide("Enable the notifier module.")
+                    .parent().path("streamtools").addDefault(true).commentSide("Enable the Stream-tools module.")
+                    .parent().path("temporalvoice").addDefault(true).commentSide("Enable the Temporal-voice module.")
+                    .parent().path("tickets").addDefault(true).commentSide("Enable the Tickets module.")
+                    .parent().path("suggestions").addDefault(true).commentSide("Enable the suggestions module.")
+                    .parent().path("customcommands").addDefault(true).commentSide("Enable the custom Commands module.")
+                    .parent().path("customevents").addDefault(true).commentSide("Enable the custom Events module.")
+                    .parent().path("ai").addDefault(true).commentSide("Enable the AI module.")
+                    .parent().path("addons").addDefault(false).commentSide("Enable the Addons module.")
+                    .parent().path("news").addDefault(true).commentSide("Enable the news command/module.")
+                    .parent().path("games").addDefault(true).commentSide("Enable the Games module.")
+                    .parent().path("reactionroles").addDefault(true).commentSide("Enable the reaction-roles module.")
+                    .parent().path("slashcommands").addDefault(true).commentSide("Enable the slash-commands support.")
+                    .parent().path("messagecommands").addDefault(true).commentSide("Enable the message-commands support.");
 
             yamlFile.path("heartbeat")
                     .comment("Heartbeat Configuration, for status reporting").blankLine()
@@ -79,8 +129,12 @@ public class Config {
             yamlFile.path("amari").path("apitoken").commentSide("Your Amari API-Token, for Amari Level imports!")
                     .addDefault("Amari API-Token");
 
-            yamlFile.path("openai").path("apitoken").commentSide("Your OpenAI API-Token, for ChatGPT!")
-                    .addDefault("OpenAI API-Token");
+            yamlFile.setBlankLine("amari");
+
+            yamlFile.path("openai").path("apiToken").commentSide("Your OpenAI API-Token, for ChatGPT!")
+                    .addDefault("OpenAI API-Token")
+                    .parent().path("apiUrl").addDefault("https://api.openai.com/v1/chat/completions").commentSide("The URL to the OpenAI API.")
+                    .parent().path("model").addDefault("gpt-3.5-turbo-0301").commentSide("The Model used for the OpenAI API.");
 
             yamlFile.setBlankLine("openai");
 
@@ -101,10 +155,7 @@ public class Config {
 
             yamlFile.path("twitter")
                     .comment("Twitter Application Configuration, used for the Twitter Notifications.").blankLine()
-                    .path("consumer").path("key").addDefault("yourTwitterConsumerKey")
-                    .parent().path("secret").addDefault("yourTwitterConsumerSecret")
-                    .parent().parent().path("access").path("key").addDefault("yourTwitterAccessKey")
-                    .parent().path("secret").addDefault("yourTwitterAccessSecret");
+                    .path("bearer").addDefault("yourTwitterBearerToken");
 
             yamlFile.path("reddit")
                     .comment("Reddit Application Configuration, used for the Reddit Notification.").blankLine()
@@ -115,12 +166,6 @@ public class Config {
                     .comment("Instagram Application Configuration, used for the Instagram Notification.").blankLine()
                     .path("username").addDefault("yourInstagramUsername")
                     .parent().path("password").addDefault("yourInstagramPassword");
-
-            yamlFile.path("bot")
-                    .comment("Discord Application Configuration, used for OAuth and Bot Authentication.").blankLine()
-                    .path("tokens").path("release").addDefault("ReleaseTokenhere").commentSide("Token used when set to release build.")
-                    .parent().path("beta").addDefault("BetaTokenhere").commentSide("Token used when set to beta build.")
-                    .parent().path("dev").addDefault("DevTokenhere").commentSide("Token used when set to dev build.");
 
             try {
                 yamlFile.save(getFile());
@@ -149,13 +194,25 @@ public class Config {
         Map<String, Object> resources = yamlFile.getValues(true);
 
         // Migrate configs
+        try {
+            Files.copy(getFile().toPath(), new File("config-old.yml").toPath());
+        } catch (Exception ignore) {
+            System.out.println("Could not move the old configuration file to config-old.yml!");
+            System.out.println("This means the config file is not backed up by us!");
+        }
+
         if (getFile().delete()) {
             init();
 
             for (Map.Entry<String, Object> entry : resources.entrySet()) {
                 String key = entry.getKey();
 
+                boolean modified = false;
+
                 if (key.startsWith("config"))
+                    continue;
+
+                if (entry.getValue() instanceof MemorySection)
                     continue;
 
                 // Migrate to 1.10.0
@@ -168,6 +225,7 @@ public class Config {
                         key = key.replace(".rel", ".release");
 
                     yamlFile.set(key, entry.getValue());
+                    modified = true;
                 }
 
                 // Migrate to 2.2.0
@@ -176,6 +234,17 @@ public class Config {
                     if (key.startsWith("youtube"))
                         continue;
 
+                    yamlFile.set(key, entry.getValue());
+                    modified = true;
+                }
+
+
+                // Migrate to 2.4.11
+                if (compareVersion("2.4.11", configVersion)) {
+                    if (key.startsWith("twitter") && !key.endsWith("bearer")) continue;
+                }
+
+                if (!modified) {
                     yamlFile.set(key, entry.getValue());
                 }
             }
@@ -190,7 +259,6 @@ public class Config {
                 exception.printStackTrace();
             }
         }
-
     }
 
     /**

@@ -171,8 +171,10 @@ public class Main {
         }
 
         new SQLSession(getInstance().getConfig().getConfiguration().getString("hikari.sql.user"),
-                getInstance().getConfig().getConfiguration().getString("hikari.sql.db"), getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"),
-                getInstance().getConfig().getConfiguration().getString("hikari.sql.host"), getInstance().getConfig().getConfiguration().getInt("hikari.sql.port"),
+                getInstance().getConfig().getConfiguration().getString("hikari.sql.db"),
+                getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"),
+                getInstance().getConfig().getConfiguration().getString("hikari.sql.host"),
+                getInstance().getConfig().getConfiguration().getInt("hikari.sql.port"),
                 getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
                 getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"),
                 getInstance().getConfig().getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"));
@@ -465,7 +467,7 @@ public class Main {
                 ArrayUtil.messageIDwithUser.clear();
 
                 BotWorker.getShardManager().getShards().forEach(jda ->
-                        BotWorker.setActivity(jda, "ree6.de | %guilds% Servers. (%shard%)", Activity.ActivityType.PLAYING));
+                        BotWorker.setActivity(jda, Data.getStatus(), Activity.ActivityType.PLAYING));
 
                 log.info("[Stats] ");
                 log.info("[Stats] Today's Stats:");
@@ -498,8 +500,7 @@ public class Main {
                             TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
 
                             if (textChannel != null && textChannel.canTalk())
-                                // TODO:: translate.
-                                textChannel.sendMessage("Happy birthday to <@" + birthday.getUserId() + ">!").queue();
+                                textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish",birthday.getUserId())).queue();
                         });
 
                 lastDay = new SimpleDateFormat("dd").format(new Date());

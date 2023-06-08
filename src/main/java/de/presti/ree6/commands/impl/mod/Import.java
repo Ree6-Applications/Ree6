@@ -93,11 +93,15 @@ public class Import implements ICommand {
             }
         } else {
             int code = jsonElement.isJsonObject() && jsonElement.getAsJsonObject().has("status_code") &&
-                    jsonElement.getAsJsonObject().get("status_code").isJsonPrimitive() ? jsonElement.getAsJsonObject().get("status_code").getAsInt() : 0;
+                    jsonElement.getAsJsonObject().get("status_code").isJsonPrimitive() ? jsonElement.getAsJsonObject().getAsJsonPrimitive("status_code").getAsInt() : 0;
 
             String reason = jsonElement.isJsonObject() && jsonElement.getAsJsonObject().has("error") &&
-                    jsonElement.getAsJsonObject().get("error").isJsonObject() && jsonElement.getAsJsonObject().get("error").getAsJsonObject().has("message") ?
-                    jsonElement.getAsJsonObject().get("error").getAsJsonObject().get("message").getAsString() : commandEvent.getResource("label.unknown");
+                    jsonElement.getAsJsonObject().get("error").isJsonObject() && jsonElement.getAsJsonObject().getAsJsonObject("error").has("message") ?
+                    jsonElement.getAsJsonObject().getAsJsonObject("error").getAsJsonPrimitive("message").getAsString() : commandEvent.getResource("label.unknown");
+
+            if (reason.matches("^[0-9]{2}$")) {
+                code = Integer.parseInt(reason);
+            }
 
             commandEvent.reply(
                     commandEvent.getResource(code == 404 ?
@@ -115,7 +119,7 @@ public class Import implements ICommand {
      */
     public void importFromAmari(CommandEvent commandEvent) {
         try {
-            Leaderboard leaderboard = AmariAPI.getAmari4J().getRawLeaderboard(commandEvent.getGuild().getId(), Integer.MIN_VALUE);
+            Leaderboard leaderboard = AmariAPI.getAmari4J().getRawLeaderboard(commandEvent.getGuild().getId(), Integer.MAX_VALUE);
 
             leaderboard.getMembers().forEach(member -> {
                 ChatUserLevel chatUserLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getUserid());

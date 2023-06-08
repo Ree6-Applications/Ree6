@@ -21,6 +21,7 @@ import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.data.ImageCreationUtility;
 import de.presti.ree6.utils.others.*;
+import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
@@ -32,6 +33,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -423,7 +425,8 @@ public class OtherEvents extends ListenerAdapter {
                         Main.getInstance().getCommandManager().sendMessage(ChatGPTAPI.getResponse(event.getMember(),
                                 event.getMessage().getContentDisplay()), event.getChannel());
                     } catch (Exception e) {
-                        // TODO:: add error message
+                        Sentry.captureException(e);
+                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.default.retrievalError"), event.getChannel());
                     }
                 }
 
@@ -462,7 +465,9 @@ public class OtherEvents extends ListenerAdapter {
 
         event.retrieveMessage().queue(message -> {
 
-            String reactionCode = event.getReaction().getEmoji().getAsReactionCode();
+            EmojiUnion emojiUnion = event.getReaction().getEmoji();
+
+            String reactionCode = emojiUnion.getAsReactionCode();
 
             long emojiId;
             if (event.getReaction().getEmoji().getType() == Emoji.Type.CUSTOM) {
@@ -488,7 +493,7 @@ public class OtherEvents extends ListenerAdapter {
                             return;
                         }
 
-                        ReactionRole reactionRole = new ReactionRole(event.getGuild().getIdLong(), emojiId, role.getIdLong(), message.getMessageReference().getMessageIdLong());
+                        ReactionRole reactionRole = new ReactionRole(event.getGuild().getIdLong(), emojiId, emojiUnion.getFormatted(), role.getIdLong(), message.getMessageReference().getMessageIdLong());
                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole);
 
                         if (message.getMessageReference().getMessage() != null) {
@@ -508,6 +513,21 @@ public class OtherEvents extends ListenerAdapter {
                     if (role != null) {
                         event.getGuild().addRoleToMember(event.getMember(), role).queue();
                     }
+
+                    boolean changes = false;
+
+                    if (reactionRole.getChannelId() == 0) {
+                        reactionRole.setChannelId(event.getChannel().getIdLong());
+                        changes = true;
+                    }
+
+                    if (reactionRole.getFormattedEmote().isBlank()) {
+                        reactionRole.setFormattedEmote(emojiUnion.getFormatted());
+                        changes = true;
+                    }
+
+                    if (changes)
+                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole);
                 }
             }
         });

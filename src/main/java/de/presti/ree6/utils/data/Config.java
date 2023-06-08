@@ -87,6 +87,9 @@ public class Config {
                     .parent().path("support").addDefault("https://support.ree6.de").commentSide("The Support Server Link of the Bot.")
                     .parent().path("github").addDefault("https://github.ree6.de").commentSide("The GitHub Link of the Bot.")
                     .parent().path("website").addDefault("https://ree6.de").commentSide("The Website Link of the Bot.")
+                    .parent().path("webinterface").addDefault("https://cp.ree6.de").commentSide("The Webinterface Link of the Bot.")
+                    .parent().path("recording").addDefault("https://cp.ree6.de/external/recording").commentSide("The Recording Link of the Bot.")
+                    .parent().path("twitchAuth").addDefault("https://cp.ree6.de/external/twitch").commentSide("The Twitch Authentication Link of the Bot.")
                     .parent().path("advertisement").addDefault("powered by Tube-hosting").commentSide("The Advertisement in Embed Footers and the rest.")
                     .parent().path("name").addDefault("Ree6").commentSide("The Name of the Bot.")
                     .parent().path("shards").addDefault(1).commentSide("The shard amount of the Bot. Check out https://anidiots.guide/understanding/sharding/#sharding for more information.")
@@ -113,7 +116,8 @@ public class Config {
                     .parent().path("news").addDefault(true).commentSide("Enable the news command/module.")
                     .parent().path("games").addDefault(true).commentSide("Enable the Games module.")
                     .parent().path("reactionroles").addDefault(true).commentSide("Enable the reaction-roles module.")
-                    .parent().path("slashcommands").addDefault(true).commentSide("Enable the slash-commands support.");
+                    .parent().path("slashcommands").addDefault(true).commentSide("Enable the slash-commands support.")
+                    .parent().path("messagecommands").addDefault(true).commentSide("Enable the message-commands support.");
 
             yamlFile.path("heartbeat")
                     .comment("Heartbeat Configuration, for status reporting").blankLine()

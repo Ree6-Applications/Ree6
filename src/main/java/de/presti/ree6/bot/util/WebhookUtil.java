@@ -19,6 +19,7 @@ public class WebhookUtil {
 
     /**
      * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     *
      * @throws IllegalStateException it is a utility class.
      */
     private WebhookUtil() {
@@ -27,23 +28,25 @@ public class WebhookUtil {
 
     /**
      * Send a Webhook-message to the wanted Webhook.
+     *
      * @param loggerMessage the MessageContent, if it has been merged.
-     * @param message the MessageContent.
-     * @param webhook the Webhook.
-     * @param isLog is the Webhook Message a Log-Message?
+     * @param message       the MessageContent.
+     * @param webhook       the Webhook.
+     * @param isLog         is the Webhook Message a Log-Message?
      */
     public static void sendWebhook(LogMessage loggerMessage, WebhookMessage message, Webhook webhook, boolean isLog) {
-        sendWebhook(loggerMessage, message, Long.parseLong(webhook.getChannelId()), webhook.getToken(), isLog);
+        sendWebhook(loggerMessage, message, Long.parseLong(webhook.getWebhookId()), webhook.getToken(), isLog);
     }
 
 
     /**
      * Send a Webhook-message to the wanted Webhook.
+     *
      * @param loggerMessage the MessageContent, if it has been merged.
-     * @param message the MessageContent.
-     * @param webhookId the ID of the Webhook.
-     * @param webhookToken the Auth-Token of the Webhook.
-     * @param isLog is the Webhook Message a Log-Message?
+     * @param message       the MessageContent.
+     * @param webhookId     the ID of the Webhook.
+     * @param webhookToken  the Auth-Token of the Webhook.
+     * @param isLog         is the Webhook Message a Log-Message?
      */
     public static void sendWebhook(LogMessage loggerMessage, WebhookMessage message, long webhookId, String webhookToken, boolean isLog) {
         log.debug("Received a Webhook to send. (Log-Typ: {})", isLog ? loggerMessage != null ? loggerMessage.getType().name() : "NONE-LOG" : "NONE-LOG");
@@ -69,18 +72,18 @@ public class WebhookUtil {
 
                     // TODO:: check the functionality of this new code. Since it would allow use to do all this in one line.
 
-                    // SQLSession.getSqlConnector().getSqlWorker().getEntityList(new Webhook("", "", ""),
-                    // "from Webhook where cid =:cid and token=:token",
-                    // Map.of("cid", webhookId,"token", webhookToken))
-                    // .forEach(webhook -> deleteWebhook(webhook.getGuildId(), webhook));
+                    SQLSession.getSqlConnector().getSqlWorker().getEntityList(new Webhook(),
+                                    "from Webhook where cid =:cid and token=:token",
+                                    Map.of("cid", webhookId, "token", webhookToken))
+                            .forEach(webhook -> deleteWebhook(webhook.getGuildId(), webhook));
 
                     // Inform and delete invalid webhook.
-                    if (isLog) {
+                    /* if (isLog) {
                         SQLSession.getSqlConnector().getSqlWorker().deleteLogWebhook(webhookId, webhookToken);
                         log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                     } else {
                         log.error("[Webhook] Invalid Webhook: {} - {}, has not been deleted since it is not a Log-Webhook.", webhookId, webhookToken);
-                    }
+                    }*/
                 } else if (throwable.getMessage().contains("failure 400")) {
                     // If 404 inform that the Message had an invalid Body.
                     log.error("[Webhook] Invalid Body with LogTyp: {}", loggerMessage.getType().name());
@@ -96,7 +99,8 @@ public class WebhookUtil {
 
     /**
      * Delete a Webhook entry from the Guild.
-     * @param guildId the ID of the Guild.
+     *
+     * @param guildId       the ID of the Guild.
      * @param webhookEntity the Webhook entity.
      */
     public static void deleteWebhook(String guildId, Webhook webhookEntity) {
@@ -107,8 +111,8 @@ public class WebhookUtil {
             // Delete the existing Webhook.
             guild.retrieveWebhooks()
                     .queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null)
-                    .filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getChannelId()) &&
-                            webhook.getToken().equalsIgnoreCase(webhookEntity.getToken()))
+                            .filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getWebhookId()) &&
+                                    webhook.getToken().equalsIgnoreCase(webhookEntity.getToken()))
                             .forEach(webhook -> webhook.delete().queue()));
         }
     }

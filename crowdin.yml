@@ -11,8 +11,8 @@ files:
       - pl.yml
       - ru.yml
       - tr.yml
-      - ja-JP.yml
-      - no-NO.yml
-      - uk-UA.yml
+      - ja.yml
+      - uk.yml
       - zh-CN.yml
+      - ro.yml
     translation: /%original_path%/%locale%.yml
