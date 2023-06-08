@@ -662,7 +662,7 @@ command:
     schedule: "Jadwalkan pesan untuk nanti atau untuk diulang!"
     money: "Mengelola uangmu!"
     steal: "Mencuri uang dari orang lain!"
-    work: "Dapatkan uangmu dari bekerja!"
+    work: "Get your own money from doing work!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"
