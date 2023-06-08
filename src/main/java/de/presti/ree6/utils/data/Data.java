@@ -95,14 +95,26 @@ public class Data {
         return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.modules." + moduleName, true);
     }
 
+    /**
+     * Get the configured Twitch Auth Url.
+     * @return the Twitch Auth Url from the config.
+     */
     public static String getTwitchAuth() {
         return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.twitchAuth", "https://cp.ree6.de/external/twitch");
     }
 
+    /**
+     * Get the configured Recording Url.
+     * @return the Recording Url from the config.
+     */
     public static String getRecordingUrl() {
         return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.recording", "https://cp.ree6.de/external/recording");
     }
 
+    /**
+     * Get the configured Webinterface Url.
+     * @return the Webinterface Url from the config.
+     */
     public static String getWebinterface() {
         return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.webinterface", "https://cp.ree6.de");
     }
