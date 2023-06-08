@@ -226,10 +226,6 @@ public class Notifier {
 
         try {
             twitterClient = new TwitterClient(TwitterCredentials.builder()
-                    /*.accessToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))
-                    .accessTokenSecret(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
-                    .apiSecretKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.secret"))
-                    .apiKey(Main.getInstance().getConfig().getConfiguration().getString("twitter.access.key"))*/
                     .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
 
             List<StreamRules.StreamRule> rules = twitterClient.retrieveFilteredStreamRules();

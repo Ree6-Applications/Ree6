@@ -513,6 +513,21 @@ public class OtherEvents extends ListenerAdapter {
                     if (role != null) {
                         event.getGuild().addRoleToMember(event.getMember(), role).queue();
                     }
+
+                    boolean changes = false;
+
+                    if (reactionRole.getChannelId() == 0) {
+                        reactionRole.setChannelId(event.getChannel().getIdLong());
+                        changes = true;
+                    }
+
+                    if (reactionRole.getFormattedEmote().isBlank()) {
+                        reactionRole.setFormattedEmote(emojiUnion.getFormatted());
+                        changes = true;
+                    }
+
+                    if (changes)
+                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole);
                 }
             }
         });
