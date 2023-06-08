@@ -5,8 +5,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,7 +17,10 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         if (getJavaVersion() < 17) {
-            print("Looks like you are using a version below Java 17!\nRee6 has been developed base on Java 17 you wont be able to run it with " + getJavaVersion() + "!\nYou can still continue with installing everything!");
+            print(String.format("""
+                    Looks like you are using a version below Java 17!
+                    Ree6 has been developed base on Java 17 you wont be able to run it with %s!
+                    You can still continue with installing everything!""", getJavaVersion()));
         }
 
         if (Arrays.stream(args).anyMatch(c -> c.equalsIgnoreCase("update"))) {
@@ -31,7 +32,7 @@ public class Main {
         if (Files.exists(Paths.get("config.yml"))) {
             print("We found a config.yml!\nDo you want to update Ree6 or fully configure it? (update/configure)");
 
-            String input = System.console().readLine();
+            String input = getValue();
             switch (input) {
                 case "update" -> {
                     print("Updating Ree6...");
@@ -53,6 +54,7 @@ public class Main {
 
     /**
      * Returns the Java version as an int value.
+     *
      * @return the Java version as an int value (8, 9, etc.)
      */
     public static int getJavaVersion() {
@@ -93,21 +95,27 @@ public class Main {
         try {
             if (System.getProperty("os.name").contains("Windows")) {
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            }
-            else {
+            } else {
                 System.out.print("\033\143");
             }
-        } catch (IOException | InterruptedException ignore) {}
+        } catch (IOException | InterruptedException ignore) {
+        }
     }
 
     public static void setupStepOne() throws InterruptedException, IOException {
         clear();
-        print("Welcome to the setup System of Ree6!\nLets start by configuration the Config!\nPlease select one of these Database Types: MariaDB, SQLite");
+        print("Welcome to the setup System of Ree6!\nLets start by configuration the Config!\nPlease select one of these Database Types: MariaDB, SQLite, Postgres, H2, H2-Server");
 
         switch (getValueOrDefault("sqlite").toLowerCase()) {
-            case "mariadb" -> setupMariaDB();
+            case "mariadb" -> setupGenericDatabase("mariadb", "MariaDB");
 
             case "sqlite" -> setupSQLite();
+
+            case "h2" -> setupH2(false);
+
+            case "h2-server" -> setupH2(true);
+
+            case "postgres" -> setupGenericDatabase("postgresql", "Postgres");
 
             default -> {
                 print("Unknown Database Typ!");
@@ -130,11 +138,23 @@ public class Main {
 
         if (getValueOrDefault("no").toLowerCase().startsWith("y")) {
 
+            print("Enter the Heartbeat-Url (NONE)");
+            config.getConfiguration().set("heartbeat.url", getValueOrDefault(""));
+
+            print("Enter the Heartbeat-Interval (NONE)");
+            config.getConfiguration().set("heartbeat.url", getValueOrDefault(""));
+
             print("Enter your Dagpi.xyz-Key (NONE)");
             config.getConfiguration().set("dagpi.apitoken", getValueOrDefault(""));
 
             print("Enter your AmariBot-Key (NONE)");
             config.getConfiguration().set("amari.apitoken", getValueOrDefault(""));
+
+            print("Enter your OpenAI API-Token (NONE)");
+            config.getConfiguration().set("openai.apiToken", getValueOrDefault(""));
+
+            print("Enter your OpenAI API-Url (NONE)");
+            config.getConfiguration().set("openai.apiUrl", getValueOrDefault(""));
 
             print("Enter your Sentry DSN (NONE)");
             config.getConfiguration().set("sentry.dsn", getValueOrDefault(""));
@@ -151,17 +171,8 @@ public class Main {
             print("Enter your Twitch Client Secret (NONE)");
             config.getConfiguration().set("twitch.client.secret", getValueOrDefaultHidden(""));
 
-            print("Enter your Twitter Consumer Id (NONE)");
-            config.getConfiguration().set("twitter.consumer.key", getValueOrDefault(""));
-
-            print("Enter your Twitter Consumer Secret (NONE)");
-            config.getConfiguration().set("twitter.consumer.secret", getValueOrDefaultHidden(""));
-
-            print("Enter your Twitter Access Id (NONE)");
-            config.getConfiguration().set("twitter.access.key", getValueOrDefault(""));
-
-            print("Enter your Twitter Access Secret (NONE)");
-            config.getConfiguration().set("twitter.access.secret", getValueOrDefaultHidden(""));
+            print("Enter your Twitter Bearer Key (NONE)");
+            config.getConfiguration().set("twitter.bearer", getValueOrDefault(""));
 
             print("Enter your Reddit Client Id (NONE)");
             config.getConfiguration().set("reddit.client.id", getValueOrDefault(""));
@@ -216,11 +227,11 @@ public class Main {
         }
     }
 
-    public static void setupMariaDB() throws IOException {
+    public static void setupGenericDatabase(String typ, String displayName) throws IOException {
         clear();
-        config.getConfiguration().set("hikari.misc.storage", "mariadb");
+        config.getConfiguration().set("hikari.misc.storage", typ);
 
-        print("You selected MariaDB!\nLets start by setting up the connection between Ree6 and MariaDB!\nWhat is the MariaDB-User that you want to use? (root)");
+        print("You selected " + displayName + "!\nLets start by setting up the connection between Ree6 and " + displayName + "!\nWhat is the Username that you want to use? (root)");
         String name = getValueOrDefault("root");
         config.getConfiguration().set("hikari.sql.name", name);
 
@@ -236,7 +247,8 @@ public class Main {
         String databaseName = getValueOrDefault("root");
         config.getConfiguration().set("hikari.sql.db", databaseName);
 
-        print("What is the MariaDB-Password? (NONE)");
+
+        print("What is the User password? (NONE)");
         String password = getValueOrDefaultHidden("");
         config.getConfiguration().set("hikari.sql.pw", password);
 
@@ -248,6 +260,32 @@ public class Main {
         config.getConfiguration().set("hikari.misc.storage", "sqlite");
 
         print("You selected SQLite!\nYou dont need to set up anything for this one!");
+
+        config.getConfiguration().save();
+    }
+
+    public static void setupH2(boolean server) throws IOException {
+        clear();
+        config.getConfiguration().set("hikari.misc.storage", server ? "h2-server" : "h2");
+
+        if (server) {
+            print("Do you want to run the H2 server?\nEnter yes if you want or no If you dont.");
+            String input = getValue();
+            if (input.equalsIgnoreCase("yes")) {
+                config.getConfiguration().set("hikari.misc.createEmbeddedServer", true);
+
+                print("Done!\nRee6 will now start a H2 embedded Server when you start it!\nThe port to connect is: 9092!");
+            } else {
+                config.getConfiguration().set("hikari.misc.createEmbeddedServer", false);
+
+                setupGenericDatabase("h2-server", "H2-Server");
+
+                print("Done!\nRee6 will now connect to the H2 server when you start it!");
+            }
+        } else {
+            config.getConfiguration().set("hikari.misc.createEmbeddedServer", false);
+            print("You selected H2!\nYou dont need to set up anything for this one!");
+        }
 
         config.getConfiguration().save();
     }
