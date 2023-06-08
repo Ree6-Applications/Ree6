@@ -11,6 +11,9 @@ import de.presti.ree6.sql.entities.Tickets;
 import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.ChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -62,14 +65,17 @@ public class Ticket implements ICommand {
             SQLSession.getSqlConnector().getSqlWorker().deleteEntity(tickets);
         }
 
+        StandardGuildMessageChannel channel = logChannel.getAsChannel().asStandardGuildMessageChannel();
+
         tickets = new Tickets();
         tickets.setChannelId(ticketChannel.getAsChannel().getIdLong());
         tickets.setGuildId(commandEvent.getGuild().getIdLong());
+        tickets.setLogChannelId(logChannel.getAsChannel().getIdLong());
 
         Tickets finalTickets = tickets;
 
-        logChannel.getAsChannel().asStandardGuildMessageChannel().createWebhook("Ticket-Log").queue(webhook -> {
-            finalTickets.setLogChannelId(webhook.getIdLong());
+        channel.createWebhook("Ticket-Log").queue(webhook -> {
+            finalTickets.setLogChannelWebhookId(webhook.getIdLong());
             finalTickets.setLogChannelWebhookToken(webhook.getToken());
             commandEvent.getGuild().createCategory("Tickets").addPermissionOverride(commandEvent.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
                 finalTickets.setTicketCategory(category1.getIdLong());
