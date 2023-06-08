@@ -13,6 +13,7 @@ import de.presti.ree6.sql.entities.StreamAction;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.actions.streamtools.container.StreamActionContainer;
 import de.presti.ree6.actions.ActionInfo;
+import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -59,8 +60,6 @@ public class StreamActionCommand implements ICommand {
 
         String subCommandGroup = commandEvent.getSubcommandGroup();
         String subCommand = commandEvent.getSubcommand();
-
-        subCommandGroup = subCommandGroup == null ? "" : subCommandGroup;
 
         switch (subCommandGroup) {
             case "manage" -> {
@@ -180,7 +179,7 @@ public class StreamActionCommand implements ICommand {
                                 SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
                                 commandEvent.reply(commandEvent.getResource("message.stream-action.added", name.getAsString()));
                             } else {
-                                commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", "https://cp.ree6.de/twitch/auth"));
+                                commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", Data.getTwitchAuth()));
                             }
                         } else {
                             commandEvent.reply(commandEvent.getResource("message.stream-action.alreadyExisting", name.getAsString()));
@@ -221,7 +220,7 @@ public class StreamActionCommand implements ICommand {
                             messageCreateBuilder.addFiles(FileUpload.fromData(stringBuilder.toString().getBytes(StandardCharsets.UTF_8), "points.txt"));
                             commandEvent.reply(messageCreateBuilder.build());
                         } else {
-                            commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", "https://cp.ree6.de/twitch/auth"));
+                            commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", Data.getTwitchAuth()));
                         }
                     }
 

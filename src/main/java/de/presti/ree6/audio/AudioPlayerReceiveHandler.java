@@ -179,7 +179,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                         .setFooter(Data.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
                         .setTitle(LanguageService.getByGuild(voiceChannel.getGuild(), "label.recording.finished"))
                         .build()).setActionRow(new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(voiceChannel.getGuild(), "label.download"), ButtonStyle.LINK,
-                        "https://cp.ree6.de/recording?recordId=" + recording.getIdentifier(), false, Emoji.fromCustom("shiba", 941219375535509504L, true))).complete();
+                        Data.getRecordingUrl() + "?id=" + recording.getIdentifier(), false, Emoji.fromCustom("shiba", 941219375535509504L, true))).complete();
             }
             // Find a way to still notify that the bot couldn't send the audio.
         } catch (Exception ex) {

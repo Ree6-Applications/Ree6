@@ -171,8 +171,10 @@ public class Main {
         }
 
         new SQLSession(getInstance().getConfig().getConfiguration().getString("hikari.sql.user"),
-                getInstance().getConfig().getConfiguration().getString("hikari.sql.db"), getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"),
-                getInstance().getConfig().getConfiguration().getString("hikari.sql.host"), getInstance().getConfig().getConfiguration().getInt("hikari.sql.port"),
+                getInstance().getConfig().getConfiguration().getString("hikari.sql.db"),
+                getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"),
+                getInstance().getConfig().getConfiguration().getString("hikari.sql.host"),
+                getInstance().getConfig().getConfiguration().getInt("hikari.sql.port"),
                 getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
                 getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"),
                 getInstance().getConfig().getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"));

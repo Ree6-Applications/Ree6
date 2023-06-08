@@ -86,8 +86,25 @@ public class Data {
         return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.name", "Ree6");
     }
 
+    /**
+     * Check if a module is activated in the config.
+     * @param moduleName Name of the module.
+     * @return if the module is activated.
+     */
     public static boolean isModuleActive(String moduleName) {
         return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.modules." + moduleName, true);
+    }
+
+    public static String getTwitchAuth() {
+        return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.twitchAuth", "https://cp.ree6.de/external/twitch");
+    }
+
+    public static String getRecordingUrl() {
+        return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.recording", "https://cp.ree6.de/external/recording");
+    }
+
+    public static String getWebinterface() {
+        return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.webinterface", "https://cp.ree6.de");
     }
 }
 

@@ -892,7 +892,7 @@ public class MenuEvents extends ListenerAdapter {
                     case "autorole" -> {
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.setup.steps.autoRole"));
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(Button.link("https://cp.ree6.de", "Webinterface")).queue();
+                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(Button.link(Data.getWebinterface(), "Webinterface")).queue();
                     }
 
                     case "tempvoice" -> {

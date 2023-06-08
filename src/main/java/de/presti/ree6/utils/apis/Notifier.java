@@ -167,8 +167,7 @@ public class Notifier {
                 .build();
 
         TwitchAuth.registerIdentityProvider(credentialManager, Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"),
-                Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"),
-                (BotWorker.getVersion() != BotVersion.DEVELOPMENT ? "https://cp.ree6.de" : "http://localhost:8888") + "/twitch/auth/callback");
+                Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"), Data.getTwitchAuth());
 
         twitchIdentityProvider = (TwitchIdentityProvider) credentialManager.getIdentityProviderByName("twitch").orElse(null);
 
