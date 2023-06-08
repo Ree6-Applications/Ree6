@@ -187,12 +187,12 @@ label:
   shuffle: "Zamíchat"
   loop: "Smyčka"
   loading: "Načítání"
-  blackJackWin: "BlackJack Win"
-  musicQuizWin: "MusicQuiz Win"
-  musicQuizFeatureGuess: "MusicQuiz Feature Guess"
-  musicQuizArtistGuess: "MusicQuiz Artist Guess"
-  musicQuizTitleGuess: "MusicQuiz Title Guess"
-  rewards: "Rewards"
+  blackJackWin: "Výhra v BlackJacku"
+  musicQuizWin: "Výhra v MusicQuiz"
+  musicQuizFeatureGuess: "Funkce MusicQuiz Guess"
+  musicQuizArtistGuess: "Uhádněte interpreta Hudební kvíz"
+  musicQuizTitleGuess: "Uhádni jméno Hudební kvíz"
+  rewards: "Odměny"
 message:
   default:
     usage: "Použití {guild_prefix}%s."
@@ -223,7 +223,7 @@ message:
       date: "Použijte platné datum!\nVezměte prosím na vědomí, že používáme formát dd.MM.yyyy (day.month.year)!"
       time: "Použijte prosím platný čas!\\nPamatuj, že používáme formát HH/mm (hodina/minuta)!"
       notEnough: "Zadaný čas nestačí!"
-    incorrectNumbers: "Please enter correct number values"
+    incorrectNumbers: "Zadejte správné hodnoty čísel"
   birthday:
     added:
       self: "Vaše narozeniny byly přidány!"
@@ -233,7 +233,7 @@ message:
       self: "Vaše narozeniny byly odstraněny!"
       other: "Narozeniny %s byly odstraněny!"
       noPerms: "Nemáte oprávnění k odstranění narozenin!"
-    wish: "Happy birthday to <@%s>!"
+    wish: "Všechno nejlepší k narozeninám <@%s>!"
   instagramNotifier:
     added: "Bylo vytvořeno oznámení Instagram pro uživatele %s!"
     list: "Zde jsou všechny Instagram oznámení které byly nastaveny:\n```%s```"
@@ -477,7 +477,7 @@ message:
     error: "Něco se pokazilo při převodu tvého zvuku!\nDůvod: %s"
   reactions:
     roleAssign: "Přidělili jste roli %s k reakci!"
-    reactionNeeded: "You need to react to this message with the reaction you want to assign %s to!"
+    reactionNeeded: "You must respond to this message with the reaction you want to assign %s!"
     roleNotFound: "Role kterou chcete přiřadit k reakci, nebyla nalezena!"
     removed: "Reakční role pro roli %s byla úspěšně odstraněna!"
     roleAdded: "Obdrželi jste roli %s!"
@@ -546,27 +546,27 @@ message:
     response: ":speaking_head: %s"
     responseNsfw: "red_circle: ||%s|| **NSFW**"
   money:
-    notEnoughMoney: "You don't have enough money for this action!"
-    withdraw: "You have successfully withdrawn %s$!"
-    deposit: "You have successfully deposited %s$!"
-    send: "You have successfully sent %s$ to %s!"
-    balance: "The Balance of %s contains %s$ in cash and %s$ on the Bank!"
+    notEnoughMoney: "Nemáte dost peněz!"
+    withdraw: "Úspěšně jste vybrali %s$ z banky!"
+    deposit: "Úspěšně jste vložili %s$ do banky!"
+    send: "Úspěšně jste odeslali %s$ na adresu %s!"
+    balance: "Zůstatek %s obsahuje %s$ v hotovosti a %s$ v bance!"
   steal:
-    success: "You have successfully stolen %s$ from %s!"
-    failed: "You have failed to steal %s$ from %s!"
-    cooldown: "You are on cooldown! You can steal again in about %s seconds."
-    self: "You can't steal from yourself!"
-    notEnoughMoney: "%s doesn't have enough money!"
+    success: "Úspěšně jste ukradli %s$ z %s!"
+    failed: "Nepodařilo se vám ukrást %s$ z %s!"
+    cooldown: "Znovu krást můžete přibližně za %s sekund."
+    self: "Nemůžeš okrást sám sebe!"
+    notEnoughMoney: "%s nemá dostatek peněz!"
   work:
-    success: "You have successfully worked and earned %s$!"
-    cooldown: "You are on cooldown! You can work again in about %s seconds."
-    failed: "You have failed to work!"
+    success: "Úspěšně jste pracovali a vydělali %s$!"
+    cooldown: "Znovu můžete pracovat přibližně za %s sekund."
+    failed: "Selhali jste v práci!"
   rewards:
-    success: "Successfully updated the rewards!"
+    success: "Odměny byly úspěšně aktualizovány!"
 game:
   description:
     blackjack: "Hrajte Blackjack se svými přáteli!"
-    musicquiz: "Play a Quiz game based on Music with your friends!"
+    musicquiz: "Zahrajte si s přáteli kvízovou hru založenou na hudbě!"
 command:
   perform:
     cooldown: "Jste na ochlazení!"
@@ -660,9 +660,9 @@ command:
     infractions: "Zobrazit všechna varování uživatele."
     musicpanel: "Přístup k jednoduchému uživatelskému rozhraní pro správu hudebního systému!"
     schedule: "Naplánovat zprávy na později nebo na opakovaný čas!"
-    money: "Manage your money!"
-    steal: "Steal money from other users!"
-    daily: "Get your own money from doing work!"
+    money: "Spravujte své peníze!"
+    steal: "Krást peníze ostatním uživatelům!"
+    daily: "Získejte vlastní peníze z práce!"
 category:
   info: "Slouží ke shromažďování informací nebo poskytování informací."
   moderation: "Nástroje pro moderování, které vám mohou pomoci spravovat uživatele nebo zabránit porušení pravidel na serveru."
@@ -670,6 +670,6 @@ category:
   fun: "Zábavné nástroje, které vám dávají sílu dělat hloupé věci, protože můžete!"
   level: "Nástroje pro vyrovnávání, které vám umožňují sledovat pokrok na serveru."
   community: "Nástroje komunity, které vám umožní komunikovat s vaší komunitou."
-  economy: "Economy Tools that allow you to manage your money."
+  economy: "Ekonomika Nástroje, které vám umožní spravovat peníze."
   nsfw: "Věci NSFW, které můžete použít pouze v kanálech NSFW."
   hidden: "Skryté příkazy, které vidí pouze majitel robota."
