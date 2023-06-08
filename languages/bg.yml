@@ -187,12 +187,12 @@ label:
   shuffle: "Разбъркване"
   loop: "Цикъл"
   loading: "Зареждане"
-  blackJackWin: "BlackJack Win"
-  musicQuizWin: "MusicQuiz Win"
-  musicQuizFeatureGuess: "MusicQuiz Feature Guess"
-  musicQuizArtistGuess: "MusicQuiz Artist Guess"
-  musicQuizTitleGuess: "MusicQuiz Title Guess"
-  rewards: "Rewards"
+  blackJackWin: "Спечелете Black Jack"
+  musicQuizWin: "Спечелете музикална викторина"
+  musicQuizFeatureGuess: "Функционална музикална викторина Guess"
+  musicQuizArtistGuess: "MusicQuiz Отгатване на изпълнител"
+  musicQuizTitleGuess: "MusicQuiz Познай заглавието"
+  rewards: "Награди"
 message:
   default:
     usage: "Употреба {guild_prefix}%s."
@@ -223,7 +223,7 @@ message:
       date: "Моля използвайте валидна дата!\nИмайте предвид, че ползваме формата dd.MM.yyyy (day.month.year)!"
       time: "Моля използвайте валидно време!\nИмайте предвид, че ползваме формата HH/mm (hour/minute (24-hour))!"
       notEnough: "Въведеното време не е достатъчно!"
-    incorrectNumbers: "Please enter correct number values"
+    incorrectNumbers: "Моля, въведете стойности на числата"
   birthday:
     added:
       self: "Твоят рожден ден бе добавен!"
@@ -233,7 +233,7 @@ message:
       self: "Твоят рожден ден бе премахнат!"
       other: "Рожденият ден на %s бе премахнат!"
       noPerms: "Нямаш позволението да премахваш рождени дни!"
-    wish: "Happy birthday to <@%s>!"
+    wish: "Честит рожден ден на <@%s>!"
   instagramNotifier:
     added: "Instagram нотификатор бе създаден за потребителя %s!"
     list: "Това са всичките Instagram нотификатори, които са били настроени:\n```%s```"
@@ -477,7 +477,7 @@ message:
     error: "Нещо се е объркало при конвертирането на вашето аудио!\nПричина: %s"
   reactions:
     roleAssign: "Възложили сте ролята %s на реакцията!"
-    reactionNeeded: "You need to react to this message with the reaction you want to assign %s to!"
+    reactionNeeded: "Трябва да отговорите на това съобщение с отговора, който искате да присвоите на %s!"
     roleNotFound: "Ролята, която искате да присвоите на реакцията, не е намерена!"
     removed: "Успешно премахване на Reaction-Role за ролята %s!"
     roleAdded: "Ти получи ролята %s!"
@@ -546,27 +546,27 @@ message:
     response: ":speaking_head: %s"
     responseNsfw: ":red_circle: ||%s|| **NSFW**"
   money:
-    notEnoughMoney: "You don't have enough money for this action!"
-    withdraw: "You have successfully withdrawn %s$!"
-    deposit: "You have successfully deposited %s$!"
-    send: "You have successfully sent %s$ to %s!"
-    balance: "The Balance of %s contains %s$ in cash and %s$ on the Bank!"
+    notEnoughMoney: "Не разполагате с достатъчно пари за това!"
+    withdraw: "Успешно изтеглихте %s$ от банката!"
+    deposit: "Успешно сте депозирали %s$ от банката!"
+    send: "Успешно изпратихте %s$ до %s!"
+    balance: "Балансът на %s съдържа %s$ в брой и %s$ в банка!"
   steal:
-    success: "You have successfully stolen %s$ from %s!"
-    failed: "You have failed to steal %s$ from %s!"
-    cooldown: "You are on cooldown! You can steal again in about %s seconds."
-    self: "You can't steal from yourself!"
-    notEnoughMoney: "%s doesn't have enough money!"
+    success: "Успешно сте откраднали %s$ от %s!"
+    failed: "Не успяхте да откраднете %s$ от %s!"
+    cooldown: "Можете да откраднете отново след около %s секунди."
+    self: "Не можете да откраднете от себе си!"
+    notEnoughMoney: "%s няма достатъчно пари!"
   work:
-    success: "You have successfully worked and earned %s$!"
-    cooldown: "You are on cooldown! You can work again in about %s seconds."
-    failed: "You have failed to work!"
+    success: "Успешно сте работили и сте спечелили %s$!"
+    cooldown: "Можете да работите отново след около %s секунди."
+    failed: "Не сте успели да работите!"
   rewards:
-    success: "Successfully updated the rewards!"
+    success: "Успешно актуализирах наградите!"
 game:
   description:
     blackjack: "Играй Блекджек с приятелите си!"
-    musicquiz: "Play a Quiz game based on Music with your friends!"
+    musicquiz: "Играйте с приятелите си викторина на тема музика!"
 command:
   perform:
     cooldown: "Намираш се в период на изчакване!"
@@ -660,9 +660,9 @@ command:
     infractions: "Показване на всички предупреждения на даден потребител."
     musicpanel: "Достъп до прост потребителски интерфейс за управление на музикалната система!"
     schedule: "Планиране на съобщенията за по-късно или за повторно време!"
-    money: "Manage your money!"
-    steal: "Steal money from other users!"
-    daily: "Get your own money from doing work!"
+    money: "Управлявайте парите си!"
+    steal: "Откраднете пари от други потребители!"
+    daily: "Спечелете собствени пари от работа!"
 category:
   info: "Използва се за събиране на информация или предоставяне на информация."
   moderation: "Инструменти за модериране, които могат да ви помогнат да управлявате потребители или да предотвратите нарушаване на правилата на сървъра."
@@ -670,6 +670,6 @@ category:
   fun: "Забавни помощни програми, които ви дават възможност да правите глупости, защото можете!"
   level: "Инструменти за повишаване на нивото, които ви позволяват да следите напредъка на сървъра.."
   community: "Инструменти, които ви позволяват да взаимодействате с общността си."
-  economy: "Economy Tools that allow you to manage your money."
+  economy: "Икономика Инструменти, които ви позволяват да управлявате парите си."
   nsfw: "NSFW неща, които може да ползвате само в NSFW канали."
   hidden: "Скрити команди, които са видими само за притежателя на бота."
