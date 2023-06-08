@@ -156,6 +156,9 @@ public class Main {
             print("Enter your OpenAI API-Url (NONE)");
             config.getConfiguration().set("openai.apiUrl", getValueOrDefault(""));
 
+            print("Enter your OpenAI AI-Model (NONE)");
+            config.getConfiguration().set("openai.model", getValueOrDefault(""));
+
             print("Enter your Sentry DSN (NONE)");
             config.getConfiguration().set("sentry.dsn", getValueOrDefault(""));
 
