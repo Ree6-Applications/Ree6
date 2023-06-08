@@ -662,7 +662,7 @@ command:
     schedule: "Schedule messages for later or for a repeated time!"
     money: "Manage your money!"
     steal: "Steal money from other users!"
-    daily: "Get your own money from doing work!"
+    work: "Get your own money from doing work!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."
