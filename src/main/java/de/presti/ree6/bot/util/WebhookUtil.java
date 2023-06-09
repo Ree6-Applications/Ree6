@@ -97,7 +97,7 @@ public class WebhookUtil {
                         }
 
                         WebhookYouTube webhookYouTube =
-                                SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookYouTube(), "SELECT * FROM YouTubeWebhooks WHERE cid = :cid AND token = :token", Map.of("cid", webhookId, "token", webhookToken));
+                                SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookYouTube(), "SELECT * FROM YouTubeNotify WHERE cid = :cid AND token = :token", Map.of("cid", webhookId, "token", webhookToken));
 
                         if (webhookYouTube != null && !deleted) {
                             SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookYouTube);
@@ -107,7 +107,7 @@ public class WebhookUtil {
 
                         if (!deleted) {
                             WebhookTwitter webhookTwitter =
-                                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookTwitter(), "SELECT * FROM TwitterWebhooks WHERE cid = :cid AND token = :token", Map.of("cid", webhookId, "token", webhookToken));
+                                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookTwitter(), "SELECT * FROM TwitterNotify WHERE cid = :cid AND token = :token", Map.of("cid", webhookId, "token", webhookToken));
 
                             if (webhookTwitter != null) {
                                 SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookTwitter);
@@ -118,7 +118,7 @@ public class WebhookUtil {
 
                         if (!deleted) {
                             WebhookTwitch webhookTwitch =
-                                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookTwitch(), "SELECT * FROM TwitchWebhooks WHERE cid = :cid AND token = :token", Map.of("cid", webhookId, "token", webhookToken));
+                                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookTwitch(), "SELECT * FROM TwitchNotify WHERE cid = :cid AND token = :token", Map.of("cid", webhookId, "token", webhookToken));
 
                             if (webhookTwitch != null) {
                                 SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookTwitch);
@@ -129,7 +129,7 @@ public class WebhookUtil {
 
                         if (!deleted) {
                             WebhookReddit webhookReddit =
-                                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookReddit(), "SELECT * FROM RedditWebhooks WHERE cid = :cid AND token = :token", Map.of("cid", webhookId, "token", webhookToken));
+                                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookReddit(), "SELECT * FROM RedditNotify WHERE cid = :cid AND token = :token", Map.of("cid", webhookId, "token", webhookToken));
 
                             if (webhookReddit != null) {
                                 SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookReddit);
@@ -140,7 +140,7 @@ public class WebhookUtil {
 
                         if (!deleted) {
                             WebhookInstagram webhookInstagram =
-                                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookInstagram(), "SELECT * FROM InstagramWebhooks WHERE cid = :cid AND token = :token", Map.of("cid", webhookId, "token", webhookToken));
+                                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookInstagram(), "SELECT * FROM InstagramNotify WHERE cid = :cid AND token = :token", Map.of("cid", webhookId, "token", webhookToken));
 
                             if (webhookInstagram != null) {
                                 SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookInstagram);
