@@ -523,10 +523,10 @@ public class Main {
                     if (scheduledMessage.getLastExecute() == null) {
                         if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                            WebhookUtil.sendWebhook(null, new WebhookMessageBuilder()
+                            WebhookUtil.sendWebhook(new WebhookMessageBuilder()
                                     .setUsername(Data.getBotName() + "-Scheduler")
                                     .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
-                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), false);
+                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
                             SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
                         }
@@ -537,10 +537,10 @@ public class Main {
                     if (scheduledMessage.getLastUpdated() == null) {
                         if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                            WebhookUtil.sendWebhook(null, new WebhookMessageBuilder()
+                            WebhookUtil.sendWebhook(new WebhookMessageBuilder()
                                     .setUsername(Data.getBotName() + "-Scheduler")
                                     .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
-                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), false);
+                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
                             scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
@@ -548,10 +548,10 @@ public class Main {
                     } else {
                         if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                            WebhookUtil.sendWebhook(null, new WebhookMessageBuilder()
+                            WebhookUtil.sendWebhook(new WebhookMessageBuilder()
                                     .setUsername(Data.getBotName() + "-Scheduler")
                                     .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
-                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), false);
+                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
                             scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);

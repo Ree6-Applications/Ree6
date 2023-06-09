@@ -156,7 +156,7 @@ public class OtherEvents extends ListenerAdapter {
             wmb.setContent(messageContent);
         }
 
-        WebhookUtil.sendWebhook(null, wmb.build(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()), false);
+        WebhookUtil.sendWebhook(wmb.build(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()));
     }
 
     /**

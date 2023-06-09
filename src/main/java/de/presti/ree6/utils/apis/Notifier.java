@@ -367,7 +367,7 @@ public class Notifier {
                         .replace("%name%", channelGoLiveEvent.getStream().getUserName())
                         .replace("%url%", twitchUrl);
                 wmb.setContent(message);
-                WebhookUtil.sendWebhook(null, wmb.build(), webhook, false);
+                WebhookUtil.sendWebhook(wmb.build(), webhook);
             });
         });
 
@@ -502,7 +502,7 @@ public class Notifier {
                         .replace("%name%", x.getUser().getDisplayedName())
                         .replace("%url%", "https://twitter.com/" + x.getUser().getName() + "/status/" + x.getId());
                 webhookMessageBuilder.setContent(message);
-                WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false);
+                WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
             });
         });
     }
@@ -662,7 +662,7 @@ public class Notifier {
 
                                     webhookEmbedBuilder.setDescription(message);
                                     webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-                                    WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false);
+                                    WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
                                 });
                             }
                         }
@@ -802,7 +802,7 @@ public class Notifier {
                                             .replace("%name%", redditPost.getSubreddit())
                                             .replace("%url%", redditPost.getUrl()));
                             webhookMessageBuilder.setContent(message);
-                            WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false);
+                            WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
                         });
                     });
                 }
@@ -953,7 +953,7 @@ public class Notifier {
 
                                 // TODO:: add this with message.
 
-                                webhooks.forEach(webhook -> WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), webhook, false));
+                                webhooks.forEach(webhook -> WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook));
                             });
                         }
                     }

@@ -68,14 +68,11 @@ public class CommandManager {
         Set<Class<? extends ICommand>> classes = reflections.getSubTypesOf(ICommand.class);
 
         for (Class<? extends ICommand> aClass : classes) {
-            log.info("Loading Command {}", aClass.getSimpleName());
             Command commandAnnotation = aClass.getAnnotation(Command.class);
 
-            if (Objects.requireNonNull(commandAnnotation.category()) == Category.MOD) {
-                if (!Data.isModuleActive("moderation")) continue;
-            } else {
-                if (!Data.isModuleActive(commandAnnotation.category().name().toLowerCase())) continue;
-            }
+            if (!Data.isModuleActive(commandAnnotation.category().getDescription().substring(9).toLowerCase())) continue;
+
+            log.info("Loading Command {}", aClass.getSimpleName());
 
             addCommand(aClass.getDeclaredConstructor().newInstance());
         }
