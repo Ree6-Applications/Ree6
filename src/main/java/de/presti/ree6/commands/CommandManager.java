@@ -396,7 +396,7 @@ public class CommandManager {
 
         // Check if there is even a Command with that name.
         if (command == null && Data.isModuleActive("customcommands")) {
-            CustomCommand customCommand = SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "SELECT * FROM CustomCommand WHERE GID=:gid AND COMMAND=:command", Map.of("gid", guild.getId(), "command", arguments[0].toLowerCase()));
+            CustomCommand customCommand = SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "SELECT * FROM CustomCommands WHERE GID=:gid AND COMMAND=:command", Map.of("gid", guild.getId(), "command", arguments[0].toLowerCase()));
             if (customCommand != null) {
                 MessageChannelUnion messageChannelUnion = textChannel;
 
