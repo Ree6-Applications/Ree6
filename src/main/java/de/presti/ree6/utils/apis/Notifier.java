@@ -159,7 +159,7 @@ public class Notifier {
      * Constructor used to created instance of the API Clients.
      */
     public Notifier() {
-        if (!Data.isModuleActive("addons")) return;
+        if (!Data.isModuleActive("notifier")) return;
 
         log.info("Initializing Twitch Client...");
         credentialManager = CredentialManagerBuilder.builder()
