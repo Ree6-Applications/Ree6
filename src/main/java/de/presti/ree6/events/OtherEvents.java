@@ -430,6 +430,12 @@ public class OtherEvents extends ListenerAdapter {
                     }
                 }
 
+                if (event.getChannel().getType() == ChannelType.NEWS &&
+                        Data.isModuleActive("autopublish")) {
+                    // TODO:: add SQL Entity with check if its set.
+                    event.getMessage().crosspost().queue();
+                }
+
                 if (Data.isModuleActive("level")) {
                     if (!ArrayUtil.timeout.contains(event.getMember())) {
 
