@@ -142,7 +142,7 @@ public class Blacklist implements ICommand {
         return new CommandDataImpl("blacklist", "command.description.blacklist")
                 .addSubcommands(
                         new SubcommandData("add", "Add a word to the blacklist")
-                                .addOption(OptionType.STRING, "words", "A single word or multiple words split by a space", true),
+                                .addOption(OptionType.STRING, "word", "A single word or multiple words split by a space", true),
                         new SubcommandData("remove", "Remove a word from the blacklist")
                                 .addOption(OptionType.STRING, "word", "The word to remove", true),
                         new SubcommandData("list", "List all words on the blacklist"));
