@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
@@ -409,8 +410,7 @@ public class CommandManager {
                 }
 
                 if (customCommand.getEmbedResponse() != null) {
-                    // TODO:: parse the Embed from JSON in to a EmbedBuilder to sent. (https://github.com/DV8FromTheWorld/JDA/pull/2471)
-                    EmbedBuilder embedBuilder = new EmbedBuilder();
+                    EmbedBuilder embedBuilder = EmbedBuilder.fromData(DataObject.fromJson(customCommand.getEmbedResponse().toString()));
                     sendMessage(embedBuilder, 5, messageChannelUnion, null);
                 }
 
