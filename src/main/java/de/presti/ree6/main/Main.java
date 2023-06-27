@@ -221,6 +221,8 @@ public class Main {
                     "message_ticket_open", "Message that should display when a Ticket is opened.", "Welcome to your Ticket!"));
             SettingsManager.getSettings().add(new Setting("-1",
                     "message_suggestion_menu", "Message that should display in the Suggestion Menu.", "Suggest something"));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "configuration_autopublish", "Automatically publish News messages.", false));
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);

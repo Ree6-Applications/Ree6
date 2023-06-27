@@ -431,8 +431,8 @@ public class OtherEvents extends ListenerAdapter {
                 }
 
                 if (event.getChannel().getType() == ChannelType.NEWS &&
-                        Data.isModuleActive("autopublish")) {
-                    // TODO:: add SQL Entity with check if its set.
+                        Data.isModuleActive("autopublish") &&
+                        SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "configuration_autopublish").getBooleanValue()) {
                     event.getMessage().crosspost().queue();
                 }
 
