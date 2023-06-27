@@ -602,7 +602,7 @@ public class Notifier {
                             youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(channel);
                         } catch (IOException e) {
                             Sentry.captureException(e);
-                            return;
+                            continue;
                         }
 
                         for (ChannelStats channelStat : channelStats) {
