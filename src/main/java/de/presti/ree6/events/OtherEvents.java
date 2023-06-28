@@ -377,6 +377,12 @@ public class OtherEvents extends ListenerAdapter {
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         super.onMessageReceived(event);
 
+        if (event.getChannel().getType() == ChannelType.NEWS &&
+                Data.isModuleActive("autopublish") &&
+                SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "configuration_autopublish").getBooleanValue()) {
+            event.getMessage().crosspost().queue(c -> c.addReaction(Emoji.fromUnicode("U+1F4E2")).queue());
+        }
+
         if (event.isFromGuild() && (event.isFromType(ChannelType.TEXT) || event.isFromType(ChannelType.VOICE)) && event.getMember() != null) {
 
             if (event.getAuthor().isBot()) return;
@@ -428,12 +434,6 @@ public class OtherEvents extends ListenerAdapter {
                         Sentry.captureException(e);
                         Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.default.retrievalError"), event.getChannel());
                     }
-                }
-
-                if (event.getChannel().getType() == ChannelType.NEWS &&
-                        Data.isModuleActive("autopublish") &&
-                        SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "configuration_autopublish").getBooleanValue()) {
-                    event.getMessage().crosspost().queue();
                 }
 
                 if (Data.isModuleActive("level")) {
