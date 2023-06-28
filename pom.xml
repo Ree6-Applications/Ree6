@@ -78,6 +78,8 @@
         </dependency>
 
         <!-- API Wrappers -->
+
+        <!-- Socials -->
         <dependency>
             <groupId>com.github.instagram4j</groupId>
             <artifactId>instagram4j</artifactId>
@@ -89,20 +91,22 @@
             <version>master-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>de.ree6</groupId>
-            <artifactId>JLyrics</artifactId>
-            <version>765f7e0b88</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.DxsSucuk</groupId>
-            <artifactId>Nekos4J</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.twitch4j</groupId>
             <artifactId>twitch4j</artifactId>
             <version>1.15.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.redouane59.twitter</groupId>
+            <artifactId>twittered</artifactId>
+            <version>2.22</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.DxsSucuk</groupId>
+            <artifactId>YoutubeWrapper</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!-- Music -->
         <dependency>
             <groupId>se.michaelthelin.spotify</groupId>
             <artifactId>spotify-web-api-java</artifactId>
@@ -115,14 +119,21 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>io.github.redouane59.twitter</groupId>
-            <artifactId>twittered</artifactId>
-            <version>2.22</version>
+            <groupId>de.ree6</groupId>
+            <artifactId>JLyrics</artifactId>
+            <version>765f7e0b88</version>
+        </dependency>
+
+        <!-- Third party APIs -->
+        <dependency>
+            <groupId>com.apptasticsoftware</groupId>
+            <artifactId>rssreader</artifactId>
+            <version>3.4.5</version>
         </dependency>
         <dependency>
             <groupId>com.github.DxsSucuk</groupId>
-            <artifactId>YoutubeWrapper</artifactId>
-            <version>1.0</version>
+            <artifactId>Nekos4J</artifactId>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.DxsSucuk</groupId>
@@ -134,6 +145,8 @@
             <artifactId>chatgpt</artifactId>
             <version>1.0.2</version>
         </dependency>
+
+        <!-- API Wrappers -->
 
         <!-- Database -->
         <dependency>
