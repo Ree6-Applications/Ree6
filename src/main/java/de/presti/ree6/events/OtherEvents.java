@@ -377,7 +377,7 @@ public class OtherEvents extends ListenerAdapter {
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         super.onMessageReceived(event);
 
-        if (event.getChannel().getType() == ChannelType.NEWS &&
+        if (event.isFromType(ChannelType.NEWS) &&
                 Data.isModuleActive("autopublish") &&
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "configuration_autopublish").getBooleanValue()) {
             event.getMessage().crosspost().queue(c -> c.addReaction(Emoji.fromUnicode("U+1F4E2")).queue());
