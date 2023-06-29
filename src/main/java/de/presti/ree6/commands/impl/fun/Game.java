@@ -61,7 +61,7 @@ public class Game implements ICommand {
                 }
 
                 ArrayList<User> participants = new ArrayList<>();
-                participants.add(commandEvent.getSlashCommandInteractionEvent().getUser());
+                participants.add(commandEvent.getUser());
 
                 GamePlayer gamePlayer = new GamePlayer(commandEvent.getMember().getUser());
                 gamePlayer.setInteractionHook(commandEvent.getInteractionHook());

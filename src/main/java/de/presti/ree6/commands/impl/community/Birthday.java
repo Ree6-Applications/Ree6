@@ -32,7 +32,7 @@ public class Birthday implements ICommand {
             return;
         }
 
-        String command = commandEvent.getSlashCommandInteractionEvent().getSubcommandName();
+        String command = commandEvent.getSubcommand();
         OptionMapping userMapping = commandEvent.getOption("user");
         OptionMapping dateMapping = commandEvent.getOption("birthday");
 
