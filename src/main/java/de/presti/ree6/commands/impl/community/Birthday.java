@@ -64,7 +64,7 @@ public class Birthday implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().addBirthday(commandEvent.getGuild().getId(), commandEvent.getChannel().getId(), commandEvent.getMember().getId(), date);
                         commandEvent.reply(commandEvent.getResource("message.birthday.added.self"), 5);
                     } else {
-                        commandEvent.reply(commandEvent.getResource("message.default.dateError.date"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.time.date"), 5);
                     }
                 } else {
                     Member member = userMapping.getAsMember();
@@ -80,7 +80,7 @@ public class Birthday implements ICommand {
                             commandEvent.reply(commandEvent.getResource("message.birthday.added.noPerms"), 5);
                         }
                     } else {
-                        commandEvent.reply(commandEvent.getResource("message.default.dateError.date"), 5);
+                        commandEvent.reply(commandEvent.getResource("message.default.time.date"), 5);
                     }
                 }
             }

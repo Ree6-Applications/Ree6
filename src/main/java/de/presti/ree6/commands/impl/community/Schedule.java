@@ -100,7 +100,7 @@ public class Schedule implements ICommand {
                 if (minute != null) fullTime += Duration.ofMinutes(minute.getAsLong()).toMillis();
 
                 if (fullTime < Duration.ofMinutes(1).toDays()) {
-                    commandEvent.reply(commandEvent.getResource("message.default.dateError.notEnough"));
+                    commandEvent.reply(commandEvent.getResource("message.default.time.notEnough"));
                     return;
                 }
 
