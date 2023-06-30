@@ -266,9 +266,51 @@ public class Notifier {
         });
         createInstagramPostStream();
 
-        log.info("Initializing YouTube Streams...");
-        createUploadStream();
+        log.info("Initializing Streams...");
 
+        log.info("Creating YouTube Streams...");
+        ThreadUtil.createThread(x -> {
+            try {
+                for (String channel : registeredYouTubeChannels) {
+
+                    List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", channel));
+                    if (!channelStats.isEmpty()) {
+                        ChannelResult youTubeChannel;
+                        try {
+                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(channel);
+                        } catch (IOException e) {
+                            Sentry.captureException(e);
+                            continue;
+                        }
+
+                        for (ChannelStats channelStat : channelStats) {
+                            if (channelStat.getYoutubeSubscribersChannelId() != null) {
+                                GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getYoutubeSubscribersChannelId());
+
+                                if (guildChannel == null) continue;
+
+                                String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText());
+                                if (!guildChannel.getName().equalsIgnoreCase(newName)) {
+                                    if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                                        continue;
+
+                                    guildChannel.getManager().setName(newName).queue();
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Couldn't get user data!", e);
+                Sentry.captureException(e);
+            }
+        }, x -> {
+            log.error("Couldn't run YT Follower count checker!", x);
+            Sentry.captureException(x);
+        }, Duration.ofMinutes(5), true, true);
+
+
+        log.info("Creating Twitter Streams...");
         ThreadUtil.createThread(x -> {
             for (String twitterName : registeredTwitterUsers) {
                 List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats WHERE twitterFollowerChannelUsername=:name", Map.of("name", twitterName));
@@ -297,7 +339,7 @@ public class Notifier {
                 }
             }
         }, x -> {
-            log.error("Failed to run Follower count checker!", x.getCause());
+            log.error("Failed to run Twitter Follower count checker!", x);
             Sentry.captureException(x);
         }, Duration.ofMinutes(5), true, true);
 
@@ -685,51 +727,6 @@ public class Notifier {
     //endregion
 
     //region YouTube
-
-    /**
-     * Used to create a Thread that listens for new YouTube uploads.
-     */
-    public void createUploadStream() {
-        ThreadUtil.createThread(x -> {
-            try {
-                for (String channel : registeredYouTubeChannels) {
-
-                    List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", channel));
-                    if (!channelStats.isEmpty()) {
-                        ChannelResult youTubeChannel;
-                        try {
-                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(channel);
-                        } catch (IOException e) {
-                            Sentry.captureException(e);
-                            continue;
-                        }
-
-                        for (ChannelStats channelStat : channelStats) {
-                            if (channelStat.getYoutubeSubscribersChannelId() != null) {
-                                GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getYoutubeSubscribersChannelId());
-
-                                if (guildChannel == null) continue;
-
-                                String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText());
-                                if (!guildChannel.getName().equalsIgnoreCase(newName)) {
-                                    if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
-                                        continue;
-
-                                    guildChannel.getManager().setName(newName).queue();
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Couldn't get upload data!", e);
-                Sentry.captureException(e);
-            }
-        }, x -> {
-            log.error("Couldn't start upload Stream!");
-            Sentry.captureException(x);
-        }, Duration.ofMinutes(5), true, true);
-    }
 
     /**
      * Used to register an Upload Event for the given YouTube Channel.
