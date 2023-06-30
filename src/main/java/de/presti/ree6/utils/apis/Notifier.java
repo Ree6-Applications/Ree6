@@ -117,19 +117,6 @@ public class Notifier {
     private IGClient instagramClient;
 
     /**
-     * Instance of the current applied stream rule.
-     */
-    @Getter(AccessLevel.PRIVATE)
-    private StreamRules.StreamRule streamRule;
-
-
-    /**
-     * Instance of the filtered stream.
-     */
-    @Getter(AccessLevel.PRIVATE)
-    Future<Response> filteredStream;
-
-    /**
      * Local list of registered Twitch Channels.
      */
     private final ArrayList<String> registeredTwitchChannels = new ArrayList<>();
@@ -231,14 +218,6 @@ public class Notifier {
         try {
             twitterClient = new TwitterClient(TwitterCredentials.builder()
                     .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
-
-            List<StreamRules.StreamRule> rules = twitterClient.retrieveFilteredStreamRules();
-
-            if (rules != null && !rules.isEmpty()) {
-                rules.forEach(x -> twitterClient.deleteFilteredStreamRuleId(x.getId()));
-            }
-
-            filteredStream = registerTwitterEventHandler();
         } catch (Exception exception) {
             log.error("Failed to create Twitter Client and deleting pre-set rules.", exception);
         }
@@ -321,6 +300,9 @@ public class Notifier {
             log.error("Failed to run Follower count checker!", x.getCause());
             Sentry.captureException(x);
         }, Duration.ofMinutes(5), true, true);
+
+        log.info("Creating RSS Streams...");
+        createRssStream();
     }
 
     public void createRssStream() {
@@ -637,17 +619,6 @@ public class Notifier {
     //region Twitter
 
     /**
-     * Register a EventHandler for the Twitter Tweet Event.
-     *
-     * @return the Future of the Event Handler for later use.
-     */
-    public Future<Response> registerTwitterEventHandler() {
-        return twitterClient.startFilteredStream(x -> {
-
-        });
-    }
-
-    /**
      * Used to Register a Tweet Event for the given Twitter Users
      *
      * @param twitterUsers the Names of the Twitter Users.
@@ -679,13 +650,6 @@ public class Notifier {
 
         if (!isTwitterRegistered(twitterUser)) {
             registeredTwitterUsers.add(twitterUser);
-            if (streamRule == null) {
-                streamRule = getTwitterClient().addFilteredStreamRule("from:" + twitterUser, "Notification");
-            } else {
-                String value = streamRule.getValue();
-                getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
-                streamRule = getTwitterClient().addFilteredStreamRule(value + " or from:" + twitterUser, "Notification");
-            }
         }
     }
 
@@ -704,11 +668,6 @@ public class Notifier {
             return;
 
         if (isTwitterRegistered(twitterUser)) {
-            String value = streamRule.getValue();
-
-            getTwitterClient().deleteFilteredStreamRuleId(streamRule.getId());
-            streamRule = getTwitterClient().addFilteredStreamRule(value.replace(" or from:" + twitterUser, ""), "Notification");
-
             registeredTwitterUsers.remove(twitterUser);
         }
     }
