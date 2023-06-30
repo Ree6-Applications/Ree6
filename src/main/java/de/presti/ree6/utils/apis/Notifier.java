@@ -147,6 +147,11 @@ public class Notifier {
     private final ArrayList<String> registeredInstagramUsers = new ArrayList<>();
 
     /**
+     * Local list of registered TikTok Users.
+     */
+    private final ArrayList<String> registeredTikTokUsers = new ArrayList<>();
+
+    /**
      * Constructor used to created instance of the API Clients.
      */
     public Notifier() {
@@ -1066,6 +1071,53 @@ public class Notifier {
      */
     public boolean isInstagramUserRegistered(String username) {
         return registeredInstagramUsers.contains(username);
+    }
+
+    //endregion
+
+    //region TikTok
+
+    /**
+     * Used to register a TikTok User.
+     *
+     * @param user the Name of the TikTok User.
+     */
+    public void registerTikTokUser(String user) {
+        if (getRedditClient() == null) return;
+
+        if (!isTikTokUserRegistered(user)) registeredTikTokUsers.add(user);
+    }
+
+    /**
+     * Used to register multiple TikTok Users.
+     *
+     * @param users the Names of the TikTok Users.
+     */
+    public void registerTikTokUser(List<String> users) {
+        if (getRedditClient() == null) return;
+
+        users.forEach(s -> {
+            if (!isTikTokUserRegistered(s)) registeredTikTokUsers.add(s);
+        });
+    }
+
+    /**
+     * Used to unregister a TikTok User.
+     *
+     * @param user the Names of the Subreddit.
+     */
+    public void unregisterTikTokUser(String user) {
+        if (isTikTokUserRegistered(user)) registeredTikTokUsers.remove(user);
+    }
+
+    /**
+     * Check if a TikTok User is already being checked.
+     *
+     * @param user the Name of the TikTok User.
+     * @return true, if there is a User | false, if there isn't a User.
+     */
+    public boolean isTikTokUserRegistered(String user) {
+        return registeredTikTokUsers.contains(user);
     }
 
     //endregion
