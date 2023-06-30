@@ -524,9 +524,9 @@ public class MenuEvents extends ListenerAdapter {
                         }
 
                         channelStats.setYoutubeSubscribersChannelId(voiceChannel.getId());
-                        channelStats.setYoutubeSubscribersChannelUsername(youtubeChannelName);
+                        channelStats.setYoutubeSubscribersChannelUsername(youTubeChannel.getId());
                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats);
-                        Main.getInstance().getNotifier().registerYouTubeChannel(youtubeChannelName);
+                        Main.getInstance().getNotifier().registerYouTubeChannel(youTubeChannel.getId());
                     } else {
                         channelStats = new ChannelStats(event.getGuild().getId(),
                                 null,
@@ -539,11 +539,11 @@ public class MenuEvents extends ListenerAdapter {
                                 null,
                                 null,
                                 voiceChannel.getId(),
-                                youtubeChannelName,
+                                youTubeChannel.getId(),
                                 null,
                                 null);
                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats);
-                        Main.getInstance().getNotifier().registerYouTubeChannel(youtubeChannelName);
+                        Main.getInstance().getNotifier().registerYouTubeChannel(youTubeChannel.getId());
                     }
                 });
 

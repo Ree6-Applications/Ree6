@@ -25,7 +25,7 @@ public class YouTubeAPIHandler {
     /**
      * The YouTube API-Handler.
      */
-    public static YouTubeAPIHandler instance;
+    private static YouTubeAPIHandler instance;
 
     /**
      * Constructor.
