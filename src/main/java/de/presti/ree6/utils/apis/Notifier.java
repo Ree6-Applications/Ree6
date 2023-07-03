@@ -359,7 +359,9 @@ public class Notifier {
 
             urls.addAll(registeredTwitterUsers.stream().map(c -> "https://nitter.net/" + c + "/rss").toList());
 
-            // TODO:: load the RSSFeed SQL Entity.
+            urls.addAll(SQLSession.getSqlConnector().getSqlWorker().getEntityList(new RSSFeed(), "SELECT * FROM RSSFeed", null).stream().map(RSSFeed::getUrl).toList());
+
+            // TODO:: add handling of custom Feed
 
             List<String> checkedIds = new ArrayList<>();
 
@@ -390,9 +392,9 @@ public class Notifier {
                         OffsetDateTime dateTime = OffsetDateTime.parse(item.getPubDate().orElse(""), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
                         OffsetDateTime now = OffsetDateTime.now();
-                        OffsetDateTime oneMinuteAgo = now.minus(1, ChronoUnit.MINUTES);
+                        OffsetDateTime threeMinuteAgo = now.minus(3, ChronoUnit.MINUTES);
 
-                        if (dateTime.isBefore(oneMinuteAgo)) return;
+                        if (dateTime.isBefore(threeMinuteAgo)) return;
 
                         String typ = "other";
 
