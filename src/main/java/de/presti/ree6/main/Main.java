@@ -4,6 +4,7 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.google.gson.JsonObject;
+import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
 import de.presti.ree6.audio.music.MusicWorker;
@@ -27,8 +28,8 @@ import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
+import de.presti.ree6.sql.entities.webhook.WebhookTikTok;
 import de.presti.ree6.sql.util.SettingsManager;
-import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
@@ -67,7 +68,7 @@ public class Main {
     /**
      * An Instance of the class itself.
      */
-    
+
     static Main instance;
 
     /**
@@ -308,6 +309,9 @@ public class Main {
                 // Register all Instagram Users.
                 getInstance().getNotifier().registerInstagramUser(SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers());
                 getInstance().getNotifier().registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
+
+                // Register all TikTok Users.
+                getInstance().getNotifier().registerTikTokUser(SQLSession.getSqlConnector().getSqlWorker().getEntityList(new WebhookTikTok(), "SELECT * FROM TikTokNotify", null).stream().map(c -> Long.parseLong(c.getName())).toList());
             }, t -> Sentry.captureException(t.getCause()));
         }
 
@@ -502,7 +506,7 @@ public class Main {
                             TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
 
                             if (textChannel != null && textChannel.canTalk())
-                                textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish",birthday.getUserId())).queue();
+                                textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish", birthday.getUserId())).queue();
                         });
 
                 lastDay = new SimpleDateFormat("dd").format(new Date());

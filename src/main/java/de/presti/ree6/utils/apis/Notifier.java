@@ -16,7 +16,6 @@ import com.github.instagram4j.instagram4j.utils.IGChallengeUtils;
 import com.github.philippheuer.credentialmanager.CredentialManager;
 import com.github.philippheuer.credentialmanager.CredentialManagerBuilder;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
-import com.github.scribejava.core.model.Response;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.auth.TwitchAuth;
@@ -42,8 +41,9 @@ import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.data.DatabaseStorageBackend;
 import de.presti.ree6.utils.others.ThreadUtil;
 import de.presti.wrapper.entities.channel.ChannelResult;
+import de.presti.wrapper.tiktok.TikTokWrapper;
+import de.presti.wrapper.tiktok.entities.TikTokUser;
 import io.github.redouane59.twitter.TwitterClient;
-import io.github.redouane59.twitter.dto.stream.StreamRules;
 import io.github.redouane59.twitter.dto.user.UserV2;
 import io.github.redouane59.twitter.signature.TwitterCredentials;
 import io.sentry.Sentry;
@@ -69,7 +69,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 // TODO:: translate
 // TODO:: fix the Twitter Stream handler, wait for responses via https://github.com/redouane59/twittered/issues/447
@@ -149,7 +148,7 @@ public class Notifier {
     /**
      * Local list of registered TikTok Users.
      */
-    private final ArrayList<String> registeredTikTokUsers = new ArrayList<>();
+    private final ArrayList<Long> registeredTikTokUsers = new ArrayList<>();
 
     /**
      * Constructor used to created instance of the API Clients.
@@ -350,6 +349,9 @@ public class Notifier {
 
         log.info("Creating RSS Streams...");
         createRssStream();
+
+        log.info("Creating TikTok Streams...");
+        createTikTokStream();
     }
 
     public void createRssStream() {
@@ -491,8 +493,8 @@ public class Notifier {
                                     WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
                                     item.getChannel().getImage().ifPresentOrElse(image ->
-                                            webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(),
-                                            URLDecoder.decode(image.getUrl().replace("nitter.net/pic/", ""), StandardCharsets.UTF_8), null)),
+                                                    webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(),
+                                                            URLDecoder.decode(image.getUrl().replace("nitter.net/pic/", ""), StandardCharsets.UTF_8), null)),
                                             () -> webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(), null, null)));
 
 
@@ -504,6 +506,9 @@ public class Notifier {
                                             webhookEmbedBuilder.setImageUrl(imageUrl);
                                         }
                                     });
+
+                                    webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getChannel().getTitle(), null));
+                                    webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitter Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
 
                                     webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
                                     webhookEmbedBuilder.setTimestamp(Instant.now());
@@ -517,7 +522,7 @@ public class Notifier {
 
                                         if (item.getLink().isPresent()) {
                                             message = message.replace("%url%", item.getLink().get()
-                                                    .replace("nitter.net", "twitter.com"))
+                                                            .replace("nitter.net", "twitter.com"))
                                                     .replace("#m", "");
                                         }
                                         webhookMessageBuilder.setContent(message);
@@ -1083,22 +1088,80 @@ public class Notifier {
     //region TikTok
 
     /**
+     * Used to create a Thread that handles TikTok notifications.
+     */
+    public void createTikTokStream() {
+        ThreadUtil.createThread(x -> {
+            for (long id : registeredTikTokUsers) {
+                try {
+                    TikTokUser user = TikTokWrapper.getUser(id);
+
+                    List<WebhookTikTok> webhooks = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new WebhookTikTok(), "SELECT * FROM TikTokNotify WHERE NAME=:name", Map.of("name", user.getId()));
+
+                    if (webhooks.isEmpty()) {
+                        return;
+                    }
+
+                    user.getPosts().forEach(post -> {
+                        if (post.getCreationTime() > (Duration.ofMillis(System.currentTimeMillis()).toSeconds() - Duration.ofMinutes(5).toSeconds())) {
+                            WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+
+                            webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+                            webhookMessageBuilder.setUsername(Data.getBotName());
+
+                            WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                            webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(user.getDisplayName(), "https://www.tiktok.com/@" + user.getName()));
+                            webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("TikTok Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+
+                            // Set rest of the Information.
+                            if (post.getCover() != null) {
+                                webhookEmbedBuilder.setImageUrl(post.getCover().getMediumUrl());
+                                webhookEmbedBuilder.setDescription("[Click here to watch the video](https://tiktok.com/share/video/" + post.getId() + ")");
+                            } else {
+                                webhookEmbedBuilder.setDescription(user.getDisplayName() + " just posted something new on TikTok!");
+                            }
+
+                            webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+
+                            webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
+
+                            webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+                            webhooks.forEach(webhook -> {
+                                String message = webhook.getMessage()
+                                        .replace("%description%", post.getDescription()
+                                                .replace("%author%", user.getName())
+                                                .replace("%url%", "https://tiktok.com/share/video/" + post.getId()));
+                                webhookMessageBuilder.setContent(message);
+                                WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
+                            });
+                        }
+                    });
+                } catch (IOException e) {
+                    Sentry.captureException(e);
+                }
+            }
+        }, Duration.ofMinutes(5), true, true);
+    }
+
+    /**
      * Used to register a TikTok User.
      *
-     * @param user the Name of the TikTok User.
+     * @param id the ID of the TikTok User.
      */
-    public void registerTikTokUser(String user) {
+    public void registerTikTokUser(long id) {
         if (getRedditClient() == null) return;
 
-        if (!isTikTokUserRegistered(user)) registeredTikTokUsers.add(user);
+        if (!isTikTokUserRegistered(id)) registeredTikTokUsers.add(id);
     }
 
     /**
      * Used to register multiple TikTok Users.
      *
-     * @param users the Names of the TikTok Users.
+     * @param users the ID of the TikTok Users.
      */
-    public void registerTikTokUser(List<String> users) {
+    public void registerTikTokUser(List<Long> users) {
         if (getRedditClient() == null) return;
 
         users.forEach(s -> {
@@ -1109,20 +1172,20 @@ public class Notifier {
     /**
      * Used to unregister a TikTok User.
      *
-     * @param user the Names of the Subreddit.
+     * @param id the ID of the TikTok User.
      */
-    public void unregisterTikTokUser(String user) {
-        if (isTikTokUserRegistered(user)) registeredTikTokUsers.remove(user);
+    public void unregisterTikTokUser(long id) {
+        if (isTikTokUserRegistered(id)) registeredTikTokUsers.remove(id);
     }
 
     /**
      * Check if a TikTok User is already being checked.
      *
-     * @param user the Name of the TikTok User.
+     * @param id the Name of the TikTok User.
      * @return true, if there is a User | false, if there isn't a User.
      */
-    public boolean isTikTokUserRegistered(String user) {
-        return registeredTikTokUsers.contains(user);
+    public boolean isTikTokUserRegistered(long id) {
+        return registeredTikTokUsers.contains(id);
     }
 
     //endregion
