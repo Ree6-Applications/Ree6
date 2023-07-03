@@ -385,6 +385,15 @@ public class Notifier {
                     .read(urls)
                     .sorted()
                     .forEach(item -> {
+                        if (item.getPubDate().isEmpty()) return;
+
+                        OffsetDateTime dateTime = OffsetDateTime.parse(item.getPubDate().orElse(""), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+                        OffsetDateTime now = OffsetDateTime.now();
+                        OffsetDateTime oneMinuteAgo = now.minus(1, ChronoUnit.MINUTES);
+
+                        if (dateTime.isBefore(oneMinuteAgo)) return;
+
                         String typ = "other";
 
                         if (item.getGuid().isPresent()) {
@@ -414,12 +423,6 @@ public class Notifier {
                                 return;
                             }
 
-                            OffsetDateTime dateTime = OffsetDateTime.parse(item.getPubDate().orElse(""), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-
-                            OffsetDateTime now = OffsetDateTime.now();
-                            OffsetDateTime fiveMinutesAgo = now.minus(5, ChronoUnit.MINUTES);
-
-                            if (dateTime.isBefore(fiveMinutesAgo)) return;
 
                             switch (typ) {
                                 case "yt" -> {
