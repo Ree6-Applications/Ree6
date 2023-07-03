@@ -101,9 +101,14 @@
             <version>2.22</version>
         </dependency>
         <dependency>
-            <groupId>com.github.DxsSucuk</groupId>
+            <groupId>me.presti</groupId>
             <artifactId>YoutubeWrapper</artifactId>
-            <version>120f66d042</version>
+            <version>db8c1a2b33</version>
+        </dependency>
+        <dependency>
+            <groupId>me.presti</groupId>
+            <artifactId>TikTokWrapper</artifactId>
+            <version>f009779ffd</version>
         </dependency>
 
         <!-- Music -->
@@ -131,12 +136,12 @@
             <version>3.4.5</version>
         </dependency>
         <dependency>
-            <groupId>com.github.DxsSucuk</groupId>
+            <groupId>me.presti</groupId>
             <artifactId>Nekos4J</artifactId>
             <version>1.0.1</version>
         </dependency>
         <dependency>
-            <groupId>com.github.DxsSucuk</groupId>
+            <groupId>me.presti</groupId>
             <artifactId>Amari4Java</artifactId>
             <version>63f49f783b</version>
         </dependency>
@@ -197,6 +202,11 @@
             <artifactId>commons-io</artifactId>
             <version>2.13.0</version>
         </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.16.0</version>
+        </dependency>
 
         <!-- Jersey and Jackson -->
         <dependency>
@@ -225,12 +235,6 @@
             <version>3.1.2</version>
         </dependency>
 
-        <!-- HTTP Clients -->
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.16.0</version>
-        </dependency>
 
         <!-- HTTP Clients -->
         <dependency>
