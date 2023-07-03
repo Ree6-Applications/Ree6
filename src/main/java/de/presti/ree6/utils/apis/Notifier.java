@@ -1096,7 +1096,7 @@ public class Notifier {
                 try {
                     TikTokUser user = TikTokWrapper.getUser(id);
 
-                    List<WebhookTikTok> webhooks = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new WebhookTikTok(), "SELECT * FROM TikTokNotify WHERE NAME=:name", Map.of("name", user.getId()));
+                    List<WebhookTikTok> webhooks = SQLSession.getSqlConnector().getSqlWorker().getTikTokWebhooksByName(user.getId());
 
                     if (webhooks.isEmpty()) {
                         return;
@@ -1132,6 +1132,7 @@ public class Notifier {
                                 String message = webhook.getMessage()
                                         .replace("%description%", post.getDescription()
                                                 .replace("%author%", user.getName())
+                                                .replace("%name%", user.getDisplayName())
                                                 .replace("%url%", "https://tiktok.com/share/video/" + post.getId()));
                                 webhookMessageBuilder.setContent(message);
                                 WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);

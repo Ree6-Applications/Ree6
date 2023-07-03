@@ -311,7 +311,7 @@ public class Main {
                 getInstance().getNotifier().registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
 
                 // Register all TikTok Users.
-                getInstance().getNotifier().registerTikTokUser(SQLSession.getSqlConnector().getSqlWorker().getEntityList(new WebhookTikTok(), "SELECT * FROM TikTokNotify", null).stream().map(c -> Long.parseLong(c.getName())).toList());
+                getInstance().getNotifier().registerTikTokUser(SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames().stream().map(Long::parseLong).toList());
             }, t -> Sentry.captureException(t.getCause()));
         }
 
