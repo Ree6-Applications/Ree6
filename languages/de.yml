@@ -204,6 +204,7 @@ message:
       channel: "Bitte erwähne einen Channel!"
     onlyNSFW: "Dieser Befehl kann nur in NSFW channels genutzt werden!"
     invalidQuery: "Bitte übergib einen richtigen Query!"
+    invalidUrl: "Please provide a valid URL!"
     checkBelow: "Schau unter der Nachricht nach!"
     retrievalError: "Es gab einen Fehler bei daten beziehen!"
     notInVoiceChannel: "Du bist in keinem Voice-Channel!"
@@ -254,6 +255,15 @@ message:
     added: "Ein YouTube Notifier wurde für %s erstellt!"
     list: "Hier ist eine Liste mit allen YouTube Notifier:\n```%s```"
     removed: "Ein YouTube Notifier für %s wurde entfernt!"
+  tiktokNotifier:
+    added: "A TikTok Notifier has been created for the Channel %s!"
+    list: "Here are all TikTok Notifier that have been setup:\n```%s```"
+    removed: "A TikTok Notifier has been removed from the Channel %s!"
+    invalidUser: "We couldn't find the provided TikTok User!"
+  rssNotifier:
+    added: "A RSS-Feed Notifier has been created for the Channel %s!"
+    list: "Here are all RSS-Feed Notifier that have been setup:\n```%s```"
+    removed: "A RSS-Feed Notifier has been removed from the Channel %s!"
   anime:
     searching: "Suche nach den Anime..."
     found: "Anime gefunden!"
@@ -586,6 +596,8 @@ command:
     twitch: "Manage dein Twitch-Notifier!"
     twitterNotifier: "Manage dein Twitter-Notifier!"
     youtubeNotifier: "Manage dein YouTube-Notifier!"
+    tiktokNotifier: "Manage your TikTok-Notifier!"
+    rssNotifier: "Manage your RSS-Feed Notifier!"
     anime: "Suche nach Animes auf kitsu.io!"
     randomcat: "Zeigt zufällige Katzenbilder, von thecatapi.com."
     cringe: "Lass Shrek ihnen sagen das ihre Nachricht purer Fremdscharm war!"
@@ -662,7 +674,7 @@ command:
     schedule: "Plane Nachrichten für später und für eine wiederholte Zeit!"
     money: "Verwalten dein Geld!"
     steal: "Stehle Geld von anderen!"
-    work: "Get your own money from doing work!"
+    work: "Verdiene dein eigens Geld vom Arbeiten!"
 category:
   info: "Wird verwendet, um Informationen zu sammeln oder Informationen zu geben."
   moderation: "Moderations-Tools, die Ihnen beim Verwalten von Benutzern helfen oder das Missachten von Regeln auf dem Server verhindern können."
