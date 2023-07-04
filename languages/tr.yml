@@ -261,9 +261,9 @@ message:
     removed: "%s Kullanıcısından bir TikTok Bildiricisi kaldırıldı!"
     invalidUser: "Sağlanan TikTok Kullanıcısını bulamadık!"
   rssNotifier:
-    added: "%s URL'si için bir RSS-Beslemesi Bildiricisi oluşturuldu!"
+    added: "A RSS-Feed Notifier has been created for the Url %s!"
     list: "İşte ayarlanan tüm RSS-Beslemesi Bildiricileri:\n```%s```"
-    removed: "%s URL'sinden bir RSS-Beslemesi Bildiricisi kaldırıldı!"
+    removed: "A RSS-Feed Notifier has been removed from the Url %s!"
   anime:
     searching: "Anime aranıyor..."
     found: "Anime bulundu!"
