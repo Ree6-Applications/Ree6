@@ -219,7 +219,7 @@ message:
     invalidOption: "You somehow selected an invalid Option! Are you a Wizard?"
     invalidOptionChannel: "The given Channel doesn't exists, how did you select it? Are you a Wizard?"
     missingOption: "You need to provide a value for the option %s!"
-    nameChangeFailed: "Could not change the my own nickname!"
+    nameChangeFailed: "Could not change my own nickname!"
     time:
       date: "Please use a valid Date!\nNote that we use the the format dd.MM.yyyy (day.month.year)!"
       time: "Please use a valid Time!\nNote that we use the format HH/mm (hour/minute (24-hour))!"
