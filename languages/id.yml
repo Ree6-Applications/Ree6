@@ -204,6 +204,7 @@ message:
       channel: "Harap mention channel!"
     onlyNSFW: "Command ini hanya bisa digunakan di Channel NSFW!"
     invalidQuery: "Harap berikan query yang valid!"
+    invalidUrl: "Please provide a valid URL!"
     checkBelow: "Periksa dibawah!"
     retrievalError: "Terjadi kesalahan saat mengambil data!"
     notInVoiceChannel: "Anda tidak ada di Voice-Channel!"
@@ -254,6 +255,15 @@ message:
     added: "Pemberitahuan Video Youtube telah dibuat untuk Channel %s!"
     list: "Dibawah ini daftar Notifier Youtube yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Video Youtube untuk Channel %s telah dihapus!"
+  tiktokNotifier:
+    added: "A TikTok Notifier has been created for the Channel %s!"
+    list: "Here are all TikTok Notifier that have been setup:\n```%s```"
+    removed: "A TikTok Notifier has been removed from the Channel %s!"
+    invalidUser: "We couldn't find the provided TikTok User!"
+  rssNotifier:
+    added: "A RSS-Feed Notifier has been created for the Channel %s!"
+    list: "Here are all RSS-Feed Notifier that have been setup:\n```%s```"
+    removed: "A RSS-Feed Notifier has been removed from the Channel %s!"
   anime:
     searching: "Mencari Anime..."
     found: "Anime ditemukan!"
@@ -586,6 +596,8 @@ command:
     twitch: "Atur Twitch-Notifier mu!"
     twitterNotifier: "Atur Twitter-Notifier mu!"
     youtubeNotifier: "Atur Youtube-Notifier mu!"
+    tiktokNotifier: "Manage your TikTok-Notifier!"
+    rssNotifier: "Manage your RSS-Feed Notifier!"
     anime: "Cari Anime di kitsu.io!"
     randomcat: "Munculkan gambar kucing random dari thecatapi.com."
     cringe: "Biarkan shrek kasi tahu kalau pesan mereka cringe!"
@@ -662,7 +674,7 @@ command:
     schedule: "Jadwalkan pesan untuk nanti atau untuk diulang!"
     money: "Mengelola uangmu!"
     steal: "Mencuri uang dari orang lain!"
-    work: "Get your own money from doing work!"
+    work: "Dapatkan uangmu dari bekerja!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"
