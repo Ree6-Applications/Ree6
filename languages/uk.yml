@@ -189,10 +189,10 @@ label:
   loading: "Завантаження"
   blackJackWin: "Виграш у блекджек"
   musicQuizWin: "MusicQuiz Перемога"
-  musicQuizFeatureGuess: "MusicQuiz Feature Guess"
-  musicQuizArtistGuess: "MusicQuiz Artist Guess"
-  musicQuizTitleGuess: "MusicQuiz Title Guess"
-  rewards: "Rewards"
+  musicQuizFeatureGuess: "Вгадування функції MusicQuiz"
+  musicQuizArtistGuess: "Вгадування виконавця MusicQuiz"
+  musicQuizTitleGuess: "Вгадування назви MusicQuiz"
+  rewards: "Винагороди"
 message:
   default:
     usage: "Використання {guild_prefix}%s."
@@ -204,7 +204,7 @@ message:
       channel: "Будь ласка, згадайте канал!"
     onlyNSFW: "Ця команда може використовуватись лише у NSFW каналах!"
     invalidQuery: "Будь ласка, вкажіть правильний запит!"
-    invalidUrl: "Please provide a valid URL!"
+    invalidUrl: "Будь ласка, вкажіть правильну адресу ресурсу!"
     checkBelow: "Погляньте нижче!"
     retrievalError: "Сталася помилка під час отримання даних!"
     notInVoiceChannel: "Ви не в голосовому каналі!"
@@ -224,7 +224,7 @@ message:
       date: "Будь ласка, використовуйте правильну дату!\nЗауважте, що ми використовуємо формат dd.MM.yyyy (day.month.year)!"
       time: "Будь ласка, використайте припустимий час!\nЗауважте, що ми використовуємо формат HH/mm (години/хвилини (24-години))!"
       notEnough: "Введеного часу недостатньо!"
-    incorrectNumbers: "Please enter correct number values"
+    incorrectNumbers: "Будь ласка, введіть коректне число"
   birthday:
     added:
       self: "Ваш день народження додано!"
@@ -234,7 +234,7 @@ message:
       self: "Ваш день народження видалено!"
       other: "День народження %s було видалено!"
       noPerms: "Ви не маєте права видаляти день народження!"
-    wish: "Happy birthday to <@%s>!"
+    wish: "З днем народження <@%s>!"
   instagramNotifier:
     added: "Для користувача %s створено сповіщення в Instagram!"
     list: "Ось всі параметри Instagram сповіщення, які були встановлені:\n```%s```"
@@ -256,14 +256,14 @@ message:
     list: "Ось всі параметри YouTube сповіщення, які були встановлені:\n```%s```"
     removed: "Для каналу %s видалено сповіщення про відео на Youtube!"
   tiktokNotifier:
-    added: "A TikTok Notifier has been created for the User %s!"
-    list: "Here are all TikTok Notifier that have been setup:\n```%s```"
-    removed: "A TikTok Notifier has been removed from the User %s!"
-    invalidUser: "We couldn't find the provided TikTok User!"
+    added: "Для користувача %s створено сповіщення в TikTok!"
+    list: "Ось всі параметри TikTok сповіщення, які були встановлені:\n```%s```"
+    removed: "Для користувача %s видалено сповіщення у TikTok!"
+    invalidUser: "Ми не змогли знайти вказаного користувача TikTok!"
   rssNotifier:
-    added: "A RSS-Feed Notifier has been created for the URL %s!"
-    list: "Here are all RSS-Feed Notifier that have been setup:\n```%s```"
-    removed: "A RSS-Feed Notifier has been removed from the URL %s!"
+    added: "RSS-Feed був створений для URL-адреси %s!"
+    list: "Ось усі RSS-Feed сповіщення які були встановлені:\n```%s```"
+    removed: "RSS-Feed був видалений для URL-адреси %s!"
   anime:
     searching: "Пошук аніме..."
     found: "Аніме знайдено!"
@@ -572,7 +572,7 @@ message:
     cooldown: "Заспокойтесь! Ви можете знову працювати приблизно через %s секунд."
     failed: "Ви не змогли працювали!"
   rewards:
-    success: "Successfully updated the rewards!"
+    success: "Успішно оновлено нагороди!"
 game:
   description:
     blackjack: "Грайте Blackjack з друзями!"
@@ -596,8 +596,8 @@ command:
     twitch: "Керуйте вашим сповіщенням Twitch!"
     twitterNotifier: "Керуйте вашим сповіщенням Twitter!"
     youtubeNotifier: "Керуйте вашим сповіщенням Youtube!"
-    tiktokNotifier: "Manage your TikTok-Notifier!"
-    rssNotifier: "Manage your RSS-Feed Notifier!"
+    tiktokNotifier: "Керуйте вашим сповіщенням TikTok!"
+    rssNotifier: "Керуйте вашим сповіщенням RSS-Feed!"
     anime: "Шукати аніме на kitsu.io!"
     randomcat: "Показує випадкові зображення кота, із thecatapi.com."
     cringe: "Нехай Шрек скаже їм, що їхній меседж був жахливим!"
