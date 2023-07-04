@@ -146,6 +146,11 @@ public class Notifier {
     private final ArrayList<String> registeredInstagramUsers = new ArrayList<>();
 
     /**
+     * Local list of registered RSS-Feeds.
+     */
+    private final ArrayList<String> registeredRSSFeeds = new ArrayList<>();
+
+    /**
      * Local list of registered TikTok Users.
      */
     private final ArrayList<Long> registeredTikTokUsers = new ArrayList<>();
@@ -361,7 +366,7 @@ public class Notifier {
 
             urls.addAll(registeredTwitterUsers.stream().map(c -> "https://nitter.net/" + c + "/rss").toList());
 
-            urls.addAll(SQLSession.getSqlConnector().getSqlWorker().getEntityList(new RSSFeed(), "SELECT * FROM RSSFeed", null).stream().map(RSSFeed::getUrl).toList());
+            urls.addAll(registeredRSSFeeds);
 
             // TODO:: add handling of custom Feed
 
@@ -1187,6 +1192,49 @@ public class Notifier {
      */
     public boolean isTikTokUserRegistered(long id) {
         return registeredTikTokUsers.contains(id);
+    }
+
+    //endregion
+
+    //region RSS
+
+    /**
+     * Used to register an RSS Feed.
+     *
+     * @param rssUrl the Url of the RSS-Feed.
+     */
+    public void registerRSS(String rssUrl) {
+        if (!isRSSRegistered(rssUrl)) registeredRSSFeeds.add(rssUrl);
+    }
+
+    /**
+     * Used to register an RSS Feed.
+     *
+     * @param rssUrls the Urls of the RSS-Feeds.
+     */
+    public void registerRSS(List<String> rssUrls) {
+        rssUrls.forEach(s -> {
+            if (!isRSSRegistered(s)) registeredRSSFeeds.add(s);
+        });
+    }
+
+    /**
+     * Used to unregister an RSS Feed.
+     *
+     * @param rssUrl the Url of the RSS-Feed.
+     */
+    public void unregisterRSS(String rssUrl) {
+        if (isRSSRegistered(rssUrl)) registeredRSSFeeds.remove(rssUrl);
+    }
+
+    /**
+     * Check if an RSS-Feed is already being checked.
+     *
+     * @param rssUrl the Url of the RSS-Feed.
+     * @return true, if there is an Url | false, if there isn't an Url.
+     */
+    public boolean isRSSRegistered(String rssUrl) {
+        return registeredRSSFeeds.contains(rssUrl);
     }
 
     //endregion

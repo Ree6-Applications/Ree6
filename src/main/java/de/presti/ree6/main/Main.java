@@ -28,6 +28,7 @@ import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
+import de.presti.ree6.sql.entities.webhook.RSSFeed;
 import de.presti.ree6.sql.entities.webhook.WebhookTikTok;
 import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
@@ -312,6 +313,9 @@ public class Main {
 
                 // Register all TikTok Users.
                 getInstance().getNotifier().registerTikTokUser(SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames().stream().map(Long::parseLong).toList());
+
+                // Register all RSS Feeds.
+                getInstance().getNotifier().registerRSS(SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls());
             }, t -> Sentry.captureException(t.getCause()));
         }
 

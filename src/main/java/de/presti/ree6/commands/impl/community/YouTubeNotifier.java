@@ -73,7 +73,10 @@ public class YouTubeNotifier implements ICommand {
 
                 String name = nameMapping.getAsString();
 
-                name = name.replace("https://www.youtube.com/channel/@", "");
+                name = name.replace("https://www.youtube.com/channel/", "")
+                        .replace("https://www.youtube.com/user/", "")
+                        .replace("https://www.youtube.com/c/", "")
+                        .replace("@", "");
 
                 ChannelResult channelResult;
 
