@@ -368,8 +368,6 @@ public class Notifier {
 
             urls.addAll(registeredRSSFeeds);
 
-            // TODO:: add handling of custom Feed
-
             List<String> checkedIds = new ArrayList<>();
 
             new RssReader()
@@ -426,6 +424,8 @@ public class Notifier {
                                 case "yt" -> id = item.getAuthor().orElseGet(() -> item.getChannel().getTitle());
 
                                 case "tw" -> id = item.getChannel().getLink().replace("https://nitter.net/", "");
+
+                                case "other" -> id = item.getChannel().getLink();
                             }
 
                             if (checkedIds.contains(id)) {
@@ -533,6 +533,46 @@ public class Notifier {
                                         webhookMessageBuilder.setContent(message);
                                         WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
                                     });
+                                }
+
+                                default -> {
+                                    try {
+                                        List<RSSFeed> webhooks = SQLSession.getSqlConnector().getSqlWorker().getRSSWebhooksByUrl(id);
+
+                                        if (webhooks.isEmpty()) return;
+
+                                        WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+
+                                        webhookMessageBuilder.setUsername(Data.getBotName());
+                                        webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+
+                                        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                                        item.getChannel().getImage().ifPresentOrElse(image ->
+                                                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(),
+                                                                URLDecoder.decode(image.getUrl(), StandardCharsets.UTF_8), null)),
+                                                () -> webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(), null, null)));
+
+
+                                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getTitle().orElse("No Title"), item.getLink().orElse("No Link")));
+
+                                        item.getDescription().ifPresent(description -> {
+                                            webhookEmbedBuilder.setDescription(description + "\n");
+                                        });
+
+                                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getChannel().getTitle(), null));
+                                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("RSS Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+
+                                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                                        webhookEmbedBuilder.setTimestamp(Instant.now());
+                                        webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
+
+                                        webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+                                        webhooks.forEach(webhook -> WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook));
+                                    } catch (Exception exception) {
+                                        Sentry.captureException(exception);
+                                    }
                                 }
                             }
 
