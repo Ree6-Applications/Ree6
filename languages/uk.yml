@@ -261,9 +261,9 @@ message:
     removed: "Для користувача %s видалено сповіщення у TikTok!"
     invalidUser: "Ми не змогли знайти вказаного користувача TikTok!"
   rssNotifier:
-    added: "A RSS-Feed Notifier has been created for the Url %s!"
+    added: "RSS-Feed був створений для URL-адреси %s!"
     list: "Ось усі RSS-Feed сповіщення які були встановлені:\n```%s```"
-    removed: "A RSS-Feed Notifier has been removed from the Url %s!"
+    removed: "RSS-Feed був видалений для URL-адреси %s!"
   anime:
     searching: "Пошук аніме..."
     found: "Аніме знайдено!"
