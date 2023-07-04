@@ -237,23 +237,23 @@ message:
     wish: "<@%s> için mutlu yıllar!"
   instagramNotifier:
     added: "%s Kullanıcısı için bir Instagram Bildiricisi oluşturuldu!"
-    list: "İşte ayarlanan tüm Instagram Notifier:\n```%s```"
+    list: "İşte ayarlanan tüm Instagram Bildiricileri:\n```%s```"
     removed: "%s Kullanıcısından bir Instagram Bildiricisi kaldırıldı!"
   redditNotifier:
     added: "Subreddit %s için bir Reddit Bildiricisi oluşturuldu!"
-    list: "İşte ayarlanan tüm Reddit Notifier:\n```%s```"
+    list: "İşte ayarlanan tüm Reddit Bildiricileri:\n```%s```"
     removed: "Subreddit %s'den bir Reddit Bildiricisi kaldırıldı!"
   twitchNotifier:
     added: "%s Kanalı için bir Twitch-Akış Bildiricisi oluşturuldu!"
-    list: "İşte ayarlanmış olan tüm Twitch Notifier:\n```%s```"
+    list: "İşte ayarlanmış olan tüm Twitch Bildiricileri:\n```%s```"
     removed: "%s Kanaldan bir Twitch-Stream Bildiricisi kaldırıldı!"
   twitterNotifier:
     added: "%s Kullanıcı için bir Twitter Bildiricisi oluşturuldu!"
-    list: "İşte ayarlanan tüm Twitter Notifier:\n```%s```"
+    list: "İşte ayarlanan tüm Twitter Bildiricileri:\n```%s```"
     removed: "%s Kullanıcıdan bir Twitter Bildiricisi kaldırıldı!"
   youtubeNotifier:
     added: "%s Kanal için Youtube-Video Bildirici oluşturulmuştur!"
-    list: "İşte ayarlanan tüm YouTube Notifier:\n```%s```"
+    list: "İşte ayarlanan tüm YouTube Bildiricileri:\n```%s```"
     removed: "%s Kanalından bir Youtube-Video Bildiricisi kaldırıldı!"
   tiktokNotifier:
     added: "%s Kullanıcısı için bir TikTok Bildiricisi oluşturuldu!"
