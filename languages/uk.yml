@@ -204,6 +204,7 @@ message:
       channel: "Будь ласка, згадайте канал!"
     onlyNSFW: "Ця команда може використовуватись лише у NSFW каналах!"
     invalidQuery: "Будь ласка, вкажіть правильний запит!"
+    invalidUrl: "Please provide a valid URL!"
     checkBelow: "Погляньте нижче!"
     retrievalError: "Сталася помилка під час отримання даних!"
     notInVoiceChannel: "Ви не в голосовому каналі!"
@@ -254,6 +255,15 @@ message:
     added: "Для каналу %s створено сповіщення про відео на Youtube!"
     list: "Ось всі параметри YouTube сповіщення, які були встановлені:\n```%s```"
     removed: "Для каналу %s видалено сповіщення про відео на Youtube!"
+  tiktokNotifier:
+    added: "A TikTok Notifier has been created for the Channel %s!"
+    list: "Here are all TikTok Notifier that have been setup:\n```%s```"
+    removed: "A TikTok Notifier has been removed from the Channel %s!"
+    invalidUser: "We couldn't find the provided TikTok User!"
+  rssNotifier:
+    added: "A RSS-Feed Notifier has been created for the Channel %s!"
+    list: "Here are all RSS-Feed Notifier that have been setup:\n```%s```"
+    removed: "A RSS-Feed Notifier has been removed from the Channel %s!"
   anime:
     searching: "Пошук аніме..."
     found: "Аніме знайдено!"
@@ -586,6 +596,8 @@ command:
     twitch: "Керуйте вашим сповіщенням Twitch!"
     twitterNotifier: "Керуйте вашим сповіщенням Twitter!"
     youtubeNotifier: "Керуйте вашим сповіщенням Youtube!"
+    tiktokNotifier: "Manage your TikTok-Notifier!"
+    rssNotifier: "Manage your RSS-Feed Notifier!"
     anime: "Шукати аніме на kitsu.io!"
     randomcat: "Показує випадкові зображення кота, із thecatapi.com."
     cringe: "Нехай Шрек скаже їм, що їхній меседж був жахливим!"
@@ -662,7 +674,7 @@ command:
     schedule: "Заплануйте повідомлення на пізніше або на повторний час!"
     money: "Керуйте своїми грошима!"
     steal: "Вкрасти гроші інших користувачів!"
-    work: "Get your own money from doing work!"
+    work: "Отримайте свої власні гроші від здійснення роботи!"
 category:
   info: "Використовується для збору інформації або надання інформації."
   moderation: "Інструменти модерації, які можуть допомогти вам керувати користувачами або запобігти порушенню правил на сервері."
