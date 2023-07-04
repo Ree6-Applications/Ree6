@@ -261,9 +261,9 @@ message:
     removed: "Notifier TikTok telah dihapus dari %s!"
     invalidUser: "Kita tidak bisa menemukan User TikTok yang telah diberi!"
   rssNotifier:
-    added: "A RSS-Feed Notifier has been created for the Url %s!"
+    added: "Notifier RSS-Feed telah dibuat untuk URL %s!"
     list: "Ini adalah semua Notifier RSS-Feed yang telah disetup:\n```%s```"
-    removed: "A RSS-Feed Notifier has been removed from the Url %s!"
+    removed: "Notifier RSS-Feed telah dihapus dari URL %s!"
   anime:
     searching: "Mencari Anime..."
     found: "Anime ditemukan!"
@@ -596,8 +596,8 @@ command:
     twitch: "Atur Twitch-Notifier mu!"
     twitterNotifier: "Atur Twitter-Notifier mu!"
     youtubeNotifier: "Atur Youtube-Notifier mu!"
-    tiktokNotifier: "Manage your TikTok-Notifier!"
-    rssNotifier: "Manage your RSS-Feed Notifier!"
+    tiktokNotifier: "Atur Notifier TikTok mu!"
+    rssNotifier: "Atur Notifier RSS-Feed mu!"
     anime: "Cari Anime di kitsu.io!"
     randomcat: "Munculkan gambar kucing random dari thecatapi.com."
     cringe: "Biarkan shrek kasi tahu kalau pesan mereka cringe!"
