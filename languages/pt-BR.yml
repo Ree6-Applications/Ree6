@@ -204,6 +204,7 @@ message:
       channel: "Please mention a channel!"
     onlyNSFW: "This Command can only be used in NSFW Channels!"
     invalidQuery: "Please provide a valid Query!"
+    invalidUrl: "Please provide a valid URL!"
     checkBelow: "Check below!"
     retrievalError: "There was an error while retrieving the data!"
     notInVoiceChannel: "You are not in a Voice-Channel!"
@@ -254,6 +255,15 @@ message:
     added: "A Youtube-Video Notifier has been created for the Channel %s!"
     list: "Here are all YouTube Notifier that have been setup:\n```%s```"
     removed: "A Youtube-Video Notifier has been removed from the Channel %s!"
+  tiktokNotifier:
+    added: "A TikTok Notifier has been created for the Channel %s!"
+    list: "Here are all TikTok Notifier that have been setup:\n```%s```"
+    removed: "A TikTok Notifier has been removed from the Channel %s!"
+    invalidUser: "We couldn't find the provided TikTok User!"
+  rssNotifier:
+    added: "A RSS-Feed Notifier has been created for the Channel %s!"
+    list: "Here are all RSS-Feed Notifier that have been setup:\n```%s```"
+    removed: "A RSS-Feed Notifier has been removed from the Channel %s!"
   anime:
     searching: "Searching for Anime..."
     found: "Anime found!"
@@ -586,6 +596,8 @@ command:
     twitch: "Manage your Twitch-Notifier!"
     twitterNotifier: "Manage your Twitter-Notifier!"
     youtubeNotifier: "Manage your Youtube-Notifier!"
+    tiktokNotifier: "Manage your TikTok-Notifier!"
+    rssNotifier: "Manage your RSS-Feed Notifier!"
     anime: "Search for animes on kitsu.io!"
     randomcat: "Shows random Cat Images, from thecatapi.com."
     cringe: "Let shrek tell them that their message was cringe!"
