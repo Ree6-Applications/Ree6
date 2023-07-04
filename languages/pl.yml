@@ -204,6 +204,7 @@ message:
       channel: "Proszę wymienić kanał!"
     onlyNSFW: "Ta komenda może być używana tylko w kanałach NSFW!"
     invalidQuery: "Proszę podać poprawne pytanie!"
+    invalidUrl: "Please provide a valid URL!"
     checkBelow: "Sprawdź poniżej!"
     retrievalError: "Wystąpił błąd podczas pobierania danych!"
     notInVoiceChannel: "Nie jesteś na kanale głosowym!"
@@ -254,6 +255,15 @@ message:
     added: "Powiadomienie o wideo na YouTube'ie zostało utworzone dla kanału %s!"
     list: "Tutaj są wszystkie powiadomienia o YouTubie, które zostały skonfigurowane:\n```%s```"
     removed: "Powiadomienie o wideo na YouTube'ie zostało usunięte dla kanału %s!"
+  tiktokNotifier:
+    added: "A TikTok Notifier has been created for the Channel %s!"
+    list: "Here are all TikTok Notifier that have been setup:\n```%s```"
+    removed: "A TikTok Notifier has been removed from the Channel %s!"
+    invalidUser: "We couldn't find the provided TikTok User!"
+  rssNotifier:
+    added: "A RSS-Feed Notifier has been created for the Channel %s!"
+    list: "Here are all RSS-Feed Notifier that have been setup:\n```%s```"
+    removed: "A RSS-Feed Notifier has been removed from the Channel %s!"
   anime:
     searching: "Wyszukiwanie Anime..."
     found: "Znaleziono anime!"
@@ -586,6 +596,8 @@ command:
     twitch: "Zarządzaj swoimi powiadomieniami Twitch!"
     twitterNotifier: "Zarządzaj swoimi powiadomieniami Twitter!"
     youtubeNotifier: "Zarządzaj swoimi powiadomieniami YouTube!"
+    tiktokNotifier: "Manage your TikTok-Notifier!"
+    rssNotifier: "Manage your RSS-Feed Notifier!"
     anime: "Szukaj Anime na kitsu.io!"
     randomcat: "Pokazuje losowe obrazy kota z thecatapi.com."
     cringe: "Niech Shrek powie, że ich wiadomość nie jest śmieszna!"
@@ -662,7 +674,7 @@ command:
     schedule: "Zaplanuj wiadomości na później lub na powtarzający się czas!"
     money: "Zarządzaj pieniędzmi!"
     steal: "Ukradnij pieniądze od innych użytkowników!"
-    work: "Get your own money from doing work!"
+    work: "Zdobądź własne pieniądze za pracę!"
 category:
   info: "Wykorzystywane do gromadzenia informacji lub przekazywania informacji."
   moderation: "Narzędzia moderacyjne, które mogą pomóc ci zarządzać użytkownikami lub zapobiec łamania zasad na serwerze."
