@@ -204,6 +204,7 @@ message:
       channel: "Моля, посочете канал!"
     onlyNSFW: "Тази команда може да бъде използвана само в NSFW каналите!"
     invalidQuery: "Моля, посочете валидна заявка!"
+    invalidUrl: "Please provide a valid URL!"
     checkBelow: "Проверете по-долу!"
     retrievalError: "Имаше грешка при извличането на данните!"
     notInVoiceChannel: "Не сте в гласов канал!"
@@ -254,6 +255,15 @@ message:
     added: "Youtube-Video нотификатор бе създаден за канала %s!"
     list: "Това са всичките YouTube нотификатори, които са били настроени:\n```%s```"
     removed: "Youtube-Video нотификатор бе премахнат от канала %s!"
+  tiktokNotifier:
+    added: "A TikTok Notifier has been created for the Channel %s!"
+    list: "Here are all TikTok Notifier that have been setup:\n```%s```"
+    removed: "A TikTok Notifier has been removed from the Channel %s!"
+    invalidUser: "We couldn't find the provided TikTok User!"
+  rssNotifier:
+    added: "A RSS-Feed Notifier has been created for the Channel %s!"
+    list: "Here are all RSS-Feed Notifier that have been setup:\n```%s```"
+    removed: "A RSS-Feed Notifier has been removed from the Channel %s!"
   anime:
     searching: "Търсене на аниме..."
     found: "Беше открито аниме!"
@@ -586,6 +596,8 @@ command:
     twitch: "Управление на вашия Twitch нотификатор!"
     twitterNotifier: "Управление на вашия Twitter нотификатор!"
     youtubeNotifier: "Управлеине на вашия YouTube нотификатор!"
+    tiktokNotifier: "Manage your TikTok-Notifier!"
+    rssNotifier: "Manage your RSS-Feed Notifier!"
     anime: "Търси анимета в kitsu.io!"
     randomcat: "Показва случайни изображения на котки от thecatapi.com."
     cringe: "Нека Шрек им каже, че посланието им е cringe!"
@@ -662,7 +674,7 @@ command:
     schedule: "Планиране на съобщенията за по-късно или за повторно време!"
     money: "Управлявайте парите си!"
     steal: "Откраднете пари от други потребители!"
-    work: "Get your own money from doing work!"
+    work: "Спечелете собствени пари от работа!"
 category:
   info: "Използва се за събиране на информация или предоставяне на информация."
   moderation: "Инструменти за модериране, които могат да ви помогнат да управлявате потребители или да предотвратите нарушаване на правилата на сървъра."
