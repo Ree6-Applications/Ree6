@@ -204,6 +204,7 @@ message:
       channel: "Prosím uveďte kanál!"
     onlyNSFW: "Tento příkaz lze použít pouze v NSFW kanálech!"
     invalidQuery: "Prosím zadejte platný dotaz!"
+    invalidUrl: "Please provide a valid URL!"
     checkBelow: "Zkontrolujte níže!"
     retrievalError: "Při načítání dat došlo k chybě!"
     notInVoiceChannel: "Nejste v hlasovém kanálu!"
@@ -254,6 +255,15 @@ message:
     added: "Pro kanál %s byl vytvořen Youtube-Video notifikátor!"
     list: "Zde jsou všechny YouTube notifikace, které byly nastaveny:\n```%s```"
     removed: "Youtube-Video notifikace byla odstraněna z kanálu %s!"
+  tiktokNotifier:
+    added: "A TikTok Notifier has been created for the Channel %s!"
+    list: "Here are all TikTok Notifier that have been setup:\n```%s```"
+    removed: "A TikTok Notifier has been removed from the Channel %s!"
+    invalidUser: "We couldn't find the provided TikTok User!"
+  rssNotifier:
+    added: "A RSS-Feed Notifier has been created for the Channel %s!"
+    list: "Here are all RSS-Feed Notifier that have been setup:\n```%s```"
+    removed: "A RSS-Feed Notifier has been removed from the Channel %s!"
   anime:
     searching: "Vyhledávání anime..."
     found: "Anime nalezeno!"
@@ -586,6 +596,8 @@ command:
     twitch: "Spravujte svůj Twitch-Notifier!"
     twitterNotifier: "Spravujte svůj Twitter-Notifier!"
     youtubeNotifier: "Spravujte svůj Youtube-Notifier!"
+    tiktokNotifier: "Manage your TikTok-Notifier!"
+    rssNotifier: "Manage your RSS-Feed Notifier!"
     anime: "Hledej anime na kitsu.io!"
     randomcat: "Zobrazuje náhodné obrázky koček z thecatapi.com."
     cringe: "Ať jim shrek řekne, že jejich zpráva byla krčení!"
