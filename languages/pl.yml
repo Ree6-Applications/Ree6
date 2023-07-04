@@ -261,9 +261,9 @@ message:
     removed: "Powiadomienie o TikTokie zostało usunięte dla użytkownika %s!"
     invalidUser: "Nie udało się znaleźć podanego użytkownika TikTok!"
   rssNotifier:
-    added: "Powiadomienie RSS zostało utworzone dla adresu URL %s!"
+    added: "A RSS-Feed Notifier has been created for the Url %s!"
     list: "Tutaj są wszystkie powiadomienia RSS, które zostały skonfigurowane:\n```%s```"
-    removed: "Powiadomienie RSS zostało usunięto dla adresu URL %s!"
+    removed: "A RSS-Feed Notifier has been removed from the Url %s!"
   anime:
     searching: "Wyszukiwanie Anime..."
     found: "Znaleziono anime!"
