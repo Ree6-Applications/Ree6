@@ -6,8 +6,8 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.webhook.WebhookTikTok;
 import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.utils.data.RegExUtil;
 import de.presti.wrapper.tiktok.TikTokWrapper;
 import de.presti.wrapper.tiktok.entities.TikTokUser;
 import net.dv8tion.jda.api.Permission;
@@ -18,13 +18,18 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * A Command to activate TikTok Notifications.
  */
 @Command(name = "tiktoknotifier", description = "command.description.tiktokNotifier", category = Category.COMMUNITY)
 public class TikTokNotifier implements ICommand {
+
+    /**
+     * The Pattern for TikTok Links.
+     */
+    private static final Pattern pattern = Pattern.compile(RegExUtil.TIKTOK_REGEX);
 
     /**
      * @inheritDoc
@@ -73,6 +78,11 @@ public class TikTokNotifier implements ICommand {
                 }
 
                 String name = nameMapping.getAsString();
+
+                if (!pattern.matcher(name).matches()) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidUrl"), 5);
+                    return;
+                }
 
                 try {
                     TikTokUser tikTokUser = TikTokWrapper.getUser(name, false);

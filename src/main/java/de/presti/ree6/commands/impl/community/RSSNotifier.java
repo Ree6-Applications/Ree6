@@ -7,6 +7,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.utils.data.RegExUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -15,11 +16,18 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
+import java.util.regex.Pattern;
+
 /**
  * A Command to activate RSS Notifications.
  */
 @Command(name = "rssnotifier", description = "command.description.rssNotifier", category = Category.COMMUNITY)
 public class RSSNotifier implements ICommand {
+
+    /**
+     * The Pattern for Links.
+     */
+    private static final Pattern pattern = Pattern.compile(RegExUtil.URL_REGEX);
 
     /**
      * @inheritDoc
@@ -67,6 +75,12 @@ public class RSSNotifier implements ICommand {
                 }
 
                 String name = nameMapping.getAsString();
+
+                if (!pattern.matcher(name).matches()) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidUrl"), 5);
+                    return;
+                }
+
                 StandardGuildMessageChannel channel = channelMapping.getAsChannel().asStandardGuildMessageChannel();
                 channel.createWebhook(Data.getBotName() + "-RSSNotifier-" + name).queue(w ->
                         SQLSession.getSqlConnector().getSqlWorker().addRSSWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), name.toLowerCase()));

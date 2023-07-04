@@ -1,6 +1,7 @@
 package de.presti.ree6.utils.apis;
 
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.RegExUtil;
 import io.sentry.Sentry;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -41,16 +42,11 @@ public class SpotifyAPIHandler {
      * The Spotify API-Handler.
      */
     public static SpotifyAPIHandler instance;
-
-    /**
-     * The Regex for Spotify Links.
-     */
-    private static final String REGEX = "^(https?://(?:open\\.)?spotify\\.com/(?:[\\w-]+/)*?(embed|track|album|playlist|artist)/(\\w+)).*";
-
+    
     /**
      * The Pattern for Spotify Links.
      */
-    private static final Pattern pattern = Pattern.compile(REGEX);
+    private static final Pattern pattern = Pattern.compile(RegExUtil.SPOTIFY_REGEX);
 
     /**
      * If spotify is connected.

@@ -28,13 +28,15 @@ public class PlayTTSStreamAction implements IStreamAction {
             return false;
         }
 
-        boolean useTTSMonster = Arrays.stream(event.getArguments()).anyMatch(s -> s.startsWith("--ttsmonster:"));
+        boolean useTTSMonster = Arrays.stream(event.getArguments()).filter(Objects::nonNull).anyMatch(s -> s.startsWith("--ttsmonster:"));
 
         if (!Main.getInstance().getMusicWorker().isConnectedMember(event.getGuild().getSelfMember())) return false;
 
         String ttsMessage = String.join(" ", event.getArguments()).split("--ttsmonster:")[0];
 
         String baseUrl = useTTSMonster ? "NOT YET IMPLEMENTED" : "https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=";
+
+        if (useTTSMonster) return true;
 
         Main.getInstance().getMusicWorker().loadAndPlay(event.getGuild(), null, null,
                 baseUrl + URLEncoder.encode(ttsMessage, StandardCharsets.UTF_8),
