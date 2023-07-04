@@ -256,14 +256,14 @@ message:
     list: "Tutaj są wszystkie powiadomienia o YouTubie, które zostały skonfigurowane:\n```%s```"
     removed: "Powiadomienie o wideo na YouTube'ie zostało usunięte dla kanału %s!"
   tiktokNotifier:
-    added: "A TikTok Notifier has been created for the Channel %s!"
+    added: "A TikTok Notifier has been created for the User %s!"
     list: "Here are all TikTok Notifier that have been setup:\n```%s```"
-    removed: "A TikTok Notifier has been removed from the Channel %s!"
+    removed: "A TikTok Notifier has been removed from the User %s!"
     invalidUser: "We couldn't find the provided TikTok User!"
   rssNotifier:
-    added: "A RSS-Feed Notifier has been created for the Channel %s!"
+    added: "A RSS-Feed Notifier has been created for the URL %s!"
     list: "Here are all RSS-Feed Notifier that have been setup:\n```%s```"
-    removed: "A RSS-Feed Notifier has been removed from the Channel %s!"
+    removed: "A RSS-Feed Notifier has been removed from the URL %s!"
   anime:
     searching: "Wyszukiwanie Anime..."
     found: "Znaleziono anime!"
