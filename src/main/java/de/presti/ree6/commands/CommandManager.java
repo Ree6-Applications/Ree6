@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
@@ -68,14 +69,11 @@ public class CommandManager {
         Set<Class<? extends ICommand>> classes = reflections.getSubTypesOf(ICommand.class);
 
         for (Class<? extends ICommand> aClass : classes) {
-            log.info("Loading Command {}", aClass.getSimpleName());
             Command commandAnnotation = aClass.getAnnotation(Command.class);
 
-            if (Objects.requireNonNull(commandAnnotation.category()) == Category.MOD) {
-                if (!Data.isModuleActive("moderation")) continue;
-            } else {
-                if (!Data.isModuleActive(commandAnnotation.category().name().toLowerCase())) continue;
-            }
+            if (!Data.isModuleActive(commandAnnotation.category().getDescription().substring(9).toLowerCase())) continue;
+
+            log.info("Loading Command {}", aClass.getSimpleName());
 
             addCommand(aClass.getDeclaredConstructor().newInstance());
         }
@@ -399,7 +397,7 @@ public class CommandManager {
 
         // Check if there is even a Command with that name.
         if (command == null && Data.isModuleActive("customcommands")) {
-            CustomCommand customCommand = SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "SELECT * FROM CustomCommand WHERE GID=:gid AND COMMAND=:command", Map.of("gid", guild.getId(), "command", arguments[0].toLowerCase()));
+            CustomCommand customCommand = SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "SELECT * FROM CustomCommands WHERE guild=:gid AND COMMAND=:command", Map.of("gid", guild.getId(), "command", arguments[0].toLowerCase()));
             if (customCommand != null) {
                 MessageChannelUnion messageChannelUnion = textChannel;
 
@@ -412,8 +410,7 @@ public class CommandManager {
                 }
 
                 if (customCommand.getEmbedResponse() != null) {
-                    // TODO:: parse the Embed from JSON in to a EmbedBuilder to sent. (https://github.com/DV8FromTheWorld/JDA/pull/2471)
-                    EmbedBuilder embedBuilder = new EmbedBuilder();
+                    EmbedBuilder embedBuilder = EmbedBuilder.fromData(DataObject.fromJson(customCommand.getEmbedResponse().toString()));
                     sendMessage(embedBuilder, 5, messageChannelUnion, null);
                 }
 

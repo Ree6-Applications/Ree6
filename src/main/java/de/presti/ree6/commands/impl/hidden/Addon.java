@@ -56,8 +56,7 @@ public class Addon implements ICommand {
             }
 
             case "start" -> {
-                String addonName = commandEvent.getSlashCommandInteractionEvent()
-                        .getOption("addon").getAsString();
+                String addonName = commandEvent.getOption("addon").getAsString();
 
                 try {
                     de.presti.ree6.addons.Addon addon = AddonLoader.loadAddon(addonName);
@@ -75,8 +74,7 @@ public class Addon implements ICommand {
 
             case "stop" -> {
                 de.presti.ree6.addons.Addon addon = Main.getInstance().getAddonManager().addons.stream()
-                        .filter(a -> a.getName().equalsIgnoreCase(commandEvent.getSlashCommandInteractionEvent()
-                                .getOption("addon").getAsString())).findFirst().orElse(null);
+                        .filter(a -> a.getName().equalsIgnoreCase(commandEvent.getOption("addon").getAsString())).findFirst().orElse(null);
 
                 if (addon != null) {
                     Main.getInstance().getAddonManager().stopAddon(addon);

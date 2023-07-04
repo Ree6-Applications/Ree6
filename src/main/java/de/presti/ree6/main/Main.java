@@ -4,6 +4,7 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.google.gson.JsonObject;
+import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator;
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
 import de.presti.ree6.audio.music.MusicWorker;
@@ -27,8 +28,9 @@ import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
+import de.presti.ree6.sql.entities.webhook.RSSFeed;
+import de.presti.ree6.sql.entities.webhook.WebhookTikTok;
 import de.presti.ree6.sql.util.SettingsManager;
-import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
@@ -67,7 +69,7 @@ public class Main {
     /**
      * An Instance of the class itself.
      */
-    
+
     static Main instance;
 
     /**
@@ -221,6 +223,8 @@ public class Main {
                     "message_ticket_open", "Message that should display when a Ticket is opened.", "Welcome to your Ticket!"));
             SettingsManager.getSettings().add(new Setting("-1",
                     "message_suggestion_menu", "Message that should display in the Suggestion Menu.", "Suggest something"));
+            SettingsManager.getSettings().add(new Setting("-1",
+                    "configuration_autopublish", "Automatically publish News messages.", false));
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
@@ -306,6 +310,12 @@ public class Main {
                 // Register all Instagram Users.
                 getInstance().getNotifier().registerInstagramUser(SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers());
                 getInstance().getNotifier().registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
+
+                // Register all TikTok Users.
+                getInstance().getNotifier().registerTikTokUser(SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames().stream().map(Long::parseLong).toList());
+
+                // Register all RSS Feeds.
+                getInstance().getNotifier().registerRSS(SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls());
             }, t -> Sentry.captureException(t.getCause()));
         }
 
@@ -500,7 +510,7 @@ public class Main {
                             TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
 
                             if (textChannel != null && textChannel.canTalk())
-                                textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish",birthday.getUserId())).queue();
+                                textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish", birthday.getUserId())).queue();
                         });
 
                 lastDay = new SimpleDateFormat("dd").format(new Date());
@@ -523,10 +533,10 @@ public class Main {
                     if (scheduledMessage.getLastExecute() == null) {
                         if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                            WebhookUtil.sendWebhook(null, new WebhookMessageBuilder()
+                            WebhookUtil.sendWebhook(new WebhookMessageBuilder()
                                     .setUsername(Data.getBotName() + "-Scheduler")
                                     .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
-                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), false);
+                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
                             SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
                         }
@@ -537,10 +547,10 @@ public class Main {
                     if (scheduledMessage.getLastUpdated() == null) {
                         if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                            WebhookUtil.sendWebhook(null, new WebhookMessageBuilder()
+                            WebhookUtil.sendWebhook(new WebhookMessageBuilder()
                                     .setUsername(Data.getBotName() + "-Scheduler")
                                     .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
-                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), false);
+                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
                             scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
@@ -548,10 +558,10 @@ public class Main {
                     } else {
                         if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                            WebhookUtil.sendWebhook(null, new WebhookMessageBuilder()
+                            WebhookUtil.sendWebhook(new WebhookMessageBuilder()
                                     .setUsername(Data.getBotName() + "-Scheduler")
                                     .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
-                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), false);
+                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
                             scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);

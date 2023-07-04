@@ -156,7 +156,7 @@ public class OtherEvents extends ListenerAdapter {
             wmb.setContent(messageContent);
         }
 
-        WebhookUtil.sendWebhook(null, wmb.build(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()), false);
+        WebhookUtil.sendWebhook(wmb.build(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()));
     }
 
     /**
@@ -376,6 +376,12 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         super.onMessageReceived(event);
+
+        if (event.isFromType(ChannelType.NEWS) &&
+                Data.isModuleActive("autopublish") &&
+                SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "configuration_autopublish").getBooleanValue()) {
+            event.getMessage().crosspost().queue(c -> c.addReaction(Emoji.fromUnicode("U+1F4E2")).queue());
+        }
 
         if (event.isFromGuild() && (event.isFromType(ChannelType.TEXT) || event.isFromType(ChannelType.VOICE)) && event.getMember() != null) {
 

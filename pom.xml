@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.5</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.10</version>
+            <version>5.0.0-beta.12</version>
         </dependency>
         <dependency>
             <groupId>com.github.walkyst</groupId>
@@ -69,15 +69,17 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
-            <version>6.22.0</version>
+            <version>6.24.0</version>
         </dependency>
         <dependency>
-            <groupId>me.carleslc.Simple-YAML</groupId>
+            <groupId>com.github.Carleslc.Simple-YAML</groupId>
             <artifactId>Simple-Yaml</artifactId>
             <version>1.8.4</version>
         </dependency>
 
         <!-- API Wrappers -->
+
+        <!-- Socials -->
         <dependency>
             <groupId>com.github.instagram4j</groupId>
             <artifactId>instagram4j</artifactId>
@@ -89,20 +91,27 @@
             <version>master-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>de.ree6</groupId>
-            <artifactId>JLyrics</artifactId>
-            <version>765f7e0b88</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.DxsSucuk</groupId>
-            <artifactId>Nekos4J</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.twitch4j</groupId>
             <artifactId>twitch4j</artifactId>
             <version>1.15.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.redouane59.twitter</groupId>
+            <artifactId>twittered</artifactId>
+            <version>2.22</version>
+        </dependency>
+        <dependency>
+            <groupId>me.presti</groupId>
+            <artifactId>YoutubeWrapper</artifactId>
+            <version>db8c1a2b33</version>
+        </dependency>
+        <dependency>
+            <groupId>me.presti</groupId>
+            <artifactId>TikTokWrapper</artifactId>
+            <version>760259545d</version>
+        </dependency>
+
+        <!-- Music -->
         <dependency>
             <groupId>se.michaelthelin.spotify</groupId>
             <artifactId>spotify-web-api-java</artifactId>
@@ -115,17 +124,24 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>io.github.redouane59.twitter</groupId>
-            <artifactId>twittered</artifactId>
-            <version>2.22</version>
+            <groupId>de.ree6</groupId>
+            <artifactId>JLyrics</artifactId>
+            <version>765f7e0b88</version>
+        </dependency>
+
+        <!-- Third party APIs -->
+        <dependency>
+            <groupId>com.apptasticsoftware</groupId>
+            <artifactId>rssreader</artifactId>
+            <version>3.4.5</version>
         </dependency>
         <dependency>
-            <groupId>com.github.DxsSucuk</groupId>
-            <artifactId>YoutubeWrapper</artifactId>
-            <version>89c8445366</version>
+            <groupId>me.presti</groupId>
+            <artifactId>Nekos4J</artifactId>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
-            <groupId>com.github.DxsSucuk</groupId>
+            <groupId>me.presti</groupId>
             <artifactId>Amari4Java</artifactId>
             <version>63f49f783b</version>
         </dependency>
@@ -135,11 +151,13 @@
             <version>1.0.2</version>
         </dependency>
 
+        <!-- API Wrappers -->
+
         <!-- Database -->
         <dependency>
             <groupId>de.ree6</groupId>
             <artifactId>Ree6-SQL</artifactId>
-            <version>2.0.1</version>
+            <version>976e689f88</version>
         </dependency>
 
         <!-- Logging -->
@@ -151,7 +169,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.7</version>
+            <version>1.4.8</version>
         </dependency>
 
         <!-- Lombok -->
@@ -184,6 +202,11 @@
             <artifactId>commons-io</artifactId>
             <version>2.13.0</version>
         </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.16.0</version>
+        </dependency>
 
         <!-- Jersey and Jackson -->
         <dependency>
@@ -212,12 +235,6 @@
             <version>3.1.2</version>
         </dependency>
 
-        <!-- HTTP Clients -->
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
-        </dependency>
 
         <!-- HTTP Clients -->
         <dependency>

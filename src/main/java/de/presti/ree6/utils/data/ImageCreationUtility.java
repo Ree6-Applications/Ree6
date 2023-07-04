@@ -72,7 +72,7 @@ public class ImageCreationUtility {
         double progress;
 
         formattedExperience = userLevel.getFormattedExperience();
-        formattedMaxExperience = userLevel.getFormattedExperience(userLevel.getTotalExperienceForNextLevel());
+        formattedMaxExperience = userLevel.getFormattedNeededExperience();
         level = String.valueOf(userLevel.getLevel());
         rank = String.valueOf(userLevel.getRank());
         progress = userLevel.getProgress();

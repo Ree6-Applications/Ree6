@@ -5,6 +5,7 @@ import de.presti.ree6.actions.ActionInfo;
 import de.presti.ree6.actions.streamtools.IStreamAction;
 import de.presti.ree6.actions.streamtools.StreamActionEvent;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.RegExUtil;
 import de.presti.ree6.utils.external.RequestUtility;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -20,24 +21,14 @@ import java.util.regex.Pattern;
 public class PlayBlerpStreamAction implements IStreamAction {
 
     /**
-     * RegEx to detect a Blerp link in the redemption itself.
+     * A {@link Pattern} to actually detect it.
      */
-    String blerpRegEx = "https:\\/\\/blerp\\.com\\/soundbites\\/[a-zA-Z0-9]+";
-
-    /**
-     * RegEx to take the CDN Url of that sound out of the HTML content.
-     */
-    String blerpPageRegEx = "https:\\/\\/cdn\\.blerp\\.com\\/normalized\\/[a-zA-Z0-9]+";
+    Pattern blerpPattern = Pattern.compile(RegExUtil.BLERP_REGEX);
 
     /**
      * A {@link Pattern} to actually detect it.
      */
-    Pattern blerpPattern = Pattern.compile(blerpRegEx);
-
-    /**
-     * A {@link Pattern} to actually detect it.
-     */
-    Pattern blerpPagePattern = Pattern.compile(blerpPageRegEx);
+    Pattern blerpPagePattern = Pattern.compile(RegExUtil.BLERP_PAGE_REGEX);
 
     /**
      * @inheritDoc
