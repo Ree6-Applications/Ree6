@@ -204,7 +204,7 @@ message:
       channel: "Harap mention channel!"
     onlyNSFW: "Command ini hanya bisa digunakan di Channel NSFW!"
     invalidQuery: "Harap berikan query yang valid!"
-    invalidUrl: "Please provide a valid URL!"
+    invalidUrl: "Tolong beri URL yang benar!"
     checkBelow: "Periksa dibawah!"
     retrievalError: "Terjadi kesalahan saat mengambil data!"
     notInVoiceChannel: "Anda tidak ada di Voice-Channel!"
@@ -256,13 +256,13 @@ message:
     list: "Dibawah ini daftar Notifier Youtube yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Video Youtube untuk Channel %s telah dihapus!"
   tiktokNotifier:
-    added: "A TikTok Notifier has been created for the User %s!"
-    list: "Here are all TikTok Notifier that have been setup:\n```%s```"
-    removed: "A TikTok Notifier has been removed from the User %s!"
-    invalidUser: "We couldn't find the provided TikTok User!"
+    added: "Notifier TikTok telah dibuat untuk %s!"
+    list: "Ini adalah semua Notifier TikTok yang telah disetup:\n```%s```"
+    removed: "Notifier TikTok telah dihapus dari %s!"
+    invalidUser: "Kita tidak bisa menemukan User TikTok yang telah diberi!"
   rssNotifier:
-    added: "A RSS-Feed Notifier has been created for the URL %s!"
-    list: "Here are all RSS-Feed Notifier that have been setup:\n```%s```"
+    added: "Notifier RSS-Feed telah dibuat untuk URL %s!"
+    list: "Ini adalah semua Notifier RSS-Feed yang telah disetup:\n```%s```"
     removed: "A RSS-Feed Notifier has been removed from the URL %s!"
   anime:
     searching: "Mencari Anime..."
