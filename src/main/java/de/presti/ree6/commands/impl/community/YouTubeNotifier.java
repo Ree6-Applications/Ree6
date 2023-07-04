@@ -73,9 +73,10 @@ public class YouTubeNotifier implements ICommand {
 
                 String name = nameMapping.getAsString();
 
-                name = name.replace("https://www.youtube.com/channel/", "")
-                        .replace("https://www.youtube.com/user/", "")
-                        .replace("https://www.youtube.com/c/", "")
+                name = name.replace("https://www.youtube.com/", "")
+                        .replace("channel/", "")
+                        .replace("user/", "")
+                        .replace("c/", "")
                         .replace("@", "");
 
                 ChannelResult channelResult;
@@ -93,6 +94,8 @@ public class YouTubeNotifier implements ICommand {
                     commandEvent.reply(commandEvent.getResource("message.default.invalidQuery", name), 5);
                     return;
                 }
+
+                name = channelResult.getTitle();
 
                 StandardGuildMessageChannel channel = channelMapping.getAsChannel().asStandardGuildMessageChannel();
                 channel.createWebhook(Data.getBotName() + "-YoutubeNotifier-" + name).queue(w -> {

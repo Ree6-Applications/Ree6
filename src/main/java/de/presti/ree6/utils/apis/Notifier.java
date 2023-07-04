@@ -3,6 +3,7 @@ package de.presti.ree6.utils.apis;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import com.apptasticsoftware.rssreader.Channel;
 import com.apptasticsoftware.rssreader.Image;
 import com.apptasticsoftware.rssreader.Item;
 import com.apptasticsoftware.rssreader.RssReader;
@@ -61,9 +62,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.OffsetDateTime;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -228,7 +229,7 @@ public class Notifier {
             twitterClient = new TwitterClient(TwitterCredentials.builder()
                     .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
         } catch (Exception exception) {
-            log.error("Failed to create Twitter Client and deleting pre-set rules.", exception);
+            log.error("Failed to create Twitter Client.", exception);
         }
 
         log.info("Initializing Reddit Client...");
@@ -331,6 +332,8 @@ public class Notifier {
                         continue;
                     }
 
+                    if (twitterUser.getData() == null) continue;
+
                     for (ChannelStats channelStat : channelStats) {
                         if (channelStat.getTwitterFollowerChannelUsername() != null) {
                             GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
@@ -362,9 +365,9 @@ public class Notifier {
     public void createRssStream() {
         ThreadUtil.createThread(x -> {
 
-            Collection<String> urls = new ArrayList<>(registeredYouTubeChannels.stream().map(c -> "https://www.youtube.com/feeds/videos.xml?channel_id=" + c).toList());
+            Collection<String> urls = new ArrayList<>(registeredYouTubeChannels.stream().map(c -> "https://rsshub.app/youtube/channel/" + c).toList());
 
-            urls.addAll(registeredTwitterUsers.stream().map(c -> "https://nitter.net/" + c + "/rss").toList());
+            ////urls.addAll(registeredTwitterUsers.stream().map(c -> "https://nitter.net/" + c + "/rss").toList());
 
             urls.addAll(registeredRSSFeeds);
 
@@ -373,18 +376,18 @@ public class Notifier {
             new RssReader()
                     .addItemExtension("media:description", Item::setDescription)
                     .addItemExtension("media:thumbnail", "url", (item, element) -> {
-                        com.apptasticsoftware.rssreader.Image image = item.getChannel().getImage().orElse(new com.apptasticsoftware.rssreader.Image());
+                        Image image = item.getChannel().getImage().orElse(new Image());
                         image.setUrl(element);
                         item.getChannel().setImage(image);
                     }).addItemExtension("media:thumbnail", "width", (item, element) -> {
-                        com.apptasticsoftware.rssreader.Image image = item.getChannel().getImage().orElse(new com.apptasticsoftware.rssreader.Image());
+                        Image image = item.getChannel().getImage().orElse(new Image());
                         image.setWidth(Integer.valueOf(element));
                         item.getChannel().setImage(image);
                     }).addItemExtension("media:thumbnail", "height", (item, element) -> {
-                        com.apptasticsoftware.rssreader.Image image = item.getChannel().getImage().orElse(new Image());
+                        Image image = item.getChannel().getImage().orElse(new Image());
                         image.setHeight(Integer.valueOf(element));
                         item.getChannel().setImage(image);
-                    })
+                    }).addChannelExtension("published", Channel::setPubDate)
                     .addItemExtension("dc:creator", Item::setAuthor)
                     .addItemExtension("dc:date", Item::setPubDate)
                     .addItemExtension("yt:channelId", Item::setAuthor)
@@ -394,34 +397,66 @@ public class Notifier {
                     .forEach(item -> {
                         if (item.getPubDate().isEmpty()) return;
 
-                        OffsetDateTime dateTime = OffsetDateTime.parse(item.getPubDate().orElse(""), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-
-                        OffsetDateTime now = OffsetDateTime.now();
-                        OffsetDateTime threeMinuteAgo = now.minus(3, ChronoUnit.MINUTES);
-
-                        if (dateTime.isBefore(threeMinuteAgo)) return;
-
                         String typ = "other";
 
                         if (item.getGuid().isPresent()) {
                             String guid = item.getGuid().get();
 
-                            if (guid.startsWith("yt")) {
-                                typ = "yt";
-                            } else if (guid.contains("nitter")) {
+                            if (guid.contains("nitter")) {
                                 typ = "tw";
                             } else {
                                 typ = "other";
                             }
                         }
 
-                        if (item.getChannel() != null) {
+                        if (item.getChannel().getLink() != null) {
+                            if (item.getChannel().getLink().startsWith("https://www.youtube.com")) {
+                                typ = "yt";
+                            }
+                        }
 
+                        if (typ.equals("yt")) {
+                            item.getPubDate().ifPresent(s -> item.setPubDate(s.substring(5)));
+                        }
+
+                        boolean failedTime = false;
+
+                        long uploadTime = System.currentTimeMillis();
+
+                        if (!typ.equals("yt")) {
+                            OffsetDateTime dateTime = OffsetDateTime.parse(item.getPubDate().orElse(""), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+                            OffsetDateTime now = OffsetDateTime.now();
+                            OffsetDateTime threeMinuteAgo = now.minus(3, ChronoUnit.MINUTES);
+
+                            failedTime = dateTime.isBefore(threeMinuteAgo);
+                            uploadTime = dateTime.toEpochSecond();
+                        } else {
+                            // Define the date format to match the input date string
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+
+                            try {
+                                // Parse the date string into a Date object
+                                Date date = dateFormat.parse(item.getPubDate().orElse(""));
+
+                                LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+                                failedTime = localDateTime.isBefore(LocalDateTime.now().minus(3, ChronoUnit.MINUTES));
+                                uploadTime = localDateTime.toEpochSecond(ZoneId.systemDefault().getRules().getOffset(date.toInstant()));
+                            } catch (ParseException e) {
+                                Sentry.captureException(e);
+                                log.error("Failed to parse YT Date!", e);
+                            }
+                        }
+
+                        if (failedTime) return;
+
+                        if (item.getChannel() != null) {
 
                             String id = "";
 
                             switch (typ) {
-                                case "yt" -> id = item.getAuthor().orElseGet(() -> item.getChannel().getTitle());
+                                case "yt" -> id = item.getAuthor().orElseGet(() -> item.getChannel().getLink().replace("https://www.youtube.com/channel/", ""));
 
                                 case "tw" -> id = item.getChannel().getLink().replace("https://nitter.net/", "");
 
@@ -463,7 +498,7 @@ public class Notifier {
 
                                         webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", slimmedDescription));
 
-                                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", TimeFormat.DATE_TIME_SHORT.format(dateTime.toEpochSecond())));
+                                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", TimeFormat.DATE_TIME_SHORT.format(uploadTime)));
 
                                         webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
                                         webhookEmbedBuilder.setColor(Color.RED.getRGB());
@@ -473,8 +508,7 @@ public class Notifier {
                                                     .replace("%title%", item.getTitle().orElse("No Title"))
                                                     .replace("%description%", slimmedDescription)
                                                     .replace("%url%", item.getLink()
-                                                            .orElseGet(() -> "https://www.youtube.com/watch?v=" + item.getGuid()
-                                                                    .orElse("").replace("yt:video:", "")));
+                                                            .orElseGet(() -> item.getGuid().orElse("")));
 
                                             webhookEmbedBuilder.setDescription(message);
                                             webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
@@ -579,7 +613,7 @@ public class Notifier {
                             checkedIds.add(id);
                         }
                     });
-        }, Duration.ofMinutes(5), true, true);
+        }, Duration.ofMinutes(3), true, true);
     }
 
     //region Twitch
@@ -738,17 +772,6 @@ public class Notifier {
         if (getTwitterClient() == null) return;
 
         twitterUser = twitterUser.toLowerCase();
-
-        UserV2 user;
-
-        try {
-            user = getTwitterClient().getUserFromUserName(twitterUser);
-            if (user.getData() == null) return;
-            if (user.isProtectedAccount()) return;
-        } catch (Exception ignore) {
-            return;
-        }
-
 
         if (!isTwitterRegistered(twitterUser)) {
             registeredTwitterUsers.add(twitterUser);
