@@ -261,9 +261,9 @@ message:
     removed: "A TikTok Notifier has been removed from the User %s!"
     invalidUser: "We couldn't find the provided TikTok User!"
   rssNotifier:
-    added: "A RSS-Feed Notifier has been created for the URL %s!"
+    added: "A RSS-Feed Notifier has been created for the Url %s!"
     list: "Here are all RSS-Feed Notifier that have been setup:\n```%s```"
-    removed: "A RSS-Feed Notifier has been removed from the URL %s!"
+    removed: "A RSS-Feed Notifier has been removed from the Url %s!"
   anime:
     searching: "Vyhledávání anime..."
     found: "Anime nalezeno!"
