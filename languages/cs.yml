@@ -1,7 +1,6 @@
 language:
   name: "Czech"
   locale: "cs"
-  version: "3.0.6"
   author: "Pogy__"
 logging:
   banned: ":airplane_departure: %s **zablokován.**"
