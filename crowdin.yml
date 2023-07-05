@@ -15,4 +15,5 @@ files:
       - uk.yml
       - zh-CN.yml
       - ro.yml
+      - pt-BR.yml
     translation: /%original_path%/%locale%.yml
