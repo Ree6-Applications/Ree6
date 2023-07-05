@@ -3,6 +3,7 @@ package de.presti.ree6.utils.apis;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import com.apptasticsoftware.rssreader.Channel;
 import com.apptasticsoftware.rssreader.Image;
 import com.apptasticsoftware.rssreader.Item;
 import com.apptasticsoftware.rssreader.RssReader;
@@ -40,6 +41,7 @@ import de.presti.ree6.sql.entities.webhook.*;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.data.DatabaseStorageBackend;
 import de.presti.ree6.utils.others.ThreadUtil;
+import de.presti.wrapper.entities.VideoResult;
 import de.presti.wrapper.entities.channel.ChannelResult;
 import de.presti.wrapper.tiktok.TikTokWrapper;
 import de.presti.wrapper.tiktok.entities.TikTokUser;
@@ -61,9 +63,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.OffsetDateTime;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -228,7 +230,7 @@ public class Notifier {
             twitterClient = new TwitterClient(TwitterCredentials.builder()
                     .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
         } catch (Exception exception) {
-            log.error("Failed to create Twitter Client and deleting pre-set rules.", exception);
+            log.error("Failed to create Twitter Client.", exception);
         }
 
         log.info("Initializing Reddit Client...");
@@ -278,46 +280,7 @@ public class Notifier {
         log.info("Initializing Streams...");
 
         log.info("Creating YouTube Streams...");
-        ThreadUtil.createThread(x -> {
-            try {
-                for (String channel : registeredYouTubeChannels) {
-
-                    List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", channel));
-                    if (!channelStats.isEmpty()) {
-                        ChannelResult youTubeChannel;
-                        try {
-                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(channel);
-                        } catch (IOException e) {
-                            Sentry.captureException(e);
-                            continue;
-                        }
-
-                        for (ChannelStats channelStat : channelStats) {
-                            if (channelStat.getYoutubeSubscribersChannelId() != null) {
-                                GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getYoutubeSubscribersChannelId());
-
-                                if (guildChannel == null) continue;
-
-                                String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText());
-                                if (!guildChannel.getName().equalsIgnoreCase(newName)) {
-                                    if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
-                                        continue;
-
-                                    guildChannel.getManager().setName(newName).queue();
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Couldn't get user data!", e);
-                Sentry.captureException(e);
-            }
-        }, x -> {
-            log.error("Couldn't run YT Follower count checker!", x);
-            Sentry.captureException(x);
-        }, Duration.ofMinutes(5), true, true);
-
+        createYTStream();
 
         log.info("Creating Twitter Streams...");
         ThreadUtil.createThread(x -> {
@@ -330,6 +293,8 @@ public class Notifier {
                     } catch (NoSuchElementException e) {
                         continue;
                     }
+
+                    if (twitterUser.getData() == null) continue;
 
                     for (ChannelStats channelStat : channelStats) {
                         if (channelStat.getTwitterFollowerChannelUsername() != null) {
@@ -362,29 +327,38 @@ public class Notifier {
     public void createRssStream() {
         ThreadUtil.createThread(x -> {
 
-            Collection<String> urls = new ArrayList<>(registeredYouTubeChannels.stream().map(c -> "https://www.youtube.com/feeds/videos.xml?channel_id=" + c).toList());
+            Collection<String> urls = new ArrayList<>(registeredRSSFeeds);
 
-            urls.addAll(registeredTwitterUsers.stream().map(c -> "https://nitter.net/" + c + "/rss").toList());
+            /*
+             *  TODO:: Either switch to RSSHub, YouTubes RSS or stay on API based.
+             *  Issue with RSSHub is that it takes 2 hours to update, because of caching.
+             *  Issue with YouTube is that it takes over 30 minutes to update, because of idk random internal stuff.
+             */
 
-            urls.addAll(registeredRSSFeeds);
+            ////Collection<String> urls = new ArrayList<>(registeredYouTubeChannels.stream().map(c -> "https://rsshub.app/youtube/channel/" + c).toList());
+
+            // TODO:: Wait till Nitter has fixed their RSS Feeds. Or Twitter finally gets the stick out of their ass and stop limiting simple scraping.
+            ////urls.addAll(registeredTwitterUsers.stream().map(c -> "https://nitter.net/" + c + "/rss").toList());
+
+            ////urls.addAll(registeredRSSFeeds);
 
             List<String> checkedIds = new ArrayList<>();
 
             new RssReader()
                     .addItemExtension("media:description", Item::setDescription)
                     .addItemExtension("media:thumbnail", "url", (item, element) -> {
-                        com.apptasticsoftware.rssreader.Image image = item.getChannel().getImage().orElse(new com.apptasticsoftware.rssreader.Image());
+                        Image image = item.getChannel().getImage().orElse(new Image());
                         image.setUrl(element);
                         item.getChannel().setImage(image);
                     }).addItemExtension("media:thumbnail", "width", (item, element) -> {
-                        com.apptasticsoftware.rssreader.Image image = item.getChannel().getImage().orElse(new com.apptasticsoftware.rssreader.Image());
+                        Image image = item.getChannel().getImage().orElse(new Image());
                         image.setWidth(Integer.valueOf(element));
                         item.getChannel().setImage(image);
                     }).addItemExtension("media:thumbnail", "height", (item, element) -> {
-                        com.apptasticsoftware.rssreader.Image image = item.getChannel().getImage().orElse(new Image());
+                        Image image = item.getChannel().getImage().orElse(new Image());
                         image.setHeight(Integer.valueOf(element));
                         item.getChannel().setImage(image);
-                    })
+                    }).addChannelExtension("published", Channel::setPubDate)
                     .addItemExtension("dc:creator", Item::setAuthor)
                     .addItemExtension("dc:date", Item::setPubDate)
                     .addItemExtension("yt:channelId", Item::setAuthor)
@@ -394,6 +368,19 @@ public class Notifier {
                     .forEach(item -> {
                         if (item.getPubDate().isEmpty()) return;
 
+                        String typ = "other";
+
+                        if (item.getGuid().isPresent()) {
+                            String guid = item.getGuid().get();
+
+                            if (guid.contains("nitter")) {
+                                typ = "tw";
+                            } else {
+                                typ = "other";
+                            }
+                        }
+
+
                         OffsetDateTime dateTime = OffsetDateTime.parse(item.getPubDate().orElse(""), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
                         OffsetDateTime now = OffsetDateTime.now();
@@ -401,28 +388,11 @@ public class Notifier {
 
                         if (dateTime.isBefore(threeMinuteAgo)) return;
 
-                        String typ = "other";
-
-                        if (item.getGuid().isPresent()) {
-                            String guid = item.getGuid().get();
-
-                            if (guid.startsWith("yt")) {
-                                typ = "yt";
-                            } else if (guid.contains("nitter")) {
-                                typ = "tw";
-                            } else {
-                                typ = "other";
-                            }
-                        }
-
                         if (item.getChannel() != null) {
-
 
                             String id = "";
 
                             switch (typ) {
-                                case "yt" -> id = item.getAuthor().orElseGet(() -> item.getChannel().getTitle());
-
                                 case "tw" -> id = item.getChannel().getLink().replace("https://nitter.net/", "");
 
                                 case "other" -> id = item.getChannel().getLink();
@@ -433,60 +403,57 @@ public class Notifier {
                             }
 
 
-                            switch (typ) {
-                                case "yt" -> {
-                                    List<WebhookYouTube> webhooks = SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(id);
+                            if (typ.equals("tw")) {
+                                List<WebhookTwitter> webhooks = SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(item.getChannel().getLink().replace("https://nitter.net/", ""));
 
-                                    if (webhooks.isEmpty()) return;
+                                if (webhooks.isEmpty()) return;
 
-                                    try {
+                                WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
-                                        // Create Webhook Message.
-                                        WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+                                webhookMessageBuilder.setUsername(Data.getBotName());
+                                webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
 
-                                        webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
-                                        webhookMessageBuilder.setUsername(Data.getBotName());
+                                WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
-                                        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+                                item.getChannel().getImage().ifPresentOrElse(image ->
+                                                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(),
+                                                        URLDecoder.decode(image.getUrl().replace("nitter.net/pic/", ""), StandardCharsets.UTF_8), null)),
+                                        () -> webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(), null, null)));
 
-                                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getChannel().getTitle(), null));
-                                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("YouTube Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
 
-                                        item.getChannel().getImage().ifPresent(c -> webhookEmbedBuilder.setImageUrl(c.getUrl()));
+                                webhookEmbedBuilder.setDescription(item.getTitle() + "\n");
 
-                                        // Set rest of the Information.
-                                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", item.getTitle().orElse("No Title")));
-
-                                        String description = item.getDescription().orElse("No Description");
-
-                                        String slimmedDescription = description.substring(0, Math.min(16, description.length())) + (description.length() >= 16 ? "..." : "");
-
-                                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", slimmedDescription));
-
-                                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", TimeFormat.DATE_TIME_SHORT.format(dateTime.toEpochSecond())));
-
-                                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
-                                        webhookEmbedBuilder.setColor(Color.RED.getRGB());
-
-                                        webhooks.forEach(webhook -> {
-                                            String message = webhook.getMessage().replace("%name%", item.getChannel().getTitle())
-                                                    .replace("%title%", item.getTitle().orElse("No Title"))
-                                                    .replace("%description%", slimmedDescription)
-                                                    .replace("%url%", item.getLink()
-                                                            .orElseGet(() -> "https://www.youtube.com/watch?v=" + item.getGuid()
-                                                                    .orElse("").replace("yt:video:", "")));
-
-                                            webhookEmbedBuilder.setDescription(message);
-                                            webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-                                            WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
-                                        });
-                                    } catch (Exception exception) {
-                                        Sentry.captureException(exception);
+                                item.getDescription().ifPresent(description -> {
+                                    if (description.contains("<img src=")) {
+                                        String imageUrl = description.split("<img src=\"")[1].split("\"")[0];
+                                        webhookEmbedBuilder.setImageUrl(imageUrl);
                                     }
-                                }
+                                });
 
-                                case "tw" -> {
-                                    List<WebhookTwitter> webhooks = SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(item.getChannel().getLink().replace("https://nitter.net/", ""));
+                                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getChannel().getTitle(), null));
+                                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitter Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+
+                                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                                webhookEmbedBuilder.setTimestamp(Instant.now());
+                                webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
+
+                                webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+
+                                webhooks.forEach(webhook -> {
+                                    String message = webhook.getMessage()
+                                            .replace("%name%", item.getChannel().getTitle());
+
+                                    if (item.getLink().isPresent()) {
+                                        message = message.replace("%url%", item.getLink().get()
+                                                        .replace("nitter.net", "twitter.com"))
+                                                .replace("#m", "");
+                                    }
+                                    webhookMessageBuilder.setContent(message);
+                                    WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
+                                });
+                            } else {
+                                try {
+                                    List<RSSFeed> webhooks = SQLSession.getSqlConnector().getSqlWorker().getRSSWebhooksByUrl(id);
 
                                     if (webhooks.isEmpty()) return;
 
@@ -499,21 +466,18 @@ public class Notifier {
 
                                     item.getChannel().getImage().ifPresentOrElse(image ->
                                                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(),
-                                                            URLDecoder.decode(image.getUrl().replace("nitter.net/pic/", ""), StandardCharsets.UTF_8), null)),
+                                                            URLDecoder.decode(image.getUrl(), StandardCharsets.UTF_8), null)),
                                             () -> webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(), null, null)));
 
 
-                                    webhookEmbedBuilder.setDescription(item.getTitle() + "\n");
+                                    webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getTitle().orElse("No Title"), item.getLink().orElse("No Link")));
 
                                     item.getDescription().ifPresent(description -> {
-                                        if (description.contains("<img src=")) {
-                                            String imageUrl = description.split("<img src=\"")[1].split("\"")[0];
-                                            webhookEmbedBuilder.setImageUrl(imageUrl);
-                                        }
+                                        webhookEmbedBuilder.setDescription(description + "\n");
                                     });
 
                                     webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getChannel().getTitle(), null));
-                                    webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitter Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+                                    webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("RSS Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
 
                                     webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
                                     webhookEmbedBuilder.setTimestamp(Instant.now());
@@ -521,65 +485,16 @@ public class Notifier {
 
                                     webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                                    webhooks.forEach(webhook -> {
-                                        String message = webhook.getMessage()
-                                                .replace("%name%", item.getChannel().getTitle());
-
-                                        if (item.getLink().isPresent()) {
-                                            message = message.replace("%url%", item.getLink().get()
-                                                            .replace("nitter.net", "twitter.com"))
-                                                    .replace("#m", "");
-                                        }
-                                        webhookMessageBuilder.setContent(message);
-                                        WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
-                                    });
-                                }
-
-                                default -> {
-                                    try {
-                                        List<RSSFeed> webhooks = SQLSession.getSqlConnector().getSqlWorker().getRSSWebhooksByUrl(id);
-
-                                        if (webhooks.isEmpty()) return;
-
-                                        WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
-
-                                        webhookMessageBuilder.setUsername(Data.getBotName());
-                                        webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
-
-                                        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
-
-                                        item.getChannel().getImage().ifPresentOrElse(image ->
-                                                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(),
-                                                                URLDecoder.decode(image.getUrl(), StandardCharsets.UTF_8), null)),
-                                                () -> webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(), null, null)));
-
-
-                                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getTitle().orElse("No Title"), item.getLink().orElse("No Link")));
-
-                                        item.getDescription().ifPresent(description -> {
-                                            webhookEmbedBuilder.setDescription(description + "\n");
-                                        });
-
-                                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getChannel().getTitle(), null));
-                                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("RSS Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
-
-                                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
-                                        webhookEmbedBuilder.setTimestamp(Instant.now());
-                                        webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
-
-                                        webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-
-                                        webhooks.forEach(webhook -> WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook));
-                                    } catch (Exception exception) {
-                                        Sentry.captureException(exception);
-                                    }
+                                    webhooks.forEach(webhook -> WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook));
+                                } catch (Exception exception) {
+                                    Sentry.captureException(exception);
                                 }
                             }
 
                             checkedIds.add(id);
                         }
                     });
-        }, Duration.ofMinutes(5), true, true);
+        }, Duration.ofMinutes(3), true, true);
     }
 
     //region Twitch
@@ -739,17 +654,6 @@ public class Notifier {
 
         twitterUser = twitterUser.toLowerCase();
 
-        UserV2 user;
-
-        try {
-            user = getTwitterClient().getUserFromUserName(twitterUser);
-            if (user.getData() == null) return;
-            if (user.isProtectedAccount()) return;
-        } catch (Exception ignore) {
-            return;
-        }
-
-
         if (!isTwitterRegistered(twitterUser)) {
             registeredTwitterUsers.add(twitterUser);
         }
@@ -787,6 +691,97 @@ public class Notifier {
     //endregion
 
     //region YouTube
+
+    /**
+     * Create an API Stream used to update ChannelStats and Notifier of YT.
+     */
+    public void createYTStream() {
+        ThreadUtil.createThread(x -> {
+            try {
+                for (String channel : registeredYouTubeChannels) {
+                    List<WebhookYouTube> webhooks = SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel);
+
+                    if (webhooks.isEmpty()) return;
+
+                    List<VideoResult> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
+                    if (!playlistItemList.isEmpty()) {
+                        for (VideoResult playlistItem : playlistItemList) {
+                            if (playlistItem.getUploadDate() != -1 && playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()
+                                    && !playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis()))) {
+                                // Create Webhook Message.
+                                WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+
+                                webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+                                webhookMessageBuilder.setUsername(Data.getBotName());
+
+                                WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(playlistItem.getOwnerName(), null));
+                                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("YouTube Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+
+                                webhookEmbedBuilder.setImageUrl(playlistItem.getThumbnail());
+
+                                // Set rest of the Information.
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", playlistItem.getTitle()));
+                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet()));
+
+                                if (playlistItem.getUploadDate() != -1)
+                                    webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", TimeFormat.DATE_TIME_SHORT.format(playlistItem.getUploadDate())));
+
+                                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                                webhookEmbedBuilder.setColor(Color.RED.getRGB());
+
+                                webhooks.forEach(webhook -> {
+                                    String message = webhook.getMessage().replace("%name%", playlistItem.getOwnerName())
+                                            .replace("%title%", playlistItem.getTitle())
+                                            .replace("%description%", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet())
+                                            .replace("%url%", "https://www.youtube.com/watch?v=" + playlistItem.getId());
+
+                                    webhookEmbedBuilder.setDescription(message);
+                                    webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+                                    WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
+                                });
+                            }
+                        }
+                    }
+
+                    List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", channel));
+
+                    if (!channelStats.isEmpty()) {
+                        ChannelResult youTubeChannel;
+                        try {
+                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(channel);
+                        } catch (IOException e) {
+                            Sentry.captureException(e);
+                            continue;
+                        }
+
+                        for (ChannelStats channelStat : channelStats) {
+                            if (channelStat.getYoutubeSubscribersChannelId() != null) {
+                                GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getYoutubeSubscribersChannelId());
+
+                                if (guildChannel == null) continue;
+
+                                String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText());
+                                if (!guildChannel.getName().equalsIgnoreCase(newName)) {
+                                    if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                                        continue;
+
+                                    guildChannel.getManager().setName(newName).queue();
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Couldn't get user data!", e);
+                Sentry.captureException(e);
+            }
+        }, x -> {
+            log.error("Couldn't run YT checker!", x);
+            Sentry.captureException(x);
+        }, Duration.ofSeconds(30), true, true);
+    }
 
     /**
      * Used to register an Upload Event for the given YouTube Channel.
