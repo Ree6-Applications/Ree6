@@ -74,7 +74,7 @@ public class SpotifyAPIHandler {
      * @throws IOException            if there was a network error.
      */
     public void initSpotify() throws ParseException, SpotifyWebApiException, IOException {
-        if (!isSpotifyConnected) return;
+        if (isSpotifyConnected) return;
 
         this.spotifyApi = new SpotifyApi.Builder().setClientId(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.id")).setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.secret")).build();
 
@@ -82,6 +82,7 @@ public class SpotifyAPIHandler {
             ClientCredentialsRequest.Builder request = new ClientCredentialsRequest.Builder(spotifyApi.getClientId(), spotifyApi.getClientSecret());
             ClientCredentials credentials = request.grant_type("client_credentials").build().execute();
             spotifyApi.setAccessToken(credentials.getAccessToken());
+            isSpotifyConnected = true;
         } catch (Exception exception) {
             if (exception.getMessage().equalsIgnoreCase("Invalid client")) {
                 log.warn("Spotify Credentials are invalid, you can ignore this if you don't use Spotify.");
