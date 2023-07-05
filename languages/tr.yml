@@ -1,7 +1,6 @@
 language:
   name: "Turkish"
   locale: "tr"
-  version: "3.0.6"
   author: "ImNotArian"
 logging:
   banned: ":airplane_departure: %s **Yasaklandı.**"
