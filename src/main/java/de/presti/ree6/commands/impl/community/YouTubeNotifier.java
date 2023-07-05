@@ -46,7 +46,8 @@ public class YouTubeNotifier implements ICommand {
         }
 
         String command = commandEvent.getSubcommand();
-        OptionMapping nameMapping = commandEvent.getOption("url");
+        OptionMapping urlMapping = commandEvent.getOption("url");
+        OptionMapping nameMapping = commandEvent.getOption("name");
         OptionMapping channelMapping = commandEvent.getOption("channel");
         OptionMapping messageMapping = commandEvent.getOption("message");
 
@@ -55,13 +56,29 @@ public class YouTubeNotifier implements ICommand {
                 StringBuilder end = new StringBuilder();
 
                 for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels(commandEvent.getGuild().getId())) {
-                    end.append(users).append("\n");
+
+                    ChannelResult channelResult = null;
+
+                    try {
+                        channelResult = YouTubeAPIHandler.getInstance().isValidChannelId(users) ?
+                                YouTubeAPIHandler.getInstance().getYouTubeChannelById(users) :
+                                YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(users);
+                    } catch (Exception ignore) {
+                    }
+
+                    end.append(users);
+
+                    if (channelResult != null) {
+                        end.append(" ").append("-").append(" ").append(channelResult.getTitle());
+                    }
+
+                    end.append("\n");
                 }
 
                 commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.list", end.toString()), 10);
             }
             case "add" -> {
-                if (nameMapping == null || channelMapping == null) {
+                if (urlMapping == null || channelMapping == null) {
                     commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));
                     return;
                 }
@@ -71,7 +88,7 @@ public class YouTubeNotifier implements ICommand {
                     return;
                 }
 
-                String name = nameMapping.getAsString();
+                String name = urlMapping.getAsString();
 
                 name = name.replace("https://www.youtube.com/", "")
                         .replace("channel/", "")
@@ -118,11 +135,30 @@ public class YouTubeNotifier implements ICommand {
                 }
 
                 String name = nameMapping.getAsString();
-                SQLSession.getSqlConnector().getSqlWorker().removeYouTubeWebhook(commandEvent.getGuild().getId(), name);
+
+                name = name.replace("https://www.youtube.com/", "")
+                        .replace("channel/", "")
+                        .replace("user/", "")
+                        .replace("c/", "")
+                        .replace("@", "");
+
+                ChannelResult channelResult;
+                try {
+                    channelResult = YouTubeAPIHandler.getInstance().isValidChannelId(name) ?
+                            YouTubeAPIHandler.getInstance().getYouTubeChannelById(name) :
+                            YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(name);
+                } catch (Exception e) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery", name), 5);
+                    return;
+                }
+
+                name = channelResult.getTitle();
+
+                SQLSession.getSqlConnector().getSqlWorker().removeYouTubeWebhook(commandEvent.getGuild().getId(), channelResult.getId());
                 commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.removed", name), 5);
 
-                if (Main.getInstance().getNotifier().isYouTubeRegistered(name)) {
-                    Main.getInstance().getNotifier().unregisterYouTubeChannel(name);
+                if (Main.getInstance().getNotifier().isYouTubeRegistered(channelResult.getId())) {
+                    Main.getInstance().getNotifier().unregisterYouTubeChannel(channelResult.getId());
                 }
             }
 
@@ -142,7 +178,7 @@ public class YouTubeNotifier implements ICommand {
                         .addOption(OptionType.CHANNEL, "channel", "The channel.", true)
                         .addOption(OptionType.STRING, "message", "Custom announcement message.", false))
                 .addSubcommands(new SubcommandData("remove", "Remove a YouTube Notifier for a specific channel.")
-                        .addOption(OptionType.STRING, "name", "The YouTube channel name of the Notifier.", true));
+                        .addOption(OptionType.STRING, "name", "The YouTube channel name or id of the Notifier.", true));
     }
 
     /**

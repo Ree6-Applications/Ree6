@@ -707,7 +707,7 @@ public class Notifier {
                     if (!playlistItemList.isEmpty()) {
                         for (VideoResult playlistItem : playlistItemList) {
                             if (playlistItem.getUploadDate() != -1 && playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()
-                                    && !playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(1).toMillis()))) {
+                                    && !playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis()))) {
                                 // Create Webhook Message.
                                 WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
@@ -780,7 +780,7 @@ public class Notifier {
         }, x -> {
             log.error("Couldn't run YT checker!", x);
             Sentry.captureException(x);
-        }, Duration.ofMinutes(5), true, true);
+        }, Duration.ofSeconds(30), true, true);
     }
 
     /**
