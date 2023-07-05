@@ -41,7 +41,7 @@ public class InstagramNotifier implements ICommand {
             return;
         }
 
-        // Ignore this, because the Compiler would otherwise scream: "OMG YOU CAN NOT INITIALIZE THE VARIABLE BELOW BECAUSE YOU CAN REACH IT!!!!"
+        // Ignore this, because the Compiler would otherwise scream: "OMG YOU CAN NOT INITIALIZE THE VARIABLE BELOW BECAUSE YOU CANT REACH IT!!!!"
         if (true) {
             commandEvent.reply("This feature is currently broken. Please wait for a fix.", 10);
             return;
