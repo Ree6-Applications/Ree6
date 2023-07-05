@@ -1,7 +1,6 @@
 language:
   name: "Bulgarian"
   locale: "bg"
-  version: "3.0.0"
   author: "D3Y4N"
 logging:
   banned: ":airplane_departure: %s **блокиран.**"
@@ -204,6 +203,7 @@ message:
       channel: "Моля, посочете канал!"
     onlyNSFW: "Тази команда може да бъде използвана само в NSFW каналите!"
     invalidQuery: "Моля, посочете валидна заявка!"
+    invalidUrl: "Моля подайте валиден URL!"
     checkBelow: "Проверете по-долу!"
     retrievalError: "Имаше грешка при извличането на данните!"
     notInVoiceChannel: "Не сте в гласов канал!"
@@ -254,6 +254,15 @@ message:
     added: "Youtube-Video нотификатор бе създаден за канала %s!"
     list: "Това са всичките YouTube нотификатори, които са били настроени:\n```%s```"
     removed: "Youtube-Video нотификатор бе премахнат от канала %s!"
+  tiktokNotifier:
+    added: "TikTok нотификатор бе създаден за потребителя %s."
+    list: "Това са всички TikTok нотификатори, които са били настроени:\n```%s```"
+    removed: "TikTok нотификатор бе премахнат от потребителя %s."
+    invalidUser: "Не можахме да открием предоставвения TikTok потребител."
+  rssNotifier:
+    added: "RSS-Feed нотификатор бе създаден за следния URL %s."
+    list: "Това са всички RSS-Feed нотификатори, които са били настроени:\n```%s```"
+    removed: "RSS-Feed нотификатор бе премахнат от URL %s."
   anime:
     searching: "Търсене на аниме..."
     found: "Беше открито аниме!"
@@ -586,6 +595,8 @@ command:
     twitch: "Управление на вашия Twitch нотификатор!"
     twitterNotifier: "Управление на вашия Twitter нотификатор!"
     youtubeNotifier: "Управлеине на вашия YouTube нотификатор!"
+    tiktokNotifier: "Управлявайте своя TikTok нотификатор!"
+    rssNotifier: "Управлявайте своя RSS-Feed нотификатор!"
     anime: "Търси анимета в kitsu.io!"
     randomcat: "Показва случайни изображения на котки от thecatapi.com."
     cringe: "Нека Шрек им каже, че посланието им е cringe!"

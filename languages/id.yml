@@ -1,7 +1,6 @@
 language:
   name: "Indonesia"
   locale: "id"
-  version: "3.0.0"
   author: "Gorengan_Hunter, SpyCat"
 logging:
   banned: ":airplane_departure: %s **telah diban.**"
@@ -204,6 +203,7 @@ message:
       channel: "Harap mention channel!"
     onlyNSFW: "Command ini hanya bisa digunakan di Channel NSFW!"
     invalidQuery: "Harap berikan query yang valid!"
+    invalidUrl: "Tolong beri URL yang benar!"
     checkBelow: "Periksa dibawah!"
     retrievalError: "Terjadi kesalahan saat mengambil data!"
     notInVoiceChannel: "Anda tidak ada di Voice-Channel!"
@@ -254,6 +254,15 @@ message:
     added: "Pemberitahuan Video Youtube telah dibuat untuk Channel %s!"
     list: "Dibawah ini daftar Notifier Youtube yang telah disetup:\n```%s```"
     removed: "Pemberitahuan Video Youtube untuk Channel %s telah dihapus!"
+  tiktokNotifier:
+    added: "Notifier TikTok telah dibuat untuk %s!"
+    list: "Ini adalah semua Notifier TikTok yang telah disetup:\n```%s```"
+    removed: "Notifier TikTok telah dihapus dari %s!"
+    invalidUser: "Kita tidak bisa menemukan User TikTok yang telah diberi!"
+  rssNotifier:
+    added: "Notifier RSS-Feed telah dibuat untuk URL %s!"
+    list: "Ini adalah semua Notifier RSS-Feed yang telah disetup:\n```%s```"
+    removed: "Notifier RSS-Feed telah dihapus dari URL %s!"
   anime:
     searching: "Mencari Anime..."
     found: "Anime ditemukan!"
@@ -586,6 +595,8 @@ command:
     twitch: "Atur Twitch-Notifier mu!"
     twitterNotifier: "Atur Twitter-Notifier mu!"
     youtubeNotifier: "Atur Youtube-Notifier mu!"
+    tiktokNotifier: "Atur Notifier TikTok mu!"
+    rssNotifier: "Atur Notifier RSS-Feed mu!"
     anime: "Cari Anime di kitsu.io!"
     randomcat: "Munculkan gambar kucing random dari thecatapi.com."
     cringe: "Biarkan shrek kasi tahu kalau pesan mereka cringe!"

@@ -1,7 +1,6 @@
 language:
   name: "German"
   locale: "de"
-  version: "3.0.0"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **gebannt.**"
@@ -204,6 +203,7 @@ message:
       channel: "Bitte erwähne einen Channel!"
     onlyNSFW: "Dieser Befehl kann nur in NSFW channels genutzt werden!"
     invalidQuery: "Bitte übergib einen richtigen Query!"
+    invalidUrl: "Bitte gebe einen richtigen Link an!"
     checkBelow: "Schau unter der Nachricht nach!"
     retrievalError: "Es gab einen Fehler bei daten beziehen!"
     notInVoiceChannel: "Du bist in keinem Voice-Channel!"
@@ -254,6 +254,15 @@ message:
     added: "Ein YouTube Notifier wurde für %s erstellt!"
     list: "Hier ist eine Liste mit allen YouTube Notifier:\n```%s```"
     removed: "Ein YouTube Notifier für %s wurde entfernt!"
+  tiktokNotifier:
+    added: "Ein TikTok Notifier wurde für den Nutzer %s erstellt!"
+    list: "Hier ist eine List mit allen TikTok Notifier:\n```%s```"
+    removed: "Ein TikTok Notifier vom Nutzer %s wurde entfernt!"
+    invalidUser: "Wir konnten den angegebenen Nutzer nicht finden!"
+  rssNotifier:
+    added: "Ein RSS-Feed Notifier wurde für die URL %s erstellt!"
+    list: "Hier ist eine List mit allen RSS Notifier:\n```%s```"
+    removed: "Ein RSS Notifier mit der URL %s wurde entfernt!"
   anime:
     searching: "Suche nach den Anime..."
     found: "Anime gefunden!"
@@ -586,6 +595,8 @@ command:
     twitch: "Manage dein Twitch-Notifier!"
     twitterNotifier: "Manage dein Twitter-Notifier!"
     youtubeNotifier: "Manage dein YouTube-Notifier!"
+    tiktokNotifier: "Manage dein TikTok-Notifier!"
+    rssNotifier: "Manage dein RSS-Notifier!"
     anime: "Suche nach Animes auf kitsu.io!"
     randomcat: "Zeigt zufällige Katzenbilder, von thecatapi.com."
     cringe: "Lass Shrek ihnen sagen das ihre Nachricht purer Fremdscharm war!"

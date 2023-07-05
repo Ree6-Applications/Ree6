@@ -1,7 +1,6 @@
 language:
   name: "Polish"
   locale: "pl"
-  version: "3.0.0"
   author: "Trust"
 logging:
   banned: ":airplane_departure: %s **zbanowany/a.**"
@@ -204,6 +203,7 @@ message:
       channel: "Proszę wymienić kanał!"
     onlyNSFW: "Ta komenda może być używana tylko w kanałach NSFW!"
     invalidQuery: "Proszę podać poprawne pytanie!"
+    invalidUrl: "Proszę podać poprawny adres URL!"
     checkBelow: "Sprawdź poniżej!"
     retrievalError: "Wystąpił błąd podczas pobierania danych!"
     notInVoiceChannel: "Nie jesteś na kanale głosowym!"
@@ -254,6 +254,15 @@ message:
     added: "Powiadomienie o wideo na YouTube'ie zostało utworzone dla kanału %s!"
     list: "Tutaj są wszystkie powiadomienia o YouTubie, które zostały skonfigurowane:\n```%s```"
     removed: "Powiadomienie o wideo na YouTube'ie zostało usunięte dla kanału %s!"
+  tiktokNotifier:
+    added: "Powiadomienie o TikTokie zostało utworzone dla użytkownika %s!"
+    list: "Tutaj są wszystkie powiadomienia o TikTokie, które zostały skonfigurowane:\n```%s```"
+    removed: "Powiadomienie o TikTokie zostało usunięte dla użytkownika %s!"
+    invalidUser: "Nie udało się znaleźć podanego użytkownika TikTok!"
+  rssNotifier:
+    added: "Powiadomienie RSS zostało utworzone dla adresu URL %s!"
+    list: "Tutaj są wszystkie powiadomienia RSS, które zostały skonfigurowane:\n```%s```"
+    removed: "Powiadomienie RSS zostało usunięto dla adresu URL %s!"
   anime:
     searching: "Wyszukiwanie Anime..."
     found: "Znaleziono anime!"
@@ -586,6 +595,8 @@ command:
     twitch: "Zarządzaj swoimi powiadomieniami Twitch!"
     twitterNotifier: "Zarządzaj swoimi powiadomieniami Twitter!"
     youtubeNotifier: "Zarządzaj swoimi powiadomieniami YouTube!"
+    tiktokNotifier: "Zarządzaj swoimi powiadomieniami z TikToka!"
+    rssNotifier: "Zarządzaj swoimi powiadomieniami RSS!"
     anime: "Szukaj Anime na kitsu.io!"
     randomcat: "Pokazuje losowe obrazy kota z thecatapi.com."
     cringe: "Niech Shrek powie, że ich wiadomość nie jest śmieszna!"
