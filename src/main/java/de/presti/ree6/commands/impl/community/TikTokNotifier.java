@@ -27,11 +27,6 @@ import java.util.regex.Pattern;
 public class TikTokNotifier implements ICommand {
 
     /**
-     * The Pattern for TikTok Links.
-     */
-    private static final Pattern pattern = Pattern.compile(RegExUtil.TIKTOK_REGEX);
-
-    /**
      * @inheritDoc
      */
     @Override
@@ -61,7 +56,12 @@ public class TikTokNotifier implements ICommand {
                 StringBuilder end = new StringBuilder();
 
                 for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames(commandEvent.getGuild().getId())) {
-                    end.append(users).append("\n");
+                    end.append(users);
+                    try {
+                        TikTokUser tikTokUser = TikTokWrapper.getUser(Long.parseLong(users), false);
+                        end.append(" ").append("-").append(" ").append(tikTokUser.getName());
+                    } catch (Exception ignore) {}
+                    end.append("\n");
                 }
 
                 commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.list", end.toString()), 10);
@@ -79,9 +79,8 @@ public class TikTokNotifier implements ICommand {
 
                 String name = nameMapping.getAsString();
 
-                if (!pattern.matcher(name).matches()) {
-                    commandEvent.reply(commandEvent.getResource("message.default.invalidUrl"), 5);
-                    return;
+                if (name.startsWith("@")) {
+                    name = name.substring(1);
                 }
 
                 try {
