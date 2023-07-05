@@ -103,12 +103,12 @@
         <dependency>
             <groupId>me.presti</groupId>
             <artifactId>YoutubeWrapper</artifactId>
-            <version>2113bac716</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>me.presti</groupId>
             <artifactId>TikTokWrapper</artifactId>
-            <version>760259545d</version>
+            <version>1.0</version>
         </dependency>
 
         <!-- Music -->
@@ -157,7 +157,7 @@
         <dependency>
             <groupId>de.ree6</groupId>
             <artifactId>Ree6-SQL</artifactId>
-            <version>976e689f88</version>
+            <version>2.0.5</version>
         </dependency>
 
         <!-- Logging -->

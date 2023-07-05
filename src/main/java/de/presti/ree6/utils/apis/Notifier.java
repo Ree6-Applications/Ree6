@@ -63,14 +63,13 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 // TODO:: translate
 // TODO:: fix the Twitter Stream handler, wait for responses via https://github.com/redouane59/twittered/issues/447
@@ -324,6 +323,9 @@ public class Notifier {
         createTikTokStream();
     }
 
+    /**
+     * Creates an RSS Stream.
+     */
     public void createRssStream() {
         ThreadUtil.createThread(x -> {
 
@@ -741,6 +743,8 @@ public class Notifier {
                                     webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
                                     WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
                                 });
+
+                                break;
                             }
                         }
                     }
@@ -780,7 +784,7 @@ public class Notifier {
         }, x -> {
             log.error("Couldn't run YT checker!", x);
             Sentry.captureException(x);
-        }, Duration.ofSeconds(30), true, true);
+        }, Duration.ofMinutes(5), true, true);
     }
 
     /**
@@ -902,10 +906,10 @@ public class Notifier {
 
                         webhooks.forEach(webhook -> {
                             String message = webhook.getMessage()
-                                    .replace("%title%", redditPost.getTitle()
+                                    .replace("%title%", redditPost.getTitle())
                                             .replace("%author%", redditPost.getAuthor())
                                             .replace("%name%", redditPost.getSubreddit())
-                                            .replace("%url%", redditPost.getUrl()));
+                                            .replace("%url%", redditPost.getUrl());
                             webhookMessageBuilder.setContent(message);
                             WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
                         });
@@ -1142,7 +1146,11 @@ public class Notifier {
                         return;
                     }
 
+                    AtomicInteger limit = new AtomicInteger();
+
                     user.getPosts().forEach(post -> {
+                        if (limit.get() > 3) return;
+
                         if (post.getCreationTime() > (Duration.ofMillis(System.currentTimeMillis()).toSeconds() - Duration.ofMinutes(5).toSeconds())) {
                             WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
@@ -1170,14 +1178,15 @@ public class Notifier {
 
                             webhooks.forEach(webhook -> {
                                 String message = webhook.getMessage()
-                                        .replace("%description%", post.getDescription()
+                                        .replace("%description%", post.getDescription())
                                                 .replace("%author%", user.getName())
                                                 .replace("%name%", user.getDisplayName())
-                                                .replace("%url%", "https://tiktok.com/share/video/" + post.getId()));
+                                                .replace("%url%", "https://tiktok.com/share/video/" + post.getId());
                                 webhookMessageBuilder.setContent(message);
                                 WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
                             });
                         }
+                        limit.incrementAndGet();
                     });
                 } catch (IOException e) {
                     Sentry.captureException(e);
@@ -1192,8 +1201,6 @@ public class Notifier {
      * @param id the ID of the TikTok User.
      */
     public void registerTikTokUser(long id) {
-        if (getRedditClient() == null) return;
-
         if (!isTikTokUserRegistered(id)) registeredTikTokUsers.add(id);
     }
 
@@ -1203,8 +1210,6 @@ public class Notifier {
      * @param users the ID of the TikTok Users.
      */
     public void registerTikTokUser(List<Long> users) {
-        if (getRedditClient() == null) return;
-
         users.forEach(s -> {
             if (!isTikTokUserRegistered(s)) registeredTikTokUsers.add(s);
         });
