@@ -1,0 +1,30 @@
+name: Documentation Request
+description: Request a documentation.
+title: "[DOCS]: "
+labels: ["documentation"]
+assignees:
+  - DxsSucuk
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this documentation report!
+  - type: textarea
+    id: what-object
+    attributes:
+      label: What should be documented?
+      description: What part of the code should be documented or improved on?
+      placeholder: CommandManager -> OnPerform
+      value: "CommandManager -> OnPerform"
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: What version of our software are you running?
+      options:
+        - v2 (STS)
+        - v3 (Current)
+    validations:
+      required: true
