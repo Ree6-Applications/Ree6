@@ -13,7 +13,7 @@ body:
     id: what-object
     attributes:
       label: What should be documented?
-      description: What part of the code should be documented or improved on?
+      description: What part of the code should be documented or improve on?
       placeholder: CommandManager -> OnPerform
       value: "CommandManager -> OnPerform"
     validations:
