@@ -118,5 +118,13 @@ public class Data {
     public static String getWebinterface() {
         return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.webinterface", "https://cp.ree6.de");
     }
+
+    /**
+     * Get the configured default prefix.
+     * @return the default prefix from the config.
+     */
+    public static String getDefaultPrefix() {
+        return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.defaultPrefix", "ree!");
+    }
 }
 
