@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl.fun;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
@@ -24,12 +25,13 @@ public class Waifu implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        JsonObject jsonObject = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.dagpi.xyz/data/waifu")
-                .bearerAuth(Main.getInstance().getConfig().getConfiguration().getString("dagpi.apitoken")).build()).getAsJsonObject();
+        JsonObject jsonObject = RequestUtility.requestJson(RequestUtility.Request.builder()
+                .url("https://api.jikan.moe/v4/random/characters")
+                .build()).getAsJsonObject();
 
         EmbedBuilder em = new EmbedBuilder();
 
-        if (!jsonObject.has("series")) {
+        if (!jsonObject.has("data")) {
             em.setTitle(commandEvent.getResource("label.error"));
             em.setColor(Color.RED);
             em.setDescription(commandEvent.getResource("message.default.retrievalError"));
@@ -38,21 +40,57 @@ public class Waifu implements ICommand {
             return;
         }
 
-        JsonObject jsonObject1 = jsonObject.get("series").getAsJsonObject();
+        JsonObject dataObject = jsonObject.get("data").getAsJsonObject();
 
-        em.setImage((jsonObject.has("display_picture") ? jsonObject.get("display_picture").getAsString() : "https://images.ree6.de/notfound.png"));
-        
-        em.addField("**" + commandEvent.getResource("label.character") + "**", "``" + (jsonObject.has("name")
-                ? jsonObject.get("name").getAsString()
-                : commandEvent.getResource("message.default.retrievalError")) + "``", true);
+        String imgUrl = "https://images.ree6.de/notfound.png";
 
-        em.addField("**"  + commandEvent.getResource("label.from") + "**", "``" + (jsonObject1.has("name")
-                ? jsonObject1.get("name").getAsString()
-                : commandEvent.getResource("message.default.retrievalError")) + "``", true);
-
-        if(jsonObject.has("nsfw") && jsonObject.get("nsfw").getAsBoolean()) {
-            em.addField("**" + commandEvent.getResource("label.nsfw") + "**", "", true);
+        if (dataObject.has("images")) {
+            JsonObject imagesObject = dataObject.get("images").getAsJsonObject();
+            if (imagesObject.has("jpg")) {
+                imgUrl = imagesObject.getAsJsonObject("jpg").getAsJsonPrimitive("image_url").getAsString();
+            }
         }
+
+        em.setImage(imgUrl);
+
+        em.addField("**" + commandEvent.getResource("label.character") + "**", "``" + (dataObject.has("name")
+                ? dataObject.getAsJsonPrimitive("name").getAsString()
+                : commandEvent.getResource("message.default.retrievalError")) + "``", true);
+
+        JsonObject fullObject = RequestUtility.requestJson(RequestUtility.Request.builder()
+                .url("https://api.jikan.moe/v4/characters/" + dataObject.getAsJsonPrimitive("mal_id").getAsString() + "/full")
+                .build()).getAsJsonObject();
+
+        String from = "";
+
+        if (fullObject.has("anime")) {
+            JsonArray animeArray = fullObject.getAsJsonArray("anime");
+            if (!animeArray.isEmpty()) {
+                JsonObject animeObject = animeArray.get(0).getAsJsonObject().getAsJsonObject("anime");
+                if (animeObject.has("title")) {
+                    from = animeObject.getAsJsonPrimitive("title").getAsString();
+                }
+            }
+        }
+
+        if (from.isBlank()) {
+            if (fullObject.has("manga")) {
+                JsonArray mangaArray = fullObject.getAsJsonArray("manga");
+                if (!mangaArray.isEmpty()) {
+                    JsonObject mangaObject = mangaArray.get(0).getAsJsonObject().getAsJsonObject("manga");
+                    if (mangaObject.has("title")) {
+                        from = mangaObject.getAsJsonPrimitive("title").getAsString();
+                    }
+                }
+            }
+        }
+
+        if (from.isBlank()) {
+            from = commandEvent.getResource("message.default.retrievalError");
+        }
+
+        em.addField("**" + commandEvent.getResource("label.from") + "**", "``" + from + "``", true);
+
         em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + Data.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
 
         commandEvent.reply(em.build());
