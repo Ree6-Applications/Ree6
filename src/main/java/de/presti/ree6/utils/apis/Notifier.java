@@ -762,6 +762,8 @@ public class Notifier {
                             continue;
                         }
 
+                        if (youTubeChannel == null) continue;
+
                         for (ChannelStats channelStat : channelStats) {
                             if (channelStat.getYoutubeSubscribersChannelId() != null) {
                                 GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getYoutubeSubscribersChannelId());
