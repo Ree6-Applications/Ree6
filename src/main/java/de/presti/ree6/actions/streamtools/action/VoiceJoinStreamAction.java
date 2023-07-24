@@ -21,7 +21,7 @@ public class VoiceJoinStreamAction implements IStreamAction {
      */
     @Override
     public boolean runAction(@NotNull StreamActionEvent event) {
-        if (event.getArguments() == null || event.getArguments().length == 0) {
+        if (event.getArguments() == null || event.getArguments().length < 1) {
             return false;
         }
 
@@ -32,7 +32,7 @@ public class VoiceJoinStreamAction implements IStreamAction {
             if (Main.getInstance().getMusicWorker().isConnectedMember(event.getGuild().getSelfMember())) {
                 if (event.getGuild().getSelfMember().getVoiceState().getChannel().getIdLong() == voiceChannel.getIdLong())
                     return true;
-                event.getGuild().moveVoiceMember(event.getGuild().getSelfMember(), voiceChannel).queue();
+                event.getGuild().moveVoiceMember(event.getGuild().getSelfMember(), voiceChannel).complete();
             } else {
                 Main.getInstance().getMusicWorker().connectToAudioChannel(event.getGuild().getAudioManager(), voiceChannel);
             }
