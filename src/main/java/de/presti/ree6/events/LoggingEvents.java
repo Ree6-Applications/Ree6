@@ -74,7 +74,7 @@ public class LoggingEvents extends ListenerAdapter {
         if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER)) return;
 
         Invite invite = event.getOldVanityCode() != null ?
-                SQLSession.getSqlConnector().getSqlWorker().getEntity(new Invite(), "SELECT * FROM Invites WHERE GID = :gid AND CODE = :code",
+                SQLSession.getSqlConnector().getSqlWorker().getEntity(new Invite(), "FROM Invite WHERE guild = :gid AND code = :code",
                         Map.of("gid", event.getGuild().getId(), "code", event.getOldVanityCode()))
                 : null;
 

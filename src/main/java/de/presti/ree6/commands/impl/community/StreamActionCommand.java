@@ -64,7 +64,7 @@ public class StreamActionCommand implements ICommand {
         switch (subCommandGroup) {
             case "manage" -> {
                 StreamAction streamAction = SQLSession.getSqlConnector().getSqlWorker()
-                        .getEntity(new StreamAction(), "SELECT * FROM StreamActions WHERE actionName = :name AND guildId = :gid",
+                        .getEntity(new StreamAction(), "FROM StreamAction WHERE actionName = :name AND guildId = :gid",
                                 Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong()));
 
                 if (streamAction != null) {
@@ -164,12 +164,12 @@ public class StreamActionCommand implements ICommand {
                 switch (subCommand) {
                     case "create" -> {
                         StreamAction streamAction = SQLSession.getSqlConnector().getSqlWorker()
-                                .getEntity(new StreamAction(), "SELECT * FROM StreamActions WHERE actionName = :name AND guildId = :gid",
+                                .getEntity(new StreamAction(), "FROM StreamAction WHERE actionName = :name AND guildId = :gid",
                                         Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong()));
 
                         if (streamAction == null) {
                             TwitchIntegration twitchIntegration = SQLSession.getSqlConnector().getSqlWorker()
-                                    .getEntity(new TwitchIntegration(),"SELECT * FROM TwitchIntegration WHERE user_id = :uid", Map.of("uid", commandEvent.getUser().getIdLong()));
+                                    .getEntity(new TwitchIntegration(),"FROM TwitchIntegration WHERE userId = :uid", Map.of("uid", commandEvent.getUser().getIdLong()));
                             if (twitchIntegration != null) {
                                 streamAction = new StreamAction();
                                 streamAction.setIntegration(twitchIntegration);
@@ -188,7 +188,7 @@ public class StreamActionCommand implements ICommand {
 
                     case "delete" -> {
                         StreamAction streamAction = SQLSession.getSqlConnector().getSqlWorker()
-                                .getEntity(new StreamAction(), "SELECT * FROM StreamActions WHERE actionName = :name AND guildId = :gid",
+                                .getEntity(new StreamAction(), "FROM StreamAction WHERE actionName = :name AND guildId = :gid",
                                         Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong()));
                         if (streamAction != null) {
                             SQLSession.getSqlConnector().getSqlWorker().deleteEntity(streamAction);
@@ -200,7 +200,7 @@ public class StreamActionCommand implements ICommand {
 
                     case "list" -> {
                         List<StreamAction> streamActions = SQLSession.getSqlConnector().getSqlWorker()
-                                .getEntityList(new StreamAction(), "SELECT * FROM StreamActions WHERE guildId = :gid",
+                                .getEntityList(new StreamAction(), "FROM StreamAction WHERE guildId = :gid",
                                         Map.of("gid", commandEvent.getGuild().getIdLong()));
 
                         commandEvent.reply(LanguageService.getByEvent(commandEvent, "message.stream-action.list",
@@ -209,7 +209,7 @@ public class StreamActionCommand implements ICommand {
 
                     case "points" -> {
                         TwitchIntegration twitchIntegration = SQLSession.getSqlConnector().getSqlWorker()
-                                .getEntity(new TwitchIntegration(), "SELECT * FROM TwitchIntegration WHERE user_id = :uid", Map.of("uid", commandEvent.getUser().getIdLong()));
+                                .getEntity(new TwitchIntegration(), "FROM TwitchIntegration WHERE userId = :uid", Map.of("uid", commandEvent.getUser().getIdLong()));
                         if (twitchIntegration != null) {
                             StringBuilder stringBuilder = new StringBuilder();
                             Main.getInstance().getNotifier().getTwitchClient().getHelix()

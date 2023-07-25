@@ -34,7 +34,7 @@ public class Steal implements ICommand {
 
         String entryString = commandEvent.getGuild().getIdLong() + "-" + commandEvent.getMember().getIdLong();
 
-        long delay = Long.parseLong((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "SELECT * FROM Settings WHERE GID=:gid AND NAME=:name",
+        long delay = Long.parseLong((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE guildId=:gid AND name=:name",
                 Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_steal_delay")).getValue());
 
         if (stealTimeout.contains(entryString)) {

@@ -58,7 +58,7 @@ public class Schedule implements ICommand {
                 StringBuilder stringBuilder = new StringBuilder();
 
                 for (ScheduledMessage scheduledMessage : SQLSession.getSqlConnector().getSqlWorker()
-                        .getEntityList(new ScheduledMessage(), "SELECT * FROM ScheduledMessage WHERE guild = :gid ",
+                        .getEntityList(new ScheduledMessage(), "FROM ScheduledMessage WHERE guildId = :gid ",
                                 Map.of("gid", commandEvent.getGuild().getIdLong()))) {
                     stringBuilder.append(scheduledMessage.getId()).append(" ").append("-").append(" ")
                             .append(scheduledMessage.getMessage()).append(" ")
@@ -74,7 +74,7 @@ public class Schedule implements ICommand {
                 OptionMapping id = commandEvent.getOption("id");
 
                 ScheduledMessage scheduledMessage = SQLSession.getSqlConnector().getSqlWorker()
-                        .getEntity(new ScheduledMessage(), "SELECT * FROM ScheduledMessage WHERE guild = :gid AND Id = :id",
+                        .getEntity(new ScheduledMessage(), "FROM ScheduledMessage WHERE guildId = :gid AND Id = :id",
                                 Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id.getAsLong()));
 
                 if (scheduledMessage != null) {
@@ -110,7 +110,7 @@ public class Schedule implements ICommand {
 
                 WebhookScheduledMessage webhookScheduledMessage =
                         SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookScheduledMessage(),
-                                "SELECT * FROM ScheduledMessageWebhooks WHERE gid = :gid AND actualChannelId = :channel",
+                                "FROM WebhookScheduledMessage WHERE guildId = :gid AND channelId = :channel",
                                 Map.of("gid", commandEvent.getGuild().getId(),"channel", guildChannel.getIdLong()));
 
                 if (webhookScheduledMessage == null) {

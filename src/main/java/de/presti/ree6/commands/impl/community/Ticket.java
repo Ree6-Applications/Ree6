@@ -59,7 +59,7 @@ public class Ticket implements ICommand {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
 
-        Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "SELECT * FROM Tickets WHERE GUILDID=:gid", Map.of("gid", commandEvent.getGuild().getId()));
+        Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", commandEvent.getGuild().getId()));
 
         if (tickets != null) {
             SQLSession.getSqlConnector().getSqlWorker().deleteEntity(tickets);

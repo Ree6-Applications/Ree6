@@ -52,7 +52,8 @@ public class CustomEvents implements EventListener {
         if (System.currentTimeMillis() - lastCheck < Duration.ofMinutes(1).toMillis()) return;
         lastCheck = System.currentTimeMillis();
         ThreadUtil.createThread(x -> {
-            List<CustomEventContainer> list = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new CustomEventAction(), "SELECT * FROM CustomEvents WHERE guild=:gid",
+            List<CustomEventContainer> list = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new CustomEventAction(),
+                    "FROM CustomEventAction WHERE guildId=:gid",
                     Map.of("gid", guildId)).stream().map(CustomEventContainer::new).toList();
 
             list.forEach(c -> {

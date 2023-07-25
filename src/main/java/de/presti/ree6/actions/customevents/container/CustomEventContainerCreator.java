@@ -67,7 +67,7 @@ public class CustomEventContainerCreator {
      */
     public static List<CustomEventContainer> getContainers(CustomEventTyp typ) {
         return SQLSession.getSqlConnector().getSqlWorker()
-                .getEntityList(new CustomEventAction(), "SELECT * FROM CustomEvents WHERE eventTyp = :typ", Map.of("typ", typ.name()))
+                .getEntityList(new CustomEventAction(), "FROM CustomEventAction WHERE event = :typ", Map.of("typ", typ.name()))
                 .stream().map(CustomEventContainer::new).toList();
     }
 
@@ -80,7 +80,7 @@ public class CustomEventContainerCreator {
      */
     public static List<CustomEventContainer> getContainers(String guildId, CustomEventTyp typ) {
         return SQLSession.getSqlConnector().getSqlWorker()
-                .getEntityList(new CustomEventAction(), "SELECT * FROM CustomEvents WHERE guild = :guild AND eventTyp = :typ", Map.of("guild", guildId, "typ", typ.name()))
+                .getEntityList(new CustomEventAction(), "FROM CustomEventAction WHERE guildId = :guild AND event = :typ", Map.of("guild", guildId, "typ", typ.name()))
                 .stream().map(CustomEventContainer::new).toList();
     }
 

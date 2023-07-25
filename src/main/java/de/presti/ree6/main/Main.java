@@ -28,8 +28,6 @@ import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
-import de.presti.ree6.sql.entities.webhook.RSSFeed;
-import de.presti.ree6.sql.entities.webhook.WebhookTikTok;
 import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.apis.Notifier;
@@ -198,33 +196,6 @@ public class Main {
                 SettingsManager.getSettings().add(new Setting("-1",
                         "command_" + commandAnnotation.name().toLowerCase(), commandAnnotation.name(), true));
             }
-
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_rewards_blackjack_win", "Payment Amount on BlackJack win", 200.0));
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_rewards_musicquiz_win", "Payment Amount on Music Quiz win", 200.0));
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_rewards_musicquiz_feature", "Payment Amount on Music Quiz Feature guess", 100.0));
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_rewards_musicquiz_artist", "Payment Amount on Music Quiz Feature guess", 50.0));
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_rewards_musicquiz_title", "Payment Amount on Music Quiz Title guess", 25.0));
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_work_min", "Minimum received Payment for work", 10.0));
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_work_max", "Maximum received Payment for work", 50.0));
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_work_delay", "Delay between each work", 5L));
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_steal_delay", "Delay between each steal", 5L));
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "message_ticket_menu", "Message that should display in the Ticket Menu.", "By clicking on the Button below you can open a Ticket!"));
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "message_ticket_open", "Message that should display when a Ticket is opened.", "Welcome to your Ticket!"));
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "message_suggestion_menu", "Message that should display in the Suggestion Menu.", "Suggest something"));
-            SettingsManager.getSettings().add(new Setting("-1",
-                    "configuration_autopublish", "Automatically publish News messages.", false));
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
@@ -286,7 +257,7 @@ public class Main {
         if (Data.isModuleActive("notifier")) {
             ThreadUtil.createThread(x -> {
                 log.info("Loading Notifier data.");
-                List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "SELECT * FROM ChannelStats", null);
+                List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "FROM ChannelStats", null);
 
                 // Register all Twitch Channels.
                 getInstance().getNotifier().registerTwitchChannel(SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames());
@@ -528,7 +499,7 @@ public class Main {
                 });
             }
 
-            for (ScheduledMessage scheduledMessage : SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ScheduledMessage(), "SELECT * FROM ScheduledMessage", null)) {
+            for (ScheduledMessage scheduledMessage : SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ScheduledMessage(), "FROM ScheduledMessage", null)) {
                 if (!scheduledMessage.isRepeated()) {
                     if (scheduledMessage.getLastExecute() == null) {
                         if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
@@ -574,7 +545,7 @@ public class Main {
             Main.getInstance().getNotifier().getCredentialManager().load();
 
             for (TwitchIntegration twitchIntegrations :
-                    SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "SELECT * FROM TwitchIntegration", null)) {
+                    SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "FROM TwitchIntegration", null)) {
 
                 CustomOAuth2Credential credential = CustomOAuth2Util.convert(twitchIntegrations);
 
