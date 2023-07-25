@@ -432,7 +432,6 @@ public class OtherEvents extends ListenerAdapter {
                     try {
                         String response = ChatGPTAPI.getResponse(event.getMember(), event.getMessage().getContentDisplay());
 
-
                         if (response != null && !response.isBlank())
                             Main.getInstance().getCommandManager().sendMessage(response, event.getChannel());
                     } catch (Exception e) {
