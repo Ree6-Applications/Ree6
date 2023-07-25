@@ -96,6 +96,14 @@ public class Data {
     }
 
     /**
+     * Check if the module notification should be hidden.
+     * @return if the module notification should be hidden.
+     */
+    public static boolean shouldHideModuleNotification() {
+        return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.hideModuleNotification", false);
+    }
+
+    /**
      * Get the configured Twitch Auth Url.
      * @return the Twitch Auth Url from the config.
      */

@@ -93,6 +93,7 @@ public class Config {
                     .parent().path("advertisement").addDefault("powered by Tube-hosting").commentSide("The Advertisement in Embed Footers and the rest.")
                     .parent().path("name").addDefault("Ree6").commentSide("The Name of the Bot.")
                     .parent().path("shards").addDefault(1).commentSide("The shard amount of the Bot. Check out https://anidiots.guide/understanding/sharding/#sharding for more information.")
+                    .parent().path("hideModuleNotification").addDefault(false).commentSide("Should the Notification for disabled Modules be hidden?")
                     .parent().path("modules").comment("Customize the active modules in Ree6.").blankLine()
                     .path("moderation").addDefault(true).commentSide("Enable the moderation module.")
                     .parent().path("music").addDefault(true).commentSide("Enable the music module.")

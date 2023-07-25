@@ -430,8 +430,11 @@ public class OtherEvents extends ListenerAdapter {
                     if (event.getMessage().getMessageReference() != null) return;
 
                     try {
-                        Main.getInstance().getCommandManager().sendMessage(ChatGPTAPI.getResponse(event.getMember(),
-                                event.getMessage().getContentDisplay()), event.getChannel());
+                        String response = ChatGPTAPI.getResponse(event.getMember(), event.getMessage().getContentDisplay());
+
+                        
+                        if (response != null && !response.isBlank())
+                            Main.getInstance().getCommandManager().sendMessage(response, event.getChannel());
                     } catch (Exception e) {
                         Sentry.captureException(e);
                         Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.default.retrievalError"), event.getChannel());
