@@ -13,24 +13,19 @@ public enum BotVersion {
     /**
      * Version for Development tests.
      */
-    DEVELOPMENT("bot.tokens.dev", true),
+    DEVELOPMENT("bot.tokens.dev"),
     /**
      * Version for a not yet fully stable release.
      */
-    BETA("bot.tokens.beta",false),
+    BETA("bot.tokens.beta"),
     /**
      * Version for a stable release.
      */
-    RELEASE("bot.tokens.release", false);
+    RELEASE("bot.tokens.release");
 
     /**
      * The Token-Path in the config file.
      */
     final String tokenPath;
-
-    /**
-     * If the Bot version should activate the debug mode.
-     */
-    final boolean debug;
 
 }

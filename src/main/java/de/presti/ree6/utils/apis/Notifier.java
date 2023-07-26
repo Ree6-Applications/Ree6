@@ -271,7 +271,14 @@ public class Notifier {
                 .password(Main.getInstance().getConfig().getConfiguration().getString("instagram.password"))
                 .onChallenge(challengeHandler).build();
         instagramClient.sendLoginRequest().exceptionally(throwable -> {
-            log.error("Failed to login to Instagram API, you can ignore this if you don't use Instagram.", throwable);
+            if (Data.isDebug()) {
+                log.error("Failed to login to Instagram API, you can ignore this if you don't use Instagram.", throwable);
+            } else {
+                log.error("Failed to login to Instagram API, you can ignore this if you don't use Instagram.");
+                log.error("Error Message: " + throwable.getMessage()
+                        .replace("com.github.instagram4j.instagram4j.exceptions.IGResponseException: ", "")
+                        .replace("&#039;", "'"));
+            }
             return null;
         });
         createInstagramPostStream();

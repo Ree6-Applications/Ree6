@@ -177,7 +177,8 @@ public class Main {
                 getInstance().getConfig().getConfiguration().getInt("hikari.sql.port"),
                 getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
                 getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"),
-                getInstance().getConfig().getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"));
+                getInstance().getConfig().getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"),
+                Data.isDebug());
 
         log.info("Loading ChatGPTAPI");
         getInstance().setChatGPTAPI(new ChatGPTAPI());
@@ -312,6 +313,15 @@ public class Main {
 
         // Create Heartbeat Thread.
         getInstance().createHeartbeatThread();
+
+        log.info("Any previous messages about \"Error executing DDL\" can be most likely ignored.");
+        log.info("Initialization finished.");
+        log.info("Bot is ready to use.");
+        log.info("You are running on: v" + BotWorker.getBuild());
+        log.info("You are running on: " + BotWorker.getShardManager().getShardsTotal() + " Shards.");
+        log.info("You are running on: " + BotWorker.getShardManager().getGuilds().size() + " Guilds.");
+        log.info("You are running on: " + BotWorker.getShardManager().getUsers().size() + " Users.");
+        log.info("Have fun!");
     }
 
     /**

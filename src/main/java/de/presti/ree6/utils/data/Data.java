@@ -134,5 +134,12 @@ public class Data {
     public static String getDefaultPrefix() {
         return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.defaultPrefix", "ree!");
     }
+
+    /**
+     * Check if the bot should run in debug mode.
+     */
+    public static boolean isDebug() {
+        return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.debug", false);
+    }
 }
 
