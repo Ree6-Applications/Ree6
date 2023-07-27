@@ -54,7 +54,7 @@ public class Config {
                     """);
             yamlFile.path("config")
                     .comment("Do not change this!")
-                    .path("version").addDefault("3.0.1")
+                    .path("version").addDefault("3.0.8")
                     .parent().path("creation").addDefault(System.currentTimeMillis());
 
             yamlFile.path("hikari")
@@ -95,6 +95,7 @@ public class Config {
                     .parent().path("shards").addDefault(1).commentSide("The shard amount of the Bot. Check out https://anidiots.guide/understanding/sharding/#sharding for more information.")
                     .parent().path("hideModuleNotification").addDefault(false).commentSide("Should the Notification for disabled Modules be hidden?")
                     .parent().path("debug").addDefault(false).commentSide("Should the Bot be in Debug Mode? This will enable more logging.")
+                    .parent().path("defaultPrefix").addDefault("ree!").commentSide("The default Prefix of the Bot.")
                     .parent().path("modules").comment("Customize the active modules in Ree6.").blankLine()
                     .path("moderation").addDefault(true).commentSide("Enable the moderation module.")
                     .parent().path("music").addDefault(true).commentSide("Enable the music module.")
@@ -194,7 +195,7 @@ public class Config {
         String configVersion = yamlFile.getString("config.version", "1.9.0");
 
         if (compareVersion(configVersion, BotWorker.getBuild()) || configVersion.equals(BotWorker.getBuild()) ||
-                configVersion.equals("3.0.1"))
+                configVersion.equals("3.0.8"))
             return;
 
         Map<String, Object> resources = yamlFile.getValues(true);

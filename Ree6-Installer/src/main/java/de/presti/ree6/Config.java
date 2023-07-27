@@ -51,7 +51,7 @@ public class Config {
                     """);
             yamlFile.path("config")
                     .comment("Do not change this!")
-                    .path("version").addDefault("3.0.1")
+                    .path("version").addDefault("3.0.8")
                     .parent().path("creation").addDefault(System.currentTimeMillis());
 
             yamlFile.path("hikari")
@@ -190,7 +190,7 @@ public class Config {
     public void migrateOldConfig() {
         String configVersion = yamlFile.getString("config.version", "1.9.0");
 
-        if (compareVersion(configVersion, "3.0.1") || configVersion.equals("3.0.1"))
+        if (compareVersion(configVersion, "3.0.8") || configVersion.equals("3.0.8"))
             return;
 
         Map<String, Object> resources = yamlFile.getValues(true);

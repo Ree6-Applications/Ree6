@@ -197,6 +197,8 @@ public class Main {
                 SettingsManager.getSettings().add(new Setting("-1",
                         "command_" + commandAnnotation.name().toLowerCase(), commandAnnotation.name(), true));
             }
+            Setting prefixSetting = SettingsManager.getDefault("chatprefix");
+            prefixSetting.setValue(Data.getDefaultPrefix());
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
