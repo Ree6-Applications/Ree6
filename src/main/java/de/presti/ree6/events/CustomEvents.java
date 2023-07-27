@@ -36,6 +36,8 @@ public class CustomEvents implements EventListener {
         }
 
         if (event instanceof GenericMessageEvent genericMessageEvent) {
+            if (!((GenericMessageEvent) event).isFromGuild()) return;
+
             runCacheEntry(genericMessageEvent.getClass(), genericMessageEvent.getGuild().getIdLong());
         }
     }
