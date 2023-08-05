@@ -103,7 +103,7 @@
         <dependency>
             <groupId>me.presti</groupId>
             <artifactId>YoutubeWrapper</artifactId>
-            <version>c80459f761</version>
+            <version>551b1cb4a6</version>
         </dependency>
         <dependency>
             <groupId>me.presti</groupId>
