@@ -30,7 +30,7 @@ public class Blacklist implements ICommand {
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             if (commandEvent.isSlashCommand()) {
 
-            OptionMapping wordOption = commandEvent.getOption("word");
+                OptionMapping wordOption = commandEvent.getOption("word");
 
                 switch (commandEvent.getSubcommand()) {
                     case "add" -> {
@@ -46,8 +46,8 @@ public class Blacklist implements ICommand {
                             ModerationUtil.blacklist(commandEvent.getGuild().getId(), words);
                             commandEvent.reply(commandEvent.getResource("message.blacklist.addedList", "```" + end + "```"), 5);
                         } else {
-                            ModerationUtil.blacklist(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
-                            commandEvent.reply(commandEvent.getResource("message.blacklist.added", commandEvent.getArguments()[1]), 5);
+                            ModerationUtil.blacklist(commandEvent.getGuild().getId(), word);
+                            commandEvent.reply(commandEvent.getResource("message.blacklist.added", word), 5);
                         }
                     }
 

@@ -47,6 +47,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -472,6 +473,8 @@ public class OtherEvents extends ListenerAdapter {
         if (!Data.isModuleActive("reactionRoles")) return;
 
         if (event.getMember() == null) return;
+
+        if (!PermissionUtil.checkPermission(event.getGuild().getSelfMember(), Permission.MESSAGE_HISTORY)) return;
 
         event.retrieveMessage().queue(message -> {
 
