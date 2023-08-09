@@ -193,6 +193,7 @@ label:
   musicQuizArtistGuess: "Вгадування виконавця MusicQuiz"
   musicQuizTitleGuess: "Вгадування назви MusicQuiz"
   rewards: "Винагороди"
+  sendToChat: "Send in Chat"
 message:
   default:
     usage: "Використання {guild_prefix}%s."
@@ -485,6 +486,8 @@ message:
     stopReason: "Запис зупинено."
     stopped: "Ваш аудіо перетворено і тепер доступно для завантаження!"
     error: "Щось пішло не так під час перетворення вашого аудіо!\nПричина: %s"
+    inChat: "Your Recording should be below this message!"
+    notFound: "We could not find the requested Recording!"
   reactions:
     roleAssign: "Ви призначили роль %s на Реакцію!"
     reactionNeeded: "Ви повинні відреагувати на повідомлення з реакцією, до якої хочете призначити %s!"
