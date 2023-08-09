@@ -193,6 +193,7 @@ label:
   musicQuizArtistGuess: "MusicQuiz Artist Guess"
   musicQuizTitleGuess: "MusicQuiz Title Guess"
   rewards: "Rewards"
+  sendToChat: "Send in Chat"
 message:
   default:
     usage: "Usage {guild_prefix}%s."
@@ -485,6 +486,8 @@ message:
     stopReason: "Recording stopped."
     stopped: "Your Audio has been converted and is now available for download!"
     error: "Something went wrong while converting your audio!\nReason: %s"
+    inChat: "Your Recording should be below this message!"
+    notFound: "We could not find the requested Recording!"
   reactions:
     roleAssign: "You have assigned the Role %s to the Reaction!"
     reactionNeeded: "You need to react to this message with the reaction you want to assign %s to!"

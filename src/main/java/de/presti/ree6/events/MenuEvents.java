@@ -10,6 +10,7 @@ import de.presti.ree6.language.Language;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.Recording;
 import de.presti.ree6.sql.entities.Suggestions;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.Tickets;
@@ -39,7 +40,9 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.internal.interactions.component.StringSelectMenuImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -66,6 +69,35 @@ public class MenuEvents extends ListenerAdapter {
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         super.onButtonInteraction(event);
+
+        if (event.getComponentId().startsWith("r_recordingDownload:") && event.getComponentId().contains(":")) {
+            String[] split = event.getComponentId().split(":");
+
+            if (split.length == 2) {
+                Recording recording = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Recording(), "FROM Recording WHERE identifier = :id AND guildId = :gid", Map.of("id", split[1], "gid", event.getGuild().getId()));
+                MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
+                if (recording != null) {
+                    messageEditBuilder.setEmbeds(new EmbedBuilder()
+                            .setDescription(LanguageService.getByGuild(event.getGuild(), "message.recording.inChat"))
+                            .setColor(Color.GREEN)
+                            .setFooter(Data.getAdvertisement(), event.getGuild().getIconUrl())
+                            .setTitle(LanguageService.getByGuild(event.getGuild(), "label.recording.finished"))
+                            .build());
+                    messageEditBuilder.setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav"));
+                    messageEditBuilder.setComponents(List.of());
+                } else {
+                    messageEditBuilder.setEmbeds(new EmbedBuilder()
+                            .setDescription(LanguageService.getByGuild(event.getGuild(), "message.recording.notFound"))
+                            .setColor(Color.RED)
+                            .setFooter(Data.getAdvertisement(), event.getGuild().getIconUrl())
+                            .setTitle(LanguageService.getByGuild(event.getGuild(), "label.error"))
+                            .build());
+                    messageEditBuilder.setComponents(List.of());
+                }
+
+                event.editMessage(messageEditBuilder.build()).queue();
+            }
+        }
 
         switch (event.getComponentId()) {
             case "re_feedback" -> {
@@ -193,10 +225,10 @@ public class MenuEvents extends ListenerAdapter {
                         EmbedBuilder em = new EmbedBuilder()
                                 .setAuthor(event.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
                                         event.getGuild().getJDA().getSelfUser().getAvatarUrl())
-                                .setTitle(LanguageService.getByGuild(event.getGuild(),"label.musicPlayer"))
+                                .setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer"))
                                 .setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl())
                                 .setColor(Color.GREEN)
-                                .setDescription(LanguageService.getByGuild(event.getGuild(),"message.music.pause"))
+                                .setDescription(LanguageService.getByGuild(event.getGuild(), "message.music.pause"))
                                 .setFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl());
                         Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
                     }
@@ -214,11 +246,11 @@ public class MenuEvents extends ListenerAdapter {
                     guildMusicManager.getPlayer().setPaused(true);
                     EmbedBuilder em = new EmbedBuilder()
                             .setAuthor(event.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                            event.getGuild().getJDA().getSelfUser().getAvatarUrl())
-                            .setTitle(LanguageService.getByGuild(event.getGuild(),"label.musicPlayer"))
+                                    event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                            .setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer"))
                             .setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl())
                             .setColor(Color.GREEN)
-                            .setDescription(LanguageService.getByGuild(event.getGuild(),"message.music.pause"))
+                            .setDescription(LanguageService.getByGuild(event.getGuild(), "message.music.pause"))
                             .setFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl());
                     Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
                 } else {
@@ -232,7 +264,7 @@ public class MenuEvents extends ListenerAdapter {
                 GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild());
 
                 if (guildMusicManager != null) {
-                    Main.getInstance().getMusicWorker().skipTrack(event.getChannel(), event.getHook(),1,true);
+                    Main.getInstance().getMusicWorker().skipTrack(event.getChannel(), event.getHook(), 1, true);
                 } else {
                     Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.music.notConnected"),
                             event.getChannel(), event.getHook());
@@ -252,8 +284,8 @@ public class MenuEvents extends ListenerAdapter {
                     em.setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl());
                     em.setColor(Color.GREEN);
                     em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild()).getScheduler().loop() ?
-                            LanguageService.getByGuild(event.getGuild(),"message.music.loop.enabled") :
-                            LanguageService.getByGuild(event.getGuild(),"message.music.loop.disabled"));
+                            LanguageService.getByGuild(event.getGuild(), "message.music.loop.enabled") :
+                            LanguageService.getByGuild(event.getGuild(), "message.music.loop.disabled"));
                     em.setFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl());
 
                     Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
@@ -339,10 +371,10 @@ public class MenuEvents extends ListenerAdapter {
                         .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_feature", "Payment Amount on Music Quiz Feature guess", musicFeatureAmount);
 
                 SQLSession.getSqlConnector().getSqlWorker()
-                        .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_artist","Payment Amount on Music Quiz Artist guess",  musicArtistAmount);
+                        .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_artist", "Payment Amount on Music Quiz Artist guess", musicArtistAmount);
 
                 SQLSession.getSqlConnector().getSqlWorker()
-                        .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_title","Payment Amount on Music Quiz Title guess",  musicTitleAmount);
+                        .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_title", "Payment Amount on Music Quiz Title guess", musicTitleAmount);
 
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setTitle(LanguageService.getByGuild(event.getGuild(), "label.rewards"))
