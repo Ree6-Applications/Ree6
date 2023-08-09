@@ -193,6 +193,7 @@ label:
   musicQuizArtistGuess: "Uhádněte interpreta Hudební kvíz"
   musicQuizTitleGuess: "Uhádni jméno Hudební kvíz"
   rewards: "Odměny"
+  sendToChat: "Send in Chat"
 message:
   default:
     usage: "Použití {guild_prefix}%s."
@@ -485,6 +486,8 @@ message:
     stopReason: "Nahrávání zastaveno."
     stopped: "Váš zvuk byl převeden a je nyní k dispozici ke stažení!"
     error: "Něco se pokazilo při převodu tvého zvuku!\nDůvod: %s"
+    inChat: "Your Recording should be below this message!"
+    notFound: "We could not find the requested Recording!"
   reactions:
     roleAssign: "Přidělili jste roli %s k reakci!"
     reactionNeeded: "You must respond to this message with the reaction you want to assign %s!"
