@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 import org.jetbrains.annotations.NotNull;
@@ -178,7 +179,9 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                         .setColor(Color.GREEN)
                         .setFooter(Data.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
                         .setTitle(LanguageService.getByGuild(voiceChannel.getGuild(), "label.recording.finished"))
-                        .build()).setActionRow(new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(voiceChannel.getGuild(), "label.download"), ButtonStyle.LINK,
+                        .build())
+                        .setActionRow(
+                                new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(voiceChannel.getGuild(), "label.download"), ButtonStyle.LINK,
                         Data.getRecordingUrl() + "?id=" + recording.getIdentifier(), false, Emoji.fromCustom("shiba", 941219375535509504L, true))).complete();
             }
             // Find a way to still notify that the bot couldn't send the audio.
