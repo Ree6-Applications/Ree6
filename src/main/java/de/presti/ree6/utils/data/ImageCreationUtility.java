@@ -85,9 +85,11 @@ public class ImageCreationUtility {
 
         log.debug("Loading and creating Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
+
         // Generate a 885x211 Image Background.
         if (rankBackgroundBase == null) rankBackgroundBase = ImageIO.read(new File("storage/images/base.png"));
         BufferedImage base = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_ARGB);
+
         log.debug("Loaded and created Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
@@ -134,9 +136,11 @@ public class ImageCreationUtility {
         log.debug("Finished drawing User Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        Font verdana60 = new Font("Verdana", Font.PLAIN, 60);
-        Font verdana50 = new Font("Verdana", Font.PLAIN, 50);
-        Font verdana40 = new Font("Verdana", Font.PLAIN, 40);
+        String discriminatorText = "#" + user.getDiscriminator();
+
+        Font verdana60 = retrieveFont(60, discriminatorText);
+        Font verdana50 = retrieveFont(50, rank);
+        Font verdana40 = retrieveFont(40, formattedExperience + " Rank Level");
 
         log.debug("Finished creating Fonts. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -154,7 +158,7 @@ public class ImageCreationUtility {
         graphics2D.drawString(username, 425, 675);
         graphics2D.setColor(Color.LIGHT_GRAY);
         graphics2D.setFont(verdana40);
-        graphics2D.drawString("#" + user.getDiscriminator(), 425, 675 - graphics2D.getFontMetrics(verdana60).getHeight() + 5);
+        graphics2D.drawString(discriminatorText, 425, 675 - graphics2D.getFontMetrics(verdana60).getHeight() + 5);
         graphics2D.setColor(Color.magenta.darker().darker());
         graphics2D.fillRoundRect(175, 705, base.getWidth() - 950, 50, 50, 50);
 
@@ -289,7 +293,7 @@ public class ImageCreationUtility {
         log.debug("Finished drawing Avatar Image on Base Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        Font verdana30 = new Font("Verdana", Font.PLAIN, 35);
+        Font verdana30 = retrieveFont(35, messageText.replace("\n", " "));
 
         log.debug("Finished creating Fonts. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
@@ -463,5 +467,21 @@ public class ImageCreationUtility {
         g2d.dispose();
 
         return outputImage;
+    }
+
+    /**
+     * Retrieves a Font with the given size and fallbacks to Arial if it can't display the given text.
+     * @param size the size of the Font.
+     * @param text the text to display.
+     * @return the Font.
+     */
+    public static Font retrieveFont(int size, String text) {
+        Font font = new Font(Data.getTextFont(), Font.PLAIN, size);
+
+        if (font.canDisplayUpTo(text) != -1) {
+            font = new Font("Arial", Font.PLAIN, size);
+        }
+
+        return font;
     }
 }

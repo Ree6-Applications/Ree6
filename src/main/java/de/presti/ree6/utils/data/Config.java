@@ -54,7 +54,7 @@ public class Config {
                     """);
             yamlFile.path("config")
                     .comment("Do not change this!")
-                    .path("version").addDefault("3.0.8")
+                    .path("version").addDefault("3.0.13")
                     .parent().path("creation").addDefault(System.currentTimeMillis());
 
             yamlFile.path("hikari")
@@ -96,6 +96,7 @@ public class Config {
                     .parent().path("hideModuleNotification").addDefault(false).commentSide("Should the Notification for disabled Modules be hidden?")
                     .parent().path("debug").addDefault(false).commentSide("Should the Bot be in Debug Mode? This will enable more logging.")
                     .parent().path("defaultPrefix").addDefault("ree!").commentSide("The default Prefix of the Bot.")
+                    .parent().path("textFont").addDefault("Verdana").commentSide("The Font that is being used in Images for the Text.")
                     .parent().path("modules").comment("Customize the active modules in Ree6.").blankLine()
                     .path("moderation").addDefault(true).commentSide("Enable the moderation module.")
                     .parent().path("music").addDefault(true).commentSide("Enable the music module.")

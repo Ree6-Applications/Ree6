@@ -136,6 +136,14 @@ public class Data {
     }
 
     /**
+     * Get the configured Font for the text.
+     * @return the Font for the text from the config.
+     */
+    public static String getTextFont() {
+        return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.textFont", "Verdana");
+    }
+
+    /**
      * Check if the bot should run in debug mode.
      */
     public static boolean isDebug() {
