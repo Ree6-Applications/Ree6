@@ -37,9 +37,9 @@ public class Shuffle implements ICommand {
                 commandEvent.getGuild()).getScheduler().shuffle();
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setTitle(commandEvent.getResource("label.musicPlayer"));
-        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setColor(Color.GREEN);
         em.setDescription(commandEvent.getResource("message.music.shuffle"));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());

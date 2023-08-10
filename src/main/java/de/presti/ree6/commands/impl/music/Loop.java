@@ -34,9 +34,9 @@ public class Loop implements ICommand {
         EmbedBuilder em = new EmbedBuilder();
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setTitle(commandEvent.getResource("label.musicPlayer"));
-        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setColor(Color.GREEN);
         em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().loop() ?
                 commandEvent.getResource("message.music.loop.enabled") :

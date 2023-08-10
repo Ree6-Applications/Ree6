@@ -34,9 +34,9 @@ public class SongList implements ICommand {
 
         end.append("```");
 
-        em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(), commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+        em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(), commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setTitle(commandEvent.getResource("label.musicPlayer"));
-        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setColor(Color.GREEN);
         em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().getQueue().isEmpty() ?
                 commandEvent.getResource("message.music.songQueueEmpty") :

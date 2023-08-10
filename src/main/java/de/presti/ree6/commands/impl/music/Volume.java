@@ -52,16 +52,16 @@ public class Volume implements ICommand {
                 player.setVolume(volume);
 
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                        commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                        commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
-                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription(commandEvent.getResource("message.music.volume.success", volume));
             } else {
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                        commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                        commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
-                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setColor(Color.RED);
                 em.setDescription(commandEvent.getResource("message.music.volume.default"));
             }
@@ -80,16 +80,16 @@ public class Volume implements ICommand {
                 player.setVolume(vol);
 
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                        commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                        commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
-                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription(commandEvent.getResource("message.music.volume.success", vol));
             } else {
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                        commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                        commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
-                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setColor(Color.GREEN);
                 em.setDescription(commandEvent.getResource("message.music.volume.default", player.getVolume()));
             }

@@ -63,7 +63,7 @@ public class Help implements ICommand {
 
         em.setColor(BotWorker.randomEmbedColor());
         em.setTitle("Help Center");
-        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
         if (categoryString == null) {
             String prefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue();

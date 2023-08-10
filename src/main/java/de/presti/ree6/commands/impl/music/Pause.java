@@ -37,9 +37,9 @@ public class Pause implements ICommand {
         Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getPlayer().setPaused(true);
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setTitle(commandEvent.getResource("label.musicPlayer"));
-        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setColor(Color.GREEN);
         em.setDescription(commandEvent.getResource("message.music.pause"));
         em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());

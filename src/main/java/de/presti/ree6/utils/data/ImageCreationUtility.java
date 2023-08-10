@@ -343,11 +343,7 @@ public class ImageCreationUtility {
         BufferedImage userImage;
 
         // Generated a Circle Image with the Avatar of the User.
-        if (user.getAvatarUrl() != null) {
-            userImage = resize(ImageIO.read(new URL(user.getAvatarUrl())), 128, 128);
-        } else {
-            userImage = resize(ImageIO.read(new URL(user.getDefaultAvatarUrl())), 128, 128);
-        }
+        userImage = resize(ImageIO.read(new URL(user.getEffectiveAvatarUrl())), 128, 128);
 
         // Create a new Graphics2D instance from the base.
         Graphics2D graphics2D = base.createGraphics();
@@ -446,7 +442,6 @@ public class ImageCreationUtility {
      * @param inputImage   The original image
      * @param scaledWidth  absolute width in pixels
      * @param scaledHeight absolute height in pixels
-     *
      * @return The new resized image
      */
     public static BufferedImage resize(BufferedImage inputImage, int scaledWidth, int scaledHeight) {
@@ -471,6 +466,7 @@ public class ImageCreationUtility {
 
     /**
      * Retrieves a Font with the given size and fallbacks to Arial if it can't display the given text.
+     *
      * @param size the size of the Font.
      * @param text the text to display.
      * @return the Font.

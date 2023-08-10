@@ -40,7 +40,7 @@ public class LoggerQueue {
             logs.add(loggerMessage);
 
             // Creating a new Webhook Message with an Embed.
-            WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder().setAvatarUrl(loggerMessage.getGuild().getJDA().getSelfUser().getAvatarUrl()).setUsername(Data.getBotName() + "-Logs");
+            WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder().setAvatarUrl(loggerMessage.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl()).setUsername(Data.getBotName() + "-Logs");
             WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder().setColor(Color.BLACK.getRGB())
                     .setFooter(new WebhookEmbed.EmbedFooter(loggerMessage.getGuild().getName() + " - " + Data.getAdvertisement(),
                             (loggerMessage.getGuild().getIconUrl() != null ? loggerMessage.getGuild().getIconUrl() : null)))
@@ -418,7 +418,7 @@ public class LoggerQueue {
 
                     // Set the new Webhook Message.
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(logMessageUser.getUser().getEffectiveName(),
-                            logMessageUser.getUser().getAvatarUrl(), null));
+                            logMessageUser.getUser().getEffectiveAvatarUrl(), null));
 
                     if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
                                     loggerMessages instanceof LogMessageUser logMessageUser1 &&

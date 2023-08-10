@@ -135,7 +135,7 @@ public class OtherEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
-        wmb.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wmb.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wmb.setUsername("Welcome!");
 
         String messageContent = SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join")

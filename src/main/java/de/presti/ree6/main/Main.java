@@ -518,7 +518,7 @@ public class Main {
 
                             WebhookUtil.sendWebhook(new WebhookMessageBuilder()
                                     .setUsername(Data.getBotName() + "-Scheduler")
-                                    .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
+                                    .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
                                     .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
                             SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
@@ -532,7 +532,7 @@ public class Main {
 
                             WebhookUtil.sendWebhook(new WebhookMessageBuilder()
                                     .setUsername(Data.getBotName() + "-Scheduler")
-                                    .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
+                                    .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
                                     .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
                             scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
@@ -543,7 +543,7 @@ public class Main {
 
                             WebhookUtil.sendWebhook(new WebhookMessageBuilder()
                                     .setUsername(Data.getBotName() + "-Scheduler")
-                                    .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl())
+                                    .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
                                     .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
                             scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));

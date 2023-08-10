@@ -99,7 +99,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wm.setUsername(Data.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -133,7 +133,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wm.setUsername(Data.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -173,7 +173,7 @@ public class LoggingEvents extends ListenerAdapter {
         if (SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "logging_memberjoin").getBooleanValue()) {
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
             wm.setUsername(Data.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -192,7 +192,7 @@ public class LoggingEvents extends ListenerAdapter {
 
             WebhookMessageBuilder wm2 = new WebhookMessageBuilder();
 
-            wm2.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+            wm2.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
             wm2.setUsername(Data.getBotName() + "-InviteLogs");
 
             if (event.getUser().isBot()) {
@@ -245,7 +245,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wm.setUsername(Data.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -286,7 +286,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wm.setUsername(Data.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -334,7 +334,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wm.setUsername(Data.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -380,7 +380,7 @@ public class LoggingEvents extends ListenerAdapter {
 
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
             wm.setUsername(Data.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -401,7 +401,7 @@ public class LoggingEvents extends ListenerAdapter {
 
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
             wm.setUsername(Data.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -427,7 +427,7 @@ public class LoggingEvents extends ListenerAdapter {
 
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
             wm.setUsername(Data.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -465,7 +465,7 @@ public class LoggingEvents extends ListenerAdapter {
                 return;
 
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
-            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
             wm.setUsername(Data.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -510,7 +510,7 @@ public class LoggingEvents extends ListenerAdapter {
 
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-            wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+            wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
             wm.setUsername(Data.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -573,7 +573,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wm.setUsername(Data.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -614,7 +614,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wm.setUsername(Data.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -654,7 +654,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wm.setUsername(Data.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -686,7 +686,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wm.setUsername(Data.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -718,7 +718,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wm.setUsername(Data.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -752,7 +752,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wm.setUsername(Data.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
@@ -786,7 +786,7 @@ public class LoggingEvents extends ListenerAdapter {
 
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
+        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
         wm.setUsername(Data.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();

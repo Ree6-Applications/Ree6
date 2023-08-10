@@ -421,7 +421,7 @@ public class Notifier {
                                 WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
                                 webhookMessageBuilder.setUsername(Data.getBotName());
-                                webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+                                webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl());
 
                                 WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
@@ -441,9 +441,9 @@ public class Notifier {
                                 });
 
                                 webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getChannel().getTitle(), null));
-                                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitter Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+                                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitter Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl(), null));
 
-                                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()));
                                 webhookEmbedBuilder.setTimestamp(Instant.now());
                                 webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
 
@@ -470,7 +470,7 @@ public class Notifier {
                                     WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
                                     webhookMessageBuilder.setUsername(Data.getBotName());
-                                    webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+                                    webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl());
 
                                     WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
@@ -487,9 +487,9 @@ public class Notifier {
                                     });
 
                                     webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getChannel().getTitle(), null));
-                                    webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("RSS Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+                                    webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("RSS Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl(), null));
 
-                                    webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                                    webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()));
                                     webhookEmbedBuilder.setTimestamp(Instant.now());
                                     webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
 
@@ -525,13 +525,13 @@ public class Notifier {
             // Create Webhook Message.
             WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
-            wmb.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+            wmb.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl());
             wmb.setUsername(Data.getBotName());
 
             WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
             webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(channelGoLiveEvent.getStream().getUserName(), twitchUrl));
-            webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitch Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+            webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitch Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl(), null));
 
             // Try getting the User.
             Optional<User> twitchUserRequest = getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(channelGoLiveEvent.getStream().getUserName())).execute().getUsers().stream().findFirst();
@@ -544,7 +544,7 @@ public class Notifier {
             webhookEmbedBuilder.setDescription("**" + channelGoLiveEvent.getStream().getTitle() + "**\n[Watch Stream](" + twitchUrl + ")");
             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Game**", channelGoLiveEvent.getStream().getGameName()));
             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Viewer**", String.valueOf(channelGoLiveEvent.getStream().getViewerCount())));
-            webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+            webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(Data.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()));
             webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
 
             wmb.addEmbeds(webhookEmbedBuilder.build());

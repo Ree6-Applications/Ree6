@@ -214,9 +214,9 @@ public class MenuEvents extends ListenerAdapter {
                         guildMusicManager.getPlayer().setPaused(false);
                         EmbedBuilder em = new EmbedBuilder()
                                 .setAuthor(event.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                                        event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                                        event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
                                 .setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer"))
-                                .setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                                .setThumbnail(event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
                                 .setColor(Color.GREEN)
                                 .setDescription(LanguageService.getByGuild(event.getGuild(), "message.music.resume"))
                                 .setFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl());
@@ -224,9 +224,9 @@ public class MenuEvents extends ListenerAdapter {
                     } else {
                         EmbedBuilder em = new EmbedBuilder()
                                 .setAuthor(event.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                                        event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                                        event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
                                 .setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer"))
-                                .setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                                .setThumbnail(event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
                                 .setColor(Color.GREEN)
                                 .setDescription(LanguageService.getByGuild(event.getGuild(), "message.music.pause"))
                                 .setFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl());
@@ -246,9 +246,9 @@ public class MenuEvents extends ListenerAdapter {
                     guildMusicManager.getPlayer().setPaused(true);
                     EmbedBuilder em = new EmbedBuilder()
                             .setAuthor(event.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                                    event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                                    event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer"))
-                            .setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl())
+                            .setThumbnail(event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
                             .setColor(Color.GREEN)
                             .setDescription(LanguageService.getByGuild(event.getGuild(), "message.music.pause"))
                             .setFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl());
@@ -279,9 +279,9 @@ public class MenuEvents extends ListenerAdapter {
                     EmbedBuilder em = new EmbedBuilder();
 
                     em.setAuthor(event.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                            event.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                            event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                     em.setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer"));
-                    em.setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                    em.setThumbnail(event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                     em.setColor(Color.GREEN);
                     em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild()).getScheduler().loop() ?
                             LanguageService.getByGuild(event.getGuild(), "message.music.loop.enabled") :
@@ -305,9 +305,9 @@ public class MenuEvents extends ListenerAdapter {
                     guildMusicManager.getScheduler().shuffle();
 
                     em.setAuthor(event.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                            event.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                            event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                     em.setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer"));
-                    em.setThumbnail(event.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                    em.setThumbnail(event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                     em.setColor(Color.GREEN);
                     em.setDescription(LanguageService.getByGuild(event.getGuild(), "message.music.shuffle"));
                     em.setFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl());

@@ -49,9 +49,9 @@ public class Stats implements ICommand {
         EmbedBuilder em = new EmbedBuilder();
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
-                commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+                commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setTitle(commandEvent.getResource("label.statistics"));
-        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getAvatarUrl());
+        em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setColor(BotWorker.randomEmbedColor());
 
         long memberCount = firstBoot ? BotWorker.getShardManager().getUsers().size() : BotWorker.getShardManager().getUserCache().size();
@@ -59,7 +59,7 @@ public class Stats implements ICommand {
 
         em.addField("**" + commandEvent.getResource("label.serverStats") + ":**", "", true);
         em.addField("**" + commandEvent.getResource("label.guilds") + "**", BotWorker.getShardManager().getGuilds().size() + "", true);
-        em.addField("**" + commandEvent.getResource("label.users") + "**", memberCount + "", true);
+        em.addField("**" + commandEvent.getResource("label.users") + "**", String.valueOf(memberCount), true);
 
         em.addField("**" + commandEvent.getResource("label.botStats") + ":**", "", true);
         em.addField("**" + commandEvent.getResource("label.version") + "**", BotWorker.getBuild() + "-" + BotWorker.getVersion().name().toUpperCase(), true);
