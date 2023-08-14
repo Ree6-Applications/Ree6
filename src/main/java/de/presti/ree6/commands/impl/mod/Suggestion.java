@@ -11,6 +11,7 @@ import de.presti.ree6.sql.entities.Suggestions;
 import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -102,8 +103,8 @@ public class Suggestion implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("suggestion", LanguageService.getDefault("command.description.suggestion"))
-                .addOptions(new OptionData(OptionType.CHANNEL, "target", "The channel the suggestions should be shown in.").setRequired(true))
-                .addOptions(new OptionData(OptionType.CHANNEL, "messagetarget", "The channel the bot should send the suggestion message to.").setRequired(true))
+                .addOptions(new OptionData(OptionType.CHANNEL, "target", "The channel the suggestions should be shown in.").setChannelTypes(ChannelType.NEWS, ChannelType.TEXT).setRequired(true))
+                .addOptions(new OptionData(OptionType.CHANNEL, "messagetarget", "The channel the bot should send the suggestion message to.").setChannelTypes(ChannelType.NEWS, ChannelType.TEXT).setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
     }
 
