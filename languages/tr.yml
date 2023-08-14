@@ -193,6 +193,7 @@ label:
   musicQuizArtistGuess: "MusicQuiz Sanatçı Tahmini"
   musicQuizTitleGuess: "MusicQuiz Başlık Tahmini"
   rewards: "Ödüller"
+  sendToChat: "Send in Chat"
 message:
   default:
     usage: "Kullanım {guild_prefix}%s."
@@ -485,6 +486,8 @@ message:
     stopReason: "Kayıt durduruldu."
     stopped: "Audio'nuz dönüştürüldü ve artık indirilebilir!"
     error: "Sesiniz dönüştürülürken bir şeyler ters gitti!\nSebep: %s"
+    inChat: "Your Recording should be below this message!"
+    notFound: "We could not find the requested Recording!"
   reactions:
     roleAssign: "%s Rolünü Reaction'a atadınız!"
     reactionNeeded: "Bu mesaja, %s atamak istediğiniz tepkiyle tepki vermelisiniz!"
