@@ -93,6 +93,8 @@ public class Config {
                     .parent().path("advertisement").addDefault("powered by Tube-hosting").commentSide("The Advertisement in Embed Footers and the rest.")
                     .parent().path("name").addDefault("Ree6").commentSide("The Name of the Bot.")
                     .parent().path("shards").addDefault(1).commentSide("The shard amount of the Bot. Check out https://anidiots.guide/understanding/sharding/#sharding for more information.")
+                    .parent().path("defaultLanguage").addDefault("en-GB").commentSide("The default Language of the Bot. Based on https://discord.com/developers/docs/reference#locales")
+                    .parent().path("allowRecordingInChat").addDefault(false).commentSide("If you wanna allow users to let the Bot send their recording into the chat.")
                     .parent().path("hideModuleNotification").addDefault(false).commentSide("Should the Notification for disabled Modules be hidden?")
                     .parent().path("debug").addDefault(false).commentSide("Should the Bot be in Debug Mode? This will enable more logging.")
                     .parent().path("defaultPrefix").addDefault("ree!").commentSide("The default Prefix of the Bot.")

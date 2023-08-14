@@ -70,7 +70,7 @@ public class MenuEvents extends ListenerAdapter {
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         super.onButtonInteraction(event);
 
-        if (event.getComponentId().startsWith("r_recordingDownload:") && event.getComponentId().contains(":")) {
+        if (Data.allowRecordingInChat() && event.getComponentId().startsWith("r_recordingDownload:") && event.getComponentId().contains(":")) {
             String[] split = event.getComponentId().split(":");
 
             if (split.length == 2) {
