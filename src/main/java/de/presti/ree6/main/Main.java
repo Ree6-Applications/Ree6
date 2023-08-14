@@ -199,6 +199,9 @@ public class Main {
             }
             Setting prefixSetting = SettingsManager.getDefault("chatprefix");
             prefixSetting.setValue(Data.getDefaultPrefix());
+
+            Setting languageSetting = SettingsManager.getDefault("configuration_language");
+            languageSetting.setValue("en_US");
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
