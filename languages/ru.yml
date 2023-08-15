@@ -193,7 +193,7 @@ label:
   musicQuizArtistGuess: "Угадать исполнителя песни в музыкальном тесте"
   musicQuizTitleGuess: "Угадать название песни в музыкальном тесте"
   rewards: "Призы"
-  sendToChat: "Send in Chat"
+  sendToChat: "Отправить в чат"
 message:
   default:
     usage: "Использование {guild_prefix}%s."
@@ -486,8 +486,8 @@ message:
     stopReason: "Запись прикрашена."
     stopped: "Ваше аудио было преобразовано и теперь доступно для скачивания!"
     error: "Что-то пошло не так при преобразовании вашего аудио!\nПричина: %s"
-    inChat: "Your Recording should be below this message!"
-    notFound: "We could not find the requested Recording!"
+    inChat: "Ваша запись должна быть ниже этого сообщения!"
+    notFound: "Мы не смогли найти запрошенную запись!"
   reactions:
     roleAssign: "Вы назначили роль %s для реакции!"
     reactionNeeded: "Вам нужно отреагировать на это сообщение той реакцией, которой вы хотите назначить %s!"
