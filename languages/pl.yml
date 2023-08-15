@@ -193,7 +193,7 @@ label:
   musicQuizArtistGuess: "Odgadanie artysty MusicQuizu"
   musicQuizTitleGuess: "Odgadnięcie tytułu MusicQuiz"
   rewards: "Nagrody"
-  sendToChat: "Send in Chat"
+  sendToChat: "Wyślij w czat"
 message:
   default:
     usage: "Użycie {guild_prefix}%s."
@@ -486,8 +486,8 @@ message:
     stopReason: "Nagrywanie zatrzymane."
     stopped: "Twój pliko audio został skonwertowany i jest teraz dostępny do pobrania!"
     error: "Coś poszło nie tak podczas konwersji twojego plika audio!\nPowód: %s"
-    inChat: "Your Recording should be below this message!"
-    notFound: "We could not find the requested Recording!"
+    inChat: "Twoje nagranie powinno znajdować się poniżej tej wiadomości!"
+    notFound: "Nie mogliśmy znaleźć żądanego nagrywania!"
   reactions:
     roleAssign: "Przypisałeś rolę %s do Reakcji!"
     reactionNeeded: "Musisz zareagować do wiadomości z reakcją, do której chcesz przypisać %s!"
