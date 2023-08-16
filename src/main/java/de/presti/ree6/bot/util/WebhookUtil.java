@@ -60,7 +60,7 @@ public class WebhookUtil {
      * @param isLog         is the Webhook Message a Log-Message?
      */
     public static void sendWebhook(LogMessage loggerMessage, WebhookMessage message, long webhookId, String webhookToken, boolean isLog) {
-        Main.getInstance().getAnalyticsLogger().debug("Received a Webhook to send. (Log-Typ: {})", isLog ? loggerMessage != null ? loggerMessage.getType().name() : "NONE-LOG" : "NONE-LOG");
+        Main.getInstance().logAnalytic("Received a Webhook to send. (Log-Typ: {})", isLog ? loggerMessage != null ? loggerMessage.getType().name() : "NONE-LOG" : "NONE-LOG");
         // Check if the given data is valid.
         if (webhookToken.contains("Not setup!") || webhookId == 0) return;
 

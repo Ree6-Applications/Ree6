@@ -56,13 +56,13 @@ public class ImageCreationUtility {
         long start = System.currentTimeMillis();
         long actionPerformance = System.currentTimeMillis();
 
-        Main.getInstance().getAnalyticsLogger().debug("Started User Rank Image creation.");
-        Main.getInstance().getAnalyticsLogger().debug("Getting User. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Started User Rank Image creation.");
+        Main.getInstance().logAnalytic("Getting User. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         User user = BotWorker.getShardManager().getUserById(userLevel.getUserId());
 
-        Main.getInstance().getAnalyticsLogger().debug("Getting default needed Data. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Getting default needed Data. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         String formattedExperience,
@@ -78,63 +78,63 @@ public class ImageCreationUtility {
         rank = String.valueOf(userLevel.getRank());
         progress = userLevel.getProgress();
 
-        Main.getInstance().getAnalyticsLogger().debug("Starting actual creation. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Starting actual creation. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         if (user == null)
             return new byte[128];
 
-        Main.getInstance().getAnalyticsLogger().debug("Loading and creating Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Loading and creating Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         // Generate a 885x211 Image Background.
         if (rankBackgroundBase == null) rankBackgroundBase = ImageIO.read(new File("storage/images/base.png"));
         BufferedImage base = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_ARGB);
 
-        Main.getInstance().getAnalyticsLogger().debug("Loaded and created Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Loaded and created Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         BufferedImage userImage;
 
-        Main.getInstance().getAnalyticsLogger().debug("Getting User avatar. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Getting User avatar. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
         // Generated a Circle Image with the Avatar of the User.
         userImage = convertToCircleShape(new URL(user.getEffectiveAvatarUrl()));
 
-        Main.getInstance().getAnalyticsLogger().debug("Creating Graphics2D. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Creating Graphics2D. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
         // Create a new Graphics2D instance from the base.
         Graphics2D graphics2D = base.createGraphics();
-        Main.getInstance().getAnalyticsLogger().debug("Created Graphics2D. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Created Graphics2D. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
         // Change the background to black.
 
-        Main.getInstance().getAnalyticsLogger().debug("Making Background Transparent. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Making Background Transparent. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
         // Make it transparent.
         graphics2D.setComposite(AlphaComposite.Clear);
         graphics2D.fillRect(0, 0, base.getWidth(), base.getHeight());
-        Main.getInstance().getAnalyticsLogger().debug("Finished drawing Background Transparent. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished drawing Background Transparent. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        Main.getInstance().getAnalyticsLogger().debug("Drawing Background Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Drawing Background Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
         // Draw Background art.
         graphics2D.setComposite(AlphaComposite.Src);
         graphics2D.drawImage(rankBackgroundBase, null, 0, 0);
         graphics2D.setColor(Color.WHITE);
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        Main.getInstance().getAnalyticsLogger().debug("Finished drawing Background Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished drawing Background Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        Main.getInstance().getAnalyticsLogger().debug("Drawing User Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Drawing User Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
         // Draw basic Information, such as the User Image, Username and the Experience Rect.
         graphics2D.setComposite(AlphaComposite.SrcAtop);
         graphics2D.drawImage(userImage, null, 175, 450);
         graphics2D.setColor(Color.WHITE);
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        Main.getInstance().getAnalyticsLogger().debug("Finished drawing User Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished drawing User Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         String discriminatorText = "#" + user.getDiscriminator();
@@ -143,7 +143,7 @@ public class ImageCreationUtility {
         Font verdana50 = retrieveFont(50, rank);
         Font verdana40 = retrieveFont(40, formattedExperience + " Rank Level");
 
-        Main.getInstance().getAnalyticsLogger().debug("Finished creating Fonts. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished creating Fonts. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         String username = new String(user.getName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
@@ -152,7 +152,7 @@ public class ImageCreationUtility {
             username = username.substring(0, 12);
         }
 
-        Main.getInstance().getAnalyticsLogger().debug("Finished substring on Username. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished substring on Username. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         graphics2D.setFont(verdana60);
@@ -163,7 +163,7 @@ public class ImageCreationUtility {
         graphics2D.setColor(Color.magenta.darker().darker());
         graphics2D.fillRoundRect(175, 705, base.getWidth() - 950, 50, 50, 50);
 
-        Main.getInstance().getAnalyticsLogger().debug("Finished drawing User-Info on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished drawing User-Info on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         //region Experience
@@ -175,7 +175,7 @@ public class ImageCreationUtility {
         graphics2D.setColor(Color.GRAY);
         graphics2D.drawString("/" + formattedMaxExperience, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + formattedMaxExperience)), 675);
 
-        Main.getInstance().getAnalyticsLogger().debug("Finished drawing User-Experience on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished drawing User-Experience on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
         //endregion
 
@@ -190,7 +190,7 @@ public class ImageCreationUtility {
         graphics2D.setFont(verdana50);
         graphics2D.drawString(rank, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth(rank)), 675 - graphics2D.getFontMetrics(verdana40).getHeight() - graphics2D.getFontMetrics(verdana40).getHeight());
 
-        Main.getInstance().getAnalyticsLogger().debug("Finished drawing User-Rank on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished drawing User-Rank on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
         //endregion
 
@@ -205,7 +205,7 @@ public class ImageCreationUtility {
         graphics2D.setFont(verdana50);
         graphics2D.drawString(level, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth(level)), 675 - graphics2D.getFontMetrics(verdana40).getHeight());
 
-        Main.getInstance().getAnalyticsLogger().debug("Finished drawing User-Level on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished drawing User-Level on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         //endregion
@@ -214,19 +214,19 @@ public class ImageCreationUtility {
         graphics2D.setColor(Color.magenta);
         graphics2D.fillRoundRect(175, 705, (base.getWidth() - 950) * (int) progress / 100, 50, 50, 50);
 
-        Main.getInstance().getAnalyticsLogger().debug("Finished drawing Progressbar on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished drawing Progressbar on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         // Close the Graphics2D instance.
         graphics2D.dispose();
-        Main.getInstance().getAnalyticsLogger().debug("Finished disposing Graphics2D instance. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished disposing Graphics2D instance. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
             ImageIO.write(base, "PNG", outputStream);
-            Main.getInstance().getAnalyticsLogger().debug("Finished writing Image into ByteArrayOutputStream. ({}ms)", System.currentTimeMillis() - actionPerformance);
-            Main.getInstance().getAnalyticsLogger().debug("Finished creation in {}ms", System.currentTimeMillis() - start);
+            Main.getInstance().logAnalytic("Finished writing Image into ByteArrayOutputStream. ({}ms)", System.currentTimeMillis() - actionPerformance);
+            Main.getInstance().logAnalytic("Finished creation in {}ms", System.currentTimeMillis() - start);
             return outputStream.toByteArray();
         }
     }
@@ -263,17 +263,17 @@ public class ImageCreationUtility {
             joinBackgroundBase.put(messageImage, backgroundImage);
         }
 
-        Main.getInstance().getAnalyticsLogger().debug("Finished loading Base Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished loading Base Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         // Load the Avatar Image.
         BufferedImage avatar = convertToCircleShape(new URL(user.getEffectiveAvatarUrl()));
-        Main.getInstance().getAnalyticsLogger().debug("Finished loading Avatar Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished loading Avatar Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         // Create a Graphics2D instance to draw on the Base Image.
         Graphics2D graphics2D = base.createGraphics();
-        Main.getInstance().getAnalyticsLogger().debug("Finished creating Graphics2D instance. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished creating Graphics2D instance. ({}ms)", System.currentTimeMillis() - actionPerformance);
 
         actionPerformance = System.currentTimeMillis();
 
@@ -291,12 +291,12 @@ public class ImageCreationUtility {
 
         // Draw the Avatar Image on the Base Image. 125
         graphics2D.drawImage(avatar, backgroundImage.getWidth() / 2 - 250, backgroundImage.getHeight() / 2 - 375, 500, 500, null);
-        Main.getInstance().getAnalyticsLogger().debug("Finished drawing Avatar Image on Base Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished drawing Avatar Image on Base Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         Font verdana30 = retrieveFont(35, messageText.replace("\n", " "));
 
-        Main.getInstance().getAnalyticsLogger().debug("Finished creating Fonts. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished creating Fonts. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         graphics2D.setFont(verdana30);
@@ -316,14 +316,14 @@ public class ImageCreationUtility {
 
         // Close the Graphics2D instance.
         graphics2D.dispose();
-        Main.getInstance().getAnalyticsLogger().debug("Finished disposing Graphics2D instance. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Finished disposing Graphics2D instance. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
             ImageIO.write(base, "PNG", outputStream);
-            Main.getInstance().getAnalyticsLogger().debug("Finished writing Image into ByteArrayOutputStream. ({}ms)", System.currentTimeMillis() - actionPerformance);
-            Main.getInstance().getAnalyticsLogger().debug("Finished creation in {}ms", System.currentTimeMillis() - start);
+            Main.getInstance().logAnalytic("Finished writing Image into ByteArrayOutputStream. ({}ms)", System.currentTimeMillis() - actionPerformance);
+            Main.getInstance().logAnalytic("Finished creation in {}ms", System.currentTimeMillis() - start);
             return outputStream.toByteArray();
         }
     }
@@ -387,23 +387,23 @@ public class ImageCreationUtility {
         long start = System.currentTimeMillis();
         long actionPerformance = System.currentTimeMillis();
 
-        Main.getInstance().getAnalyticsLogger().debug("Started User Image creation.");
+        Main.getInstance().logAnalytic("Started User Image creation.");
 
         BufferedImage mainImage = resize(ImageIO.read(url), 250, 250);
 
         if (mainImage == null) return null;
 
-        Main.getInstance().getAnalyticsLogger().debug("Loading Image from URL and resizing it. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Loading Image from URL and resizing it. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         BufferedImage output = new BufferedImage(mainImage.getWidth(), mainImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
-        Main.getInstance().getAnalyticsLogger().debug("Creating Output BufferedImage. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Creating Output BufferedImage. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         Graphics2D g2 = output.createGraphics();
 
-        Main.getInstance().getAnalyticsLogger().debug("Created Graphics2D. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Created Graphics2D. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         // This is what we want, but it only does hard-clipping, i.e. aliasing
@@ -414,10 +414,10 @@ public class ImageCreationUtility {
         g2.setComposite(AlphaComposite.Src);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(Color.WHITE);
-        Main.getInstance().getAnalyticsLogger().debug("Set Graphic Presets. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Set Graphic Presets. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
         g2.fill(new Ellipse2D.Float(0, 0, mainImage.getHeight(), mainImage.getHeight()));
-        Main.getInstance().getAnalyticsLogger().debug("Filled Graphic Base with Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Filled Graphic Base with Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         // ... then compositing the image on top,
@@ -425,14 +425,14 @@ public class ImageCreationUtility {
         g2.setComposite(AlphaComposite.SrcAtop);
         g2.drawImage(mainImage, 0, 0, null);
 
-        Main.getInstance().getAnalyticsLogger().debug("Drawing Image finished. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Drawing Image finished. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
         g2.dispose();
 
-        Main.getInstance().getAnalyticsLogger().debug("Disposing Graphics2D finished. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        Main.getInstance().logAnalytic("Disposing Graphics2D finished. ({}ms)", System.currentTimeMillis() - actionPerformance);
 
-        Main.getInstance().getAnalyticsLogger().debug("Finished creation. ({}ms)", System.currentTimeMillis() - start);
+        Main.getInstance().logAnalytic("Finished creation. ({}ms)", System.currentTimeMillis() - start);
         return output;
     }
 

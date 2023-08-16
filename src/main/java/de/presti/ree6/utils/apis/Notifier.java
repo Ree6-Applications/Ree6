@@ -163,65 +163,70 @@ public class Notifier {
         if (!Data.isModuleActive("notifier")) return;
 
         log.info("Initializing Twitch Client...");
-        credentialManager = CredentialManagerBuilder.builder()
-                .withStorageBackend(new DatabaseStorageBackend())
-                .build();
+        try {
+            credentialManager = CredentialManagerBuilder.builder()
+                    .withStorageBackend(new DatabaseStorageBackend())
+                    .build();
 
-        TwitchAuth.registerIdentityProvider(credentialManager, Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"),
-                Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"), Data.getTwitchAuth());
+            TwitchAuth.registerIdentityProvider(credentialManager, Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"),
+                    Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"), Data.getTwitchAuth());
 
-        twitchIdentityProvider = (TwitchIdentityProvider) credentialManager.getIdentityProviderByName("twitch").orElse(null);
+            twitchIdentityProvider = (TwitchIdentityProvider) credentialManager.getIdentityProviderByName("twitch").orElse(null);
 
-        twitchClient = TwitchClientBuilder
-                .builder()
-                .withEnableHelix(true)
-                .withClientId(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"))
-                .withClientSecret(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"))
-                .withEnablePubSub(true)
-                .withCredentialManager(credentialManager)
-                .build();
+            twitchClient = TwitchClientBuilder
+                    .builder()
+                    .withEnableHelix(true)
+                    .withClientId(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"))
+                    .withClientSecret(Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"))
+                    .withEnablePubSub(true)
+                    .withCredentialManager(credentialManager)
+                    .build();
 
-        for (TwitchIntegration twitchIntegrations :
-                SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "FROM TwitchIntegration", null)) {
+            for (TwitchIntegration twitchIntegrations :
+                    SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "FROM TwitchIntegration", null)) {
 
-            OAuth2Credential credential = new OAuth2Credential("twitch", twitchIntegrations.getToken());
+                OAuth2Credential credential = new OAuth2Credential("twitch", twitchIntegrations.getToken());
 
-            PubSubSubscription[] subscriptions = new PubSubSubscription[3];
-            subscriptions[0] = getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(credential, twitchIntegrations.getChannelId());
-            subscriptions[1] = getTwitchClient().getPubSub().listenForSubscriptionEvents(credential, twitchIntegrations.getChannelId());
-            subscriptions[2] = getTwitchClient().getPubSub().listenForFollowingEvents(credential, twitchIntegrations.getChannelId());
+                PubSubSubscription[] subscriptions = new PubSubSubscription[3];
+                subscriptions[0] = getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(credential, twitchIntegrations.getChannelId());
+                subscriptions[1] = getTwitchClient().getPubSub().listenForSubscriptionEvents(credential, twitchIntegrations.getChannelId());
+                subscriptions[2] = getTwitchClient().getPubSub().listenForFollowingEvents(credential, twitchIntegrations.getChannelId());
 
-            twitchSubscription.put(credential.getUserId(), subscriptions);
+                twitchSubscription.put(credential.getUserId(), subscriptions);
+            }
+
+            twitchClient.getEventManager().onEvent(RewardRedeemedEvent.class, event -> {
+                List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(0);
+                list.forEach(container -> {
+                    if (!event.getRedemption().getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
+
+                    if (container.getExtraArgument() == null || event.getRedemption().getReward().getId().equals(container.getExtraArgument())) {
+                        container.runActions(event, event.getRedemption().getUserInput());
+                    }
+                });
+            });
+
+            twitchClient.getEventManager().onEvent(FollowingEvent.class, event -> {
+                List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(1);
+                list.forEach(container -> {
+                    if (!event.getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
+
+                    container.runActions(event, event.getData().getUsername());
+                });
+            });
+
+            twitchClient.getEventManager().onEvent(ChannelSubscribeEvent.class, event -> {
+                List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(2);
+                list.forEach(container -> {
+                    if (!event.getBroadcasterUserId().equalsIgnoreCase(container.getTwitchChannelId())) return;
+
+                    container.runActions(null, event.getUserName());
+                });
+            });
+        } catch (Exception exception) {
+            Sentry.captureException(exception);
+            log.error("Failed to create Twitch Client.", exception);
         }
-
-        twitchClient.getEventManager().onEvent(RewardRedeemedEvent.class, event -> {
-            List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(0);
-            list.forEach(container -> {
-                if (!event.getRedemption().getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
-
-                if (container.getExtraArgument() == null || event.getRedemption().getReward().getId().equals(container.getExtraArgument())) {
-                    container.runActions(event, event.getRedemption().getUserInput());
-                }
-            });
-        });
-
-        twitchClient.getEventManager().onEvent(FollowingEvent.class, event -> {
-            List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(1);
-            list.forEach(container -> {
-                if (!event.getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
-
-                container.runActions(event, event.getData().getUsername());
-            });
-        });
-
-        twitchClient.getEventManager().onEvent(ChannelSubscribeEvent.class, event -> {
-            List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(2);
-            list.forEach(container -> {
-                if (!event.getBroadcasterUserId().equalsIgnoreCase(container.getTwitchChannelId())) return;
-
-                container.runActions(null, event.getUserName());
-            });
-        });
 
         log.info("Initializing Twitter Client...");
 
@@ -234,13 +239,13 @@ public class Notifier {
 
         log.info("Initializing Reddit Client...");
 
-        redditClient = Reddit4J
-                .rateLimited()
-                .setClientId(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.id"))
-                .setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.secret"))
-                .setUserAgent("Ree6Bot/" + BotWorker.getBuild() + " (by /u/PrestiSchmesti)");
-
         try {
+            redditClient = Reddit4J
+                    .rateLimited()
+                    .setClientId(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.id"))
+                    .setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.secret"))
+                    .setUserAgent("Ree6Bot/" + BotWorker.getBuild() + " (by /u/PrestiSchmesti)");
+
             redditClient.userlessConnect();
             createRedditPostStream();
         } catch (Exception exception) {
@@ -270,6 +275,7 @@ public class Notifier {
                 .username(Main.getInstance().getConfig().getConfiguration().getString("instagram.username"))
                 .password(Main.getInstance().getConfig().getConfiguration().getString("instagram.password"))
                 .onChallenge(challengeHandler).build();
+
         instagramClient.sendLoginRequest().exceptionally(throwable -> {
             if (Data.isDebug()) {
                 log.error("Failed to login to Instagram API, you can ignore this if you don't use Instagram.", throwable);
@@ -718,16 +724,15 @@ public class Notifier {
                     List<VideoResult> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
                     if (!playlistItemList.isEmpty()) {
                         for (VideoResult playlistItem : playlistItemList) {
-                            if (Data.isDebug()) {
-                                Main.getInstance().getAnalyticsLogger().debug("Video: " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate());
-                                Main.getInstance().getAnalyticsLogger().debug("Current: " + System.currentTimeMillis() + " | " + (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) + " | " + playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis())));
-                            }
 
-                            if (playlistItem.getUploadDate() != -1 && playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()
-                                    && !playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis()))) {
-                                if (Data.isDebug()) {
-                                    Main.getInstance().getAnalyticsLogger().debug("Passed! -> " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate());
-                                }
+                            Main.getInstance().logAnalytic("Video: " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate());
+                            Main.getInstance().logAnalytic("Current: " + System.currentTimeMillis() + " | " + (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) + " | " + playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis())));
+
+                            if (playlistItem.getUploadDate() != -1 && (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis() ||
+                                    (playlistItem.getTimeAgo() > 0 && Duration.ofMinutes(5).toMillis() >= playlistItem.getTimeAgo())) &&
+                                    playlistItem.getActualUploadDate() != null && !playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis()))) {
+
+                                Main.getInstance().logAnalytic("Passed! -> " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate());
                                 // Create Webhook Message.
                                 WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
@@ -930,9 +935,9 @@ public class Notifier {
                         webhooks.forEach(webhook -> {
                             String message = webhook.getMessage()
                                     .replace("%title%", redditPost.getTitle())
-                                            .replace("%author%", redditPost.getAuthor())
-                                            .replace("%name%", redditPost.getSubreddit())
-                                            .replace("%url%", redditPost.getUrl());
+                                    .replace("%author%", redditPost.getAuthor())
+                                    .replace("%name%", redditPost.getSubreddit())
+                                    .replace("%url%", redditPost.getUrl());
                             webhookMessageBuilder.setContent(message);
                             WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
                         });
@@ -1203,9 +1208,9 @@ public class Notifier {
                             webhooks.forEach(webhook -> {
                                 String message = webhook.getMessage()
                                         .replace("%description%", post.getDescription())
-                                                .replace("%author%", user.getName())
-                                                .replace("%name%", user.getDisplayName())
-                                                .replace("%url%", "https://tiktok.com/share/video/" + post.getId());
+                                        .replace("%author%", user.getName())
+                                        .replace("%name%", user.getDisplayName())
+                                        .replace("%url%", "https://tiktok.com/share/video/" + post.getId());
                                 webhookMessageBuilder.setContent(message);
                                 WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
                             });
