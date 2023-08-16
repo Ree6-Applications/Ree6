@@ -26,9 +26,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * SpotifyAPIHandler.
+ * API Handler class used to work quicker and easier with the Spotify API..<br>
  *
- * @author Kay-Bilger
+ * Original Author: <a href="https://github.com/sedmelluq/lavaplayer/issues/519#issuecomment-691219176">Kay-Bilger</a>
  */
 @Slf4j
 public class SpotifyAPIHandler {
@@ -41,6 +41,7 @@ public class SpotifyAPIHandler {
     /**
      * The Spotify API-Handler.
      */
+    @Getter
     public static SpotifyAPIHandler instance;
     
     /**
@@ -70,7 +71,7 @@ public class SpotifyAPIHandler {
      * Initialize the Spotify API.
      *
      * @throws ParseException         if the response is not a Valid JSON.
-     * @throws SpotifyWebApiException if the and error occurs.
+     * @throws SpotifyWebApiException if an error occurs.
      * @throws IOException            if there was a network error.
      */
     public void initSpotify() throws ParseException, SpotifyWebApiException, IOException {
@@ -100,7 +101,7 @@ public class SpotifyAPIHandler {
      * @param trackId The Track ID.
      * @return a {@link Track} Object.
      * @throws ParseException         if the response is not a Valid JSON.
-     * @throws SpotifyWebApiException if the and error occurs.
+     * @throws SpotifyWebApiException if an error occurs.
      * @throws IOException            if there was a network error.
      */
     public Track getTrack(String trackId) throws ParseException, SpotifyWebApiException, IOException {
@@ -160,7 +161,7 @@ public class SpotifyAPIHandler {
      * @param trackID The Track ID.
      * @return The Artist and Track Name.
      * @throws ParseException         if the response is not a Valid JSON.
-     * @throws SpotifyWebApiException if the and error occurs.
+     * @throws SpotifyWebApiException if an error occurs.
      * @throws IOException            if there was a network error.
      */
     public String getArtistAndName(String trackID) throws ParseException, SpotifyWebApiException, IOException {
@@ -183,7 +184,7 @@ public class SpotifyAPIHandler {
      * @param link The Spotify Playlist Link.
      * @return A List with all Track names.
      * @throws ParseException         if the response is not a Valid JSON.
-     * @throws SpotifyWebApiException if the and error occurs.
+     * @throws SpotifyWebApiException if an error occurs.
      * @throws IOException            if there was a network error.
      */
     public ArrayList<String> convert(String link) throws ParseException, SpotifyWebApiException, IOException {
@@ -231,14 +232,5 @@ public class SpotifyAPIHandler {
         }
 
         return new String[]{"None", "None"};
-    }
-
-    /**
-     * Get the Spotify API.
-     *
-     * @return The Spotify API.
-     */
-    public static SpotifyAPIHandler getInstance() {
-        return instance;
     }
 }

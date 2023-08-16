@@ -44,6 +44,8 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -199,6 +201,9 @@ public class Main {
             }
             Setting prefixSetting = SettingsManager.getDefault("chatprefix");
             prefixSetting.setValue(Data.getDefaultPrefix());
+
+            Setting languageSetting = SettingsManager.getDefault("configuration_language");
+            languageSetting.setValue("en_US");
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
@@ -262,34 +267,69 @@ public class Main {
                 log.info("Loading Notifier data.");
                 List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "FROM ChannelStats", null);
 
-                // Register all Twitch Channels.
-                getInstance().getNotifier().registerTwitchChannel(SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames());
-                getInstance().getNotifier().registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).toList());
+                try {
+                    // Register all Twitch Channels.
+                    getInstance().getNotifier().registerTwitchChannel(SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames());
+                    getInstance().getNotifier().registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).toList());
 
-                // Register the Event-handler.
-                getInstance().getNotifier().registerTwitchEventHandler();
+                    // Register the Event-handler.
+                    getInstance().getNotifier().registerTwitchEventHandler();
+                } catch (Exception exception) {
+                    log.error("Error while loading Twitch data: " + exception.getMessage());
+                    Sentry.captureException(exception);
+                }
 
-                // Register all Twitter Users.
-                getInstance().getNotifier().registerTwitterUser(SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames());
-                getInstance().getNotifier().registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).filter(Objects::nonNull).toList());
+                try {
+                    // Register all Twitter Users.
+                    getInstance().getNotifier().registerTwitterUser(SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames());
+                    getInstance().getNotifier().registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).filter(Objects::nonNull).toList());
+                } catch (Exception exception) {
+                    log.error("Error while loading Twitter data: " + exception.getMessage());
+                    Sentry.captureException(exception);
+                }
 
-                // Register all YouTube channels.
-                getInstance().getNotifier().registerYouTubeChannel(SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels());
-                getInstance().getNotifier().registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).filter(Objects::nonNull).toList());
+                try {
+                    // Register all YouTube channels.
+                    getInstance().getNotifier().registerYouTubeChannel(SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels());
+                    getInstance().getNotifier().registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).filter(Objects::nonNull).toList());
+                } catch (Exception exception) {
+                    log.error("Error while loading YouTube data: " + exception.getMessage());
+                    Sentry.captureException(exception);
+                }
 
-                // Register all Reddit Subreddits.
-                getInstance().getNotifier().registerSubreddit(SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits());
-                getInstance().getNotifier().registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).filter(Objects::nonNull).toList());
+                try {
+                    // Register all Reddit Subreddits.
+                    getInstance().getNotifier().registerSubreddit(SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits());
+                    getInstance().getNotifier().registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).filter(Objects::nonNull).toList());
+                } catch (Exception exception) {
+                    log.error("Error while loading Reddit data: " + exception.getMessage());
+                    Sentry.captureException(exception);
+                }
 
-                // Register all Instagram Users.
-                getInstance().getNotifier().registerInstagramUser(SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers());
-                getInstance().getNotifier().registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
+                try {
+                    // Register all Instagram Users.
+                    getInstance().getNotifier().registerInstagramUser(SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers());
+                    getInstance().getNotifier().registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
+                } catch (Exception exception) {
+                    log.error("Error while loading Instagram data: " + exception.getMessage());
+                    Sentry.captureException(exception);
+                }
 
-                // Register all TikTok Users.
-                getInstance().getNotifier().registerTikTokUser(SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames().stream().map(Long::parseLong).toList());
+                try {
+                    // Register all TikTok Users.
+                    getInstance().getNotifier().registerTikTokUser(SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames().stream().map(Long::parseLong).toList());
+                } catch (Exception exception) {
+                    log.error("Error while loading TikTok data: " + exception.getMessage());
+                    Sentry.captureException(exception);
+                }
 
-                // Register all RSS Feeds.
-                getInstance().getNotifier().registerRSS(SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls());
+                try {
+                    // Register all RSS Feeds.
+                    getInstance().getNotifier().registerRSS(SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls());
+                } catch (Exception exception) {
+                    log.error("Error while loading RSS data: " + exception.getMessage());
+                    Sentry.captureException(exception);
+                }
             }, t -> Sentry.captureException(t.getCause()));
         }
 
@@ -581,20 +621,38 @@ public class Main {
     public void createHeartbeatThread() {
         String heartbeatUrl = getInstance().getConfig().getConfiguration().getString("heartbeat.url", null);
 
-
         if (heartbeatUrl == null || heartbeatUrl.isBlank() || heartbeatUrl.equalsIgnoreCase("none"))
             return;
 
         ThreadUtil.createThread(x -> {
                     String formattedUrl = heartbeatUrl.replace("%ping%", String.valueOf(BotWorker.getShardManager().getAverageGatewayPing()));
                     try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(formattedUrl).GET().build())) {
-                        log.debug("Heartbeat sent!");
+                        Main.getInstance().logAnalytic("Heartbeat sent!");
                     } catch (Exception exception) {
                         log.warn("Heartbeat failed! Reporting to Sentry...");
                         Sentry.captureException(exception);
                     }
                 }, Sentry::captureException,
                 Duration.ofSeconds(getInstance().getConfig().getConfiguration().getInt("heartbeat.interval", 60)), true, true);
+    }
+
+    /**
+     * Method used to log analytics.
+     *
+     * @param message the message that should be logged.
+     */
+    public void logAnalytic(String message, Object... args) {
+        if (!Data.isDebug()) return;
+        getAnalyticsLogger().debug(message, args);
+    }
+
+    /**
+     * Retrieve the Instance of the Analytics Logger.
+     *
+     * @return {@link Logger} Instance of the Analytics Logger.
+     */
+    public Logger getAnalyticsLogger() {
+        return LoggerFactory.getLogger("analytics");
     }
 
     /**

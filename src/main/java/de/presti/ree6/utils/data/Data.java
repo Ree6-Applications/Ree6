@@ -104,6 +104,22 @@ public class Data {
     }
 
     /**
+     * Check if the bot should be able to send the recordings in chat.
+     * @return if the bot is allowed to send the recordings in chat.
+     */
+    public static boolean allowRecordingInChat() {
+        return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.allowRecordingInChat", false);
+    }
+
+    /**
+     * Get the configured default language.
+     * @return the default language from the config.
+     */
+    public static String getDefaultLanguage() {
+        return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.defaultLanguage", "en-GB");
+    }
+
+    /**
      * Get the configured Twitch Auth Url.
      * @return the Twitch Auth Url from the config.
      */

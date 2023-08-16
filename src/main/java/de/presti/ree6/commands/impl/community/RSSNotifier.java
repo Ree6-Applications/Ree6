@@ -9,10 +9,12 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.data.RegExUtil;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
@@ -118,7 +120,7 @@ public class RSSNotifier implements ICommand {
                 .addSubcommands(new SubcommandData("list", "List all RSS Feeds."))
                 .addSubcommands(new SubcommandData("add", "Add a RSS Notifier for a specific url.")
                         .addOption(OptionType.STRING, "url", "The RSS url.", true)
-                        .addOption(OptionType.CHANNEL, "channel", "The channel.", true))
+                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT)))
                         .addSubcommands(new SubcommandData("remove", "Remove a RSS Notifier for a specific url.")
                                 .addOption(OptionType.STRING, "url", "The RSS url of the Notifier.", true));
     }

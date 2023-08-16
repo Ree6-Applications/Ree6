@@ -1,7 +1,7 @@
 language:
   name: "English (UK)"
   locale: "en-GB"
-  version: "3.0.6"
+  version: "3.0.13"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **banned.**"

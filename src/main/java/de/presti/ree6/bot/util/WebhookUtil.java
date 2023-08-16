@@ -4,12 +4,12 @@ import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.logger.events.LogMessage;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.webhook.*;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,7 +60,7 @@ public class WebhookUtil {
      * @param isLog         is the Webhook Message a Log-Message?
      */
     public static void sendWebhook(LogMessage loggerMessage, WebhookMessage message, long webhookId, String webhookToken, boolean isLog) {
-        log.debug("Received a Webhook to send. (Log-Typ: {})", isLog ? loggerMessage != null ? loggerMessage.getType().name() : "NONE-LOG" : "NONE-LOG");
+        Main.getInstance().logAnalytic("Received a Webhook to send. (Log-Typ: {})", isLog ? loggerMessage != null ? loggerMessage.getType().name() : "NONE-LOG" : "NONE-LOG");
         // Check if the given data is valid.
         if (webhookToken.contains("Not setup!") || webhookId == 0) return;
 

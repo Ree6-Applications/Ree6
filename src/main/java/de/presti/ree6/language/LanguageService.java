@@ -2,6 +2,7 @@ package de.presti.ree6.language;
 
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.external.RequestUtility;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
@@ -286,7 +287,10 @@ public class LanguageService {
      */
     public static @NotNull String getByLocale(@NotNull DiscordLocale discordLocale, @NotNull String key, @Nullable Object... parameters) {
         if (discordLocale == DiscordLocale.UNKNOWN) return getDefault(key, parameters);
-        Language language = languageResources.containsKey(discordLocale) ? languageResources.get(discordLocale) : languageResources.get(DiscordLocale.ENGLISH_UK);
+
+        Language language = languageResources.containsKey(discordLocale) ? languageResources.get(discordLocale) :
+                languageResources.get(DiscordLocale.from(Data.getDefaultLanguage()));
+        
         return language != null ? language.getResource(key, parameters) : "Missing language resource!";
     }
 

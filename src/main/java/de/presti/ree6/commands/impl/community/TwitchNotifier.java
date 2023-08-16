@@ -8,10 +8,12 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
@@ -118,7 +120,7 @@ public class TwitchNotifier implements ICommand {
                 .addSubcommands(new SubcommandData("list", "List all Twitch channels."))
                 .addSubcommands(new SubcommandData("add", "Add a Twitch Notifier for a specific channel.")
                         .addOption(OptionType.STRING, "name", "The Twitch channel name.", true)
-                        .addOption(OptionType.CHANNEL, "channel", "The channel.", true)
+                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
                         .addOption(OptionType.STRING, "message", "Custom announcement message.", false))
                 .addSubcommands(new SubcommandData("remove", "Remove a Twitch Notifier for a specific channel.")
                         .addOption(OptionType.STRING, "name", "The Twitch channel name of the Notifier.", true));
