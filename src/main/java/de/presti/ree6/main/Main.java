@@ -621,7 +621,6 @@ public class Main {
     public void createHeartbeatThread() {
         String heartbeatUrl = getInstance().getConfig().getConfiguration().getString("heartbeat.url", null);
 
-
         if (heartbeatUrl == null || heartbeatUrl.isBlank() || heartbeatUrl.equalsIgnoreCase("none"))
             return;
 
@@ -639,6 +638,7 @@ public class Main {
 
     /**
      * Method used to log analytics.
+     *
      * @param message the message that should be logged.
      */
     public void logAnalytic(String message, Object... args) {

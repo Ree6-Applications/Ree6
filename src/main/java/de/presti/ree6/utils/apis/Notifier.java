@@ -725,8 +725,9 @@ public class Notifier {
                     if (!playlistItemList.isEmpty()) {
                         for (VideoResult playlistItem : playlistItemList) {
 
-                            Main.getInstance().logAnalytic("Video: " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate());
-                            Main.getInstance().logAnalytic("Current: " + System.currentTimeMillis() + " | " + (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) + " | " + playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis())));
+                            Main.getInstance().logAnalytic("Video: " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate() + " | " + playlistItem.getTimeAgo());
+                            Main.getInstance().logAnalytic("Current: " + System.currentTimeMillis() + " | " + (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) + " | "
+                                    + playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis())) + " | " + (playlistItem.getTimeAgo() > 0 && Duration.ofMinutes(5).toMillis() >= playlistItem.getTimeAgo()));
 
                             if (playlistItem.getUploadDate() != -1 && (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis() ||
                                     (playlistItem.getTimeAgo() > 0 && Duration.ofMinutes(5).toMillis() >= playlistItem.getTimeAgo())) &&
