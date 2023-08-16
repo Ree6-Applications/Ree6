@@ -11,6 +11,7 @@ import de.presti.ree6.sql.entities.Tickets;
 import de.presti.ree6.utils.data.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.ChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
@@ -18,6 +19,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -106,8 +108,8 @@ public class Ticket implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("tickets", LanguageService.getDefault("command.description.tickets"))
-                .addOption(OptionType.CHANNEL, "supportchannel", "The channel that should have the ticket creation message.", true)
-                .addOption(OptionType.CHANNEL, "logchannel", "The channel that should receive the transcripts.", true);
+                .addOptions(new OptionData(OptionType.CHANNEL, "supportchannel", "The channel that should have the ticket creation message.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT),
+                        new OptionData(OptionType.CHANNEL, "logchannel", "The channel that should receive the transcripts.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT));
     }
 
     /**

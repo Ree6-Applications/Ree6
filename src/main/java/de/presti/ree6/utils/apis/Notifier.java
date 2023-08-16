@@ -718,8 +718,16 @@ public class Notifier {
                     List<VideoResult> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
                     if (!playlistItemList.isEmpty()) {
                         for (VideoResult playlistItem : playlistItemList) {
+                            if (Data.isDebug()) {
+                                Main.getInstance().getAnalyticsLogger().debug("Video: " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate());
+                                Main.getInstance().getAnalyticsLogger().debug("Current: " + System.currentTimeMillis() + " | " + (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) + " | " + playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis())));
+                            }
+
                             if (playlistItem.getUploadDate() != -1 && playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()
                                     && !playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis()))) {
+                                if (Data.isDebug()) {
+                                    Main.getInstance().getAnalyticsLogger().debug("Passed! -> " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate());
+                                }
                                 // Create Webhook Message.
                                 WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 

@@ -44,6 +44,8 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -591,13 +593,21 @@ public class Main {
         ThreadUtil.createThread(x -> {
                     String formattedUrl = heartbeatUrl.replace("%ping%", String.valueOf(BotWorker.getShardManager().getAverageGatewayPing()));
                     try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(formattedUrl).GET().build())) {
-                        log.debug("Heartbeat sent!");
+                        Main.getInstance().getAnalyticsLogger().debug("Heartbeat sent!");
                     } catch (Exception exception) {
                         log.warn("Heartbeat failed! Reporting to Sentry...");
                         Sentry.captureException(exception);
                     }
                 }, Sentry::captureException,
                 Duration.ofSeconds(getInstance().getConfig().getConfiguration().getInt("heartbeat.interval", 60)), true, true);
+    }
+
+    /**
+     * Retrieve the Instance of the Analytics Logger.
+     * @return {@link Logger} Instance of the Analytics Logger.
+     */
+    public Logger getAnalyticsLogger() {
+        return LoggerFactory.getLogger("analytics");
     }
 
     /**

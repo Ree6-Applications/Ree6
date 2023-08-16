@@ -12,10 +12,12 @@ import de.presti.wrapper.YouTubeWrapper;
 import de.presti.wrapper.entities.channel.ChannelResult;
 import de.presti.wrapper.entities.search.ChannelSearchResult;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
@@ -175,7 +177,7 @@ public class YouTubeNotifier implements ICommand {
                 .addSubcommands(new SubcommandData("list", "List all YouTube channels."))
                 .addSubcommands(new SubcommandData("add", "Add a YouTube Notifier for a specific channel.")
                         .addOption(OptionType.STRING, "url", "The YouTube channel url.", true)
-                        .addOption(OptionType.CHANNEL, "channel", "The channel.", true)
+                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
                         .addOption(OptionType.STRING, "message", "Custom announcement message.", false))
                 .addSubcommands(new SubcommandData("remove", "Remove a YouTube Notifier for a specific channel.")
                         .addOption(OptionType.STRING, "name", "The YouTube channel name or id of the Notifier.", true));
