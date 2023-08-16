@@ -26,9 +26,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * SpotifyAPIHandler.
+ * API Handler class used to work quicker and easier with the Spotify API..<br>
  *
- * @author <a href="https://github.com/sedmelluq/lavaplayer/issues/519#issuecomment-691219176">Kay-Bilger</a>
+ * Original Author: <a href="https://github.com/sedmelluq/lavaplayer/issues/519#issuecomment-691219176">Kay-Bilger</a>
  */
 @Slf4j
 public class SpotifyAPIHandler {
