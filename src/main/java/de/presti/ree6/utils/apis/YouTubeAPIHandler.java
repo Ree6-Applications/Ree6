@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.apis;
 
+import de.presti.ree6.utils.data.RegExUtil;
 import de.presti.wrapper.YouTubeWrapper;
 import de.presti.wrapper.entities.VideoResult;
 import de.presti.wrapper.entities.channel.ChannelResult;
@@ -8,11 +9,13 @@ import de.presti.wrapper.entities.channel.ChannelVideoResult;
 import de.presti.wrapper.entities.search.ChannelSearchResult;
 import de.presti.wrapper.entities.search.SearchResult;
 import io.sentry.Sentry;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 // TODO:: check if there is a way to make this more efficient, maybe use a cache system or merge multiple requests into one and split the result for further use again?
 
@@ -26,6 +29,12 @@ public class YouTubeAPIHandler {
      * The YouTube API-Handler.
      */
     private static YouTubeAPIHandler instance;
+
+    /**
+     * The Pattern for YouTube Links.
+     */
+    @Getter
+    private static final Pattern pattern = Pattern.compile(RegExUtil.YOUTUBE_REGEX);
 
     /**
      * Constructor.

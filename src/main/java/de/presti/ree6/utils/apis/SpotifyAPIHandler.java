@@ -70,7 +70,7 @@ public class SpotifyAPIHandler {
      * Initialize the Spotify API.
      *
      * @throws ParseException         if the response is not a Valid JSON.
-     * @throws SpotifyWebApiException if the and error occurs.
+     * @throws SpotifyWebApiException if an error occurs.
      * @throws IOException            if there was a network error.
      */
     public void initSpotify() throws ParseException, SpotifyWebApiException, IOException {

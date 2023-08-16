@@ -30,4 +30,9 @@ public class RegExUtil {
      */
     public static final String BLERP_PAGE_REGEX = "https:\\/\\/cdn\\.blerp\\.com\\/normalized\\/[a-zA-Z0-9]+";
 
+    /**
+     * The Regex for YouTube Links.
+     */
+    public static final String YOUTUBE_REGEX = "^(?:(?:https?:\\/\\/)?(?:www\\.)?youtu\\.be\\/|^(?:(?:(?:https?:\\/\\/)?(?:www\\.)?youtube\\.com\\/watch\\?.*v=)|(?:https?:\\/\\/)?(?:www\\.)?youtube\\.com\\/v\\/))([a-zA-Z0-9_-]{11})";
+
 }

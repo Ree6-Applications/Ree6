@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
 
 /**
  * Wrapper class that handles most Music related stuff.
@@ -292,7 +293,8 @@ public class MusicWorker {
 
     /**
      * Play a specific song.
-     * @param value The song name or url.
+     *
+     * @param value        The song name or url.
      * @param commandEvent The command event.
      */
     public void playSong(String value, CommandEvent commandEvent) {
@@ -335,6 +337,13 @@ public class MusicWorker {
             }
 
             if (!isspotify) {
+                if (value.contains("youtu.be/") || value.contains("youtube.com/")) {
+                    Matcher matcher = YouTubeAPIHandler.getPattern().matcher(value);
+                    if (matcher.find()) {
+                        value = matcher.group(0);
+                    }
+                }
+
                 loadAndPlay(channel, Objects.requireNonNull(member.getVoiceState()).getChannel(), value, interactionHook, false);
             } else {
                 if (spotiftrackinfos.isEmpty()) {
