@@ -196,7 +196,7 @@ public class MusicWorker {
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(), Data.getWebsite(), guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
                             .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer"))
-                            .setThumbnail(guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
+                            .setImage(track.getInfo().artworkUrl)
                             .setColor(Color.GREEN)
                             .setDescription(LanguageService.getByGuild(guild, "message.music.queueAdded.default", FormatUtil.filter(track.getInfo().title)))
                             .setFooter(guild.getName() + " - " + Data.getAdvertisement(), guild.getIconUrl()), 5, messageChannel, interactionHook);
