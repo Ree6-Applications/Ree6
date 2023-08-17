@@ -1,7 +1,7 @@
 language:
   name: "Czech"
   locale: "cs"
-  version: "3.0.6"
+  version: "3.0.13"
   author: "Pogy__"
 logging:
   banned: ":airplane_departure: %s **zablokován.**"
@@ -193,6 +193,7 @@ label:
   musicQuizArtistGuess: "Uhádněte interpreta Hudební kvíz"
   musicQuizTitleGuess: "Uhádni jméno Hudební kvíz"
   rewards: "Odměny"
+  sendToChat: "Odeslat do chatu"
 message:
   default:
     usage: "Použití {guild_prefix}%s."
@@ -485,6 +486,8 @@ message:
     stopReason: "Nahrávání zastaveno."
     stopped: "Váš zvuk byl převeden a je nyní k dispozici ke stažení!"
     error: "Něco se pokazilo při převodu tvého zvuku!\nDůvod: %s"
+    inChat: "Váš záznam by měl být pod touto zprávou!"
+    notFound: "Požadovaný záznam se nám nepodařilo najít!"
   reactions:
     roleAssign: "Přidělili jste roli %s k reakci!"
     reactionNeeded: "You must respond to this message with the reaction you want to assign %s!"

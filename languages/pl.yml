@@ -1,7 +1,7 @@
 language:
   name: "Polish"
   locale: "pl"
-  version: "3.0.6"
+  version: "3.0.13"
   author: "Trust"
 logging:
   banned: ":airplane_departure: %s **zbanowany/a.**"
@@ -193,6 +193,7 @@ label:
   musicQuizArtistGuess: "Odgadanie artysty MusicQuizu"
   musicQuizTitleGuess: "Odgadnięcie tytułu MusicQuiz"
   rewards: "Nagrody"
+  sendToChat: "Wyślij w czat"
 message:
   default:
     usage: "Użycie {guild_prefix}%s."
@@ -485,6 +486,8 @@ message:
     stopReason: "Nagrywanie zatrzymane."
     stopped: "Twój pliko audio został skonwertowany i jest teraz dostępny do pobrania!"
     error: "Coś poszło nie tak podczas konwersji twojego plika audio!\nPowód: %s"
+    inChat: "Twoje nagranie powinno znajdować się poniżej tej wiadomości!"
+    notFound: "Nie mogliśmy znaleźć żądanego nagrywania!"
   reactions:
     roleAssign: "Przypisałeś rolę %s do Reakcji!"
     reactionNeeded: "Musisz zareagować do wiadomości z reakcją, do której chcesz przypisać %s!"

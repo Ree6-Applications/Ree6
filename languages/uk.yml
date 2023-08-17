@@ -1,7 +1,7 @@
 language:
   name: "Ukrainian"
   locale: "uk"
-  version: "3.0.6"
+  version: "3.0.13"
   author: "xlanyleeet"
 logging:
   banned: ":airplane_departure: %s **заблоковано.**"
@@ -193,6 +193,7 @@ label:
   musicQuizArtistGuess: "Вгадування виконавця MusicQuiz"
   musicQuizTitleGuess: "Вгадування назви MusicQuiz"
   rewards: "Винагороди"
+  sendToChat: "Надішліть його в чат"
 message:
   default:
     usage: "Використання {guild_prefix}%s."
@@ -485,6 +486,8 @@ message:
     stopReason: "Запис зупинено."
     stopped: "Ваш аудіо перетворено і тепер доступно для завантаження!"
     error: "Щось пішло не так під час перетворення вашого аудіо!\nПричина: %s"
+    inChat: "Ваш запис має бути під цим повідомленням!"
+    notFound: "Ми не змогли знайти запитуваний запис!"
   reactions:
     roleAssign: "Ви призначили роль %s на Реакцію!"
     reactionNeeded: "Ви повинні відреагувати на повідомлення з реакцією, до якої хочете призначити %s!"
