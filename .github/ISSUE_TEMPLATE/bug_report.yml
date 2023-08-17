@@ -32,8 +32,8 @@ body:
       label: Version
       description: What version of our software are you running?
       options:
-        - v2 (STS)
         - v3 (Current)
+        - v2 (STS)
     validations:
       required: true
   - type: textarea
