@@ -198,7 +198,7 @@ public class Config {
         String configVersion = yamlFile.getString("config.version", "1.9.0");
 
         if (compareVersion(configVersion, BotWorker.getBuild()) || configVersion.equals(BotWorker.getBuild()) ||
-                configVersion.equals("3.0.8"))
+                configVersion.equals("3.0.13"))
             return;
 
         Map<String, Object> resources = yamlFile.getValues(true);
