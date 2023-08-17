@@ -1,5 +1,6 @@
 package de.presti.ree6.main;
 
+import best.azura.eventbus.core.EventBus;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.pubsub.PubSubSubscription;
@@ -78,6 +79,11 @@ public class Main {
     Notifier notifier;
 
     /**
+     * Instance of the EventBus, used to manage the Events.
+     */
+    EventBus eventBus;
+
+    /**
      * Instance of the Command.
      */
     CommandManager commandManager;
@@ -124,6 +130,9 @@ public class Main {
 
         // Create the Main instance.
         instance = new Main();
+
+        // Create an Instance of the EventBus.
+        getInstance().setEventBus(new EventBus());
 
         // Create the LoggerQueue Instance.
         getInstance().setLoggerQueue(new LoggerQueue());

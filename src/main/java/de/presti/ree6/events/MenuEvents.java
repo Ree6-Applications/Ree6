@@ -264,7 +264,7 @@ public class MenuEvents extends ListenerAdapter {
                 GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild());
 
                 if (guildMusicManager != null) {
-                    Main.getInstance().getMusicWorker().skipTrack(event.getChannel(), event.getHook(), 1, true);
+                    Main.getInstance().getMusicWorker().skipTrack(event.getChannel(), event.getHook(), 1, false);
                 } else {
                     Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.music.notConnected"),
                             event.getChannel(), event.getHook());
@@ -321,7 +321,7 @@ public class MenuEvents extends ListenerAdapter {
 
             case "re_music_add" -> {
                 Modal.Builder builder = Modal.create("re_music_add_modal", LanguageService.getByGuild(event.getGuild(), "label.queueAdd"));
-                builder.addActionRow(TextInput.create("re_music_add_modal_song", LanguageService.getByGuild(event.getGuild(), "label.song"), TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(512).setMinLength(8).build());
+                builder.addActionRow(TextInput.create("re_music_add_modal_song", LanguageService.getByGuild(event.getGuild(), "label.song"), TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(512).setMinLength(4).build());
                 event.replyModal(builder.build()).queue();
             }
         }

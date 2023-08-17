@@ -249,6 +249,11 @@
             <artifactId>reflections</artifactId>
             <version>0.10.2</version>
         </dependency>
+        <dependency>
+            <groupId>best.azura</groupId>
+            <artifactId>Azura-Event-Bus</artifactId>
+            <version>3.0.2</version>
+        </dependency>
 
         <!-- Google -->
         <dependency>

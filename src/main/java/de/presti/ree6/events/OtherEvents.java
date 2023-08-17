@@ -41,6 +41,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
@@ -368,6 +369,21 @@ public class OtherEvents extends ListenerAdapter {
 
         if (!event.isGuildDeafened()) {
             event.getGuild().getSelfMember().deafen(true).queue();
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onMessageDelete(@NotNull MessageDeleteEvent event) {
+        super.onMessageDelete(event);
+
+        if (ArrayUtil.musicPanelList.containsKey(event.getGuild().getIdLong())) {
+            long id = ArrayUtil.musicPanelList.get(event.getGuild().getIdLong()).getIdLong();
+            if (id == event.getMessageIdLong()) {
+                ArrayUtil.musicPanelList.remove(event.getGuild().getIdLong());
+            }
         }
     }
 
