@@ -12,7 +12,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import de.presti.ree6.audio.music.source.RestrictedHttpAudioSourceManager;
+import de.presti.ree6.api.events.MusicPlayerStateChangeEvent;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
@@ -184,7 +184,7 @@ public class MusicWorker {
         final AudioChannel finalAudioChannel = audioChannel;
         MessageChannel messageChannel = channel;
 
-        playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
+        playerManager.loadItemOrdered(musicManager, trackUrl.trim(), new AudioLoadResultHandler() {
 
             /**
              * Just override the default trackLoaded with a simple play call.
@@ -240,6 +240,8 @@ public class MusicWorker {
              */
             @Override
             public void noMatches() {
+                Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guild, MusicPlayerStateChangeEvent.State.ERROR, null));
+
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(), Data.getWebsite(), guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
@@ -255,6 +257,8 @@ public class MusicWorker {
              */
             @Override
             public void loadFailed(FriendlyException exception) {
+                Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guild, MusicPlayerStateChangeEvent.State.ERROR, null));
+
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(), Data.getWebsite(), guild.getJDA().getSelfUser().getEffectiveAvatarUrl())

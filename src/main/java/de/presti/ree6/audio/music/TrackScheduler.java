@@ -5,7 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackState;
+import de.presti.ree6.api.events.MusicPlayerStateChangeEvent;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
@@ -89,7 +89,12 @@ public class TrackScheduler extends AudioEventAdapter {
         if (!player.startTrack(track, !force)) {
             if (!queue.offer(track)) {
                 log.error("[TrackScheduler] Couldn't offer a new Track!");
+                Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.ERROR, track));
+            } else {
+                Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.QUEUE_ADD, track));
             }
+        } else {
+            Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.PLAYING, track));
         }
     }
 
@@ -221,6 +226,8 @@ public class TrackScheduler extends AudioEventAdapter {
                         .setColor(Color.GREEN)
                         .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.songNext", FormatUtil.filter(track.getInfo().title)))
                         .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+
+            Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(textChannel.asGuildMessageChannel().getGuild(), MusicPlayerStateChangeEvent.State.PLAYING, track));
             player.startTrack(track.makeClone(), false);
         } else {
             if (!silent)
@@ -231,6 +238,8 @@ public class TrackScheduler extends AudioEventAdapter {
                         .setColor(Color.RED)
                         .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.songQueueReachedEnd"))
                         .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+
+            Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(textChannel.asGuildMessageChannel().getGuild(), MusicPlayerStateChangeEvent.State.QUEUE_EMPTY, null));
         }
     }
 
@@ -290,6 +299,8 @@ public class TrackScheduler extends AudioEventAdapter {
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         // Only start the next track if the end reason is suitable for it (FINISHED or
         // LOAD_FAILED)
+        if (endReason == AudioTrackEndReason.FINISHED)
+            Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.FINISHED, null));
 
         // Check if loop is toggled
         if (loop) {
@@ -300,6 +311,8 @@ public class TrackScheduler extends AudioEventAdapter {
                 if (loopTrack != null && player != null) {
                     player.startTrack(loopTrack, false);
                 } else {
+                    Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.ERROR, null));
+
                     if (getChannel() != null) {
                         Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                                 .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
@@ -314,6 +327,8 @@ public class TrackScheduler extends AudioEventAdapter {
                 }
                 // If there was a error cancel the loop, and go to the next song in the playlist.
             } else if (endReason == AudioTrackEndReason.LOAD_FAILED) {
+                Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.ERROR, null));
+
                 if (getChannel() != null) {
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
@@ -335,6 +350,7 @@ public class TrackScheduler extends AudioEventAdapter {
             if (endReason.mayStartNext) {
                 // check if there was an error on the current song if so inform user.
                 if (endReason == AudioTrackEndReason.LOAD_FAILED && getChannel() != null) {
+                    Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.ERROR, null));
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), Data.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                             .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer"))
@@ -357,6 +373,7 @@ public class TrackScheduler extends AudioEventAdapter {
     public void stopAll(InteractionHook interactionHook) {
         EmbedBuilder em = new EmbedBuilder();
         if (Main.getInstance().getMusicWorker().isConnected(guildMusicManager.getGuild()) || getPlayer().getPlayingTrack() != null) {
+            Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.STOPPED, null));
 
             guildMusicManager.getPlayer().stopTrack();
 

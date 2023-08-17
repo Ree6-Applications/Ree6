@@ -46,6 +46,16 @@ public class FormatUtil {
     public static final String STOP_EMOJI  = "\u23F9";
 
     /**
+     * A String containing the UTF-8 character for a repeat button.
+     */
+    public static final String LOOP_EMOJI = "\u221E";
+
+    /**
+     * A String containing the UTF-8 character for a shuffle button.
+     */
+    public static final String SHUFFLE_EMOJI = "\uD83D\uDD00";
+
+    /**
      * Constructor should not be called, since it is a utility class that doesn't need an instance.
      * @throws IllegalStateException it is a utility class.
      */

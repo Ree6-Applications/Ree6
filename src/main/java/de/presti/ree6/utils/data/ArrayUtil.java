@@ -50,6 +50,11 @@ public class ArrayUtil {
     public static final Map<User, Long> voiceJoined = new HashMap<>();
 
     /**
+     * HashMap used to store Guild ID and the message of a music Panel.
+     */
+    public static final Map<Long, Message> musicPanelList = new HashMap<>();
+
+    /**
      * HashMap used to store a users Ids, to keep them from spamming commands.
      */
     public static final List<String> commandCooldown = new ArrayList<>();
