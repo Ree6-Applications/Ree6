@@ -37,7 +37,7 @@ public class Play implements ICommand {
             OptionMapping valueOption = commandEvent.getOption("name");
 
             if (valueOption != null) {
-                Main.getInstance().getMusicWorker().playSong(valueOption.getAsString().trim(), commandEvent);
+                Main.getInstance().getMusicWorker().playSong(valueOption.getAsString(), commandEvent);
             } else {
                 EmbedBuilder em = new EmbedBuilder();
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
@@ -62,7 +62,7 @@ public class Play implements ICommand {
                 em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
                 commandEvent.reply(em.build(), 5);
             } else {
-                Main.getInstance().getMusicWorker().playSong(commandEvent.getArguments()[0].trim(), commandEvent);
+                Main.getInstance().getMusicWorker().playSong(commandEvent.getArguments()[0], commandEvent);
             }
         }
 
