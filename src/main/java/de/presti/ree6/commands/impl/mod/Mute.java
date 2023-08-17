@@ -41,7 +41,7 @@ public class Mute implements ICommand {
                 OptionMapping timeOption = commandEvent.getOption("time");
                 OptionMapping reasonOption = commandEvent.getOption("reason");
 
-                if (targetOption != null && timeOption != null) {
+                if (targetOption != null && timeOption != null && targetOption.getAsMember() != null) {
                     long time;
                     try {
                         time = timeOption.getAsLong();
