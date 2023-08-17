@@ -1,7 +1,7 @@
 language:
   name: "German"
   locale: "de"
-  version: "3.0.6"
+  version: "3.0.13"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **gebannt.**"
@@ -193,6 +193,7 @@ label:
   musicQuizArtistGuess: "Musik Quiz Artist erraten"
   musicQuizTitleGuess: "Musik Quiz Title erraten"
   rewards: "Belohnungen"
+  sendToChat: "In den Chat senden"
 message:
   default:
     usage: "Nutzung {guild_prefix}%s."
@@ -485,6 +486,8 @@ message:
     stopReason: "Die Aufnahme wurde beendet."
     stopped: "Die Aufnahme wurde nun konvertiert und ist zum Download bereit! "
     error: "Etwas ist beim konvertieren schiefgelaufen!\nGrund: %s"
+    inChat: "Deine Aufnahme sollte unter dieser Nachricht sein!"
+    notFound: "Wir konnten leider keine Aufnahme finden!"
   reactions:
     roleAssign: "Du hast die Rolle %s zur Reaktion zugewiesen!"
     reactionNeeded: "Du musst auf diese Nachricht mit der Reaction reagieren, welche du der Rolle %s zuweisen willst!"

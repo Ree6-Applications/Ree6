@@ -1,7 +1,7 @@
 language:
   name: "Turkish"
   locale: "tr"
-  version: "3.0.6"
+  version: "3.0.13"
   author: "ImNotArian"
 logging:
   banned: ":airplane_departure: %s **Yasaklandı.**"
@@ -193,6 +193,7 @@ label:
   musicQuizArtistGuess: "MusicQuiz Sanatçı Tahmini"
   musicQuizTitleGuess: "MusicQuiz Başlık Tahmini"
   rewards: "Ödüller"
+  sendToChat: "Sohbete gönder"
 message:
   default:
     usage: "Kullanım {guild_prefix}%s."
@@ -485,6 +486,8 @@ message:
     stopReason: "Kayıt durduruldu."
     stopped: "Audio'nuz dönüştürüldü ve artık indirilebilir!"
     error: "Sesiniz dönüştürülürken bir şeyler ters gitti!\nSebep: %s"
+    inChat: "Kaydınız bu mesajın altında olmalıdır!"
+    notFound: "İstenen Kaydı bulamadık!"
   reactions:
     roleAssign: "%s Rolünü Reaction'a atadınız!"
     reactionNeeded: "Bu mesaja, %s atamak istediğiniz tepkiyle tepki vermelisiniz!"

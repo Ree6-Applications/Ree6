@@ -1,7 +1,7 @@
 language:
   name: "Indonesia"
   locale: "id"
-  version: "3.0.6"
+  version: "3.0.13"
   author: "Gorengan_Hunter, SpyCat"
 logging:
   banned: ":airplane_departure: %s **telah diban.**"
@@ -193,6 +193,7 @@ label:
   musicQuizArtistGuess: "Menebak Artis MusicQuiz"
   musicQuizTitleGuess: "Menebak Judul MusicQuiz"
   rewards: "Hadiah"
+  sendToChat: "Kirimkan ke dalam Obrolan"
 message:
   default:
     usage: "Penggunaan {guild_prefix}%s."
@@ -485,6 +486,8 @@ message:
     stopReason: "Perekaman dihentikan."
     stopped: "Audiomu telah dibenarkan dan sekarang sudah bisa di download!"
     error: "Sesuatu ada yang salah saat membenarkan audiomu!\nAlasan: %s"
+    inChat: "Rekaman Anda seharusnya berada di bawah pesan ini!"
+    notFound: "Kami tidak dapat menemukan Rekaman yang diminta!"
   reactions:
     roleAssign: "Kamu telah menambahkan Role %s ke Reaction!"
     reactionNeeded: "Kamu harus react ke message ini dengan reaction yang kamu mau berikan ke %s!"

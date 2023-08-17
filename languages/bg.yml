@@ -1,7 +1,7 @@
 language:
   name: "Bulgarian"
   locale: "bg"
-  version: "3.0.6"
+  version: "3.0.13"
   author: "D3Y4N"
 logging:
   banned: ":airplane_departure: %s **блокиран.**"
@@ -193,6 +193,7 @@ label:
   musicQuizArtistGuess: "MusicQuiz Отгатване на изпълнител"
   musicQuizTitleGuess: "MusicQuiz Познай заглавието"
   rewards: "Награди"
+  sendToChat: "Изпратете го в чата"
 message:
   default:
     usage: "Употреба {guild_prefix}%s."
@@ -485,6 +486,8 @@ message:
     stopReason: "Записването спря."
     stopped: "Вашето аудио е конвертирано и вече е достъпно за изтегляне!"
     error: "Нещо се е объркало при конвертирането на вашето аудио!\nПричина: %s"
+    inChat: "Вашият запис трябва да е под това съобщение!"
+    notFound: "Не успяхме да намерим искания запис!"
   reactions:
     roleAssign: "Възложили сте ролята %s на реакцията!"
     reactionNeeded: "Трябва да отговорите на това съобщение с отговора, който искате да присвоите на %s!"
