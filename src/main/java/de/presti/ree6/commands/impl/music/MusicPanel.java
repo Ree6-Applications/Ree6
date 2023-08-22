@@ -64,7 +64,7 @@ public class MusicPanel implements ICommand {
         if (event.getState() == MusicPlayerStateChangeEvent.State.PLAYING) {
 
             embedBuilder1 = embedBuilder1
-                    .setImage(audioTrackInfo1 != null && !audioTrackInfo1.artworkUrl.isBlank() ? audioTrackInfo1.artworkUrl : "https://images.unsplash.com/photo-1546977463-943d58b78c19")
+                    .setImage(audioTrackInfo1 != null && (audioTrackInfo1.artworkUrl != null && !audioTrackInfo1.artworkUrl.isBlank()) ? audioTrackInfo1.artworkUrl : "https://images.unsplash.com/photo-1546977463-943d58b78c19")
                     .setTitle("**" + (audioTrackInfo1 != null ? LanguageService.getByGuild(event.getGuild(), "message.music.songInfoSlim", audioTrackInfo1.title, audioTrackInfo1.author)
                             : LanguageService.getByGuild(event.getGuild(), "message.music.notPlaying")) + "**");
         } else if (event.getState() != MusicPlayerStateChangeEvent.State.QUEUE_ADD) {
@@ -97,7 +97,7 @@ public class MusicPanel implements ICommand {
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setColor(Color.MAGENTA)
-                .setImage(audioTrackInfo != null && !audioTrackInfo.artworkUrl.isBlank() ? audioTrackInfo.artworkUrl : "https://images.unsplash.com/photo-1546977463-943d58b78c19")
+                .setImage(audioTrackInfo != null && (audioTrackInfo.artworkUrl != null && !audioTrackInfo.artworkUrl.isBlank()) ? audioTrackInfo.artworkUrl : "https://images.unsplash.com/photo-1546977463-943d58b78c19")
                 .setTitle("**" + (audioTrackInfo != null ? commandEvent.getResource("message.music.songInfoSlim", audioTrackInfo.title, audioTrackInfo.author)
                         : commandEvent.getResource("message.music.notPlaying")) + "**")
                 .setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
