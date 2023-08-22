@@ -22,6 +22,8 @@ import se.michaelthelin.spotify.requests.data.tracks.GetTrackRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +56,11 @@ public class SpotifyAPIHandler {
      */
     @Getter
     private boolean isSpotifyConnected = false;
+
+    /**
+     * The retries for each track id.
+     */
+    Map<String, Integer> retries = new HashMap<>();
 
     /**
      * Constructor.
@@ -106,11 +113,14 @@ public class SpotifyAPIHandler {
      */
     public Track getTrack(String trackId) throws ParseException, SpotifyWebApiException, IOException {
         if (!isSpotifyConnected) return null;
+        if (retries.getOrDefault(trackId, 0) >= 3) return null;
 
         try {
             return spotifyApi.getTrack(trackId).build().execute();
         } catch (UnauthorizedException unauthorizedException) {
             if (spotifyApi.getClientId() != null) {
+                retries.put(trackId, retries.getOrDefault(trackId, 0) + 1);
+
                 initSpotify();
                 return getTrack(trackId);
             } else {
@@ -134,7 +144,10 @@ public class SpotifyAPIHandler {
             Paging<PlaylistTrack> playlistTracks = playlist.getTracks();
 
             for (PlaylistTrack track : playlistTracks.getItems()) {
-                tracks.add(getTrack(track.getTrack().getId()));
+                Track track1 = getTrack(track.getTrack().getId());
+                if (track1 == null) continue;
+
+                tracks.add(track1);
             }
         } catch (UnauthorizedException unauthorizedException) {
             if (spotifyApi.getClientId() != null) {
