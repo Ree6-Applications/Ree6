@@ -147,20 +147,10 @@ public class InviteContainerManager {
         ArrayList<InviteContainer> containerList = new ArrayList<>();
 
         List<de.presti.ree6.sql.entities.Invite> inviteList = SQLSession.getSqlConnector().getSqlWorker().getInvites(guildId);
-        inviteList.stream()
-                .forEach(invite -> containerList.add(new InviteContainer(invite.getUserId(), invite.getGuild(), invite.getCode(), invite.getUses(),
+        inviteList.forEach(invite -> containerList.add(new InviteContainer(invite.getUserId(), invite.getGuild(), invite.getCode(), invite.getUses(),
                         false)));
 
         return containerList;
-    }
-
-    /**
-     * Get every deleted Invite of the current Session.
-     *
-     * @return {@link ArrayList<InviteContainer>} with every Invite deleted in the current Session.
-     */
-    public static ArrayList<InviteContainer> getDeletedInvites() {
-        return deletedInvites;
     }
 
 }
