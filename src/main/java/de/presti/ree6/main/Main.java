@@ -505,122 +505,143 @@ public class Main {
 
             if (!lastDay.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 
-                ArrayUtil.messageIDwithMessage.clear();
-                ArrayUtil.messageIDwithUser.clear();
+                try {
+                    ArrayUtil.messageIDwithMessage.clear();
+                    ArrayUtil.messageIDwithUser.clear();
 
-                BotWorker.getShardManager().getShards().forEach(jda ->
-                        BotWorker.setActivity(jda, Data.getStatus(), Activity.ActivityType.PLAYING));
+                    BotWorker.getShardManager().getShards().forEach(jda ->
+                            BotWorker.setActivity(jda, Data.getStatus(), Activity.ActivityType.PLAYING));
 
-                log.info("[Stats] ");
-                log.info("[Stats] Today's Stats:");
-                int guildSize = BotWorker.getShardManager().getGuilds().size(), userSize = BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum();
-                log.info("[Stats] Guilds: {}", guildSize);
-                log.info("[Stats] Overall Users: {}", userSize);
-                log.info("[Stats] ");
+                    log.info("[Stats] ");
+                    log.info("[Stats] Today's Stats:");
+                    int guildSize = BotWorker.getShardManager().getGuilds().size(), userSize = BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum();
+                    log.info("[Stats] Guilds: {}", guildSize);
+                    log.info("[Stats] Overall Users: {}", userSize);
+                    log.info("[Stats] ");
 
-                LocalDate yesterday = LocalDate.now().minusDays(1);
-                Statistics statistics = SQLSession.getSqlConnector().getSqlWorker().getStatistics(yesterday.getDayOfMonth(), yesterday.getMonthValue(), yesterday.getYear());
-                JsonObject jsonObject = statistics != null ? statistics.getStatsObject() : new JsonObject();
-                JsonObject guildStats = statistics != null && jsonObject.has("guild") ? jsonObject.getAsJsonObject("guild") : new JsonObject();
+                    LocalDate yesterday = LocalDate.now().minusDays(1);
+                    Statistics statistics = SQLSession.getSqlConnector().getSqlWorker().getStatistics(yesterday.getDayOfMonth(), yesterday.getMonthValue(), yesterday.getYear());
+                    JsonObject jsonObject = statistics != null ? statistics.getStatsObject() : new JsonObject();
+                    JsonObject guildStats = statistics != null && jsonObject.has("guild") ? jsonObject.getAsJsonObject("guild") : new JsonObject();
 
-                guildStats.addProperty("amount", guildSize);
-                guildStats.addProperty("users", userSize);
+                    guildStats.addProperty("amount", guildSize);
+                    guildStats.addProperty("users", userSize);
 
-                jsonObject.add("guild", guildStats);
+                    jsonObject.add("guild", guildStats);
 
-                SQLSession.getSqlConnector().getSqlWorker().updateStatistic(jsonObject);
+                    SQLSession.getSqlConnector().getSqlWorker().updateStatistic(jsonObject);
 
-                Calendar currentCalendar = Calendar.getInstance();
+                    Calendar currentCalendar = Calendar.getInstance();
 
-                SQLSession.getSqlConnector().getSqlWorker()
-                        .getBirthdays().stream().filter(birthday -> {
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(birthday.getBirthdate());
-                            return calendar.get(Calendar.MONTH) == currentCalendar.get(Calendar.MONTH) &&
-                                    calendar.get(Calendar.DAY_OF_MONTH) == currentCalendar.get(Calendar.DAY_OF_MONTH);
-                        }).forEach(birthday -> {
-                            TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
+                    SQLSession.getSqlConnector().getSqlWorker()
+                            .getBirthdays().stream().filter(birthday -> {
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTime(birthday.getBirthdate());
+                                return calendar.get(Calendar.MONTH) == currentCalendar.get(Calendar.MONTH) &&
+                                        calendar.get(Calendar.DAY_OF_MONTH) == currentCalendar.get(Calendar.DAY_OF_MONTH);
+                            }).forEach(birthday -> {
+                                TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
 
-                            if (textChannel != null && textChannel.canTalk())
-                                textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish", birthday.getUserId())).queue();
-                        });
+                                if (textChannel != null && textChannel.canTalk())
+                                    textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish", birthday.getUserId())).queue();
+                            });
 
-                lastDay = new SimpleDateFormat("dd").format(new Date());
+                    lastDay = new SimpleDateFormat("dd").format(new Date());
+                } catch (Exception exception) {
+                    log.error("Failed to update statistics!", exception);
+                    Sentry.captureException(exception);
+                }
             }
 
-            File storageTemp = new File("storage/tmp/");
-            File[] files = storageTemp.listFiles();
-            if (files != null) {
-                Arrays.stream(files).forEach(f -> {
-                    try {
-                        Files.deleteIfExists(f.toPath());
-                    } catch (IOException e) {
-                        log.error("Couldn't delete file " + f.getName(), e);
-                    }
-                });
+            try {
+                File storageTemp = new File("storage/tmp/");
+                File[] files = storageTemp.listFiles();
+                if (files != null) {
+                    Arrays.stream(files).forEach(f -> {
+                        try {
+                            Files.deleteIfExists(f.toPath());
+                        } catch (IOException e) {
+                            log.error("Couldn't delete file " + f.getName(), e);
+                        }
+                    });
+                }
+            } catch (Exception exception) {
+                log.error("Failed to clear temporal files!", exception);
+                Sentry.captureException(exception);
             }
 
-            for (ScheduledMessage scheduledMessage : SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ScheduledMessage(), "FROM ScheduledMessage", null)) {
-                if (!scheduledMessage.isRepeated()) {
-                    if (scheduledMessage.getLastExecute() == null) {
-                        if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
+            try {
+                for (ScheduledMessage scheduledMessage : SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ScheduledMessage(), "FROM ScheduledMessage", null)) {
+                    if (!scheduledMessage.isRepeated()) {
+                        if (scheduledMessage.getLastExecute() == null) {
+                            if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                            WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                    .setUsername(Data.getBotName() + "-Scheduler")
-                                    .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
-                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
+                                WebhookUtil.sendWebhook(new WebhookMessageBuilder()
+                                        .setUsername(Data.getBotName() + "-Scheduler")
+                                        .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
+                                        .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
+                            }
+                        } else {
                             SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
                         }
                     } else {
-                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
-                    }
-                } else {
-                    if (scheduledMessage.getLastUpdated() == null) {
-                        if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
+                        if (scheduledMessage.getLastUpdated() == null) {
+                            if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                            WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                    .setUsername(Data.getBotName() + "-Scheduler")
-                                    .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
-                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
+                                WebhookUtil.sendWebhook(new WebhookMessageBuilder()
+                                        .setUsername(Data.getBotName() + "-Scheduler")
+                                        .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
+                                        .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
-                            scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
-                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
-                        }
-                    } else {
-                        if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
+                                scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
+                            }
+                        } else {
+                            if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                            WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                    .setUsername(Data.getBotName() + "-Scheduler")
-                                    .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
-                                    .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
+                                WebhookUtil.sendWebhook(new WebhookMessageBuilder()
+                                        .setUsername(Data.getBotName() + "-Scheduler")
+                                        .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
+                                        .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
-                            scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
-                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
+                                scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
+                            }
                         }
                     }
                 }
+            } catch (Exception exception) {
+                log.error("Failed to run scheduled Messages.", exception);
+                Sentry.captureException(exception);
             }
 
-            // Need to load them all.
-            Main.getInstance().getNotifier().getCredentialManager().load();
+            try {
+                // Need to load them all.
+                Main.getInstance().getNotifier().getCredentialManager().load();
 
-            for (TwitchIntegration twitchIntegrations :
-                    SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "FROM TwitchIntegration", null)) {
+                for (TwitchIntegration twitchIntegrations :
+                        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "FROM TwitchIntegration", null)) {
 
-                CustomOAuth2Credential credential = CustomOAuth2Util.convert(twitchIntegrations);
+                    CustomOAuth2Credential credential = CustomOAuth2Util.convert(twitchIntegrations);
 
-                OAuth2Credential originalCredential = new OAuth2Credential("twitch", credential.getAccessToken(), credential.getRefreshToken(), credential.getUserId(), credential.getUserName(), credential.getExpiresIn(), credential.getScopes());
+                    OAuth2Credential originalCredential = new OAuth2Credential("twitch", credential.getAccessToken(), credential.getRefreshToken(), credential.getUserId(), credential.getUserName(), credential.getExpiresIn(), credential.getScopes());
 
-                if (!Main.getInstance().getNotifier().getTwitchSubscription().containsKey(credential.getUserId())) {
-                    PubSubSubscription[] subscriptions = new PubSubSubscription[3];
-                    subscriptions[0] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(originalCredential, twitchIntegrations.getChannelId());
-                    subscriptions[1] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForSubscriptionEvents(originalCredential, twitchIntegrations.getChannelId());
-                    subscriptions[2] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForFollowingEvents(originalCredential, twitchIntegrations.getChannelId());
+                    if (!Main.getInstance().getNotifier().getTwitchSubscription().containsKey(credential.getUserId())) {
+                        PubSubSubscription[] subscriptions = new PubSubSubscription[3];
+                        subscriptions[0] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(originalCredential, twitchIntegrations.getChannelId());
+                        subscriptions[1] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForSubscriptionEvents(originalCredential, twitchIntegrations.getChannelId());
+                        subscriptions[2] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForFollowingEvents(originalCredential, twitchIntegrations.getChannelId());
 
-                    Main.getInstance().getNotifier().getTwitchSubscription().put(credential.getUserId(), subscriptions);
+                        Main.getInstance().getNotifier().getTwitchSubscription().put(credential.getUserId(), subscriptions);
+                    }
                 }
+            } catch (Exception exception) {
+                log.error("Failed to load Twitch Credentials.", exception);
+                Sentry.captureException(exception);
             }
+
         }, null, Duration.ofMinutes(1), true, false);
     }
 
