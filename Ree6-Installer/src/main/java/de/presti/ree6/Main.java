@@ -11,10 +11,21 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
+/**
+ * Main class.
+ */
 public class Main {
 
+    /**
+     * The Config.
+     */
     private static final Config config = new Config();
 
+    /**
+     * Main method.
+     * @param args the args.
+     * @throws InterruptedException if the delay fails?
+     */
     public static void main(String[] args) throws InterruptedException {
         if (getJavaVersion() < 17) {
             print(String.format("""
@@ -73,6 +84,10 @@ public class Main {
                 dotPos > -1 ? dotPos : dashPos > -1 ? dashPos : 1));
     }
 
+    /**
+     * Configure Ree6.
+     * @throws InterruptedException if the delay fails?
+     */
     public static void config() throws InterruptedException {
         config.init();
 
@@ -86,11 +101,18 @@ public class Main {
         }
     }
 
+    /**
+     * Print something to the console.
+     * @param print the thing to print.
+     */
     public static void print(String print) {
         System.out.println();
         System.out.println(print);
     }
 
+    /**
+     * Clear the console.
+     */
     public static void clear() {
         try {
             if (System.getProperty("os.name").contains("Windows")) {
@@ -102,6 +124,11 @@ public class Main {
         }
     }
 
+    /**
+     * Set up the first step of the configuration.
+     * @throws InterruptedException if the delay fails?
+     * @throws IOException If something went wrong.
+     */
     public static void setupStepOne() throws InterruptedException, IOException {
         clear();
         print("Welcome to the setup System of Ree6!\nLets start by configuration the Config!\nPlease select one of these Database Types: MariaDB, SQLite, Postgres, H2, H2-Server");
@@ -127,6 +154,10 @@ public class Main {
         setupStepTwo();
     }
 
+    /**
+     * Setup the second step of the configuration.
+     * @throws IOException if something went wrong.
+     */
     public static void setupStepTwo() throws IOException {
         clear();
         print("The Database configuration looks fine!\nLets continue with our API-Keys!\nKeys marked with * are required!");
@@ -199,6 +230,9 @@ public class Main {
         }
     }
 
+    /**
+     * Update Ree6 to the latest version.
+     */
     public static void update() {
         print("Requesting version list from Github...");
         JSONArray jsonObject = new JSONArray(RequestUtility.request("https://api.github.com/repos/Ree6-Applications/Ree6/releases"));
@@ -230,6 +264,12 @@ public class Main {
         }
     }
 
+    /**
+     * Setup a generic database.
+     * @param typ the typ of the database.
+     * @param displayName the display name of the database.
+     * @throws IOException if something went wrong.
+     */
     public static void setupGenericDatabase(String typ, String displayName) throws IOException {
         clear();
         config.getConfiguration().set("hikari.misc.storage", typ);
@@ -258,6 +298,10 @@ public class Main {
         config.getConfiguration().save();
     }
 
+    /**
+     * Setup SQLite.
+     * @throws IOException if something went wrong.
+     */
     public static void setupSQLite() throws IOException {
         clear();
         config.getConfiguration().set("hikari.misc.storage", "sqlite");
@@ -267,6 +311,10 @@ public class Main {
         config.getConfiguration().save();
     }
 
+    /**
+     * Setup H2.
+     * @throws IOException if something went wrong.
+     */
     public static void setupH2(boolean server) throws IOException {
         clear();
         config.getConfiguration().set("hikari.misc.storage", server ? "h2-server" : "h2");
@@ -293,16 +341,30 @@ public class Main {
         config.getConfiguration().save();
     }
 
+    /**
+     * Get a value from the console.
+     * @return the value.
+     */
     public static String getValue() {
         return System.console().readLine();
     }
 
+    /**
+     * Get a value from the console or a default value.
+     * @param defaultValue the default value.
+     * @return the value.
+     */
     public static String getValueOrDefault(String defaultValue) {
         String value = getValue();
 
         return value.isBlank() ? defaultValue : value;
     }
 
+    /**
+     * Get a hidden value from the console or a default value.
+     * @param defaultValue the default value.
+     * @return the value.
+     */
     public static String getValueOrDefaultHidden(String defaultValue) {
         String value = String.valueOf(System.console().readPassword());
 

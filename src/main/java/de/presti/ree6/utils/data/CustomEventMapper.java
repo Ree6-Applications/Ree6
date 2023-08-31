@@ -23,10 +23,19 @@ import net.dv8tion.jda.api.events.role.update.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A Mapper that maps an Event to a EventTyp.
+ */
 public class CustomEventMapper {
 
+    /**
+     * The map for the CustomEventMapper.
+     */
     public static Map<Class<? extends GenericEvent>, CustomEventTyp> map = new HashMap<>();
 
+    /**
+     * Load the CustomEventMapper.
+     */
     public static void load() {
         map.put(GuildMemberJoinEvent.class, CustomEventTyp.MEMBER_JOIN);
         map.put(GuildMemberRemoveEvent.class, CustomEventTyp.MEMBER_LEAVE);
@@ -53,10 +62,20 @@ public class CustomEventMapper {
         map.put(ChannelUpdateNSFWEvent.class, CustomEventTyp.CHANNEL_UPDATE);
     }
 
+    /**
+     * Get the EventTyp for the given event class.
+     * @param clazz The event class.
+     * @return The EventTyp.
+     */
     public static CustomEventTyp getEventTyp(Class<? extends GenericEvent> clazz) {
         return map.get(clazz);
     }
 
+    /**
+     * Get the event class for the given EventTyp.
+     * @param typ The EventTyp.
+     * @return The event class.
+     */
     public static Class<? extends GenericEvent> getClass(CustomEventTyp typ) {
         for (Map.Entry<Class<? extends GenericEvent>, CustomEventTyp> entry : map.entrySet()) {
             if (entry.getValue() == typ) {

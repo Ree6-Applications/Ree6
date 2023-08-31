@@ -1,6 +1,7 @@
 package de.presti.ree6.game.core.base;
 
 import de.presti.ree6.bot.BotWorker;
+import lombok.Getter;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
@@ -12,6 +13,7 @@ public class GamePlayer {
     /**
      * The ID of the User.
      */
+    @Getter
     private final long relatedUserId;
 
     /**
@@ -22,6 +24,7 @@ public class GamePlayer {
     /**
      * The InteractionHook of the User.
      */
+    @Getter
     private InteractionHook interactionHook;
 
     /**
@@ -42,14 +45,6 @@ public class GamePlayer {
     }
 
     /**
-     * Get the ID of the User.
-     * @return The ID of the User.
-     */
-    public long getRelatedUserId() {
-        return relatedUserId;
-    }
-
-    /**
      * Get the {@link User} of the Player.
      * @return The {@link User} of the Player.
      */
@@ -66,13 +61,5 @@ public class GamePlayer {
      */
     public void setInteractionHook(InteractionHook interactionHook) {
         this.interactionHook = interactionHook;
-    }
-
-    /**
-     * Get the InteractionHook of the User.
-     * @return The InteractionHook of the User.
-     */
-    public InteractionHook getInteractionHook() {
-        return interactionHook;
     }
 }

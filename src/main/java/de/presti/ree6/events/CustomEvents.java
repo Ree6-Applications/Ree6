@@ -20,10 +20,20 @@ import java.util.Map;
 
 public class CustomEvents implements EventListener {
 
+    /**
+     * The cache for the CustomEvents.
+     */
     Map<CustomEventTyp, List<CustomEventContainer>> cache = new HashMap<>();
 
+    /**
+     * The last time the cache was checked.
+     */
     long lastCheck;
 
+    /**
+     * Listens for all events.
+     * @param event The event.
+     */
     @Override
     public void onEvent(@NotNull GenericEvent event) {
 
@@ -42,6 +52,11 @@ public class CustomEvents implements EventListener {
         }
     }
 
+    /**
+     * Run the cache entry for the given event.
+     * @param clazz The event class.
+     * @param guildId The guild id.
+     */
     public void runCacheEntry(Class<? extends GenericEvent> clazz, long guildId) {
         cache.entrySet().stream().
                 filter(c -> c.getKey() == CustomEventMapper.getEventTyp(clazz))
@@ -50,6 +65,11 @@ public class CustomEvents implements EventListener {
         checkForNew(clazz, guildId);
     }
 
+    /**
+     * Check for new CustomEvents.
+     * @param clazz The event class.
+     * @param guildId The guild id.
+     */
     public void checkForNew(Class<? extends GenericEvent> clazz, long guildId) {
         if (System.currentTimeMillis() - lastCheck < Duration.ofMinutes(1).toMillis()) return;
         lastCheck = System.currentTimeMillis();

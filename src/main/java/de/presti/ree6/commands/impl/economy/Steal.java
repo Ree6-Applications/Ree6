@@ -20,11 +20,20 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * Steal money from other users.
+ */
 @Command(name = "steal", description = "command.description.steal", category = Category.ECONOMY)
 public class Steal implements ICommand {
 
+    /**
+     * List of every User that is on cooldown.
+     */
     ArrayList<String> stealTimeout = new ArrayList<>();
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.isSlashCommand()) {
@@ -81,12 +90,18 @@ public class Steal implements ICommand {
         ThreadUtil.createThread(x -> stealTimeout.remove(entryString), Duration.ofSeconds(delay), false, false);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("steal", "command.description.steal")
                 .addOption(OptionType.USER, "user", "The user you want to steal money from.", true);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String[] getAlias() {
         return new String[0];

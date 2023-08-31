@@ -5,6 +5,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+/**
+ * Utility class used to send Request and handle their responses easily.
+ */
 public class RequestUtility {
 
     /**

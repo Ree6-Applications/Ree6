@@ -670,6 +670,7 @@ public class Main {
      * Method used to log analytics.
      *
      * @param message the message that should be logged.
+     * @param args    the arguments for the message that should be logged.
      */
     public void logAnalytic(String message, Object... args) {
         if (!Data.isDebug()) return;

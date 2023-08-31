@@ -5,48 +5,42 @@ import lombok.Getter;
 /**
  * Classed used to store information about a song for the music quiz game.
  */
+@Getter
 public class MusicQuizEntry {
 
     /**
      * The Name of the Artist.
      */
-    @Getter
     String artist;
 
     /**
      * The Name of the Song.
      */
-    @Getter
     String title;
 
     /**
      * An array of all features.
      */
-    @Getter
     String[] features;
 
     /**
      * The URL of the Song.
      */
-    @Getter
     String audioUrl;
 
     /**
      * Value to know if the artists has already been guessed.
      */
-    @Getter
     boolean artistGuessed;
 
     /**
      * Value to know if the title has already been guessed.
      */
-    @Getter
     boolean titleGuessed;
 
     /**
      * Value to know if the features have already been guessed.
      */
-    @Getter
     boolean featuresGuessed;
 
     /**

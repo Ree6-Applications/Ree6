@@ -161,6 +161,7 @@ public class Data {
 
     /**
      * Check if the bot should run in debug mode.
+     * @return if the bot should run in debug mode.
      */
     public static boolean isDebug() {
         return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.debug", false);

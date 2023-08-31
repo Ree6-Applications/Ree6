@@ -103,6 +103,7 @@ public class Ban implements ICommand {
      *
      * @param member The user to ban.
      * @param reason The reason why the user should be banned.
+     * @param deleteTime The deletion time in days.
      * @param commandEvent The command event.
      */
     public void banMember(Member member, String reason, int deleteTime, CommandEvent commandEvent) {

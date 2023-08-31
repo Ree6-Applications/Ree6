@@ -6,12 +6,12 @@ import lombok.Getter;
 /**
  * Class used to store information about a player in the music quiz game.
  */
+@Getter
 public class MusicQuizPlayer extends GamePlayer {
 
     /**
      * The amount of points the player has.
      */
-    @Getter
     int points = 0;
 
     /**
