@@ -1,7 +1,8 @@
 package de.presti.ree6.module.giveaway;
 
-import de.presti.ree6.logger.invite.InviteContainer;
 import de.presti.ree6.module.IManager;
+import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.Giveaway;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * Manager for the Giveaways.
  */
-public class GiveawayManager implements IManager<InviteContainer> {
+public class GiveawayManager implements IManager<Giveaway> {
 
     /**
      * Constructor.
@@ -21,23 +22,32 @@ public class GiveawayManager implements IManager<InviteContainer> {
     /**
      * The List of Giveaways.
      */
-    private final List<InviteContainer> giveaways = new ArrayList<>();
+    private final List<Giveaway> giveaways = new ArrayList<>();
 
     /**
      * @inheritDoc
      */
     @Override
     public void load() {
-
+        replace(SQLSession.getSqlConnector().getSqlWorker()
+                .getEntityList(new Giveaway(), "FROM Giveaway", null));
     }
 
     /**
      * @inheritDoc
      */
     @Override
-    public InviteContainer get(String value) {
-        for (InviteContainer giveaway : giveaways) {
-            if (giveaway.getCode().equals(value)) {
+    public Giveaway get(String value) {
+        return get(Long.parseLong(value));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public Giveaway get(long value) {
+        for (Giveaway giveaway : giveaways) {
+            if (giveaway.getMessageId() == value) {
                 return giveaway;
             }
         }
@@ -49,15 +59,7 @@ public class GiveawayManager implements IManager<InviteContainer> {
      * @inheritDoc
      */
     @Override
-    public InviteContainer get(long value) {
-        return get(String.valueOf(value));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public List<InviteContainer> getList() {
+    public List<Giveaway> getList() {
         return giveaways;
     }
 }
