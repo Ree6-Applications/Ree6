@@ -83,6 +83,9 @@ public class EmbedSender implements ICommand {
         }
 
         Main.getInstance().getCommandManager().sendMessage(embedBuilder, commandEvent.getChannel());
+
+        if (commandEvent.isSlashCommand())
+            commandEvent.reply(commandEvent.getResource("message.default.checkBelow"));
     }
 
     /**
