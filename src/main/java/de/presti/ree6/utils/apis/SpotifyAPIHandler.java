@@ -113,7 +113,7 @@ public class SpotifyAPIHandler {
      */
     public Track getTrack(String trackId) throws ParseException, SpotifyWebApiException, IOException {
         if (!isSpotifyConnected) return null;
-        if (retries.getOrDefault(trackId, 0) >= 3) return null;
+        if (retries.getOrDefault(trackId, 0) >= 3) throw new BadRequestException("Failed to receive Tracks 3 times in a row.");
 
         try {
             return spotifyApi.getTrack(trackId).build().execute();

@@ -335,6 +335,7 @@ public class MusicWorker {
                     spotiftrackinfos = SpotifyAPIHandler.getInstance().convert(value);
                 } catch (Exception exception) {
                     Sentry.captureException(exception);
+                    log.error("Couldn't convert Spotify URL to Track Info", exception);
                 } finally {
                     if (spotiftrackinfos == null) spotiftrackinfos = new ArrayList<>();
                 }
