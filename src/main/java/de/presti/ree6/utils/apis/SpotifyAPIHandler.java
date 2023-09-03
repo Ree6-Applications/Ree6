@@ -116,7 +116,9 @@ public class SpotifyAPIHandler {
         if (retries.getOrDefault(trackId, 0) >= 3) throw new BadRequestException("Failed to receive Tracks 3 times in a row.");
 
         try {
-            return spotifyApi.getTrack(trackId).build().execute();
+            Track track = spotifyApi.getTrack(trackId).build().execute();
+            retries.remove(trackId);
+            return track;
         } catch (UnauthorizedException unauthorizedException) {
             if (spotifyApi.getClientId() != null) {
                 retries.put(trackId, retries.getOrDefault(trackId, 0) + 1);
@@ -153,6 +155,7 @@ public class SpotifyAPIHandler {
 
                 tracks.add(track1);
             }
+            retries.remove(playlistId);
         } catch (UnauthorizedException unauthorizedException) {
             if (spotifyApi.getClientId() != null) {
 
