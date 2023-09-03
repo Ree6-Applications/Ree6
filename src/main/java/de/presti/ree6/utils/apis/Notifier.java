@@ -58,6 +58,7 @@ import masecla.reddit4j.objects.Sorting;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.utils.TimeFormat;
+import org.jsoup.HttpStatusException;
 
 import java.awt.*;
 import java.io.IOException;
@@ -1219,6 +1220,11 @@ public class Notifier {
                         limit.incrementAndGet();
                     });
                 } catch (IOException e) {
+                    if (e instanceof HttpStatusException httpStatusException) {
+                        if (httpStatusException.getStatusCode() == 404) return;
+                        // TODO:: check, maybe delete on 404?
+                    }
+
                     Sentry.captureException(e);
                 }
             }
