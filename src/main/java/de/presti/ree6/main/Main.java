@@ -143,6 +143,8 @@ public class Main {
         // Initialize the Config.
         getInstance().getConfig().init();
 
+        ArrayUtil.temporalVoicechannel.addAll(getInstance().getConfig().getTemporal().getStringList("temporalvoice"));
+
         log.info("Creating Sentry Instance.");
 
         // Create a Sentry Instance to send Exception to an external Service for bug fixing.
@@ -333,7 +335,7 @@ public class Main {
                 }
 
                 try {
-                    // Register all RSS Feeds.
+                    // Register all RSS-Feeds.
                     getInstance().getNotifier().registerRSS(SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls());
                 } catch (Exception exception) {
                     log.error("Error while loading RSS data: " + exception.getMessage());
@@ -408,14 +410,8 @@ public class Main {
         BotWorker.setState(BotState.STOPPED);
 
         if (Data.isModuleActive("temporalvoice")) {
-            // Deleting every temporal voicechannel.
-            for (String voiceIds : ArrayUtil.temporalVoicechannel) {
-                VoiceChannel voiceChannel = BotWorker.getShardManager().getVoiceChannelById(voiceIds);
-
-                if (voiceChannel != null) {
-                    voiceChannel.delete().complete();
-                }
-            }
+            // Save it all.
+            getConfig().getTemporal().set("temporalvoice", ArrayUtil.temporalVoicechannel);
         }
 
         // Check if there is an SQL-connection if so, shutdown.
@@ -641,6 +637,25 @@ public class Main {
                 log.error("Failed to load Twitch Credentials.", exception);
                 Sentry.captureException(exception);
             }
+
+            ArrayUtil.temporalVoicechannel.forEach(vc -> {
+                VoiceChannel voiceChannel = BotWorker.getShardManager().getVoiceChannelById(vc);
+                if (voiceChannel == null) {
+                    ArrayUtil.temporalVoicechannel.remove(vc);
+                } else {
+                    if (voiceChannel.getMembers().size() == 0) {
+                        voiceChannel.delete().queue();
+                        ArrayUtil.temporalVoicechannel.remove(vc);
+                    } else {
+                        if (voiceChannel.getMembers().size() == 1) {
+                            if (voiceChannel.getMembers().get(0).getUser().isBot()) {
+                                voiceChannel.delete().queue();
+                                ArrayUtil.temporalVoicechannel.remove(vc);
+                            }
+                        }
+                    }
+                }
+            });
 
         }, null, Duration.ofMinutes(1), true, false);
     }

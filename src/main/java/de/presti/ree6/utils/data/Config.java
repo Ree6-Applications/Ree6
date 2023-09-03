@@ -22,12 +22,14 @@ public class Config {
     private YamlFile yamlFile;
 
     /**
+     * The YamlFile for the temp file.
+     */
+    private YamlFile yamlTempFile;
+
+    /**
      * Initialize the Configuration.
      */
     public void init() {
-
-        yamlFile = createConfiguration();
-
         try {
             Path storage = Path.of("storage");
             Path storageTemp = Path.of("storage/tmp");
@@ -40,6 +42,36 @@ public class Config {
         } catch (Exception exception) {
             log.error("Could not create Storage folder!", exception);
         }
+
+        createTemporalFile();
+        createConfigFile();
+    }
+
+    /**
+     * Create a new Temporal File.
+     */
+    public void createTemporalFile() {
+        yamlTempFile = createTemporal();
+
+        if (!getTemporalFile().exists()) {
+            yamlTempFile.options().copyHeader();
+            yamlTempFile.options().copyDefaults();
+            yamlTempFile.options().header("""
+                    ################################
+                    #                              #
+                    # Ree6 Temporal Info           #
+                    # by Presti                    #
+                    #                              #
+                    ################################
+                    """);
+        }
+    }
+
+    /**
+     * Create a new Config File.
+     */
+    public void createConfigFile() {
+        yamlFile = createConfiguration();
 
         if (!getFile().exists()) {
             yamlFile.options().copyHeader();
@@ -331,6 +363,37 @@ public class Config {
      */
     public File getFile() {
         return new File("config.yml");
+    }
+
+    /**
+     * Create a new Temporal Info file.
+     * @return The Temporal Info file as {@link YamlFile}.
+     */
+    public YamlFile createTemporal() {
+        try {
+            return yamlTempFile = new YamlFile(getTemporalFile());
+        } catch (Exception e) {
+            return new YamlFile();
+        }
+    }
+
+    /**
+     * Get the Temporal Info file.
+     * @return The Temporal Info file as {@link YamlFile}.
+     */
+    public YamlFile getTemporal() {
+        if (yamlTempFile == null)
+            return createTemporal();
+
+        return yamlTempFile;
+    }
+
+    /**
+     * Get the Temporal Info file.
+     * @return The Temporal Info file as {@link File}.
+     */
+    public File getTemporalFile() {
+        return new File("storage/temp.yml");
     }
 
 }
