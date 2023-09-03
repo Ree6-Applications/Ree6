@@ -120,6 +120,7 @@ public class SpotifyAPIHandler {
         } catch (UnauthorizedException unauthorizedException) {
             if (spotifyApi.getClientId() != null) {
                 retries.put(trackId, retries.getOrDefault(trackId, 0) + 1);
+                isSpotifyConnected = false;
 
                 initSpotify();
                 return getTrack(trackId);
@@ -138,6 +139,9 @@ public class SpotifyAPIHandler {
     public ArrayList<Track> getTracks(String playlistId) {
         if (!isSpotifyConnected) return new ArrayList<>();
         ArrayList<Track> tracks = new ArrayList<>();
+
+        if (retries.getOrDefault(playlistId, 0) >= 3) return tracks;
+
         GetPlaylistRequest request = spotifyApi.getPlaylist(playlistId).build();
         try {
             Playlist playlist = request.execute();
@@ -153,6 +157,8 @@ public class SpotifyAPIHandler {
             if (spotifyApi.getClientId() != null) {
 
                 try {
+                    isSpotifyConnected = false;
+                    retries.put(playlistId, retries.getOrDefault(playlistId, 0) + 1);
                     initSpotify();
                 } catch (Exception exception) {
                     Sentry.captureException(exception);
