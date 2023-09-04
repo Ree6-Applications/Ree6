@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Timestamp;
@@ -245,6 +246,8 @@ public class Main {
 
             if (Data.shouldUseLavaLink()) {
                 getInstance().lavalink = new JdaLavalink(shards, shard -> BotWorker.getShardManager().getShardById(shard));
+                getInstance().lavalink.addNode(new URI(getInstance().getConfig().getConfiguration().getString("lavalink.url")),
+                        getInstance().getConfig().getConfiguration().getString("lavalink.password"));
             }
 
             BotWorker.createBot(version, shards);
