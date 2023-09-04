@@ -37,6 +37,7 @@ import de.presti.ree6.utils.data.*;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
+import lavalink.client.io.jda.JdaLavalink;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -112,6 +113,11 @@ public class Main {
      * Instance of the Config System.
      */
     Config config;
+
+    /**
+     * Instance of the Lavalink.
+     */
+    JdaLavalink lavalink;
 
     /**
      * String used to identify the last day.
@@ -235,6 +241,10 @@ public class Main {
                 version = BotVersion.DEVELOPMENT;
             } else if (argList.contains("--beta")) {
                 version = BotVersion.BETA;
+            }
+
+            if (Data.shouldUseLavaLink()) {
+                getInstance().lavalink = new JdaLavalink(shards, shard -> BotWorker.getShardManager().getShardById(shard));
             }
 
             BotWorker.createBot(version, shards);

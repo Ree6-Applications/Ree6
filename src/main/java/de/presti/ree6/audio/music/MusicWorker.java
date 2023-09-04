@@ -87,11 +87,7 @@ public class MusicWorker {
 
         musicManagers.putIfAbsent(guildId, new GuildMusicManager(guild, playerManager));
 
-        GuildMusicManager musicManager = musicManagers.get(guildId);
-
-        guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
-
-        return musicManager;
+        return musicManagers.get(guildId);
     }
 
 

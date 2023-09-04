@@ -129,9 +129,9 @@
             <version>765f7e0b88</version>
         </dependency>
         <dependency>
-            <groupId>com.github.freyacodes</groupId>
+            <groupId>de.ree6</groupId>
             <artifactId>Lavalink-Client</artifactId>
-            <version>d710034753</version>
+            <version>a8e9e49a57</version>
         </dependency>
 
         <!-- Third party APIs -->

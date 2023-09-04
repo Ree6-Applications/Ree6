@@ -1,7 +1,5 @@
 package de.presti.ree6.game.impl.musicquiz;
 
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
-import com.sedmelluq.discord.lavaplayer.player.event.TrackEndEvent;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.game.core.GameSession;
 import de.presti.ree6.game.core.base.GameInfo;
@@ -16,6 +14,8 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.utils.others.ThreadUtil;
+import lavalink.client.player.event.IPlayerEventListener;
+import lavalink.client.player.event.TrackEndEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
@@ -79,11 +79,11 @@ public class MusicQuiz implements IGame {
     Future<?> internalTimer;
 
     /**
-     * {@link AudioEventListener} to check if the song/timer is over.
+     * {@link IPlayerEventListener} to check if the song/timer is over.
      */
-    AudioEventListener audioEventListener = event -> {
+    IPlayerEventListener audioEventListener = event -> {
         if (event instanceof TrackEndEvent trackEndEvent &&
-                trackEndEvent.track.getInfo().title.equalsIgnoreCase("timer")) {
+                trackEndEvent.getTrack().getInfo().title.equalsIgnoreCase("timer")) {
             selectNextSong();
         }
     };

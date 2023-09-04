@@ -1,7 +1,6 @@
 package de.presti.ree6.commands.impl.music;
 
 import com.jagrosh.jlyrics.LyricsClient;
-import de.presti.ree6.audio.AudioPlayerSendHandler;
 import de.presti.ree6.audio.music.GuildMusicManager;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
@@ -37,9 +36,7 @@ public class Lyrics implements ICommand {
             return;
         }
 
-        AudioPlayerSendHandler sendingHandler = (AudioPlayerSendHandler) commandEvent.getGuild().getAudioManager().getSendingHandler();
-
-        if (sendingHandler != null && sendingHandler.isMusicPlaying(commandEvent.getGuild())) {
+        if (Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild()) && Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).isMusicPlaying()) {
 
             GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild());
             String title = guildMusicManager.getPlayer().getPlayingTrack().getInfo().title.contains("(") && guildMusicManager.getPlayer().getPlayingTrack().getInfo().title.contains(")") ?

@@ -3,6 +3,7 @@ package de.presti.ree6.bot;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -81,15 +82,21 @@ public class BotWorker {
         token = Main.getInstance().getConfig().getConfiguration().getString(getVersion().getTokenPath());
         state = BotState.INIT;
 
-        shardManager = DefaultShardManagerBuilder
+         DefaultShardManagerBuilder defaultShardManagerBuilder = DefaultShardManagerBuilder
                 .createDefault(token)
                 .setShardsTotal(shardAmount)
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_INVITES, GatewayIntent.DIRECT_MESSAGES,
                         GatewayIntent.GUILD_INVITES, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.MESSAGE_CONTENT,
                         GatewayIntent.GUILD_WEBHOOKS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MODERATION)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .disableCache(CacheFlag.EMOJI, CacheFlag.ACTIVITY)
-                .build();
+                .disableCache(CacheFlag.EMOJI, CacheFlag.ACTIVITY);
+
+         if (Data.shouldUseLavaLink()) {
+             defaultShardManagerBuilder.addEventListeners(Main.getInstance().getLavalink());
+             defaultShardManagerBuilder.setVoiceDispatchInterceptor(Main.getInstance().getLavalink().getVoiceInterceptor());
+         }
+
+        shardManager = defaultShardManagerBuilder.build();
     }
 
     /**
