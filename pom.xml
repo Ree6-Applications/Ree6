@@ -128,6 +128,11 @@
             <artifactId>JLyrics</artifactId>
             <version>765f7e0b88</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.freyacodes</groupId>
+            <artifactId>Lavalink-Client</artifactId>
+            <version>d710034753</version>
+        </dependency>
 
         <!-- Third party APIs -->
         <dependency>

@@ -86,7 +86,7 @@ public class Config {
                     """);
             yamlFile.path("config")
                     .comment("Do not change this!")
-                    .path("version").addDefault("3.0.13")
+                    .path("version").addDefault("3.0.15")
                     .parent().path("creation").addDefault(System.currentTimeMillis());
 
             yamlFile.path("hikari")
@@ -156,6 +156,11 @@ public class Config {
                     .parent().path("reactionroles").addDefault(true).commentSide("Enable the reaction-roles module.")
                     .parent().path("slashcommands").addDefault(true).commentSide("Enable the slash-commands support.")
                     .parent().path("messagecommands").addDefault(true).commentSide("Enable the message-commands support.");
+
+            yamlFile.path("lavalink")
+                    .comment("Lavalink Configuration, for lavalink support.").blankLine()
+                    .path("url").addDefault("none")
+                    .parent().path("password").addDefault("none");
 
             yamlFile.path("heartbeat")
                     .comment("Heartbeat Configuration, for status reporting").blankLine()
@@ -230,7 +235,7 @@ public class Config {
         String configVersion = yamlFile.getString("config.version", "1.9.0");
 
         if (compareVersion(configVersion, BotWorker.getBuild()) || configVersion.equals(BotWorker.getBuild()) ||
-                configVersion.equals("3.0.13"))
+                configVersion.equals("3.0.15"))
             return;
 
         Map<String, Object> resources = yamlFile.getValues(true);
@@ -367,6 +372,7 @@ public class Config {
 
     /**
      * Create a new Temporal Info file.
+     *
      * @return The Temporal Info file as {@link YamlFile}.
      */
     public YamlFile createTemporal() {
@@ -379,6 +385,7 @@ public class Config {
 
     /**
      * Get the Temporal Info file.
+     *
      * @return The Temporal Info file as {@link YamlFile}.
      */
     public YamlFile getTemporal() {
@@ -390,6 +397,7 @@ public class Config {
 
     /**
      * Get the Temporal Info file.
+     *
      * @return The Temporal Info file as {@link File}.
      */
     public File getTemporalFile() {
