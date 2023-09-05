@@ -255,7 +255,17 @@ public class Main {
             getInstance().addEvents();
 
             if (Data.shouldUseLavaLink()) {
-                getInstance().getLavalink().addNode(new URL(getInstance().getConfig().getConfiguration().getString("lavalink.url")).toURI(),
+                String lavalinkUrl = getInstance().getConfig().getConfiguration().getString("lavalink.host");
+
+                if (getInstance().getConfig().getConfiguration().getBoolean("lavalink.secure")) {
+                    lavalinkUrl = "wss://" + lavalinkUrl;
+                } else {
+                    lavalinkUrl = "ws://" + lavalinkUrl;
+                }
+
+                lavalinkUrl += ":" + getInstance().getConfig().getConfiguration().getInt("lavalink.port");
+
+                getInstance().getLavalink().addNode(URI.create(lavalinkUrl),
                         getInstance().getConfig().getConfiguration().getString("lavalink.password"));
             }
         } catch (Exception ex) {

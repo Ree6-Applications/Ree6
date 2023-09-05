@@ -50,6 +50,7 @@ public class BotWorker {
     /**
      * Current {@link ShardManager}.
      */
+    @Getter
     private static ShardManager shardManager;
 
     /**
@@ -178,22 +179,13 @@ public class BotWorker {
     }
 
     /**
-     * Get the ShardManager of Ree6.
-     *
-     * @return the {@link ShardManager}
-     */
-    public static ShardManager getShardManager() {
-        return shardManager;
-    }
-
-    /**
      * Get the build / the actual version in the x.y.z format.
      *
      * @return the Build.
      */
     public static String getBuild() {
         if (build == null) {
-            build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(), "3.0.8");
+            build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(), "3.0.15");
         }
         return build;
     }

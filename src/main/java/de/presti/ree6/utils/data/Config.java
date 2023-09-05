@@ -159,7 +159,9 @@ public class Config {
 
             yamlFile.path("lavalink")
                     .comment("Lavalink Configuration, for lavalink support.").blankLine()
-                    .path("url").addDefault("none")
+                    .path("host").addDefault("none").commentSide("node.mylava.link")
+                    .parent().path("port").addDefault(0).commentSide("Port of the Node.")
+                    .parent().path("secure").addDefault(false).commentSide("If you are using SSL")
                     .parent().path("password").addDefault("none");
 
             yamlFile.path("heartbeat")
