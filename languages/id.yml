@@ -576,6 +576,10 @@ message:
     failed: "Kamu tidak berhasil kerja!"
   rewards:
     success: "Berhasil merubah hadiah!"
+  giveaway:
+    list:
+      default: "Here is a list of all giveaways:\n```%s```"
+      entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
 game:
   description:
     blackjack: "Mainkan Blackjack dengan temanmu!"
@@ -678,6 +682,7 @@ command:
     money: "Mengelola uangmu!"
     steal: "Mencuri uang dari orang lain!"
     work: "Dapatkan uangmu dari bekerja!"
+    giveaway: "Manage Giveaways!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"
