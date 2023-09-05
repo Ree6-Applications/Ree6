@@ -656,7 +656,7 @@ public class Main {
                 if (voiceChannel == null) {
                     ArrayUtil.temporalVoicechannel.remove(vc);
                 } else {
-                    if (voiceChannel.getMembers().size() == 0) {
+                    if (voiceChannel.getMembers().isEmpty()) {
                         voiceChannel.delete().queue();
                         ArrayUtil.temporalVoicechannel.remove(vc);
                     } else {
