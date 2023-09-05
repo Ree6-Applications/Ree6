@@ -131,7 +131,7 @@
         <dependency>
             <groupId>com.github.freyacodes</groupId>
             <artifactId>Lavalink-Client</artifactId>
-            <version>d710034753</version>
+            <version>4.0</version>
         </dependency>
 
         <!-- Third party APIs -->
