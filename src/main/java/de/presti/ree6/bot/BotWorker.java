@@ -73,7 +73,7 @@ public class BotWorker {
     /**
      * Create a new {@link net.dv8tion.jda.api.sharding.ShardManager} instance and set the rest information for later use.
      *
-     * @param version1 the current Bot Version "typ".
+     * @param version1    the current Bot Version "typ".
      * @param shardAmount the amount of shards to use.
      */
     public static void createBot(BotVersion version1, int shardAmount) {
@@ -82,7 +82,7 @@ public class BotWorker {
         token = Main.getInstance().getConfig().getConfiguration().getString(getVersion().getTokenPath());
         state = BotState.INIT;
 
-         DefaultShardManagerBuilder defaultShardManagerBuilder = DefaultShardManagerBuilder
+        DefaultShardManagerBuilder defaultShardManagerBuilder = DefaultShardManagerBuilder
                 .createDefault(token)
                 .setShardsTotal(shardAmount)
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_INVITES, GatewayIntent.DIRECT_MESSAGES,
@@ -91,12 +91,16 @@ public class BotWorker {
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .disableCache(CacheFlag.EMOJI, CacheFlag.ACTIVITY);
 
-         if (Data.shouldUseLavaLink()) {
-             defaultShardManagerBuilder.addEventListeners(Main.getInstance().getLavalink());
-             defaultShardManagerBuilder.setVoiceDispatchInterceptor(Main.getInstance().getLavalink().getVoiceInterceptor());
-         }
+        if (Data.shouldUseLavaLink()) {
+            defaultShardManagerBuilder.addEventListeners(Main.getInstance().getLavalink());
+            defaultShardManagerBuilder.setVoiceDispatchInterceptor(Main.getInstance().getLavalink().getVoiceInterceptor());
+        }
 
         shardManager = defaultShardManagerBuilder.build();
+
+        if (Data.shouldUseLavaLink() && Main.getInstance().getLavalink().getNodes().isEmpty()) {
+            Main.getInstance().getLavalink().setUserId(shardManager.getShardById(0).getSelfUser().getId());
+        }
     }
 
     /**

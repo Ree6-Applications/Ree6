@@ -246,14 +246,17 @@ public class Main {
 
             if (Data.shouldUseLavaLink()) {
                 getInstance().lavalink = new JdaLavalink(shards, shard -> BotWorker.getShardManager().getShardById(shard));
-                getInstance().lavalink.addNode(new URI(getInstance().getConfig().getConfiguration().getString("lavalink.url")),
-                        getInstance().getConfig().getConfiguration().getString("lavalink.password"));
             }
 
             BotWorker.createBot(version, shards);
 
             getInstance().setMusicWorker(new MusicWorker());
             getInstance().addEvents();
+
+            if (Data.shouldUseLavaLink()) {
+                getInstance().getLavalink().addNode(new URI(getInstance().getConfig().getConfiguration().getString("lavalink.url")),
+                        getInstance().getConfig().getConfiguration().getString("lavalink.password"));
+            }
         } catch (Exception ex) {
             log.error("[Main] Error while init: " + ex.getMessage());
             System.exit(0);
