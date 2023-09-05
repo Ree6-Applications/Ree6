@@ -22,6 +22,7 @@ import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.impl.musicquiz.util.MusicQuizUtil;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.events.LoggerQueue;
+import de.presti.ree6.module.giveaway.GiveawayManager;
 import de.presti.ree6.sql.DatabaseTyp;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.ScheduledMessage;
@@ -92,6 +93,11 @@ public class Main {
      * Addon Manager, used to manage the Addons.
      */
     AddonManager addonManager;
+
+    /**
+     * Instance of the GiveawayManager, used to manage the Giveaways.
+     */
+    GiveawayManager giveawayManager;
 
     /**
      * Instance of the LoggerQueue, used to merge Logs to prevent Rate-Limits.
@@ -267,6 +273,9 @@ public class Main {
             log.info("Loading Stream-actions");
             StreamActionContainerCreator.loadAll();
         }
+
+        log.info("Loading GiveawayManager");
+        getInstance().setGiveawayManager(new GiveawayManager());
 
         log.info("Creating Notifier.");
 
