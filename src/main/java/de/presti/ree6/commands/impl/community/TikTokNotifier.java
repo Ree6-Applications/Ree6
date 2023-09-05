@@ -7,7 +7,6 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.Data;
-import de.presti.ree6.utils.data.RegExUtil;
 import de.presti.wrapper.tiktok.TikTokWrapper;
 import de.presti.wrapper.tiktok.entities.TikTokUser;
 import net.dv8tion.jda.api.Permission;
@@ -19,8 +18,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
-
-import java.util.regex.Pattern;
 
 /**
  * A Command to activate TikTok Notifications.

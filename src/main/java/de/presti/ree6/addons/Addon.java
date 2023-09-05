@@ -1,8 +1,5 @@
 package de.presti.ree6.addons;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.File;
 
 /**

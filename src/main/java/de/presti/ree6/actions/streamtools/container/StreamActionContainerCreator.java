@@ -25,6 +25,13 @@ public class StreamActionContainerCreator {
     private static final HashMap<String, Class<? extends IStreamAction>> cachedActions = new HashMap<>();
 
     /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     */
+    public StreamActionContainerCreator() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
      * Load all actions.
      */
     public static void loadAll() {
