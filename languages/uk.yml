@@ -576,6 +576,10 @@ message:
     failed: "Ви не змогли працювали!"
   rewards:
     success: "Успішно оновлено нагороди!"
+  giveaway:
+    list:
+      default: "Here is a list of all giveaways:\n```%s```"
+      entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
 game:
   description:
     blackjack: "Грайте Blackjack з друзями!"
@@ -678,6 +682,7 @@ command:
     money: "Керуйте своїми грошима!"
     steal: "Вкрасти гроші інших користувачів!"
     work: "Отримайте свої власні гроші від здійснення роботи!"
+    giveaway: "Manage Giveaways!"
 category:
   info: "Використовується для збору інформації або надання інформації."
   moderation: "Інструменти модерації, які можуть допомогти вам керувати користувачами або запобігти порушенню правил на сервері."
