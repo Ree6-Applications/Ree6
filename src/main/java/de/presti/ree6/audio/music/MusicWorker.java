@@ -65,7 +65,7 @@ public class MusicWorker {
      */
     public MusicWorker() {
         musicManagers = new HashMap<>();
-        playerManager = new DefaultAudioPlayerManager();
+        playerManager = Data.shouldUseLavaLink() ? Main.getInstance().getLavalink().getAudioPlayerManager() : new DefaultAudioPlayerManager();
 
         // Register AudioSources, if music module is active. If not, then don't register them. This will cause a failed resolve when ever a command is being executed.
         if (Data.isModuleActive("music")) {
