@@ -1,7 +1,5 @@
 package de.presti.ree6.audio.music;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
@@ -11,10 +9,9 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
 import lavalink.client.player.IPlayer;
-import lavalink.client.player.event.IPlayerEventListener;
 import lavalink.client.player.event.PlayerEvent;
+import lavalink.client.player.event.PlayerEventListenerAdapter;
 import lavalink.client.player.event.TrackEndEvent;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +31,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 @Slf4j
 @SuppressWarnings("ALL")
-public class TrackScheduler implements IPlayerEventListener {
+public class TrackScheduler extends PlayerEventListenerAdapter {
     /**
      * The {@link IPlayer} from the current Channel.
      */
@@ -247,13 +244,6 @@ public class TrackScheduler implements IPlayerEventListener {
                 .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
     }
 
-    @Override
-    public void onEvent(PlayerEvent playerEvent) {
-        if (playerEvent instanceof TrackEndEvent trackEndEvent) {
-            onTrackEnd(player, trackEndEvent.getTrack(), trackEndEvent.getReason());
-        }
-    }
-
     /**
      * Used to inform user about the next song or problems.
      *
@@ -261,6 +251,7 @@ public class TrackScheduler implements IPlayerEventListener {
      * @param track     the current Track.
      * @param endReason the current end Reason.
      */
+    @Override
     public void onTrackEnd(IPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         // Only start the next track if the end reason is suitable for it (FINISHED or
         // LOAD_FAILED)
