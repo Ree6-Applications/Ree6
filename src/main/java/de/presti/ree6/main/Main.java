@@ -53,6 +53,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Timestamp;
@@ -254,7 +255,7 @@ public class Main {
             getInstance().addEvents();
 
             if (Data.shouldUseLavaLink()) {
-                getInstance().getLavalink().addNode(new URI(getInstance().getConfig().getConfiguration().getString("lavalink.url")),
+                getInstance().getLavalink().addNode(new URL(getInstance().getConfig().getConfiguration().getString("lavalink.url")).toURI(),
                         getInstance().getConfig().getConfiguration().getString("lavalink.password"));
             }
         } catch (Exception ex) {
