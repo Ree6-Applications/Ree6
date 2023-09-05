@@ -172,7 +172,7 @@ public class Data {
      * @return if the bot should use LavaLink.
      */
     public static boolean shouldUseLavaLink() {
-        return !Main.getInstance().getConfig().getConfiguration().getString("lavalink.host", "none").equalsIgnoreCase("none");
+        return Main.getInstance().getConfig().getConfiguration().getBoolean("lavalink.enable", false);
     }
 }
 
