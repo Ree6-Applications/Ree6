@@ -576,6 +576,10 @@ message:
     failed: "Selhali jste v práci!"
   rewards:
     success: "Odměny byly úspěšně aktualizovány!"
+  giveaway:
+    list:
+      default: "Here is a list of all giveaways:\n```%s```"
+      entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
 game:
   description:
     blackjack: "Hrajte Blackjack se svými přáteli!"
@@ -678,6 +682,7 @@ command:
     money: "Spravujte své peníze!"
     steal: "Krást peníze ostatním uživatelům!"
     work: "Získejte své vlastní peníze za práci!"
+    giveaway: "Manage Giveaways!"
 category:
   info: "Slouží ke shromažďování informací nebo poskytování informací."
   moderation: "Nástroje pro moderování, které vám mohou pomoci spravovat uživatele nebo zabránit porušení pravidel na serveru."
