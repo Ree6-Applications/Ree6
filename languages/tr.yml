@@ -576,6 +576,10 @@ message:
     failed: "Çalışamadınız!"
   rewards:
     success: "Ödüller başarıyla güncellendi!"
+  giveaway:
+    list:
+      default: "Here is a list of all giveaways:\n```%s```"
+      entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
 game:
   description:
     blackjack: "Arkadaşlarınızla Blackjack oynayın!"
@@ -678,6 +682,7 @@ command:
     money: "Paranızı yönetin!"
     steal: "Diğer kullanıcılardan para çalın!"
     work: "İş yaparak kendi paranı kazan!"
+    giveaway: "Manage Giveaways!"
 category:
   info: "Bilgi toplamak veya bilgi sağlamak için kullanılır."
   moderation: "Kullanıcıları yönetmenize veya Sunucuda kural ihlalini önlemenize yardımcı olabilecek Denetleme Araçları."
