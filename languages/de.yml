@@ -576,6 +576,10 @@ message:
     failed: "Du konntest nicht Arbeiten!"
   rewards:
     success: "Belohnungen wurden erfolgreich aktualisiert!"
+  giveaway:
+    list:
+      default: "Here is a list of all giveaways:\n```%s```"
+      entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
 game:
   description:
     blackjack: "Spiele Blackjack mit deinen Freunden!"
@@ -678,6 +682,7 @@ command:
     money: "Verwalten dein Geld!"
     steal: "Stehle Geld von anderen!"
     work: "Verdiene dein eigens Geld vom Arbeiten!"
+    giveaway: "Manage Giveaways!"
 category:
   info: "Wird verwendet, um Informationen zu sammeln oder Informationen zu geben."
   moderation: "Moderations-Tools, die Ihnen beim Verwalten von Benutzern helfen oder das Missachten von Regeln auf dem Server verhindern können."
