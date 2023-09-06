@@ -1,5 +1,6 @@
 package de.presti.ree6.audio.music;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
@@ -9,7 +10,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
 import lavalink.client.player.IPlayer;
-import lavalink.client.player.event.PlayerEventListenerAdapter;
+import lavalink.client.player.event.AudioEventAdapterWrapped;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 @Slf4j
 @SuppressWarnings("ALL")
-public class TrackScheduler extends PlayerEventListenerAdapter {
+public class TrackScheduler extends AudioEventAdapterWrapped {
     /**
      * The {@link IPlayer} from the current Channel.
      */
@@ -242,6 +243,11 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
                 .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
     }
 
+    @Override
+    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        onTrackEnd(this.player, track, endReason);
+    }
+
     /**
      * Used to inform user about the next song or problems.
      *
@@ -249,7 +255,6 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
      * @param track     the current Track.
      * @param endReason the current end Reason.
      */
-    @Override
     public void onTrackEnd(IPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         // Only start the next track if the end reason is suitable for it (FINISHED or
         // LOAD_FAILED)
