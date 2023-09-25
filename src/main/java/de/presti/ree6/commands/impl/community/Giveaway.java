@@ -29,6 +29,13 @@ public class Giveaway implements ICommand {
 
         switch (commandEvent.getSubcommand()) {
             case "create" -> {
+                long winners = commandEvent.getOption("winners").getAsLong();
+                String prize = commandEvent.getOption("prize").getAsString();
+                String duration = commandEvent.getOption("duration").getAsString();
+
+
+
+                de.presti.ree6.sql.entities.Giveaway giveaway = new de.presti.ree6.sql.entities.Giveaway();
                 // TODO:: create.
             }
 
