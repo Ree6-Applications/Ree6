@@ -6,7 +6,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -73,14 +72,12 @@ public class Waifu implements ICommand {
             }
         }
 
-        if (from.isBlank()) {
-            if (fullObject.has("manga")) {
-                JsonArray mangaArray = fullObject.getAsJsonArray("manga");
-                if (!mangaArray.isEmpty()) {
-                    JsonObject mangaObject = mangaArray.get(0).getAsJsonObject().getAsJsonObject("manga");
-                    if (mangaObject.has("title")) {
-                        from = mangaObject.getAsJsonPrimitive("title").getAsString();
-                    }
+        if (from.isBlank() && fullObject.has("manga")) {
+            JsonArray mangaArray = fullObject.getAsJsonArray("manga");
+            if (!mangaArray.isEmpty()) {
+                JsonObject mangaObject = mangaArray.get(0).getAsJsonObject().getAsJsonObject("manga");
+                if (mangaObject.has("title")) {
+                    from = mangaObject.getAsJsonPrimitive("title").getAsString();
                 }
             }
         }
