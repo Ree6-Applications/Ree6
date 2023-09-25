@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>3.0.14</version>
+    <version>3.0.15</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -103,7 +103,7 @@
         <dependency>
             <groupId>me.presti</groupId>
             <artifactId>YoutubeWrapper</artifactId>
-            <version>0ae3a59111</version>
+            <version>9a00634195</version>
         </dependency>
         <dependency>
             <groupId>me.presti</groupId>
@@ -162,7 +162,7 @@
         <dependency>
             <groupId>de.ree6</groupId>
             <artifactId>Ree6-SQL</artifactId>
-            <version>ef051559d4</version>
+            <version>f17e6fb6f9</version>
         </dependency>
 
         <!-- Logging -->

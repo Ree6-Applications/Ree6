@@ -517,6 +517,14 @@ public class Main {
                     BotWorker.getShardManager().getShards().forEach(jda ->
                             BotWorker.setActivity(jda, Data.getStatus(), Activity.ActivityType.PLAYING));
 
+                    log.info("Applying fix for Hibernate Schema break.");
+                    try {
+                        SQLSession.runMigrations();
+                    } catch (Exception exception) {
+                        Sentry.captureException(exception);
+                        log.error("Failed to apply fix!", exception);
+                    }
+
                     log.info("[Stats] ");
                     log.info("[Stats] Today's Stats:");
                     int guildSize = BotWorker.getShardManager().getGuilds().size(), userSize = BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum();
