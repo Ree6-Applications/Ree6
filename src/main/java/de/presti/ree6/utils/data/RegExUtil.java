@@ -35,4 +35,19 @@ public class RegExUtil {
      */
     public static final String YOUTUBE_REGEX = "^(?:(?:https?:\\/\\/)?(?:www\\.)?youtu\\.be\\/|^(?:(?:(?:https?:\\/\\/)?(?:www\\.)?youtube\\.com\\/watch\\?.*v=)|(?:https?:\\/\\/)?(?:www\\.)?youtube\\.com\\/v\\/))([a-zA-Z0-9_-]{11})";
 
+    /**
+     * The Regex to check if a String only contains numbers.
+     */
+    public static final String NUMBER_ONLY_REGEX = "^[0-9]+$";
+
+    /**
+     * The Regex to detect any number.
+     */
+    public static final String NUMBER_REGEX = "[0-9]+";
+
+    /**
+     * The Regex to detect any dhm based time input.
+     * For example 1d, 2h, 3m
+     */
+    public static final String TIME_INPUT_REGEX = "\\d+[dhm]";
 }

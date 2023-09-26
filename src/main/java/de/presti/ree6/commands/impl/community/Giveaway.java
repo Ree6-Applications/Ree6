@@ -6,10 +6,18 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.utils.data.RegExUtil;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A Command to manage Giveaways.
@@ -33,9 +41,42 @@ public class Giveaway implements ICommand {
                 String prize = commandEvent.getOption("prize").getAsString();
                 String duration = commandEvent.getOption("duration").getAsString();
 
+                long days = 0, hours = 0, minutes = 0;
 
+                Matcher matcher = Pattern.compile(RegExUtil.TIME_INPUT_REGEX).matcher(duration);
 
-                de.presti.ree6.sql.entities.Giveaway giveaway = new de.presti.ree6.sql.entities.Giveaway();
+                Set<Character> letters = new HashSet<>();
+
+                while (matcher.find()) {
+                    String match = matcher.group();
+                    char letter = match.charAt(match.length() - 1);
+                    if (!letters.contains(letter)) {
+                        long value = Long.parseLong(match.substring(0, match.length() - 1));
+
+                        if (letter == 'd') {
+                            days = value;
+                        } else if (letter == 'h') {
+                            hours = value;
+                        } else {
+                            minutes = value;
+                        }
+
+                        letters.add(letter);
+                    }
+                }
+
+                Instant endInstant = Instant.now();
+                endInstant = endInstant.plusSeconds(minutes * 60);
+                endInstant = endInstant.plusSeconds(hours * 60 * 60);
+                endInstant = endInstant.plusSeconds(days * 24 * 60 * 60);
+
+                Timestamp endTime = Timestamp.from(endInstant);
+
+                // TODO:: create Message
+
+                de.presti.ree6.sql.entities.Giveaway giveaway =
+                        new de.presti.ree6.sql.entities.Giveaway(0, commandEvent.getMember().getIdLong(),
+                                commandEvent.getGuild().getIdLong(), prize, winners, endTime);
                 // TODO:: create.
             }
 
