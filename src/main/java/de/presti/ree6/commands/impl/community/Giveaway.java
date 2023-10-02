@@ -80,8 +80,6 @@ public class Giveaway implements ICommand {
 
                 Timestamp endTime = Timestamp.from(endInstant);
 
-                // TODO:: create Message
-
                 EmbedBuilder embedBuilder = new EmbedBuilder();
                 embedBuilder.setTitle(prize);
                 embedBuilder.setDescription("Ending: <t:" + endTime + ":R>\n" +
@@ -98,7 +96,6 @@ public class Giveaway implements ICommand {
                 });
 
                 commandEvent.reply(commandEvent.getResource("message.giveaway.created"));
-                // TODO:: create.
             }
 
             case "end" -> {
