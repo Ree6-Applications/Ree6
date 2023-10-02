@@ -6,6 +6,7 @@ import de.presti.ree6.sql.entities.Giveaway;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Manager for the Giveaways.
@@ -52,6 +53,12 @@ public class GiveawayManager implements IManager<Giveaway> {
             }
         }
 
+        Giveaway giveaway = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Giveaway(), "FROM Giveaway WHERE messageId = :id", Map.of("id", value));
+
+        if (giveaway != null) {
+            giveaways.add(giveaway);
+            return giveaway;
+        }
         return null;
     }
 
