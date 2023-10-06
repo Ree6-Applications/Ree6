@@ -115,7 +115,7 @@
         <dependency>
             <groupId>se.michaelthelin.spotify</groupId>
             <artifactId>spotify-web-api-java</artifactId>
-            <version>8.2.0</version>
+            <version>8.3.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
