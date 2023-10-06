@@ -576,6 +576,10 @@ message:
     failed: "You have failed to work!"
   rewards:
     success: "Successfully updated the rewards!"
+  giveaway:
+    list:
+      default: "Here is a list of all giveaways:\n```%s```"
+      entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
@@ -678,6 +682,7 @@ command:
     money: "Manage your money!"
     steal: "Steal money from other users!"
     work: "Get your own money from doing work!"
+    giveaway: "Manage Giveaways!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."

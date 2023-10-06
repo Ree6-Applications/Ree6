@@ -57,7 +57,7 @@ public class Birthday implements ICommand {
                 }
             }
 
-            case "add" -> {
+            default -> {
                 String date = dateMapping.getAsString();
                 if (userMapping == null) {
                     if (GenericValidator.isDate(date, "dd.MM.yyyy", true)) {

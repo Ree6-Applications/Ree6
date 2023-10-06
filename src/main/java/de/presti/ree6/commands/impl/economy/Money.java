@@ -91,7 +91,7 @@ public class Money implements ICommand {
                     commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
                 }
             }
-            case "balance" -> {
+            default -> {
                 if (user != null) {
                     Member member = user.getAsMember();
 

@@ -115,7 +115,7 @@ public class MusicPanel implements ICommand {
         Message message;
 
         if (commandEvent.isSlashCommand()) {
-            commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).complete();
+            commandEvent.reply(commandEvent.getResource("message.default.checkBelow"));
         }
 
         if (commandEvent.getChannel().canTalk()) {
