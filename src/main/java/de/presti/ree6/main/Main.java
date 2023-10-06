@@ -517,14 +517,6 @@ public class Main {
                     BotWorker.getShardManager().getShards().forEach(jda ->
                             BotWorker.setActivity(jda, Data.getStatus(), Activity.ActivityType.PLAYING));
 
-                    log.info("Applying fix for Hibernate Schema break.");
-                    try {
-                        SQLSession.runMigrations();
-                    } catch (Exception exception) {
-                        Sentry.captureException(exception);
-                        log.error("Failed to apply fix!", exception);
-                    }
-
                     log.info("[Stats] ");
                     log.info("[Stats] Today's Stats:");
                     int guildSize = BotWorker.getShardManager().getGuilds().size(), userSize = BotWorker.getShardManager().getGuilds().stream().mapToInt(Guild::getMemberCount).sum();
@@ -632,7 +624,8 @@ public class Main {
 
             try {
                 // Need to load them all.
-                Main.getInstance().getNotifier().getCredentialManager().load();
+                if (Data.isModuleActive("notifier"))
+                    Main.getInstance().getNotifier().getCredentialManager().load();
 
                 for (TwitchIntegration twitchIntegrations :
                         SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "FROM TwitchIntegration", null)) {
