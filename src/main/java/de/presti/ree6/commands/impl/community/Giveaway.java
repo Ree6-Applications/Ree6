@@ -153,6 +153,8 @@ public class Giveaway implements ICommand {
                             stringBuilder.append(users.get(RandomUtils.nextInt(0, users.size())).getAsMention()).append(", ");
                         }
 
+                        // TODO:: edit message and set the new finished message.
+
                         commandEvent.reply(commandEvent.getResource("message.giveaway.finish", stringBuilder.substring(0, stringBuilder.length() - 2)));
                     }).onFailure(throwable -> {
                         Sentry.captureException(throwable);
