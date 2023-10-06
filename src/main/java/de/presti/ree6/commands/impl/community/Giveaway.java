@@ -100,6 +100,65 @@ public class Giveaway implements ICommand {
 
             case "end" -> {
                 // TODO:: end
+                String id = commandEvent.getOption("id").getAsString();
+
+                if (!id.matches(RegExUtil.NUMBER_REGEX)) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));
+                    return;
+                }
+
+                long idLong;
+
+                try {
+                    idLong = Long.parseLong(id);
+                } catch (Exception ignore) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));
+                    return;
+                }
+
+                de.presti.ree6.sql.entities.Giveaway giveaway = Main.getInstance().getGiveawayManager().get(idLong);
+
+                if (giveaway == null || giveaway.getGuildId() != commandEvent.getGuild().getIdLong()) {
+                    commandEvent.reply(commandEvent.getResource("message.giveaway.notFound"));
+                    return;
+                }
+
+                if (giveaway.getEnding().after(Timestamp.from(Instant.now()))) {
+                    commandEvent.reply(commandEvent.getResource("message.giveaway.notEnded"));
+                    return;
+                }
+
+                commandEvent.getGuild().getChannelById(GuildMessageChannelUnion.class, giveaway.getChannelId()).retrieveMessageById(giveaway.getMessageId()).queue(message -> {
+                    MessageReaction reaction = message.getReaction(Emoji.fromUnicode("U+1F389"));
+
+                    if (reaction == null) {
+                        commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.none"));
+                        return;
+                    }
+
+                    if (!reaction.hasCount()) {
+                        commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.none"));
+                        return;
+                    }
+
+                    reaction.retrieveUsers().mapToResult().complete().onSuccess(users -> {
+                        if (users.isEmpty()) {
+                            commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.none"));
+                            return;
+                        }
+
+                        StringBuilder stringBuilder = new StringBuilder();
+
+                        for (int i = 0; i < Math.min(giveaway.getWinners(), users.size()); i++) {
+                            stringBuilder.append(users.get(RandomUtils.nextInt(0, users.size())).getAsMention()).append(", ");
+                        }
+
+                        commandEvent.reply(commandEvent.getResource("message.giveaway.finish", stringBuilder.substring(0, stringBuilder.length() - 2)));
+                    }).onFailure(throwable -> {
+                        Sentry.captureException(throwable);
+                        commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.error"));
+                    });
+                });
             }
 
             case "reroll" -> {
@@ -125,6 +184,11 @@ public class Giveaway implements ICommand {
 
                 if (giveaway == null || giveaway.getGuildId() != commandEvent.getGuild().getIdLong()) {
                     commandEvent.reply(commandEvent.getResource("message.giveaway.notFound"));
+                    return;
+                }
+
+                if (giveaway.getEnding().after(Timestamp.from(Instant.now()))) {
+                    commandEvent.reply(commandEvent.getResource("message.giveaway.notEnded"));
                     return;
                 }
 
