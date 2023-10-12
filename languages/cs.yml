@@ -1,7 +1,7 @@
 language:
   name: "Czech"
   locale: "cs"
-  version: "3.0.13"
+  version: "3.0.15"
   author: "Pogy__"
 logging:
   banned: ":airplane_departure: %s **zablokován.**"
@@ -577,6 +577,16 @@ message:
   rewards:
     success: "Odměny byly úspěšně aktualizovány!"
   giveaway:
+    created: "Successfully created the giveaway with the ID: ||%s||!"
+    finish: "The giveaway has ended and the winners are %s"
+    ended: "The giveaway already ended."
+    reroll: "Rerolled: %s"
+    notFound: "No giveaway with the given Id has been found!"
+    notEnded: "The giveaway has not yet ended."
+    reaction:
+      none: "There are no reactions on the giveaway message!"
+      less: "There are not enough reactions on the giveaway message!"
+      error: "There was an error while fetching the reactions!"
     list:
       default: "Here is a list of all giveaways:\n```%s```"
       entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
