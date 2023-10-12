@@ -130,8 +130,8 @@ public class Giveaway implements ICommand {
                     return;
                 }
 
-                if (giveaway.getEnding().after(Timestamp.from(Instant.now()))) {
-                    commandEvent.reply(commandEvent.getResource("message.giveaway.notEnded"));
+                if (giveaway.getEnding().before(Timestamp.from(Instant.now()))) {
+                    commandEvent.reply(commandEvent.getResource("message.giveaway.ended"));
                     return;
                 }
 
