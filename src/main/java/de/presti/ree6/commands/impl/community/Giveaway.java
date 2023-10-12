@@ -106,7 +106,6 @@ public class Giveaway implements ICommand {
             }
 
             case "end" -> {
-                // TODO:: end
                 String id = commandEvent.getOption("id").getAsString();
 
                 if (!id.matches(RegExUtil.NUMBER_REGEX)) {
@@ -158,6 +157,11 @@ public class Giveaway implements ICommand {
 
                     if (!reaction.hasCount()) {
                         commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.none"));
+                        return;
+                    }
+
+                    if (reaction.getCount() < 2) {
+                        commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.less"));
                         return;
                     }
 
@@ -216,7 +220,20 @@ public class Giveaway implements ICommand {
                     return;
                 }
 
-                commandEvent.getGuild().getChannelById(GuildMessageChannelUnion.class, giveaway.getChannelId()).retrieveMessageById(giveaway.getMessageId()).queue(message -> {
+                GuildMessageChannelUnion channel = commandEvent.getGuild().getChannelById(GuildMessageChannelUnion.class, giveaway.getChannelId());
+
+                if (channel == null) {
+                    Main.getInstance().getGiveawayManager().remove(giveaway);
+                    return;
+                }
+
+                channel.retrieveMessageById(giveaway.getMessageId()).onErrorMap(throwable -> {
+                    Main.getInstance().getGiveawayManager().remove(giveaway);
+                    return null;
+                }).queue(message -> {
+                    if (message == null)
+                        return;
+
                     MessageReaction reaction = message.getReaction(Emoji.fromUnicode("U+1F389"));
 
                     if (reaction == null) {
@@ -239,22 +256,26 @@ public class Giveaway implements ICommand {
                         return;
                     }
 
-                    reaction.retrieveUsers().mapToResult().complete().onSuccess(users -> {
-                        if (users.isEmpty()) {
-                            commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.none"));
+                    reaction.retrieveUsers().mapToResult().onErrorMap(throwable -> {
+                        Main.getInstance().getGiveawayManager().remove(giveaway);
+                        commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.error"));
+                        return null;
+                    }).queue(users -> {
+                        if (users == null) {
                             return;
                         }
 
-                        StringBuilder stringBuilder = new StringBuilder();
+                        users.onSuccess(userList -> {
+                            if (userList.isEmpty()) {
+                                commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.none"));
+                                return;
+                            }
 
-                        for (int i = 0; i < winners; i++) {
-                            stringBuilder.append(users.get(RandomUtils.nextInt(0, users.size())).getAsMention()).append(", ");
-                        }
-
-                        commandEvent.reply(commandEvent.getResource("message.giveaway.reroll", stringBuilder.substring(0, stringBuilder.length() - 2)));
-                    }).onFailure(throwable -> {
-                        Sentry.captureException(throwable);
-                        commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.error"));
+                            MessageEditBuilder messageEditBuilder = MessageEditBuilder.fromMessage(message);
+                            commandEvent.reply(commandEvent.getResource("message.giveaway.reroll",
+                                    Main.getInstance().getGiveawayManager().endGiveaway(giveaway, messageEditBuilder, userList, winners)));
+                            message.editMessage(messageEditBuilder.build()).queue();
+                        }).onFailure(Sentry::captureException);
                     });
                 });
             }
