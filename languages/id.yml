@@ -577,7 +577,7 @@ message:
   rewards:
     success: "Berhasil merubah hadiah!"
   giveaway:
-    created: "Successfully created the giveaway with the ID: ||%s||!"
+    created: "Successfully created the giveaway with the ID: ```%s```!"
     finish: "The giveaway has ended and the winners are %s"
     ended: "The giveaway already ended."
     reroll: "Rerolled: %s"
