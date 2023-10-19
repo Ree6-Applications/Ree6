@@ -1,6 +1,5 @@
 package de.presti.ree6.commands;
 
-import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;

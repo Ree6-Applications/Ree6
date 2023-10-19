@@ -25,6 +25,7 @@ import de.presti.ree6.logger.events.LoggerQueue;
 import de.presti.ree6.module.giveaway.GiveawayManager;
 import de.presti.ree6.sql.DatabaseTyp;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.Giveaway;
 import de.presti.ree6.sql.entities.ScheduledMessage;
 import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.TwitchIntegration;
@@ -44,8 +45,12 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +64,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -619,6 +625,77 @@ public class Main {
                 }
             } catch (Exception exception) {
                 log.error("Failed to run scheduled Messages.", exception);
+                Sentry.captureException(exception);
+            }
+
+            try {
+                ArrayList<Giveaway> toDelete = new ArrayList<>();
+                Instant currentTime = Instant.now();
+                for (Giveaway giveaway : giveawayManager.getList()) {
+                    Instant giveAwayTime = giveaway.getEnding().toInstant();
+                    if (giveAwayTime.isBefore(Instant.now()) && giveAwayTime.isAfter(currentTime.minus(1, ChronoUnit.MINUTES))) {
+                        Guild guild = BotWorker.getShardManager().getGuildById(giveaway.getGuildId());
+
+                        if (guild == null) {
+                            toDelete.add(giveaway);
+                            continue;
+                        }
+
+                        GuildMessageChannelUnion channel = guild.getChannelById(GuildMessageChannelUnion.class, giveaway.getChannelId());
+
+                        if (channel == null) {
+                            toDelete.add(giveaway);
+                            continue;
+                        }
+
+                        channel.retrieveMessageById(giveaway.getMessageId()).onErrorMap(throwable -> {
+                            toDelete.add(giveaway);
+                            return null;
+                        }).queue(message -> {
+                            if (message == null)
+                                return;
+
+                            MessageReaction reaction = message.getReaction(Emoji.fromUnicode("U+1F389"));
+
+                            if (reaction == null) {
+                                return;
+                            }
+
+                            if (!reaction.hasCount()) {
+                                return;
+                            }
+
+                            if (reaction.getCount() < 2) {
+                                return;
+                            }
+
+                            reaction.retrieveUsers().mapToResult().onErrorMap(throwable -> {
+                                toDelete.add(giveaway);
+                                return null;
+                            }).queue(users -> {
+                                if (users == null) {
+                                    return;
+                                }
+
+                                users.onSuccess(userList -> {
+                                    if (userList.isEmpty()) {
+                                        return;
+                                    }
+
+                                    MessageEditBuilder messageEditBuilder = MessageEditBuilder.fromMessage(message);
+                                    Main.getInstance().getGiveawayManager().endGiveaway(giveaway, messageEditBuilder, userList);
+                                    message.editMessage(messageEditBuilder.build()).queue();
+                                }).onFailure(Sentry::captureException);
+                            });
+                        });
+                    }
+                }
+
+                for (Giveaway giveaway : toDelete) {
+                    giveawayManager.remove(giveaway);
+                }
+            } catch (Exception exception) {
+                log.error("Failed to run Giveaway checks.", exception);
                 Sentry.captureException(exception);
             }
 

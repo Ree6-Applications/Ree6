@@ -11,13 +11,14 @@ import de.presti.ree6.utils.data.RegExUtil;
 import de.presti.ree6.utils.others.RandomUtils;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.sql.Timestamp;
@@ -40,6 +41,11 @@ public class Giveaway implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         if (!commandEvent.isSlashCommand()) {
             commandEvent.reply(commandEvent.getResource("command.perform.onlySlashSupported"));
+            return;
+        }
+
+        if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.ADMINISTRATOR)) {
+            commandEvent.reply(commandEvent.getResource("message.default.needPermission", Permission.MANAGE_WEBHOOKS.getName()));
             return;
         }
 
@@ -82,14 +88,15 @@ public class Giveaway implements ICommand {
 
                 EmbedBuilder embedBuilder = new EmbedBuilder();
                 embedBuilder.setTitle(prize);
-                embedBuilder.setDescription("Ending: <t:" + endTime + ":R>\n" +
+
+                embedBuilder.setDescription("Ending: <t:" + endInstant.getEpochSecond() + ":R>\n" +
                         "Hosted by: " + commandEvent.getMember().getAsMention() + "\n");
 
                 commandEvent.getChannel().sendMessageEmbeds(embedBuilder.build()).queue(message -> {
                     message.addReaction(Emoji.fromUnicode("U+1F389")).queue();
                     de.presti.ree6.sql.entities.Giveaway giveaway =
                             new de.presti.ree6.sql.entities.Giveaway(message.getIdLong(), commandEvent.getMember().getIdLong(),
-                                    commandEvent.getGuild().getIdLong(), prize, winners, endTime);
+                                    commandEvent.getGuild().getIdLong(), commandEvent.getChannel().getIdLong(), prize, winners, endTime);
 
                     giveaway = SQLSession.getSqlConnector().getSqlWorker().updateEntity(giveaway);
                     Main.getInstance().getGiveawayManager().add(giveaway);
@@ -99,7 +106,6 @@ public class Giveaway implements ICommand {
             }
 
             case "end" -> {
-                // TODO:: end
                 String id = commandEvent.getOption("id").getAsString();
 
                 if (!id.matches(RegExUtil.NUMBER_REGEX)) {
@@ -123,12 +129,25 @@ public class Giveaway implements ICommand {
                     return;
                 }
 
-                if (giveaway.getEnding().after(Timestamp.from(Instant.now()))) {
-                    commandEvent.reply(commandEvent.getResource("message.giveaway.notEnded"));
+                if (giveaway.getEnding().before(Timestamp.from(Instant.now()))) {
+                    commandEvent.reply(commandEvent.getResource("message.giveaway.ended"));
                     return;
                 }
 
-                commandEvent.getGuild().getChannelById(GuildMessageChannelUnion.class, giveaway.getChannelId()).retrieveMessageById(giveaway.getMessageId()).queue(message -> {
+                GuildMessageChannelUnion channel = commandEvent.getGuild().getChannelById(GuildMessageChannelUnion.class, giveaway.getChannelId());
+
+                if (channel == null) {
+                    Main.getInstance().getGiveawayManager().remove(giveaway);
+                    return;
+                }
+
+                channel.retrieveMessageById(giveaway.getMessageId()).onErrorMap(throwable -> {
+                    Main.getInstance().getGiveawayManager().remove(giveaway);
+                    return null;
+                }).queue(message -> {
+                    if (message == null)
+                        return;
+
                     MessageReaction reaction = message.getReaction(Emoji.fromUnicode("U+1F389"));
 
                     if (reaction == null) {
@@ -141,24 +160,31 @@ public class Giveaway implements ICommand {
                         return;
                     }
 
-                    reaction.retrieveUsers().mapToResult().complete().onSuccess(users -> {
-                        if (users.isEmpty()) {
-                            commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.none"));
+                    if (reaction.getCount() < 2) {
+                        commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.less"));
+                        return;
+                    }
+
+                    reaction.retrieveUsers().mapToResult().onErrorMap(throwable -> {
+                        Main.getInstance().getGiveawayManager().remove(giveaway);
+                        commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.error"));
+                        return null;
+                    }).queue(users -> {
+                        if (users == null) {
                             return;
                         }
 
-                        StringBuilder stringBuilder = new StringBuilder();
+                        users.onSuccess(userList -> {
+                            if (userList.isEmpty()) {
+                                commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.none"));
+                                return;
+                            }
 
-                        for (int i = 0; i < Math.min(giveaway.getWinners(), users.size()); i++) {
-                            stringBuilder.append(users.get(RandomUtils.nextInt(0, users.size())).getAsMention()).append(", ");
-                        }
-
-                        // TODO:: edit message and set the new finished message.
-
-                        commandEvent.reply(commandEvent.getResource("message.giveaway.finish", stringBuilder.substring(0, stringBuilder.length() - 2)));
-                    }).onFailure(throwable -> {
-                        Sentry.captureException(throwable);
-                        commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.error"));
+                            MessageEditBuilder messageEditBuilder = MessageEditBuilder.fromMessage(message);
+                            commandEvent.reply(commandEvent.getResource("message.giveaway.finish",
+                                    Main.getInstance().getGiveawayManager().endGiveaway(giveaway, messageEditBuilder, userList)));
+                            message.editMessage(messageEditBuilder.build()).queue();
+                        }).onFailure(Sentry::captureException);
                     });
                 });
             }
@@ -194,7 +220,20 @@ public class Giveaway implements ICommand {
                     return;
                 }
 
-                commandEvent.getGuild().getChannelById(GuildMessageChannelUnion.class, giveaway.getChannelId()).retrieveMessageById(giveaway.getMessageId()).queue(message -> {
+                GuildMessageChannelUnion channel = commandEvent.getGuild().getChannelById(GuildMessageChannelUnion.class, giveaway.getChannelId());
+
+                if (channel == null) {
+                    Main.getInstance().getGiveawayManager().remove(giveaway);
+                    return;
+                }
+
+                channel.retrieveMessageById(giveaway.getMessageId()).onErrorMap(throwable -> {
+                    Main.getInstance().getGiveawayManager().remove(giveaway);
+                    return null;
+                }).queue(message -> {
+                    if (message == null)
+                        return;
+
                     MessageReaction reaction = message.getReaction(Emoji.fromUnicode("U+1F389"));
 
                     if (reaction == null) {
@@ -207,27 +246,36 @@ public class Giveaway implements ICommand {
                         return;
                     }
 
+                    if (reaction.getCount() < 2) {
+                        commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.less"));
+                        return;
+                    }
+
                     if (reaction.getCount() < winners) {
                         commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.less"));
                         return;
                     }
 
-                    reaction.retrieveUsers().mapToResult().complete().onSuccess(users -> {
-                        if (users.isEmpty()) {
-                            commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.none"));
+                    reaction.retrieveUsers().mapToResult().onErrorMap(throwable -> {
+                        Main.getInstance().getGiveawayManager().remove(giveaway);
+                        commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.error"));
+                        return null;
+                    }).queue(users -> {
+                        if (users == null) {
                             return;
                         }
 
-                        StringBuilder stringBuilder = new StringBuilder();
+                        users.onSuccess(userList -> {
+                            if (userList.isEmpty()) {
+                                commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.none"));
+                                return;
+                            }
 
-                        for (int i = 0; i < winners; i++) {
-                            stringBuilder.append(users.get(RandomUtils.nextInt(0, users.size())).getAsMention()).append(", ");
-                        }
-
-                        commandEvent.reply(commandEvent.getResource("message.giveaway.reroll", stringBuilder.substring(0, stringBuilder.length() - 2)));
-                    }).onFailure(throwable -> {
-                        Sentry.captureException(throwable);
-                        commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.error"));
+                            MessageEditBuilder messageEditBuilder = MessageEditBuilder.fromMessage(message);
+                            commandEvent.reply(commandEvent.getResource("message.giveaway.reroll",
+                                    Main.getInstance().getGiveawayManager().endGiveaway(giveaway, messageEditBuilder, userList, winners)));
+                            message.editMessage(messageEditBuilder.build()).queue();
+                        }).onFailure(Sentry::captureException);
                     });
                 });
             }
