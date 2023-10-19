@@ -68,7 +68,7 @@ public class Schedule implements ICommand {
                                     .atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH/mm")));
                 }
 
-                commandEvent.reply(commandEvent.getResource("message.schedule.list"));
+                commandEvent.reply(commandEvent.getResource("message.schedule.list", stringBuilder.toString()));
             }
 
             case "delete" -> {
