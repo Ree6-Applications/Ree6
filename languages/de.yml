@@ -577,19 +577,19 @@ message:
   rewards:
     success: "Belohnungen wurden erfolgreich aktualisiert!"
   giveaway:
-    created: "Successfully created the giveaway with the ID: ```%s```!"
-    finish: "The giveaway has ended and the winners are %s"
-    ended: "The giveaway already ended."
-    reroll: "Rerolled: %s"
-    notFound: "No giveaway with the given Id has been found!"
-    notEnded: "The giveaway has not yet ended."
+    created: "Ein Giveaway wurde erstellt! ID: ```%s```"
+    finish: "Das Giveaway wurde beendet! Gewinner: %s"
+    ended: "Das Giveaway ist schon geendet."
+    reroll: "Neue Gewinner: %s"
+    notFound: "Es wurden kein Giveaway mit dieser ID gefunden!"
+    notEnded: "Das Giveaway ist noch am Laufen."
     reaction:
-      none: "There are no reactions on the giveaway message!"
-      less: "There are not enough reactions on the giveaway message!"
-      error: "There was an error while fetching the reactions!"
+      none: "Es wurden keine Reaktionen auf der Giveaway-Nachricht gefunden!"
+      less: "Es gibt nicht genügend Reaktionen auf der Giveaway-Nachricht!"
+      error: "Es gab einen Fehler, beim versuch die Reaktionen zuladen!"
     list:
-      default: "Here is a list of all giveaways:\n```%s```"
-      entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
+      default: "Hier ist eine Liste aller Giveaways: ```%s```"
+      entry: "ID: %s | Channel: %s | Gewinner: %s | Preis: %s | endet: %s"
 game:
   description:
     blackjack: "Spiele Blackjack mit deinen Freunden!"
@@ -692,7 +692,7 @@ command:
     money: "Verwalten dein Geld!"
     steal: "Stehle Geld von anderen!"
     work: "Verdiene dein eigens Geld vom Arbeiten!"
-    giveaway: "Manage Giveaways!"
+    giveaway: "Verwalte deine Giveaways!"
 category:
   info: "Wird verwendet, um Informationen zu sammeln oder Informationen zu geben."
   moderation: "Moderations-Tools, die Ihnen beim Verwalten von Benutzern helfen oder das Missachten von Regeln auf dem Server verhindern können."
