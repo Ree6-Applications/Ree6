@@ -588,8 +588,8 @@ message:
       less: "There are not enough reactions on the giveaway message!"
       error: "There was an error while fetching the reactions!"
     list:
-      default: "Here is a list of all giveaways:\n```%s```"
-      entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
+      default: "İşte tüm hediyelerin listesi:\n```%s```"
+      entry: "ID: %s | Kanal: %s | Kazanan: %s | Ödül: %s | Bitiş: %s"
 game:
   description:
     blackjack: "Arkadaşlarınızla Blackjack oynayın!"
@@ -692,7 +692,7 @@ command:
     money: "Paranızı yönetin!"
     steal: "Diğer kullanıcılardan para çalın!"
     work: "İş yaparak kendi paranı kazan!"
-    giveaway: "Manage Giveaways!"
+    giveaway: "Hediyeleri Yönet!"
 category:
   info: "Bilgi toplamak veya bilgi sağlamak için kullanılır."
   moderation: "Kullanıcıları yönetmenize veya Sunucuda kural ihlalini önlemenize yardımcı olabilecek Denetleme Araçları."
