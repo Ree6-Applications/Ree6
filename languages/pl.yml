@@ -577,19 +577,19 @@ message:
   rewards:
     success: "Zaktualizowano nagrody!"
   giveaway:
-    created: "Successfully created the giveaway with the ID: ```%s```!"
-    finish: "The giveaway has ended and the winners are %s"
-    ended: "The giveaway already ended."
-    reroll: "Rerolled: %s"
-    notFound: "No giveaway with the given Id has been found!"
-    notEnded: "The giveaway has not yet ended."
+    created: "Pomyślnie utworzono rozdanie z ID: ```%s```!"
+    finish: "Rozdanie zakończyło się, zwycięzcami są %s"
+    ended: "Rozdanie już się skończyło."
+    reroll: "Odnowiono: %s"
+    notFound: "Nie znaleziono żadnego rozdania z podanym identyfikatorem!"
+    notEnded: "Rozdanie jeszcze się nie skończyło."
     reaction:
-      none: "There are no reactions on the giveaway message!"
-      less: "There are not enough reactions on the giveaway message!"
-      error: "There was an error while fetching the reactions!"
+      none: "Nie ma reakcji na wiadomości rozdania!"
+      less: "Nie ma wystarczającej ilości reakcji na wiadomości rozdania!"
+      error: "Wystąpił błąd podczas pobierania reakcji!"
     list:
-      default: "Here is a list of all giveaways:\n```%s```"
-      entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
+      default: "Oto lista wszystkich rozdań:\n```%s ``` ` `"
+      entry: "ID: %s | Kanał: %s | Zwycięzca: %s | Nagroda: %s | Kończy: %s"
 game:
   description:
     blackjack: "Zagraj w Blackjack z przyjaciółmi!"
@@ -692,7 +692,7 @@ command:
     money: "Zarządzaj pieniędzmi!"
     steal: "Ukradnij pieniądze od innych użytkowników!"
     work: "Zdobądź własne pieniądze za pracę!"
-    giveaway: "Manage Giveaways!"
+    giveaway: "Zarządzaj rozdaniami!"
 category:
   info: "Wykorzystywane do gromadzenia informacji lub przekazywania informacji."
   moderation: "Narzędzia moderacyjne, które mogą pomóc ci zarządzać użytkownikami lub zapobiec łamania zasad na serwerze."
