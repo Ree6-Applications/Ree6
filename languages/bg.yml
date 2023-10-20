@@ -577,19 +577,19 @@ message:
   rewards:
     success: "Успешно актуализирах наградите!"
   giveaway:
-    created: "Successfully created the giveaway with the ID: ```%s```!"
-    finish: "The giveaway has ended and the winners are %s"
-    ended: "The giveaway already ended."
-    reroll: "Rerolled: %s"
-    notFound: "No giveaway with the given Id has been found!"
-    notEnded: "The giveaway has not yet ended."
+    created: "Успешно създадохте раздаване с ID: ```%s```."
+    finish: "Раздаването приключи и победителите са %s"
+    ended: "Раздаването вече приключи."
+    reroll: "Участва наново: %s"
+    notFound: "Не беше намерено раздаване с това id!"
+    notEnded: "Раздаването все още не е приключило."
     reaction:
-      none: "There are no reactions on the giveaway message!"
-      less: "There are not enough reactions on the giveaway message!"
-      error: "There was an error while fetching the reactions!"
+      none: "Никой не е реагирал на съобщението с раздаването!"
+      less: "Няма достатъчно реакции на съобщението с раздаването!"
+      error: "Получи се грешка при събиране на реакциите!"
     list:
-      default: "Here is a list of all giveaways:\n```%s```"
-      entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
+      default: "Това са всички раздавания:\n```%s```"
+      entry: "ID: %s | Канал: %s | Победител: %s | Награда: %s | Приключва: %s"
 game:
   description:
     blackjack: "Играй Блекджек с приятелите си!"
@@ -692,7 +692,7 @@ command:
     money: "Управлявайте парите си!"
     steal: "Откраднете пари от други потребители!"
     work: "Спечелете собствени пари от работа!"
-    giveaway: "Manage Giveaways!"
+    giveaway: "Менаджирайте Раздаванията!"
 category:
   info: "Използва се за събиране на информация или предоставяне на информация."
   moderation: "Инструменти за модериране, които могат да ви помогнат да управлявате потребители или да предотвратите нарушаване на правилата на сървъра."
