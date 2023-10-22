@@ -577,16 +577,16 @@ message:
   rewards:
     success: "Ödüller başarıyla güncellendi!"
   giveaway:
-    created: "Successfully created the giveaway with the ID: ```%s```!"
-    finish: "The giveaway has ended and the winners are %s"
-    ended: "The giveaway already ended."
-    reroll: "Rerolled: %s"
-    notFound: "No giveaway with the given Id has been found!"
-    notEnded: "The giveaway has not yet ended."
+    created: "Hediye şu ID'le başarıyla oluşturuldu: ```%s```!"
+    finish: "Çekiliş sona erdi ve kazananlar %s"
+    ended: "Çekiliş zaten sona erdi."
+    reroll: "Yeniden kayıt edildi: %s"
+    notFound: "Verilen ID'e sahip bir hediye bulunamadı!"
+    notEnded: "Hediye çekilişi henüz sona ermedi."
     reaction:
-      none: "There are no reactions on the giveaway message!"
-      less: "There are not enough reactions on the giveaway message!"
-      error: "There was an error while fetching the reactions!"
+      none: "Çekiliş mesajına herhangi bir tepki gelmedi!"
+      less: "Çekiliş mesajına yeterli tepki gelmedi!"
+      error: "Tepkiler alınırken bir hata oluştu!"
     list:
       default: "İşte tüm hediyelerin listesi:\n```%s```"
       entry: "ID: %s | Kanal: %s | Kazanan: %s | Ödül: %s | Bitiş: %s"
