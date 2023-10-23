@@ -195,15 +195,21 @@ public class Main {
             default -> databaseTyp = DatabaseTyp.SQLite;
         }
 
-        new SQLSession(getInstance().getConfig().getConfiguration().getString("hikari.sql.user"),
-                getInstance().getConfig().getConfiguration().getString("hikari.sql.db"),
-                getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"),
-                getInstance().getConfig().getConfiguration().getString("hikari.sql.host"),
-                getInstance().getConfig().getConfiguration().getInt("hikari.sql.port"),
-                getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
-                getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"),
-                getInstance().getConfig().getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"),
-                Data.isDebug());
+        try {
+            new SQLSession(getInstance().getConfig().getConfiguration().getString("hikari.sql.user"),
+                    getInstance().getConfig().getConfiguration().getString("hikari.sql.db"),
+                    getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"),
+                    getInstance().getConfig().getConfiguration().getString("hikari.sql.host"),
+                    getInstance().getConfig().getConfiguration().getInt("hikari.sql.port"),
+                    getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
+                    getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"),
+                    getInstance().getConfig().getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"),
+                    Data.isDebug());
+        } catch (Exception exception) {
+            log.error("Shutting down, because of an critical error!", exception);
+            System.exit(0);
+            return;
+        }
 
         log.info("Loading ChatGPTAPI");
         getInstance().setChatGPTAPI(new ChatGPTAPI());
