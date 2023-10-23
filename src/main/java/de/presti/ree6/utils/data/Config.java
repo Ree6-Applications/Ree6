@@ -1,13 +1,18 @@
 package de.presti.ree6.utils.data;
 
 import de.presti.ree6.bot.BotWorker;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.MemorySection;
 import org.simpleyaml.configuration.file.YamlFile;
+import org.simpleyaml.configuration.serialization.SerializableAs;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -159,11 +164,10 @@ public class Config {
 
             yamlFile.path("lavalink")
                     .comment("Lavalink Configuration, for lavalink support.").blankLine()
-                    .path("enable").addDefault(false).commentSide("If you wanna use Lavalink.")
-                    .parent().path("host").addDefault("none").commentSide("node.mylava.link")
-                    .parent().path("port").addDefault(0).commentSide("Port of the Node.")
-                    .parent().path("secure").addDefault(false).commentSide("If you are using SSL")
-                    .parent().path("password").addDefault("none");
+                    .path("enable").addDefault(false).commentSide("If you want to use Lavalink.")
+                    .parent().path("nodes")
+                    .addDefault(List.of(Map.of("name", "Node Name", "host", "node.mylava.link", "port", 0, "secure", false, "password", "none")))
+                    .comment("Lavalink Nodes Configuration.").blankLine();
 
             yamlFile.path("heartbeat")
                     .comment("Heartbeat Configuration, for status reporting").blankLine()
@@ -405,6 +409,29 @@ public class Config {
      */
     public File getTemporalFile() {
         return new File("storage/temp.yml");
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LavaLinkNodeConfig {
+        String name;
+        String host;
+        int port;
+        boolean secure;
+        String password;
+
+        public String buildAddress() {
+            String lavalinkUrl = getHost();
+
+            if (isSecure()) {
+                lavalinkUrl = "wss://" + lavalinkUrl;
+            } else {
+                lavalinkUrl = "ws://" + lavalinkUrl;
+            }
+
+            return lavalinkUrl + ":" + getPort();
+        }
     }
 
 }

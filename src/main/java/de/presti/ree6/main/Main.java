@@ -267,18 +267,17 @@ public class Main {
             getInstance().addEvents();
 
             if (Data.shouldUseLavaLink()) {
-                String lavalinkUrl = getInstance().getConfig().getConfiguration().getString("lavalink.host");
 
-                if (getInstance().getConfig().getConfiguration().getBoolean("lavalink.secure")) {
-                    lavalinkUrl = "wss://" + lavalinkUrl;
-                } else {
-                    lavalinkUrl = "ws://" + lavalinkUrl;
+                List<HashMap<String, Object>> nodes = (List<HashMap<String, Object>>) getInstance().getConfig()
+                        .getConfiguration().getList("lavalink.nodes");
+
+                for (Config.LavaLinkNodeConfig node : nodes.stream().map(map ->
+                        new Config.LavaLinkNodeConfig((String) map.get("name"), (String) map.get("host"),
+                                (Integer) map.get("port"), (boolean) map.get("secure"),
+                                (String) map.get("password"))).toList()) {
+                    getInstance().getLavalink().addNode(node.getName(),
+                            URI.create(node.buildAddress()), node.getPassword());
                 }
-
-                lavalinkUrl += ":" + getInstance().getConfig().getConfiguration().getInt("lavalink.port");
-
-                getInstance().getLavalink().addNode(URI.create(lavalinkUrl),
-                        getInstance().getConfig().getConfiguration().getString("lavalink.password"));
             }
         } catch (Exception ex) {
             log.error("[Main] Error while init: " + ex.getMessage());

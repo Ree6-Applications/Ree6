@@ -40,6 +40,16 @@
             <name>Maven Central</name>
             <url>https://repo.maven.apache.org/maven2/</url>
         </repository>
+        <repository>
+            <id>ll-releases</id>
+            <name>Lavalink Releases</name>
+            <url>https://maven.lavalink.dev/releases</url>
+        </repository>
+        <repository>
+            <id>ll-snapshots</id>
+            <name>Lavalink Snapshots</name>
+            <url>https://maven.lavalink.dev/snapshots</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -128,6 +138,11 @@
             <artifactId>JLyrics</artifactId>
             <version>765f7e0b88</version>
         </dependency>
+        <!--<dependency>
+            <groupId>dev.arbjerg</groupId>
+            <artifactId>lavalink-client</artifactId>
+            <version>00786d310c97e44730796bfd616b5b15286de173-SNAPSHOT</version>
+        </dependency>-->
         <dependency>
             <groupId>de.ree6</groupId>
             <artifactId>Lavalink-Client</artifactId>
