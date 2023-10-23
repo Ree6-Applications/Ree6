@@ -91,6 +91,11 @@ public class Kick implements ICommand {
      * @param commandEvent The CommandEvent.
      */
     public void kickMember(Member member, String reason, CommandEvent commandEvent) {
+        if (member == null) {
+            commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
+            return;
+        }
+
         if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
             commandEvent.reply(commandEvent.getResource("message.kick.success", member.getAsMention()), 5);
             commandEvent.getGuild().kick(member).reason(reason).queue();
