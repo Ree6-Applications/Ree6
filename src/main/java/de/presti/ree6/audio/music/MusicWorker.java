@@ -89,7 +89,13 @@ public class MusicWorker {
 
         musicManagers.putIfAbsent(guildId, new GuildMusicManager(guild, playerManager));
 
-        return musicManagers.get(guildId);
+        GuildMusicManager musicManager = musicManagers.get(guildId);
+
+        if (!Data.shouldUseLavaLink()) {
+            guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+        }
+
+        return musicManager;
     }
 
 
