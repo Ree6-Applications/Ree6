@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.others;
 
+import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
 import lombok.extern.slf4j.Slf4j;
@@ -11,17 +12,17 @@ import net.dv8tion.jda.api.entities.Role;
 import java.util.Map;
 
 /**
- * Utility class used to handle Roles that should be added to Members automatically.
+ * Utility class used to handle User specific stuff that is being used multiple times.
  */
 @Slf4j
-public class AutoRoleHandler {
+public class UserUtil {
 
     /**
      * Constructor should not be called, since it is a utility class that doesn't need an instance.
      *
      * @throws IllegalStateException it is a utility class.
      */
-    private AutoRoleHandler() {
+    private UserUtil() {
         throw new IllegalStateException("Utility class");
     }
 
@@ -216,5 +217,24 @@ public class AutoRoleHandler {
                                         : "message.brs.autoRole.missingPermission", role.getName()))
                                 .queue());
         }
+    }
+
+    /**
+     * Checks if a specific user has supported Ree6 via Donations!
+     * @param member the User of the current Guild to check.
+     * @return true if the User has supported Ree6 via Donations, false if not.
+     */
+    public static boolean isSupporter(Member member) {
+        Guild ree6Guild = BotWorker.getShardManager().getGuildById(805149057004732457L);
+
+        if (ree6Guild != null) {
+            Member ree6Member = ree6Guild.getMemberById(member.getId());
+
+            if (ree6Member != null) {
+                return ree6Member.getRoles().stream()
+                        .anyMatch(c -> c.getIdLong() == 910133809327009822L);
+            }
+        }
+        return false;
     }
 }

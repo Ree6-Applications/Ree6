@@ -79,7 +79,7 @@ public class OtherEvents extends ListenerAdapter {
 
         Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
 
-        BotWorker.setActivity(event.getJDA(), Data.getStatus(), Activity.ActivityType.PLAYING);
+        BotWorker.setActivity(event.getJDA(), Data.getStatus(), Activity.ActivityType.CUSTOM_STATUS);
     }
 
     /**
@@ -130,7 +130,7 @@ public class OtherEvents extends ListenerAdapter {
             });
         }
 
-        AutoRoleHandler.handleMemberJoin(event.getGuild(), event.getMember());
+        UserUtil.handleMemberJoin(event.getGuild(), event.getMember());
 
         if (!SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId())) return;
 
@@ -307,7 +307,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 SQLSession.getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), newUserLevel);
 
-                AutoRoleHandler.handleVoiceLevelReward(event.getGuild(), event.getMember());
+                UserUtil.handleVoiceLevelReward(event.getGuild(), event.getMember());
             }
 
             if (event.getChannelLeft().getMembers().size() == 1 &&
@@ -475,7 +475,7 @@ public class OtherEvents extends ListenerAdapter {
                         ThreadUtil.createThread(x -> ArrayUtil.timeout.remove(event.getMember()), null, Duration.ofSeconds(30), false, false);
                     }
 
-                    AutoRoleHandler.handleChatLevelReward(event.getGuild(), event.getMember());
+                    UserUtil.handleChatLevelReward(event.getGuild(), event.getMember());
                 }
             }
         }

@@ -6,6 +6,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.utils.others.UserUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -34,7 +35,7 @@ public class Info implements ICommand {
             if (targetOption != null && targetOption.getAsMember() != null) {
                 sendInfo(targetOption.getAsMember(), commandEvent);
             } else {
-                commandEvent.reply(commandEvent.getResource("message.default.noMention.user"), 5);
+                sendInfo(commandEvent.getMember(), commandEvent);
             }
 
         } else {
@@ -46,7 +47,7 @@ public class Info implements ICommand {
                     sendInfo(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent);
                 }
             } else {
-                commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
+                sendInfo(commandEvent.getMember(), commandEvent);
             }
         }
     }
@@ -57,7 +58,7 @@ public class Info implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("info", LanguageService.getDefault("command.description.info"))
-                .addOptions(new OptionData(OptionType.USER, "target", "The User whose profile Information you want.").setRequired(true));
+                .addOptions(new OptionData(OptionType.USER, "target", "The User whose profile Information you want.").setRequired(false));
     }
 
     /**
@@ -76,7 +77,7 @@ public class Info implements ICommand {
     public void sendInfo(Member member, CommandEvent commandEvent) {
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setTitle(member.getEffectiveName(), member.getEffectiveAvatarUrl());
+        em.setTitle(member.getEffectiveName() + (UserUtil.isSupporter(member) ? " <a:duckswing:1070690323459735682>" : ""));
         em.setThumbnail(member.getEffectiveAvatarUrl());
 
         if (member.getUser().getDiscriminator().equals("0000")) {

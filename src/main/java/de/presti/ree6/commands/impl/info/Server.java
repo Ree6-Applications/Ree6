@@ -6,6 +6,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.utils.others.UserUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -32,10 +33,18 @@ public class Server implements ICommand {
 
             Member owner = commandEvent.getGuild().getOwner();
 
+            boolean addBadge = false;
+
+            if (owner != null) {
+                if (UserUtil.isSupporter(owner)) {
+                    addBadge = true;
+                }
+            }
+
             em.setAuthor(commandEvent.getGuild().getName(), null, commandEvent.getGuild().getIconUrl());
             em.addField(":id: **" + commandEvent.getResource("label.serverId") + "**", commandEvent.getGuild().getId(), true);
             em.addField(":calendar: **" + commandEvent.getResource("label.creationDate") + "**", commandEvent.getGuild().getTimeCreated().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")), true);
-            em.addField(":crown: **" + commandEvent.getResource("label.owner") + "**", owner != null ? owner.getAsMention() : commandEvent.getResource("label.notExisting"), true);
+            em.addField(":crown: **" + commandEvent.getResource("label.owner") + "**", owner != null ? owner.getAsMention() + (addBadge ? " <a:duckswing:1070690323459735682>" : "") : commandEvent.getResource("label.notExisting"), true);
             em.addField(":busts_in_silhouette: **" + commandEvent.getResource("label.members") + " (" + commandEvent.getGuild().getMemberCount() + ")**", "**" + (commandEvent.getGuild().getMemberCount() - (commandEvent.getGuild().getMembers().stream().filter(member -> !member.getUser().isBot())).count()) + "** User\n**" + commandEvent.getGuild().getBoostCount() + "** Boosts :sparkles:", true);
             em.addField(":speech_balloon: **" + commandEvent.getResource("label.channels") + " (" + (commandEvent.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.TEXT)).count() + commandEvent.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.VOICE)).count()) + ")**", "**" + commandEvent.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.TEXT)).count() + "** Text | **" + commandEvent.getGuild().getChannels().stream().filter(channel -> channel.getType().equals(ChannelType.VOICE)).count() + "** Voicechannel", true);
             em.addField(":earth_africa: **" + commandEvent.getResource("label.other") + "**", "**" + commandEvent.getResource("label.verificationLevel") + ":** " + commandEvent.getGuild().getVerificationLevel().getKey(), true);

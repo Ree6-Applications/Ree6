@@ -521,7 +521,7 @@ public class Main {
                     ArrayUtil.messageIDwithUser.clear();
 
                     BotWorker.getShardManager().getShards().forEach(jda ->
-                            BotWorker.setActivity(jda, Data.getStatus(), Activity.ActivityType.PLAYING));
+                            BotWorker.setActivity(jda, Data.getStatus(), Activity.ActivityType.CUSTOM_STATUS));
 
                     log.info("[Stats] ");
                     log.info("[Stats] Today's Stats:");
