@@ -166,5 +166,13 @@ public class Data {
     public static boolean isDebug() {
         return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.debug", false);
     }
+
+    /**
+     * Check if the bot should use LavaLink.
+     * @return if the bot should use LavaLink.
+     */
+    public static boolean shouldUseLavaLink() {
+        return Main.getInstance().getConfig().getConfiguration().getBoolean("lavalink.enable", false);
+    }
 }
 

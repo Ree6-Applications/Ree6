@@ -1,7 +1,6 @@
 package de.presti.ree6.audio.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
@@ -10,6 +9,10 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
+import lavalink.client.player.IPlayer;
+import lavalink.client.player.event.AudioEventAdapterWrapped;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -27,31 +30,38 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 @Slf4j
 @SuppressWarnings("ALL")
-public class TrackScheduler extends AudioEventAdapter {
+public class TrackScheduler extends AudioEventAdapterWrapped {
     /**
-     * The {@link AudioPlayer} from the current Channel.
+     * The {@link IPlayer} from the current Channel.
      */
-    private final AudioPlayer player;
+    @Getter
+    private final IPlayer player;
 
     /**
      * The {@link GuildMusicManager} related to this TrackScheduler.
      */
+    @Getter
     private final GuildMusicManager guildMusicManager;
 
     /**
      * The Song-Queue.
      */
+    @Getter
     private final BlockingQueue<AudioTrack> queue;
 
     /**
      * The Channel where the command had been executed.
      */
-    MessageChannelUnion channel;
+    @Setter
+    @Getter
+    private MessageChannelUnion channel;
 
     /**
      * If the bot should loop the current track.
      */
-    boolean loop = false;
+    @Setter
+    @Getter
+    private boolean loop = false;
 
     /**
      * Constructs a TrackScheduler.
@@ -59,7 +69,7 @@ public class TrackScheduler extends AudioEventAdapter {
      * @param guildMusicManager The GuildMusicManager related to this TrackScheduler.
      * @param player            The audio player this scheduler uses
      */
-    public TrackScheduler(GuildMusicManager guildMusicManager, AudioPlayer player) {
+    public TrackScheduler(GuildMusicManager guildMusicManager, IPlayer player) {
         this.guildMusicManager = guildMusicManager;
         this.player = player;
         this.queue = new LinkedBlockingQueue<>();
@@ -86,7 +96,7 @@ public class TrackScheduler extends AudioEventAdapter {
         // something is playing, it returns false and does nothing. In that case the
         // player was already playing so this
         // track goes to the queue instead.
-        if (!player.startTrack(track, !force)) {
+        if (!player.playTrack(track, !force)) {
             if (!queue.offer(track)) {
                 log.error("[TrackScheduler] Couldn't offer a new Track!");
                 Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.ERROR, track));
@@ -97,7 +107,6 @@ public class TrackScheduler extends AudioEventAdapter {
             Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.PLAYING, track));
         }
     }
-
 
     /**
      * Toggle the loop.
@@ -110,24 +119,6 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     /**
-     * Check if loop is activ or not.
-     *
-     * @return true, if it is activ | false, if not.
-     */
-    public boolean isLoop() {
-        return loop;
-    }
-
-    /**
-     * Toggle the loop.
-     *
-     * @param loop should the loop we activ or not?
-     */
-    public void setLoop(boolean loop) {
-        this.loop = loop;
-    }
-
-    /**
      * Shuffle the current playlsist.
      */
     public void shuffle() {
@@ -136,42 +127,6 @@ public class TrackScheduler extends AudioEventAdapter {
         Collections.shuffle(audioTrackArrayList);
         queue.clear();
         queue.addAll(audioTrackArrayList);
-    }
-
-    /**
-     * Get the Text-Channel the commands have been performed from.
-     *
-     * @return the {@link TextChannel}.
-     */
-    public MessageChannelUnion getChannel() {
-        return channel;
-    }
-
-    /**
-     * Change the Text-Channel where the commands have been performed from.
-     *
-     * @param channel the {@link TextChannel}.
-     */
-    public void setChannel(MessageChannelUnion channel) {
-        this.channel = channel;
-    }
-
-    /**
-     * Get the used Audio-Player.
-     *
-     * @return the {@link AudioPlayer}.
-     */
-    public AudioPlayer getPlayer() {
-        return player;
-    }
-
-    /**
-     * Get the current Queue.
-     *
-     * @return the {@link BlockingQueue<AudioTrack>}.
-     */
-    public BlockingQueue<AudioTrack> getQueue() {
-        return queue;
     }
 
     /**
@@ -200,7 +155,7 @@ public class TrackScheduler extends AudioEventAdapter {
      */
     public void nextTrack(MessageChannelUnion textChannel, int position, boolean silent) {
         if (loop && player.getPlayingTrack() != null) {
-            player.startTrack(player.getPlayingTrack().makeClone(), true);
+            player.playTrack(player.getPlayingTrack().makeClone(), true);
             return;
         }
 
@@ -228,7 +183,7 @@ public class TrackScheduler extends AudioEventAdapter {
                         .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
 
             Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(textChannel.asGuildMessageChannel().getGuild(), MusicPlayerStateChangeEvent.State.PLAYING, track));
-            player.startTrack(track.makeClone(), false);
+            player.playTrack(track.makeClone(), false);
         } else {
             if (!silent)
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
@@ -288,15 +243,19 @@ public class TrackScheduler extends AudioEventAdapter {
                 .setFooter(guildMusicManager.getGuild().getName() + " - " + Data.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
     }
 
+    @Override
+    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        onTrackEnd(this.player, track, endReason);
+    }
+
     /**
-     * Override the default onTrackEnd method, to inform user about the next song or problems.
+     * Used to inform user about the next song or problems.
      *
      * @param player    the current AudioPlayer.
      * @param track     the current Track.
      * @param endReason the current end Reason.
      */
-    @Override
-    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+    public void onTrackEnd(IPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         // Only start the next track if the end reason is suitable for it (FINISHED or
         // LOAD_FAILED)
         if (endReason == AudioTrackEndReason.FINISHED)
@@ -309,7 +268,7 @@ public class TrackScheduler extends AudioEventAdapter {
                 AudioTrack loopTrack = track.makeClone();
 
                 if (loopTrack != null && player != null) {
-                    player.startTrack(loopTrack, false);
+                    player.playTrack(loopTrack, false);
                 } else {
                     Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.ERROR, null));
 

@@ -15,7 +15,7 @@
  */
 package de.presti.ree6.utils.others;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import lavalink.client.player.IPlayer;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -81,11 +81,11 @@ public class FormatUtil {
     }
 
     /**
-     * Get the current Status of the {@link AudioPlayer} as Emoji.
-     * @param audioPlayer The {@link AudioPlayer} to get the Status from.
-     * @return A String containing the current Status of the {@link AudioPlayer} as Emoji.
+     * Get the current Status of the {@link IPlayer} as Emoji.
+     * @param audioPlayer The {@link IPlayer} to get the Status from.
+     * @return A String containing the current Status of the {@link IPlayer} as Emoji.
      */
-    public static String getStatusEmoji(AudioPlayer audioPlayer) {
+    public static String getStatusEmoji(IPlayer audioPlayer) {
         return audioPlayer.isPaused() ? PAUSE_EMOJI : PLAY_EMOJI;
     }
 

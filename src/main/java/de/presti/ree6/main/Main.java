@@ -39,6 +39,7 @@ import de.presti.ree6.utils.data.*;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
+import lavalink.client.io.jda.JdaLavalink;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,6 +58,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Timestamp;
@@ -124,6 +127,11 @@ public class Main {
      * Instance of the Config System.
      */
     Config config;
+
+    /**
+     * Instance of the Lavalink.
+     */
+    JdaLavalink lavalink;
 
     /**
      * String used to identify the last day.
@@ -255,10 +263,28 @@ public class Main {
                 version = BotVersion.BETA;
             }
 
+            if (Data.shouldUseLavaLink()) {
+                getInstance().lavalink = new JdaLavalink(shards, shard -> BotWorker.getShardManager().getShardById(shard));
+            }
+
             BotWorker.createBot(version, shards);
 
             getInstance().setMusicWorker(new MusicWorker());
             getInstance().addEvents();
+
+            if (Data.shouldUseLavaLink()) {
+
+                List<HashMap<String, Object>> nodes = (List<HashMap<String, Object>>) getInstance().getConfig()
+                        .getConfiguration().getList("lavalink.nodes");
+
+                for (Config.LavaLinkNodeConfig node : nodes.stream().map(map ->
+                        new Config.LavaLinkNodeConfig((String) map.get("name"), (String) map.get("host"),
+                                (Integer) map.get("port"), (boolean) map.get("secure"),
+                                (String) map.get("password"))).toList()) {
+                    getInstance().getLavalink().addNode(node.getName(),
+                            URI.create(node.buildAddress()), node.getPassword());
+                }
+            }
         } catch (Exception ex) {
             log.error("[Main] Error while init: " + ex.getMessage());
             System.exit(0);
@@ -736,7 +762,7 @@ public class Main {
                 if (voiceChannel == null) {
                     ArrayUtil.temporalVoicechannel.remove(vc);
                 } else {
-                    if (voiceChannel.getMembers().size() == 0) {
+                    if (voiceChannel.getMembers().isEmpty()) {
                         voiceChannel.delete().queue();
                         ArrayUtil.temporalVoicechannel.remove(vc);
                     } else {

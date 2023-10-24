@@ -2,8 +2,8 @@ package de.presti.ree6.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
+import lavalink.client.player.LavaplayerPlayerWrapper;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
-import net.dv8tion.jda.api.entities.Guild;
 
 import java.nio.ByteBuffer;
 
@@ -16,7 +16,7 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
     /**
      * {@link AudioPlayer} that sends the Music Data.
      */
-    private final AudioPlayer audioPlayer;
+    private final LavaplayerPlayerWrapper audioPlayer;
 
     /**
      * Audio ByteBuffer.
@@ -31,7 +31,7 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
     /**
      * @param audioPlayer Audio player to wrap.
      */
-    public AudioPlayerSendHandler(AudioPlayer audioPlayer) {
+    public AudioPlayerSendHandler(LavaplayerPlayerWrapper audioPlayer) {
         this.audioPlayer = audioPlayer;
         this.buffer = ByteBuffer.allocate(1024);
         this.frame = new MutableAudioFrame();
@@ -57,16 +57,6 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
         // flip to make it a read buffer
         buffer.flip();
         return buffer;
-    }
-
-    /**
-     * Check if the Audio-Player is playing any Music!
-     * @param guild the Guild.
-     * @return true, if yes.
-     */
-    public boolean isMusicPlaying(Guild guild) {
-        return guild.getSelfMember().getVoiceState() != null && guild.getSelfMember().getVoiceState().inAudioChannel() &&
-                audioPlayer.getPlayingTrack() != null && !audioPlayer.isPaused();
     }
 
     /**
