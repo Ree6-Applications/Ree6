@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.MemorySection;
 import org.simpleyaml.configuration.file.YamlFile;
-import org.simpleyaml.configuration.serialization.SerializableAs;
 
 import java.io.File;
 import java.nio.file.Files;
