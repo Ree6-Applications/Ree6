@@ -1,7 +1,7 @@
 language:
   name: "Indonesia"
   locale: "id"
-  version: "3.0.13"
+  version: "3.0.15"
   author: "Gorengan_Hunter, SpyCat"
 logging:
   banned: ":airplane_departure: %s **telah diban.**"
@@ -576,6 +576,20 @@ message:
     failed: "Kamu tidak berhasil kerja!"
   rewards:
     success: "Berhasil merubah hadiah!"
+  giveaway:
+    created: "Berhasil membuat giveaway dengan ID: ```%s```!"
+    finish: "Giveaway telah berakhir dan pemenangnya adalah %s"
+    ended: "Giveaway sudah berakhir."
+    reroll: "Dilakukan ulang: %s"
+    notFound: "Tidak ditemukan giveaway dengan Id yang diberikan!"
+    notEnded: "Giveaway belum berakhir."
+    reaction:
+      none: "Tidak ada reaksi pada pesan giveaway!"
+      less: "Tidak cukup reaksi pada pesan giveaway!"
+      error: "Terjadi kesalahan saat mengambil reaksi!"
+    list:
+      default: "Berikut adalah daftar semua giveaway:\n```%s```"
+      entry: "ID: %s | Saluran: %s | Pemenang: %s | Hadiah: %s | Berakhir: %s"
 game:
   description:
     blackjack: "Mainkan Blackjack dengan temanmu!"
@@ -678,6 +692,7 @@ command:
     money: "Mengelola uangmu!"
     steal: "Mencuri uang dari orang lain!"
     work: "Dapatkan uangmu dari bekerja!"
+    giveaway: "Kelola Giveaway!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"

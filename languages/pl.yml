@@ -1,7 +1,7 @@
 language:
   name: "Polish"
   locale: "pl"
-  version: "3.0.13"
+  version: "3.0.15"
   author: "Trust"
 logging:
   banned: ":airplane_departure: %s **zbanowany/a.**"
@@ -576,6 +576,20 @@ message:
     failed: "Nie udało Ci się pracować!"
   rewards:
     success: "Zaktualizowano nagrody!"
+  giveaway:
+    created: "Pomyślnie utworzono rozdanie z ID: ```%s```!"
+    finish: "Rozdanie zakończyło się, zwycięzcami są %s"
+    ended: "Rozdanie już się skończyło."
+    reroll: "Odnowiono: %s"
+    notFound: "Nie znaleziono żadnego rozdania z podanym identyfikatorem!"
+    notEnded: "Rozdanie jeszcze się nie skończyło."
+    reaction:
+      none: "Nie ma reakcji na wiadomości rozdania!"
+      less: "Nie ma wystarczającej ilości reakcji na wiadomości rozdania!"
+      error: "Wystąpił błąd podczas pobierania reakcji!"
+    list:
+      default: "Oto lista wszystkich rozdań:\n```%s ``` ` `"
+      entry: "ID: %s | Kanał: %s | Zwycięzca: %s | Nagroda: %s | Kończy: %s"
 game:
   description:
     blackjack: "Zagraj w Blackjack z przyjaciółmi!"
@@ -678,6 +692,7 @@ command:
     money: "Zarządzaj pieniędzmi!"
     steal: "Ukradnij pieniądze od innych użytkowników!"
     work: "Zdobądź własne pieniądze za pracę!"
+    giveaway: "Zarządzaj rozdaniami!"
 category:
   info: "Wykorzystywane do gromadzenia informacji lub przekazywania informacji."
   moderation: "Narzędzia moderacyjne, które mogą pomóc ci zarządzać użytkownikami lub zapobiec łamania zasad na serwerze."

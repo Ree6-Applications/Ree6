@@ -1,7 +1,7 @@
 language:
   name: "Turkish"
   locale: "tr"
-  version: "3.0.13"
+  version: "3.0.15"
   author: "ImNotArian"
 logging:
   banned: ":airplane_departure: %s **Yasaklandı.**"
@@ -576,6 +576,20 @@ message:
     failed: "Çalışamadınız!"
   rewards:
     success: "Ödüller başarıyla güncellendi!"
+  giveaway:
+    created: "Hediye şu ID'le başarıyla oluşturuldu: ```%s```!"
+    finish: "Çekiliş sona erdi ve kazananlar %s"
+    ended: "Çekiliş zaten sona erdi."
+    reroll: "Yeniden kayıt edildi: %s"
+    notFound: "Verilen ID'e sahip bir hediye bulunamadı!"
+    notEnded: "Hediye çekilişi henüz sona ermedi."
+    reaction:
+      none: "Çekiliş mesajına herhangi bir tepki gelmedi!"
+      less: "Çekiliş mesajına yeterli tepki gelmedi!"
+      error: "Tepkiler alınırken bir hata oluştu!"
+    list:
+      default: "İşte tüm hediyelerin listesi:\n```%s```"
+      entry: "ID: %s | Kanal: %s | Kazanan: %s | Ödül: %s | Bitiş: %s"
 game:
   description:
     blackjack: "Arkadaşlarınızla Blackjack oynayın!"
@@ -678,6 +692,7 @@ command:
     money: "Paranızı yönetin!"
     steal: "Diğer kullanıcılardan para çalın!"
     work: "İş yaparak kendi paranı kazan!"
+    giveaway: "Hediyeleri Yönet!"
 category:
   info: "Bilgi toplamak veya bilgi sağlamak için kullanılır."
   moderation: "Kullanıcıları yönetmenize veya Sunucuda kural ihlalini önlemenize yardımcı olabilecek Denetleme Araçları."

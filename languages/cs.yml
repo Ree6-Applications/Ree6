@@ -1,7 +1,7 @@
 language:
   name: "Czech"
   locale: "cs"
-  version: "3.0.13"
+  version: "3.0.15"
   author: "Pogy__"
 logging:
   banned: ":airplane_departure: %s **zablokován.**"
@@ -576,6 +576,20 @@ message:
     failed: "Selhali jste v práci!"
   rewards:
     success: "Odměny byly úspěšně aktualizovány!"
+  giveaway:
+    created: "Úspěšně vytvořený giveaway s ID: ```%s```!"
+    finish: "Giveaway skončil a vítězové jsou %s"
+    ended: "Giveaway již skončil."
+    reroll: "Opětovné přiřazení vítěze: %s"
+    notFound: "Nebyl nalezen žádný giveaway s tímto Id!"
+    notEnded: "Giveaway ještě neskončil."
+    reaction:
+      none: "Na zprávě giveaway nejsou žádné reakce!"
+      less: "Na zprávě giveaway není dostatek reakcí!"
+      error: "Při načítání reakcí došlo k chybě!"
+    list:
+      default: "Zde je seznam všech giveawayů:\n```%s```"
+      entry: "ID: %s | Kanál: %s | Vítěz: %s | Cena: %s | Končí: %s"
 game:
   description:
     blackjack: "Hrajte Blackjack se svými přáteli!"
@@ -678,6 +692,7 @@ command:
     money: "Spravujte své peníze!"
     steal: "Krást peníze ostatním uživatelům!"
     work: "Získejte své vlastní peníze za práci!"
+    giveaway: "Spravovat giveaway!"
 category:
   info: "Slouží ke shromažďování informací nebo poskytování informací."
   moderation: "Nástroje pro moderování, které vám mohou pomoci spravovat uživatele nebo zabránit porušení pravidel na serveru."
