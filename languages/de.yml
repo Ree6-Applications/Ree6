@@ -1,7 +1,7 @@
 language:
   name: "German"
   locale: "de"
-  version: "3.0.13"
+  version: "3.0.15"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **gebannt.**"
@@ -576,6 +576,20 @@ message:
     failed: "Du konntest nicht Arbeiten!"
   rewards:
     success: "Belohnungen wurden erfolgreich aktualisiert!"
+  giveaway:
+    created: "Ein Giveaway wurde erstellt! ID: ```%s```"
+    finish: "Das Giveaway wurde beendet! Gewinner: %s"
+    ended: "Das Giveaway ist schon geendet."
+    reroll: "Neue Gewinner: %s"
+    notFound: "Es wurden kein Giveaway mit dieser ID gefunden!"
+    notEnded: "Das Giveaway ist noch am Laufen."
+    reaction:
+      none: "Es wurden keine Reaktionen auf der Giveaway-Nachricht gefunden!"
+      less: "Es gibt nicht genügend Reaktionen auf der Giveaway-Nachricht!"
+      error: "Es gab einen Fehler, beim versuch die Reaktionen zuladen!"
+    list:
+      default: "Hier ist eine Liste aller Giveaways: ```%s```"
+      entry: "ID: %s | Channel: %s | Gewinner: %s | Preis: %s | endet: %s"
 game:
   description:
     blackjack: "Spiele Blackjack mit deinen Freunden!"
@@ -678,6 +692,7 @@ command:
     money: "Verwalten dein Geld!"
     steal: "Stehle Geld von anderen!"
     work: "Verdiene dein eigens Geld vom Arbeiten!"
+    giveaway: "Verwalte deine Giveaways!"
 category:
   info: "Wird verwendet, um Informationen zu sammeln oder Informationen zu geben."
   moderation: "Moderations-Tools, die Ihnen beim Verwalten von Benutzern helfen oder das Missachten von Regeln auf dem Server verhindern können."
