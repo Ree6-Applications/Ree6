@@ -21,6 +21,8 @@ import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.FormatUtil;
 import io.sentry.Sentry;
+import lavalink.client.io.Link;
+import lavalink.client.io.jda.JdaLink;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -63,10 +65,10 @@ public class MusicWorker {
      */
     public MusicWorker() {
         musicManagers = new HashMap<>();
-        playerManager = new DefaultAudioPlayerManager();
+        playerManager = Data.shouldUseLavaLink() ? Main.getInstance().getLavalink().getAudioPlayerManager() : new DefaultAudioPlayerManager();
 
         // Register AudioSources, if music module is active. If not, then don't register them. This will cause a failed resolve when ever a command is being executed.
-        if (Data.isModuleActive("music")) {
+        if (Data.isModuleActive("music") && !Data.shouldUseLavaLink()) {
             playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
             playerManager.registerSourceManager(new BandcampAudioSourceManager());
             playerManager.registerSourceManager(new VimeoAudioSourceManager());
@@ -89,7 +91,9 @@ public class MusicWorker {
 
         GuildMusicManager musicManager = musicManagers.get(guildId);
 
-        guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+        if (!Data.shouldUseLavaLink()) {
+            guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+        }
 
         return musicManager;
     }
@@ -492,11 +496,19 @@ public class MusicWorker {
      * @param audioChannel the Audio-Channel the Bot should join.
      */
     public void connectToAudioChannel(AudioManager audioManager, AudioChannel audioChannel) {
-        if (!audioManager.isConnected() && !isAttemptingToConnect(audioManager.getConnectionStatus())) {
-            audioManager.openAudioConnection(audioChannel);
+        if (Data.shouldUseLavaLink()) {
+            JdaLink link = Main.getInstance().getLavalink().getLink(audioManager.getGuild());
 
-            if ((audioManager.isConnected() || (audioManager.getGuild().getSelfMember().getVoiceState() != null && audioManager.getGuild().getSelfMember().getVoiceState().inAudioChannel())) && !audioManager.isSelfDeafened() && audioManager.getGuild().getSelfMember().hasPermission(Permission.VOICE_DEAF_OTHERS)) {
-                audioManager.getGuild().getSelfMember().deafen(true).queue();
+            if (link.getState() == Link.State.NOT_CONNECTED) {
+                link.connect(audioChannel);
+            }
+        } else {
+            if (!audioManager.isConnected() && !isAttemptingToConnect(audioManager.getConnectionStatus())) {
+                audioManager.openAudioConnection(audioChannel);
+
+                if ((audioManager.isConnected() || (audioManager.getGuild().getSelfMember().getVoiceState() != null && audioManager.getGuild().getSelfMember().getVoiceState().inAudioChannel())) && !audioManager.isSelfDeafened() && audioManager.getGuild().getSelfMember().hasPermission(Permission.VOICE_DEAF_OTHERS)) {
+                    audioManager.getGuild().getSelfMember().deafen(true).queue();
+                }
             }
         }
     }
@@ -508,7 +520,13 @@ public class MusicWorker {
      * @return true, if the Bot is connected to an Audio-channel | false, if not.
      */
     public boolean isConnected(Guild guild) {
-        return guild != null && (guild.getAudioManager().isConnected() || isConnectedMember(guild.getSelfMember()));
+        if (guild == null) return false;
+
+        if (Data.shouldUseLavaLink()) {
+            return Main.getInstance().getLavalink().getLink(guild).getState() == Link.State.CONNECTED;
+        } else {
+            return guild.getAudioManager().isConnected() || isConnectedMember(guild.getSelfMember());
+        }
     }
 
     /**
@@ -517,7 +535,11 @@ public class MusicWorker {
      * @param guild the Guild.
      */
     public void disconnect(Guild guild) {
-        guild.getAudioManager().closeAudioConnection();
+        if (Data.shouldUseLavaLink()) {
+            Main.getInstance().getLavalink().getLink(guild).destroy();
+        } else {
+            guild.getAudioManager().closeAudioConnection();
+        }
     }
 
     /**

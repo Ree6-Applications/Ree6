@@ -1,6 +1,5 @@
 package de.presti.ree6.commands.impl.music;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
@@ -8,6 +7,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.Data;
+import lavalink.client.player.IPlayer;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -40,7 +40,7 @@ public class Volume implements ICommand {
         EmbedBuilder em = new EmbedBuilder();
 
         // Preloading it so we can use it later.
-        AudioPlayer player = Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getPlayer();
+        IPlayer player = Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getPlayer();
 
         if (commandEvent.isSlashCommand()) {
 

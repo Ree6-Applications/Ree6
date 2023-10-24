@@ -26,7 +26,7 @@ public class Record implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.getGuild().getAudioManager().isConnected()) {
             GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild());
-            if (guildMusicManager == null || !guildMusicManager.getSendHandler().isMusicPlaying(commandEvent.getGuild())) {
+            if (guildMusicManager == null || !guildMusicManager.isMusicPlaying()) {
                 AudioManager audioManager = commandEvent.getGuild().getAudioManager();
 
                 AudioPlayerReceiveHandler handler = (AudioPlayerReceiveHandler) audioManager.getReceivingHandler();
