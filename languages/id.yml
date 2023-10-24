@@ -577,19 +577,19 @@ message:
   rewards:
     success: "Berhasil merubah hadiah!"
   giveaway:
-    created: "Successfully created the giveaway with the ID: ```%s```!"
-    finish: "The giveaway has ended and the winners are %s"
-    ended: "The giveaway already ended."
-    reroll: "Rerolled: %s"
-    notFound: "No giveaway with the given Id has been found!"
-    notEnded: "The giveaway has not yet ended."
+    created: "Berhasil membuat giveaway dengan ID: ```%s```!"
+    finish: "Giveaway telah berakhir dan pemenangnya adalah %s"
+    ended: "Giveaway sudah berakhir."
+    reroll: "Dilakukan ulang: %s"
+    notFound: "Tidak ditemukan giveaway dengan Id yang diberikan!"
+    notEnded: "Giveaway belum berakhir."
     reaction:
-      none: "There are no reactions on the giveaway message!"
-      less: "There are not enough reactions on the giveaway message!"
-      error: "There was an error while fetching the reactions!"
+      none: "Tidak ada reaksi pada pesan giveaway!"
+      less: "Tidak cukup reaksi pada pesan giveaway!"
+      error: "Terjadi kesalahan saat mengambil reaksi!"
     list:
-      default: "Here is a list of all giveaways:\n```%s```"
-      entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
+      default: "Berikut adalah daftar semua giveaway:\n```%s```"
+      entry: "ID: %s | Saluran: %s | Pemenang: %s | Hadiah: %s | Berakhir: %s"
 game:
   description:
     blackjack: "Mainkan Blackjack dengan temanmu!"
@@ -692,7 +692,7 @@ command:
     money: "Mengelola uangmu!"
     steal: "Mencuri uang dari orang lain!"
     work: "Dapatkan uangmu dari bekerja!"
-    giveaway: "Manage Giveaways!"
+    giveaway: "Kelola Giveaway!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"
