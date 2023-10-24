@@ -8,7 +8,6 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.RegExUtil;
-import de.presti.ree6.utils.others.RandomUtils;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -100,9 +99,8 @@ public class Giveaway implements ICommand {
 
                     giveaway = SQLSession.getSqlConnector().getSqlWorker().updateEntity(giveaway);
                     Main.getInstance().getGiveawayManager().add(giveaway);
+                    commandEvent.reply(commandEvent.getResource("message.giveaway.created", message.getId()));
                 });
-
-                commandEvent.reply(commandEvent.getResource("message.giveaway.created"));
             }
 
             case "end" -> {
@@ -281,12 +279,11 @@ public class Giveaway implements ICommand {
             }
 
             default -> {
-                StringBuilder stringBuilder = new StringBuilder("```");
+                StringBuilder stringBuilder = new StringBuilder();
                 for (de.presti.ree6.sql.entities.Giveaway giveaway : Main.getInstance().getGiveawayManager().getList()) {
                     stringBuilder.append(commandEvent.getResource("message.giveaway.list.entry", giveaway.getMessageId(), giveaway.getChannelId(), giveaway.getWinners(), giveaway.getPrize(), giveaway.getEnding()));
                 }
-                stringBuilder.append("```");
-                commandEvent.reply(commandEvent.getResource("message.giveaway.list.default") + " " + (stringBuilder.length() == 6 ? "None" : stringBuilder));
+                commandEvent.reply(commandEvent.getResource("message.giveaway.list.default", stringBuilder.length() == 6 ? "```None```" : stringBuilder));
             }
         }
     }
