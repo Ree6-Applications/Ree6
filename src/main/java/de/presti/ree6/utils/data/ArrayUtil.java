@@ -47,7 +47,7 @@ public class ArrayUtil {
     /**
      * HashMap used to store user Ids and their VC join time, to track VoiceXP.
      */
-    public static final Map<User, Long> voiceJoined = new HashMap<>();
+    public static final Map<Member, Long> voiceJoined = new HashMap<>();
 
     /**
      * HashMap used to store Guild ID and the message of a music Panel.

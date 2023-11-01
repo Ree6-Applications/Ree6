@@ -262,8 +262,8 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
         if (event.getChannelLeft() == null) {
-            if (!ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
-                ArrayUtil.voiceJoined.put(event.getMember().getUser(), System.currentTimeMillis());
+            if (!ArrayUtil.voiceJoined.containsKey(event.getMember()) && !event.getEntity().getUser().isBot()) {
+                ArrayUtil.voiceJoined.put(event.getMember(), System.currentTimeMillis());
             }
 
             if (Data.isModuleActive("temporalvoice")) {
@@ -293,8 +293,8 @@ public class OtherEvents extends ListenerAdapter {
                 }
             }
         } else if (event.getChannelJoined() == null) {
-            if (ArrayUtil.voiceJoined.containsKey(event.getMember().getUser())) {
-                int min = TimeUtil.getTimeinMin(TimeUtil.getTimeinSec(ArrayUtil.voiceJoined.get(event.getMember().getUser())));
+            if (ArrayUtil.voiceJoined.containsKey(event.getMember())) {
+                int min = TimeUtil.getTimeinMin(TimeUtil.getTimeinSec(ArrayUtil.voiceJoined.get(event.getMember())));
 
                 int addXP = 0;
 
@@ -308,6 +308,7 @@ public class OtherEvents extends ListenerAdapter {
                 SQLSession.getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), newUserLevel);
 
                 UserUtil.handleVoiceLevelReward(event.getGuild(), event.getMember());
+                ArrayUtil.voiceJoined.remove(event.getMember());
             }
 
             if (event.getChannelLeft().getMembers().size() == 1 &&
