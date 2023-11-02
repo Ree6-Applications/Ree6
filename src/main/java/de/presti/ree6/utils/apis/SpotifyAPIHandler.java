@@ -150,7 +150,10 @@ public class SpotifyAPIHandler {
             Paging<PlaylistTrack> playlistTracks = playlist.getTracks();
 
             for (PlaylistTrack track : playlistTracks.getItems()) {
+                if (track == null) continue;
+
                 Track track1 = getTrack(track.getTrack().getId());
+
                 if (track1 == null) continue;
 
                 tracks.add(track1);
