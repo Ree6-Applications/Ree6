@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -171,7 +172,13 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
             Recording recording = new Recording(voiceChannel.getGuild().getId(), voiceChannel.getId(), creatorId, AudioUtil.convertPCMtoWAV(byteBuffer),
                     JsonParser.parseString(new Gson().toJson(participants)).getAsJsonArray());
 
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(recording);
+            boolean failedToUpload = false;
+
+            try {
+                SQLSession.getSqlConnector().getSqlWorker().updateEntity(recording);
+            } catch (Exception ignore) {
+                failedToUpload = true;
+            }
 
             if (voiceChannel.canTalk()) {
                 message.editMessageEmbeds(new EmbedBuilder()
@@ -182,9 +189,13 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                         .build())
                         .setActionRow(
                                 new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(voiceChannel.getGuild(), "label.download"), ButtonStyle.LINK,
-                        Data.getRecordingUrl() + "?id=" + recording.getIdentifier(), false, Emoji.fromCustom("shiba", 941219375535509504L, true)),
+                        Data.getRecordingUrl() + "?id=" + recording.getIdentifier(), failedToUpload, Emoji.fromCustom("shiba", 941219375535509504L, true)),
                                 Button.primary("r_recordingDownload:" + recording.getIdentifier(), Emoji.fromCustom("sip", 1011956355810209852L, false))
-                                        .withLabel(LanguageService.getByGuild(voiceChannel.getGuild(), "label.sendToChat")).withDisabled(!Data.allowRecordingInChat())).complete();
+                                        .withLabel(LanguageService.getByGuild(voiceChannel.getGuild(), "label.sendToChat")).withDisabled(!Data.allowRecordingInChat() || failedToUpload)).complete();
+
+                if (failedToUpload) {
+                    voiceChannel.sendMessage(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.error", "Upload failed")).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav"));
+                }
             }
             // Find a way to still notify that the bot couldn't send the audio.
         } catch (Exception ex) {
