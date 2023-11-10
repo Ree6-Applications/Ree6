@@ -548,6 +548,7 @@ public class Main {
 
             if (!lastDay.equalsIgnoreCase(new SimpleDateFormat("dd").format(new Date()))) {
 
+                // region Update the statistics.
                 try {
                     ArrayUtil.messageIDwithMessage.clear();
                     ArrayUtil.messageIDwithUser.clear();
@@ -594,8 +595,10 @@ public class Main {
                     log.error("Failed to update statistics!", exception);
                     Sentry.captureException(exception);
                 }
+                //endregion
             }
 
+            //region Cleanup
             try {
                 File storageTemp = new File("storage/tmp/");
                 File[] files = storageTemp.listFiles();
@@ -612,7 +615,9 @@ public class Main {
                 log.error("Failed to clear temporal files!", exception);
                 Sentry.captureException(exception);
             }
+            //endregion
 
+            //region Schedules Message sending.
             try {
                 for (ScheduledMessage scheduledMessage : SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ScheduledMessage(), "FROM ScheduledMessage", null)) {
                     if (!scheduledMessage.isRepeated()) {
@@ -659,7 +664,9 @@ public class Main {
                 log.error("Failed to run scheduled Messages.", exception);
                 Sentry.captureException(exception);
             }
+            //endregion
 
+            //region Giveaway checks
             try {
                 ArrayList<Giveaway> toDelete = new ArrayList<>();
                 Instant currentTime = Instant.now();
@@ -730,7 +737,9 @@ public class Main {
                 log.error("Failed to run Giveaway checks.", exception);
                 Sentry.captureException(exception);
             }
+            //endregion
 
+            //region Twitch credentials updater.
             try {
                 // Need to load them all.
                 if (Data.isModuleActive("notifier"))
@@ -756,7 +765,9 @@ public class Main {
                 log.error("Failed to load Twitch Credentials.", exception);
                 Sentry.captureException(exception);
             }
+            //endregion
 
+            //region Fallback Temporal Voice check.
             ArrayUtil.temporalVoicechannel.forEach(vc -> {
                 VoiceChannel voiceChannel = BotWorker.getShardManager().getVoiceChannelById(vc);
                 if (voiceChannel == null) {
@@ -775,6 +786,7 @@ public class Main {
                     }
                 }
             });
+            //endregion
 
         }, null, Duration.ofMinutes(1), true, false);
     }
