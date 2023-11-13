@@ -104,61 +104,64 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
 
-        ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
-        if (channelStats != null) {
-            if (channelStats.getMemberStatsChannelId() != null) {
-                GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
-                if (guildChannel != null) {
-                    guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.overallMembers") + ": " + event.getGuild().getMemberCount()).queue();
+        ThreadUtil.createThread(x -> {
+
+            ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+            if (channelStats != null) {
+                if (channelStats.getMemberStatsChannelId() != null) {
+                    GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
+                    if (guildChannel != null) {
+                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.overallMembers") + ": " + event.getGuild().getMemberCount()).queue();
+                    }
                 }
+
+                event.getGuild().loadMembers().onSuccess(members -> {
+                    if (channelStats.getRealMemberStatsChannelId() != null) {
+                        GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getRealMemberStatsChannelId());
+                        if (guildChannel != null) {
+                            guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.realMembers") + ": " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
+                        }
+                    }
+
+                    if (channelStats.getBotMemberStatsChannelId() != null) {
+                        GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getBotMemberStatsChannelId());
+                        if (guildChannel != null) {
+                            guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.botMembers") + ": " + members.stream().filter(member -> member.getUser().isBot()).count()).queue();
+                        }
+                    }
+                });
             }
 
-            event.getGuild().loadMembers().onSuccess(members -> {
-                if (channelStats.getRealMemberStatsChannelId() != null) {
-                    GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getRealMemberStatsChannelId());
-                    if (guildChannel != null) {
-                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.realMembers") + ": " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
-                    }
+            UserUtil.handleMemberJoin(event.getGuild(), event.getMember());
+
+            if (!SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId())) return;
+
+            WebhookMessageBuilder wmb = new WebhookMessageBuilder();
+
+            wmb.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
+            wmb.setUsername("Welcome!");
+
+            String messageContent = SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join")
+                    .getStringValue()
+                    .replace("%user_name%", event.getMember().getUser().getName())
+                    .replace("%guild_name%", event.getGuild().getName())
+                    .replace("%guild_member_count%", String.valueOf(event.getGuild().getMemberCount()));
+            if (!SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue().isBlank()) {
+                try {
+                    messageContent = messageContent.replace("%user_mention%", event.getMember().getUser().getName());
+                    wmb.addFile("welcome.png", ImageCreationUtility.createJoinImage(event.getUser(),
+                            SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue(), messageContent));
+                } catch (IOException e) {
+                    wmb.setContent(messageContent);
+                    log.error("Error while creating join image!", e);
                 }
-
-                if (channelStats.getBotMemberStatsChannelId() != null) {
-                    GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getBotMemberStatsChannelId());
-                    if (guildChannel != null) {
-                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.botMembers") + ": " + members.stream().filter(member -> member.getUser().isBot()).count()).queue();
-                    }
-                }
-            });
-        }
-
-        UserUtil.handleMemberJoin(event.getGuild(), event.getMember());
-
-        if (!SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId())) return;
-
-        WebhookMessageBuilder wmb = new WebhookMessageBuilder();
-
-        wmb.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wmb.setUsername("Welcome!");
-
-        String messageContent = SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join")
-                .getStringValue()
-                .replace("%user_name%", event.getMember().getUser().getName())
-                .replace("%guild_name%", event.getGuild().getName())
-                .replace("%guild_member_count%", String.valueOf(event.getGuild().getMemberCount()));
-        if (!SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue().isBlank()) {
-            try {
-                messageContent = messageContent.replace("%user_mention%", event.getMember().getUser().getName());
-                wmb.addFile("welcome.png", ImageCreationUtility.createJoinImage(event.getUser(),
-                        SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue(), messageContent));
-            } catch (IOException e) {
+            } else {
+                messageContent = messageContent.replace("%user_mention%", event.getMember().getUser().getAsMention());
                 wmb.setContent(messageContent);
-                log.error("Error while creating join image!", e);
             }
-        } else {
-            messageContent = messageContent.replace("%user_mention%", event.getMember().getUser().getAsMention());
-            wmb.setContent(messageContent);
-        }
 
-        WebhookUtil.sendWebhook(wmb.build(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()));
+            WebhookUtil.sendWebhook(wmb.build(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()));
+        });
     }
 
     /**
@@ -168,31 +171,33 @@ public class OtherEvents extends ListenerAdapter {
     public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
         super.onGuildMemberRemove(event);
 
-        ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
-        if (channelStats != null) {
-            if (channelStats.getMemberStatsChannelId() != null) {
-                GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
-                if (guildChannel != null) {
-                    guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.overallMembers") + ": " + event.getGuild().getMemberCount()).queue();
+        ThreadUtil.createThread(x -> {
+            ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+            if (channelStats != null) {
+                if (channelStats.getMemberStatsChannelId() != null) {
+                    GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
+                    if (guildChannel != null) {
+                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.overallMembers") + ": " + event.getGuild().getMemberCount()).queue();
+                    }
                 }
+
+                event.getGuild().loadMembers().onSuccess(members -> {
+                    if (channelStats.getRealMemberStatsChannelId() != null) {
+                        GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getRealMemberStatsChannelId());
+                        if (guildChannel != null) {
+                            guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.realMembers") + ": " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
+                        }
+                    }
+
+                    if (channelStats.getBotMemberStatsChannelId() != null) {
+                        GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getBotMemberStatsChannelId());
+                        if (guildChannel != null) {
+                            guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.botMembers") + ": " + members.stream().filter(member -> member.getUser().isBot()).count()).queue();
+                        }
+                    }
+                });
             }
-
-            event.getGuild().loadMembers().onSuccess(members -> {
-                if (channelStats.getRealMemberStatsChannelId() != null) {
-                    GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getRealMemberStatsChannelId());
-                    if (guildChannel != null) {
-                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.realMembers") + ": " + members.stream().filter(member -> !member.getUser().isBot()).count()).queue();
-                    }
-                }
-
-                if (channelStats.getBotMemberStatsChannelId() != null) {
-                    GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getBotMemberStatsChannelId());
-                    if (guildChannel != null) {
-                        guildChannel.getManager().setName(LanguageService.getByGuild(event.getGuild(), "label.botMembers") + ": " + members.stream().filter(member -> member.getUser().isBot()).count()).queue();
-                    }
-                }
-            });
-        }
+        });
 
         if (Data.isModuleActive("tickets")) {
             Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
@@ -405,35 +410,6 @@ public class OtherEvents extends ListenerAdapter {
 
             if (event.getAuthor().isBot()) return;
 
-            if (ModerationUtil.shouldModerate(event.getGuild().getId())) {
-                if (ModerationUtil.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
-                    Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
-                    Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.blacklisted"), event.getChannel(), null);
-                    return;
-                } /* else if (!event.getMessage().getAttachments().isEmpty()) {
-                    for (Message.Attachment attachment : event.getMessage().getAttachments()) {
-                        if (attachment.isImage()) {
-                            if (ModerationUtil.checkImage(event.getGuild().getId(), attachment.getUrl())) {
-                                Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
-                                Main.getInstance().getCommandManager().sendMessage("The Image contained blacklisted words!", event.getChannel(), null);
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    String messageContent = event.getMessage().getContentRaw();
-                    String extractedUrl = ModerationUtil.extractUrl(messageContent);
-
-                    if (extractedUrl != null &&!extractedUrl.isEmpty()) {
-                        if (ModerationUtil.checkImage(event.getGuild().getId(), extractedUrl)) {
-                            Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
-                            Main.getInstance().getCommandManager().sendMessage("The Image contained blacklisted words!", event.getChannel(), null);
-                            return;
-                        }
-                    }
-                } */
-            }
-
             if (!ArrayUtil.messageIDwithMessage.containsKey(event.getMessageId())) {
                 ArrayUtil.messageIDwithMessage.put(event.getMessageId(), event.getMessage());
             }
@@ -442,43 +418,55 @@ public class OtherEvents extends ListenerAdapter {
                 ArrayUtil.messageIDwithUser.put(event.getMessageId(), event.getAuthor());
             }
 
-            if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
+            // TODO:: start working with futureComplete instead of creating a thread here.
+            ThreadUtil.createThread(x -> {
 
-                if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
-                    if (event.getMessage().getMessageReference() != null) return;
-
-                    try {
-                        String response = ChatGPTAPI.getResponse(event.getMember(), event.getMessage().getContentDisplay());
-
-                        if (response != null && !response.isBlank())
-                            Main.getInstance().getCommandManager().sendMessage(response, event.getChannel());
-                    } catch (Exception e) {
-                        Sentry.captureException(e);
-                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.default.retrievalError"), event.getChannel());
+                if (ModerationUtil.shouldModerate(event.getGuild().getId())) {
+                    if (ModerationUtil.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
+                        Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.blacklisted"), event.getChannel(), null);
+                        return;
                     }
                 }
 
-                if (Data.isModuleActive("level")) {
-                    if (!ArrayUtil.timeout.contains(event.getMember())) {
+                if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
 
-                        ChatUserLevel userLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
+                    if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
+                        if (event.getMessage().getMessageReference() != null) return;
 
-                        if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) {
-                            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(),
-                                    "message.levelUp", userLevel.getLevel(), LanguageService.getByGuild(event.getGuild(), "label.chat")
-                                    , event.getMember().getAsMention()), event.getChannel());
+                        try {
+                            String response = ChatGPTAPI.getResponse(event.getMember(), event.getMessage().getContentDisplay());
+
+                            if (response != null && !response.isBlank())
+                                Main.getInstance().getCommandManager().sendMessage(response, event.getChannel());
+                        } catch (Exception e) {
+                            Sentry.captureException(e);
+                            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.default.retrievalError"), event.getChannel());
+                        }
+                    }
+
+                    if (Data.isModuleActive("level")) {
+                        if (!ArrayUtil.timeout.contains(event.getMember())) {
+
+                            ChatUserLevel userLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
+
+                            if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) {
+                                Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(),
+                                        "message.levelUp", userLevel.getLevel(), LanguageService.getByGuild(event.getGuild(), "label.chat")
+                                        , event.getMember().getAsMention()), event.getChannel());
+                            }
+
+                            SQLSession.getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), userLevel);
+
+                            ArrayUtil.timeout.add(event.getMember());
+
+                            ThreadUtil.createThread(y -> ArrayUtil.timeout.remove(event.getMember()), Duration.ofSeconds(30), false, false);
                         }
 
-                        SQLSession.getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), userLevel);
-
-                        ArrayUtil.timeout.add(event.getMember());
-
-                        ThreadUtil.createThread(x -> ArrayUtil.timeout.remove(event.getMember()), null, Duration.ofSeconds(30), false, false);
+                        UserUtil.handleChatLevelReward(event.getGuild(), event.getMember());
                     }
-
-                    UserUtil.handleChatLevelReward(event.getGuild(), event.getMember());
                 }
-            }
+            });
         }
     }
 

@@ -40,21 +40,23 @@ public interface ICommand {
             }
             return null;
         });
-        // Update Stats.
-        SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getId(), commandEvent.getCommand());
-        if (SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "configuration_news").getBooleanValue()) {
-            ThreadUtil.createThread(x -> AnnouncementManager.getAnnouncementList().forEach(a -> {
-                if (!AnnouncementManager.hasReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id())) {
-                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setTitle(a.title())
-                            .setAuthor(Data.getBotName() + "-Info")
-                            .setDescription(a.content().replace("\\n", "\n") + "\n\n" + LanguageService.getByGuild(commandEvent.getGuild(), "message.news.notice"))
-                            .setFooter(Data.getAdvertisement(), commandEvent.getGuild().getIconUrl())
-                            .setColor(BotWorker.randomEmbedColor()), 15, commandEvent.getChannel());
+        ThreadUtil.createThread(y -> {
+            // Update Stats.
+            SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getId(), commandEvent.getCommand());
+            if (SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "configuration_news").getBooleanValue()) {
+                AnnouncementManager.getAnnouncementList().forEach(a -> {
+                    if (!AnnouncementManager.hasReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id())) {
+                        Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setTitle(a.title())
+                                .setAuthor(Data.getBotName() + "-Info")
+                                .setDescription(a.content().replace("\\n", "\n") + "\n\n" + LanguageService.getByGuild(commandEvent.getGuild(), "message.news.notice"))
+                                .setFooter(Data.getAdvertisement(), commandEvent.getGuild().getIconUrl())
+                                .setColor(BotWorker.randomEmbedColor()), 15, commandEvent.getChannel());
 
-                    AnnouncementManager.addReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id());
-                }
-            }), null);
-        }
+                        AnnouncementManager.addReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id());
+                    }
+                });
+            }
+        });
     }
 
     /**

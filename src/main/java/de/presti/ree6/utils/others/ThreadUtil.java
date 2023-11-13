@@ -63,25 +63,37 @@ public class ThreadUtil {
      * @return the Future of the Thread.
      */
     public static Future<?> createThread(Consumer<Void> success, Consumer<Throwable> failure, Duration duration, boolean loop, boolean pre) {
+        if (failure == null) failure = Sentry::captureException;
+
+        Consumer<Throwable> finalFailure = failure;
         return executorService.submit(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
+            if (!loop) {
                 if (pre) {
                     success.accept(null);
-                    if (!loop) Thread.currentThread().interrupt();
+                    return;
+                }
+                if (duration != null) {
+                    try {
+                        Thread.sleep(duration.toMillis());
+                    } catch (InterruptedException e) {
+                        finalFailure.accept(e);
+                    }
                 }
 
-                try {
-                    if (duration != null) Thread.sleep(duration.toMillis());
-                } catch (InterruptedException e) {
-                    if (failure == null) Sentry.captureException(e);
-                    else failure.accept(e);
+                success.accept(null);
+            } else {
+                while (!Thread.currentThread().isInterrupted()) {
+                    if (pre) success.accept(null);
 
-                    Thread.currentThread().interrupt();
-                }
+                    if (duration != null) {
+                        try {
+                            Thread.sleep(duration.toMillis());
+                        } catch (InterruptedException e) {
+                            finalFailure.accept(e);
+                        }
+                    }
 
-                if (!pre) {
-                    success.accept(null);
-                    if (!loop) Thread.currentThread().interrupt();
+                    if (!pre) success.accept(null);
                 }
             }
         });
