@@ -25,6 +25,7 @@ import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -38,8 +39,7 @@ import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
+import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -267,7 +267,7 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
         if (event.getChannelLeft() == null) {
-            if (!ArrayUtil.voiceJoined.containsKey(event.getMember()) && !event.getEntity().getUser().isBot()) {
+            if (!ArrayUtil.voiceJoined.containsKey(event.getMember()) && !event.getEntity().getUser().isBot() && (event.getEntity().getVoiceState() != null && !event.getEntity().getVoiceState().isGuildDeafened())) {
                 ArrayUtil.voiceJoined.put(event.getMember(), System.currentTimeMillis());
             }
 
@@ -298,23 +298,7 @@ public class OtherEvents extends ListenerAdapter {
                 }
             }
         } else if (event.getChannelJoined() == null) {
-            if (ArrayUtil.voiceJoined.containsKey(event.getMember())) {
-                int min = TimeUtil.getTimeinMin(TimeUtil.getTimeinSec(ArrayUtil.voiceJoined.get(event.getMember())));
-
-                int addXP = 0;
-
-                for (int i = 1; i <= min; i++) {
-                    addXP += RandomUtils.random.nextInt(5, 11);
-                }
-
-                VoiceUserLevel newUserLevel = SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(event.getGuild().getId(), event.getMember().getId());
-                newUserLevel.addExperience(addXP);
-
-                SQLSession.getSqlConnector().getSqlWorker().addVoiceLevelData(event.getGuild().getId(), newUserLevel);
-
-                UserUtil.handleVoiceLevelReward(event.getGuild(), event.getMember());
-                ArrayUtil.voiceJoined.remove(event.getMember());
-            }
+            doVoiceXPStuff(event.getMember());
 
             if (event.getChannelLeft().getMembers().size() == 1 &&
                     event.getChannelLeft().getMembers().get(0).getIdLong() == event.getJDA().getSelfUser().getIdLong()) {
@@ -370,11 +354,56 @@ public class OtherEvents extends ListenerAdapter {
      * @inheritDoc
      */
     @Override
-    public void onGuildVoiceGuildDeafen(@NotNull GuildVoiceGuildDeafenEvent event) {
-        if (event.getMember() != event.getGuild().getSelfMember()) return;
+    public void onGenericGuildVoice(@NotNull GenericGuildVoiceEvent event) {
 
-        if (!event.isGuildDeafened()) {
-            event.getGuild().getSelfMember().deafen(true).queue();
+        boolean toggleOn = false;
+
+        if (event instanceof GuildVoiceGuildDeafenEvent guildDeafenEvent) {
+            if (event.getMember() == event.getGuild().getSelfMember() &&
+                    !guildDeafenEvent.isGuildDeafened()) {
+                event.getGuild().getSelfMember().deafen(true).queue();
+            }
+
+            toggleOn = guildDeafenEvent.isGuildDeafened();
+        } else if (event instanceof GuildVoiceGuildMuteEvent guildVoiceGuildMuteEvent) {
+            toggleOn = guildVoiceGuildMuteEvent.isGuildMuted();
+        } else if (event instanceof GuildVoiceMuteEvent guildVoiceMuteEvent) {
+            toggleOn = guildVoiceMuteEvent.isMuted();
+        } else if (event instanceof GuildVoiceDeafenEvent guildVoiceDeafenEvent) {
+            toggleOn = guildVoiceDeafenEvent.isDeafened();
+        }
+
+        if (event.getMember().getUser().isBot()) return;
+
+        if (toggleOn) {
+            doVoiceXPStuff(event.getMember());
+        } else {
+            ArrayUtil.voiceJoined.put(event.getMember(), System.currentTimeMillis());
+        }
+    }
+
+    @Override
+    public void onGuildVoiceMute(@NotNull GuildVoiceMuteEvent event) {
+        super.onGuildVoiceMute(event);
+    }
+
+    public void doVoiceXPStuff(Member member) {
+        if (ArrayUtil.voiceJoined.containsKey(member)) {
+            int min = TimeUtil.getTimeinMin(TimeUtil.getTimeinSec(ArrayUtil.voiceJoined.get(member)));
+
+            int addXP = 0;
+
+            for (int i = 1; i <= min; i++) {
+                addXP += RandomUtils.random.nextInt(5, 11);
+            }
+
+            VoiceUserLevel newUserLevel = SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(member.getGuild().getId(), member.getId());
+            newUserLevel.addExperience(addXP);
+
+            SQLSession.getSqlConnector().getSqlWorker().addVoiceLevelData(member.getGuild().getId(), newUserLevel);
+
+            UserUtil.handleVoiceLevelReward(member.getGuild(), member);
+            ArrayUtil.voiceJoined.remove(member);
         }
     }
 
