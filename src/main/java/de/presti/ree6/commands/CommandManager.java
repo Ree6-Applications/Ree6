@@ -10,6 +10,8 @@ import de.presti.ree6.sql.entities.custom.CustomCommand;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.Data;
 import de.presti.ree6.utils.others.ThreadUtil;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -49,7 +51,8 @@ public class CommandManager {
     /**
      * An Arraylist with all registered Commands.
      */
-    static final ArrayList<ICommand> commands = new ArrayList<>();
+    @Getter(AccessLevel.PUBLIC)
+    private final ArrayList<ICommand> commands = new ArrayList<>();
 
     /**
      * Constructor for the Command-Manager used to register every Command.
@@ -291,15 +294,6 @@ public class CommandManager {
     @SuppressWarnings("unused")
     public void removeCommand(ICommand command) {
         commands.remove(command);
-    }
-
-    /**
-     * Get every Command in the list.
-     *
-     * @return an {@link ArrayList} with all Commands.
-     */
-    public ArrayList<ICommand> getCommands() {
-        return commands;
     }
 
     /**
