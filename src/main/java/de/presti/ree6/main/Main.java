@@ -708,20 +708,35 @@ public class Main {
                                 return;
                             }
 
+                            MessageEditBuilder messageEditBuilder = MessageEditBuilder.fromMessage(message);
+
                             reaction.retrieveUsers().mapToResult().onErrorMap(throwable -> {
+                                messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.error"));
+                                message.editMessage(messageEditBuilder.build()).queue();
                                 toDelete.add(giveaway);
                                 return null;
                             }).queue(users -> {
                                 if (users == null) {
+                                    messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.less"));
+                                    message.editMessage(messageEditBuilder.build()).queue();
                                     return;
                                 }
 
                                 users.onSuccess(userList -> {
+
                                     if (userList.isEmpty()) {
+                                        messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.none"));
+                                        message.editMessage(messageEditBuilder.build()).queue();
                                         return;
                                     }
 
-                                    MessageEditBuilder messageEditBuilder = MessageEditBuilder.fromMessage(message);
+                                    if (userList.stream().filter(user -> !user.isBot()).count() < giveaway.getWinners()) {
+                                        messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.less"));
+                                        message.editMessage(messageEditBuilder.build()).queue();
+                                        return;
+                                    }
+
+
                                     Main.getInstance().getGiveawayManager().endGiveaway(giveaway, messageEditBuilder, userList);
                                     message.editMessage(messageEditBuilder.build()).queue();
                                 }).onFailure(Sentry::captureException);

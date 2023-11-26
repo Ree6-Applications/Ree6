@@ -80,6 +80,8 @@ public class GiveawayManager implements IManager<Giveaway> {
     public String endGiveaway(Giveaway giveaway, MessageEditBuilder messageEditBuilder, List<User> users, long winners) {
         StringBuilder stringBuilder = new StringBuilder();
 
+        users.removeIf(User::isBot);
+
         for (int i = 0; i < Math.min(giveaway.getWinners(), Math.min(winners, users.size())); i++) {
             stringBuilder.append(users.get(RandomUtils.nextInt(0, users.size())).getAsMention()).append(", ");
         }

@@ -178,6 +178,11 @@ public class Giveaway implements ICommand {
                                 return;
                             }
 
+                            if (userList.stream().filter(user -> !user.isBot()).count() < giveaway.getWinners()) {
+                                commandEvent.reply(commandEvent.getResource("message.giveaway.reaction.less"));
+                                return;
+                            }
+
                             MessageEditBuilder messageEditBuilder = MessageEditBuilder.fromMessage(message);
                             commandEvent.reply(commandEvent.getResource("message.giveaway.finish",
                                     Main.getInstance().getGiveawayManager().endGiveaway(giveaway, messageEditBuilder, userList)));
