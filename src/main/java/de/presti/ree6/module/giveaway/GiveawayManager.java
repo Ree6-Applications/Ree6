@@ -88,11 +88,13 @@ public class GiveawayManager implements IManager<Giveaway> {
 
         EmbedBuilder embedBuilder = new EmbedBuilder(messageEditBuilder.getEmbeds().get(0));
 
+        String winnerText = stringBuilder.substring(0, stringBuilder.length() - 2);
+
         embedBuilder.setDescription("Ended: <t:" + (System.currentTimeMillis() / 1000) + ":R>\n" +
-                "Winners: " + stringBuilder + "\n");
+                "Winners: " + winnerText + "\n");
 
         messageEditBuilder.setEmbeds(embedBuilder.build());
-        return stringBuilder.substring(0, stringBuilder.length() - 2);
+        return winnerText;
     }
 
     /**
