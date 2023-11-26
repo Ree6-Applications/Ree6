@@ -47,7 +47,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.17</version>
+            <version>5.0.0-beta.18</version>
         </dependency>
         <dependency>
             <groupId>dev.arbjerg</groupId>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
-            <version>6.33.1</version>
+            <version>6.34.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.Carleslc.Simple-YAML</groupId>
@@ -245,7 +245,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
-            <version>5.2.1</version>
+            <version>5.2.2</version>
         </dependency>
 
         <!-- Utility -->
