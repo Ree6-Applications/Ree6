@@ -3,41 +3,27 @@ package de.presti.ree6.utils.data;
 import de.presti.ree6.main.Main;
 
 /**
- * Utility class to save long term used Data.
+ * Utility class to access bot-related configurations.
  */
-public class Data {
+public class BotConfig {
 
-    /**
-     * Constructor for the Data Utility class.
-     */
-    private Data() {
+    private static final Main INSTANCE = Main.getInstance();
+
+    private BotConfig() {
         throw new IllegalStateException("Utility class");
     }
 
-    /**
-     * Get the configured Discord Bot status.
-     * @return the Discord Bot status from the config.
-     */
     public static String getStatus() {
-        return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.status", "ree6.de | %guilds% Servers. (%shard%)");
+        return getConfigString("bot.misc.status", "ree6.de | %guilds% Servers. (%shard%)");
     }
 
-    /**
-     * Get the configured Discord Bot Website.
-     * @return the Discord Bot Website from the config.
-     */
     public static String getWebsite() {
-        return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.website", "https://ree6.de");
+        return getConfigString("bot.misc.website", "https://ree6.de");
     }
 
-    /**
-     * Get the configured Github repository.
-     * @return the Github repository from the config.
-     */
     public static String getGithub() {
-        return Main.getInstance().getConfig().getConfiguration().getString("bot.misc.github", "https://github.ree6.de");
+        return getConfigString("bot.misc.github", "https://github.ree6.de");
     }
-
     /**
      * Get the configured Discord Bot invite.
      * @return the Discord Bot invite from the config.
@@ -173,5 +159,17 @@ public class Data {
      */
     public static boolean shouldUseLavaLink() {
         return Main.getInstance().getConfig().getConfiguration().getBoolean("lavalink.enable", false);
+    }
+
+    private static String getConfigString(String path, String defaultValue) {
+        return INSTANCE.getConfig().getConfiguration().getString(path, defaultValue);
+    }
+
+    private static long getConfigLong(String path, long defaultValue) {
+        return INSTANCE.getConfig().getConfiguration().getLong(path, defaultValue);
+    }
+
+    private static boolean getConfigBoolean(String path, boolean defaultValue) {
+        return INSTANCE.getConfig().getConfiguration().getBoolean(path, defaultValue);
     }
 }

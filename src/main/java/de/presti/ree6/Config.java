@@ -7,6 +7,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.io.IOException;
 
 /**
  * Config.
@@ -188,80 +189,118 @@ public class Config {
      * Migrate configs to newer versions
      */
     public void migrateOldConfig() {
-        String configVersion = yamlFile.getString("config.version", "1.9.0");
+        String configVersion = getConfigVersion();
 
-        if (compareVersion(configVersion, "3.0.8") || configVersion.equals("3.0.8"))
+        if (shouldSkipMigration(configVersion)) {
             return;
+        }
 
-        Map<String, Object> resources = yamlFile.getValues(true);
+        backupOldConfig();
 
-        // Migrate configs
+        processMigration(configVersion);
+    }
+
+    private String getConfigVersion() {
+        return yamlFile.getString("config.version", "1.9.0");
+    }
+
+    private boolean shouldSkipMigration(String configVersion) {
+        return compareVersion(configVersion, "3.0.8") || configVersion.equals("3.0.8");
+    }
+
+    private void backupOldConfig() {
         try {
             Files.copy(getFile().toPath(), new File("config-old.yml").toPath());
-        } catch (Exception ignore) {
-            System.out.println("Could not move the old configuration file to config-old.yml!");
-            System.out.println("This means the config file is not backed up by us!");
+        } catch (IOException ignore) {
+            handleBackupFailure();
         }
+    }
+
+    private void handleBackupFailure() {
+        System.out.println("Could not move the old configuration file to config-old.yml!");
+        System.out.println("This means the config file is not backed up by us!");
+    }
+
+    private void processMigration(String configVersion) {
+        Map<String, Object> resources = yamlFile.getValues(true);
 
         if (getFile().delete()) {
             init();
 
             for (Map.Entry<String, Object> entry : resources.entrySet()) {
-                String key = entry.getKey();
-
-                boolean modified = false;
-
-                if (key.startsWith("config"))
-                    continue;
-
-                if (entry.getValue() instanceof MemorySection)
-                    continue;
-
-                // Migrate to 1.10.0
-                if (compareVersion("1.10.0", configVersion)) {
-
-                    if (key.startsWith("mysql"))
-                        key = key.replace("mysql", "hikari.sql");
-
-                    if (key.endsWith(".rel"))
-                        key = key.replace(".rel", ".release");
-
-                    yamlFile.set(key, entry.getValue());
-                    modified = true;
-                }
-
-                // Migrate to 2.2.0
-                if (compareVersion("2.2.0", configVersion)) {
-
-                    if (key.startsWith("youtube"))
-                        continue;
-
-                    yamlFile.set(key, entry.getValue());
-                    modified = true;
-                }
-
-
-                // Migrate to 2.4.11
-                if (compareVersion("2.4.11", configVersion)) {
-                    if (key.startsWith("twitter") && !key.endsWith("bearer")) continue;
-                }
-
-                if (!modified) {
-                    yamlFile.set(key, entry.getValue());
-                }
+                migrateEntry(configVersion, entry);
             }
 
-            if (compareVersion("2.2.0", configVersion)) {
-                yamlFile.remove("youtube");
-            }
-
-            try {
-                yamlFile.save(getFile());
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
+            saveYamlFile();
         }
     }
+
+    private void migrateEntry(String configVersion, Map.Entry<String, Object> entry) {
+        String key = entry.getKey();
+
+        if (shouldSkipMigrationEntry(configVersion, key, entry.getValue())) {
+            return;
+        }
+
+        boolean modified = migrateToVersion(configVersion, key, entry);
+
+        if (!modified) {
+            yamlFile.set(key, entry.getValue());
+        }
+    }
+
+    private boolean shouldSkipMigrationEntry(String configVersion, String key, Object value) {
+        return key.startsWith("config") || value instanceof MemorySection || shouldSkipSpecificMigration(configVersion, key);
+    }
+
+    private boolean shouldSkipSpecificMigration(String configVersion, String key) {
+        return (compareVersion("2.4.11", configVersion) && (key.startsWith("twitter") && !key.endsWith("bearer")))
+                || (compareVersion("2.2.0", configVersion) && key.startsWith("youtube"));
+    }
+
+    private boolean migrateToVersion(String configVersion, String key, Map.Entry<String, Object> entry) {
+        boolean modified = false;
+
+        if (compareVersion("1.10.0", configVersion)) {
+            modified = migrateToVersion110(key, entry);
+        }
+
+        if (compareVersion("2.2.0", configVersion)) {
+            modified = migrateToVersion220(key, entry) || modified;
+        }
+
+        return modified;
+    }
+
+    private boolean migrateToVersion110(String key, Map.Entry<String, Object> entry) {
+        if (key.startsWith("mysql")) {
+            key = key.replace("mysql", "hikari.sql");
+        }
+
+        if (key.endsWith(".rel")) {
+            key = key.replace(".rel", ".release");
+        }
+
+        yamlFile.set(key, entry.getValue());
+        return true;
+    }
+
+    private boolean migrateToVersion220(String key, Map.Entry<String, Object> entry) {
+        if (!key.startsWith("youtube")) {
+            yamlFile.set(key, entry.getValue());
+            return true;
+        }
+        return false;
+    }
+
+    private void saveYamlFile() {
+        try {
+            yamlFile.save(getFile());
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
 
     /**
      * Compare two version that are based on the x.y.z format.
