@@ -90,7 +90,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>de.presti.ree6.Main</mainClass>
+                                    <mainClass>de.presti.ree6.installer.Main</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>

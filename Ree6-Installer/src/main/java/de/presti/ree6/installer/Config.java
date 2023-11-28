@@ -1,4 +1,4 @@
-package de.presti.ree6;
+package de.presti.ree6.installer;
 
 import org.simpleyaml.configuration.MemorySection;
 import org.simpleyaml.configuration.file.YamlFile;
@@ -6,6 +6,7 @@ import org.simpleyaml.configuration.file.YamlFile;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,9 +23,6 @@ public class Config {
      * Initialize the Configuration.
      */
     public void init() {
-
-        yamlFile = createConfiguration();
-
         try {
             Path storage = Path.of("storage");
             Path storageTemp = Path.of("storage/tmp");
@@ -35,8 +33,18 @@ public class Config {
             if (!Files.exists(storageTemp))
                 Files.createDirectory(storageTemp);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            System.err.println("Could not create Storage folder!");
+            System.err.println(exception.getMessage());
         }
+
+        createConfigFile();
+    }
+
+    /**
+     * Create a new Config File.
+     */
+    public void createConfigFile() {
+        yamlFile = createConfiguration();
 
         if (!getFile().exists()) {
             yamlFile.options().copyHeader();
@@ -51,7 +59,7 @@ public class Config {
                     """);
             yamlFile.path("config")
                     .comment("Do not change this!")
-                    .path("version").addDefault("3.0.8")
+                    .path("version").addDefault("3.0.15")
                     .parent().path("creation").addDefault(System.currentTimeMillis());
 
             yamlFile.path("hikari")
@@ -90,8 +98,12 @@ public class Config {
                     .parent().path("advertisement").addDefault("powered by Tube-hosting").commentSide("The Advertisement in Embed Footers and the rest.")
                     .parent().path("name").addDefault("Ree6").commentSide("The Name of the Bot.")
                     .parent().path("shards").addDefault(1).commentSide("The shard amount of the Bot. Check out https://anidiots.guide/understanding/sharding/#sharding for more information.")
+                    .parent().path("defaultLanguage").addDefault("en-GB").commentSide("The default Language of the Bot. Based on https://discord.com/developers/docs/reference#locales")
+                    .parent().path("allowRecordingInChat").addDefault(false).commentSide("If you wanna allow users to let the Bot send their recording into the chat.")
                     .parent().path("hideModuleNotification").addDefault(false).commentSide("Should the Notification for disabled Modules be hidden?")
                     .parent().path("debug").addDefault(false).commentSide("Should the Bot be in Debug Mode? This will enable more logging.")
+                    .parent().path("defaultPrefix").addDefault("ree!").commentSide("The default Prefix of the Bot.")
+                    .parent().path("textFont").addDefault("Verdana").commentSide("The Font that is being used in Images for the Text.")
                     .parent().path("modules").comment("Customize the active modules in Ree6.").blankLine()
                     .path("moderation").addDefault(true).commentSide("Enable the moderation module.")
                     .parent().path("music").addDefault(true).commentSide("Enable the music module.")
@@ -117,6 +129,13 @@ public class Config {
                     .parent().path("reactionroles").addDefault(true).commentSide("Enable the reaction-roles module.")
                     .parent().path("slashcommands").addDefault(true).commentSide("Enable the slash-commands support.")
                     .parent().path("messagecommands").addDefault(true).commentSide("Enable the message-commands support.");
+
+            yamlFile.path("lavalink")
+                    .comment("Lavalink Configuration, for lavalink support.").blankLine()
+                    .path("enable").addDefault(false).commentSide("If you want to use Lavalink.")
+                    .parent().path("nodes")
+                    .addDefault(List.of(Map.of("name", "Node Name", "host", "node.mylava.link", "port", 0, "secure", false, "password", "none")))
+                    .comment("Lavalink Nodes Configuration.").blankLine();
 
             yamlFile.path("heartbeat")
                     .comment("Heartbeat Configuration, for status reporting").blankLine()
@@ -172,14 +191,16 @@ public class Config {
             try {
                 yamlFile.save(getFile());
             } catch (Exception exception) {
-                exception.printStackTrace();
+                System.err.println("Could not save config file!");
+                System.err.println(exception.getMessage());
             }
         } else {
             try {
                 yamlFile.load();
                 migrateOldConfig();
             } catch (Exception exception) {
-                exception.printStackTrace();
+                System.err.println("Could not load the config.!");
+                System.err.println(exception.getMessage());
             }
         }
     }
@@ -190,7 +211,8 @@ public class Config {
     public void migrateOldConfig() {
         String configVersion = yamlFile.getString("config.version", "1.9.0");
 
-        if (compareVersion(configVersion, "3.0.8") || configVersion.equals("3.0.8"))
+        if (compareVersion(configVersion, "3.0.15") ||
+                configVersion.equals("3.0.15"))
             return;
 
         Map<String, Object> resources = yamlFile.getValues(true);
@@ -324,5 +346,4 @@ public class Config {
     public File getFile() {
         return new File("config.yml");
     }
-
 }

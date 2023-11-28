@@ -1,4 +1,4 @@
-package de.presti.ree6;
+package de.presti.ree6.installer;
 
 import java.net.URI;
 import java.net.http.HttpClient;

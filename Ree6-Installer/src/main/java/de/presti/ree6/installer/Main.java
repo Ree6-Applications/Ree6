@@ -1,4 +1,4 @@
-package de.presti.ree6;
+package de.presti.ree6.installer;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
