@@ -59,7 +59,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Timestamp;
@@ -817,7 +816,7 @@ public class Main {
 
         ThreadUtil.createThread(x -> {
                     String formattedUrl = heartbeatUrl.replace("%ping%", String.valueOf(BotWorker.getShardManager().getAverageGatewayPing()));
-                    try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(formattedUrl).GET().build())) {
+                    try (InputStream ignored = RequestUtility.request(RequestUtility.Request.builder().url(formattedUrl).GET().build())) {
                         Main.getInstance().logAnalytic("Heartbeat sent!");
                     } catch (Exception exception) {
                         log.warn("Heartbeat failed! Reporting to Sentry...");
