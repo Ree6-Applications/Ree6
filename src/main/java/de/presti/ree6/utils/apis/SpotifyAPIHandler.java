@@ -68,7 +68,7 @@ public class SpotifyAPIHandler {
     public SpotifyAPIHandler() {
         try {
             initSpotify();
-        } catch (ParseException | SpotifyWebApiException | IOException e) {
+        } catch (Exception e) {
             log.error("Couldn't create a Spotify Instance", e);
         }
         instance = this;
@@ -84,7 +84,10 @@ public class SpotifyAPIHandler {
     public void initSpotify() throws ParseException, SpotifyWebApiException, IOException {
         if (isSpotifyConnected) return;
 
-        this.spotifyApi = new SpotifyApi.Builder().setClientId(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.id")).setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.secret")).build();
+        this.spotifyApi = new SpotifyApi.Builder()
+                .setClientId(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.id"))
+                .setClientSecret(Main.getInstance().getConfig().getConfiguration().getString("spotify.client.secret"))
+                .build();
 
         try {
             ClientCredentialsRequest.Builder request = new ClientCredentialsRequest.Builder(spotifyApi.getClientId(), spotifyApi.getClientSecret());

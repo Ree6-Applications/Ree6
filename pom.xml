@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>3.0.18</version>
+    <version>3.0.19</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -116,12 +116,6 @@
             <groupId>se.michaelthelin.spotify</groupId>
             <artifactId>spotify-web-api-java</artifactId>
             <version>8.3.4</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>de.ree6</groupId>
