@@ -182,7 +182,7 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
                         .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.songNext", FormatUtil.filter(track.getInfo().title)))
                         .setFooter(guildMusicManager.getGuild().getName() + " - " + BotConfig.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
 
-            Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(textChannel.asGuildMessageChannel().getGuild(), MusicPlayerStateChangeEvent.State.PLAYING, track));
+            Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.PLAYING, track));
             player.playTrack(track.makeClone(), false);
         } else {
             if (!silent)
@@ -194,7 +194,7 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
                         .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.songQueueReachedEnd"))
                         .setFooter(guildMusicManager.getGuild().getName() + " - " + BotConfig.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
 
-            Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(textChannel.asGuildMessageChannel().getGuild(), MusicPlayerStateChangeEvent.State.QUEUE_EMPTY, null));
+            Main.getInstance().getEventBus().post(new MusicPlayerStateChangeEvent(guildMusicManager.getGuild(), MusicPlayerStateChangeEvent.State.QUEUE_EMPTY, null));
         }
     }
 
