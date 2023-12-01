@@ -45,7 +45,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 
 /**
- * Wrapper class that handles most Music related stuff.
+ * Wrapper class that handles most Music-related stuff.
  */
 @Slf4j
 public class MusicWorker {
@@ -67,7 +67,9 @@ public class MusicWorker {
         musicManagers = new HashMap<>();
         playerManager = BotConfig.shouldUseLavaLink() ? Main.getInstance().getLavalink().getAudioPlayerManager() : new DefaultAudioPlayerManager();
 
-        // Register AudioSources, if music module is active. If not, then don't register them. This will cause a failed resolve when ever a command is being executed.
+        // Register AudioSources if music module is active.
+        // If not, then don't register them.
+        // This will cause a failed resolve whenever a command is being executed.
         if (BotConfig.isModuleActive("music") && !BotConfig.shouldUseLavaLink()) {
             playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
             playerManager.registerSourceManager(new BandcampAudioSourceManager());
@@ -105,7 +107,7 @@ public class MusicWorker {
      * @param channel         the TextChannel where the command has been performed, used for errors.
      * @param audioChannel    the AudioChannel for the Bot to join.
      * @param trackUrl        the Track URL.
-     * @param interactionHook a InteractionHook if it was an SlashCommand.
+     * @param interactionHook an InteractionHook if it was a SlashCommand.
      */
     public void loadAndPlaySilence(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook) {
         loadAndPlay(channel, audioChannel, trackUrl, interactionHook, true);
@@ -118,7 +120,7 @@ public class MusicWorker {
      * @param channel         the TextChannel where the command has been performed.
      * @param audioChannel    the AudioChannel for the Bot to join.
      * @param trackUrl        the Track URL.
-     * @param interactionHook a InteractionHook if it was an SlashCommand.
+     * @param interactionHook an InteractionHook if it was a SlashCommand.
      * @param silent          if the Bot shouldn't send a Message.
      */
     public void loadAndPlay(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent) {
@@ -131,7 +133,7 @@ public class MusicWorker {
      * @param channel         the TextChannel where the command has been performed.
      * @param audioChannel    the AudioChannel for the Bot to join.
      * @param trackUrl        the Track URL.
-     * @param interactionHook a InteractionHook if it was an SlashCommand.
+     * @param interactionHook an InteractionHook if it was a SlashCommand.
      * @param silent          if the Bot shouldn't send a Message.
      * @param force           if the song should be forced or not.
      */
@@ -146,7 +148,7 @@ public class MusicWorker {
      * @param channel         the TextChannel where the command has been performed.
      * @param audioChannel    the AudioChannel for the Bot to join.
      * @param trackUrl        the Track URL.
-     * @param interactionHook a InteractionHook if it was an SlashCommand.
+     * @param interactionHook an InteractionHook if it was a SlashCommand.
      * @param silent          if the Bot shouldn't send a Message.
      * @param force           if the song should be forced or not.
      */
@@ -191,7 +193,7 @@ public class MusicWorker {
         playerManager.loadItemOrdered(musicManager, trackUrl.trim(), new AudioLoadResultHandler() {
 
             /**
-             * Just override the default trackLoaded with a simple play call.
+             * Override the default trackLoaded with a simple play call.
              * @param track the AudioTrack that you want to play
              */
             @Override
@@ -209,7 +211,7 @@ public class MusicWorker {
             }
 
             /**
-             * Just override the default playlistLoaded with a rather simple play and queue call.
+             * Override the default playlistLoaded with a rather simple play and queue call.
              * @param playlist the AudioPlaylist.
              */
             @Override
@@ -473,7 +475,7 @@ public class MusicWorker {
      * A method used to seek to a specific position in the current AudioTrack.
      *
      * @param channel             the TextChannel, used to inform the user about the seek.
-     * @param seekAmountInSeconds the amount of seconds that should be seeked.
+     * @param seekAmountInSeconds the number of seconds that should be seeked.
      */
     public void seekInTrack(MessageChannelUnion channel, int seekAmountInSeconds) {
         getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).getScheduler().seekPosition(channel, seekAmountInSeconds);
