@@ -124,11 +124,11 @@ public class Config {
                     .parent().path("predefineInformation").addDefault("""
                             You are Ree6 a Discord bot.
                             """).commentSide("Predefined Information for the AI.")
-                    .parent().path("invite").addDefault("https://invite.ree6.de").commentSide("The Invite Link of the Bot.")
-                    .parent().path("support").addDefault("https://support.ree6.de").commentSide("The Support Server Link of the Bot.")
-                    .parent().path("github").addDefault("https://github.ree6.de").commentSide("The GitHub Link of the Bot.")
-                    .parent().path("website").addDefault("https://ree6.de").commentSide("The Website Link of the Bot.")
-                    .parent().path("webinterface").addDefault("https://cp.ree6.de").commentSide("The Webinterface Link of the Bot.")
+                    .parent().path("invite").addDefault("https://invite.ree6.de").commentSide("The Invite Link of the Bot. (Can not be empty)")
+                    .parent().path("support").addDefault("https://support.ree6.de").commentSide("The Support Server Link of the Bot. (Can not be empty)")
+                    .parent().path("github").addDefault("https://github.ree6.de").commentSide("The GitHub Link of the Bot. (Can not be empty)")
+                    .parent().path("website").addDefault("https://ree6.de").commentSide("The Website Link of the Bot. (Can not be empty)")
+                    .parent().path("webinterface").addDefault("https://cp.ree6.de").commentSide("The Webinterface Link of the Bot. (Can not be empty)")
                     .parent().path("recording").addDefault("https://cp.ree6.de/external/recording").commentSide("The Recording Link of the Bot.")
                     .parent().path("twitchAuth").addDefault("https://cp.ree6.de/external/twitch").commentSide("The Twitch Authentication Link of the Bot.")
                     .parent().path("advertisement").addDefault("powered by Tube-hosting").commentSide("The Advertisement in Embed Footers and the rest.")
