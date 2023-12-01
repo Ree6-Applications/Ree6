@@ -77,7 +77,7 @@ public class InviteContainerManager {
                 guild.getVanityCode() != null) {
             try {
                 VanityInvite vanityInvite = guild.retrieveVanityInvite().complete();
-                return new InviteImpl(null, vanityInvite.getCode(), true, Objects.requireNonNull(guild.getOwner()).getUser(), 0, -1242525,
+                return new InviteImpl(null, vanityInvite.getCode(), true, Objects.requireNonNullElse(guild.getOwner(), guild.getSelfMember()).getUser(), 0, -1242525,
                         true, OffsetDateTime.now(), vanityInvite.getUses(), null,  null, null, null, Invite.InviteType.UNKNOWN);
             } catch (Exception ex) {
                 log.error("[InviteManager] Error while retrieving Vanity Invite: " + ex.getMessage());
