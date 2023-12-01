@@ -6,7 +6,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.wrapper.tiktok.TikTokWrapper;
 import de.presti.wrapper.tiktok.entities.TikTokUser;
 import net.dv8tion.jda.api.Permission;
@@ -87,7 +87,7 @@ public class TikTokNotifier implements ICommand {
 
                     StandardGuildMessageChannel channel = channelMapping.getAsChannel().asStandardGuildMessageChannel();
 
-                    channel.createWebhook(Data.getBotName() + "-TikTokNotifier-" + name).queue(w -> {
+                    channel.createWebhook(BotConfig.getBotName() + "-TikTokNotifier-" + name).queue(w -> {
                         if (messageMapping != null) {
                             SQLSession.getSqlConnector().getSqlWorker().addTikTokWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), tikTokUser.getId(), messageMapping.getAsString());
                         } else {

@@ -7,7 +7,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -46,11 +46,11 @@ public class Lyrics implements ICommand {
             client.getLyrics(title).thenAccept(lyrics -> {
 
                 if (lyrics == null) {
-                    commandEvent.reply(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
+                    commandEvent.reply(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), BotConfig.getWebsite(),
                                     commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl()).setTitle(commandEvent.getResource("label.musicPlayer"))
                             .setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl()).setColor(Color.RED)
                             .setDescription(commandEvent.getResource("message.music.lyrics.notFound", "``" + FormatUtil.filter(title) + "``"))
-                            .setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl()).build(), 5);
+                            .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl()).build(), 5);
                     return;
                 }
 
@@ -72,7 +72,7 @@ public class Lyrics implements ICommand {
                         commandEvent.reply(eb.setDescription(content.substring(0, index).trim()).build());
                         content = content.substring(index).trim();
                         eb.setAuthor(null).setTitle(null, null);
-                        eb.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
+                        eb.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
                     }
 
                     commandEvent.reply(eb.setDescription(content).build());

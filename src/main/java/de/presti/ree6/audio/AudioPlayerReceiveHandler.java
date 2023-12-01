@@ -6,7 +6,7 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Recording;
 import de.presti.ree6.utils.data.AudioUtil;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -87,7 +87,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
         message = voiceChannel.sendMessageEmbeds(new EmbedBuilder()
                 .setDescription(LanguageService.getByGuild(member.getGuild(), "message.recording.started"))
                 .setColor(Color.YELLOW)
-                .setFooter("Requested by " + member.getEffectiveName() + " - " + Data.getAdvertisement(), member.getEffectiveAvatarUrl())
+                .setFooter("Requested by " + member.getEffectiveName() + " - " + BotConfig.getAdvertisement(), member.getEffectiveAvatarUrl())
                 .setTitle(LanguageService.getByGuild(member.getGuild(), "label.recording.start"))
                 .build()).complete();
     }
@@ -184,14 +184,14 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 message.editMessageEmbeds(new EmbedBuilder()
                         .setDescription(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.stopped"))
                         .setColor(Color.GREEN)
-                        .setFooter(Data.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
+                        .setFooter(BotConfig.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
                         .setTitle(LanguageService.getByGuild(voiceChannel.getGuild(), "label.recording.finished"))
                         .build())
                         .setActionRow(
                                 new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(voiceChannel.getGuild(), "label.download"), ButtonStyle.LINK,
-                        Data.getRecordingUrl() + "?id=" + recording.getIdentifier(), failedToUpload, Emoji.fromCustom("shiba", 941219375535509504L, true)),
+                        BotConfig.getRecordingUrl() + "?id=" + recording.getIdentifier(), failedToUpload, Emoji.fromCustom("shiba", 941219375535509504L, true)),
                                 Button.primary("r_recordingDownload:" + recording.getIdentifier(), Emoji.fromCustom("sip", 1011956355810209852L, false))
-                                        .withLabel(LanguageService.getByGuild(voiceChannel.getGuild(), "label.sendToChat")).withDisabled(!Data.allowRecordingInChat() || failedToUpload)).complete();
+                                        .withLabel(LanguageService.getByGuild(voiceChannel.getGuild(), "label.sendToChat")).withDisabled(!BotConfig.allowRecordingInChat() || failedToUpload)).complete();
 
                 if (failedToUpload) {
                     voiceChannel.sendMessage(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.error", "Upload failed")).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav"));
@@ -203,7 +203,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 message.editMessageEmbeds(new EmbedBuilder()
                         .setDescription(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.error", ex.getMessage()))
                         .setColor(Color.RED)
-                        .setFooter(Data.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
+                        .setFooter(BotConfig.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
                         .setTitle(LanguageService.getByGuild(voiceChannel.getGuild(), "label.error"))
                         .build()).complete();
             }

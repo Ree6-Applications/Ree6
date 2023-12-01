@@ -6,7 +6,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.data.RegExUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -84,7 +84,7 @@ public class RSSNotifier implements ICommand {
                 }
 
                 StandardGuildMessageChannel channel = channelMapping.getAsChannel().asStandardGuildMessageChannel();
-                channel.createWebhook(Data.getBotName() + "-RSSNotifier-" + name).queue(w ->
+                channel.createWebhook(BotConfig.getBotName() + "-RSSNotifier-" + name).queue(w ->
                         SQLSession.getSqlConnector().getSqlWorker().addRSSWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), name.toLowerCase()));
                 commandEvent.reply(commandEvent.getResource("message.rssNotifier.added", name), 5);
 

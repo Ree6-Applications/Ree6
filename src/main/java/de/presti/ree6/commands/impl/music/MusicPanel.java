@@ -1,7 +1,6 @@
 package de.presti.ree6.commands.impl.music;
 
 import best.azura.eventbus.handler.EventHandler;
-import best.azura.eventbus.handler.ListenerHandler;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import de.presti.ree6.api.events.MusicPlayerStateChangeEvent;
 import de.presti.ree6.audio.music.GuildMusicManager;
@@ -12,7 +11,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -100,7 +99,7 @@ public class MusicPanel implements ICommand {
                 .setImage(audioTrackInfo != null && (audioTrackInfo.artworkUrl != null && !audioTrackInfo.artworkUrl.isBlank()) ? audioTrackInfo.artworkUrl : "https://images.unsplash.com/photo-1546977463-943d58b78c19")
                 .setTitle("**" + (audioTrackInfo != null ? commandEvent.getResource("message.music.songInfoSlim", audioTrackInfo.title, audioTrackInfo.author)
                         : commandEvent.getResource("message.music.notPlaying")) + "**")
-                .setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
+                .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
 

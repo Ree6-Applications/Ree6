@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.data;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.level.UserLevel;
@@ -473,7 +474,7 @@ public class ImageCreationUtility {
      * @return the Font.
      */
     public static Font retrieveFont(int size, String text) {
-        Font font = new Font(Data.getTextFont(), Font.PLAIN, size);
+        Font font = new Font(BotConfig.getTextFont(), Font.PLAIN, size);
 
         if (font.canDisplayUpTo(text) != -1) {
             font = new Font("Arial", Font.PLAIN, size);

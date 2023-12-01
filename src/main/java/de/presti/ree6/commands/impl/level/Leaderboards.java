@@ -4,7 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -24,8 +24,8 @@ public class Leaderboards implements ICommand {
         messageCreateBuilder.setContent(commandEvent.getResource("message.leaderboards"));
         messageCreateBuilder.addActionRow(
                 Button.link("https://support-dev.discord.com/hc/de/articles/360043053492-Statistics-Bot-Policy", commandEvent.getResource("label.discordGuidelines")),
-                Button.link(Data.getWebinterface() + "/dash/" + commandEvent.getGuild().getId() + "/leaderboards", commandEvent.getResource("label.chatLeaderboard")),
-                Button.link(Data.getWebinterface() + "/dash/" + commandEvent.getGuild().getId() + "/leaderboards", commandEvent.getResource("label.voiceLeaderboard"))
+                Button.link(BotConfig.getWebinterface() + "/dash/" + commandEvent.getGuild().getId() + "/leaderboards", commandEvent.getResource("label.chatLeaderboard")),
+                Button.link(BotConfig.getWebinterface() + "/dash/" + commandEvent.getGuild().getId() + "/leaderboards", commandEvent.getResource("label.voiceLeaderboard"))
         );
         commandEvent.reply(messageCreateBuilder.build());
     }

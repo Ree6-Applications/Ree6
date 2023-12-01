@@ -13,7 +13,7 @@ import de.presti.ree6.sql.entities.StreamAction;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.actions.streamtools.container.StreamActionContainer;
 import de.presti.ree6.actions.ActionInfo;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -179,7 +179,7 @@ public class StreamActionCommand implements ICommand {
                                 SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
                                 commandEvent.reply(commandEvent.getResource("message.stream-action.added", name.getAsString()));
                             } else {
-                                commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", Data.getTwitchAuth()));
+                                commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", BotConfig.getTwitchAuth()));
                             }
                         } else {
                             commandEvent.reply(commandEvent.getResource("message.stream-action.alreadyExisting", name.getAsString()));
@@ -220,7 +220,7 @@ public class StreamActionCommand implements ICommand {
                             messageCreateBuilder.addFiles(FileUpload.fromData(stringBuilder.toString().getBytes(StandardCharsets.UTF_8), "points.txt"));
                             commandEvent.reply(messageCreateBuilder.build());
                         } else {
-                            commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", Data.getTwitchAuth()));
+                            commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", BotConfig.getTwitchAuth()));
                         }
                     }
 
