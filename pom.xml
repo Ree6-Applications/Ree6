@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>3.0.17</version>
+    <version>3.0.18</version>
     <packaging>jar</packaging>
 
     <properties>
