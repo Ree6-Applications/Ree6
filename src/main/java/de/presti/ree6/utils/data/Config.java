@@ -330,7 +330,7 @@ public class Config {
     }
 
     /**
-     * Compare two version that are based on the x.y.z format.
+     * Compare two versions that are based on the x.y.z format.
      *
      * @param versionA the base version.
      * @param versionB the version that should be tested against versionA.
