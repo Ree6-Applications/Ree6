@@ -54,7 +54,7 @@ public class EmbedSender implements ICommand {
         EmbedBuilder embedBuilder = new EmbedBuilder();
 
         embedBuilder.setTitle(title != null ? title.getAsString() : commandEvent.getResource("label.title"), url != null ? GenericValidator.isUrl(url.getAsString()) ? url.getAsString() : null : null);
-        embedBuilder.setDescription(description != null ? description.getAsString() : commandEvent.getResource("label.description"));
+        embedBuilder.setDescription(description != null ? description.getAsString().replace("\\n", "\n").replace("<br>", "\n") : commandEvent.getResource("label.description"));
 
         if (color != null) {
             embedBuilder.setColor(new Color(color.getAsInt()));
