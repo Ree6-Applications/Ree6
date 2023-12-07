@@ -17,7 +17,7 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Invite;
 import de.presti.ree6.sql.entities.webhook.Webhook;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
@@ -100,13 +100,13 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(LanguageService.getByEvent(event, "logging.banned", event.getUser().getAsMention()));
 
@@ -134,13 +134,13 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(LanguageService.getByEvent(event, "logging.unbanned", event.getUser().getAsMention()));
 
@@ -174,13 +174,13 @@ public class LoggingEvents extends ListenerAdapter {
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
             wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-            wm.setUsername(Data.getBotName() + "-Logs");
+            wm.setUsername(BotConfig.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
             we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
-            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
             we.setDescription(LanguageService.getByEvent(event, "logging.joined.default", event.getUser().getAsMention(), TimeFormat.DATE_TIME_SHORT.format(event.getUser().getTimeCreated()), TimeFormat.RELATIVE.format(event.getUser().getTimeCreated())));
 
@@ -193,7 +193,7 @@ public class LoggingEvents extends ListenerAdapter {
             WebhookMessageBuilder wm2 = new WebhookMessageBuilder();
 
             wm2.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-            wm2.setUsername(Data.getBotName() + "-InviteLogs");
+            wm2.setUsername(BotConfig.getBotName() + "-InviteLogs");
 
             if (event.getUser().isBot()) {
                 event.getGuild().retrieveAuditLogs().type(ActionType.BOT_ADD).limit(1).queue(auditLogEntries -> {
@@ -246,13 +246,13 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
 
         if (event.getMember() != null) {
@@ -287,13 +287,13 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         AuditLogPaginationAction paginationAction = event.getGuild().retrieveAuditLogs().user(event.getUser()).type(ActionType.MEMBER_UPDATE).limit(1);
         if (event.getNewTimeOutEnd() != null) {
@@ -335,13 +335,13 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
 
         if (event.getNewNickname() == null) {
@@ -381,12 +381,12 @@ public class LoggingEvents extends ListenerAdapter {
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
             wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-            wm.setUsername(Data.getBotName() + "-Logs");
+            wm.setUsername(BotConfig.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getEffectiveName(), event.getEntity().getEffectiveAvatarUrl(), null));
-            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
             we.setDescription(LanguageService.getByEvent(event, "logging.voicechannel.join", event.getEntity().getUser().getAsMention(), event.getChannelJoined().getAsMention()));
 
@@ -402,12 +402,12 @@ public class LoggingEvents extends ListenerAdapter {
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
             wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-            wm.setUsername(Data.getBotName() + "-Logs");
+            wm.setUsername(BotConfig.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getEffectiveName(), event.getEntity().getEffectiveAvatarUrl(), null));
-            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
             we.setDescription(LanguageService.getByEvent(event, "logging.voicechannel.leave", event.getEntity().getUser().getAsMention(), event.getChannelLeft().getAsMention()));
 
@@ -428,12 +428,12 @@ public class LoggingEvents extends ListenerAdapter {
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
             wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-            wm.setUsername(Data.getBotName() + "-Logs");
+            wm.setUsername(BotConfig.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getEntity().getEffectiveName(), event.getEntity().getEffectiveAvatarUrl(), null));
-            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
             we.setDescription(LanguageService.getByEvent(event, "logging.voicechannel.move", event.getEntity().getUser().getAsMention(), event.getChannelLeft().getAsMention(), event.getChannelJoined().getAsMention()));
 
@@ -466,12 +466,12 @@ public class LoggingEvents extends ListenerAdapter {
 
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
             wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-            wm.setUsername(Data.getBotName() + "-Logs");
+            wm.setUsername(BotConfig.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
             we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.channel.update.voice", event.getChannel().getAsMention()));
@@ -511,12 +511,12 @@ public class LoggingEvents extends ListenerAdapter {
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
             wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-            wm.setUsername(Data.getBotName() + "-Logs");
+            wm.setUsername(BotConfig.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
             we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
             we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.channel.update.chat", event.getChannel().getAsMention()));
@@ -574,13 +574,13 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
 
         StringBuilder finalString = new StringBuilder();
@@ -615,13 +615,13 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
 
         StringBuilder finalString = new StringBuilder();
@@ -655,12 +655,12 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.role.create", event.getRole().getName()));
 
@@ -687,12 +687,12 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.role.delete", event.getRole().getName()));
 
@@ -719,12 +719,12 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.role.update", event.getRole().getName()));
         we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.oldName") + "**", event.getOldName()));
@@ -753,12 +753,12 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.role.update", event.getRole().getName()));
         we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.oldMentionable") + "**", event.getOldValue().toString()));
@@ -787,12 +787,12 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.role.update", event.getRole().getName()));
         we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.oldHoist") + "**", event.getOldValue().toString()));
@@ -821,12 +821,12 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.role.update", event.getRole().getName()));
 
@@ -881,12 +881,12 @@ public class LoggingEvents extends ListenerAdapter {
         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
         wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-        wm.setUsername(Data.getBotName() + "-Logs");
+        wm.setUsername(BotConfig.getBotName() + "-Logs");
 
         WebhookEmbedBuilder we = new WebhookEmbedBuilder();
         we.setColor(Color.BLACK.getRGB());
         we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
         we.setTimestamp(Instant.now());
         we.setDescription(LanguageService.getByGuild(event.getGuild(), "logging.role.update", event.getRole().getName()));
         we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.oldColor") + "**", (event.getOldColor() != null ? event.getOldColor() : Color.gray).getRGB() + ""));
@@ -923,12 +923,12 @@ public class LoggingEvents extends ListenerAdapter {
             WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
             wm.setAvatarUrl(event.getJDA().getSelfUser().getAvatarUrl());
-            wm.setUsername(Data.getBotName() + "-Logs");
+            wm.setUsername(BotConfig.getBotName() + "-Logs");
 
             WebhookEmbedBuilder we = new WebhookEmbedBuilder();
             we.setColor(Color.BLACK.getRGB());
             we.setAuthor(new WebhookEmbed.EmbedAuthor(user.getName(), user.getEffectiveAvatarUrl(), null));
-            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
             we.setTimestamp(Instant.now());
 
             Message message = ArrayUtil.getMessageFromMessageListAndRemove(event.getMessageId());

@@ -6,9 +6,10 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.custom.CustomCommand;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.ThreadUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -73,14 +74,14 @@ public class CommandManager {
         for (Class<? extends ICommand> aClass : classes) {
             Command commandAnnotation = aClass.getAnnotation(Command.class);
 
-            if (!Data.isModuleActive(commandAnnotation.category().getDescription().substring(9).toLowerCase())) continue;
+            if (!BotConfig.isModuleActive(commandAnnotation.category().getDescription().substring(9).toLowerCase())) continue;
 
             log.info("Loading Command {}", aClass.getSimpleName());
 
             addCommand(aClass.getDeclaredConstructor().newInstance());
         }
 
-        if (!Data.isModuleActive("ai")) return;
+        if (!BotConfig.isModuleActive("ai")) return;
 
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -183,7 +184,7 @@ public class CommandManager {
      * @param jda Instance of the Bot.
      */
     public void addSlashCommand(JDA jda) {
-        if (!Data.isModuleActive("slashcommands")) return;
+        if (!BotConfig.isModuleActive("slashcommands")) return;
 
         CommandListUpdateAction listUpdateAction = jda.updateCommands();
 
@@ -326,24 +327,24 @@ public class CommandManager {
 
         // Check if it is a Slash Command.
         if (slashCommandInteractionEvent != null) {
-            if (!Data.isModuleActive("slashcommands")) return false;
+            if (!BotConfig.isModuleActive("slashcommands")) return false;
             if (!performSlashCommand(textChannel, slashCommandInteractionEvent)) {
                 return false;
             }
         } else {
-            if (!Data.isModuleActive("messagecommands")) return false;
+            if (!BotConfig.isModuleActive("messagecommands")) return false;
             if (!performMessageCommand(member, guild, messageContent, message, textChannel)) {
                 return false;
             }
         }
 
         // Check if this is a Developer build, if not then cooldown the User.
-        if (!Data.isDebug()) {
+        if (!BotConfig.isDebug()) {
             ThreadUtil.createThread(x -> ArrayUtil.commandCooldown.remove(member.getUser().getId()), null, Duration.ofSeconds(5), false, false);
         }
 
         // Add them to the Cooldown.
-        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && !Data.isDebug()) {
+        if (!ArrayUtil.commandCooldown.contains(member.getUser().getId()) && !BotConfig.isDebug()) {
             ArrayUtil.commandCooldown.add(member.getUser().getId());
         }
 
@@ -389,7 +390,7 @@ public class CommandManager {
         ICommand command = getCommandByName(arguments[0]);
 
         // Check if there is even a Command with that name.
-        if (command == null && Data.isModuleActive("customcommands")) {
+        if (command == null && BotConfig.isModuleActive("customcommands")) {
             CustomCommand customCommand = SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "FROM CustomCommand WHERE guildId=:gid AND name=:command", Map.of("gid", guild.getId(), "command", arguments[0].toLowerCase()));
             if (customCommand != null) {
                 MessageChannelUnion messageChannelUnion = textChannel;
@@ -417,11 +418,14 @@ public class CommandManager {
             return false;
         }
 
-        // Check if the Command is blacklisted.
-        if (!SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() &&
-                command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-            sendMessage(LanguageService.getByGuild(guild, "command.perform.blocked"), 5, textChannel, null);
-            return false;
+        if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
+            Setting blacklistSetting = SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase());
+
+            // Check if the Command is blacklisted.
+            if (blacklistSetting != null && !blacklistSetting.getBooleanValue()) {
+                sendMessage(LanguageService.getByGuild(guild, "command.perform.blocked"), 5, textChannel, null);
+                return false;
+            }
         }
 
         // Parse the arguments.
@@ -469,7 +473,7 @@ public class CommandManager {
      * @return true, if yes | false, if not.
      */
     public boolean isTimeout(User user) {
-        return ArrayUtil.commandCooldown.contains(user.getId()) && !Data.isDebug();
+        return ArrayUtil.commandCooldown.contains(user.getId()) && !BotConfig.isDebug();
     }
 
     /**

@@ -8,7 +8,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -88,7 +88,7 @@ public class NSFW implements ICommand {
                 EmbedBuilder em = new EmbedBuilder();
 
                 em.setImage(randomUrl);
-                em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + Data.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
+                em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + BotConfig.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
 
                 if (commandEvent.isSlashCommand()) {
                     message.editMessage(commandEvent.getResource("message.default.checkBelow")).queue();

@@ -9,7 +9,7 @@ import de.presti.ree6.logger.events.implentation.LogMessageMember;
 import de.presti.ree6.logger.events.implentation.LogMessageRole;
 import de.presti.ree6.logger.events.implentation.LogMessageUser;
 import de.presti.ree6.logger.events.implentation.LogMessageVoice;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.Permission;
 
@@ -40,9 +40,9 @@ public class LoggerQueue {
             logs.add(loggerMessage);
 
             // Creating a new Webhook Message with an Embed.
-            WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder().setAvatarUrl(loggerMessage.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl()).setUsername(Data.getBotName() + "-Logs");
+            WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder().setAvatarUrl(loggerMessage.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl()).setUsername(BotConfig.getBotName() + "-Logs");
             WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder().setColor(Color.BLACK.getRGB())
-                    .setFooter(new WebhookEmbed.EmbedFooter(loggerMessage.getGuild().getName() + " - " + Data.getAdvertisement(),
+                    .setFooter(new WebhookEmbed.EmbedFooter(loggerMessage.getGuild().getName() + " - " + BotConfig.getAdvertisement(),
                             (loggerMessage.getGuild().getIconUrl() != null ? loggerMessage.getGuild().getIconUrl() : null)))
                     .setTimestamp(Instant.now());
 

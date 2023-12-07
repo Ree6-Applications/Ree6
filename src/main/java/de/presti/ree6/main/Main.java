@@ -9,6 +9,7 @@ import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
 import de.presti.ree6.audio.music.MusicWorker;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
@@ -59,7 +60,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Timestamp;
@@ -212,7 +212,7 @@ public class Main {
                     getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
                     getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"),
                     getInstance().getConfig().getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"),
-                    Data.isDebug());
+                    BotConfig.isDebug());
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
@@ -237,7 +237,7 @@ public class Main {
                         "command_" + commandAnnotation.name().toLowerCase(), commandAnnotation.name(), true));
             }
             Setting prefixSetting = SettingsManager.getDefault("chatprefix");
-            prefixSetting.setValue(Data.getDefaultPrefix());
+            prefixSetting.setValue(BotConfig.getDefaultPrefix());
 
             Setting languageSetting = SettingsManager.getDefault("configuration_language");
             languageSetting.setValue("en_US");
@@ -263,7 +263,7 @@ public class Main {
                 version = BotVersion.BETA;
             }
 
-            if (Data.shouldUseLavaLink()) {
+            if (BotConfig.shouldUseLavaLink()) {
                 getInstance().lavalink = new JdaLavalink(shards, shard -> BotWorker.getShardManager().getShardById(shard));
             }
 
@@ -272,7 +272,7 @@ public class Main {
             getInstance().setMusicWorker(new MusicWorker());
             getInstance().addEvents();
 
-            if (Data.shouldUseLavaLink()) {
+            if (BotConfig.shouldUseLavaLink()) {
 
                 List<HashMap<String, Object>> nodes = (List<HashMap<String, Object>>) getInstance().getConfig()
                         .getConfiguration().getList("lavalink.nodes");
@@ -291,14 +291,14 @@ public class Main {
             return;
         }
 
-        if (Data.isModuleActive("music")) {
+        if (BotConfig.isModuleActive("music")) {
             log.info("Loading SpotifyAPI");
             new SpotifyAPIHandler();
         }
 
-        if (Data.isModuleActive("games")) {
+        if (BotConfig.isModuleActive("games")) {
 
-            if (Data.isModuleActive("music")) {
+            if (BotConfig.isModuleActive("music")) {
                 log.info("Loading MusicQuizUtil");
                 new MusicQuizUtil();
             }
@@ -307,7 +307,7 @@ public class Main {
             GameManager.loadAllGames();
         }
 
-        if (Data.isModuleActive("streamtools")) {
+        if (BotConfig.isModuleActive("streamtools")) {
             log.info("Loading Stream-actions");
             StreamActionContainerCreator.loadAll();
         }
@@ -320,7 +320,7 @@ public class Main {
         // Create the Notifier-Manager instance.
         getInstance().setNotifier(new Notifier());
 
-        if (Data.isModuleActive("notifier")) {
+        if (BotConfig.isModuleActive("notifier")) {
             ThreadUtil.createThread(x -> {
                 log.info("Loading Notifier data.");
                 List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "FROM ChannelStats", null);
@@ -400,7 +400,7 @@ public class Main {
         // Initialize the Addon-Manager.
         getInstance().setAddonManager(new AddonManager());
 
-        if (Data.isModuleActive("addons")) {
+        if (BotConfig.isModuleActive("addons")) {
             // Initialize the Addon-Loader.
             AddonLoader.loadAllAddons();
 
@@ -430,13 +430,13 @@ public class Main {
     private void addEvents() {
         BotWorker.addEvent(new MenuEvents(), new OtherEvents());
 
-        if (Data.isModuleActive("logging"))
+        if (BotConfig.isModuleActive("logging"))
             BotWorker.addEvent(new LoggingEvents());
 
-        if (Data.isModuleActive("games"))
+        if (BotConfig.isModuleActive("games"))
             BotWorker.addEvent(new GameEvents());
 
-        if (Data.isModuleActive("customevents"))
+        if (BotConfig.isModuleActive("customevents"))
             BotWorker.getShardManager().addEventListener(new CustomEvents());
     }
 
@@ -456,7 +456,7 @@ public class Main {
         log.info("[Main] Shutdown init. !");
         BotWorker.setState(BotState.STOPPED);
 
-        if (Data.isModuleActive("temporalvoice")) {
+        if (BotConfig.isModuleActive("temporalvoice")) {
             // Save it all.
             getConfig().getTemporal().set("temporalvoice", ArrayUtil.temporalVoicechannel);
         }
@@ -468,14 +468,14 @@ public class Main {
             log.info("[Main] Closed Database Connection!");
         }
 
-        if (Data.isModuleActive("addons")) {
+        if (BotConfig.isModuleActive("addons")) {
             // Shutdown every Addon.
             log.info("[Main] Disabling every Addon!");
             getAddonManager().stopAddons();
             log.info("[Main] Every Addon has been disabled!");
         }
 
-        if (Data.isModuleActive("notifier")) {
+        if (BotConfig.isModuleActive("notifier")) {
             // Close the Twitch-Client
             log.info("[Main] Closing Twitch API Instance!");
             getNotifier().getTwitchClient().close();
@@ -554,7 +554,7 @@ public class Main {
                     ArrayUtil.messageIDwithUser.clear();
 
                     BotWorker.getShardManager().getShards().forEach(jda ->
-                            BotWorker.setActivity(jda, Data.getStatus(), Activity.ActivityType.CUSTOM_STATUS));
+                            BotWorker.setActivity(jda, BotConfig.getStatus(), Activity.ActivityType.CUSTOM_STATUS));
 
                     log.info("[Stats] ");
                     log.info("[Stats] Today's Stats:");
@@ -625,7 +625,7 @@ public class Main {
                             if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
                                 WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                        .setUsername(Data.getBotName() + "-Scheduler")
+                                        .setUsername(BotConfig.getBotName() + "-Scheduler")
                                         .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
                                         .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
@@ -639,7 +639,7 @@ public class Main {
                             if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
                                 WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                        .setUsername(Data.getBotName() + "-Scheduler")
+                                        .setUsername(BotConfig.getBotName() + "-Scheduler")
                                         .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
                                         .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
@@ -650,7 +650,7 @@ public class Main {
                             if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
                                 WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                        .setUsername(Data.getBotName() + "-Scheduler")
+                                        .setUsername(BotConfig.getBotName() + "-Scheduler")
                                         .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
                                         .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
@@ -757,7 +757,7 @@ public class Main {
             //region Twitch credentials updater.
             try {
                 // Need to load them all.
-                if (Data.isModuleActive("notifier"))
+                if (BotConfig.isModuleActive("notifier"))
                     Main.getInstance().getNotifier().getCredentialManager().load();
 
                 for (TwitchIntegration twitchIntegrations :
@@ -817,7 +817,7 @@ public class Main {
 
         ThreadUtil.createThread(x -> {
                     String formattedUrl = heartbeatUrl.replace("%ping%", String.valueOf(BotWorker.getShardManager().getAverageGatewayPing()));
-                    try (InputStream inputStream = RequestUtility.request(RequestUtility.Request.builder().url(formattedUrl).GET().build())) {
+                    try (InputStream ignored = RequestUtility.request(RequestUtility.Request.builder().url(formattedUrl).GET().build())) {
                         Main.getInstance().logAnalytic("Heartbeat sent!");
                     } catch (Exception exception) {
                         log.warn("Heartbeat failed! Reporting to Sentry...");
@@ -834,7 +834,7 @@ public class Main {
      * @param args    the arguments for the message that should be logged.
      */
     public void logAnalytic(String message, Object... args) {
-        if (!Data.isDebug()) return;
+        if (!BotConfig.isDebug()) return;
         getAnalyticsLogger().debug(message, args);
     }
 

@@ -6,7 +6,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -34,7 +34,7 @@ public class Waifu implements ICommand {
             em.setTitle(commandEvent.getResource("label.error"));
             em.setColor(Color.RED);
             em.setDescription(commandEvent.getResource("message.default.retrievalError"));
-            em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + Data.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
+            em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + BotConfig.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
             commandEvent.reply(em.build());
             return;
         }
@@ -88,7 +88,7 @@ public class Waifu implements ICommand {
 
         em.addField("**" + commandEvent.getResource("label.from") + "**", "``" + from + "``", true);
 
-        em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + Data.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
+        em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + BotConfig.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
 
         commandEvent.reply(em.build());
     }

@@ -7,7 +7,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -35,7 +35,7 @@ public class SongInfo implements ICommand {
         GuildMusicManager guildMusicManager = Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild());
         AudioTrack audioTrack = guildMusicManager != null ? guildMusicManager.getPlayer().getPlayingTrack() : null;
 
-        em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
+        em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), BotConfig.getWebsite(),
                 commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setTitle(commandEvent.getResource("label.musicPlayer"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
@@ -44,7 +44,7 @@ public class SongInfo implements ICommand {
                 commandEvent.getResource("message.music.songInfo", audioTrack.getInfo().title, audioTrack.getInfo().author,
                 FormatUtil.getStatusEmoji(guildMusicManager.getPlayer()) + FormatUtil.progressBar((double)audioTrack.getPosition() / audioTrack.getDuration()),
                 FormatUtil.formatTime(audioTrack.getPosition()), FormatUtil.formatTime(audioTrack.getDuration()), FormatUtil.volumeIcon(guildMusicManager.getPlayer().getVolume())));
-        em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
+        em.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
 
         commandEvent.reply(em.build(), 5);
     }

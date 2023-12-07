@@ -3,7 +3,7 @@ package de.presti.ree6.audio.music;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import de.presti.ree6.audio.AudioPlayerSendHandler;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavaplayerPlayerWrapper;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public class GuildMusicManager {
      */
     public GuildMusicManager(Guild guild, AudioPlayerManager manager) {
         this.guild = guild;
-        player = Data.shouldUseLavaLink() ? Main.getInstance().getLavalink().getLink(guild).getPlayer() : new LavaplayerPlayerWrapper(manager.createPlayer());
+        player = BotConfig.shouldUseLavaLink() ? Main.getInstance().getLavalink().getLink(guild).getPlayer() : new LavaplayerPlayerWrapper(manager.createPlayer());
         scheduler = new TrackScheduler(this, player);
         player.addListener(scheduler);
     }
@@ -60,7 +60,7 @@ public class GuildMusicManager {
      * @return Wrapper around AudioPlayer to use it as an AudioSendHandler.
      */
     public AudioPlayerSendHandler getSendHandler() {
-        if (Data.shouldUseLavaLink()) return null;
+        if (BotConfig.shouldUseLavaLink()) return null;
 
         if (audioPlayerSendHandler != null) return audioPlayerSendHandler;
 

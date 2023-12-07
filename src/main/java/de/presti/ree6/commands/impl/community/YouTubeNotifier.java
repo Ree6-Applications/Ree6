@@ -7,7 +7,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.wrapper.entities.channel.ChannelResult;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -115,7 +115,7 @@ public class YouTubeNotifier implements ICommand {
                 name = channelResult.getTitle();
 
                 StandardGuildMessageChannel channel = channelMapping.getAsChannel().asStandardGuildMessageChannel();
-                channel.createWebhook(Data.getBotName() + "-YoutubeNotifier-" + name).queue(w -> {
+                channel.createWebhook(BotConfig.getBotName() + "-YoutubeNotifier-" + name).queue(w -> {
                     if (messageMapping != null) {
                         SQLSession.getSqlConnector().getSqlWorker().addYouTubeWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), channelResult.getId(), messageMapping.getAsString());
                     } else {

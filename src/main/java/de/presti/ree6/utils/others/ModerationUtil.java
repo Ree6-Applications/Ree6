@@ -1,7 +1,7 @@
 package de.presti.ree6.utils.others;
 
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +60,7 @@ public class ModerationUtil {
      * @return true, if the Server should be moderated.
      */
     public static boolean shouldModerate(String guildId) {
-        return Data.isModuleActive("moderation") && SQLSession.getSqlConnector().getSqlWorker().isChatProtectorSetup(guildId);
+        return BotConfig.isModuleActive("moderation") && SQLSession.getSqlConnector().getSqlWorker().isChatProtectorSetup(guildId);
     }
 
     /**

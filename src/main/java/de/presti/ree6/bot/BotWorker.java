@@ -3,7 +3,6 @@ package de.presti.ree6.bot;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.data.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -92,14 +91,14 @@ public class BotWorker {
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .disableCache(CacheFlag.EMOJI, CacheFlag.ACTIVITY);
 
-        if (Data.shouldUseLavaLink()) {
+        if (BotConfig.shouldUseLavaLink()) {
             defaultShardManagerBuilder.addEventListeners(Main.getInstance().getLavalink());
             defaultShardManagerBuilder.setVoiceDispatchInterceptor(Main.getInstance().getLavalink().getVoiceInterceptor());
         }
 
         shardManager = defaultShardManagerBuilder.build();
 
-        if (Data.shouldUseLavaLink() && Main.getInstance().getLavalink().getNodes().isEmpty()) {
+        if (BotConfig.shouldUseLavaLink() && Main.getInstance().getLavalink().getNodes().isEmpty()) {
             Main.getInstance().getLavalink().setUserId(shardManager.getShardById(0).getSelfUser().getId());
         }
     }
@@ -185,7 +184,7 @@ public class BotWorker {
      */
     public static String getBuild() {
         if (build == null) {
-            build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(), "3.0.15");
+            build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(), "3.0.17");
         }
         return build;
     }
