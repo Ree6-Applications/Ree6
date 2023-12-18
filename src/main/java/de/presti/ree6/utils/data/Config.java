@@ -33,7 +33,7 @@ public class Config {
     /**
      * The config version.
      */
-    private final String version = "3.0.17";
+    private final String version = "3.0.19";
 
     /**
      * Initialize the Configuration.
@@ -205,7 +205,9 @@ public class Config {
 
             yamlFile.setBlankLine("openai");
 
-            yamlFile.path("sentry").path("dsn").commentSide("Your Sentry DSN, for error reporting!")
+            yamlFile.path("sentry")
+                    .path("enable").commentSide("If you want to use Sentry.").addDefault(true)
+                    .parent().path("dsn").commentSide("Your Sentry DSN, for error reporting!")
                     .addDefault("yourSentryDSNHere");
 
             yamlFile.setBlankLine("sentry");

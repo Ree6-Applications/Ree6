@@ -32,6 +32,7 @@ import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
+import de.presti.ree6.sql.util.SQLConfig;
 import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.apis.Notifier;
@@ -165,20 +166,24 @@ public class Main {
 
         ArrayUtil.temporalVoicechannel.addAll(getInstance().getConfig().getTemporal().getStringList("temporalvoice"));
 
-        log.info("Creating Sentry Instance.");
+        if (BotConfig.shouldUseSentry()) {
+            log.info("Creating Sentry Instance.");
 
-        // Create a Sentry Instance to send Exception to an external Service for bug fixing.
-        Sentry.init(options -> {
-            String dsn = getInstance().getConfig().getConfiguration().getString("sentry.dsn");
-            options.setDsn((dsn == null || dsn.equalsIgnoreCase("yourSentryDSNHere")) ? "" : dsn);
-            // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-            // We recommend adjusting this value in production.
-            options.setTracesSampleRate(1.0);
-            // When first trying Sentry it's good to see what the SDK is doing:
-            options.setRelease(BotWorker.getBuild());
-        });
+            // Create a Sentry Instance to send Exception to an external Service for bug fixing.
+            Sentry.init(options -> {
+                String dsn = getInstance().getConfig().getConfiguration().getString("sentry.dsn");
+                options.setDsn((dsn == null || dsn.equalsIgnoreCase("yourSentryDSNHere")) ? "" : dsn);
 
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> Sentry.captureException(e));
+                // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+                // We recommend adjusting this value in production.
+                options.setTracesSampleRate(1.0);
+
+                // When first trying Sentry, it's good to see what the SDK is doing:
+                options.setRelease(BotWorker.getBuild());
+            });
+
+            Thread.setDefaultUncaughtExceptionHandler((t, e) -> Sentry.captureException(e));
+        }
 
         log.info("Starting preparations of the Bot...");
 
@@ -204,15 +209,20 @@ public class Main {
         }
 
         try {
-            new SQLSession(getInstance().getConfig().getConfiguration().getString("hikari.sql.user"),
-                    getInstance().getConfig().getConfiguration().getString("hikari.sql.db"),
-                    getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"),
-                    getInstance().getConfig().getConfiguration().getString("hikari.sql.host"),
-                    getInstance().getConfig().getConfiguration().getInt("hikari.sql.port"),
-                    getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
-                    getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"),
-                    getInstance().getConfig().getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"),
-                    BotConfig.isDebug());
+            SQLConfig sqlConfig = SQLConfig.builder()
+                    .username(getInstance().getConfig().getConfiguration().getString("hikari.sql.user"))
+                    .database(getInstance().getConfig().getConfiguration().getString("hikari.sql.db"))
+                    .password(getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"))
+                    .host(getInstance().getConfig().getConfiguration().getString("hikari.sql.host"))
+                    .port(getInstance().getConfig().getConfiguration().getInt("hikari.sql.port"))
+                    .path(getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"))
+                    .typ(databaseTyp)
+                    .poolSize(getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize", 1))
+                    .createEmbeddedServer(getInstance().getConfig().getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"))
+                    .debug(BotConfig.isDebug())
+                    .sentry(BotConfig.shouldUseSentry()).build();
+
+            new SQLSession(sqlConfig);
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);

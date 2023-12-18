@@ -206,5 +206,13 @@ public class BotConfig {
     public static boolean shouldResetOnDeafenGlobal() {
         return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.leveling.resets.deafenGlobal", true);
     }
+
+    /**
+     * Check if Ree6 should use Sentry to report exceptions.
+     * @return if Ree6 should use Sentry to report exceptions.
+     */
+    public static boolean shouldUseSentry() {
+        return Main.getInstance().getConfig().getConfiguration().getBoolean("sentry.enable", true);
+    }
 }
 
