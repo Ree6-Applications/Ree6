@@ -205,7 +205,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                                         .withLabel(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.sendToChat")).withDisabled(!BotConfig.allowRecordingInChat() || failedToUpload)).complete();
 
                 if (failedToUpload) {
-                    audioChannelUnion.asStageChannel().sendMessage(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.error", "Upload failed")).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav"));
+                    audioChannelUnion.asGuildMessageChannel().sendMessage(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.error", "Upload failed")).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav"));
                 }
             }
             // Find a way to still notify that the bot couldn't send the audio.
