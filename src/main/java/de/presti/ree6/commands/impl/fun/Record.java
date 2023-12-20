@@ -10,6 +10,7 @@ import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 
@@ -54,12 +55,15 @@ public class Record implements ICommand {
         if (voiceState != null &&
                 voiceState.inAudioChannel() &&
                 voiceState.getChannel() != null &&
-                voiceState.getChannel().getType() == ChannelType.VOICE &&
-                voiceState.getChannel() instanceof VoiceChannel voiceChannel) {
-            AudioManager audioManager = commandEvent.getGuild().getAudioManager();
-            audioManager.openAudioConnection(voiceChannel);
+                (voiceState.getChannel().getType() == ChannelType.VOICE ||
+                        voiceState.getChannel().getType() == ChannelType.STAGE)) {
 
-            AudioPlayerReceiveHandler handler = new AudioPlayerReceiveHandler(commandEvent.getMember(), voiceChannel);
+            AudioChannelUnion audioChannelUnion = voiceState.getChannel();
+
+            AudioManager audioManager = commandEvent.getGuild().getAudioManager();
+            audioManager.openAudioConnection(audioChannelUnion);
+
+            AudioPlayerReceiveHandler handler = new AudioPlayerReceiveHandler(commandEvent.getMember(), audioChannelUnion);
 
             audioManager.setReceivingHandler(handler);
 
