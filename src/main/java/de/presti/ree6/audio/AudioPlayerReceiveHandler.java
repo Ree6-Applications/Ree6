@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
@@ -57,7 +58,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     /**
      * The voice channel this handler is currently handling.
      */
-    private final VoiceChannel voiceChannel;
+    private final AudioChannelUnion voiceChannel;
 
     /**
      * A list with all IDs of users who where in the talk while recording.
@@ -75,21 +76,32 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
      * @param member       The member who started the recording.
      * @param voiceChannel The voice channel this handler should handle.
      */
-    public AudioPlayerReceiveHandler(Member member, VoiceChannel voiceChannel) {
+    public AudioPlayerReceiveHandler(Member member, AudioChannelUnion voiceChannel) {
         this.creatorId = member.getId();
         this.voiceChannel = voiceChannel;
         if (voiceChannel.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_CHANGE)) {
             voiceChannel.getGuild().getSelfMember().modifyNickname(LanguageService.getByGuild(member.getGuild(), "label.recording.name")).reason(LanguageService.getByGuild(member.getGuild(), "message.recording.startReason", member.getUser().getName())).onErrorMap(throwable -> {
-                if (voiceChannel.canTalk()) voiceChannel.sendMessage(LanguageService.getByGuild(member.getGuild(), "message.default.nameChangeFailed")).queue();
+                if (voiceChannel instanceof VoiceChannel)
+                    if (voiceChannel.asVoiceChannel().canTalk()) voiceChannel.asVoiceChannel().sendMessage(LanguageService.getByGuild(member.getGuild(), "message.default.nameChangeFailed")).queue();
+                else
+                    if (voiceChannel.asStageChannel().canTalk()) voiceChannel.asStageChannel().sendMessage(LanguageService.getByGuild(member.getGuild(), "message.default.nameChangeFailed")).queue();
                 return null;
             }).queue();
         }
-        message = voiceChannel.sendMessageEmbeds(new EmbedBuilder()
-                .setDescription(LanguageService.getByGuild(member.getGuild(), "message.recording.started"))
-                .setColor(Color.YELLOW)
-                .setFooter("Requested by " + member.getEffectiveName() + " - " + BotConfig.getAdvertisement(), member.getEffectiveAvatarUrl())
-                .setTitle(LanguageService.getByGuild(member.getGuild(), "label.recording.start"))
-                .build()).complete();
+        if (voiceChannel instanceof VoiceChannel)
+            message = voiceChannel.asVoiceChannel().sendMessageEmbeds(new EmbedBuilder()
+                    .setDescription(LanguageService.getByGuild(member.getGuild(), "message.recording.started"))
+                    .setColor(Color.YELLOW)
+                    .setFooter("Requested by " + member.getEffectiveName() + " - " + BotConfig.getAdvertisement(), member.getEffectiveAvatarUrl())
+                    .setTitle(LanguageService.getByGuild(member.getGuild(), "label.recording.start"))
+                    .build()).complete();
+        else
+            message = voiceChannel.asStageChannel().sendMessageEmbeds(new EmbedBuilder()
+                    .setDescription(LanguageService.getByGuild(member.getGuild(), "message.recording.started"))
+                    .setColor(Color.YELLOW)
+                    .setFooter("Requested by " + member.getEffectiveName() + " - " + BotConfig.getAdvertisement(), member.getEffectiveAvatarUrl())
+                    .setTitle(LanguageService.getByGuild(member.getGuild(), "label.recording.start"))
+                    .build()).complete();
     }
 
     /**
@@ -157,7 +169,10 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
         if (voiceChannel.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_CHANGE)) {
             voiceChannel.getGuild().getSelfMember().modifyNickname(voiceChannel.getGuild().getSelfMember().getUser().getName()).reason(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.stopReason")).onErrorMap(throwable -> {
-                if (voiceChannel.canTalk()) voiceChannel.sendMessage(LanguageService.getByGuild(voiceChannel.getGuild(), "message.default.nameChangeFailed")).queue();
+                if (voiceChannel instanceof VoiceChannel)
+                    if (voiceChannel.asVoiceChannel().canTalk()) voiceChannel.asVoiceChannel().sendMessage(LanguageService.getByGuild(voiceChannel.getGuild(), "message.default.nameChangeFailed")).queue();
+                else
+                    if (voiceChannel.asStageChannel().canTalk()) voiceChannel.asStageChannel().sendMessage(LanguageService.getByGuild(voiceChannel.getGuild(), "message.default.nameChangeFailed")).queue();
                 return null;
             }).queue();
         }
@@ -179,34 +194,60 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
             } catch (Exception ignore) {
                 failedToUpload = true;
             }
-
-            if (voiceChannel.canTalk()) {
+            if (voiceChannel instanceof VoiceChannel) {
                 message.editMessageEmbeds(new EmbedBuilder()
-                        .setDescription(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.stopped"))
-                        .setColor(Color.GREEN)
-                        .setFooter(BotConfig.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
-                        .setTitle(LanguageService.getByGuild(voiceChannel.getGuild(), "label.recording.finished"))
-                        .build())
+                                .setDescription(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.stopped"))
+                                .setColor(Color.GREEN)
+                                .setFooter(BotConfig.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
+                                .setTitle(LanguageService.getByGuild(voiceChannel.getGuild(), "label.recording.finished"))
+                                .build())
                         .setActionRow(
                                 new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(voiceChannel.getGuild(), "label.download"), ButtonStyle.LINK,
-                        BotConfig.getRecordingUrl() + "?id=" + recording.getIdentifier(), failedToUpload, Emoji.fromCustom("shiba", 941219375535509504L, true)),
+                                        BotConfig.getRecordingUrl() + "?id=" + recording.getIdentifier(), failedToUpload, Emoji.fromCustom("shiba", 941219375535509504L, true)),
                                 Button.primary("r_recordingDownload:" + recording.getIdentifier(), Emoji.fromCustom("sip", 1011956355810209852L, false))
                                         .withLabel(LanguageService.getByGuild(voiceChannel.getGuild(), "label.sendToChat")).withDisabled(!BotConfig.allowRecordingInChat() || failedToUpload)).complete();
 
                 if (failedToUpload) {
-                    voiceChannel.sendMessage(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.error", "Upload failed")).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav"));
+                    voiceChannel.asVoiceChannel().sendMessage(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.error", "Upload failed")).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav"));
+                }
+            }
+            else {
+                message.editMessageEmbeds(new EmbedBuilder()
+                                .setDescription(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.stopped"))
+                                .setColor(Color.GREEN)
+                                .setFooter(BotConfig.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
+                                .setTitle(LanguageService.getByGuild(voiceChannel.getGuild(), "label.recording.finished"))
+                                .build())
+                        .setActionRow(
+                                new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(voiceChannel.getGuild(), "label.download"), ButtonStyle.LINK,
+                                        BotConfig.getRecordingUrl() + "?id=" + recording.getIdentifier(), failedToUpload, Emoji.fromCustom("shiba", 941219375535509504L, true)),
+                                Button.primary("r_recordingDownload:" + recording.getIdentifier(), Emoji.fromCustom("sip", 1011956355810209852L, false))
+                                        .withLabel(LanguageService.getByGuild(voiceChannel.getGuild(), "label.sendToChat")).withDisabled(!BotConfig.allowRecordingInChat() || failedToUpload)).complete();
+
+                if (failedToUpload) {
+                    voiceChannel.asStageChannel().sendMessage(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.error", "Upload failed")).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav"));
                 }
             }
             // Find a way to still notify that the bot couldn't send the audio.
         } catch (Exception ex) {
-            if (voiceChannel.canTalk()) {
-                message.editMessageEmbeds(new EmbedBuilder()
-                        .setDescription(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.error", ex.getMessage()))
-                        .setColor(Color.RED)
-                        .setFooter(BotConfig.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
-                        .setTitle(LanguageService.getByGuild(voiceChannel.getGuild(), "label.error"))
-                        .build()).complete();
-            }
+            if (voiceChannel instanceof VoiceChannel)
+                if (voiceChannel.asVoiceChannel().canTalk()) {
+                    message.editMessageEmbeds(new EmbedBuilder()
+                            .setDescription(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.error", ex.getMessage()))
+                            .setColor(Color.RED)
+                            .setFooter(BotConfig.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
+                            .setTitle(LanguageService.getByGuild(voiceChannel.getGuild(), "label.error"))
+                            .build()).complete();
+                }
+            else
+                if (voiceChannel.asStageChannel().canTalk()) {
+                    message.editMessageEmbeds(new EmbedBuilder()
+                            .setDescription(LanguageService.getByGuild(voiceChannel.getGuild(), "message.recording.error", ex.getMessage()))
+                            .setColor(Color.RED)
+                            .setFooter(BotConfig.getAdvertisement(), voiceChannel.getGuild().getIconUrl())
+                            .setTitle(LanguageService.getByGuild(voiceChannel.getGuild(), "label.error"))
+                            .build()).complete();
+                }
 
             log.error("Something went wrong while converting a recording!", ex);
         }
