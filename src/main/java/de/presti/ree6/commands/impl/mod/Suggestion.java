@@ -87,6 +87,8 @@ public class Suggestion implements ICommand {
         Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()));
 
         if (suggestions != null) {
+            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(suggestions);
+
             suggestions.getGuildChannelId().setChannelId(channel.getIdLong());
             SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions);
         } else {
