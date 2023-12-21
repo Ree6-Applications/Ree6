@@ -54,7 +54,7 @@ public class TikTokNotifier implements ICommand {
             case "list" -> {
                 StringBuilder end = new StringBuilder();
 
-                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames(commandEvent.getGuild().getId())) {
+                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames(commandEvent.getGuild().getIdLong())) {
                     end.append(users);
                     try {
                         TikTokUser tikTokUser = TikTokWrapper.getUser(Long.parseLong(users), false);
@@ -89,9 +89,9 @@ public class TikTokNotifier implements ICommand {
 
                     channel.createWebhook(BotConfig.getBotName() + "-TikTokNotifier-" + name).queue(w -> {
                         if (messageMapping != null) {
-                            SQLSession.getSqlConnector().getSqlWorker().addTikTokWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), tikTokUser.getId(), messageMapping.getAsString());
+                            SQLSession.getSqlConnector().getSqlWorker().addTikTokWebhook(commandEvent.getGuild().getIdLong(), channel.getIdLong(), w.getIdLong(), w.getToken(), tikTokUser.getId(), messageMapping.getAsString());
                         } else {
-                            SQLSession.getSqlConnector().getSqlWorker().addTikTokWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), tikTokUser.getId());
+                            SQLSession.getSqlConnector().getSqlWorker().addTikTokWebhook(commandEvent.getGuild().getIdLong(), channel.getIdLong(), w.getIdLong(), w.getToken(), tikTokUser.getId());
                         }
                     });
                     commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.added", name), 5);
@@ -114,7 +114,7 @@ public class TikTokNotifier implements ICommand {
                 try {
                     TikTokUser tikTokUser = TikTokWrapper.getUser(name, false);
 
-                    SQLSession.getSqlConnector().getSqlWorker().removeTikTokWebhook(commandEvent.getGuild().getId(), tikTokUser.getId());
+                    SQLSession.getSqlConnector().getSqlWorker().removeTikTokWebhook(commandEvent.getGuild().getIdLong(), tikTokUser.getId());
 
                     commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.removed", name), 5);
 

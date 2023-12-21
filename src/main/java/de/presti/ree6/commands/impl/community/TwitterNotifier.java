@@ -52,7 +52,7 @@ public class TwitterNotifier implements ICommand {
             case "list" -> {
                 StringBuilder end = new StringBuilder();
 
-                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames(commandEvent.getGuild().getId())) {
+                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames(commandEvent.getGuild().getIdLong())) {
                     end.append(users).append("\n");
                 }
 
@@ -73,9 +73,9 @@ public class TwitterNotifier implements ICommand {
                 StandardGuildMessageChannel channel = channelMapping.getAsChannel().asStandardGuildMessageChannel();
                 channel.createWebhook(BotConfig.getBotName() + "-TwitterNotifier-" + name).queue(w -> {
                     if (messageMapping != null) {
-                        SQLSession.getSqlConnector().getSqlWorker().addTwitterWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), name.toLowerCase(), messageMapping.getAsString());
+                        SQLSession.getSqlConnector().getSqlWorker().addTwitterWebhook(commandEvent.getGuild().getIdLong(), channel.getIdLong(), w.getIdLong(), w.getToken(), name.toLowerCase(), messageMapping.getAsString());
                     } else {
-                        SQLSession.getSqlConnector().getSqlWorker().addTwitterWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), name.toLowerCase());
+                        SQLSession.getSqlConnector().getSqlWorker().addTwitterWebhook(commandEvent.getGuild().getIdLong(), channel.getIdLong(), w.getIdLong(), w.getToken(), name.toLowerCase());
                     }
                 });
                 commandEvent.reply(commandEvent.getResource("message.twitterNotifier.added", name), 5);
@@ -91,7 +91,7 @@ public class TwitterNotifier implements ICommand {
                 }
 
                 String name = nameMapping.getAsString();
-                SQLSession.getSqlConnector().getSqlWorker().removeTwitterWebhook(commandEvent.getGuild().getId(), name);
+                SQLSession.getSqlConnector().getSqlWorker().removeTwitterWebhook(commandEvent.getGuild().getIdLong(), name);
                 commandEvent.reply(commandEvent.getResource("message.twitterNotifier.removed", name), 5);
 
                 if (Main.getInstance().getNotifier().isTwitterRegistered(name)) {

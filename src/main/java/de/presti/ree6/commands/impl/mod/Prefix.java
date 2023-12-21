@@ -32,7 +32,7 @@ public class Prefix implements ICommand {
                 OptionMapping prefixOption = commandEvent.getOption("new-prefix");
 
                 if (prefixOption != null) {
-                    SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", "Prefix", prefixOption.getAsString());
+                    SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getIdLong(), "chatprefix", "Prefix", prefixOption.getAsString());
                     commandEvent.reply(commandEvent.getResource("message.prefix.success", prefixOption.getAsString()), 5);
                 } else {
                     commandEvent.reply(commandEvent.getResource("message.default.usage","prefix PREFIX", 5));
@@ -42,7 +42,7 @@ public class Prefix implements ICommand {
                     commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
                     commandEvent.reply(commandEvent.getResource("message.default.usage","prefix PREFIX", 5));
                 } else {
-                    SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "chatprefix", "Prefix", commandEvent.getArguments()[0]);
+                    SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getIdLong(), "chatprefix", "Prefix", commandEvent.getArguments()[0]);
                     commandEvent.reply(commandEvent.getResource("message.prefix.success", commandEvent.getArguments()[0]), 5);
                 }
             }

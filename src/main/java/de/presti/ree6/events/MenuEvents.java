@@ -12,7 +12,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.*;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
-import de.presti.ree6.sql.entities.webhook.Webhook;
+import de.presti.ree6.sql.entities.webhook.base.Webhook;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.wrapper.entities.channel.ChannelResult;
@@ -71,7 +71,7 @@ public class MenuEvents extends ListenerAdapter {
             String[] split = event.getComponentId().split(":");
 
             if (split.length == 2) {
-                Recording recording = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Recording(), "FROM Recording WHERE identifier = :id AND guildId = :gid", Map.of("id", split[1], "gid", event.getGuild().getId()));
+                Recording recording = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Recording(), "FROM Recording WHERE identifier = :id AND guildId = :gid", Map.of("id", split[1], "gid", event.getGuild().getIdLong()));
                 MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
                 if (recording != null) {
                     messageEditBuilder.setEmbeds(new EmbedBuilder()
@@ -111,7 +111,7 @@ public class MenuEvents extends ListenerAdapter {
 
             case "re_ticket_open" -> {
                 event.deferReply(true).queue();
-                Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+                Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
 
                 if (tickets != null) {
                     Category category = event.getGuild().getCategoryById(tickets.getTicketCategory());
@@ -129,7 +129,7 @@ public class MenuEvents extends ListenerAdapter {
                                 .queue(channel -> {
                                     MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
                                     messageCreateBuilder.setEmbeds(new EmbedBuilder().setTitle(LanguageService.getByGuild(event.getGuild(), "label.ticket"))
-                                            .setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_ticket_open").getStringValue())
+                                            .setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "message_ticket_open").getStringValue())
                                             .setThumbnail(event.getMember().getEffectiveAvatarUrl()).setColor(Color.GREEN).setTimestamp(Instant.now()).build());
                                     messageCreateBuilder.addActionRow(Button.primary("re_ticket_close", LanguageService.getByGuild(event.getGuild(), "label.closeTicket")));
                                     Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), channel);
@@ -146,7 +146,7 @@ public class MenuEvents extends ListenerAdapter {
             case "re_ticket_close" -> {
                 event.deferReply(true).queue();
 
-                Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+                Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
 
                 if (tickets != null) {
                     StringBuilder stringBuilder = new StringBuilder();
@@ -358,19 +358,19 @@ public class MenuEvents extends ListenerAdapter {
                 }
 
                 SQLSession.getSqlConnector().getSqlWorker()
-                        .setSetting(event.getGuild().getId(), "configuration_rewards_blackjack_win", "Payment Amount on BlackJack win", blackJackAmount);
+                        .setSetting(event.getGuild().getIdLong(), "configuration_rewards_blackjack_win", "Payment Amount on BlackJack win", blackJackAmount);
 
                 SQLSession.getSqlConnector().getSqlWorker()
-                        .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_win", "Payment Amount on Music Quiz win", musicWinAmount);
+                        .setSetting(event.getGuild().getIdLong(), "configuration_rewards_musicquiz_win", "Payment Amount on Music Quiz win", musicWinAmount);
 
                 SQLSession.getSqlConnector().getSqlWorker()
-                        .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_feature", "Payment Amount on Music Quiz Feature guess", musicFeatureAmount);
+                        .setSetting(event.getGuild().getIdLong(), "configuration_rewards_musicquiz_feature", "Payment Amount on Music Quiz Feature guess", musicFeatureAmount);
 
                 SQLSession.getSqlConnector().getSqlWorker()
-                        .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_artist", "Payment Amount on Music Quiz Artist guess", musicArtistAmount);
+                        .setSetting(event.getGuild().getIdLong(), "configuration_rewards_musicquiz_artist", "Payment Amount on Music Quiz Artist guess", musicArtistAmount);
 
                 SQLSession.getSqlConnector().getSqlWorker()
-                        .setSetting(event.getGuild().getId(), "configuration_rewards_musicquiz_title", "Payment Amount on Music Quiz Title guess", musicTitleAmount);
+                        .setSetting(event.getGuild().getIdLong(), "configuration_rewards_musicquiz_title", "Payment Amount on Music Quiz Title guess", musicTitleAmount);
 
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setTitle(LanguageService.getByGuild(event.getGuild(), "label.rewards"))
@@ -395,12 +395,12 @@ public class MenuEvents extends ListenerAdapter {
             }
 
             case "re_suggestion_modal" -> {
-                Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+                Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
 
                 event.deferReply(true).queue();
 
                 if (suggestions != null) {
-                    MessageChannel messageChannel = (MessageChannel) event.getGuild().getGuildChannelById(suggestions.getChannelId());
+                    MessageChannel messageChannel = (MessageChannel) event.getGuild().getGuildChannelById(suggestions.getGuildChannelId().getChannelId());
 
                     if (messageChannel == null) return;
 
@@ -458,7 +458,7 @@ public class MenuEvents extends ListenerAdapter {
                 }
                 event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.twitchCountName", Main.getInstance().getNotifier().getTwitchClient().getHelix().getChannelFollowers(null, channelId, null, 1, null).execute().getTotal()), category)
                         .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> {
-                            ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+                            ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
                             if (channelStats != null) {
 
                                 if (channelStats.getTwitchFollowerChannelId() != null) {
@@ -473,7 +473,7 @@ public class MenuEvents extends ListenerAdapter {
                                 SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats);
                                 Main.getInstance().getNotifier().registerTwitchChannel(twitchUsername);
                             } else {
-                                channelStats = new ChannelStats(event.getGuild().getId(),
+                                channelStats = new ChannelStats(event.getGuild().getIdLong(),
                                         null,
                                         null,
                                         null,
@@ -554,7 +554,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText()), category)
                         .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> {
-                            ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+                            ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
                             if (channelStats != null) {
 
                                 if (channelStats.getYoutubeSubscribersChannelId() != null) {
@@ -569,7 +569,7 @@ public class MenuEvents extends ListenerAdapter {
                                 SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats);
                                 Main.getInstance().getNotifier().registerYouTubeChannel(youTubeChannel.getId());
                             } else {
-                                channelStats = new ChannelStats(event.getGuild().getId(),
+                                channelStats = new ChannelStats(event.getGuild().getIdLong(),
                                         null,
                                         null,
                                         null,
@@ -636,7 +636,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.redditCountName", subreddit.getActiveUserCount()), category)
                         .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> {
-                            ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+                            ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
                             if (channelStats != null) {
 
                                 if (channelStats.getSubredditMemberChannelId() != null) {
@@ -651,7 +651,7 @@ public class MenuEvents extends ListenerAdapter {
                                 SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats);
                                 Main.getInstance().getNotifier().registerSubreddit(subredditName);
                             } else {
-                                channelStats = new ChannelStats(event.getGuild().getId(),
+                                channelStats = new ChannelStats(event.getGuild().getIdLong(),
                                         null,
                                         null,
                                         null,
@@ -718,7 +718,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.twitterCountName", twitterUser.getFollowersCount()), category)
                         .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> {
-                            ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+                            ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
                             if (channelStats != null) {
 
                                 if (channelStats.getTwitterFollowerChannelId() != null) {
@@ -733,7 +733,7 @@ public class MenuEvents extends ListenerAdapter {
                                 SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats);
                                 Main.getInstance().getNotifier().registerTwitterUser(twitterName);
                             } else {
-                                channelStats = new ChannelStats(event.getGuild().getId(),
+                                channelStats = new ChannelStats(event.getGuild().getIdLong(),
                                         null,
                                         null,
                                         null,
@@ -800,7 +800,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.instagramCountName", instagramUser.getFollower_count()), category)
                         .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> {
-                            ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+                            ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
                             if (channelStats != null) {
 
                                 if (channelStats.getInstagramFollowerChannelId() != null) {
@@ -815,7 +815,7 @@ public class MenuEvents extends ListenerAdapter {
                                 SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats);
                                 Main.getInstance().getNotifier().registerInstagramUser(instagramName);
                             } else {
-                                channelStats = new ChannelStats(event.getGuild().getId(),
+                                channelStats = new ChannelStats(event.getGuild().getIdLong(),
                                         null,
                                         null,
                                         null,
@@ -906,7 +906,7 @@ public class MenuEvents extends ListenerAdapter {
                     case "log" -> {
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setup"), "logSetup"));
 
-                        if (SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId()))
+                        if (SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()))
                             optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete"), "logDelete"));
 
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.backToMenu"), "backToSetupMenu"));
@@ -919,7 +919,7 @@ public class MenuEvents extends ListenerAdapter {
                     case "welcome" -> {
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setup"), "welcomeSetup"));
 
-                        if (SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId()))
+                        if (SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getIdLong()))
                             optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete"), "welcomeDelete"));
 
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setImage"), "welcomeImage"));
@@ -940,7 +940,7 @@ public class MenuEvents extends ListenerAdapter {
                     case "tempvoice" -> {
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setup"), "tempVoiceSetup"));
 
-                        if (SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildId=:gid", Map.of("gid", event.getGuild().getId())) != null)
+                        if (SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())) != null)
                             optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete"), "tempVoiceDelete"));
 
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.backToMenu"), "backToSetupMenu"));
@@ -968,7 +968,7 @@ public class MenuEvents extends ListenerAdapter {
                     case "tickets" -> {
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setup"), "ticketsSetup"));
 
-                        if (SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getId())) != null)
+                        if (SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())) != null)
                             optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete"), "ticketsDelete"));
 
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.backToMenu"), "backToSetupMenu"));
@@ -1017,7 +1017,7 @@ public class MenuEvents extends ListenerAdapter {
                                 voiceChannel1.getManager().setUserLimit(0).queue();
                                 event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.botMembersName", members.stream().filter(member -> member.getUser().isBot()).count()), category).queue(voiceChannel2 -> {
                                     voiceChannel2.getManager().setUserLimit(0).queue();
-                                    ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+                                    ChannelStats channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
                                     if (channelStats != null) {
                                         if (channelStats.getMemberStatsChannelId() != null) {
                                             VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getMemberStatsChannelId());
@@ -1042,7 +1042,7 @@ public class MenuEvents extends ListenerAdapter {
                                         channelStats.setBotMemberStatsChannelId(voiceChannel2.getId());
                                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats);
                                     } else {
-                                        channelStats = new ChannelStats(event.getGuild().getId(),
+                                        channelStats = new ChannelStats(event.getGuild().getIdLong(),
                                                 voiceChannel.getId(),
                                                 voiceChannel1.getId(),
                                                 voiceChannel2.getId(),
@@ -1131,7 +1131,7 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     case "ticketsDelete" -> {
-                        Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+                        Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
 
                         if (tickets != null) {
                             embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.deleted"));
@@ -1176,7 +1176,7 @@ public class MenuEvents extends ListenerAdapter {
                 VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(value);
 
                 if (voiceChannel != null) {
-                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(new TemporalVoicechannel(event.getGuild().getId(), voiceChannel.getId()));
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(new TemporalVoicechannel(event.getGuild().getIdLong(), voiceChannel.getIdLong()));
                     embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.setupSuccess"));
                     embedBuilder.setColor(Color.GREEN);
                     event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
@@ -1216,7 +1216,7 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     case "tempVoiceDelete" -> {
-                        TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+                        TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
 
                         if (temporalVoicechannel != null) {
                             embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.deleted"));
@@ -1247,7 +1247,7 @@ public class MenuEvents extends ListenerAdapter {
 
                 if (selectedLocale != DiscordLocale.UNKNOWN && LanguageService.getSupported().contains(selectedLocale)) {
                     Language language = LanguageService.languageResources.get(selectedLocale);
-                    SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getId(), "configuration_language", "Language", selectedLocale.getLocale());
+                    SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getIdLong(), "configuration_language", "Language", selectedLocale.getLocale());
                     embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.lang.setupSuccess", language.getName() + " by " + language.getAuthor()));
                     embedBuilder.setColor(Color.GREEN);
                     event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
@@ -1287,7 +1287,7 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     case "logDelete" -> {
-                        Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId());
+                        Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong());
 
                         if (webhook != null) {
                             event.getJDA().retrieveWebhookById(webhook.getChannelId()).queue(webhook1 -> {
@@ -1343,11 +1343,11 @@ public class MenuEvents extends ListenerAdapter {
 
                 if (textChannel != null) {
                     textChannel.createWebhook(BotConfig.getBotName() + "-Logs").queue(webhook -> {
-                        if (SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getId())) {
-                            WebhookUtil.deleteWebhook(event.getGuild().getId(), SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getId()));
+                        if (SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong())) {
+                            WebhookUtil.deleteWebhook(event.getGuild().getIdLong(), SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()));
                         }
 
-                        SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getId(), textChannel.getIdLong(), webhook.getId(), webhook.getToken());
+                        SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getIdLong(), textChannel.getIdLong(), webhook.getIdLong(), webhook.getToken());
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupSuccess"));
                         embedBuilder.setColor(Color.GREEN);
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
@@ -1394,7 +1394,7 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     case "welcomeDelete" -> {
-                        Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId());
+                        Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getIdLong());
 
                         if (webhook != null) {
                             event.getJDA().retrieveWebhookById(webhook.getChannelId()).queue(webhook1 -> {
@@ -1449,11 +1449,11 @@ public class MenuEvents extends ListenerAdapter {
 
                 if (textChannel != null) {
                     textChannel.createWebhook(BotConfig.getBotName() + "-Welcome").queue(webhook -> {
-                        if (SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId())) {
-                            WebhookUtil.deleteWebhook(event.getGuild().getId(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()));
+                        if (SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getIdLong())) {
+                            WebhookUtil.deleteWebhook(event.getGuild().getIdLong(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getIdLong()));
                         }
 
-                        SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getId(), textChannel.getIdLong(), webhook.getId(), webhook.getToken());
+                        SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getIdLong(), textChannel.getIdLong(), webhook.getIdLong(), webhook.getToken());
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.setupSuccess"));
                         embedBuilder.setColor(Color.GREEN);
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();

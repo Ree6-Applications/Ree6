@@ -54,7 +54,7 @@ public class Setup implements ICommand {
                                     byte[] imageArray = inputStream.readAllBytes();
 
                                     SQLSession.getSqlConnector().getSqlWorker()
-                                            .setSetting(new Setting(commandEvent.getGuild().getId(), "message_join_image", "Welcome Image", Base64.getEncoder().encodeToString(imageArray)));
+                                            .setSetting(new Setting(commandEvent.getGuild().getIdLong(), "message_join_image", "Welcome Image", Base64.getEncoder().encodeToString(imageArray)));
                                     commandEvent.reply(commandEvent.getResource("message.setup.successImage"));
                                 } catch (Exception e) {
                                     commandEvent.reply(commandEvent.getResource("command.perform.error"));

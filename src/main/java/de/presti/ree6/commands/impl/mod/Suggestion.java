@@ -77,7 +77,7 @@ public class Suggestion implements ICommand {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle(commandEvent.getResource("label.suggestionMenu"));
         embedBuilder.setColor(Color.ORANGE);
-        embedBuilder.setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "message_suggestion_menu").getStringValue());
+        embedBuilder.setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_suggestion_menu").getStringValue());
         embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
         messageCreateBuilder.setEmbeds(embedBuilder.build());
         messageCreateBuilder.setActionRow(Button.primary("re_suggestion", commandEvent.getResource("message.suggestion.suggestionMenuPlaceholder")));
@@ -87,7 +87,7 @@ public class Suggestion implements ICommand {
         Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()));
 
         if (suggestions != null) {
-            suggestions.setChannelId(channel.getIdLong());
+            suggestions.getGuildChannelId().setChannelId(channel.getIdLong());
             SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions);
         } else {
             suggestions = new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong());

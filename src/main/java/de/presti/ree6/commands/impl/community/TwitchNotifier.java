@@ -52,7 +52,7 @@ public class TwitchNotifier implements ICommand {
             case "list" -> {
                 StringBuilder end = new StringBuilder();
 
-                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames(commandEvent.getGuild().getId())) {
+                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames(commandEvent.getGuild().getIdLong())) {
                     end.append(users).append("\n");
                 }
 
@@ -73,9 +73,9 @@ public class TwitchNotifier implements ICommand {
                 StandardGuildMessageChannel channel = channelMapping.getAsChannel().asStandardGuildMessageChannel();
                 channel.createWebhook(BotConfig.getBotName() + "-TwitchNotifier-" + name).queue(w -> {
                     if (messageMapping != null) {
-                        SQLSession.getSqlConnector().getSqlWorker().addTwitchWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), name.toLowerCase(), messageMapping.getAsString());
+                        SQLSession.getSqlConnector().getSqlWorker().addTwitchWebhook(commandEvent.getGuild().getIdLong(), channel.getIdLong(), w.getIdLong(), w.getToken(), name.toLowerCase(), messageMapping.getAsString());
                     } else {
-                        SQLSession.getSqlConnector().getSqlWorker().addTwitchWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), name.toLowerCase());
+                        SQLSession.getSqlConnector().getSqlWorker().addTwitchWebhook(commandEvent.getGuild().getIdLong(), channel.getIdLong(), w.getIdLong(), w.getToken(), name.toLowerCase());
                     }
                 });
                 commandEvent.reply(commandEvent.getResource("message.twitchNotifier.added", name), 5);
@@ -91,7 +91,7 @@ public class TwitchNotifier implements ICommand {
                 }
 
                 String name = nameMapping.getAsString();
-                SQLSession.getSqlConnector().getSqlWorker().removeTwitchWebhook(commandEvent.getGuild().getId(), name);
+                SQLSession.getSqlConnector().getSqlWorker().removeTwitchWebhook(commandEvent.getGuild().getIdLong(), name);
                 commandEvent.reply(commandEvent.getResource("message.twitchNotifier.removed", name), 5);
 
                 if (Main.getInstance().getNotifier().isTwitchRegistered(name)) {

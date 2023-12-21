@@ -43,10 +43,10 @@ public class Blacklist implements ICommand {
                                 words.add(wordEntry);
                                 end.append("\n").append(wordEntry);
                             }
-                            ModerationUtil.blacklist(commandEvent.getGuild().getId(), words);
+                            ModerationUtil.blacklist(commandEvent.getGuild().getIdLong(), words);
                             commandEvent.reply(commandEvent.getResource("message.blacklist.addedList", "```" + end + "```"), 5);
                         } else {
-                            ModerationUtil.blacklist(commandEvent.getGuild().getId(), word);
+                            ModerationUtil.blacklist(commandEvent.getGuild().getIdLong(), word);
                             commandEvent.reply(commandEvent.getResource("message.blacklist.added", word), 5);
                         }
                     }
@@ -54,15 +54,15 @@ public class Blacklist implements ICommand {
                     case "remove" -> {
                         String word = wordOption.getAsString();
 
-                        ModerationUtil.removeBlacklist(commandEvent.getGuild().getId(), word);
+                        ModerationUtil.removeBlacklist(commandEvent.getGuild().getIdLong(), word);
                         commandEvent.reply(commandEvent.getResource("message.blacklist.removed", word), 5);
                     }
 
                     default -> {
-                        if (ModerationUtil.shouldModerate(commandEvent.getGuild().getId())) {
+                        if (ModerationUtil.shouldModerate(commandEvent.getGuild().getIdLong())) {
                             StringBuilder end = new StringBuilder();
 
-                            for (String s : ModerationUtil.getBlacklist(commandEvent.getGuild().getId())) {
+                            for (String s : ModerationUtil.getBlacklist(commandEvent.getGuild().getIdLong())) {
                                 end.append("\n").append(s);
                             }
 
@@ -84,10 +84,10 @@ public class Blacklist implements ICommand {
                             commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
                             commandEvent.reply(commandEvent.getResource("message.default.usage", "blacklist remove WORD"), 5);
                         } else if (commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
-                            if (ModerationUtil.shouldModerate(commandEvent.getGuild().getId())) {
+                            if (ModerationUtil.shouldModerate(commandEvent.getGuild().getIdLong())) {
                                 StringBuilder end = new StringBuilder();
 
-                                for (String s : ModerationUtil.getBlacklist(commandEvent.getGuild().getId())) {
+                                for (String s : ModerationUtil.getBlacklist(commandEvent.getGuild().getIdLong())) {
                                     end.append("\n").append(s);
                                 }
 
@@ -109,14 +109,14 @@ public class Blacklist implements ICommand {
                                     words.add(commandEvent.getArguments()[i]);
                                     end.append("\n").append(commandEvent.getArguments()[i]);
                                 }
-                                ModerationUtil.blacklist(commandEvent.getGuild().getId(), words);
+                                ModerationUtil.blacklist(commandEvent.getGuild().getIdLong(), words);
                                 commandEvent.reply(commandEvent.getResource("message.blacklist.addedList", "```" + end + "```"), 5);
                             } else {
-                                ModerationUtil.blacklist(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
+                                ModerationUtil.blacklist(commandEvent.getGuild().getIdLong(), commandEvent.getArguments()[1]);
                                 commandEvent.reply(commandEvent.getResource("message.blacklist.added", commandEvent.getArguments()[1]), 5);
                             }
                         } else if (commandEvent.getArguments()[0].equalsIgnoreCase("remove")) {
-                            ModerationUtil.removeBlacklist(commandEvent.getGuild().getId(), commandEvent.getArguments()[1]);
+                            ModerationUtil.removeBlacklist(commandEvent.getGuild().getIdLong(), commandEvent.getArguments()[1]);
                             commandEvent.reply(commandEvent.getResource("message.blacklist.removed", commandEvent.getArguments()[1]), 5);
                         } else {
                             commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);

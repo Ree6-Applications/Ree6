@@ -42,8 +42,8 @@ public interface ICommand {
         });
         ThreadUtil.createThread(y -> {
             // Update Stats.
-            SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getId(), commandEvent.getCommand());
-            if (SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "configuration_news").getBooleanValue()) {
+            SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getIdLong(), commandEvent.getCommand());
+            if (SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news").getBooleanValue()) {
                 AnnouncementManager.getAnnouncementList().forEach(a -> {
                     if (!AnnouncementManager.hasReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id())) {
                         Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setTitle(a.title())

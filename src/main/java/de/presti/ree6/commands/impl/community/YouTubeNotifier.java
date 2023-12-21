@@ -55,7 +55,7 @@ public class YouTubeNotifier implements ICommand {
             case "list" -> {
                 StringBuilder end = new StringBuilder();
 
-                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels(commandEvent.getGuild().getId())) {
+                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels(commandEvent.getGuild().getIdLong())) {
 
                     ChannelResult channelResult = null;
 
@@ -117,9 +117,9 @@ public class YouTubeNotifier implements ICommand {
                 StandardGuildMessageChannel channel = channelMapping.getAsChannel().asStandardGuildMessageChannel();
                 channel.createWebhook(BotConfig.getBotName() + "-YoutubeNotifier-" + name).queue(w -> {
                     if (messageMapping != null) {
-                        SQLSession.getSqlConnector().getSqlWorker().addYouTubeWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), channelResult.getId(), messageMapping.getAsString());
+                        SQLSession.getSqlConnector().getSqlWorker().addYouTubeWebhook(commandEvent.getGuild().getIdLong(), channel.getIdLong(), w.getIdLong(), w.getToken(), channelResult.getId(), messageMapping.getAsString());
                     } else {
-                        SQLSession.getSqlConnector().getSqlWorker().addYouTubeWebhook(commandEvent.getGuild().getId(), channel.getIdLong(), w.getId(), w.getToken(), channelResult.getId());
+                        SQLSession.getSqlConnector().getSqlWorker().addYouTubeWebhook(commandEvent.getGuild().getIdLong(), channel.getIdLong(), w.getIdLong(), w.getToken(), channelResult.getId());
                     }
                 });
                 commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.added", name), 5);
@@ -154,7 +154,7 @@ public class YouTubeNotifier implements ICommand {
 
                 name = channelResult.getTitle();
 
-                SQLSession.getSqlConnector().getSqlWorker().removeYouTubeWebhook(commandEvent.getGuild().getId(), channelResult.getId());
+                SQLSession.getSqlConnector().getSqlWorker().removeYouTubeWebhook(commandEvent.getGuild().getIdLong(), channelResult.getId());
                 commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.removed", name), 5);
 
                 if (Main.getInstance().getNotifier().isYouTubeRegistered(channelResult.getId())) {

@@ -83,7 +83,7 @@ public class Ticket implements ICommand {
                 MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
                 messageCreateBuilder.setEmbeds(new EmbedBuilder()
                         .setTitle(LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket"))
-                        .setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "message_ticket_menu").getStringValue())
+                        .setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_ticket_menu").getStringValue())
                         .setColor(0x55ff00)
                         .setThumbnail(commandEvent.getGuild().getIconUrl())
                         .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())

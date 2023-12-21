@@ -53,7 +53,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     /**
      * The ID of the User who wanted to start the recording.
      */
-    String creatorId;
+    long creatorId;
 
     /**
      * The voice channel this handler is currently handling.
@@ -66,7 +66,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     List<String> participants = new ArrayList<>();
 
     /**
-     * The first send message which should be edited.
+     * The first sent message which should be edited.
      */
     Message message;
 
@@ -77,7 +77,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
      * @param audioChannelUnion The voice channel this handler should handle.
      */
     public AudioPlayerReceiveHandler(Member member, AudioChannelUnion audioChannelUnion) {
-        this.creatorId = member.getId();
+        this.creatorId = member.getIdLong();
         this.audioChannelUnion = audioChannelUnion;
         if (audioChannelUnion.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_CHANGE)) {
             audioChannelUnion.getGuild().getSelfMember().modifyNickname(LanguageService.getByGuild(member.getGuild(), "label.recording.name")).reason(LanguageService.getByGuild(member.getGuild(), "message.recording.startReason", member.getUser().getName())).onErrorMap(throwable -> {
@@ -180,7 +180,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 byteBuffer.put(data);
             }
 
-            Recording recording = new Recording(audioChannelUnion.getGuild().getId(), audioChannelUnion.getId(), creatorId, AudioUtil.convertPCMtoWAV(byteBuffer),
+            Recording recording = new Recording(audioChannelUnion.getGuild().getIdLong(), audioChannelUnion.getIdLong(), creatorId, AudioUtil.convertPCMtoWAV(byteBuffer),
                     JsonParser.parseString(new Gson().toJson(participants)).getAsJsonArray());
 
             boolean failedToUpload = false;

@@ -316,7 +316,7 @@ public class CommandManager {
             if (slashCommandInteractionEvent != null) {
                 sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown"), 5, textChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 deleteMessage(message, slashCommandInteractionEvent.getHook().setEphemeral(true));
-            } else if (messageContent.toLowerCase().startsWith(SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase())) {
+            } else if (messageContent.toLowerCase().startsWith(SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "chatprefix").getStringValue().toLowerCase())) {
                 sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown"), 5, textChannel, null);
                 deleteMessage(message, null);
             }
@@ -369,7 +369,7 @@ public class CommandManager {
             return false;
         }
 
-        String currentPrefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "chatprefix").getStringValue().toLowerCase();
+        String currentPrefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "chatprefix").getStringValue().toLowerCase();
 
         // Check if the message starts with the prefix.
         if (!messageContent.toLowerCase().startsWith(currentPrefix))
@@ -379,7 +379,7 @@ public class CommandManager {
         messageContent = messageContent.substring(currentPrefix.length());
 
         // Split all Arguments.
-        String[] arguments = messageContent.split(" ");
+        String[] arguments = messageContent.split("\\s+");
 
         if (arguments.length == 0 || arguments[0].isBlank()) {
             sendMessage(LanguageService.getByGuild(guild, "command.perform.missingCommand"), 5, textChannel, null);
@@ -391,7 +391,7 @@ public class CommandManager {
 
         // Check if there is even a Command with that name.
         if (command == null && BotConfig.isModuleActive("customcommands")) {
-            CustomCommand customCommand = SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "FROM CustomCommand WHERE guildId=:gid AND name=:command", Map.of("gid", guild.getId(), "command", arguments[0].toLowerCase()));
+            CustomCommand customCommand = SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "FROM CustomCommand WHERE guildId=:gid AND name=:command", Map.of("gid", guild.getIdLong(), "command", arguments[0].toLowerCase()));
             if (customCommand != null) {
                 MessageChannelUnion messageChannelUnion = textChannel;
 
@@ -419,7 +419,7 @@ public class CommandManager {
         }
 
         if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-            Setting blacklistSetting = SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase());
+            Setting blacklistSetting = SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase());
 
             // Check if the Command is blacklisted.
             if (blacklistSetting != null && !blacklistSetting.getBooleanValue()) {
@@ -455,7 +455,7 @@ public class CommandManager {
         }
 
         // Check if the command is blocked or not.
-        if (!SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getId(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
+        if (!SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
             sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
             return false;
         }

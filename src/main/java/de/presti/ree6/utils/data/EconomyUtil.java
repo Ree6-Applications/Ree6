@@ -74,8 +74,8 @@ public class EconomyUtil {
 
         if (moneyHolder == null && createIfNotExists) {
             moneyHolder = new MoneyHolder();
-            moneyHolder.setGuildId(guildId);
-            moneyHolder.setUserId(memberId);
+            moneyHolder.getGuildUserId().setGuildId(guildId);
+            moneyHolder.getGuildUserId().setUserId(memberId);
             moneyHolder = SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder);
         }
 
@@ -139,7 +139,7 @@ public class EconomyUtil {
             SQLSession.getSqlConnector().getSqlWorker().updateEntity(sender);
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new MoneyTransaction(0L, isSystem, isSystem ? receiver.getGuildId(): sender.getGuildId(), receiver, receiver, toBank, fromBank, amount, Timestamp.from(Instant.now())));
+        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new MoneyTransaction(0L, isSystem, isSystem ? receiver.getGuildUserId().getGuildId() : sender.getGuildUserId().getGuildId(), receiver, receiver, toBank, fromBank, amount, Timestamp.from(Instant.now())));
 
         return true;
     }

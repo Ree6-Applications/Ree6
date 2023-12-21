@@ -53,7 +53,7 @@ public class InviteContainerManager {
      * @param creator the ID of the Invite creator.
      * @param code    the Code of the Invite.
      */
-    public static void removeInvite(String guildID, String creator, String code) {
+    public static void removeInvite(long guildID, long creator, String code) {
         SQLSession.getSqlConnector().getSqlWorker().removeInvite(guildID, creator, code);
     }
 
@@ -63,7 +63,7 @@ public class InviteContainerManager {
      * @param guildID the ID of the Guild.
      * @param code    the Code of the Invite.
      */
-    public static void removeInvite(String guildID, String code) {
+    public static void removeInvite(long guildID, String code) {
         SQLSession.getSqlConnector().getSqlWorker().removeInvite(guildID, code);
     }
 
@@ -95,7 +95,7 @@ public class InviteContainerManager {
      */
     public static InviteContainer getRightInvite(Guild guild) {
         // Every Invite from our Database.
-        ArrayList<InviteContainer> cachedInvites = getInvites(guild.getId());
+        ArrayList<InviteContainer> cachedInvites = getInvites(guild.getIdLong());
 
         // Every Invite from the Guild.
         ArrayList<Invite> guildInvites = new ArrayList<>(guild.retrieveInvites().complete());
@@ -115,14 +115,14 @@ public class InviteContainerManager {
 
                 if (inv.getInviter() == null ||
                         !inv.getCode().equalsIgnoreCase(inv2.getCode()) ||
-                        !inv.getInviter().getId().equalsIgnoreCase(inv2.getCreatorId())) continue;
+                        inv.getInviter().getIdLong() != inv2.getCreatorId()) continue;
 
                 if (inv.getUses() + 1 == inv2.getUses()) {
                     inv2.setVanity(inv.getMaxAge() == -1242525);
                     if (inv2.isVanity()) {
-                        inv2.setGuildId(guild.getId());
-                        if (inv2.getCreatorId() == null) {
-                            inv2.setCreatorId(guild.getOwnerId());
+                        inv2.setGuildId(guild.getIdLong());
+                        if (inv2.getCreatorId() == 0) {
+                            inv2.setCreatorId(guild.getOwnerIdLong());
                         }
                     }
                     return inv2;
@@ -130,7 +130,7 @@ public class InviteContainerManager {
             }
 
             if (!foundOne && inv != null && inv.getInviter() != null) {
-                InviteContainerManager.addInvite(new InviteContainer(inv.getInviter().getId(), guild.getId(), inv.getCode(), inv.getUses(), inv.getMaxUses() == -1242525));
+                InviteContainerManager.addInvite(new InviteContainer(inv.getInviter().getIdLong(), guild.getIdLong(), inv.getCode(), inv.getUses(), inv.getMaxUses() == -1242525));
             }
         }
 
@@ -143,7 +143,7 @@ public class InviteContainerManager {
      * @param guildId the ID of the Guild.
      * @return {@link ArrayList<InviteContainer>} with every Invite saved in our Database.
      */
-    public static ArrayList<InviteContainer> getInvites(String guildId) {
+    public static ArrayList<InviteContainer> getInvites(long guildId) {
         ArrayList<InviteContainer> containerList = new ArrayList<>();
 
         List<de.presti.ree6.sql.entities.Invite> inviteList = SQLSession.getSqlConnector().getSqlWorker().getInvites(guildId);

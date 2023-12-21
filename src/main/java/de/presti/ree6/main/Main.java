@@ -243,7 +243,7 @@ public class Main {
                 // Skip the hidden Commands.
                 if (commandAnnotation.category() == Category.HIDDEN) continue;
 
-                SettingsManager.getSettings().add(new Setting("-1",
+                SettingsManager.getSettings().add(new Setting(-1,
                         "command_" + commandAnnotation.name().toLowerCase(), commandAnnotation.name(), true));
             }
             Setting prefixSetting = SettingsManager.getDefault("chatprefix");
