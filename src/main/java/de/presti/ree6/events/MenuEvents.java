@@ -940,7 +940,7 @@ public class MenuEvents extends ListenerAdapter {
                     case "tempvoice" -> {
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setup"), "tempVoiceSetup"));
 
-                        if (SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())) != null)
+                        if (SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getIdLong())) != null)
                             optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete"), "tempVoiceDelete"));
 
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.backToMenu"), "backToSetupMenu"));
@@ -1216,7 +1216,7 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     case "tempVoiceDelete" -> {
-                        TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
+                        TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
 
                         if (temporalVoicechannel != null) {
                             embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.deleted"));

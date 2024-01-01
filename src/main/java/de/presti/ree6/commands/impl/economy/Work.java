@@ -41,10 +41,10 @@ public class Work implements ICommand {
             return;
         }
 
-        double min = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE guildId=:gid AND name=:name",
+        double min = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
                 Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_min")).getValue());
 
-        double max = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE guildId=:gid AND name=:name",
+        double max = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
                 Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_max")).getValue());
 
         double amount = RandomUtils.round(RandomUtils.nextDouble(min, max), 2);

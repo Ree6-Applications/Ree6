@@ -117,7 +117,7 @@ public class Warn implements ICommand {
 
                     case "list" -> {
                         StringBuilder stringBuilder = new StringBuilder();
-                        for (Punishments punishments : SQLSession.getSqlConnector().getSqlWorker().getEntityList(new Punishments(), "FROM Punishments WHERE guildId = :gid", Map.of("gid", commandEvent.getGuild().getIdLong()))) {
+                        for (Punishments punishments : SQLSession.getSqlConnector().getSqlWorker().getEntityList(new Punishments(), "FROM Punishments WHERE guildAndId.guildId = :gid", Map.of("gid", commandEvent.getGuild().getIdLong()))) {
                             int action = punishments.getAction();
                             stringBuilder.append(punishments.getId()).append(" - ").append(punishments.getWarnings()).append(" -> ");
 
@@ -141,7 +141,7 @@ public class Warn implements ICommand {
 
                     case "delete" -> {
                         int id = idMapping.getAsInt();
-                        Punishments punishment = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "FROM Punishments WHERE guildId = :gid AND id = :id", Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id));
+                        Punishments punishment = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "FROM Punishments WHERE guildAndId.guildId = :gid AND guildAndId.id = :id", Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id));
                         if (punishment != null) {
                             SQLSession.getSqlConnector().getSqlWorker().deleteEntity(punishment);
                             commandEvent.reply(commandEvent.getResource("message.warn.punishment.deleted", id));
@@ -155,7 +155,7 @@ public class Warn implements ICommand {
             default -> {
                 Member member = userMapping.getAsMember();
                 if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
-                    Warning warning = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "FROM Warning WHERE guildId = :gid AND userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong()));
+                    Warning warning = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "FROM Warning WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong()));
                     int warnings = warning != null ? warning.getWarnings() + 1 : 1;
                     if (warning == null) {
                         warning = new Warning();
@@ -168,7 +168,7 @@ public class Warn implements ICommand {
                     SQLSession.getSqlConnector().getSqlWorker().updateEntity(warning);
 
                     commandEvent.reply(commandEvent.getResource("message.warn.success", userMapping.getAsMember().getAsMention(), warnings));
-                    Punishments punishment = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "FROM Punishments WHERE guildId = :gid AND warnings = :amount", Map.of("gid", commandEvent.getGuild().getIdLong(), "amount", warnings));
+                    Punishments punishment = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "FROM Punishments WHERE guildAndId.guildId = :gid AND warnings = :amount", Map.of("gid", commandEvent.getGuild().getIdLong(), "amount", warnings));
                     if (punishment != null) {
                         switch (punishment.getAction()) {
                             case 1 -> member.timeoutFor(Duration.ofMillis(punishment.getTimeoutTime())).reason(commandEvent.getResource("message.warn.reachedWarnings", warnings)).queue();
