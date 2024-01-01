@@ -11,12 +11,9 @@ import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.exceptions.detailed.BadRequestException;
 import se.michaelthelin.spotify.exceptions.detailed.UnauthorizedException;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
-import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
-import se.michaelthelin.spotify.model_objects.specification.Paging;
-import se.michaelthelin.spotify.model_objects.specification.Playlist;
-import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
-import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.model_objects.specification.*;
 import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import se.michaelthelin.spotify.requests.data.albums.GetAlbumsTracksRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistRequest;
 import se.michaelthelin.spotify.requests.data.tracks.GetTrackRequest;
 
@@ -138,6 +135,54 @@ public class SpotifyAPIHandler {
     /**
      * Get the Tracks on a Playlist.
      *
+     * @param albumId The Album ID.
+     * @return a {@link java.util.List} of {@link Track} Objects.
+     */
+    public ArrayList<Track> getAlbumTracks(String albumId) {
+        if (!isSpotifyConnected) return new ArrayList<>();
+        ArrayList<Track> tracks = new ArrayList<>();
+
+        if (retries.getOrDefault(albumId, 0) >= 3) return tracks;
+
+        GetAlbumsTracksRequest request = spotifyApi.getAlbumsTracks(albumId).build();
+        try {
+            Paging<TrackSimplified> playlistTracks = request.execute();
+
+            for (TrackSimplified track : playlistTracks.getItems()) {
+                if (track == null) continue;
+
+                Track track1 = getTrack(track.getId());
+
+                if (track1 == null) continue;
+
+                tracks.add(track1);
+            }
+
+            retries.remove(albumId);
+        } catch (UnauthorizedException unauthorizedException) {
+            if (spotifyApi.getClientId() != null) {
+
+                try {
+                    isSpotifyConnected = false;
+                    retries.put(albumId, retries.getOrDefault(albumId, 0) + 1);
+                    initSpotify();
+                } catch (Exception exception) {
+                    Sentry.captureException(exception);
+                }
+
+                return getAlbumTracks(albumId);
+            } else {
+                log.error("Couldn't get Tracks from Playlist", unauthorizedException);
+            }
+        } catch (ParseException | SpotifyWebApiException | IOException e) {
+            log.error("Couldn't get Tracks from Playlist", e);
+        }
+        return tracks;
+    }
+
+    /**
+     * Get the Tracks on a Playlist.
+     *
      * @param playlistId The Playlist ID.
      * @return a {@link java.util.List} of {@link Track} Objects.
      */
@@ -232,6 +277,20 @@ public class SpotifyAPIHandler {
 
         if (type.contentEquals("playlist")) {
             ArrayList<Track> tracks = getTracks(id);
+
+            tracks.stream().map(Track::getId).forEach(s -> {
+                try {
+                    listOfTracks.add(getArtistAndName(s));
+                } catch (ParseException | SpotifyWebApiException | IOException e) {
+                    log.error("Couldn't get Tracks from ID", e);
+                }
+            });
+
+            return listOfTracks;
+        }
+
+        if (type.contentEquals("album")) {
+            ArrayList<Track> tracks = getAlbumTracks(id);
 
             tracks.stream().map(Track::getId).forEach(s -> {
                 try {
