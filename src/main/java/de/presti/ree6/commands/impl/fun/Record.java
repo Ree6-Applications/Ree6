@@ -6,7 +6,9 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -68,6 +70,12 @@ public class Record implements ICommand {
             audioManager.setReceivingHandler(handler);
 
             commandEvent.reply(commandEvent.getResource("message.record.recordingStarted"));
+
+            if (audioChannelUnion.getGuild().getSelfMember().hasPermission(Permission.VOICE_SET_STATUS)) {
+                if (audioChannelUnion.getType() == ChannelType.VOICE) {
+                    audioChannelUnion.asVoiceChannel().modifyStatus(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.recording.name")).queue();
+                }
+            }
         } else {
             commandEvent.reply(commandEvent.getResource("message.default.notInVoiceChannel"));
         }
