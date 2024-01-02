@@ -69,6 +69,8 @@ public class Help implements ICommand {
             String prefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").getStringValue();
             for (Category cat : Category.values()) {
                 if (cat != Category.HIDDEN) {
+                    if (!BotConfig.isModuleActive(cat.name().toLowerCase())) continue;
+
                     String formattedName = cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase();
                     em.addField("**" + formattedName + "**", prefix + "help " + cat.name().toLowerCase(), true);
                 }
