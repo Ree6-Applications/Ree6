@@ -693,6 +693,7 @@ command:
     steal: "Ukradnij pieniądze od innych użytkowników!"
     work: "Zdobądź własne pieniądze za pracę!"
     giveaway: "Zarządzaj rozdaniami!"
+    avatar: "Get the Avatar of an User!"
 category:
   info: "Wykorzystywane do gromadzenia informacji lub przekazywania informacji."
   moderation: "Narzędzia moderacyjne, które mogą pomóc ci zarządzać użytkownikami lub zapobiec łamania zasad na serwerze."
