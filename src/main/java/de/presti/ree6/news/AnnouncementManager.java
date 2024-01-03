@@ -10,19 +10,18 @@ import java.util.List;
 /**
  * Announcement Manager used to store and manage announcements.
  */
+@Getter
 public class AnnouncementManager {
 
     /**
      * List of all announcements.
      */
-    @Getter
-    private static List<Announcement> announcementList = new ArrayList<>();
+    private static final List<Announcement> announcementList = new ArrayList<>();
 
     /**
      * HashMap used to store guild ids and their received announcements.
      */
-    @Getter
-    private static HashMap<Long, List<String>> receivedAnnouncements = new HashMap<>();
+    private static final HashMap<Long, List<String>> receivedAnnouncements = new HashMap<>();
 
     /**
      * Method used to add an announcement to the list.
