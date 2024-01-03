@@ -90,12 +90,19 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 return null;
             }).queue();
         }
+
         message = audioChannelUnion.asGuildMessageChannel().sendMessageEmbeds(new EmbedBuilder()
                 .setDescription(LanguageService.getByGuild(member.getGuild(), "message.recording.started"))
                 .setColor(Color.YELLOW)
                 .setFooter("Requested by " + member.getEffectiveName() + " - " + BotConfig.getAdvertisement(), member.getEffectiveAvatarUrl())
                 .setTitle(LanguageService.getByGuild(member.getGuild(), "label.recording.start"))
                 .build()).complete();
+
+        if (audioChannelUnion.getGuild().getSelfMember().hasPermission(Permission.VOICE_SET_STATUS)) {
+            if (audioChannelUnion.getType() == ChannelType.VOICE) {
+                audioChannelUnion.asVoiceChannel().modifyStatus(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.recording.name")).queue();
+            }
+        }
     }
 
     /**
