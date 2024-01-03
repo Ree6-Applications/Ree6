@@ -146,7 +146,7 @@ public class AddonLoader {
             File addonFile = new File("addons/" + fileName);
             AddonInterface addonInterface = null;
             // Try loading the Class with a URL Class Loader.
-            try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{addonFile.toURI().toURL()})) {
+            try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{addonFile.toURI().toURL()}, AddonLoader.class.getClassLoader())) {
 
                 // Get the Addon Class.
                 Class<?> addonClass = getClass(urlClassLoader, classPath);
