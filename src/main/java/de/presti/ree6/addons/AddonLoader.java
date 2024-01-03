@@ -1,16 +1,17 @@
 package de.presti.ree6.addons;
 
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.data.ArrayUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -146,12 +147,12 @@ public class AddonLoader {
             File addonFile = new File("addons/" + fileName);
             AddonInterface addonInterface = null;
             // Try loading the Class with a URL Class Loader.
-            try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{addonFile.toURI().toURL()})) {
+            try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { addonFile.toURI().toURL() }, AddonLoader.class.getClassLoader())) {
 
                 // Get the Addon Class.
                 Class<?> addonClass = getClass(urlClassLoader, classPath);
 
-                // If valid call the onEnable methode.
+                // If valid, call the onEnable methode.
                 if (addonClass != null) {
                     log.info("[AddonManager] Loaded {} ({}) by {}", name, version, author);
                     addonInterface = (AddonInterface) addonClass.getDeclaredConstructor().newInstance();

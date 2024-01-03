@@ -1,6 +1,7 @@
 package de.presti.ree6.addons;
 
 import de.presti.ree6.bot.BotWorker;
+import de.presti.ree6.utils.others.VersionUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -40,8 +41,29 @@ public class AddonManager {
         // Check if it's made for the current Ree6 Version if not inform.
         if (!addon.getApiVersion().equalsIgnoreCase(BotWorker.getBuild())) {
 
-            log.warn("[AddonManager] The Addon {} by {} has been developed for the Version {}, " +
-                    "which is not the same version you are using. This could mean that the addon doesn't function right!", addon.getName(), addon.getAuthor(), addon.getApiVersion());
+            VersionUtil.VersionType difference = VersionUtil.compareVersion(BotWorker.getBuild(), addon.getApiVersion());
+
+            boolean isAddonForOlder = true;
+
+            if (difference == VersionUtil.VersionType.NONE) {
+                VersionUtil.VersionType reverseDifference = VersionUtil.compareVersion(addon.getApiVersion(), BotWorker.getBuild());
+                if (reverseDifference != VersionUtil.VersionType.NONE) {
+                    isAddonForOlder = false;
+                    difference = reverseDifference;
+                }
+            }
+
+            if (isAddonForOlder) {
+                log.warn("[AddonManager] The Addon {}({}) by {} is made for an older version of Ree6. Ree6 is on Version {} and the Addon is made for Version {}.", addon.getName(), addon.getVersion(), addon.getAuthor(), BotWorker.getBuild(), addon.getApiVersion());
+            } else {
+                log.warn("[AddonManager] The Addon {}({}) by {} is made for a newer version of Ree6. Ree6 is on Version {} and the Addon is made for Version {}.", addon.getName(), addon.getVersion(), addon.getAuthor().toLowerCase(), BotWorker.getBuild(), addon.getApiVersion());
+            }
+
+            if (difference == VersionUtil.VersionType.MAYOR) {
+                log.warn("[AddonManager] Version difference is at least one mayor version, be advised this will most likely cause Issues or not work at all!");
+            } else if (difference == VersionUtil.VersionType.MINOR || difference == VersionUtil.VersionType.PATCH) {
+                log.warn("[AddonManager] Version difference is at least one " + difference.name().toLowerCase() + " version, be advised this might cause Issues!");
+            }
         }
 
         try {

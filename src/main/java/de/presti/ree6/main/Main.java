@@ -235,22 +235,12 @@ public class Main {
         try {
             // Create the Command-Manager instance.
             getInstance().setCommandManager(new CommandManager());
-            // Create Command Settings.
-            for (ICommand command : getInstance().getCommandManager().getCommands()) {
 
-                Command commandAnnotation = command.getClass().getAnnotation(Command.class);
-
-                // Skip the hidden Commands.
-                if (commandAnnotation.category() == Category.HIDDEN) continue;
-
-                SettingsManager.getSettings().add(new Setting(-1,
-                        "command_" + commandAnnotation.name().toLowerCase(), commandAnnotation.name(), true));
-            }
             Setting prefixSetting = SettingsManager.getDefault("chatprefix");
             prefixSetting.setValue(BotConfig.getDefaultPrefix());
 
             Setting languageSetting = SettingsManager.getDefault("configuration_language");
-            languageSetting.setValue("en_US");
+            languageSetting.setValue(BotConfig.getDefaultLanguage());
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
