@@ -33,7 +33,7 @@ public class Work implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         String entryString = commandEvent.getGuild().getIdLong() + "-" + commandEvent.getMember().getIdLong();
 
-        long delay = Long.parseLong((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE guildId=:gid AND name=:name",
+        long delay = Long.parseLong((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
                 Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_delay")).getValue());
 
         if (workTimeout.contains(entryString)) {
