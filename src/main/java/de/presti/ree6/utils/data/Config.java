@@ -1,6 +1,7 @@
 package de.presti.ree6.utils.data;
 
 import de.presti.ree6.bot.BotWorker;
+import de.presti.ree6.utils.others.VersionUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -339,23 +340,7 @@ public class Config {
      * @return True if versionA is above versionB.
      */
     public boolean compareVersion(String versionA, String versionB) {
-        if (versionA == null) return false;
-        if (versionB == null) return true;
-
-        String[] split = versionA.split("\\.");
-
-        int mayor = Integer.parseInt(split[0]);
-        int minor = Integer.parseInt(split[1]);
-        int patch = Integer.parseInt(split[2]);
-
-        String[] split2 = versionB.split("\\.");
-        int otherMayor = Integer.parseInt(split2[0]);
-        int otherMinor = Integer.parseInt(split2[1]);
-        int otherPatch = Integer.parseInt(split2[2]);
-
-        if (mayor > otherMayor) return true;
-        if (mayor == otherMayor && minor > otherMinor) return true;
-        return mayor == otherMayor && minor == otherMinor && patch > otherPatch;
+        return VersionUtil.compareVersion(versionA, versionB) != VersionUtil.VersionType.NONE;
     }
 
     /**
