@@ -74,8 +74,8 @@ public class EconomyUtil {
 
         if (moneyHolder == null && createIfNotExists) {
             moneyHolder = new MoneyHolder();
-            moneyHolder.getGuildUserId().setGuildId(guildId);
-            moneyHolder.getGuildUserId().setUserId(memberId);
+            moneyHolder.setGuildId(guildId);
+            moneyHolder.setUserId(memberId);
             moneyHolder = SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder);
         }
 
