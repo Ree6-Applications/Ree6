@@ -693,6 +693,7 @@ command:
     steal: "Diğer kullanıcılardan para çalın!"
     work: "İş yaparak kendi paranı kazan!"
     giveaway: "Hediyeleri Yönet!"
+    avatar: "Get the Avatar of an User!"
 category:
   info: "Bilgi toplamak veya bilgi sağlamak için kullanılır."
   moderation: "Kullanıcıları yönetmenize veya Sunucuda kural ihlalini önlemenize yardımcı olabilecek Denetleme Araçları."
