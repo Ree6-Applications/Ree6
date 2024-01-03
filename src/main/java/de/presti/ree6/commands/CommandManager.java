@@ -8,6 +8,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.custom.CustomCommand;
+import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.ThreadUtil;
@@ -263,6 +264,14 @@ public class CommandManager {
 
         if (!commands.contains(command)) {
             commands.add(command);
+
+            Command commandAnnotation = command.getClass().getAnnotation(Command.class);
+
+            // Skip the hidden Commands.
+            if (commandAnnotation.category() == Category.HIDDEN) return;
+
+            SettingsManager.getSettings().add(new Setting(-1,
+                    "command_" + commandAnnotation.name().toLowerCase(), commandAnnotation.name(), true));
         }
     }
 
@@ -454,10 +463,14 @@ public class CommandManager {
             return false;
         }
 
-        // Check if the command is blocked or not.
-        if (!SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).getBooleanValue() && command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-            sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
-            return false;
+        if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
+            Setting blacklistSetting = SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase());
+
+            // Check if the Command is blacklisted.
+            if (blacklistSetting != null && !blacklistSetting.getBooleanValue()) {
+                sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                return false;
+            }
         }
 
         // Perform the Command.
