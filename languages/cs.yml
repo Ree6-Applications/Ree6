@@ -693,6 +693,7 @@ command:
     steal: "Krást peníze ostatním uživatelům!"
     work: "Získejte své vlastní peníze za práci!"
     giveaway: "Spravovat giveaway!"
+    avatar: "Get the Avatar of an User!"
 category:
   info: "Slouží ke shromažďování informací nebo poskytování informací."
   moderation: "Nástroje pro moderování, které vám mohou pomoci spravovat uživatele nebo zabránit porušení pravidel na serveru."
