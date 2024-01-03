@@ -693,6 +693,7 @@ command:
     steal: "Mencuri uang dari orang lain!"
     work: "Dapatkan uangmu dari bekerja!"
     giveaway: "Kelola Giveaway!"
+    avatar: "Get the Avatar of an User!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"
