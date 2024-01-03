@@ -693,6 +693,7 @@ command:
     steal: "Steal money from other users!"
     work: "Get your own money from doing work!"
     giveaway: "Manage Giveaways!"
+    avatar: "Get the Avatar of an User!"
 category:
   info: "Used to gather information or provide information."
   moderation: "Moderation Tools that can help you manager Users or prevent rule breaking on the Server."

@@ -151,7 +151,7 @@ public class AddonLoader {
                 // Get the Addon Class.
                 Class<?> addonClass = getClass(urlClassLoader, classPath);
 
-                // If valid call the onEnable methode.
+                // If valid, call the onEnable methode.
                 if (addonClass != null) {
                     log.info("[AddonManager] Loaded {} ({}) by {}", name, version, author);
                     addonInterface = (AddonInterface) addonClass.getDeclaredConstructor().newInstance();

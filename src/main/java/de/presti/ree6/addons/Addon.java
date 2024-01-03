@@ -80,6 +80,14 @@ public record Addon(AddonInterface addonInterface, String name, String author, S
     }
 
     /**
+     * Get the ClassLoader of the Addon.
+     * @return ClassLoader.
+     */
+    public ClassLoader getClassLoader() {
+        return addonInterface.getClass().getClassLoader();
+    }
+
+    /**
      * Get everything in a single String.
      *
      * @return a String with every data.
