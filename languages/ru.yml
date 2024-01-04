@@ -1,7 +1,7 @@
 language:
   name: "Russian"
   locale: "ru"
-  version: "3.0.15"
+  version: "3.1.2"
   author: "Trusty"
 logging:
   banned: ":airplane_departure: %s **забанен.**"
