@@ -195,6 +195,7 @@ label:
   rewards: "Ödüller"
   sendToChat: "Sohbete gönder"
   avatar: "Avatar"
+  footerMessage: "Requested by %s - %s"
 message:
   default:
     usage: "Kullanım {guild_prefix}%s."
