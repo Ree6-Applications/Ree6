@@ -194,6 +194,7 @@ label:
   musicQuizTitleGuess: "Menebak Judul MusicQuiz"
   rewards: "Hadiah"
   sendToChat: "Kirimkan ke dalam Obrolan"
+  avatar: "Avatar"
 message:
   default:
     usage: "Penggunaan {guild_prefix}%s."
