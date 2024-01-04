@@ -195,6 +195,7 @@ label:
   rewards: "Винагороди"
   sendToChat: "Надішліть його в чат"
   avatar: "Avatar"
+  footerMessage: "Requested by %s - %s"
 message:
   default:
     usage: "Використання {guild_prefix}%s."
