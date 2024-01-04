@@ -195,6 +195,7 @@ label:
   rewards: "Hadiah"
   sendToChat: "Kirimkan ke dalam Obrolan"
   avatar: "Avatar"
+  footerMessage: "Requested by %s - %s"
 message:
   default:
     usage: "Penggunaan {guild_prefix}%s."
