@@ -194,6 +194,7 @@ label:
   musicQuizTitleGuess: "Palpite no Título do MusicQuiz"
   rewards: "Recompensas"
   sendToChat: "Enviar no Chat"
+  avatar: "Avatar"
 message:
   default:
     usage: "Uso {guild_prefix}%s."
