@@ -194,6 +194,7 @@ label:
   musicQuizTitleGuess: "MusicQuiz Познай заглавието"
   rewards: "Награди"
   sendToChat: "Изпратете го в чата"
+  avatar: "Avatar"
 message:
   default:
     usage: "Употреба {guild_prefix}%s."
