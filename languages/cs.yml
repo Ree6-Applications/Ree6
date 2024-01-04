@@ -194,6 +194,7 @@ label:
   musicQuizTitleGuess: "Uhádni jméno Hudební kvíz"
   rewards: "Odměny"
   sendToChat: "Odeslat do chatu"
+  avatar: "Avatar"
 message:
   default:
     usage: "Použití {guild_prefix}%s."
