@@ -194,6 +194,7 @@ label:
   musicQuizTitleGuess: "MusicQuiz Başlık Tahmini"
   rewards: "Ödüller"
   sendToChat: "Sohbete gönder"
+  avatar: "Avatar"
 message:
   default:
     usage: "Kullanım {guild_prefix}%s."
