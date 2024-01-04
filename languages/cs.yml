@@ -195,6 +195,7 @@ label:
   rewards: "Odměny"
   sendToChat: "Odeslat do chatu"
   avatar: "Avatar"
+  footerMessage: "Requested by %s - %s"
 message:
   default:
     usage: "Použití {guild_prefix}%s."
