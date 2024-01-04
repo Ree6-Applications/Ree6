@@ -1,7 +1,7 @@
 language:
   name: "Português (BR)"
   locale: "pt-BR"
-  version: "3.0.15"
+  version: "3.1.2"
   author: "louanfontenele"
 logging:
   banned: ":airplane_departure: %s **foi banido.**"
