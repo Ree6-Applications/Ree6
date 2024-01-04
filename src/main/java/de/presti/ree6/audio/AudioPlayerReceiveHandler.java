@@ -94,7 +94,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
         message = audioChannelUnion.asGuildMessageChannel().sendMessageEmbeds(new EmbedBuilder()
                 .setDescription(LanguageService.getByGuild(member.getGuild(), "message.recording.started"))
                 .setColor(Color.YELLOW)
-                .setFooter("Requested by " + member.getEffectiveName() + " - " + BotConfig.getAdvertisement(), member.getEffectiveAvatarUrl())
+                .setFooter(LanguageService.getByGuild(member.getGuild(),"label.footerMessage", member.getEffectiveAvatarUrl(), BotConfig.getAdvertisement()), member.getEffectiveAvatarUrl())
                 .setTitle(LanguageService.getByGuild(member.getGuild(), "label.recording.start"))
                 .build()).complete();
 

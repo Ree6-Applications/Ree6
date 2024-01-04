@@ -29,7 +29,7 @@ public class DogImage implements ICommand {
         em.setTitle(commandEvent.getResource("label.randomDogImage"));
         em.setColor(BotWorker.randomEmbedColor());
         em.setImage(js.get("message").getAsString());
-        em.setFooter("Requested by " + commandEvent.getMember().getEffectiveName() + " - " + BotConfig.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
+        em.setFooter(commandEvent.getResource("label.footerMessage", commandEvent.getMember().getEffectiveAvatarUrl(), BotConfig.getAdvertisement()), commandEvent.getMember().getEffectiveAvatarUrl());
 
         commandEvent.reply(em.build());
     }

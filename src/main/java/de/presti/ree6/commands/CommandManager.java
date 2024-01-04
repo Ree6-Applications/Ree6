@@ -663,7 +663,11 @@ public class CommandManager {
      * @param interactionHook the Interaction-hook, if it is a slash event.
      */
     public void deleteMessage(Message message, InteractionHook interactionHook) {
-        if (message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) && message.getChannel().retrieveMessageById(message.getIdLong()).complete() != null && message.getType().canDelete() && !message.isEphemeral() && interactionHook == null) {
+        if (message != null && message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) &&
+                message.getChannel().retrieveMessageById(message.getIdLong()).complete() != null &&
+                message.getType().canDelete() &&
+                !message.isEphemeral() &&
+                interactionHook == null) {
             message.delete().onErrorMap(throwable -> {
                 log.error("[CommandManager] Couldn't delete a Message!", throwable);
                 return null;

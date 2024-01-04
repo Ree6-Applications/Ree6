@@ -89,7 +89,7 @@ public class Info implements ICommand {
         em.addField("**Created Date**", member.getTimeCreated().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
         em.addField("**Joined Date**", member.getTimeJoined().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
 
-        em.setFooter("Requested by " + commandEvent.getMember().getEffectiveName() + " - " + BotConfig.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
+        em.setFooter(commandEvent.getResource("label.footerMessage", commandEvent.getMember().getEffectiveAvatarUrl(), BotConfig.getAdvertisement()), commandEvent.getMember().getEffectiveAvatarUrl());
 
         commandEvent.reply(em.build());
     }

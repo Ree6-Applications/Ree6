@@ -25,7 +25,7 @@ public class Monkey implements ICommand {
 		em.setTitle(commandEvent.getResource("label.monkey"));
 		em.setColor(BotWorker.randomEmbedColor());
 		em.setImage("https://c.tenor.com/Y89PE1f7exQAAAAd/reject-modernity-return-to-monke.gif");
-		em.setFooter("Requested by " + commandEvent.getMember().getEffectiveName() + " - " + BotConfig.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
+		em.setFooter(commandEvent.getResource("label.footerMessage", commandEvent.getMember().getEffectiveAvatarUrl(), BotConfig.getAdvertisement()), commandEvent.getMember().getEffectiveAvatarUrl());
 
 		commandEvent.reply(em.build());
 	}
