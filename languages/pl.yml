@@ -194,6 +194,7 @@ label:
   musicQuizTitleGuess: "Odgadnięcie tytułu MusicQuiz"
   rewards: "Nagrody"
   sendToChat: "Wyślij w czat"
+  avatar: "Avatar"
 message:
   default:
     usage: "Użycie {guild_prefix}%s."
