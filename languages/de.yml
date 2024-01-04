@@ -195,6 +195,7 @@ label:
   rewards: "Belohnungen"
   sendToChat: "In den Chat senden"
   avatar: "Avatar"
+  footerMessage: "Requested by %s - %s"
 message:
   default:
     usage: "Nutzung {guild_prefix}%s."
