@@ -195,7 +195,7 @@ label:
   rewards: "Recompensas"
   sendToChat: "Enviar no Chat"
   avatar: "Avatar"
-  footerMessage: "Requested by %s - %s"
+  footerMessage: "Solicitado por %s - %s"
 message:
   default:
     usage: "Uso {guild_prefix}%s."
@@ -695,7 +695,7 @@ command:
     steal: "Roube dinheiro de outros usuários!"
     work: "Obtenha seu próprio dinheiro fazendo trabalhos!"
     giveaway: "Gerencie sorteios!"
-    avatar: "Get the Avatar of an User!"
+    avatar: "Obtenha o avatar de um usuário!"
 category:
   info: "Usado para reunir informações ou fornecer informações."
   moderation: "Ferramentas de moderação que podem ajudar você a gerenciar usuários ou evitar infrações nas regras do servidor."
