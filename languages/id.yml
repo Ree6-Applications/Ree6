@@ -195,7 +195,7 @@ label:
   rewards: "Hadiah"
   sendToChat: "Kirimkan ke dalam Obrolan"
   avatar: "Avatar"
-  footerMessage: "Requested by %s - %s"
+  footerMessage: "Diminta oleh %s - %s"
 message:
   default:
     usage: "Penggunaan {guild_prefix}%s."
@@ -695,7 +695,7 @@ command:
     steal: "Mencuri uang dari orang lain!"
     work: "Dapatkan uangmu dari bekerja!"
     giveaway: "Kelola Giveaway!"
-    avatar: "Get the Avatar of an User!"
+    avatar: "Dapatkan Avatar Pengguna!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"
