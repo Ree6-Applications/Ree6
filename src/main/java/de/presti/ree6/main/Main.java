@@ -237,10 +237,16 @@ public class Main {
             getInstance().setCommandManager(new CommandManager());
 
             Setting prefixSetting = SettingsManager.getDefault("chatprefix");
+            SettingsManager.getSettings().remove(prefixSetting);
+
             prefixSetting.setValue(BotConfig.getDefaultPrefix());
+            SettingsManager.getSettings().add(prefixSetting);
 
             Setting languageSetting = SettingsManager.getDefault("configuration_language");
+            SettingsManager.getSettings().remove(languageSetting);
+
             languageSetting.setValue(BotConfig.getDefaultLanguage());
+            SettingsManager.getSettings().add(languageSetting);
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
