@@ -195,7 +195,7 @@ label:
   rewards: "Ödüller"
   sendToChat: "Sohbete gönder"
   avatar: "Avatar"
-  footerMessage: "Requested by %s - %s"
+  footerMessage: "%s tarafından talep edildi - %s"
 message:
   default:
     usage: "Kullanım {guild_prefix}%s."
@@ -695,7 +695,7 @@ command:
     steal: "Diğer kullanıcılardan para çalın!"
     work: "İş yaparak kendi paranı kazan!"
     giveaway: "Hediyeleri Yönet!"
-    avatar: "Get the Avatar of an User!"
+    avatar: "Bir Kullanıcının Avatarını Alın!"
 category:
   info: "Bilgi toplamak veya bilgi sağlamak için kullanılır."
   moderation: "Kullanıcıları yönetmenize veya Sunucuda kural ihlalini önlemenize yardımcı olabilecek Denetleme Araçları."
