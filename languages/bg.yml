@@ -1,7 +1,7 @@
 language:
   name: "Bulgarian"
   locale: "bg"
-  version: "3.0.15"
+  version: "3.1.2"
   author: "D3Y4N"
 logging:
   banned: ":airplane_departure: %s **блокиран.**"
@@ -194,6 +194,8 @@ label:
   musicQuizTitleGuess: "MusicQuiz Познай заглавието"
   rewards: "Награди"
   sendToChat: "Изпратете го в чата"
+  avatar: "Аватар"
+  footerMessage: "Поискано от %s - %s"
 message:
   default:
     usage: "Употреба {guild_prefix}%s."
@@ -693,6 +695,7 @@ command:
     steal: "Откраднете пари от други потребители!"
     work: "Спечелете собствени пари от работа!"
     giveaway: "Менаджирайте Раздаванията!"
+    avatar: "Вземете аватара на потребител!"
 category:
   info: "Използва се за събиране на информация или предоставяне на информация."
   moderation: "Инструменти за модериране, които могат да ви помогнат да управлявате потребители или да предотвратите нарушаване на правилата на сървъра."

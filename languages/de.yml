@@ -1,7 +1,7 @@
 language:
   name: "German"
   locale: "de"
-  version: "3.0.15"
+  version: "3.1.2"
   author: "Presti"
 logging:
   banned: ":airplane_departure: %s **gebannt.**"
@@ -194,6 +194,8 @@ label:
   musicQuizTitleGuess: "Musik Quiz Title erraten"
   rewards: "Belohnungen"
   sendToChat: "In den Chat senden"
+  avatar: "Profilbild"
+  footerMessage: "Anfrage von %s - %s"
 message:
   default:
     usage: "Nutzung {guild_prefix}%s."
@@ -693,6 +695,7 @@ command:
     steal: "Stehle Geld von anderen!"
     work: "Verdiene dein eigens Geld vom Arbeiten!"
     giveaway: "Verwalte deine Giveaways!"
+    avatar: "Zeigt dir das Profilbild von einem Nutzer an!"
 category:
   info: "Wird verwendet, um Informationen zu sammeln oder Informationen zu geben."
   moderation: "Moderations-Tools, die Ihnen beim Verwalten von Benutzern helfen oder das Missachten von Regeln auf dem Server verhindern können."

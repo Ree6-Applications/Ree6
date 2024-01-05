@@ -1,7 +1,7 @@
 language:
   name: "Turkish"
   locale: "tr"
-  version: "3.0.15"
+  version: "3.1.2"
   author: "ImNotArian"
 logging:
   banned: ":airplane_departure: %s **Yasaklandı.**"
@@ -194,6 +194,8 @@ label:
   musicQuizTitleGuess: "MusicQuiz Başlık Tahmini"
   rewards: "Ödüller"
   sendToChat: "Sohbete gönder"
+  avatar: "Avatar"
+  footerMessage: "Requested by %s - %s"
 message:
   default:
     usage: "Kullanım {guild_prefix}%s."
@@ -693,6 +695,7 @@ command:
     steal: "Diğer kullanıcılardan para çalın!"
     work: "İş yaparak kendi paranı kazan!"
     giveaway: "Hediyeleri Yönet!"
+    avatar: "Get the Avatar of an User!"
 category:
   info: "Bilgi toplamak veya bilgi sağlamak için kullanılır."
   moderation: "Kullanıcıları yönetmenize veya Sunucuda kural ihlalini önlemenize yardımcı olabilecek Denetleme Araçları."

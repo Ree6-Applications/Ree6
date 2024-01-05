@@ -1,7 +1,7 @@
 language:
   name: "Czech"
   locale: "cs"
-  version: "3.0.15"
+  version: "3.1.2"
   author: "Pogy__"
 logging:
   banned: ":airplane_departure: %s **zablokován.**"
@@ -194,6 +194,8 @@ label:
   musicQuizTitleGuess: "Uhádni jméno Hudební kvíz"
   rewards: "Odměny"
   sendToChat: "Odeslat do chatu"
+  avatar: "Avatar"
+  footerMessage: "Requested by %s - %s"
 message:
   default:
     usage: "Použití {guild_prefix}%s."
@@ -693,6 +695,7 @@ command:
     steal: "Krást peníze ostatním uživatelům!"
     work: "Získejte své vlastní peníze za práci!"
     giveaway: "Spravovat giveaway!"
+    avatar: "Get the Avatar of an User!"
 category:
   info: "Slouží ke shromažďování informací nebo poskytování informací."
   moderation: "Nástroje pro moderování, které vám mohou pomoci spravovat uživatele nebo zabránit porušení pravidel na serveru."

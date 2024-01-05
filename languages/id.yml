@@ -1,7 +1,7 @@
 language:
   name: "Indonesia"
   locale: "id"
-  version: "3.0.15"
+  version: "3.1.2"
   author: "Gorengan_Hunter, SpyCat"
 logging:
   banned: ":airplane_departure: %s **telah diban.**"
@@ -194,6 +194,8 @@ label:
   musicQuizTitleGuess: "Menebak Judul MusicQuiz"
   rewards: "Hadiah"
   sendToChat: "Kirimkan ke dalam Obrolan"
+  avatar: "Avatar"
+  footerMessage: "Requested by %s - %s"
 message:
   default:
     usage: "Penggunaan {guild_prefix}%s."
@@ -693,6 +695,7 @@ command:
     steal: "Mencuri uang dari orang lain!"
     work: "Dapatkan uangmu dari bekerja!"
     giveaway: "Kelola Giveaway!"
+    avatar: "Get the Avatar of an User!"
 category:
   info: "Dipakai untuk mendapatkan informasi atau memberi informasi."
   moderation: "Alat moderasi untuk membantumu menjaga servermu!"
