@@ -194,8 +194,8 @@ label:
   musicQuizTitleGuess: "Угадать название песни в музыкальном тесте"
   rewards: "Призы"
   sendToChat: "Отправить в чат"
-  avatar: "Avatar"
-  footerMessage: "Requested by %s - %s"
+  avatar: "Аватар"
+  footerMessage: "Запрос от %s - %s"
 message:
   default:
     usage: "Использование {guild_prefix}%s."
@@ -695,7 +695,7 @@ command:
     steal: "Украсть деньги у других пользователей!"
     work: "Получите свои собственные деньги от выполнения работы!"
     giveaway: "Управление розыгрышами!"
-    avatar: "Get the Avatar of an User!"
+    avatar: "Получите аватар пользователя!"
 category:
   info: "Используется для сбора информации или представления информации."
   moderation: "Модернизация инструментов, которые могут помочь вам управлять пользователями или предотвратить нарушение правил на сервере."
