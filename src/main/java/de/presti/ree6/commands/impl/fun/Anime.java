@@ -9,7 +9,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -139,7 +139,7 @@ public class Anime implements ICommand {
             em.addField(":stopwatch: **" + commandEvent.getResource("label.duration") + "**", duration, true);
             em.addField(":star: **" + commandEvent.getResource("label.averageRating") + "**", " **" + rating + "/100**", true);
             em.addField(":trophy: **" + commandEvent.getResource("label.rank") + "**", "**TOP " + rank + "**", true);
-            em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + Data.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
+            em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + BotConfig.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
 
             if (commandEvent.isSlashCommand()) {
                 message.editMessage(commandEvent.getResource("message.anime.found")).queue();

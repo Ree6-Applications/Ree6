@@ -1,7 +1,7 @@
 language:
   name: "Russian"
   locale: "ru"
-  version: "3.0.15"
+  version: "3.1.2"
   author: "Trusty"
 logging:
   banned: ":airplane_departure: %s **забанен.**"
@@ -194,6 +194,8 @@ label:
   musicQuizTitleGuess: "Угадать название песни в музыкальном тесте"
   rewards: "Призы"
   sendToChat: "Отправить в чат"
+  avatar: "Avatar"
+  footerMessage: "Requested by %s - %s"
 message:
   default:
     usage: "Использование {guild_prefix}%s."
@@ -693,6 +695,7 @@ command:
     steal: "Украсть деньги у других пользователей!"
     work: "Получите свои собственные деньги от выполнения работы!"
     giveaway: "Управление розыгрышами!"
+    avatar: "Get the Avatar of an User!"
 category:
   info: "Используется для сбора информации или представления информации."
   moderation: "Модернизация инструментов, которые могут помочь вам управлять пользователями или предотвратить нарушение правил на сервере."

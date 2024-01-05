@@ -2,7 +2,7 @@ package de.presti.ree6.language;
 
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.external.RequestUtility;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
@@ -225,12 +225,12 @@ public class LanguageService {
         if (guildId == -1) {
             resource = getDefault(key, parameter);
         } else {
-            resource = getByLocale(SQLSession.getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "configuration_language").getStringValue(), key, parameter);
+            resource = getByLocale(SQLSession.getSqlConnector().getSqlWorker().getSetting(guildId, "configuration_language").getStringValue(), key, parameter);
         }
 
         if (guildId != -1 && resource.contains("{guild_prefix}")) {
             resource = resource
-                    .replace("{guild_prefix}", SQLSession.getSqlConnector().getSqlWorker().getSetting(String.valueOf(guildId), "chatprefix").getStringValue());
+                    .replace("{guild_prefix}", SQLSession.getSqlConnector().getSqlWorker().getSetting(guildId, "chatprefix").getStringValue());
         }
 
         return resource;
@@ -249,7 +249,7 @@ public class LanguageService {
 
         if (interaction.getGuild() != null && resource.contains("{guild_prefix}"))
             resource = resource
-                    .replace("{guild_prefix}", SQLSession.getSqlConnector().getSqlWorker().getSetting(interaction.getGuild().getId(), "chatprefix").getStringValue());
+                    .replace("{guild_prefix}", SQLSession.getSqlConnector().getSqlWorker().getSetting(interaction.getGuild().getIdLong(), "chatprefix").getStringValue());
 
         return resource;
     }
@@ -289,7 +289,7 @@ public class LanguageService {
         if (discordLocale == DiscordLocale.UNKNOWN) return getDefault(key, parameters);
 
         Language language = languageResources.containsKey(discordLocale) ? languageResources.get(discordLocale) :
-                languageResources.get(DiscordLocale.from(Data.getDefaultLanguage()));
+                languageResources.get(DiscordLocale.from(BotConfig.getDefaultLanguage()));
         
         return language != null ? language.getResource(key, parameters) : "Missing language resource!";
     }

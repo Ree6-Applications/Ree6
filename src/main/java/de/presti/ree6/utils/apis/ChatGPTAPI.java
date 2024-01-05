@@ -6,7 +6,7 @@ import com.lilittlecat.chatgpt.offical.exception.BizException;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -49,7 +49,7 @@ public class ChatGPTAPI {
      * Method to initialise and create the API Wrapper Instance.
      */
     public void initGPT() {
-        if (Data.isModuleActive("ai")) {
+        if (BotConfig.isModuleActive("ai")) {
             preDefinedInformation = Main.getInstance().getConfig().getConfiguration().getString("bot.misc.predefineInformation");
             chatGPT = new ChatGPT(Main.getInstance().getConfig().getConfiguration().getString("openai.apiUrl", "https://api.openai.com/v1/chat/completions"),
                     Main.getInstance().getConfig().getConfiguration().getString("openai.apiToken"));
@@ -94,7 +94,7 @@ public class ChatGPTAPI {
      * @return the response by the Model.
      */
     public static String getResponse(List<Message> messages) {
-        if (!Data.isModuleActive("ai")) return Data.shouldHideModuleNotification() ? "" : "AI Module has been disabled!";
+        if (!BotConfig.isModuleActive("ai")) return BotConfig.shouldHideModuleNotification() ? "" : "AI Module has been disabled!";
 
         return chatGPT.ask(Main.getInstance().getConfig().getConfiguration().getString("openai.model", "gpt-3.5-turbo-0301"), messages);
     }

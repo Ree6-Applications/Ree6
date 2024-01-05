@@ -54,7 +54,7 @@ public class StreamActionContainer {
      */
     public StreamActionContainer(StreamAction streamAction) {
         twitchChannelId = streamAction.getIntegration().getChannelId();
-        guild = BotWorker.getShardManager().getGuildById(streamAction.getGuildId());
+        guild = BotWorker.getShardManager().getGuildById(streamAction.getGuild());
         extraArgument = streamAction.getArgument();
 
         if (streamAction.getActions() != null && streamAction.getActions().isJsonArray()) {

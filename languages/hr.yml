@@ -1,8 +1,8 @@
 language:
-  name: "English (UK)"
-  locale: "en-GB"
-  version: "3.0.15"
-  author: "Presti"
+  name: "Croatian"
+  locale: "hr"
+  version: "3.1.2"
+  author: "Huza"
 logging:
   banned: ":airplane_departure: %s **banned.**"
   unbanned: ":airplane_arriving: %s **unbanned.**"
@@ -194,6 +194,8 @@ label:
   musicQuizTitleGuess: "MusicQuiz Title Guess"
   rewards: "Rewards"
   sendToChat: "Send in Chat"
+  avatar: "Avatar"
+  footerMessage: "Requested by %s - %s"
 message:
   default:
     usage: "Usage {guild_prefix}%s."

@@ -86,7 +86,7 @@ public class Reactions implements ICommand {
                 }
 
                 ReactionRole reactionRole = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
-                        "FROM ReactionRole WHERE guildId=:gid AND roleId=:roleId AND messageId=:messageId",
+                        "FROM ReactionRole WHERE guildRoleId.guildId=:gid AND guildRoleId.roleId=:roleId AND messageId=:messageId",
                         Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsRole().getIdLong(), "messageId", messageId));
 
                 if (reactionRole != null) {

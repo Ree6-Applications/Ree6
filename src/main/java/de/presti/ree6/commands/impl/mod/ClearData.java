@@ -32,14 +32,14 @@ public class ClearData implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             if (!timeout.contains(commandEvent.getGuild().getId())) {
-                SQLSession.getSqlConnector().getSqlWorker().clearInvites(commandEvent.getGuild().getId());
+                SQLSession.getSqlConnector().getSqlWorker().clearInvites(commandEvent.getGuild().getIdLong());
                 if (commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-                    commandEvent.getGuild().retrieveInvites().queue(invites -> invites.stream().filter(invite -> invite.getInviter() != null).forEach(invite -> SQLSession.getSqlConnector().getSqlWorker().setInvite(commandEvent.getGuild().getId(), invite.getInviter().getId(), invite.getCode(), invite.getUses())));
+                    commandEvent.getGuild().retrieveInvites().queue(invites -> invites.stream().filter(invite -> invite.getInviter() != null).forEach(invite -> SQLSession.getSqlConnector().getSqlWorker().setInvite(commandEvent.getGuild().getIdLong(), invite.getInviter().getIdLong(), invite.getCode(), invite.getUses())));
 
                 Invite vanityInvite = InviteContainerManager.convertVanityInvite(commandEvent.getGuild());
 
                 if (vanityInvite != null) {
-                    SQLSession.getSqlConnector().getSqlWorker().setInvite(commandEvent.getGuild().getId(), commandEvent.getGuild().getOwnerId(), vanityInvite.getCode(), vanityInvite.getUses());
+                    SQLSession.getSqlConnector().getSqlWorker().setInvite(commandEvent.getGuild().getIdLong(), commandEvent.getGuild().getOwnerIdLong(), vanityInvite.getCode(), vanityInvite.getUses());
                 }
 
                 commandEvent.reply(commandEvent.getResource("message.clearData.success"), 5);

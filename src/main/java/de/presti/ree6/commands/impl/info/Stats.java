@@ -9,7 +9,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.stats.CommandStats;
 import de.presti.ree6.sql.entities.stats.GuildCommandStats;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.TimeUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -48,7 +48,7 @@ public class Stats implements ICommand {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
+        em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), BotConfig.getWebsite(),
                 commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setTitle(commandEvent.getResource("label.statistics"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
@@ -75,7 +75,7 @@ public class Stats implements ICommand {
 
         StringBuilder end = new StringBuilder();
 
-        for (GuildCommandStats values : SQLSession.getSqlConnector().getSqlWorker().getStats(commandEvent.getGuild().getId())) {
+        for (GuildCommandStats values : SQLSession.getSqlConnector().getSqlWorker().getStats(commandEvent.getGuild().getIdLong())) {
             end.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
         }
 
@@ -89,7 +89,7 @@ public class Stats implements ICommand {
         em.addField("**" + commandEvent.getResource("label.topCommands") + "**", end.toString(), true);
         em.addField("**" + commandEvent.getResource("label.overallTopCommands") + "**", end2.toString(), true);
 
-        em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
+        em.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
 
         MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
 

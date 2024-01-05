@@ -9,6 +9,7 @@ import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator
 import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.addons.AddonManager;
 import de.presti.ree6.audio.music.MusicWorker;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
@@ -31,6 +32,7 @@ import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.stats.Statistics;
+import de.presti.ree6.sql.util.SQLConfig;
 import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.apis.Notifier;
@@ -164,20 +166,24 @@ public class Main {
 
         ArrayUtil.temporalVoicechannel.addAll(getInstance().getConfig().getTemporal().getStringList("temporalvoice"));
 
-        log.info("Creating Sentry Instance.");
+        if (BotConfig.shouldUseSentry()) {
+            log.info("Creating Sentry Instance.");
 
-        // Create a Sentry Instance to send Exception to an external Service for bug fixing.
-        Sentry.init(options -> {
-            String dsn = getInstance().getConfig().getConfiguration().getString("sentry.dsn");
-            options.setDsn((dsn == null || dsn.equalsIgnoreCase("yourSentryDSNHere")) ? "" : dsn);
-            // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-            // We recommend adjusting this value in production.
-            options.setTracesSampleRate(1.0);
-            // When first trying Sentry it's good to see what the SDK is doing:
-            options.setRelease(BotWorker.getBuild());
-        });
+            // Create a Sentry Instance to send Exception to an external Service for bug fixing.
+            Sentry.init(options -> {
+                String dsn = getInstance().getConfig().getConfiguration().getString("sentry.dsn");
+                options.setDsn((dsn == null || dsn.equalsIgnoreCase("yourSentryDSNHere")) ? "" : dsn);
 
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> Sentry.captureException(e));
+                // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+                // We recommend adjusting this value in production.
+                options.setTracesSampleRate(1.0);
+
+                // When first trying Sentry, it's good to see what the SDK is doing:
+                options.setRelease(BotWorker.getBuild());
+            });
+
+            Thread.setDefaultUncaughtExceptionHandler((t, e) -> Sentry.captureException(e));
+        }
 
         log.info("Starting preparations of the Bot...");
 
@@ -203,15 +209,20 @@ public class Main {
         }
 
         try {
-            new SQLSession(getInstance().getConfig().getConfiguration().getString("hikari.sql.user"),
-                    getInstance().getConfig().getConfiguration().getString("hikari.sql.db"),
-                    getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"),
-                    getInstance().getConfig().getConfiguration().getString("hikari.sql.host"),
-                    getInstance().getConfig().getConfiguration().getInt("hikari.sql.port"),
-                    getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"), databaseTyp,
-                    getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize"),
-                    getInstance().getConfig().getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"),
-                    Data.isDebug());
+            SQLConfig sqlConfig = SQLConfig.builder()
+                    .username(getInstance().getConfig().getConfiguration().getString("hikari.sql.user"))
+                    .database(getInstance().getConfig().getConfiguration().getString("hikari.sql.db"))
+                    .password(getInstance().getConfig().getConfiguration().getString("hikari.sql.pw"))
+                    .host(getInstance().getConfig().getConfiguration().getString("hikari.sql.host"))
+                    .port(getInstance().getConfig().getConfiguration().getInt("hikari.sql.port"))
+                    .path(getInstance().getConfig().getConfiguration().getString("hikari.misc.storageFile"))
+                    .typ(databaseTyp)
+                    .poolSize(getInstance().getConfig().getConfiguration().getInt("hikari.misc.poolSize", 1))
+                    .createEmbeddedServer(getInstance().getConfig().getConfiguration().getBoolean("hikari.misc.createEmbeddedServer"))
+                    .debug(BotConfig.isDebug())
+                    .sentry(BotConfig.shouldUseSentry()).build();
+
+            new SQLSession(sqlConfig);
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
@@ -224,22 +235,12 @@ public class Main {
         try {
             // Create the Command-Manager instance.
             getInstance().setCommandManager(new CommandManager());
-            // Create Command Settings.
-            for (ICommand command : getInstance().getCommandManager().getCommands()) {
 
-                Command commandAnnotation = command.getClass().getAnnotation(Command.class);
-
-                // Skip the hidden Commands.
-                if (commandAnnotation.category() == Category.HIDDEN) continue;
-
-                SettingsManager.getSettings().add(new Setting("-1",
-                        "command_" + commandAnnotation.name().toLowerCase(), commandAnnotation.name(), true));
-            }
             Setting prefixSetting = SettingsManager.getDefault("chatprefix");
-            prefixSetting.setValue(Data.getDefaultPrefix());
+            prefixSetting.setValue(BotConfig.getDefaultPrefix());
 
             Setting languageSetting = SettingsManager.getDefault("configuration_language");
-            languageSetting.setValue("en_US");
+            languageSetting.setValue(BotConfig.getDefaultLanguage());
         } catch (Exception exception) {
             log.error("Shutting down, because of an critical error!", exception);
             System.exit(0);
@@ -262,7 +263,7 @@ public class Main {
                 version = BotVersion.BETA;
             }
 
-            if (Data.shouldUseLavaLink()) {
+            if (BotConfig.shouldUseLavaLink()) {
                 getInstance().lavalink = new JdaLavalink(shards, shard -> BotWorker.getShardManager().getShardById(shard));
             }
 
@@ -271,7 +272,7 @@ public class Main {
             getInstance().setMusicWorker(new MusicWorker());
             getInstance().addEvents();
 
-            if (Data.shouldUseLavaLink()) {
+            if (BotConfig.shouldUseLavaLink()) {
 
                 List<HashMap<String, Object>> nodes = (List<HashMap<String, Object>>) getInstance().getConfig()
                         .getConfiguration().getList("lavalink.nodes");
@@ -290,14 +291,14 @@ public class Main {
             return;
         }
 
-        if (Data.isModuleActive("music")) {
+        if (BotConfig.isModuleActive("music")) {
             log.info("Loading SpotifyAPI");
             new SpotifyAPIHandler();
         }
 
-        if (Data.isModuleActive("games")) {
+        if (BotConfig.isModuleActive("games")) {
 
-            if (Data.isModuleActive("music")) {
+            if (BotConfig.isModuleActive("music")) {
                 log.info("Loading MusicQuizUtil");
                 new MusicQuizUtil();
             }
@@ -306,7 +307,7 @@ public class Main {
             GameManager.loadAllGames();
         }
 
-        if (Data.isModuleActive("streamtools")) {
+        if (BotConfig.isModuleActive("streamtools")) {
             log.info("Loading Stream-actions");
             StreamActionContainerCreator.loadAll();
         }
@@ -319,7 +320,7 @@ public class Main {
         // Create the Notifier-Manager instance.
         getInstance().setNotifier(new Notifier());
 
-        if (Data.isModuleActive("notifier")) {
+        if (BotConfig.isModuleActive("notifier")) {
             ThreadUtil.createThread(x -> {
                 log.info("Loading Notifier data.");
                 List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "FROM ChannelStats", null);
@@ -399,7 +400,7 @@ public class Main {
         // Initialize the Addon-Manager.
         getInstance().setAddonManager(new AddonManager());
 
-        if (Data.isModuleActive("addons")) {
+        if (BotConfig.isModuleActive("addons")) {
             // Initialize the Addon-Loader.
             AddonLoader.loadAllAddons();
 
@@ -429,13 +430,13 @@ public class Main {
     private void addEvents() {
         BotWorker.addEvent(new MenuEvents(), new OtherEvents());
 
-        if (Data.isModuleActive("logging"))
+        if (BotConfig.isModuleActive("logging"))
             BotWorker.addEvent(new LoggingEvents());
 
-        if (Data.isModuleActive("games"))
+        if (BotConfig.isModuleActive("games"))
             BotWorker.addEvent(new GameEvents());
 
-        if (Data.isModuleActive("customevents"))
+        if (BotConfig.isModuleActive("customevents"))
             BotWorker.getShardManager().addEventListener(new CustomEvents());
     }
 
@@ -455,7 +456,7 @@ public class Main {
         log.info("[Main] Shutdown init. !");
         BotWorker.setState(BotState.STOPPED);
 
-        if (Data.isModuleActive("temporalvoice")) {
+        if (BotConfig.isModuleActive("temporalvoice")) {
             // Save it all.
             getConfig().getTemporal().set("temporalvoice", ArrayUtil.temporalVoicechannel);
         }
@@ -467,14 +468,14 @@ public class Main {
             log.info("[Main] Closed Database Connection!");
         }
 
-        if (Data.isModuleActive("addons")) {
+        if (BotConfig.isModuleActive("addons")) {
             // Shutdown every Addon.
             log.info("[Main] Disabling every Addon!");
             getAddonManager().stopAddons();
             log.info("[Main] Every Addon has been disabled!");
         }
 
-        if (Data.isModuleActive("notifier")) {
+        if (BotConfig.isModuleActive("notifier")) {
             // Close the Twitch-Client
             log.info("[Main] Closing Twitch API Instance!");
             getNotifier().getTwitchClient().close();
@@ -553,7 +554,7 @@ public class Main {
                     ArrayUtil.messageIDwithUser.clear();
 
                     BotWorker.getShardManager().getShards().forEach(jda ->
-                            BotWorker.setActivity(jda, Data.getStatus(), Activity.ActivityType.CUSTOM_STATUS));
+                            BotWorker.setActivity(jda, BotConfig.getStatus(), Activity.ActivityType.CUSTOM_STATUS));
 
                     log.info("[Stats] ");
                     log.info("[Stats] Today's Stats:");
@@ -624,7 +625,7 @@ public class Main {
                             if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
                                 WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                        .setUsername(Data.getBotName() + "-Scheduler")
+                                        .setUsername(BotConfig.getBotName() + "-Scheduler")
                                         .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
                                         .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
@@ -638,7 +639,7 @@ public class Main {
                             if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
                                 WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                        .setUsername(Data.getBotName() + "-Scheduler")
+                                        .setUsername(BotConfig.getBotName() + "-Scheduler")
                                         .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
                                         .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
@@ -649,7 +650,7 @@ public class Main {
                             if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
                                 WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                        .setUsername(Data.getBotName() + "-Scheduler")
+                                        .setUsername(BotConfig.getBotName() + "-Scheduler")
                                         .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
                                         .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
@@ -756,7 +757,7 @@ public class Main {
             //region Twitch credentials updater.
             try {
                 // Need to load them all.
-                if (Data.isModuleActive("notifier"))
+                if (BotConfig.isModuleActive("notifier"))
                     Main.getInstance().getNotifier().getCredentialManager().load();
 
                 for (TwitchIntegration twitchIntegrations :
@@ -833,7 +834,7 @@ public class Main {
      * @param args    the arguments for the message that should be logged.
      */
     public void logAnalytic(String message, Object... args) {
-        if (!Data.isDebug()) return;
+        if (!BotConfig.isDebug()) return;
         getAnalyticsLogger().debug(message, args);
     }
 

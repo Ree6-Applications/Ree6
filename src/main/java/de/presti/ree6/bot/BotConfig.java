@@ -1,16 +1,16 @@
-package de.presti.ree6.utils.data;
+package de.presti.ree6.bot;
 
 import de.presti.ree6.main.Main;
 
 /**
  * Utility class to save long term used Data.
  */
-public class Data {
+public class BotConfig {
 
     /**
      * Constructor for the Data Utility class.
      */
-    private Data() {
+    private BotConfig() {
         throw new IllegalStateException("Utility class");
     }
 
@@ -173,6 +173,46 @@ public class Data {
      */
     public static boolean shouldUseLavaLink() {
         return Main.getInstance().getConfig().getConfiguration().getBoolean("lavalink.enable", false);
+    }
+
+    /**
+     * Check if the leveling progress should be reset on mute.
+     * @return if the leveling progress should be reset on mute.
+     */
+    public static boolean shouldResetOnMute() {
+        return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.leveling.resets.mute", true);
+    }
+
+    /**
+     * Check if the leveling progress should be reset on global mute.
+     * @return if the leveling progress should be reset on global mute.
+     */
+    public static boolean shouldResetOnMuteGlobal() {
+        return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.leveling.resets.muteGlobal", true);
+    }
+
+    /**
+     * Check if the leveling progress should be reset on deafen.
+     * @return if the leveling progress should be reset on deafen.
+     */
+    public static boolean shouldResetOnDeafen() {
+        return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.leveling.resets.deafen", true);
+    }
+
+    /**
+     * Check if the leveling progress should be reset on global deafen.
+     * @return if the leveling progress should be reset on global deafen.
+     */
+    public static boolean shouldResetOnDeafenGlobal() {
+        return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.leveling.resets.deafenGlobal", true);
+    }
+
+    /**
+     * Check if Ree6 should use Sentry to report exceptions.
+     * @return if Ree6 should use Sentry to report exceptions.
+     */
+    public static boolean shouldUseSentry() {
+        return Main.getInstance().getConfig().getConfiguration().getBoolean("sentry.enable", true);
     }
 }
 

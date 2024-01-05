@@ -80,8 +80,8 @@ Level implements ICommand {
     public void sendLevel(Member member, CommandEvent commandEvent, String type) {
 
         UserLevel userLevel = type.equalsIgnoreCase("voice") ?
-                SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getId(), member.getId()) :
-                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getId(), member.getId());
+                SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getIdLong(), member.getIdLong()) :
+                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), member.getIdLong());
 
             try {
                 MessageCreateBuilder createBuilder = new MessageCreateBuilder();

@@ -8,7 +8,7 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Suggestions;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -36,7 +36,7 @@ public class Suggestion implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        if (!Data.isModuleActive("suggestions")) {
+        if (!BotConfig.isModuleActive("suggestions")) {
             commandEvent.reply("Suggestions module disabled!", 5);
             return;
         }
@@ -77,17 +77,19 @@ public class Suggestion implements ICommand {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle(commandEvent.getResource("label.suggestionMenu"));
         embedBuilder.setColor(Color.ORANGE);
-        embedBuilder.setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "message_suggestion_menu").getStringValue());
-        embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
+        embedBuilder.setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_suggestion_menu").getStringValue());
+        embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
         messageCreateBuilder.setEmbeds(embedBuilder.build());
         messageCreateBuilder.setActionRow(Button.primary("re_suggestion", commandEvent.getResource("message.suggestion.suggestionMenuPlaceholder")));
 
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
 
-        Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()));
+        Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildChannelId.guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()));
 
         if (suggestions != null) {
-            suggestions.setChannelId(channel.getIdLong());
+            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(suggestions);
+
+            suggestions.getGuildChannelId().setChannelId(channel.getIdLong());
             SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions);
         } else {
             suggestions = new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong());

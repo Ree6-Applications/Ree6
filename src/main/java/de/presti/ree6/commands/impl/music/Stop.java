@@ -5,7 +5,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -25,7 +25,7 @@ public class Stop implements ICommand {
             }
             Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().stopAll(commandEvent.getInteractionHook());
         } else {
-            commandEvent.reply(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), Data.getWebsite(),
+            commandEvent.reply(new EmbedBuilder().setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), BotConfig.getWebsite(),
                             commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl()).setTitle(commandEvent.getResource("label.musicPlayer"))
                     .setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
                     .setColor(Color.RED)

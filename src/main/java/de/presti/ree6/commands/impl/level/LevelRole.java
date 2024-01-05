@@ -58,9 +58,9 @@ public class LevelRole implements ICommand {
                 long level = levelMapping.getAsLong();
 
                 if (voiceMapping.getAsBoolean()) {
-                    SQLSession.getSqlConnector().getSqlWorker().addVoiceLevelReward(commandEvent.getGuild().getId(), role.getId(), level);
+                    SQLSession.getSqlConnector().getSqlWorker().addVoiceLevelReward(commandEvent.getGuild().getIdLong(), role.getIdLong(), level);
                 } else {
-                    SQLSession.getSqlConnector().getSqlWorker().addChatLevelReward(commandEvent.getGuild().getId(), role.getId(), level);
+                    SQLSession.getSqlConnector().getSqlWorker().addChatLevelReward(commandEvent.getGuild().getIdLong(), role.getIdLong(), level);
                 }
                 commandEvent.reply(commandEvent.getResource("message.levelRole.added", role.getName(), level));
             }
@@ -69,9 +69,9 @@ public class LevelRole implements ICommand {
                 long level = levelMapping.getAsLong();
 
                 if (voiceMapping.getAsBoolean()) {
-                    SQLSession.getSqlConnector().getSqlWorker().removeVoiceLevelReward(commandEvent.getGuild().getId(), role.getId(), level);
+                    SQLSession.getSqlConnector().getSqlWorker().removeVoiceLevelReward(commandEvent.getGuild().getIdLong(), role.getIdLong(), level);
                 } else {
-                    SQLSession.getSqlConnector().getSqlWorker().removeChatLevelReward(commandEvent.getGuild().getId(), role.getId(), level);
+                    SQLSession.getSqlConnector().getSqlWorker().removeChatLevelReward(commandEvent.getGuild().getIdLong(), role.getIdLong(), level);
                 }
                 commandEvent.reply(commandEvent.getResource("message.levelRole.removed", role.getName(), level));
             }
@@ -81,9 +81,9 @@ public class LevelRole implements ICommand {
                 StringBuilder chatStringBuilder = new StringBuilder();
                 createBuilder.setContent(commandEvent.getResource("message.levelRole.list"));
 
-                SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(commandEvent.getGuild().getId())
+                SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(commandEvent.getGuild().getIdLong())
                         .forEach((level1, role1) -> voiceStringBuilder.append(level1).append(" -> ").append(role1));
-                SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(commandEvent.getGuild().getId())
+                SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(commandEvent.getGuild().getIdLong())
                         .forEach((level1, role1) -> chatStringBuilder.append(level1).append(" -> ").append(role1));
 
                 createBuilder.addFiles(FileUpload.fromData(voiceStringBuilder.toString().getBytes(StandardCharsets.UTF_8), "voice.txt"),

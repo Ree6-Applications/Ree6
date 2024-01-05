@@ -8,12 +8,12 @@ public class InviteContainer {
     /**
      * The ID of the Guild.
      */
-    String guildId;
+    long guildId;
 
     /**
      * The ID of the creator.
      */
-    String creatorId;
+    long creatorId;
 
     /**
      * The Code of the Invite.
@@ -39,7 +39,7 @@ public class InviteContainer {
      * @param uses      the Usage Count of the Invite.
      * @param isVanity  if the Invite is a vanity Invite.
      */
-    public InviteContainer(String creatorId, String guildId, String code, long uses, boolean isVanity) {
+    public InviteContainer(long creatorId, long guildId, String code, long uses, boolean isVanity) {
         this.creatorId = creatorId;
         this.guildId = guildId;
         this.code = code;
@@ -52,7 +52,7 @@ public class InviteContainer {
      *
      * @return {@link String} as User ID.
      */
-    public String getCreatorId() {
+    public long getCreatorId() {
         return creatorId;
     }
 
@@ -61,7 +61,7 @@ public class InviteContainer {
      *
      * @param creatorId the ID of the Creator.
      */
-    public void setCreatorId(String creatorId) {
+    public void setCreatorId(long creatorId) {
         this.creatorId = creatorId;
     }
 
@@ -70,7 +70,7 @@ public class InviteContainer {
      *
      * @return {@link String} as Guild ID.
      */
-    public String getGuildId() {
+    public long getGuildId() {
         return guildId;
     }
 
@@ -79,7 +79,7 @@ public class InviteContainer {
      *
      * @param guildId the ID of the Guild.
      */
-    public void setGuildId(String guildId) {
+    public void setGuildId(long guildId) {
         this.guildId = guildId;
     }
 

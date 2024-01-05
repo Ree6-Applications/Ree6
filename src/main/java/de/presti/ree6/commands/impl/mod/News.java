@@ -25,10 +25,10 @@ public class News implements ICommand {
             return;
         }
 
-        Setting setting = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "configuration_news");
+        Setting setting = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news");
 
         if (setting == null) {
-            SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getId(), "configuration_news", "Receive News", true);
+            SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getIdLong(), "configuration_news", "Receive News", true);
             commandEvent.reply(commandEvent.getResource("message.news.enabled"), 5);
             return;
         }

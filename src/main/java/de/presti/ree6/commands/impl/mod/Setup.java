@@ -7,7 +7,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -54,7 +54,7 @@ public class Setup implements ICommand {
                                     byte[] imageArray = inputStream.readAllBytes();
 
                                     SQLSession.getSqlConnector().getSqlWorker()
-                                            .setSetting(new Setting(commandEvent.getGuild().getId(), "message_join_image", "Welcome Image", Base64.getEncoder().encodeToString(imageArray)));
+                                            .setSetting(new Setting(commandEvent.getGuild().getIdLong(), "message_join_image", "Welcome Image", Base64.getEncoder().encodeToString(imageArray)));
                                     commandEvent.reply(commandEvent.getResource("message.setup.successImage"));
                                 } catch (Exception e) {
                                     commandEvent.reply(commandEvent.getResource("command.perform.error"));
@@ -69,7 +69,7 @@ public class Setup implements ICommand {
 
             EmbedBuilder embedBuilder = new EmbedBuilder()
                     .setTitle(commandEvent.getResource("label.setup"))
-                    .setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl())
+                    .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
                     .setColor(Color.cyan)
                     .setDescription(commandEvent.getResource("message.setup.setupMenu"));
 

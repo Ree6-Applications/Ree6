@@ -1,7 +1,7 @@
 language:
   name: "Português (BR)"
   locale: "pt-BR"
-  version: "3.0.15"
+  version: "3.1.2"
   author: "louanfontenele"
 logging:
   banned: ":airplane_departure: %s **foi banido.**"
@@ -194,6 +194,8 @@ label:
   musicQuizTitleGuess: "Palpite no Título do MusicQuiz"
   rewards: "Recompensas"
   sendToChat: "Enviar no Chat"
+  avatar: "Avatar"
+  footerMessage: "Requested by %s - %s"
 message:
   default:
     usage: "Uso {guild_prefix}%s."
@@ -693,6 +695,7 @@ command:
     steal: "Roube dinheiro de outros usuários!"
     work: "Obtenha seu próprio dinheiro fazendo trabalhos!"
     giveaway: "Gerencie sorteios!"
+    avatar: "Get the Avatar of an User!"
 category:
   info: "Usado para reunir informações ou fornecer informações."
   moderation: "Ferramentas de moderação que podem ajudar você a gerenciar usuários ou evitar infrações nas regras do servidor."

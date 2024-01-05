@@ -8,7 +8,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -64,11 +64,13 @@ public class Help implements ICommand {
         em.setColor(BotWorker.randomEmbedColor());
         em.setTitle("Help Center");
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-        em.setFooter(commandEvent.getGuild().getName() + " - " + Data.getAdvertisement(), commandEvent.getGuild().getIconUrl());
+        em.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
         if (categoryString == null) {
-            String prefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue();
+            String prefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").getStringValue();
             for (Category cat : Category.values()) {
                 if (cat != Category.HIDDEN) {
+                    if (!BotConfig.isModuleActive(cat.name().toLowerCase())) continue;
+
                     String formattedName = cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase();
                     em.addField("**" + formattedName + "**", prefix + "help " + cat.name().toLowerCase(), true);
                 }
@@ -79,7 +81,7 @@ public class Help implements ICommand {
 
                 Category category = getCategoryFromString(categoryString);
 
-                String prefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getId(), "chatprefix").getStringValue();
+                String prefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").getStringValue();
 
                 for (ICommand cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).category() == category).toList()) {
                     end.append("``")
@@ -99,11 +101,11 @@ public class Help implements ICommand {
 
         messageCreateBuilder
                 .addActionRow(
-                        Button.of(ButtonStyle.LINK, Data.getInvite(), commandEvent.getResource("label.invite"),
+                        Button.of(ButtonStyle.LINK, BotConfig.getInvite(), commandEvent.getResource("label.invite"),
                                 Emoji.fromCustom("re_icon_invite", 1019234807844175945L, false)),
-                        Button.of(ButtonStyle.LINK, Data.getSupport(), commandEvent.getResource("label.support"),
+                        Button.of(ButtonStyle.LINK, BotConfig.getSupport(), commandEvent.getResource("label.support"),
                                 Emoji.fromCustom("re_icon_help", 1019234684745564170L, false)),
-                        Button.of(ButtonStyle.LINK, Data.getGithub(), commandEvent.getResource("label.github"),
+                        Button.of(ButtonStyle.LINK, BotConfig.getGithub(), commandEvent.getResource("label.github"),
                                 Emoji.fromCustom("re_icon_github", 492259724079792138L, false)),
                         Button.of(ButtonStyle.SECONDARY, "re_feedback", commandEvent.getResource("label.feedback"),
                                 Emoji.fromCustom("kiss", 1012765976951009361L, true))

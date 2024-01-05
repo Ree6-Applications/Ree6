@@ -18,16 +18,13 @@ import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.data.ImageCreationUtility;
 import de.presti.ree6.utils.others.*;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -62,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 /**
  * Event Handler for no categorized Events.
@@ -79,7 +77,7 @@ public class OtherEvents extends ListenerAdapter {
 
         Main.getInstance().getCommandManager().addSlashCommand(event.getJDA());
 
-        BotWorker.setActivity(event.getJDA(), Data.getStatus(), Activity.ActivityType.CUSTOM_STATUS);
+        BotWorker.setActivity(event.getJDA(), BotConfig.getStatus(), Activity.ActivityType.CUSTOM_STATUS);
     }
 
     /**
@@ -87,7 +85,7 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
-        SQLSession.getSqlConnector().getSqlWorker().createSettings(event.getGuild().getId());
+        SQLSession.getSqlConnector().getSqlWorker().createSettings(event.getGuild().getIdLong());
     }
 
     /**
@@ -95,7 +93,7 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onGuildLeave(@Nonnull GuildLeaveEvent event) {
-        SQLSession.getSqlConnector().getSqlWorker().deleteAllData(event.getGuild().getId());
+        SQLSession.getSqlConnector().getSqlWorker().deleteAllData(event.getGuild().getIdLong());
     }
 
     /**
@@ -134,23 +132,23 @@ public class OtherEvents extends ListenerAdapter {
 
             UserUtil.handleMemberJoin(event.getGuild(), event.getMember());
 
-            if (!SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getId())) return;
+            if (!SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getIdLong())) return;
 
             WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
             wmb.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
             wmb.setUsername("Welcome!");
 
-            String messageContent = SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join")
+            String messageContent = SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "message_join")
                     .getStringValue()
                     .replace("%user_name%", event.getMember().getUser().getName())
                     .replace("%guild_name%", event.getGuild().getName())
                     .replace("%guild_member_count%", String.valueOf(event.getGuild().getMemberCount()));
-            if (!SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue().isBlank()) {
+            if (!SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "message_join_image").getStringValue().isBlank()) {
                 try {
                     messageContent = messageContent.replace("%user_mention%", event.getMember().getUser().getName());
                     wmb.addFile("welcome.png", ImageCreationUtility.createJoinImage(event.getUser(),
-                            SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "message_join_image").getStringValue(), messageContent));
+                            SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "message_join_image").getStringValue(), messageContent));
                 } catch (IOException e) {
                     wmb.setContent(messageContent);
                     log.error("Error while creating join image!", e);
@@ -160,7 +158,7 @@ public class OtherEvents extends ListenerAdapter {
                 wmb.setContent(messageContent);
             }
 
-            WebhookUtil.sendWebhook(wmb.build(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getId()));
+            WebhookUtil.sendWebhook(wmb.build(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getIdLong()));
         });
     }
 
@@ -199,7 +197,7 @@ public class OtherEvents extends ListenerAdapter {
             }
         });
 
-        if (Data.isModuleActive("tickets")) {
+        if (BotConfig.isModuleActive("tickets")) {
             Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
             if (tickets != null) {
                 Category category = event.getGuild().getCategoryById(tickets.getTicketCategory());
@@ -209,7 +207,7 @@ public class OtherEvents extends ListenerAdapter {
                     if (!channels.isEmpty()) {
                         TextChannel channel = channels.get(0);
                         StringBuilder stringBuilder = new StringBuilder();
-                        stringBuilder.append(Data.getBotName())
+                        stringBuilder.append(BotConfig.getBotName())
                                 .append(" Ticket transcript")
                                 .append(" ")
                                 .append(ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)))
@@ -242,12 +240,12 @@ public class OtherEvents extends ListenerAdapter {
 
                         WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
                         webhookMessageBuilder.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-                        webhookMessageBuilder.setUsername(Data.getBotName() + "-Tickets");
+                        webhookMessageBuilder.setUsername(BotConfig.getBotName() + "-Tickets");
 
                         WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
                         webhookEmbedBuilder.setDescription("Here is the transcript of the ticket " + tickets.getTicketCount() + "!");
-                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " " + Data.getAdvertisement(), event.getGuild().getIconUrl()));
+                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
                         webhookEmbedBuilder.setColor(BotWorker.randomEmbedColor().getRGB());
 
                         webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
@@ -267,12 +265,19 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
         if (event.getChannelLeft() == null) {
-            if (!ArrayUtil.voiceJoined.containsKey(event.getMember()) && !event.getEntity().getUser().isBot() && (event.getEntity().getVoiceState() != null && !event.getEntity().getVoiceState().isGuildDeafened())) {
+            if (!ArrayUtil.voiceJoined.containsKey(event.getMember()) && !event.getEntity().getUser().isBot()) {
+                GuildVoiceState voiceState = event.getVoiceState();
+
+                if (voiceState.isMuted() && BotConfig.shouldResetOnMute()) return;
+                if (voiceState.isGuildMuted() && BotConfig.shouldResetOnMuteGlobal()) return;
+                if (voiceState.isDeafened() && BotConfig.shouldResetOnDeafen()) return;
+                if (voiceState.isGuildDeafened() && BotConfig.shouldResetOnDeafenGlobal()) return;
+
                 ArrayUtil.voiceJoined.put(event.getMember(), System.currentTimeMillis());
             }
 
-            if (Data.isModuleActive("temporalvoice")) {
-                TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+            if (BotConfig.isModuleActive("temporalvoice")) {
+                TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getId()));
 
                 if (temporalVoicechannel != null) {
                     VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
@@ -280,7 +285,7 @@ public class OtherEvents extends ListenerAdapter {
                     if (voiceChannel == null)
                         return;
 
-                    if (!temporalVoicechannel.getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
+                    if (temporalVoicechannel.getGuildChannelId().getChannelId() != voiceChannel.getIdLong()) {
                         return;
                     }
 
@@ -314,7 +319,7 @@ public class OtherEvents extends ListenerAdapter {
                 Main.getInstance().getMusicWorker().disconnect(event.getGuild());
             }
 
-            if (Data.isModuleActive("temporalvoice")) {
+            if (BotConfig.isModuleActive("temporalvoice")) {
                 if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())
                         && (event.getChannelLeft().getMembers().isEmpty() || (event.getChannelLeft().getMembers().size() == 1 &&
                         event.getChannelLeft().getMembers().get(0).getIdLong() == event.getJDA().getSelfUser().getIdLong()))) {
@@ -323,7 +328,7 @@ public class OtherEvents extends ListenerAdapter {
             }
         } else {
 
-            TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildId=:gid", Map.of("gid", event.getGuild().getId()));
+            TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getId()));
 
             if (temporalVoicechannel != null) {
                 VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
@@ -331,7 +336,7 @@ public class OtherEvents extends ListenerAdapter {
                 if (voiceChannel == null)
                     return;
 
-                if (!temporalVoicechannel.getVoiceChannelId().equalsIgnoreCase(voiceChannel.getId())) {
+                if (temporalVoicechannel.getGuildChannelId().getChannelId() != voiceChannel.getIdLong()) {
                     return;
                 }
 
@@ -356,53 +361,56 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onGenericGuildVoice(@NotNull GenericGuildVoiceEvent event) {
 
-        boolean toggleOn = false;
+        if (!(event instanceof GuildVoiceDeafenEvent || event instanceof GuildVoiceGuildDeafenEvent || event instanceof GuildVoiceGuildMuteEvent || event instanceof GuildVoiceMuteEvent)) {
+            return;
+        }
 
         if (event instanceof GuildVoiceGuildDeafenEvent guildDeafenEvent) {
             if (event.getMember() == event.getGuild().getSelfMember() &&
                     !guildDeafenEvent.isGuildDeafened()) {
                 event.getGuild().getSelfMember().deafen(true).queue();
             }
-
-            toggleOn = guildDeafenEvent.isGuildDeafened();
-        } else if (event instanceof GuildVoiceGuildMuteEvent guildVoiceGuildMuteEvent) {
-            toggleOn = guildVoiceGuildMuteEvent.isGuildMuted();
-        } else if (event instanceof GuildVoiceMuteEvent guildVoiceMuteEvent) {
-            toggleOn = guildVoiceMuteEvent.isMuted();
-        } else if (event instanceof GuildVoiceDeafenEvent guildVoiceDeafenEvent) {
-            toggleOn = guildVoiceDeafenEvent.isDeafened();
         }
 
         if (event.getMember().getUser().isBot()) return;
 
+        GuildVoiceState voiceState = event.getVoiceState();
+
+        boolean toggleOn = (BotConfig.shouldResetOnDeafenGlobal() && voiceState.isGuildDeafened()) ||
+                (BotConfig.shouldResetOnDeafen() && voiceState.isDeafened()) ||
+                (BotConfig.shouldResetOnMuteGlobal() && voiceState.isGuildMuted()) ||
+                (BotConfig.shouldResetOnMute() && voiceState.isMuted());
+
         if (toggleOn) {
             doVoiceXPStuff(event.getMember());
         } else {
+            if (!event.getVoiceState().inAudioChannel()) return;
+            if (ArrayUtil.voiceJoined.containsKey(event.getMember())) return;
+
             ArrayUtil.voiceJoined.put(event.getMember(), System.currentTimeMillis());
         }
     }
 
-    @Override
-    public void onGuildVoiceMute(@NotNull GuildVoiceMuteEvent event) {
-        super.onGuildVoiceMute(event);
-    }
-
+    /**
+     * Method used to do all the calculations for the Voice XP.
+     * @param member the Member that should be checked.
+     */
     public void doVoiceXPStuff(Member member) {
         if (ArrayUtil.voiceJoined.containsKey(member)) {
             int min = TimeUtil.getTimeinMin(TimeUtil.getTimeinSec(ArrayUtil.voiceJoined.get(member)));
 
-            int addXP = 0;
+            int addXP = IntStream.rangeClosed(1, min).map(i -> RandomUtils.random.nextInt(5, 11)).sum();
 
-            for (int i = 1; i <= min; i++) {
-                addXP += RandomUtils.random.nextInt(5, 11);
-            }
+            // TODO:: await database future system.
+            ThreadUtil.createThread(x -> {
+                VoiceUserLevel newUserLevel = SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(member.getGuild().getIdLong(), member.getIdLong());
+                newUserLevel.addExperience(addXP);
 
-            VoiceUserLevel newUserLevel = SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(member.getGuild().getId(), member.getId());
-            newUserLevel.addExperience(addXP);
+                SQLSession.getSqlConnector().getSqlWorker().addVoiceLevelData(member.getGuild().getIdLong(), newUserLevel);
 
-            SQLSession.getSqlConnector().getSqlWorker().addVoiceLevelData(member.getGuild().getId(), newUserLevel);
+                UserUtil.handleVoiceLevelReward(member.getGuild(), member);
+            });
 
-            UserUtil.handleVoiceLevelReward(member.getGuild(), member);
             ArrayUtil.voiceJoined.remove(member);
         }
     }
@@ -430,8 +438,8 @@ public class OtherEvents extends ListenerAdapter {
         super.onMessageReceived(event);
 
         if (event.isFromType(ChannelType.NEWS) &&
-                Data.isModuleActive("autopublish") &&
-                SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "configuration_autopublish").getBooleanValue()) {
+                BotConfig.isModuleActive("autopublish") &&
+                SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "configuration_autopublish").getBooleanValue()) {
             event.getMessage().crosspost().queue(c -> c.addReaction(Emoji.fromUnicode("U+1F4E2")).queue());
         }
 
@@ -450,8 +458,8 @@ public class OtherEvents extends ListenerAdapter {
             // TODO:: start working with futureComplete instead of creating a thread here.
             ThreadUtil.createThread(x -> {
 
-                if (ModerationUtil.shouldModerate(event.getGuild().getId())) {
-                    if (ModerationUtil.checkMessage(event.getGuild().getId(), event.getMessage().getContentRaw())) {
+                if (ModerationUtil.shouldModerate(event.getGuild().getIdLong())) {
+                    if (ModerationUtil.checkMessage(event.getGuild().getIdLong(), event.getMessage().getContentRaw())) {
                         Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
                         Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.blacklisted"), event.getChannel(), null);
                         return;
@@ -474,18 +482,18 @@ public class OtherEvents extends ListenerAdapter {
                         }
                     }
 
-                    if (Data.isModuleActive("level")) {
+                    if (BotConfig.isModuleActive("level")) {
                         if (!ArrayUtil.timeout.contains(event.getMember())) {
 
-                            ChatUserLevel userLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getId(), event.getMember().getId());
+                            ChatUserLevel userLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getIdLong(), event.getMember().getIdLong());
 
-                            if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getId(), "level_message").getBooleanValue()) {
+                            if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26)) && SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "level_message").getBooleanValue()) {
                                 Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(),
                                         "message.levelUp", userLevel.getLevel(), LanguageService.getByGuild(event.getGuild(), "label.chat")
                                         , event.getMember().getAsMention()), event.getChannel());
                             }
 
-                            SQLSession.getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getId(), userLevel);
+                            SQLSession.getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getIdLong(), userLevel);
 
                             ArrayUtil.timeout.add(event.getMember());
 
@@ -504,7 +512,7 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-        if (!Data.isModuleActive("reactionRoles")) return;
+        if (!BotConfig.isModuleActive("reactionRoles")) return;
 
         if (event.getMember() == null) return;
 
@@ -552,10 +560,10 @@ public class OtherEvents extends ListenerAdapter {
                     }
                 }
             } else {
-                ReactionRole reactionRole = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(), "FROM ReactionRole WHERE guildId=:gid AND emoteId=:emoteId AND messageId=:messageId", Map.of("gid", event.getGuild().getIdLong(), "emoteId", emojiId, "messageId", message.getIdLong()));
+                ReactionRole reactionRole = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(), "FROM ReactionRole WHERE guildRoleId.guildId=:gid AND emoteId=:emoteId AND messageId=:messageId", Map.of("gid", event.getGuild().getIdLong(), "emoteId", emojiId, "messageId", message.getIdLong()));
 
                 if (reactionRole != null) {
-                    Role role = event.getGuild().getRoleById(reactionRole.getRoleId());
+                    Role role = event.getGuild().getRoleById(reactionRole.getId());
 
                     if (role != null) {
                         event.getGuild().addRoleToMember(event.getMember(), role).queue();
@@ -585,7 +593,7 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
-        if (!Data.isModuleActive("reactionRoles")) return;
+        if (!BotConfig.isModuleActive("reactionRoles")) return;
         if (event.getMember() == null) return;
 
         String reactionCode = event.getReaction().getEmoji().getAsReactionCode();
@@ -598,11 +606,11 @@ public class OtherEvents extends ListenerAdapter {
         }
 
         ReactionRole reactionRole = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
-                "FROM ReactionRole WHERE guildId=:gid AND emoteId=:emoteId AND messageId=:messageId",
+                "FROM ReactionRole WHERE guildRoleId.guildId=:gid AND emoteId=:emoteId AND messageId=:messageId",
                 Map.of("gid", event.getGuild().getIdLong(), "emoteId", emojiId, "messageId", event.getMessageIdLong()));
 
         if (reactionRole != null) {
-            Role role = event.getGuild().getRoleById(reactionRole.getRoleId());
+            Role role = event.getGuild().getRoleById(reactionRole.getId());
 
             if (role != null) {
                 event.getGuild().removeRoleFromMember(event.getMember(), role).queue();
@@ -615,7 +623,7 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        if (!Data.isModuleActive("slashcommands")) return;
+        if (!BotConfig.isModuleActive("slashcommands")) return;
 
         // Only accept commands from guilds
         if (!event.isFromGuild() && event.getMember() != null) return;

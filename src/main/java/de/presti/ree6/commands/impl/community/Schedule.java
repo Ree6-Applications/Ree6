@@ -7,7 +7,7 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.ScheduledMessage;
 import de.presti.ree6.sql.entities.webhook.WebhookScheduledMessage;
-import de.presti.ree6.utils.data.Data;
+import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -59,7 +59,7 @@ public class Schedule implements ICommand {
                 StringBuilder stringBuilder = new StringBuilder();
 
                 for (ScheduledMessage scheduledMessage : SQLSession.getSqlConnector().getSqlWorker()
-                        .getEntityList(new ScheduledMessage(), "FROM ScheduledMessage WHERE guildId = :gid ",
+                        .getEntityList(new ScheduledMessage(), "FROM ScheduledMessage WHERE guildAndId.guildId = :gid ",
                                 Map.of("gid", commandEvent.getGuild().getIdLong()))) {
                     stringBuilder.append(scheduledMessage.getId()).append(" ").append("-").append(" ")
                             .append(scheduledMessage.getMessage()).append(" ")
@@ -75,7 +75,7 @@ public class Schedule implements ICommand {
                 OptionMapping id = commandEvent.getOption("id");
 
                 ScheduledMessage scheduledMessage = SQLSession.getSqlConnector().getSqlWorker()
-                        .getEntity(new ScheduledMessage(), "FROM ScheduledMessage WHERE guildId = :gid AND Id = :id",
+                        .getEntity(new ScheduledMessage(), "FROM ScheduledMessage WHERE guildAndId.guildId = :gid AND guildAndId.id = :id",
                                 Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id.getAsLong()));
 
                 if (scheduledMessage != null) {
@@ -111,14 +111,14 @@ public class Schedule implements ICommand {
 
                 WebhookScheduledMessage webhookScheduledMessage =
                         SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookScheduledMessage(),
-                                "FROM WebhookScheduledMessage WHERE guildId = :gid AND channelId = :channel",
+                                "FROM WebhookScheduledMessage WHERE guildAndId.guildId = :gid AND channelId = :channel",
                                 Map.of("gid", commandEvent.getGuild().getId(),"channel", guildChannel.getIdLong()));
 
                 if (webhookScheduledMessage == null) {
-                    Webhook webhook = guildChannel.asStandardGuildMessageChannel().createWebhook(Data.getBotName() + "-Schedule").complete();
+                    Webhook webhook = guildChannel.asStandardGuildMessageChannel().createWebhook(BotConfig.getBotName() + "-Schedule").complete();
 
                     webhookScheduledMessage = SQLSession.getSqlConnector().getSqlWorker()
-                            .updateEntity(new WebhookScheduledMessage(commandEvent.getGuild().getId(), guildChannel.getIdLong(), webhook.getId(), webhook.getToken()));
+                            .updateEntity(new WebhookScheduledMessage(commandEvent.getGuild().getIdLong(), guildChannel.getIdLong(), webhook.getIdLong(), webhook.getToken()));
                 }
 
                 scheduledMessage.setScheduledMessageWebhook(webhookScheduledMessage);

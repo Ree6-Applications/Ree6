@@ -1,7 +1,7 @@
 language:
   name: "Ukrainian"
   locale: "uk"
-  version: "3.0.15"
+  version: "3.1.2"
   author: "xlanyleeet"
 logging:
   banned: ":airplane_departure: %s **заблоковано.**"
@@ -194,6 +194,8 @@ label:
   musicQuizTitleGuess: "Вгадування назви MusicQuiz"
   rewards: "Винагороди"
   sendToChat: "Надішліть його в чат"
+  avatar: "Avatar"
+  footerMessage: "Requested by %s - %s"
 message:
   default:
     usage: "Використання {guild_prefix}%s."
@@ -693,6 +695,7 @@ command:
     steal: "Вкрасти гроші інших користувачів!"
     work: "Отримайте свої власні гроші від здійснення роботи!"
     giveaway: "Керування розіграшами!"
+    avatar: "Get the Avatar of an User!"
 category:
   info: "Використовується для збору інформації або надання інформації."
   moderation: "Інструменти модерації, які можуть допомогти вам керувати користувачами або запобігти порушенню правил на сервері."

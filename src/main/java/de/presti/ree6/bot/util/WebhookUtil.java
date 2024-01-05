@@ -7,6 +7,8 @@ import de.presti.ree6.logger.events.LogMessage;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.webhook.*;
+import de.presti.ree6.sql.entities.webhook.base.Webhook;
+import de.presti.ree6.sql.entities.webhook.base.WebhookSocial;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -34,7 +36,7 @@ public class WebhookUtil {
      * @param webhook the Webhook.
      */
     public static void sendWebhook(WebhookMessage message, Webhook webhook) {
-        sendWebhook(null, message, Long.parseLong(webhook.getWebhookId()), webhook.getToken(), false);
+        sendWebhook(null, message, webhook.getWebhookId(), webhook.getToken(), false);
     }
 
     /**
@@ -46,7 +48,29 @@ public class WebhookUtil {
      * @param isLog         is the Webhook Message a Log-Message?
      */
     public static void sendWebhook(LogMessage loggerMessage, WebhookMessage message, Webhook webhook, boolean isLog) {
-        sendWebhook(loggerMessage, message, Long.parseLong(webhook.getWebhookId()), webhook.getToken(), isLog);
+        sendWebhook(loggerMessage, message, webhook.getWebhookId(), webhook.getToken(), isLog);
+    }
+
+    /**
+     * Send a Webhook-message to the wanted Webhook.
+     *
+     * @param message the MessageContent.
+     * @param webhook the Webhook.
+     */
+    public static void sendWebhook(WebhookMessage message, WebhookSocial webhook) {
+        sendWebhook(null, message, webhook.getWebhookId(), webhook.getToken(), false);
+    }
+
+    /**
+     * Send a Webhook-message to the wanted Webhook.
+     *
+     * @param loggerMessage the MessageContent, if it has been merged.
+     * @param message       the MessageContent.
+     * @param webhook       the Webhook.
+     * @param isLog         is the Webhook Message a Log-Message?
+     */
+    public static void sendWebhook(LogMessage loggerMessage, WebhookMessage message, WebhookSocial webhook, boolean isLog) {
+        sendWebhook(loggerMessage, message, webhook.getWebhookId(), webhook.getToken(), isLog);
     }
 
 
@@ -171,7 +195,7 @@ public class WebhookUtil {
      * @param guildId       the ID of the Guild.
      * @param webhookEntity the Webhook entity.
      */
-    public static void deleteWebhook(String guildId, Webhook webhookEntity) {
+    public static void deleteWebhook(long guildId, Webhook webhookEntity) {
         // Get the Guild from the ID.
         Guild guild = BotWorker.getShardManager().getGuildById(guildId);
 
@@ -179,7 +203,7 @@ public class WebhookUtil {
             // Delete the existing Webhook.
             guild.retrieveWebhooks()
                     .queue(webhooks -> webhooks.stream().filter(webhook -> webhook.getToken() != null)
-                            .filter(webhook -> webhook.getId().equalsIgnoreCase(webhookEntity.getWebhookId()) &&
+                            .filter(webhook -> webhook.getIdLong() == webhookEntity.getWebhookId() &&
                                     webhook.getToken().equalsIgnoreCase(webhookEntity.getToken()))
                             .forEach(webhook -> webhook.delete().queue()));
         }
