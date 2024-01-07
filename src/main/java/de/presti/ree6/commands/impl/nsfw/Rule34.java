@@ -75,7 +75,7 @@ public class Rule34 implements ICommand {
 
         if (tags.contains("loli") || tags.contains("l0li") || tags.contains("lol1") || tags.contains("l0l1") ||
                 tags.contains("child") || tags.contentEquals("children") || tags.contains("kid") ||
-                tags.contains("underaged") || tags.contains("underage")) {
+                tags.contains("underaged") || tags.contains("underage") || tags.contains("young")) {
             message.editMessage(commandEvent.getResource("message.nsfw.notAllowed")).queue();
             return;
         }
