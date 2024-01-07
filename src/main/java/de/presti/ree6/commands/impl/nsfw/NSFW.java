@@ -61,7 +61,8 @@ public class NSFW implements ICommand {
                     if (fileUrl.endsWith(".jpg") ||
                             fileUrl.endsWith(".png") ||
                             fileUrl.endsWith(".jpeg") ||
-                            fileUrl.endsWith(".gif")) {
+                            fileUrl.endsWith(".gif") ||
+                            fileUrl.endsWith(".webp")) {
                         images.add(x.getUrl());
                     }
                 }
