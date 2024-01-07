@@ -7,6 +7,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.others.RandomUtils;
+import io.sentry.Sentry;
 import masecla.reddit4j.objects.RedditPost;
 import masecla.reddit4j.objects.Sorting;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -85,6 +86,8 @@ public class NSFW implements ICommand {
                 message.editMessage(commandEvent.getResource("message.default.retrievalError")).delay(Duration.ofSeconds(5)).flatMap(Message::delete).queue();
             }
         } catch (Exception exception) {
+            log.error("Failed to load NSFW Images from Reddit!", exception);
+            Sentry.captureException(exception);
             message.editMessage(commandEvent.getResource("message.default.retrievalError")).delay(Duration.ofSeconds(5)).flatMap(Message::delete).queue();
         }
     }
