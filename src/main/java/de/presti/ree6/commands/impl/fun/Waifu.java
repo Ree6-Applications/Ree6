@@ -62,22 +62,26 @@ public class Waifu implements ICommand {
 
         String from = "";
 
-        if (fullObject.has("anime")) {
-            JsonArray animeArray = fullObject.getAsJsonArray("anime");
-            if (!animeArray.isEmpty()) {
-                JsonObject animeObject = animeArray.get(0).getAsJsonObject().getAsJsonObject("anime");
-                if (animeObject.has("title")) {
-                    from = animeObject.getAsJsonPrimitive("title").getAsString();
+        if (fullObject.has("data")) {
+            JsonObject fullDataObject = fullObject.getAsJsonObject("data");
+
+            if (fullDataObject.has("anime")) {
+                JsonArray animeArray = fullDataObject.getAsJsonArray("anime");
+                if (!animeArray.isEmpty()) {
+                    JsonObject animeObject = animeArray.get(0).getAsJsonObject().getAsJsonObject("anime");
+                    if (animeObject.has("title")) {
+                        from = "[" + animeObject.getAsJsonPrimitive("title").getAsString() + "](" + animeObject.getAsJsonPrimitive("url").getAsString() + ")";
+                    }
                 }
             }
-        }
 
-        if (from.isBlank() && fullObject.has("manga")) {
-            JsonArray mangaArray = fullObject.getAsJsonArray("manga");
-            if (!mangaArray.isEmpty()) {
-                JsonObject mangaObject = mangaArray.get(0).getAsJsonObject().getAsJsonObject("manga");
-                if (mangaObject.has("title")) {
-                    from = mangaObject.getAsJsonPrimitive("title").getAsString();
+            if (from.isBlank() && fullDataObject.has("manga")) {
+                JsonArray mangaArray = fullDataObject.getAsJsonArray("manga");
+                if (!mangaArray.isEmpty()) {
+                    JsonObject mangaObject = mangaArray.get(0).getAsJsonObject().getAsJsonObject("manga");
+                    if (mangaObject.has("title")) {
+                        from = "[" + mangaObject.getAsJsonPrimitive("title").getAsString() + "](" + mangaObject.getAsJsonPrimitive("url").getAsString() + ")";
+                    }
                 }
             }
         }
@@ -86,7 +90,7 @@ public class Waifu implements ICommand {
             from = commandEvent.getResource("message.default.retrievalError");
         }
 
-        em.addField("**" + commandEvent.getResource("label.from") + "**", "``" + from + "``", true);
+        em.addField("**" + commandEvent.getResource("label.from") + "**", from, true);
 
         em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + BotConfig.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
 

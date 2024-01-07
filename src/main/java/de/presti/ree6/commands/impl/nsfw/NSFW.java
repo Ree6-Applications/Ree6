@@ -1,16 +1,14 @@
 package de.presti.ree6.commands.impl.nsfw;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.bot.BotConfig;
-import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
+import masecla.reddit4j.objects.RedditPost;
+import masecla.reddit4j.objects.Sorting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -19,7 +17,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A command to show NSFW-Image from r/hentai.
@@ -49,39 +46,26 @@ public class NSFW implements ICommand {
                 commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.nsfw.searching")).complete() :
                 commandEvent.getChannel().sendMessage(commandEvent.getResource("message.nsfw.searching")).complete();
 
-        JsonElement jsonElement = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://www.reddit.com/r/hentai/new.json?sort=hot&limit=50").build());
+        List<String> images = new ArrayList<>();
 
-        if (jsonElement.isJsonObject() &&
-                jsonElement.getAsJsonObject().has("data") &&
-                jsonElement.getAsJsonObject().get("data").isJsonObject() &&
-                jsonElement.getAsJsonObject().getAsJsonObject("data").has("children") &&
-                jsonElement.getAsJsonObject().getAsJsonObject("data").get("children").isJsonArray()) {
+        try {
+            List<RedditPost> request = Main.getInstance().getNotifier().getRedditClient().getSubredditPosts("hentai", Sorting.HOT).limit(50).submit();
 
-            JsonArray children = jsonElement.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("children");
+            request.forEach(x -> {
+                String fileUrl = x.getUrl().toLowerCase();
 
-            List<String> images = new ArrayList<>();
+                if (x.getMedia() == null &&
+                        !fileUrl.startsWith("https://www.reddit.com/gallery/") &&
+                        !fileUrl.startsWith("https://redgifs.com/")) {
 
-            for (JsonElement child : children) {
-                if (child.isJsonObject() &&
-                        child.getAsJsonObject().has("data") &&
-                        child.getAsJsonObject().get("data").isJsonObject()) {
-
-                    JsonObject data = child.getAsJsonObject().getAsJsonObject("data");
-
-                    if (data.get("url") != null && data.get("url").isJsonPrimitive() &&
-                            data.get("post_hint") != null && data.get("post_hint").isJsonPrimitive()) {
-                        String postHint = data.getAsJsonPrimitive("post_hint").getAsString(),
-                                fileUrl = data.getAsJsonPrimitive("url").getAsString();
-                        if ((postHint.equalsIgnoreCase("image") ||
-                                postHint.equalsIgnoreCase("link") ||
-                                postHint.equalsIgnoreCase("rich:video")) &&
-                                !fileUrl.toLowerCase(Locale.ROOT).startsWith("https://www.reddit.com/gallery/") &&
-                                !fileUrl.toLowerCase(Locale.ROOT).startsWith("https://redgifs.com/")) {
-                            images.add(fileUrl);
-                        }
+                    if (fileUrl.endsWith(".jpg") ||
+                            fileUrl.endsWith(".png") ||
+                            fileUrl.endsWith(".jpeg") ||
+                            fileUrl.endsWith(".gif")) {
+                        images.add(x.getUrl());
                     }
                 }
-            }
+            });
 
             if (!images.isEmpty()) {
                 String randomUrl = images.get(RandomUtils.secureRandom.nextInt(images.size() - 1));
@@ -92,7 +76,6 @@ public class NSFW implements ICommand {
 
                 if (commandEvent.isSlashCommand()) {
                     message.editMessage(commandEvent.getResource("message.default.checkBelow")).queue();
-                    Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel());
                     commandEvent.reply(em.build());
                 } else {
                     message.editMessageEmbeds(em.build()).queue(message1 -> message1.editMessage(commandEvent.getResource("message.default.checkBelow")).queue());
@@ -100,7 +83,7 @@ public class NSFW implements ICommand {
             } else {
                 message.editMessage(commandEvent.getResource("message.default.retrievalError")).delay(Duration.ofSeconds(5)).flatMap(Message::delete).queue();
             }
-        } else {
+        } catch (Exception exception) {
             message.editMessage(commandEvent.getResource("message.default.retrievalError")).delay(Duration.ofSeconds(5)).flatMap(Message::delete).queue();
         }
     }
