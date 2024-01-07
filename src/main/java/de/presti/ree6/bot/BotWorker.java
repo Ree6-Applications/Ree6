@@ -16,7 +16,9 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -69,6 +71,39 @@ public class BotWorker {
     @Getter
     private static long startTime;
 
+    /**
+     * Git commit id.
+     */
+    private static String gitCommitFull;
+
+    /**
+     * Git commit abbreviated id.
+     */
+    private static String gitCommit;
+
+    /**
+     * Git build version.
+     */
+    private static String gitVersion;
+
+    /**
+     * Load the git information from the git.properties file.
+     */
+    private static void loadGitProperties() {
+        Properties prop = new Properties();
+        try {
+            //load a properties file from class path, inside static method
+            prop.load(Main.class.getClassLoader().getResourceAsStream("git.properties"));
+
+            //get the property value and print it out
+            gitCommitFull = prop.getProperty("git.commit.id.full");
+            gitCommit = prop.getProperty("git.commit.id.abbrev");
+            gitVersion = prop.getProperty("git.build.version");
+        }
+        catch (IOException ex) {
+            log.error("Failed to read git information from file!", ex);
+        }
+    }
 
     /**
      * Create a new {@link net.dv8tion.jda.api.sharding.ShardManager} instance and set the rest information for later use.
@@ -77,6 +112,9 @@ public class BotWorker {
      * @param shardAmount the amount of shards to use.
      */
     public static void createBot(BotVersion version1, int shardAmount) {
+        log.info("Loading git information...");
+        loadGitProperties();
+
         log.info("Creating Instance build " + build);
         version = version1;
         token = Main.getInstance().getConfig().getConfiguration().getString(getVersion().getTokenPath());
@@ -184,8 +222,27 @@ public class BotWorker {
      */
     public static String getBuild() {
         if (build == null) {
-            build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(), "3.1.0");
+            build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(),
+                    Objects.requireNonNullElse(gitVersion, "3.1.4"));
         }
         return build;
+    }
+
+    /**
+     * Get the commit of the current build.
+     *
+     * @return the commit.
+     */
+    public static String getCommit() {
+        return gitCommit;
+    }
+
+    /**
+     * Get the commit of the current build.
+     *
+     * @return the commit.
+     */
+    public static String getCommitFull() {
+        return gitCommitFull;
     }
 }
