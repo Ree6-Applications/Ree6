@@ -5,18 +5,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 import de.presti.ree6.bot.BotWorker;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 /**
  * Utility used to work with HTTP Requests.
@@ -107,9 +107,16 @@ public class RequestUtility {
                 return jsonObject;
             }
 
-            try {
+            String content = IOUtils.toString(httpResponse, StandardCharsets.UTF_8);
 
-                JsonStreamParser jsonStreamParser = new JsonStreamParser(new InputStreamReader(httpResponse));
+            if (content.isEmpty()) {
+                jsonObject.getAsJsonObject().addProperty("success", false);
+                return jsonObject;
+            }
+
+            try {
+                JsonStreamParser jsonStreamParser = new JsonStreamParser(content);
+
                 if (jsonStreamParser.hasNext()) {
                     jsonObject = jsonStreamParser.next();
                 } else {
@@ -119,6 +126,7 @@ public class RequestUtility {
                 return jsonObject;
             } catch (Exception ex) {
                 log.error("Couldn't send a Request!", ex);
+                log.error("Content: " + content);
             }
         } catch (IOException e) {
             log.error("Couldn't send a Request!", e);
