@@ -156,12 +156,18 @@ public class ImageCreationUtility {
         Main.getInstance().logAnalytic("Finished substring on Username. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
+        graphics2D.setColor(BotConfig.getRankTextColor());
         graphics2D.setFont(verdana60);
         graphics2D.drawString(username, 425, 675);
-        graphics2D.setColor(Color.LIGHT_GRAY);
-        graphics2D.setFont(verdana40);
-        graphics2D.drawString(discriminatorText, 425, 675 - graphics2D.getFontMetrics(verdana60).getHeight() + 5);
-        graphics2D.setColor(Color.magenta.darker().darker());
+
+        // TODO:: remove this once discord removes discriminators.
+        if (!user.getDiscriminator().equals("#0000")) {
+            graphics2D.setColor(BotConfig.getRankDetailColor());
+            graphics2D.setFont(verdana40);
+            graphics2D.drawString(discriminatorText, 425, 675 - graphics2D.getFontMetrics(verdana60).getHeight() + 5);
+        }
+
+        graphics2D.setColor(BotConfig.getRankProgressbarBackgroundColor());
         graphics2D.fillRoundRect(175, 705, base.getWidth() - 950, 50, 50, 50);
 
         Main.getInstance().logAnalytic("Finished drawing User-Info on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
@@ -170,10 +176,10 @@ public class ImageCreationUtility {
         //region Experience
 
         // Draw The current Experience and needed Experience for the next Level.
-        graphics2D.setColor(Color.LIGHT_GRAY);
+        graphics2D.setColor(BotConfig.getRankDetailColor());
         graphics2D.setFont(verdana40);
         graphics2D.drawString(formattedExperience, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + formattedMaxExperience)) - 5 - graphics2D.getFontMetrics().stringWidth(formattedExperience + ""), 675);
-        graphics2D.setColor(Color.GRAY);
+        graphics2D.setColor(BotConfig.getRankDetailColor().darker());
         graphics2D.drawString("/" + formattedMaxExperience, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + formattedMaxExperience)), 675);
 
         Main.getInstance().logAnalytic("Finished drawing User-Experience on card. ({}ms)", System.currentTimeMillis() - actionPerformance);
@@ -183,11 +189,11 @@ public class ImageCreationUtility {
         //region Rank
 
         // Draw the current Ranking.
-        graphics2D.setColor(Color.WHITE);
+        graphics2D.setColor(BotConfig.getRankTextColor());
         graphics2D.setFont(verdana40);
         graphics2D.drawString("Rank", (base.getWidth() - 800) - (graphics2D.getFontMetrics(verdana50).stringWidth(rank)) - (graphics2D.getFontMetrics().stringWidth("Rank")) - 10, 675 - graphics2D.getFontMetrics().getHeight() - graphics2D.getFontMetrics().getHeight());
 
-        graphics2D.setColor(Color.MAGENTA.brighter());
+        graphics2D.setColor(BotConfig.getRankHighlightColor());
         graphics2D.setFont(verdana50);
         graphics2D.drawString(rank, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth(rank)), 675 - graphics2D.getFontMetrics(verdana40).getHeight() - graphics2D.getFontMetrics(verdana40).getHeight());
 
@@ -198,11 +204,11 @@ public class ImageCreationUtility {
         //region Level
 
         // Draw the current Level.
-        graphics2D.setColor(Color.WHITE);
+        graphics2D.setColor(BotConfig.getRankTextColor());
         graphics2D.setFont(verdana40);
         graphics2D.drawString("Level", (base.getWidth() - 800) - (graphics2D.getFontMetrics(verdana50).stringWidth(level)) - (graphics2D.getFontMetrics().stringWidth("Level")) - 10, 675 - graphics2D.getFontMetrics().getHeight());
 
-        graphics2D.setColor(Color.magenta.brighter());
+        graphics2D.setColor(BotConfig.getRankHighlightColor());
         graphics2D.setFont(verdana50);
         graphics2D.drawString(level, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth(level)), 675 - graphics2D.getFontMetrics(verdana40).getHeight());
 
@@ -212,7 +218,7 @@ public class ImageCreationUtility {
         //endregion
 
         // Draw the Progressbar.
-        graphics2D.setColor(Color.magenta);
+        graphics2D.setColor(BotConfig.getRankProgressbarColor());
         graphics2D.fillRoundRect(175, 705, (base.getWidth() - 950) * (int) progress / 100, 50, 50, 50);
 
         Main.getInstance().logAnalytic("Finished drawing Progressbar on card. ({}ms)", System.currentTimeMillis() - actionPerformance);

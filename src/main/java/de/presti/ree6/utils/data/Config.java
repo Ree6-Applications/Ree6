@@ -34,7 +34,7 @@ public class Config {
     /**
      * The config version.
      */
-    private final String version = "3.0.19";
+    private final String version = "3.1.6";
 
     /**
      * Initialize the Configuration.
@@ -150,8 +150,13 @@ public class Config {
                     .parent().path("muteGlobal").addDefault(true).commentSide("Should an XP reset be triggered when a user gets muted on the Server?")
                     .parent().path("deafen").addDefault(true).commentSide("Should an XP reset be triggered when a user deafens themselves?")
                     .parent().path("deafenGlobal").addDefault(true).commentSide("Should an XP reset be triggered when a user gets deafened on the Server?")
-                    .parent()
-                    .parent().parent().path("modules").comment("Customize the active modules in Ree6.").blankLine()
+                    .parent().parent().path("rankCard").comment("Customize the rank card in Ree6.").blankLine()
+                    .addDefault("textColor", "#FFFFFF").commentSide("The Color of the Text in the Rank Card.")
+                    .addDefault("highlightColor", "#FF00FF").commentSide("The Color of the Highlights in the Rank Card. (Level and Rank)")
+                    .addDefault("detailColor", "#C0C0C0").commentSide("The Color of the Details in the Rank Card. (XP and Discriminator)")
+                    .addDefault("progressbarColor", "#FF00FF").commentSide("The Color of the Progressbar in the Rank Card.")
+                    .addDefault("progressBarBackgroundColor", "#7C007C").commentSide("The Color of the Background of the Progressbar in the Rank Card.")
+                    .parent().path("modules").comment("Customize the active modules in Ree6.").blankLine()
                     .path("moderation").addDefault(true).commentSide("Enable the moderation module.")
                     .parent().path("music").addDefault(true).commentSide("Enable the music module.")
                     .parent().path("fun").addDefault(true).commentSide("Enable the fun commands.")

@@ -2,6 +2,8 @@ package de.presti.ree6.bot;
 
 import de.presti.ree6.main.Main;
 
+import java.awt.*;
+
 /**
  * Utility class to save long term used Data.
  */
@@ -13,6 +15,11 @@ public class BotConfig {
     private BotConfig() {
         throw new IllegalStateException("Utility class");
     }
+
+    /**
+     * Color values to be preset to prevent parsing hex codes from the config over and over and over and over and over again.
+     */
+    private static Color rankTextColor, rankDetailColor, rankHighlightColor,  rankProgressbarColor, rankProgressbarBackgroundColor;
 
     /**
      * Get the configured Discord Bot status.
@@ -214,5 +221,64 @@ public class BotConfig {
     public static boolean shouldUseSentry() {
         return Main.getInstance().getConfig().getConfiguration().getBoolean("sentry.enable", true);
     }
+
+    //region Rank Colors
+
+    /**
+     * Get the configured color for the rank card.
+     * @return the color for the rank card from the config.
+     */
+    public static Color getRankTextColor() {
+        if (rankTextColor == null) {
+            rankTextColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.textColor", "#FFFFFF"));
+        }
+        return rankTextColor;
+    }
+
+    /**
+     * Get the configured color for the details on the rank card.
+     * @return the color for the details on the rank card from the config.
+     */
+    public static Color getRankDetailColor() {
+        if (rankDetailColor == null) {
+            rankDetailColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.detailColor", "#FFFFFF"));
+        }
+        return rankDetailColor;
+    }
+
+    /**
+     * Get the configured color for the highlight on the rank card.
+     * @return the color for the highlight on the rank card from the config.
+     */
+    public static Color getRankHighlightColor() {
+        if (rankHighlightColor == null) {
+            rankHighlightColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.highlightColor", "#FF00FF"));
+        }
+        return rankHighlightColor;
+    }
+
+    /**
+     * Get the configured color for the progressbar on the rank card.
+     * @return the color for the progressbar on the rank card from the config.
+     */
+    public static Color getRankProgressbarColor() {
+        if (rankProgressbarColor == null) {
+            rankProgressbarColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.progressbarColor", "#FF00FF"));
+        }
+        return rankProgressbarColor;
+    }
+
+    /**
+     * Get the configured color for the background of the progressbar on the rank card.
+     * @return the color for the background of the progressbar on the rank card from the config.
+     */
+    public static Color getRankProgressbarBackgroundColor() {
+        if (rankProgressbarBackgroundColor == null) {
+            rankProgressbarBackgroundColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.progressbarBackgroundColor", "#FF00FF"));
+        }
+        return rankProgressbarBackgroundColor;
+    }
+
+    //endregion
 }
 
