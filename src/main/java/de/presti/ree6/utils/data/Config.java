@@ -114,7 +114,7 @@ public class Config {
                     .parent().path("poolSize").addDefault(10);
 
             yamlFile.path("bot")
-                    .comment("Discord Application and overall Bot Configuration, used for OAuth, Bot Authentication, and customization.").blankLine()
+                    .comment("Discord Application and overall Bot Configuration, used for OAuth, Bot Authentication and customization.").blankLine()
                     .path("tokens").path("release").addDefault("ReleaseTokenhere").commentSide("Token used when set to release build.")
                     .parent().path("beta").addDefault("BetaTokenhere").commentSide("Token used when set to beta build.")
                     .parent().path("dev").addDefault("DevTokenhere").commentSide("Token used when set to dev build.")
