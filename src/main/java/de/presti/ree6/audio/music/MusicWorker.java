@@ -56,7 +56,7 @@ public class MusicWorker {
     public final AudioPlayerManager playerManager;
 
     /**
-     * All Guild Music Manager
+     * All Guild Music Managers
      */
     public final Map<Long, GuildMusicManager> musicManagers;
 
