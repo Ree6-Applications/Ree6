@@ -395,7 +395,7 @@ public class MenuEvents extends ListenerAdapter {
             }
 
             case "re_suggestion_modal" -> {
-                Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
+                Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getIdLong()));
 
                 event.deferReply(true).queue();
 
