@@ -65,7 +65,7 @@ public class LoggingEvents extends ListenerAdapter {
     //region Guild
 
     /**
-     * @inheritDoc
+     * @see ListenerAdapter#onGuildUpdateVanityCode(GuildUpdateVanityCodeEvent) 
      */
     @Override
     public void onGuildUpdateVanityCode(@NotNull GuildUpdateVanityCodeEvent event) {
@@ -88,7 +88,7 @@ public class LoggingEvents extends ListenerAdapter {
     }
 
     /**
-     * @inheritDoc
+     * @see ListenerAdapter#onGuildBan(GuildBanEvent) 
      */
     @Override
     public void onGuildBan(@Nonnull GuildBanEvent event) {
@@ -122,7 +122,7 @@ public class LoggingEvents extends ListenerAdapter {
     }
 
     /**
-     * @inheritDoc
+     * @see ListenerAdapter#onGuildUnban(GuildUnbanEvent)
      */
     @Override
     public void onGuildUnban(@Nonnull GuildUnbanEvent event) {
@@ -160,7 +160,7 @@ public class LoggingEvents extends ListenerAdapter {
     //region Member
 
     /**
-     * @inheritDoc
+     * @see ListenerAdapter#onGuildMemberJoin(GuildMemberJoinEvent)
      */
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {

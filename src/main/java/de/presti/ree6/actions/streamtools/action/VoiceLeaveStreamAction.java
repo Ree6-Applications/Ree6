@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class VoiceLeaveStreamAction implements IStreamAction {
 
     /**
-     * @inheritDoc
+     * @see IStreamAction#runAction(StreamActionEvent)
      */
     @Override
     public boolean runAction(@NotNull StreamActionEvent event) {

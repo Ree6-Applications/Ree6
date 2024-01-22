@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * StreamAction used to play a blerp sound that is bound to a specific channel reward.
+ * StreamAction used to play a blerp sound bound to a specific channel reward.
  */
 @NoArgsConstructor
 @ActionInfo(name = "PlayBlerp", command = "play-blerp", description = "Plays the blerp audio of a reward.", introduced = "2.4.0")
@@ -31,7 +31,7 @@ public class PlayBlerpStreamAction implements IStreamAction {
     Pattern blerpPagePattern = Pattern.compile(RegExUtil.BLERP_PAGE_REGEX);
 
     /**
-     * @inheritDoc
+     * @see IStreamAction#runAction(StreamActionEvent)
      */
     @Override
     public boolean runAction(@NotNull StreamActionEvent event) {

@@ -70,7 +70,7 @@ public class Blackjack implements IGame {
     Message menuMessage;
 
     /**
-     * @inheritDoc
+     * @see IGame#createGame() 
      */
     @Override
     public void createGame() {
@@ -93,7 +93,7 @@ public class Blackjack implements IGame {
     }
 
     /**
-     * @inheritDoc
+     * @see IGame#startGame() 
      */
     @Override
     public void startGame() {
@@ -120,7 +120,7 @@ public class Blackjack implements IGame {
     }
 
     /**
-     * @inheritDoc
+     * @see IGame#joinGame(GamePlayer)
      */
     @Override
     public void joinGame(GamePlayer user) {
@@ -167,7 +167,7 @@ public class Blackjack implements IGame {
     }
 
     /**
-     * @inheritDoc
+     * @see IGame#leaveGame(GamePlayer)
      */
     @Override
     public void leaveGame(GamePlayer user) {
@@ -179,7 +179,7 @@ public class Blackjack implements IGame {
     }
 
     /**
-     * @inheritDoc
+     * @see IGame#onButtonInteractionReceive(ButtonInteractionEvent)
      */
     @Override
     public void onButtonInteractionReceive(ButtonInteractionEvent buttonInteractionEvent) {
@@ -371,7 +371,7 @@ public class Blackjack implements IGame {
     }
 
     /**
-     * @inheritDoc
+     * @see IGame#stopGame()
      */
     @Override
     public void stopGame() {

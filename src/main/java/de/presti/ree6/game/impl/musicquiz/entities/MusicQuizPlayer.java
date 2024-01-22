@@ -2,6 +2,7 @@ package de.presti.ree6.game.impl.musicquiz.entities;
 
 import de.presti.ree6.game.core.base.GamePlayer;
 import lombok.Getter;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 /**
  * Class used to store information about a player in the music quiz game.
@@ -15,14 +16,14 @@ public class MusicQuizPlayer extends GamePlayer {
     int points = 0;
 
     /**
-     * @inheritDoc
+     * @see GamePlayer#GamePlayer(long)
      */
     public MusicQuizPlayer(long relatedUserId) {
         super(relatedUserId);
     }
 
     /**
-     * @inheritDoc
+     * Constructor to pass a GamePlayer to a MusicQuizPlayer
      */
     public MusicQuizPlayer(GamePlayer gamePlayer) {
         super(gamePlayer.getRelatedUser());
@@ -31,7 +32,7 @@ public class MusicQuizPlayer extends GamePlayer {
 
     /**
      * Method used to add points to the player.
-     * @param points The amount of points that should be added.
+     * @param points The number of points that should be added.
      */
     public void addPoints(int points) {
         this.points += points;

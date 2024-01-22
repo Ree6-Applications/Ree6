@@ -28,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 public class Anime implements ICommand {
 
     /**
-     * @inheritDoc
+     * @see ICommand#onPerform(CommandEvent)
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
@@ -153,7 +153,7 @@ public class Anime implements ICommand {
     }
 
     /**
-     * @inheritDoc
+     * @see ICommand#getCommandData()
      */
     @Override
     public CommandData getCommandData() {
@@ -162,7 +162,7 @@ public class Anime implements ICommand {
     }
 
     /**
-     * @inheritDoc
+     * @see ICommand#getAlias()
      */
     @Override
     public String[] getAlias() {

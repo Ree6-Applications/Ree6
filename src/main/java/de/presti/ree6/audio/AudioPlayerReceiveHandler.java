@@ -46,7 +46,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     private final Queue<byte[]> queue = new ConcurrentLinkedQueue<>();
 
     /**
-     * Boolean used to indicated that handler finished his Job.
+     * Boolean used to indicate that the handler finished his Job.
      */
     private boolean finished = false;
 
@@ -110,10 +110,10 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
      */
     @Override // combine multiple user audio-streams into a single one
     public boolean canReceiveCombined() {
-        /* one entry = 20ms of audio, which means 20 * 100 = 2000ms = 2s of audio,
-         * but since we want to allow up to 5 minute of audio we have to do
-         * 20 * 100 * 150 =  300.000ms = 5 minutes of audio.
-         * And since 100 entries are 2s we would need 15000 entries for 5 minutes of audio.
+        /* One entry = 20ms of audio, which means 20 * 100 = 2000ms = 2s of audio,
+         * but since we want to allow up to 5 minutes of audio, we have to do
+         * 20 * 100 * 150 = 300.000ms = 300s = 5 minutes of audio.
+         * And since 100 entries are 2s, we would need 15000 entries for 5 minutes of audio.
          */
         return queue.size() < 15000;
     }

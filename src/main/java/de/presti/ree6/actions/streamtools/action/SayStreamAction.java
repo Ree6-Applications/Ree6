@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class SayStreamAction implements IStreamAction {
 
     /**
-     * @inheritDoc
+     * @see IStreamAction#runAction(StreamActionEvent)
      */
     @Override
     public boolean runAction(@NotNull StreamActionEvent event) {

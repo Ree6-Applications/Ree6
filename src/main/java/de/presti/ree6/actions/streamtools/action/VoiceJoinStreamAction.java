@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 public class VoiceJoinStreamAction implements IStreamAction {
 
     /**
-     * @inheritDoc
+     * @see IStreamAction#runAction(StreamActionEvent)
      */
     @Override
     public boolean runAction(@NotNull StreamActionEvent event) {

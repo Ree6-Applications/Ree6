@@ -16,7 +16,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 public class Cringe implements ICommand {
 
     /**
-     * @inheritDoc
+     * @see ICommand#onPerform(CommandEvent)
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
@@ -31,7 +31,7 @@ public class Cringe implements ICommand {
     }
 
     /**
-     * @inheritDoc
+     * @see ICommand#getCommandData()
      */
     @Override
     public CommandData getCommandData() {
@@ -39,7 +39,7 @@ public class Cringe implements ICommand {
     }
 
     /**
-     * @inheritDoc
+     * @see ICommand#getAlias()
      */
     @Override
     public String[] getAlias() {
