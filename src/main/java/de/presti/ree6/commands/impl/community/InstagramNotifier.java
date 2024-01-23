@@ -56,13 +56,15 @@ public class InstagramNotifier implements ICommand {
 
         switch (command) {
             case "list" -> {
-                StringBuilder end = new StringBuilder();
+                SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers(commandEvent.getGuild().getIdLong()).thenAccept(strings -> {
+                    StringBuilder end = new StringBuilder();
 
-                for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers(commandEvent.getGuild().getIdLong())) {
-                    end.append(users).append("\n");
-                }
+                    for (String users : strings) {
+                        end.append(users).append("\n");
+                    }
 
-                commandEvent.reply(commandEvent.getResource("message.instagramNotifier.list", end.toString()), 10);
+                    commandEvent.reply(commandEvent.getResource("message.instagramNotifier.list", end.toString()), 10);
+                });
             }
             case "add" -> {
                 if (nameMapping == null || channelMapping == null) {

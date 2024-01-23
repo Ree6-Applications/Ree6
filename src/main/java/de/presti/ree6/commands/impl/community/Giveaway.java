@@ -97,9 +97,15 @@ public class Giveaway implements ICommand {
                             new de.presti.ree6.sql.entities.Giveaway(message.getIdLong(), commandEvent.getMember().getIdLong(),
                                     commandEvent.getGuild().getIdLong(), commandEvent.getChannel().getIdLong(), prize, winners, endTime);
 
-                    giveaway = SQLSession.getSqlConnector().getSqlWorker().updateEntity(giveaway);
-                    Main.getInstance().getGiveawayManager().add(giveaway);
-                    commandEvent.reply(commandEvent.getResource("message.giveaway.created", message.getId()));
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(giveaway).thenAccept(giveaway1 -> {
+                        if (giveaway1 == null) {
+                            commandEvent.reply(commandEvent.getResource("message.default.internalError"));
+                            return;
+                        }
+
+                        Main.getInstance().getGiveawayManager().add(giveaway1);
+                        commandEvent.reply(commandEvent.getResource("message.giveaway.created", message.getId()));
+                    });
                 });
             }
 

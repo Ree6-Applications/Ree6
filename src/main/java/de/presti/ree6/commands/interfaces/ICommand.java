@@ -40,22 +40,22 @@ public interface ICommand {
             }
             return null;
         });
-        ThreadUtil.createThread(y -> {
-            // Update Stats.
-            SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getIdLong(), commandEvent.getCommand());
-            if (SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news").getBooleanValue()) {
-                AnnouncementManager.getAnnouncementList().forEach(a -> {
-                    if (!AnnouncementManager.hasReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id())) {
-                        Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setTitle(a.title())
-                                .setAuthor(BotConfig.getBotName() + "-Info")
-                                .setDescription(a.content().replace("\\n", "\n") + "\n\n" + LanguageService.getByGuild(commandEvent.getGuild(), "message.news.notice"))
-                                .setFooter(BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
-                                .setColor(BotWorker.randomEmbedColor()), 15, commandEvent.getChannel());
 
-                        AnnouncementManager.addReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id());
-                    }
-                });
-            }
+        // Update Stats.
+        SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getIdLong(), commandEvent.getCommand());
+        SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news").thenAccept(setting -> {
+            if (!setting.getBooleanValue()) return;
+            AnnouncementManager.getAnnouncementList().forEach(a -> {
+                if (!AnnouncementManager.hasReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id())) {
+                    Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setTitle(a.title())
+                            .setAuthor(BotConfig.getBotName() + "-Info")
+                            .setDescription(a.content().replace("\\n", "\n") + "\n\n" + LanguageService.getByGuild(commandEvent.getGuild(), "message.news.notice"))
+                            .setFooter(BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
+                            .setColor(BotWorker.randomEmbedColor()), 15, commandEvent.getChannel());
+
+                    AnnouncementManager.addReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id());
+                }
+            });
         });
     }
 
