@@ -24,8 +24,8 @@ public class Disconnect implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
 
         if (Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()) != null &&
-                Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).isMusicPlaying()) {
-            if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent) && Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
+                Main.getInstance().getMusicWorker().isConnected(commandEvent.getGuild())) {
+            if (!Main.getInstance().getMusicWorker().checkInteractPermission(commandEvent)) {
                 return;
             }
             Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().stopAll(commandEvent.getInteractionHook());
