@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import org.reflections.Reflections;
 
@@ -59,8 +60,8 @@ public class GameManager {
      * @param participants   The Participants of the Game.
      * @return The created GameSession.
      */
-    public static GameSession createGameSession(String gameIdentifier, String gameName, Member host, MessageChannelUnion channel, ArrayList<User> participants) {
-        GameSession gameSession = new GameSession(gameIdentifier, channel.asGuildMessageChannel().getGuild(), host, channel, participants);
+    public static GameSession createGameSession(String gameIdentifier, String gameName, Member host, GuildMessageChannelUnion channel, ArrayList<User> participants) {
+        GameSession gameSession = new GameSession(gameIdentifier, channel.getGuild(), host, channel, participants);
         gameSession.setGame(getGame(gameName, gameSession));
         gameSessions.put(gameIdentifier, gameSession);
         return gameSession;

@@ -466,7 +466,7 @@ public class OtherEvents extends ListenerAdapter {
                     }
                 }
 
-                if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getChannel(), null)) {
+                if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getGuildChannel(), null)) {
 
                     if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
                         if (event.getMessage().getMessageReference() != null) return;
@@ -630,6 +630,6 @@ public class OtherEvents extends ListenerAdapter {
 
         event.deferReply(true).queue();
 
-        Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getChannel(), event);
+        Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getGuildChannel(), event);
     }
 }
