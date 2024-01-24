@@ -6,6 +6,7 @@ import lombok.Getter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class GameSession {
     /**
      * The Channel where the Game is played.
      */
-    private final MessageChannelUnion channel;
+    private final GuildMessageChannelUnion channel;
 
     /**
      * The Guild in which this Session originated.
@@ -61,7 +62,7 @@ public class GameSession {
      * @param messageChannelUnion The Channel where the Game is played.
      * @param participants        The Participants of the Game.
      */
-    public GameSession(String gameIdentifier, Guild guild, Member user, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
+    public GameSession(String gameIdentifier, Guild guild, Member user, GuildMessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
         this(gameIdentifier, guild, user, null, messageChannelUnion, participants);
     }
 
@@ -75,7 +76,7 @@ public class GameSession {
      * @param messageChannelUnion The Channel where the Game is played.
      * @param participants        The Participants of the Game.
      */
-    public GameSession(String gameIdentifier, Guild guild, Member user, IGame game, MessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
+    public GameSession(String gameIdentifier, Guild guild, Member user, IGame game, GuildMessageChannelUnion messageChannelUnion, ArrayList<User> participants) {
         this.gameIdentifier = gameIdentifier;
         this.guild = guild;
         this.host = user;
@@ -116,7 +117,7 @@ public class GameSession {
      *
      * @return The Channel where the Game is played.
      */
-    public MessageChannelUnion getChannel() {
+    public GuildMessageChannelUnion getChannel() {
         return channel;
     }
 

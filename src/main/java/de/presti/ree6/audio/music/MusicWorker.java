@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -109,7 +110,7 @@ public class MusicWorker {
      * @param trackUrl        the Track URL.
      * @param interactionHook an InteractionHook if it was a SlashCommand.
      */
-    public void loadAndPlaySilence(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook) {
+    public void loadAndPlaySilence(final GuildMessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook) {
         loadAndPlay(channel, audioChannel, trackUrl, interactionHook, true);
     }
 
@@ -123,7 +124,7 @@ public class MusicWorker {
      * @param interactionHook an InteractionHook if it was a SlashCommand.
      * @param silent          if the Bot shouldn't send a Message.
      */
-    public void loadAndPlay(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent) {
+    public void loadAndPlay(final GuildMessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent) {
         loadAndPlay(channel, audioChannel, trackUrl, interactionHook, silent, false);
     }
 
@@ -137,8 +138,8 @@ public class MusicWorker {
      * @param silent          if the Bot shouldn't send a Message.
      * @param force           if the song should be forced or not.
      */
-    public void loadAndPlay(final MessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent, boolean force) {
-        loadAndPlay(channel.asGuildMessageChannel().getGuild(), channel, audioChannel, trackUrl, interactionHook, silent, force);
+    public void loadAndPlay(final GuildMessageChannelUnion channel, final AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent, boolean force) {
+        loadAndPlay(channel.getGuild(), channel, audioChannel, trackUrl, interactionHook, silent, force);
     }
 
     /**
@@ -152,7 +153,7 @@ public class MusicWorker {
      * @param silent          if the Bot shouldn't send a Message.
      * @param force           if the song should be forced or not.
      */
-    public void loadAndPlay(final Guild guild, MessageChannelUnion channel, AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent, boolean force) {
+    public void loadAndPlay(final Guild guild, GuildMessageChannelUnion channel, AudioChannel audioChannel, final String trackUrl, InteractionHook interactionHook, boolean silent, boolean force) {
         GuildMusicManager musicManager = getGuildAudioPlayer(guild);
 
         if (channel != null)
@@ -329,7 +330,7 @@ public class MusicWorker {
      * @param channel         The channel it has been executed in.
      * @param interactionHook The Interaction-Hook of the member
      */
-    public void playSong(String value, Guild guild, Member member, MessageChannelUnion channel, InteractionHook interactionHook) {
+    public void playSong(String value, Guild guild, Member member, GuildMessageChannelUnion channel, InteractionHook interactionHook) {
         Interaction interaction = interactionHook != null ? interactionHook.getInteraction() : null;
         if (FormatUtil.isUrl(value)) {
             boolean isspotify = false;
@@ -446,7 +447,7 @@ public class MusicWorker {
      * @param interactionHook the Interaction-Hook, used to replace the channel if it is a SlashCommand.
      * @param skipAmount      the amount of Tracks that should be skipped.
      */
-    public void skipTrack(MessageChannelUnion channel, InteractionHook interactionHook, int skipAmount) {
+    public void skipTrack(GuildMessageChannelUnion channel, InteractionHook interactionHook, int skipAmount) {
         skipTrack(channel, interactionHook, skipAmount, false);
     }
 
@@ -458,17 +459,17 @@ public class MusicWorker {
      * @param skipAmount      the amount of Tracks that should be skipped.
      * @param silent          if the skip should be silent or not.
      */
-    public void skipTrack(MessageChannelUnion channel, InteractionHook interactionHook, int skipAmount, boolean silent) {
+    public void skipTrack(GuildMessageChannelUnion channel, InteractionHook interactionHook, int skipAmount, boolean silent) {
         if (!silent) {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(channel.getJDA().getSelfUser().getName(), BotConfig.getWebsite(), channel.getJDA().getSelfUser().getAvatarUrl())
-                    .setTitle(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(), "label.musicPlayer"))
+                    .setTitle(LanguageService.getByGuild(channel.getGuild(), "label.musicPlayer"))
                     .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                     .setColor(Color.GREEN)
-                    .setDescription(LanguageService.getByGuild(channel.asGuildMessageChannel().getGuild(), "message.music.skip"))
-                    .setFooter(channel.asGuildMessageChannel().getGuild().getName() + " - " + BotConfig.getAdvertisement(), channel.asGuildMessageChannel().getGuild().getIconUrl()), 5, channel, interactionHook);
+                    .setDescription(LanguageService.getByGuild(channel.getGuild(), "message.music.skip"))
+                    .setFooter(channel.getGuild().getName() + " - " + BotConfig.getAdvertisement(), channel.getGuild().getIconUrl()), 5, channel, interactionHook);
         }
 
-        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).getScheduler().nextTrack(channel, skipAmount, silent);
+        getGuildAudioPlayer(channel.getGuild()).getScheduler().nextTrack(channel, skipAmount, silent);
     }
 
     /**
@@ -477,8 +478,8 @@ public class MusicWorker {
      * @param channel             the TextChannel, used to inform the user about the seek.
      * @param seekAmountInSeconds the number of seconds that should be seeked.
      */
-    public void seekInTrack(MessageChannelUnion channel, int seekAmountInSeconds) {
-        getGuildAudioPlayer(channel.asGuildMessageChannel().getGuild()).getScheduler().seekPosition(channel, seekAmountInSeconds);
+    public void seekInTrack(GuildMessageChannelUnion channel, int seekAmountInSeconds) {
+        getGuildAudioPlayer(channel.getGuild()).getScheduler().seekPosition(channel, seekAmountInSeconds);
     }
 
     /**

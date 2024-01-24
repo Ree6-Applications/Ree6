@@ -5,6 +5,7 @@ import de.presti.ree6.main.Main;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -49,7 +50,7 @@ public class CommandEvent {
      * The MessageChannel associated with the Command execution.
      */
     @Nonnull
-    MessageChannelUnion channel;
+    GuildMessageChannelUnion channel;
 
     /**
      * The Arguments parsed with the Command execution.
@@ -74,7 +75,7 @@ public class CommandEvent {
      * @param arguments                    the given Arguments.
      * @param slashCommandInteractionEvent the {@link SlashCommandInteractionEvent} Entity.
      */
-    public CommandEvent(String command, @Nonnull Member member, @Nonnull Guild guild, @Nullable Message message, @Nonnull MessageChannelUnion textChannel, @Nullable String[] arguments, @Nullable SlashCommandInteractionEvent slashCommandInteractionEvent) {
+    public CommandEvent(String command, @Nonnull Member member, @Nonnull Guild guild, @Nullable Message message, @Nonnull GuildMessageChannelUnion textChannel, @Nullable String[] arguments, @Nullable SlashCommandInteractionEvent slashCommandInteractionEvent) {
         this.command = command;
         this.member = member;
         this.guild = guild;
@@ -216,11 +217,11 @@ public class CommandEvent {
     }
 
     /**
-     * Get the {@link TextChannel} Entity associated with the Event.
+     * Get the {@link GuildMessageChannelUnion} Entity associated with the Event.
      *
-     * @return the {@link TextChannel} Entity.
+     * @return the {@link GuildMessageChannelUnion} Entity.
      */
-    public @Nonnull MessageChannelUnion getChannel() {
+    public @Nonnull GuildMessageChannelUnion getChannel() {
         return channel;
     }
 

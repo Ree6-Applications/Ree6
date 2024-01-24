@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
@@ -54,7 +55,7 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
      */
     @Setter
     @Getter
-    private MessageChannelUnion channel;
+    private GuildMessageChannelUnion channel;
 
     /**
      * If the bot should loop the current track.
@@ -142,7 +143,7 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
      * @param textChannel the Text-Channel where the command have been performed from.
      * @param silent      should the bot send a message or not?
      */
-    public void nextTrack(MessageChannelUnion textChannel, boolean silent) {
+    public void nextTrack(GuildMessageChannelUnion textChannel, boolean silent) {
         nextTrack(textChannel, 0, silent);
     }
 
@@ -153,7 +154,7 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
      * @param position    the position of the track it should skip to. (relative to the current track)
      * @param silent      should the bot send a message or not?
      */
-    public void nextTrack(MessageChannelUnion textChannel, int position, boolean silent) {
+    public void nextTrack(GuildMessageChannelUnion textChannel, int position, boolean silent) {
         if (loop && player.getPlayingTrack() != null) {
             player.playTrack(player.getPlayingTrack().makeClone(), true);
             return;
@@ -204,7 +205,7 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
      * @param channel             the Text-Channel where the command have been performed from.
      * @param seekAmountInSeconds the amount of seconds to seek to.
      */
-    public void seekPosition(MessageChannelUnion channel, int seekAmountInSeconds) {
+    public void seekPosition(GuildMessageChannelUnion channel, int seekAmountInSeconds) {
         if (player.getPlayingTrack() == null) {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                     .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), BotConfig.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
