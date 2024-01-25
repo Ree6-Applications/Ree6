@@ -236,17 +236,6 @@ public class BotConfig {
     }
 
     /**
-     * Get the configured color for the details on the rank card.
-     * @return the color for the details on the rank card from the config.
-     */
-    public static Color getRankDetailColor() {
-        if (rankDetailColor == null) {
-            rankDetailColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.detailColor", "#FFFFFF"));
-        }
-        return rankDetailColor;
-    }
-
-    /**
      * Get the configured color for the highlight on the rank card.
      * @return the color for the highlight on the rank card from the config.
      */
@@ -255,6 +244,17 @@ public class BotConfig {
             rankHighlightColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.highlightColor", "#FF00FF"));
         }
         return rankHighlightColor;
+    }
+
+    /**
+     * Get the configured color for the details on the rank card.
+     * @return the color for the details on the rank card from the config.
+     */
+    public static Color getRankDetailColor() {
+        if (rankDetailColor == null) {
+            rankDetailColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.detailColor", "#C0C0C0"));
+        }
+        return rankDetailColor;
     }
 
     /**
@@ -274,7 +274,7 @@ public class BotConfig {
      */
     public static Color getRankProgressbarBackgroundColor() {
         if (rankProgressbarBackgroundColor == null) {
-            rankProgressbarBackgroundColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.progressbarBackgroundColor", "#FF00FF"));
+            rankProgressbarBackgroundColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.progressbarBackgroundColor", "#7C007C"));
         }
         return rankProgressbarBackgroundColor;
     }
