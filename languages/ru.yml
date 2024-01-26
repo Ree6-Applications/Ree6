@@ -2,7 +2,7 @@ language:
   name: "Russian"
   locale: "ru"
   version: "3.1.2"
-  author: "Trusty"
+  author: "Trusty, Gru"
 logging:
   banned: ":airplane_departure: %s **забанен.**"
   unbanned: ":airplane_arriving: %s **разбанен.**"
