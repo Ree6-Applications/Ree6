@@ -608,8 +608,6 @@ command:
     slashNotSupported: "Эта команда пока не поддерживает команды Slash!"
     onlySlashSupported: "Эта команда поддерживает только команды Slash!"
   description:
-    rules: "Создает панель правил в этом канале"
-    report: "Создает отчёт о проделанной работе"
     pickupline: "Вам нужна линия подачи? Мы вам ответили."
     birthday: "Позвольте боту вспомнить ваш день рождения."
     instagramNotifier: "Управляйте вашим Instagram-уведомлением!"
