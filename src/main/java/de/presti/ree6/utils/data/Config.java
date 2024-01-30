@@ -34,7 +34,7 @@ public class Config {
     /**
      * The config version.
      */
-    private final String version = "3.1.6";
+    private final String version = "3.1.10";
 
     /**
      * Initialize the Configuration.
