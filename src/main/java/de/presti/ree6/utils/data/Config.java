@@ -150,7 +150,7 @@ public class Config {
                     .parent().path("muteGlobal").addDefault(true).commentSide("Should an XP reset be triggered when a user gets muted on the Server?")
                     .parent().path("deafen").addDefault(true).commentSide("Should an XP reset be triggered when a user deafens themselves?")
                     .parent().path("deafenGlobal").addDefault(true).commentSide("Should an XP reset be triggered when a user gets deafened on the Server?")
-                    .parent().parent().path("rankCard").comment("Customize the rank card in Ree6.").blankLine()
+                    .parent().parent().parent().path("rankCard").comment("Customize the rank card in Ree6.").blankLine()
                     .addDefault("textColor", "#FFFFFF").commentSide("The Color of the Text in the Rank Card.")
                     .addDefault("highlightColor", "#FF00FF").commentSide("The Color of the Highlights in the Rank Card. (Level and Rank)")
                     .addDefault("detailColor", "#C0C0C0").commentSide("The Color of the Details in the Rank Card. (XP and Discriminator)")
