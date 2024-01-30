@@ -90,8 +90,8 @@ public class BotWorker {
      * Load the git information from the git.properties file.
      */
     private static void loadGitProperties() {
-        Properties prop = new Properties();
         try {
+            Properties prop = new Properties();
             //load a properties file from class path, inside static method
             prop.load(Main.class.getClassLoader().getResourceAsStream("git.properties"));
 
@@ -99,8 +99,7 @@ public class BotWorker {
             gitCommitFull = prop.getProperty("git.commit.id.full");
             gitCommit = prop.getProperty("git.commit.id.abbrev");
             gitVersion = prop.getProperty("git.build.version");
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             log.error("Failed to read git information from file!", ex);
         }
     }
