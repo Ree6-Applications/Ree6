@@ -99,7 +99,7 @@ public class BotWorker {
             gitCommitFull = prop.getProperty("git.commit.id.full");
             gitCommit = prop.getProperty("git.commit.id.abbrev");
             gitVersion = prop.getProperty("git.build.version");
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             log.error("Failed to read git information from file!", ex);
         }
     }
@@ -222,7 +222,7 @@ public class BotWorker {
     public static String getBuild() {
         if (build == null) {
             build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(),
-                    Objects.requireNonNullElse(gitVersion, "3.1.7"));
+                    Objects.requireNonNullElse(gitVersion, "3.1.8"));
         }
         return build;
     }
