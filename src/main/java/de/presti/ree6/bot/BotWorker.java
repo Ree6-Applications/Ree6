@@ -222,7 +222,7 @@ public class BotWorker {
     public static String getBuild() {
         if (build == null) {
             build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(),
-                    Objects.requireNonNullElse(gitVersion, "3.1.8"));
+                    Objects.requireNonNullElse(gitVersion, "3.1.9"));
         }
         return build;
     }

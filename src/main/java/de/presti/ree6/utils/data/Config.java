@@ -320,6 +320,20 @@ public class Config {
                     if (key.startsWith("twitter") && !key.endsWith("bearer")) continue;
                 }
 
+                // Migrate to 3.1.9
+                if (compareVersion("3.1.9", configVersion)) {
+
+                    if (key.startsWith("bot.misc.leveling.modules."))
+                        key = key.replace("bot.misc.leveling.modules.", "bot.misc.modules.");
+
+                    if (key.endsWith("bot.misc.leveling.rankCard."))
+                        key = key.replace("bot.misc.leveling.rankCard.", "bot.misc.rankCard.");
+
+                    yamlFile.set(key, entry.getValue());
+                    modified = true;
+                }
+
+
                 if (!modified) {
                     yamlFile.set(key, entry.getValue());
                 }
