@@ -50,7 +50,7 @@ public class TwitchNotifier implements ICommand {
 
         switch (command) {
             case "list" -> {
-                StringBuilder end = new StringBuilder();
+                StringBuilder end = new StringBuilder("\n");
 
                 for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames(commandEvent.getGuild().getIdLong())) {
                     end.append(users).append("\n");
