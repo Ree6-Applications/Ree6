@@ -90,7 +90,7 @@ public class YouTubeNotifier implements ICommand {
 
                 String name = urlMapping.getAsString();
 
-                name = name.replace("https://www.youtube.com/", "")
+                name = name.replaceAll("^(https?://)?(?:.*\\.)?(youtube\\.com)(?:$|\\/)", "")
                         .replace("channel/", "")
                         .replace("user/", "")
                         .replace("c/", "")
