@@ -160,7 +160,26 @@ public class Notifier implements ICommand {
                                                 .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
                                                 .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
                                         new SubcommandData("remove", "Remove a TikTok Notifier for a specific user.")
-                                                .addOption(OptionType.STRING, "name", "The TikTok username of the Notifier.", true)));
+                                                .addOption(OptionType.STRING, "name", "The TikTok username of the Notifier.", true)),
+
+                        new SubcommandGroupData("reddit", "Reddit Notifier")
+                                .addSubcommands(
+                                        new SubcommandData("list", "List all subreddits."),
+                                        new SubcommandData("add", "Add a Reddit Notifier for a specific subreddit.")
+                                                .addOption(OptionType.STRING, "name", "The subreddit name.", true)
+                                                .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
+                                                .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
+                                        new SubcommandData("remove", "Remove a Reddit Notifier for a specific subreddit.")
+                                                .addOption(OptionType.STRING, "name", "The subreddit name of the Notifier.", true)),
+
+                        new SubcommandGroupData("rss", "RSS Notifier")
+                                .addSubcommands(
+                                        new SubcommandData("list", "List all RSS Feeds."),
+                                        new SubcommandData("add", "Add a RSS Notifier for a specific url.")
+                                                .addOption(OptionType.STRING, "url", "The RSS url.", true)
+                                                .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT)),
+                                        new SubcommandData("remove", "Remove a RSS Notifier for a specific url.")
+                                                .addOption(OptionType.STRING, "url", "The RSS url of the Notifier.", true)));
     }
 
     /**

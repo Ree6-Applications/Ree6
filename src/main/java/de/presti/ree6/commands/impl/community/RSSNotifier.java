@@ -117,11 +117,12 @@ public class RSSNotifier implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("rssnotifier", "command.description.rssNotifier")
-                .addSubcommands(new SubcommandData("list", "List all RSS Feeds."))
-                .addSubcommands(new SubcommandData("add", "Add a RSS Notifier for a specific url.")
-                        .addOption(OptionType.STRING, "url", "The RSS url.", true)
-                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT)))
-                        .addSubcommands(new SubcommandData("remove", "Remove a RSS Notifier for a specific url.")
+                .addSubcommands(
+                        new SubcommandData("list", "List all RSS Feeds."),
+                        new SubcommandData("add", "Add a RSS Notifier for a specific url.")
+                                .addOption(OptionType.STRING, "url", "The RSS url.", true)
+                                .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT)),
+                        new SubcommandData("remove", "Remove a RSS Notifier for a specific url.")
                                 .addOption(OptionType.STRING, "url", "The RSS url of the Notifier.", true));
     }
 

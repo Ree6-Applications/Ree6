@@ -109,13 +109,14 @@ public class RedditNotifier implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("redditnotifier", "command.description.redditNotifier")
-                .addSubcommands(new SubcommandData("list", "List all subreddits."))
-                .addSubcommands(new SubcommandData("add", "Add a Reddit Notifier for a specific subreddit.")
-                        .addOption(OptionType.STRING, "name", "The subreddit name.", true)
-                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
-                        .addOption(OptionType.STRING, "message", "Custom announcement message.", false))
-                .addSubcommands(new SubcommandData("remove", "Remove a Reddit Notifier for a specific subreddit.")
-                        .addOption(OptionType.STRING, "name", "The subreddit name of the Notifier.", true));
+                .addSubcommands(
+                        new SubcommandData("list", "List all subreddits."),
+                        new SubcommandData("add", "Add a Reddit Notifier for a specific subreddit.")
+                                .addOption(OptionType.STRING, "name", "The subreddit name.", true)
+                                .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
+                                .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
+                        new SubcommandData("remove", "Remove a Reddit Notifier for a specific subreddit.")
+                                .addOption(OptionType.STRING, "name", "The subreddit name of the Notifier.", true));
     }
 
     /**
@@ -123,6 +124,6 @@ public class RedditNotifier implements ICommand {
      */
     @Override
     public String[] getAlias() {
-        return new String[] { "reddit", "reditnotifier" };
+        return new String[]{"reddit", "reditnotifier"};
     }
 }
