@@ -59,7 +59,7 @@ public class Notifier implements ICommand {
 
         String command = commandEvent.getSubcommand();
         String commandGroup = commandEvent.getSubcommandGroup();
-        OptionMapping urlMapping = commandEvent.getOption("name");
+        OptionMapping urlMapping = commandEvent.getOption("url");
         OptionMapping nameMapping = commandEvent.getOption("name");
         OptionMapping channelMapping = commandEvent.getOption("channel");
         OptionMapping messageMapping = commandEvent.getOption("message");
@@ -153,6 +153,8 @@ public class Notifier implements ICommand {
 
                         commandEvent.reply(commandEvent.getResource("message.rssNotifier.list", end.toString()), 10);
                     }
+
+                    default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
                 }
             }
             case "add" -> {
@@ -397,6 +399,8 @@ public class Notifier implements ICommand {
                             Main.getInstance().getNotifier().registerRSS(name);
                         }
                     }
+
+                    default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
                 }
             }
             case "remove" -> {
@@ -532,9 +536,10 @@ public class Notifier implements ICommand {
                             Main.getInstance().getNotifier().unregisterRSS(name);
                         }
                     }
+
+                    default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
                 }
             }
-
             default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
         }
     }
@@ -566,7 +571,7 @@ public class Notifier implements ICommand {
                                         new SubcommandData("remove", "Remove a YouTube Notifier for a specific channel.")
                                                 .addOption(OptionType.STRING, "name", "The YouTube channel name or id of the Notifier.", true)),
 
-                        new SubcommandGroupData("twitch", "command.description.twitchNotifier")
+                        new SubcommandGroupData("twitch", "command.description.twitch")
                                 .addSubcommands(
                                         new SubcommandData("list", "List all Twitch channels."),
                                         new SubcommandData("add", "Add a Twitch Notifier for a specific channel.")
