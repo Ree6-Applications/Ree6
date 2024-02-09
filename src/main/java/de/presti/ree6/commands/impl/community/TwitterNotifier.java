@@ -109,13 +109,13 @@ public class TwitterNotifier implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("twitternotifier", "command.description.twitterNotifier")
-                .addSubcommands(new SubcommandData("list", "List all Twitter users."))
-                .addSubcommands(new SubcommandData("add", "Add a Twitter Notifier for a specific user.")
-                        .addOption(OptionType.STRING, "name", "The Twitter username.", true)
-                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
-                        .addOption(OptionType.STRING, "message", "Custom announcement message.", false))
-                .addSubcommands(new SubcommandData("remove", "Remove a Twitter Notifier for a specific user.")
-                        .addOption(OptionType.STRING, "name", "The Twitter username of the Notifier.", true));
+                .addSubcommands(new SubcommandData("list", "List all Twitter users."),
+                        new SubcommandData("add", "Add a Twitter Notifier for a specific user.")
+                                .addOption(OptionType.STRING, "name", "The Twitter username.", true)
+                                .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
+                                .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
+                        new SubcommandData("remove", "Remove a Twitter Notifier for a specific user.")
+                                .addOption(OptionType.STRING, "name", "The Twitter username of the Notifier.", true));
     }
 
     /**

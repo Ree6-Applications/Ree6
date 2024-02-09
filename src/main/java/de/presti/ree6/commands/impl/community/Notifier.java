@@ -111,7 +111,8 @@ public class Notifier implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("notifier", "command.description.instagramNotifier")
-                .addSubcommandGroups(new SubcommandGroupData("instagram", "Instagram Notifier")
+                .addSubcommandGroups(
+                        new SubcommandGroupData("instagram", "Instagram Notifier")
                                 .addSubcommands(
                                         new SubcommandData("list", "List all Instagram users."),
                                         new SubcommandData("add", "Add a Instagram Notifier for a specific user.")
@@ -120,6 +121,7 @@ public class Notifier implements ICommand {
                                                 .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
                                         new SubcommandData("remove", "Remove a Instagram Notifier for a specific user.")
                                                 .addOption(OptionType.STRING, "name", "The username of the Notifier.", true)),
+
                         new SubcommandGroupData("youtube", "YouTube Notifier")
                                 .addSubcommands(
                                         new SubcommandData("list", "List all YouTube channels."),
@@ -129,6 +131,7 @@ public class Notifier implements ICommand {
                                                 .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
                                         new SubcommandData("remove", "Remove a YouTube Notifier for a specific channel.")
                                                 .addOption(OptionType.STRING, "name", "The YouTube channel name or id of the Notifier.", true)),
+
                         new SubcommandGroupData("twitch", "Twitch Notifier")
                                 .addSubcommands(
                                         new SubcommandData("list", "List all Twitch channels."),
@@ -137,7 +140,27 @@ public class Notifier implements ICommand {
                                                 .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
                                                 .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
                                         new SubcommandData("remove", "Remove a Twitch Notifier for a specific channel.")
-                                                .addOption(OptionType.STRING, "name", "The Twitch channel name of the Notifier.", true)));
+                                                .addOption(OptionType.STRING, "name", "The Twitch channel name of the Notifier.", true)),
+
+                        new SubcommandGroupData("twitter", "Twitter Notifier")
+                                .addSubcommands(
+                                        new SubcommandData("list", "List all Twitter users."),
+                                        new SubcommandData("add", "Add a Twitter Notifier for a specific user.")
+                                                .addOption(OptionType.STRING, "name", "The Twitter username.", true)
+                                                .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
+                                                .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
+                                        new SubcommandData("remove", "Remove a Twitter Notifier for a specific user.")
+                                                .addOption(OptionType.STRING, "name", "The Twitter username of the Notifier.", true)),
+
+                        new SubcommandGroupData("tiktok", "TikTok Notifier")
+                                .addSubcommands(
+                                        new SubcommandData("list", "List all TikTok users."),
+                                        new SubcommandData("add", "Add a TikTok Notifier for a specific user.")
+                                                .addOption(OptionType.STRING, "name", "The TikTok username.", true)
+                                                .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
+                                                .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
+                                        new SubcommandData("remove", "Remove a TikTok Notifier for a specific user.")
+                                                .addOption(OptionType.STRING, "name", "The TikTok username of the Notifier.", true)));
     }
 
     /**

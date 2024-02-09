@@ -59,7 +59,8 @@ public class TikTokNotifier implements ICommand {
                     try {
                         TikTokUser tikTokUser = TikTokWrapper.getUser(Long.parseLong(users), false);
                         end.append(" ").append("-").append(" ").append(tikTokUser.getName());
-                    } catch (Exception ignore) {}
+                    } catch (Exception ignore) {
+                    }
                     end.append("\n");
                 }
 
@@ -136,13 +137,13 @@ public class TikTokNotifier implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("tiktoknotifier", "command.description.tiktokNotifier")
-                .addSubcommands(new SubcommandData("list", "List all TikTok users."))
-                .addSubcommands(new SubcommandData("add", "Add a TikTok Notifier for a specific user.")
-                        .addOption(OptionType.STRING, "name", "The TikTok username.", true)
-                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
-                        .addOption(OptionType.STRING, "message", "Custom announcement message.", false))
-                .addSubcommands(new SubcommandData("remove", "Remove a TikTok Notifier for a specific user.")
-                        .addOption(OptionType.STRING, "name", "The TikTok username of the Notifier.", true));
+                .addSubcommands(new SubcommandData("list", "List all TikTok users."),
+                        new SubcommandData("add", "Add a TikTok Notifier for a specific user.")
+                                .addOption(OptionType.STRING, "name", "The TikTok username.", true)
+                                .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
+                                .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
+                        new SubcommandData("remove", "Remove a TikTok Notifier for a specific user.")
+                                .addOption(OptionType.STRING, "name", "The TikTok username of the Notifier.", true));
     }
 
     /**
