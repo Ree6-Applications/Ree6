@@ -617,6 +617,7 @@ command:
     youtubeNotifier: "Atur Youtube-Notifier mu!"
     tiktokNotifier: "Atur Notifier TikTok mu!"
     rssNotifier: "Atur Notifier RSS-Feed mu!"
+    notifier: "Manage all your Notifiers!"
     anime: "Cari Anime di kitsu.io!"
     randomcat: "Munculkan gambar kucing random dari thecatapi.com."
     cringe: "Biarkan shrek kasi tahu kalau pesan mereka cringe!"
