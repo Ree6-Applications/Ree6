@@ -617,7 +617,10 @@ command:
     youtubeNotifier: "Atur Youtube-Notifier mu!"
     tiktokNotifier: "Atur Notifier TikTok mu!"
     rssNotifier: "Atur Notifier RSS-Feed mu!"
-    notifier: "Manage all your Notifiers!"
+    notifier:
+      default: "Manage all your Notifiers!"
+      list: "List all your Notifiers!"
+      remove: "Remove a Notifier!"
     anime: "Cari Anime di kitsu.io!"
     randomcat: "Munculkan gambar kucing random dari thecatapi.com."
     cringe: "Biarkan shrek kasi tahu kalau pesan mereka cringe!"
