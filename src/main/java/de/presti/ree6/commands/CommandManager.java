@@ -283,7 +283,7 @@ public class CommandManager {
                 }
 
                 if (!commandDescription.equals("Missing language resource!")) {
-                    subcommandGroupData.setDescriptionLocalization(locale, commandDescription);
+                    subcommandData.setDescriptionLocalization(locale, commandDescription);
                 }
             }
         }
