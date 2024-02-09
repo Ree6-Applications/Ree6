@@ -617,6 +617,7 @@ command:
     youtubeNotifier: "Spravujte svůj Youtube-Notifier!"
     tiktokNotifier: "Spravujte své TikTok-Notifikace!"
     rssNotifier: "Spravujte své RSS-Feed notifikace!"
+    notifier: "Manage all your Notifiers!"
     anime: "Hledej anime na kitsu.io!"
     randomcat: "Zobrazuje náhodné obrázky koček z thecatapi.com."
     cringe: "Ať jim shrek řekne, že jejich zpráva byla krčení!"
