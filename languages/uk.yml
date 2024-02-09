@@ -617,7 +617,10 @@ command:
     youtubeNotifier: "Керуйте вашим сповіщенням Youtube!"
     tiktokNotifier: "Керуйте вашим сповіщенням TikTok!"
     rssNotifier: "Керуйте вашим сповіщенням RSS-Feed!"
-    notifier: "Manage all your Notifiers!"
+    notifier:
+      default: "Manage all your Notifiers!"
+      list: "List all your Notifiers!"
+      remove: "Remove a Notifier!"
     anime: "Шукати аніме на kitsu.io!"
     randomcat: "Показує випадкові зображення кота, із thecatapi.com."
     cringe: "Нехай Шрек скаже їм, що їхній меседж був жахливим!"
