@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 /**
  * A Command to activate Notifications.
  */
-@Command(name = "notifier", description = "command.description.notifier", category = Category.COMMUNITY)
+@Command(name = "notifier", description = "command.description.notifier.default", category = Category.COMMUNITY)
 public class Notifier implements ICommand {
 
     /**
@@ -64,11 +64,11 @@ public class Notifier implements ICommand {
         OptionMapping channelMapping = commandEvent.getOption("channel");
         OptionMapping messageMapping = commandEvent.getOption("message");
 
-        switch (command) {
+        switch (commandGroup) {
             case "list" -> {
                 StringBuilder end = new StringBuilder("\n");
 
-                switch (commandEvent.getSubcommandGroup()) {
+                switch (command) {
                     case "instagram" -> {
 
                         for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers(commandEvent.getGuild().getIdLong())) {
@@ -158,7 +158,7 @@ public class Notifier implements ICommand {
                 }
             }
             case "add" -> {
-                switch (commandGroup) {
+                switch (command) {
                     case "instagram" -> {
                         // Ignore this, because the Compiler would otherwise scream:
                         // "OMG YOU CAN NOT INITIALIZE THE VARIABLE BELOW BECAUSE YOU CANT REACH IT!!!!"
@@ -404,7 +404,7 @@ public class Notifier implements ICommand {
                 }
             }
             case "remove" -> {
-                switch (commandGroup) {
+                switch (command) {
                     case "instagram" -> {
                         if (nameMapping == null) {
                             commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"));
@@ -549,76 +549,68 @@ public class Notifier implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("notifier", "command.description.notifier")
+        return new CommandDataImpl("notifier", "command.description.notifier.default")
                 .addSubcommandGroups(
-                        new SubcommandGroupData("instagram", "command.description.instagramNotifier")
+                        new SubcommandGroupData("add", "command.description.notifier.add")
                                 .addSubcommands(
-                                        new SubcommandData("list", "List all Instagram users."),
-                                        new SubcommandData("add", "Add a Instagram Notifier for a specific user.")
+                                        new SubcommandData("instagram", "command.description.instagramNotifier")
                                                 .addOption(OptionType.STRING, "name", "The username.", true)
                                                 .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
                                                 .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
-                                        new SubcommandData("remove", "Remove a Instagram Notifier for a specific user.")
-                                                .addOption(OptionType.STRING, "name", "The username of the Notifier.", true)),
 
-                        new SubcommandGroupData("youtube", "command.description.youtubeNotifier")
-                                .addSubcommands(
-                                        new SubcommandData("list", "List all YouTube channels."),
-                                        new SubcommandData("add", "Add a YouTube Notifier for a specific channel.")
+                                        new SubcommandData("youtube", "command.description.youtubeNotifier")
                                                 .addOption(OptionType.STRING, "url", "The YouTube channel url.", true)
                                                 .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
                                                 .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
-                                        new SubcommandData("remove", "Remove a YouTube Notifier for a specific channel.")
-                                                .addOption(OptionType.STRING, "name", "The YouTube channel name or id of the Notifier.", true)),
 
-                        new SubcommandGroupData("twitch", "command.description.twitch")
-                                .addSubcommands(
-                                        new SubcommandData("list", "List all Twitch channels."),
-                                        new SubcommandData("add", "Add a Twitch Notifier for a specific channel.")
+                                        new SubcommandData("twitch", "command.description.twitch")
                                                 .addOption(OptionType.STRING, "name", "The Twitch channel name.", true)
                                                 .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
                                                 .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
-                                        new SubcommandData("remove", "Remove a Twitch Notifier for a specific channel.")
-                                                .addOption(OptionType.STRING, "name", "The Twitch channel name of the Notifier.", true)),
 
-                        new SubcommandGroupData("twitter", "command.description.twitterNotifier")
-                                .addSubcommands(
-                                        new SubcommandData("list", "List all Twitter users."),
-                                        new SubcommandData("add", "Add a Twitter Notifier for a specific user.")
+                                        new SubcommandData("twitter", "command.description.twitterNotifier")
                                                 .addOption(OptionType.STRING, "name", "The Twitter username.", true)
                                                 .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
                                                 .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
-                                        new SubcommandData("remove", "Remove a Twitter Notifier for a specific user.")
-                                                .addOption(OptionType.STRING, "name", "The Twitter username of the Notifier.", true)),
 
-                        new SubcommandGroupData("tiktok", "command.description.tiktokNotifier")
-                                .addSubcommands(
-                                        new SubcommandData("list", "List all TikTok users."),
-                                        new SubcommandData("add", "Add a TikTok Notifier for a specific user.")
+                                        new SubcommandData("tiktok", "command.description.tiktokNotifier")
                                                 .addOption(OptionType.STRING, "name", "The TikTok username.", true)
                                                 .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
                                                 .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
-                                        new SubcommandData("remove", "Remove a TikTok Notifier for a specific user.")
-                                                .addOption(OptionType.STRING, "name", "The TikTok username of the Notifier.", true)),
 
-                        new SubcommandGroupData("reddit", "command.description.redditNotifier")
-                                .addSubcommands(
-                                        new SubcommandData("list", "List all subreddits."),
-                                        new SubcommandData("add", "Add a Reddit Notifier for a specific subreddit.")
+                                        new SubcommandData("reddit", "command.description.redditNotifier")
                                                 .addOption(OptionType.STRING, "name", "The subreddit name.", true)
                                                 .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
                                                 .addOption(OptionType.STRING, "message", "Custom announcement message.", false),
-                                        new SubcommandData("remove", "Remove a Reddit Notifier for a specific subreddit.")
-                                                .addOption(OptionType.STRING, "name", "The subreddit name of the Notifier.", true)),
 
-                        new SubcommandGroupData("rss", "command.description.rssNotifier")
-                                .addSubcommands(
-                                        new SubcommandData("list", "List all RSS Feeds."),
-                                        new SubcommandData("add", "Add a RSS Notifier for a specific url.")
+                                        new SubcommandData("rss", "command.description.rssNotifier")
                                                 .addOption(OptionType.STRING, "url", "The RSS url.", true)
-                                                .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT)),
-                                        new SubcommandData("remove", "Remove a RSS Notifier for a specific url.")
-                                                .addOption(OptionType.STRING, "url", "The RSS url of the Notifier.", true)));
+                                                .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))),
+                        new SubcommandGroupData("remove", "command.description.notifier.remove")
+                                .addSubcommands(
+                                        new SubcommandData("instagram", "command.description.instagramNotifier")
+                                                .addOption(OptionType.STRING, "name", "The username of the Notifier.", true),
+                                        new SubcommandData("youtube", "command.description.youtubeNotifier")
+                                                .addOption(OptionType.STRING, "name", "The YouTube channel name or id of the Notifier.", true),
+                                        new SubcommandData("twitch", "command.description.twitch")
+                                                .addOption(OptionType.STRING, "name", "The Twitch channel name of the Notifier.", true),
+                                        new SubcommandData("twitter", "command.description.twitterNotifier")
+                                                .addOption(OptionType.STRING, "name", "The Twitter username of the Notifier.", true),
+                                        new SubcommandData("tiktok", "command.description.tiktokNotifier")
+                                                .addOption(OptionType.STRING, "name", "The TikTok username of the Notifier.", true),
+                                        new SubcommandData("reddit", "command.description.redditNotifier")
+                                                .addOption(OptionType.STRING, "name", "The subreddit name of the Notifier.", true),
+                                        new SubcommandData("rss", "command.description.rssNotifier")
+                                                .addOption(OptionType.STRING, "name", "The RSS url of the Notifier.", true)),
+                        new SubcommandGroupData("list", "command.description.notifier.list")
+                                .addSubcommands(
+                                        new SubcommandData("instagram", "command.description.instagramNotifier"),
+                                        new SubcommandData("youtube", "command.description.youtubeNotifier"),
+                                        new SubcommandData("twitch", "command.description.twitch"),
+                                        new SubcommandData("twitter", "command.description.twitterNotifier"),
+                                        new SubcommandData("tiktok", "command.description.tiktokNotifier"),
+                                        new SubcommandData("reddit", "command.description.redditNotifier"),
+                                        new SubcommandData("rss", "command.description.rssNotifier")));
     }
 
     /**
