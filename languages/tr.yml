@@ -617,7 +617,10 @@ command:
     youtubeNotifier: "Youtube-Bildiricinizi yönetin!"
     tiktokNotifier: "TikTok-Bildiricinizi yönetin!"
     rssNotifier: "RSS-Beslemesi Bildiricinizi yönetin!"
-    notifier: "Manage all your Notifiers!"
+    notifier:
+      default: "Manage all your Notifiers!"
+      list: "List all your Notifiers!"
+      remove: "Remove a Notifier!"
     anime: "Kitsu.io'da anime arayın!"
     randomcat: "thecatapi.com'dan rastgele Kedi Resimleri gösterir."
     cringe: "Shrek onlara mesajlarının utanç verici olduğunu söylesin!"
