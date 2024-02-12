@@ -30,6 +30,7 @@ import java.util.Map;
 /**
  * A command used to set up the Ticket system
  */
+// TODO:: maybe move this to setup?
 @Command(name = "tickets", description = "command.description.tickets", category = Category.COMMUNITY)
 public class Ticket implements ICommand {
 

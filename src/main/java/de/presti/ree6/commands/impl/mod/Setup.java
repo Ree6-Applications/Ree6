@@ -1,5 +1,7 @@
 package de.presti.ree6.commands.impl.mod;
 
+import de.presti.ree6.bot.BotConfig;
+import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
@@ -7,11 +9,14 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
-import de.presti.ree6.bot.BotConfig;
+import de.presti.ree6.sql.entities.TemporalVoicechannel;
+import de.presti.ree6.sql.util.SettingsManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -27,6 +32,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A command to set Ree6 up.
@@ -131,28 +137,117 @@ public class Setup implements ICommand {
                     }
                 }
             } else {
+                OptionMapping optionMapping = commandEvent.getOption("channel");
+
+                if (optionMapping == null) {
+                    commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
+                    return;
+                }
+
+                GuildChannelUnion guildChannelUnion = optionMapping.getAsChannel();
+
                 switch (commandEvent.getSubcommandGroup()) {
                     case "auditlog" -> {
                         if (commandEvent.getSubcommand().equals("set")) {
-                            // TODO:: log set
+                            if (guildChannelUnion.getType() == ChannelType.TEXT) {
+                                guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Logs").queue(webhook -> {
+                                    if (SQLSession.getSqlConnector().getSqlWorker().isLogSetup(commandEvent.getGuild().getIdLong())) {
+                                        WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()));
+                                    }
+
+                                    SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
+                                    commandEvent.reply(commandEvent.getResource("message.auditLog.setupSuccess"));
+                                });
+                            } else {
+                                commandEvent.reply(commandEvent.getResource("message.default.invalidOptionChannel"));
+                            }
                         } else {
-                            // TODO:: log remove
+                            if (SQLSession.getSqlConnector().getSqlWorker().isLogSetup(commandEvent.getGuild().getIdLong())) {
+                                WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()));
+                                commandEvent.reply(commandEvent.getResource("message.auditLog.deleted"));
+                            } else {
+                                commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
+                            }
                         }
                     }
                     case "welcome" -> {
                         if (commandEvent.getSubcommand().equals("set")) {
-                            // TODO:: welcome set
+                            if (guildChannelUnion.getType() == ChannelType.TEXT) {
+                                guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Welcome").queue(webhook -> {
+                                    if (SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(commandEvent.getGuild().getIdLong())) {
+                                        WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()));
+                                    }
+
+                                    SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
+                                    commandEvent.reply(commandEvent.getResource("message.welcome.setupSuccess"));
+                                });
+                            } else {
+                                commandEvent.reply(commandEvent.getResource("message.default.invalidOptionChannel"));
+                            }
                         } else {
-                            // TODO:: welcome remove
+                            if (SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(commandEvent.getGuild().getIdLong())) {
+                                WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()));
+                                commandEvent.reply(commandEvent.getResource("message.welcome.deleted"));
+                            } else {
+                                commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
+                            }
                         }
-                    }
-                    case "autorole" -> {
                     }
                     case "tempvoice" -> {
                         if (commandEvent.getSubcommand().equals("set")) {
-                            // TODO:: temporal set
+                            if (guildChannelUnion.getType() == ChannelType.VOICE) {
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new TemporalVoicechannel(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong()));
+                                commandEvent.reply(commandEvent.getResource("message.temporalVoice.setupSuccess"));
+                            } else {
+                                commandEvent.reply(commandEvent.getResource("message.default.invalidOptionChannel"));
+                            }
                         } else {
-                            // TODO:: temporal remove
+                            TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", commandEvent.getGuild().getId()));
+                            if (temporalVoicechannel != null) {
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel);
+                                commandEvent.reply(commandEvent.getResource("message.temporalVoice.deleted"));
+                            } else {
+                                commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
+                            }
+                        }
+                    }
+                    case "rewards" -> {
+                        if (commandEvent.getSubcommand().equals("set")) {
+                            OptionMapping blackJackWin = commandEvent.getOption("blackJackWin");
+                            OptionMapping musicQuizWin = commandEvent.getOption("musicQuizWin");
+                            OptionMapping musicQuizFeature = commandEvent.getOption("musicQuizFeature");
+                            OptionMapping musicQuizArtist = commandEvent.getOption("musicQuizArtist");
+                            OptionMapping musicQuizTitle = commandEvent.getOption("musicQuizTitle");
+
+                            if (blackJackWin != null) {
+                                SQLSession.getSqlConnector().getSqlWorker().setSetting(new Setting(commandEvent.getGuild().getIdLong(), "configuration_rewards_blackJackWin", "BlackJack Win", blackJackWin.getAsDouble()));
+                            }
+
+                            if (musicQuizWin != null) {
+                                SQLSession.getSqlConnector().getSqlWorker().setSetting(new Setting(commandEvent.getGuild().getIdLong(), "configuration_rewards_musicQuizWin", "MusicQuiz Win", musicQuizWin.getAsDouble()));
+                            }
+
+                            if (musicQuizFeature != null) {
+                                SQLSession.getSqlConnector().getSqlWorker().setSetting(new Setting(commandEvent.getGuild().getIdLong(), "configuration_rewards_musicQuizFeature", "MusicQuiz Feature", musicQuizFeature.getAsDouble()));
+                            }
+
+                            if (musicQuizArtist != null) {
+                                SQLSession.getSqlConnector().getSqlWorker().setSetting(new Setting(commandEvent.getGuild().getIdLong(), "configuration_rewards_musicQuizArtist", "MusicQuiz Artist", musicQuizArtist.getAsDouble()));
+                            }
+
+                            if (musicQuizTitle != null) {
+                                SQLSession.getSqlConnector().getSqlWorker().setSetting(new Setting(commandEvent.getGuild().getIdLong(), "configuration_rewards_musicQuizTitle", "MusicQuiz Title", musicQuizTitle.getAsDouble()));
+                            }
+
+                            commandEvent.reply(commandEvent.getResource("message.rewards.success"));
+                        } else {
+                            for (Setting setting : SettingsManager.getSettings()) {
+                                if (!setting.getName().startsWith("configuration_rewards_")) continue;
+
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Setting(commandEvent.getGuild().getIdLong(), setting.getName(), setting.getDisplayName(), setting.getValue()));
+                            }
+
+                            commandEvent.reply(commandEvent.getResource("message.rewards.success"));
                         }
                     }
                 }
@@ -188,12 +283,15 @@ public class Setup implements ICommand {
                         new SubcommandGroupData("statistics", "Statistics Setup")
                                 .addSubcommands(new SubcommandData("create", "Create the Statistics channel."))
                                 .addSubcommands(new SubcommandData("remove", "Remove the Statistics channel.")),
-                        new SubcommandGroupData("tickets", "Ticket System Setup")
-                                .addSubcommands(new SubcommandData("set", "Set the Ticket System channel.")
-                                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The Ticket Channel.", true).setChannelTypes(ChannelType.TEXT)))
-                                .addSubcommands(new SubcommandData("remove", "Remove the Ticket System channel.")),
                         new SubcommandGroupData("rewards", "Rewards Setup")
-                                .addSubcommands(new SubcommandData("set", "Set the Rewards value."))
+                                .addSubcommands(new SubcommandData("set", "Set the Rewards value.")
+                                        .addOptions(
+                                                new OptionData(OptionType.NUMBER, "blackJackWin", "The amount of money the user gets for a BlackJack Win.", false),
+                                                new OptionData(OptionType.NUMBER, "musicQuizWin", "The amount of money the user gets for a MusicQuiz Win.", false),
+                                                new OptionData(OptionType.NUMBER, "musicQuizFeature", "The amount of money the user gets for the correct MusicQuiz Feature guess.", false),
+                                                new OptionData(OptionType.NUMBER, "musicQuizArtist", "The amount of money the user gets for the correct MusicQuiz Artist guess.", false),
+                                                new OptionData(OptionType.NUMBER, "musicQuizTitle", "The amount of money the user gets for the correct MusicQuiz Title guess.", false)
+                                        ))
                                 .addSubcommands(new SubcommandData("reset", "Reset the Rewards value."))
                 );
     }
