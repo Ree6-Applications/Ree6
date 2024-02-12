@@ -280,9 +280,10 @@ public class Setup implements ICommand {
                                 .addSubcommands(new SubcommandData("set", "Set a Temporal Voice Channel.")
                                         .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The Temporal Voice Channel.", true).setChannelTypes(ChannelType.VOICE)))
                                 .addSubcommands(new SubcommandData("remove", "Remove a Temporal Voice Channel.")),
-                        new SubcommandGroupData("statistics", "Statistics Setup")
+                        // TODO:: think about a better way to implement it.
+                        /*new SubcommandGroupData("statistics", "Statistics Setup")
                                 .addSubcommands(new SubcommandData("create", "Create the Statistics channel."))
-                                .addSubcommands(new SubcommandData("remove", "Remove the Statistics channel.")),
+                                .addSubcommands(new SubcommandData("remove", "Remove the Statistics channel.")),*/
                         new SubcommandGroupData("rewards", "Rewards Setup")
                                 .addSubcommands(new SubcommandData("set", "Set the Rewards value.")
                                         .addOptions(
