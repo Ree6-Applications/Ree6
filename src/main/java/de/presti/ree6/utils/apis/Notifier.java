@@ -811,7 +811,6 @@ public class Notifier {
                 }
             } catch (Exception e) {
                 log.error("Couldn't get user data!", e);
-                e.printStackTrace();
                 Sentry.captureException(e);
             }
         }, x -> {
