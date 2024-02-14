@@ -287,11 +287,11 @@ public class Setup implements ICommand {
                         new SubcommandGroupData("rewards", "Rewards Setup")
                                 .addSubcommands(new SubcommandData("set", "Set the Rewards value.")
                                         .addOptions(
-                                                new OptionData(OptionType.NUMBER, "blackJackWin", "The amount of money the user gets for a BlackJack Win.", false),
-                                                new OptionData(OptionType.NUMBER, "musicQuizWin", "The amount of money the user gets for a MusicQuiz Win.", false),
-                                                new OptionData(OptionType.NUMBER, "musicQuizFeature", "The amount of money the user gets for the correct MusicQuiz Feature guess.", false),
-                                                new OptionData(OptionType.NUMBER, "musicQuizArtist", "The amount of money the user gets for the correct MusicQuiz Artist guess.", false),
-                                                new OptionData(OptionType.NUMBER, "musicQuizTitle", "The amount of money the user gets for the correct MusicQuiz Title guess.", false)
+                                                new OptionData(OptionType.NUMBER, "blackjackwin", "The amount of money the user gets for a BlackJack Win.", false),
+                                                new OptionData(OptionType.NUMBER, "musicquizwin", "The amount of money the user gets for a MusicQuiz Win.", false),
+                                                new OptionData(OptionType.NUMBER, "musicquizfeature", "The amount of money the user gets for the correct MusicQuiz Feature guess.", false),
+                                                new OptionData(OptionType.NUMBER, "musicquizartist", "The amount of money the user gets for the correct MusicQuiz Artist guess.", false),
+                                                new OptionData(OptionType.NUMBER, "musicquiztitle", "The amount of money the user gets for the correct MusicQuiz Title guess.", false)
                                         ))
                                 .addSubcommands(new SubcommandData("reset", "Reset the Rewards value."))
                 );
