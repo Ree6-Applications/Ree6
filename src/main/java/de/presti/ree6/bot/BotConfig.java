@@ -1,12 +1,14 @@
 package de.presti.ree6.bot;
 
 import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 
 /**
  * Utility class to save long term used Data.
  */
+@Slf4j
 public class BotConfig {
 
     /**
@@ -99,6 +101,12 @@ public class BotConfig {
      * @return if the module is activated.
      */
     public static boolean isModuleActive(String moduleName) {
+        if (isDebug()) {
+            log.info("Checking if module " + moduleName + " is active.");
+            Object object = Main.getInstance().getConfig().getConfiguration().get("bot.misc.modules." + moduleName);
+            log.info("Module is null: " + (object == null));
+            if (object != null) log.info("Module is active: " + ((boolean) object));
+        }
         return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.modules." + moduleName, true);
     }
 
@@ -236,17 +244,6 @@ public class BotConfig {
     }
 
     /**
-     * Get the configured color for the details on the rank card.
-     * @return the color for the details on the rank card from the config.
-     */
-    public static Color getRankDetailColor() {
-        if (rankDetailColor == null) {
-            rankDetailColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.detailColor", "#FFFFFF"));
-        }
-        return rankDetailColor;
-    }
-
-    /**
      * Get the configured color for the highlight on the rank card.
      * @return the color for the highlight on the rank card from the config.
      */
@@ -255,6 +252,17 @@ public class BotConfig {
             rankHighlightColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.highlightColor", "#FF00FF"));
         }
         return rankHighlightColor;
+    }
+
+    /**
+     * Get the configured color for the details on the rank card.
+     * @return the color for the details on the rank card from the config.
+     */
+    public static Color getRankDetailColor() {
+        if (rankDetailColor == null) {
+            rankDetailColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.detailColor", "#C0C0C0"));
+        }
+        return rankDetailColor;
     }
 
     /**
@@ -274,7 +282,7 @@ public class BotConfig {
      */
     public static Color getRankProgressbarBackgroundColor() {
         if (rankProgressbarBackgroundColor == null) {
-            rankProgressbarBackgroundColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.progressbarBackgroundColor", "#FF00FF"));
+            rankProgressbarBackgroundColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.rankCard.progressbarBackgroundColor", "#7C007C"));
         }
         return rankProgressbarBackgroundColor;
     }
