@@ -1,12 +1,14 @@
 package de.presti.ree6.bot;
 
 import de.presti.ree6.main.Main;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 
 /**
  * Utility class to save long term used Data.
  */
+@Slf4j
 public class BotConfig {
 
     /**
@@ -99,6 +101,12 @@ public class BotConfig {
      * @return if the module is activated.
      */
     public static boolean isModuleActive(String moduleName) {
+        if (isDebug()) {
+            log.info("Checking if module " + moduleName + " is active.");
+            Object object = Main.getInstance().getConfig().getConfiguration().get("bot.misc.modules." + moduleName);
+            log.info("Module is null: " + (object == null));
+            if (object != null) log.info("Module is active: " + ((boolean) object));
+        }
         return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.modules." + moduleName, true);
     }
 

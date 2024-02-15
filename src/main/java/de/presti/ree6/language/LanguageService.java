@@ -1,8 +1,8 @@
 package de.presti.ree6.language;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.external.RequestUtility;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
@@ -95,7 +95,7 @@ public class LanguageService {
 
                     if (Files.exists(languageFile)) {
 
-                        log.info("Language file {} already exists! Will compare version!", language);
+                        log.info("Version comparing: {}!", language);
                         YamlConfiguration newLanguageYaml = YamlConfiguration.loadConfigurationFromString(content);
                         Language newLanguage = new Language(newLanguageYaml);
                         Language oldLanguage = new Language(YamlConfiguration.loadConfiguration(languageFile.toFile()));
@@ -105,7 +105,7 @@ public class LanguageService {
                                 log.info("Failed to delete old Language file {}!", language);
                             }
 
-                            // Not using YamlConfiguration#save, since that methods breaks the whole file somehow? Unsure why?
+                            // Not using YamlConfiguration#save, since that method breaks the whole file somehow? Unsure why?
                             Files.writeString(languageFile, content, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
 
                             log.info("Updated Language file {}!", language);

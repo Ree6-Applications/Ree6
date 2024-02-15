@@ -720,58 +720,59 @@ public class Notifier {
                 for (String channel : registeredYouTubeChannels) {
                     List<WebhookYouTube> webhooks = SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel);
 
-                    if (webhooks.isEmpty()) return;
+                    if (!webhooks.isEmpty()) {
 
-                    List<VideoResult> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
-                    if (!playlistItemList.isEmpty()) {
-                        for (VideoResult playlistItem : playlistItemList) {
+                        List<VideoResult> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
+                        if (!playlistItemList.isEmpty()) {
+                            for (VideoResult playlistItem : playlistItemList) {
 
-                            Main.getInstance().logAnalytic("Video: " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate() + " | " + playlistItem.getTimeAgo());
-                            Main.getInstance().logAnalytic("Current: " + System.currentTimeMillis() + " | " + (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) + " | "
-                                    + (playlistItem.getActualUploadDate() != null && playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis()))) + " | " + (playlistItem.getTimeAgo() > 0 && Duration.ofMinutes(5).toMillis() >= playlistItem.getTimeAgo()));
+                                Main.getInstance().logAnalytic("Video: " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate() + " | " + playlistItem.getTimeAgo());
+                                Main.getInstance().logAnalytic("Current: " + System.currentTimeMillis() + " | " + (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) + " | "
+                                        + (playlistItem.getActualUploadDate() != null && playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis()))) + " | " + (playlistItem.getTimeAgo() > 0 && Duration.ofMinutes(5).toMillis() >= playlistItem.getTimeAgo()));
 
-                            if (playlistItem.getUploadDate() != -1 && (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis() ||
-                                    (playlistItem.getTimeAgo() > 0 && Duration.ofMinutes(5).toMillis() >= playlistItem.getTimeAgo())) &&
-                                    playlistItem.getActualUploadDate() != null && !playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis()))) {
+                                if (playlistItem.getUploadDate() != -1 && (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis() ||
+                                        (playlistItem.getTimeAgo() > 0 && Duration.ofMinutes(5).toMillis() >= playlistItem.getTimeAgo())) &&
+                                        playlistItem.getActualUploadDate() != null && !playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis()))) {
 
-                                Main.getInstance().logAnalytic("Passed! -> " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate());
-                                // Create Webhook Message.
-                                WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
+                                    Main.getInstance().logAnalytic("Passed! -> " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate());
+                                    // Create Webhook Message.
+                                    WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
-                                webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
-                                webhookMessageBuilder.setUsername(BotConfig.getBotName());
+                                    webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
+                                    webhookMessageBuilder.setUsername(BotConfig.getBotName());
 
-                                WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+                                    WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
-                                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(playlistItem.getOwnerName(), null));
-                                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("YouTube Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+                                    webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(playlistItem.getOwnerName(), null));
+                                    webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("YouTube Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
 
-                                webhookEmbedBuilder.setImageUrl(playlistItem.getThumbnail());
+                                    webhookEmbedBuilder.setImageUrl(playlistItem.getThumbnail());
 
-                                // Set rest of the Information.
-                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", playlistItem.getTitle()));
-                                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet()));
+                                    // Set rest of the Information.
+                                    webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", playlistItem.getTitle()));
+                                    webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet()));
 
-                                webhookEmbedBuilder.setDescription("[Click here to watch the Video](https://www.youtube.com/watch?v=" + playlistItem.getId() + ")");
+                                    webhookEmbedBuilder.setDescription("[Click here to watch the Video](https://www.youtube.com/watch?v=" + playlistItem.getId() + ")");
 
-                                if (playlistItem.getUploadDate() != -1)
-                                    webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", TimeFormat.DATE_TIME_SHORT.format(playlistItem.getUploadDate())));
+                                    if (playlistItem.getUploadDate() != -1)
+                                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", TimeFormat.DATE_TIME_SHORT.format(playlistItem.getUploadDate())));
 
-                                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(BotConfig.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
-                                webhookEmbedBuilder.setColor(Color.RED.getRGB());
+                                    webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(BotConfig.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+                                    webhookEmbedBuilder.setColor(Color.RED.getRGB());
 
-                                webhooks.forEach(webhook -> {
-                                    String message = webhook.getMessage().replace("%name%", playlistItem.getOwnerName())
-                                            .replace("%title%", playlistItem.getTitle())
-                                            .replace("%description%", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet())
-                                            .replace("%url%", "https://www.youtube.com/watch?v=" + playlistItem.getId());
+                                    webhooks.forEach(webhook -> {
+                                        String message = webhook.getMessage().replace("%name%", playlistItem.getOwnerName())
+                                                .replace("%title%", playlistItem.getTitle())
+                                                .replace("%description%", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet())
+                                                .replace("%url%", "https://www.youtube.com/watch?v=" + playlistItem.getId());
 
-                                    webhookEmbedBuilder.setDescription(message);
-                                    webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-                                    WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
-                                });
+                                        webhookEmbedBuilder.setDescription(message);
+                                        webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+                                        WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
+                                    });
 
-                                break;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -782,7 +783,8 @@ public class Notifier {
                     if (!channelStats.isEmpty()) {
                         ChannelResult youTubeChannel;
                         try {
-                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(channel);
+                            // TODO:: change YT Tracker to use the ID instead of username.
+                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelById(channel);
                         } catch (IOException e) {
                             Sentry.captureException(e);
                             continue;
@@ -814,7 +816,7 @@ public class Notifier {
         }, x -> {
             log.error("Couldn't run YT checker!", x);
             Sentry.captureException(x);
-        }, Duration.ofMinutes(5), true, true);
+        }, Duration.ofMinutes(1), true, true);
     }
 
     /**
