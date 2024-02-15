@@ -618,9 +618,9 @@ command:
     tiktokNotifier: "Manage dein TikTok-Notifier!"
     rssNotifier: "Manage dein RSS-Notifier!"
     notifier:
-      default: "Manage all your Notifiers!"
-      list: "List all your Notifiers!"
-      remove: "Remove a Notifier!"
+      default: "Manage deine Benachrichtigungen!"
+      list: "Liste alle Benachrichtigungen!"
+      remove: "Entferne eine Benachrichtigung!"
     anime: "Suche nach Animes auf kitsu.io!"
     randomcat: "Zeigt zufällige Katzenbilder, von thecatapi.com."
     cringe: "Lass Shrek ihnen sagen das ihre Nachricht purer Fremdscharm war!"
