@@ -368,7 +368,9 @@ public class OtherEvents extends ListenerAdapter {
         if (event instanceof GuildVoiceGuildDeafenEvent guildDeafenEvent) {
             if (event.getMember() == event.getGuild().getSelfMember() &&
                     !guildDeafenEvent.isGuildDeafened()) {
-                event.getGuild().getSelfMember().deafen(true).queue();
+                if (event.getGuild().getAudioManager().getReceivingHandler() == null) {
+                    event.getGuild().getSelfMember().deafen(true).queue();
+                }
             }
         }
 
