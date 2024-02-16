@@ -566,6 +566,9 @@ message:
     deposit: "Você depositou com sucesso %s$!"
     send: "Você enviou com sucesso %s$ para %s!"
     balance: "O saldo de %s contém %s$ em dinheiro e %s$ no banco!"
+    set: "You have successfully set the balance of %s to %s$!"
+    add: "You have successfully added %s$ to the balance of %s!"
+    remove: "You have successfully removed %s$ from the balance of %s!"
   steal:
     success: "Você roubou com sucesso %s$ de %s!"
     failed: "Você não conseguiu roubar %s$ de %s!"
@@ -695,7 +698,9 @@ command:
     infractions: "Mostra todos os avisos de um usuário."
     musicpanel: "Acesse uma interface de usuário simples para gerenciar o sistema de música!"
     schedule: "Agende mensagens para mais tarde ou para um horário repetido!"
-    money: "Gerencie seu dinheiro!"
+    money:
+      default: "Manage your money!"
+      admin: "Manage the money of other Users!"
     steal: "Roube dinheiro de outros usuários!"
     work: "Obtenha seu próprio dinheiro fazendo trabalhos!"
     giveaway: "Gerencie sorteios!"
