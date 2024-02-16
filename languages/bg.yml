@@ -566,6 +566,9 @@ message:
     deposit: "Успешно сте депозирали %s$ от банката!"
     send: "Успешно изпратихте %s$ до %s!"
     balance: "Балансът на %s съдържа %s$ в брой и %s$ в банка!"
+    set: "You have successfully set the balance of %s to %s$!"
+    add: "You have successfully added %s$ to the balance of %s!"
+    remove: "You have successfully removed %s$ from the balance of %s!"
   steal:
     success: "Успешно сте откраднали %s$ от %s!"
     failed: "Не успяхте да откраднете %s$ от %s!"
@@ -695,7 +698,9 @@ command:
     infractions: "Показване на всички предупреждения на даден потребител."
     musicpanel: "Достъп до прост потребителски интерфейс за управление на музикалната система!"
     schedule: "Планиране на съобщенията за по-късно или за повторно време!"
-    money: "Управлявайте парите си!"
+    money:
+      default: "Manage your money!"
+      admin: "Manage the money of other Users!"
     steal: "Откраднете пари от други потребители!"
     work: "Спечелете собствени пари от работа!"
     giveaway: "Менаджирайте Раздаванията!"
