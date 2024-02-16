@@ -1,5 +1,6 @@
 package de.presti.ree6.addons;
 
+import de.presti.ree6.addons.utils.AddonClassLoader;
 import de.presti.ree6.main.Main;
 import lombok.extern.slf4j.Slf4j;
 import org.simpleyaml.configuration.file.FileConfiguration;
@@ -96,7 +97,7 @@ public class AddonLoader {
         try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream("addons/" + fileName))) {
             ZipEntry entry;
 
-            // While there a still Classes inside the JAR it should check them.
+            // While there a still Classes inside the JAR, it should check them.
             while ((entry = zipInputStream.getNextEntry()) != null) {
                 try {
                     // Get the current name of the class.
@@ -147,7 +148,7 @@ public class AddonLoader {
             File addonFile = new File("addons/" + fileName);
             AddonInterface addonInterface = null;
             // Try loading the Class with a URL Class Loader.
-            try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { addonFile.toURI().toURL() }, AddonLoader.class.getClassLoader())) {
+            try (AddonClassLoader urlClassLoader = new AddonClassLoader(new URL[] { addonFile.toURI().toURL() }, AddonLoader.class.getClassLoader())) {
 
                 // Get the Addon Class.
                 Class<?> addonClass = getClass(urlClassLoader, classPath);
@@ -185,7 +186,7 @@ public class AddonLoader {
      * @return the Main class of the Addon.
      * @throws ClassNotFoundException if there is no file with the given Path.
      */
-    private static Class<?> getClass(URLClassLoader classLoader, String classPath) throws ClassNotFoundException {
+    private static Class<?> getClass(AddonClassLoader classLoader, String classPath) throws ClassNotFoundException {
         // Class from the loader.
         Class<?> urlCl = classLoader.loadClass(classPath);
 
