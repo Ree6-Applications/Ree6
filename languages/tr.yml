@@ -566,6 +566,9 @@ message:
     deposit: "%s$'ı başarıyla yatırdınız!"
     send: "%s$'ı %s'ye başarıyla gönderdiniz!"
     balance: "%s Bakiyesi nakit olarak %s$ ve Bankada %s$ içeriyor!"
+    set: "You have successfully set the balance of %s to %s$!"
+    add: "You have successfully added %s$ to the balance of %s!"
+    remove: "You have successfully removed %s$ from the balance of %s!"
   steal:
     success: "%s'den %s$'ı başarıyla çaldınız!"
     failed: "%s'den %s$ çalmayı başaramadınız!"
@@ -695,7 +698,9 @@ command:
     infractions: "Bir kullanıcının sahip olduğu tüm uyarıları göster."
     musicpanel: "Müzik Sistemini yönetmek için basit bir kullanıcı arayüzüne erişin!"
     schedule: "Mesajları daha sonra veya tekrarlanan bir süre için planlayın!"
-    money: "Paranızı yönetin!"
+    money:
+      default: "Manage your money!"
+      admin: "Manage the money of other Users!"
     steal: "Diğer kullanıcılardan para çalın!"
     work: "İş yaparak kendi paranı kazan!"
     giveaway: "Hediyeleri Yönet!"
