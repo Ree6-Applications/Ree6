@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
@@ -177,15 +178,15 @@ public class Money implements ICommand {
                 .addSubcommandGroups(new SubcommandGroupData("admin", "command.description.money.admin")
                         .addSubcommands(new SubcommandData("add", "Add money to a user!")
                                         .addOption(OptionType.USER, "user", "The user you want to add money to.", true)
-                                        .addOption(OptionType.NUMBER, "amount", "The amount of money you want to add.", true)
+                                        .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to set.", true).setMinValue(0).setMaxValue(999999999))
                                         .addOption(OptionType.BOOLEAN, "bank", "If the money should be set in the bank.", false),
                                 new SubcommandData("set", "Set the money of a user!")
                                         .addOption(OptionType.USER, "user", "The user you want to set the money of.", true)
-                                        .addOption(OptionType.NUMBER, "amount", "The amount of money you want to set.", true)
+                                        .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to set.", true).setMinValue(0).setMaxValue(999999999))
                                         .addOption(OptionType.BOOLEAN, "bank", "If the money should be set in the bank.", false),
                                 new SubcommandData("remove", "Remove money from a user!")
                                         .addOption(OptionType.USER, "user", "The user you want to remove money from.", true)
-                                        .addOption(OptionType.NUMBER, "amount", "The amount of money you want to remove.", true)
+                                        .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to set.", true).setMinValue(0).setMaxValue(999999999))
                                         .addOption(OptionType.BOOLEAN, "bank", "If the money should be set in the bank.", false)));
     }
 
