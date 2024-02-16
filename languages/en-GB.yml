@@ -695,7 +695,9 @@ command:
     infractions: "Show all the warnings a user has."
     musicpanel: "Access a simple UI to manage the Music System!"
     schedule: "Schedule messages for later or for a repeated time!"
-    money: "Manage your money!"
+    money:
+      default: "Manage your money!"
+      admin: "Manage the money of other Users!"
     steal: "Steal money from other users!"
     work: "Get your own money from doing work!"
     giveaway: "Manage Giveaways!"
