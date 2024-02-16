@@ -566,6 +566,9 @@ message:
     deposit: "You have successfully deposited %s$!"
     send: "You have successfully sent %s$ to %s!"
     balance: "The Balance of %s contains %s$ in cash and %s$ on the Bank!"
+    set: "You have successfully set the balance of %s to %s$!"
+    add: "You have successfully added %s$ to the balance of %s!"
+    remove: "You have successfully removed %s$ from the balance of %s!"
   steal:
     success: "You have successfully stolen %s$ from %s!"
     failed: "You have failed to steal %s$ from %s!"

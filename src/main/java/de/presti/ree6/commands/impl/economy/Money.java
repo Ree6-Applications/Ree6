@@ -144,7 +144,7 @@ public class Money implements ICommand {
                         EconomyUtil.pay(EconomyUtil.getMoneyHolder(commandEvent.getMember()),
                                 EconomyUtil.getMoneyHolder(member), optionAmount, false,
                                 transferToBank, true);
-                        commandEvent.reply(commandEvent.getResource("message.money.add", member.getAsMention(), EconomyUtil.formatMoney(optionAmount)), 5);
+                        commandEvent.reply(commandEvent.getResource("message.money.add", EconomyUtil.formatMoney(optionAmount), member.getAsMention()), 5);
                     }
                     case "set" -> {
                         EconomyUtil.set(EconomyUtil.getMoneyHolder(member), optionAmount, transferToBank);
@@ -154,7 +154,7 @@ public class Money implements ICommand {
                         EconomyUtil.pay(EconomyUtil.getMoneyHolder(commandEvent.getMember()),
                                 EconomyUtil.getMoneyHolder(member), -optionAmount, false,
                                 transferToBank, true);
-                        commandEvent.reply(commandEvent.getResource("message.money.remove", member.getAsMention(), EconomyUtil.formatMoney(optionAmount)), 5);
+                        commandEvent.reply(commandEvent.getResource("message.money.remove", EconomyUtil.formatMoney(optionAmount), member.getAsMention()), 5);
                     }
                 }
             } else {
