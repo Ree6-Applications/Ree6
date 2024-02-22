@@ -716,12 +716,11 @@ public class Notifier {
      */
     public void createYTStream() {
         ThreadUtil.createThread(x -> {
-            try {
-                for (String channel : registeredYouTubeChannels) {
-                    List<WebhookYouTube> webhooks = SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel);
+            for (String channel : registeredYouTubeChannels) {
+                List<WebhookYouTube> webhooks = SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel);
 
-                    if (!webhooks.isEmpty()) {
-
+                if (!webhooks.isEmpty()) {
+                    try {
                         List<VideoResult> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
                         if (!playlistItemList.isEmpty()) {
                             for (VideoResult playlistItem : playlistItemList) {
@@ -775,48 +774,49 @@ public class Notifier {
                                 }
                             }
                         }
+                    } catch (Exception exception) {
+                        Sentry.captureException(exception);
+                        log.error("Couldn't get user data of " + channel + "!", exception);
+                    }
+                }
+
+                List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),
+                        "FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", channel));
+
+                if (!channelStats.isEmpty()) {
+                    ChannelResult youTubeChannel;
+                    try {
+                        // TODO:: change YT Tracker to use the ID instead of username.
+                        youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelById(channel);
+                    } catch (Exception e) {
+                        Sentry.captureException(e);
+                        continue;
                     }
 
-                    List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),
-                            "FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", channel));
+                    if (youTubeChannel == null) continue;
 
-                    if (!channelStats.isEmpty()) {
-                        ChannelResult youTubeChannel;
-                        try {
-                            // TODO:: change YT Tracker to use the ID instead of username.
-                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelById(channel);
-                        } catch (IOException e) {
-                            Sentry.captureException(e);
-                            continue;
-                        }
+                    for (ChannelStats channelStat : channelStats) {
+                        if (channelStat.getYoutubeSubscribersChannelId() != null) {
+                            GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getYoutubeSubscribersChannelId());
 
-                        if (youTubeChannel == null) continue;
+                            if (guildChannel == null) continue;
 
-                        for (ChannelStats channelStat : channelStats) {
-                            if (channelStat.getYoutubeSubscribersChannelId() != null) {
-                                GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getYoutubeSubscribersChannelId());
+                            String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText());
+                            if (!guildChannel.getName().equalsIgnoreCase(newName)) {
+                                if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                                    continue;
 
-                                if (guildChannel == null) continue;
-
-                                String newName = LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText());
-                                if (!guildChannel.getName().equalsIgnoreCase(newName)) {
-                                    if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
-                                        continue;
-
-                                    guildChannel.getManager().setName(newName).queue();
-                                }
+                                guildChannel.getManager().setName(newName).queue();
                             }
                         }
                     }
                 }
-            } catch (Exception e) {
-                log.error("Couldn't get user data!", e);
-                Sentry.captureException(e);
             }
         }, x -> {
             log.error("Couldn't run YT checker!", x);
             Sentry.captureException(x);
-        }, Duration.ofMinutes(1), true, true);
+            // Default is 5 minutes.
+        }, Duration.ofSeconds(20), true, true);
     }
 
     /**

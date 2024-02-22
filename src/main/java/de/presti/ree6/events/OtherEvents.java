@@ -4,6 +4,7 @@ import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.audio.AudioPlayerReceiveHandler;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
@@ -18,7 +19,6 @@ import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.data.ImageCreationUtility;
 import de.presti.ree6.utils.others.*;
 import io.sentry.Sentry;
@@ -368,7 +368,9 @@ public class OtherEvents extends ListenerAdapter {
         if (event instanceof GuildVoiceGuildDeafenEvent guildDeafenEvent) {
             if (event.getMember() == event.getGuild().getSelfMember() &&
                     !guildDeafenEvent.isGuildDeafened()) {
-                event.getGuild().getSelfMember().deafen(true).queue();
+                if (event.getGuild().getAudioManager().getReceivingHandler() == null) {
+                    event.getGuild().getSelfMember().deafen(true).queue();
+                }
             }
         }
 

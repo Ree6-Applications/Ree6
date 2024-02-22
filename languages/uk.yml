@@ -566,6 +566,9 @@ message:
     deposit: "Ви успішно внесли %s$!"
     send: "Ви успішно відправили %s$ до %s!"
     balance: "Баланс %s містить %s$ готівкою та %s$ у банку!"
+    set: "You have successfully set the balance of %s to %s$!"
+    add: "You have successfully added %s$ to the balance of %s!"
+    remove: "You have successfully removed %s$ from the balance of %s!"
   steal:
     success: "Ви успішно вкрали %s$ в %s!"
     failed: "Не вдалося вкрасти %s$ з %s!"
@@ -617,6 +620,10 @@ command:
     youtubeNotifier: "Керуйте вашим сповіщенням Youtube!"
     tiktokNotifier: "Керуйте вашим сповіщенням TikTok!"
     rssNotifier: "Керуйте вашим сповіщенням RSS-Feed!"
+    notifier:
+      default: "Manage all your Notifiers!"
+      list: "List all your Notifiers!"
+      remove: "Remove a Notifier!"
     anime: "Шукати аніме на kitsu.io!"
     randomcat: "Показує випадкові зображення кота, із thecatapi.com."
     cringe: "Нехай Шрек скаже їм, що їхній меседж був жахливим!"
@@ -691,7 +698,9 @@ command:
     infractions: "Показати всі попередження користувача."
     musicpanel: "Отримайте доступ до простого інтерфейсу для управління музичною системою!"
     schedule: "Заплануйте повідомлення на пізніше або на повторний час!"
-    money: "Керуйте своїми грошима!"
+    money:
+      default: "Manage your money!"
+      admin: "Manage the money of other Users!"
     steal: "Вкрасти гроші інших користувачів!"
     work: "Отримайте свої власні гроші від здійснення роботи!"
     giveaway: "Керування розіграшами!"
