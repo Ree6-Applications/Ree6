@@ -16,6 +16,7 @@ public class EconomyUtil {
 
     /**
      * Check if a MoneyHolder has any cash.
+     *
      * @param member The Member.
      * @return If the MoneyHolder has any cash.
      */
@@ -25,7 +26,8 @@ public class EconomyUtil {
 
     /**
      * Check if a MoneyHolder has any cash.
-     * @param guildId The ID of the Guild.
+     *
+     * @param guildId  The ID of the Guild.
      * @param memberId The ID of the Member.
      * @return If the MoneyHolder has any cash.
      */
@@ -35,6 +37,7 @@ public class EconomyUtil {
 
     /**
      * Check if a MoneyHolder has any cash.
+     *
      * @param moneyHolder The MoneyHolder to check.
      * @return If the MoneyHolder has any cash.
      */
@@ -44,6 +47,7 @@ public class EconomyUtil {
 
     /**
      * Retrieve a MoneyHolder from the Database.
+     *
      * @param member The Member.
      * @return The MoneyHolder.
      */
@@ -53,7 +57,8 @@ public class EconomyUtil {
 
     /**
      * Retrieve a MoneyHolder from the Database.
-     * @param guildId The ID of the Guild.
+     *
+     * @param guildId  The ID of the Guild.
      * @param memberId The ID of the Member.
      * @return The MoneyHolder.
      */
@@ -63,8 +68,9 @@ public class EconomyUtil {
 
     /**
      * Retrieve a MoneyHolder from the Database.
-     * @param guildId The ID of the Guild.
-     * @param memberId The ID of the Member.
+     *
+     * @param guildId           The ID of the Guild.
+     * @param memberId          The ID of the Member.
      * @param createIfNotExists If the MoneyHolder should be created if it does not exist.
      * @return The MoneyHolder.
      */
@@ -84,8 +90,9 @@ public class EconomyUtil {
 
     /**
      * Check if the MoneyHolder has enough money.
-     * @param target The MoneyHolder to check.
-     * @param amount The amount to check.
+     *
+     * @param target    The MoneyHolder to check.
+     * @param amount    The amount to check.
      * @param checkBank If the bank should be checked.
      * @return If the MoneyHolder has enough money.
      */
@@ -95,11 +102,12 @@ public class EconomyUtil {
 
     /**
      * Create a payment transaction between two MoneyHolders.
-     * @param sender The sender of the money.
+     *
+     * @param sender   The sender of the money.
      * @param receiver The receiver of the money.
-     * @param amount The amount of money to send.
+     * @param amount   The amount of money to send.
      * @param fromBank If the money should be taken from the bank.
-     * @param toBank If the money should be sent to the bank.
+     * @param toBank   If the money should be sent to the bank.
      * @return If the payment was successful.
      */
     public static boolean pay(MoneyHolder sender, MoneyHolder receiver, double amount, boolean fromBank, boolean toBank) {
@@ -107,12 +115,36 @@ public class EconomyUtil {
     }
 
     /**
+     * Set the amount of money for a MoneyHolder.
+     *
+     * @param holder  The sender of the money.
+     * @param amount  The amount of money to send.
+     * @param setBank If the money should be put into the bank.
+     * @return If the set was successful.
+     */
+    public static boolean set(MoneyHolder holder, double amount, boolean setBank) {
+        if (holder == null || amount < 0) {
+            return false;
+        }
+
+        if (setBank) {
+            holder.setBankAmount(amount);
+        } else {
+            holder.setAmount(amount);
+        }
+
+        SQLSession.getSqlConnector().getSqlWorker().updateEntity(holder);
+        return true;
+    }
+
+    /**
      * Create a payment transaction between two MoneyHolders.
-     * @param sender The sender of the money.
+     *
+     * @param sender   The sender of the money.
      * @param receiver The receiver of the money.
-     * @param amount The amount of money to send.
+     * @param amount   The amount of money to send.
      * @param fromBank If the money should be taken from the bank.
-     * @param toBank If the money should be sent to the bank.
+     * @param toBank   If the money should be sent to the bank.
      * @param isSystem If the payment is a system payment.
      * @return If the payment was successful.
      */
@@ -139,7 +171,7 @@ public class EconomyUtil {
             SQLSession.getSqlConnector().getSqlWorker().updateEntity(sender);
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new MoneyTransaction(0L, isSystem, isSystem ? receiver.getGuildUserId().getGuildId() : sender.getGuildUserId().getGuildId(), receiver, receiver, toBank, fromBank, amount, Timestamp.from(Instant.now())));
+        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new MoneyTransaction(0L, isSystem, isSystem ? receiver.getGuildUserId().getGuildId() : sender.getGuildUserId().getGuildId(), isSystem && sender == null ? receiver : sender, receiver, toBank, fromBank, amount, Timestamp.from(Instant.now())));
 
         return true;
     }

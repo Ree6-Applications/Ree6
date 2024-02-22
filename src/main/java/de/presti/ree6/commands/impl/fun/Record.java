@@ -69,6 +69,8 @@ public class Record implements ICommand {
 
             audioManager.setReceivingHandler(handler);
 
+            commandEvent.getGuild().getSelfMember().deafen(false).queue();
+
             commandEvent.reply(commandEvent.getResource("message.record.recordingStarted"));
         } else {
             commandEvent.reply(commandEvent.getResource("message.default.notInVoiceChannel"));
