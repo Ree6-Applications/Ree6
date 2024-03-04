@@ -595,6 +595,10 @@ message:
     list:
       default: "Hier ist eine Liste aller Giveaways: ```%s```"
       entry: "ID: %s | Channel: %s | Gewinner: %s | Preis: %s | endet: %s"
+  autoRole:
+    setupDescription: "Set the Roles that a User should get upon joining the Server!"
+    setupPlaceholder: "Select multiple Roles!"
+    setupSuccess: "Successfully set the new Auto-Roles!"
 game:
   description:
     blackjack: "Spiele Blackjack mit deinen Freunden!"
