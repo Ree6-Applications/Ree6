@@ -595,6 +595,10 @@ message:
     list:
       default: "Berikut adalah daftar semua giveaway:\n```%s```"
       entry: "ID: %s | Saluran: %s | Pemenang: %s | Hadiah: %s | Berakhir: %s"
+  autoRole:
+    setupDescription: "Set the Roles that a User should get upon joining the Server!"
+    setupPlaceholder: "Select multiple Roles!"
+    setupSuccess: "Successfully set the new Auto-Roles!"
 game:
   description:
     blackjack: "Mainkan Blackjack dengan temanmu!"
