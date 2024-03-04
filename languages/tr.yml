@@ -595,6 +595,10 @@ message:
     list:
       default: "İşte tüm hediyelerin listesi:\n```%s```"
       entry: "ID: %s | Kanal: %s | Kazanan: %s | Ödül: %s | Bitiş: %s"
+  autoRole:
+    setupDescription: "Set the Roles that a User should get upon joining the Server!"
+    setupPlaceholder: "Select multiple Roles!"
+    setupSuccess: "Successfully set the new Auto-Roles!"
 game:
   description:
     blackjack: "Arkadaşlarınızla Blackjack oynayın!"
