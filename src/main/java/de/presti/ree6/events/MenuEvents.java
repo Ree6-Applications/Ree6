@@ -11,6 +11,7 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.*;
+import de.presti.ree6.sql.entities.roles.AutoRole;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.base.Webhook;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
@@ -22,6 +23,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -863,14 +865,47 @@ public class MenuEvents extends ListenerAdapter {
             return;
 
         if (event.getMessage().getEmbeds().isEmpty() ||
-                event.getMessage().getEmbeds().get(0) == null ||
-                event.getInteraction().getSelectedOptions().isEmpty())
+                event.getMessage().getEmbeds().get(0) == null)
             return;
 
-        if (event.getInteraction().getValues().isEmpty())
+        if (event.getInteraction().getValues().isEmpty() && !event.getInteraction().getComponent().getId().equals("setupAutoRole"))
             return;
 
         switch (event.getInteraction().getComponent().getId()) {
+            case "setupAutoRole" -> {
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
+                // We are doing this because a normal List can't be modified.
+                ArrayList<String> values = new ArrayList<>(event.getValues());
+
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+                if (event.getSelectedOptions().isEmpty()) {
+                    SQLSession.getSqlConnector().getSqlWorker().getAutoRoles(event.getGuild().getIdLong()).forEach(autoRole ->
+                            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(autoRole));
+                } else {
+                    SQLSession.getSqlConnector().getSqlWorker().getAutoRoles(event.getGuild().getIdLong()).forEach(autoRole -> {
+                        String value = String.valueOf(autoRole.getRoleId());
+
+                        if (!event.getValues().contains(value)) {
+                            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(autoRole);
+                            values.remove(value);
+                        }
+                    });
+
+                    for (String roleId : values) {
+                        Role role = event.getGuild().getRoleById(roleId);
+                        if (role != null) {
+                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(new AutoRole(event.getGuild().getIdLong(), role.getIdLong()));
+                        }
+                    }
+                }
+
+                embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.autoRole.setupSuccess"));
+                event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+            }
+
             case "setupActionMenu" -> {
 
                 if (checkPerms(event.getMember(), event.getChannel())) {
@@ -933,6 +968,7 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     case "autorole" -> {
+                        // TODO:: redirect to the new menu.
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.setup.steps.autoRole"));
 
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(Button.link(BotConfig.getWebinterface(), "Webinterface")).queue();

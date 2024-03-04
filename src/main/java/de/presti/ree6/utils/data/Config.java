@@ -132,7 +132,7 @@ public class Config {
                     .parent().path("webinterface").addDefault("https://cp.ree6.de").commentSide("The Webinterface Link of the Bot. (Can not be empty)")
                     .parent().path("recording").addDefault("https://cp.ree6.de/external/recording").commentSide("The Recording Link of the Bot.")
                     .parent().path("twitchAuth").addDefault("https://cp.ree6.de/external/twitch").commentSide("The Twitch Authentication Link of the Bot.")
-                    .parent().path("advertisement").addDefault("powered by Tube-hosting").commentSide("The Advertisement in Embed Footers and the rest.")
+                    .parent().path("advertisement").addDefault("powered by Ree6.de").commentSide("The Advertisement in Embed Footers and the rest.")
                     .parent().path("name").addDefault("Ree6").commentSide("The Name of the Bot.")
                     .parent().path("shards").addDefault(1).commentSide("The shard amount of the Bot. Check out https://anidiots.guide/understanding/sharding/#sharding for more information.")
                     .parent().path("defaultLanguage").addDefault("en-GB").commentSide("The default Language of the Bot. Based on https://discord.com/developers/docs/reference#locales")

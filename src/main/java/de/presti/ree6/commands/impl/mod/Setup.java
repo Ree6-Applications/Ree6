@@ -11,9 +11,11 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.util.SettingsManager;
+import de.presti.ree6.utils.others.GuildUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -22,6 +24,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
@@ -107,16 +110,17 @@ public class Setup implements ICommand {
                                 .addActionRow(selectMenu).queue();
                     }
                 } else if (commandEvent.getSubcommand().equalsIgnoreCase("autorole")) {
-                    // TODO:: update messages.
                     EmbedBuilder embedBuilder = new EmbedBuilder()
                             .setTitle(commandEvent.getResource("label.setup"))
                             .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
                             .setColor(Color.cyan)
-                            .setDescription(commandEvent.getResource("message.setup.setupMenu"));
+                            .setDescription(commandEvent.getResource("message.autoRole.setupDescription"));
 
                     List<SelectOption> optionList = new ArrayList<>();
 
-                    commandEvent.getGuild().getRoles().forEach(role -> optionList.add(SelectOption.of(role.getName(), role.getId())));
+                    for (Role role : GuildUtil.getManagableRoles(commandEvent.getGuild())) {
+                        optionList.add(SelectOption.of(role.getName(), role.getId()));
+                    }
 
                     SQLSession.getSqlConnector().getSqlWorker().getAutoRoles(commandEvent.getGuild().getIdLong()).forEach(autoRole -> {
                         SelectOption option = optionList.stream().filter(selectOption -> selectOption.getValue().equals(String.valueOf(autoRole.getRoleId()))).findFirst().orElse(null);
@@ -126,14 +130,14 @@ public class Setup implements ICommand {
                         }
                     });
 
-                    SelectMenu selectMenu = new StringSelectMenuImpl("setupActionMenu", commandEvent.getResource("message.setup.setupMenuPlaceholder"), 0, 10, false, optionList);
+                    SelectMenu selectMenu = new StringSelectMenuImpl("setupAutoRole", commandEvent.getResource("message.autoRole.setupPlaceholder"), 0, 10, false, optionList);
 
                     if (commandEvent.isSlashCommand()) {
                         commandEvent.getInteractionHook().sendMessageEmbeds(embedBuilder.build())
-                                .addActionRow(selectMenu).queue();
+                                .addActionRow(selectMenu).addActionRow(Button.link(BotConfig.getWebinterface(), "Webinterface")).queue();
                     } else {
                         commandEvent.getChannel().sendMessageEmbeds(embedBuilder.build())
-                                .addActionRow(selectMenu).queue();
+                                .addActionRow(selectMenu).addActionRow(Button.link(BotConfig.getWebinterface(), "Webinterface")).queue();
                     }
                 }
             } else {

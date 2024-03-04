@@ -816,7 +816,7 @@ public class Notifier {
             log.error("Couldn't run YT checker!", x);
             Sentry.captureException(x);
             // Default is 5 minutes.
-        }, Duration.ofSeconds(20), true, true);
+        }, Duration.ofMinutes(5), true, true);
     }
 
     /**

@@ -262,7 +262,7 @@ public class LanguageService {
      * @return The String.
      */
     public static @NotNull String getDefault(@NotNull String key, @Nullable Object... parameter) {
-        return getByLocale(DiscordLocale.ENGLISH_UK, key, parameter);
+        return getByLocale(DiscordLocale.from(BotConfig.getDefaultLanguage()), key, parameter);
     }
 
     /**
@@ -290,7 +290,7 @@ public class LanguageService {
 
         Language language = languageResources.containsKey(discordLocale) ? languageResources.get(discordLocale) :
                 languageResources.get(DiscordLocale.from(BotConfig.getDefaultLanguage()));
-        
+
         return language != null ? language.getResource(key, parameters) : "Missing language resource!";
     }
 
