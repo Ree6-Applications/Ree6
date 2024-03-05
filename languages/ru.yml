@@ -596,9 +596,9 @@ message:
       default: "Вот список всех розыгрышей:\n```%s```"
       entry: "ID: %s | Канал: %s | Победитель: %s | Приз: %s | Кончается: %s"
   autoRole:
-    setupDescription: "Set the Roles that a User should get upon joining the Server!"
-    setupPlaceholder: "Select multiple Roles!"
-    setupSuccess: "Successfully set the new Auto-Roles!"
+    setupDescription: "Установите роли, которые пользователь должен получить при вступлении в сервер!"
+    setupPlaceholder: "Выберите несколько Ролей!"
+    setupSuccess: "Новые роли успешно установлены!"
 game:
   description:
     blackjack: "Играйте в Блэкджек со своими друзьями!"
