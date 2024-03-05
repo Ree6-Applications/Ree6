@@ -596,9 +596,9 @@ message:
       default: "Oto lista wszystkich rozdań:\n```%s ``` ` `"
       entry: "ID: %s | Kanał: %s | Zwycięzca: %s | Nagroda: %s | Kończy: %s"
   autoRole:
-    setupDescription: "Set the Roles that a User should get upon joining the Server!"
-    setupPlaceholder: "Select multiple Roles!"
-    setupSuccess: "Successfully set the new Auto-Roles!"
+    setupDescription: "Ustaw role, które powinien otrzymać użytkownik przy dołączaniu do serwera!"
+    setupPlaceholder: "Wybierz wiele rol!"
+    setupSuccess: "Pomyślnie ustawiono nowe role automatyczne!"
 game:
   description:
     blackjack: "Zagraj w Blackjack z przyjaciółmi!"
