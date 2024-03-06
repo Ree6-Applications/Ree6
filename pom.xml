@@ -90,7 +90,7 @@
         <dependency>
             <groupId>com.github.masecla22</groupId>
             <artifactId>Reddit4J</artifactId>
-            <version>master-SNAPSHOT</version>
+            <version>74c789155d</version>
         </dependency>
         <dependency>
             <groupId>com.github.twitch4j</groupId>

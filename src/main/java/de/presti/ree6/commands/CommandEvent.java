@@ -166,6 +166,16 @@ public class CommandEvent {
     }
 
     /**
+     * If the message default should be ephemeral or not.
+     * @param ephemeral if the message should be ephemeral.
+     */
+    public void setEphemeral(boolean ephemeral) {
+        if (isSlashCommand()) {
+            getInteractionHook().setEphemeral(ephemeral);
+        }
+    }
+
+    /**
      * Get a Message from the Guild specific Language Setting.
      *
      * @param key        the Key of the Message.
