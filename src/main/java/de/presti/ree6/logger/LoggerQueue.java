@@ -1,14 +1,14 @@
-package de.presti.ree6.logger.events;
+package de.presti.ree6.logger;
 
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.logger.events.implentation.LogMessageMember;
-import de.presti.ree6.logger.events.implentation.LogMessageRole;
-import de.presti.ree6.logger.events.implentation.LogMessageUser;
-import de.presti.ree6.logger.events.implentation.LogMessageVoice;
+import de.presti.ree6.logger.events.LogMessageMember;
+import de.presti.ree6.logger.events.LogMessageRole;
+import de.presti.ree6.logger.events.LogMessageUser;
+import de.presti.ree6.logger.events.LogMessageVoice;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.Permission;

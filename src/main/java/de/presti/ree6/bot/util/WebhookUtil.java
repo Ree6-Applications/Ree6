@@ -3,7 +3,7 @@ package de.presti.ree6.bot.util;
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.logger.events.LogMessage;
+import de.presti.ree6.logger.LogMessage;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.webhook.*;
