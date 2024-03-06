@@ -36,7 +36,7 @@ public class Server implements ICommand {
             boolean addBadge = false;
 
             if (owner != null) {
-                if (GuildUtil.isSupporter(owner)) {
+                if (GuildUtil.isSupporter(owner.getUser())) {
                     addBadge = true;
                 }
             }

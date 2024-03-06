@@ -45,9 +45,11 @@
     <dependencies>
         <!-- Discord -->
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <!-- net.dv8tion -->
+            <groupId>io.github.JDA-Fork</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.20</version>
+            <!-- 5.0.0-beta.20 -->
+            <version>a28502724c</version>
         </dependency>
         <dependency>
             <groupId>dev.arbjerg</groupId>

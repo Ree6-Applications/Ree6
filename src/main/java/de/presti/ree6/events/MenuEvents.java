@@ -409,9 +409,9 @@ public class MenuEvents extends ListenerAdapter {
                     EmbedBuilder embedBuilder = new EmbedBuilder()
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.suggestion"))
                             .setColor(Color.ORANGE)
-                            .setThumbnail(event.getUser().getEffectiveAvatarUrl())
+                            .setThumbnail(event.getMember().getEffectiveAvatarUrl())
                             .setDescription("```" + event.getValue("re_suggestion_text").getAsString() + "```")
-                            .setFooter(LanguageService.getByGuild(event.getGuild(), "message.suggestion.footer", event.getUser().getEffectiveName()), event.getUser().getEffectiveAvatarUrl())
+                            .setFooter(LanguageService.getByGuild(event.getGuild(), "message.suggestion.footer", event.getUser().getEffectiveName()), event.getMember().getEffectiveAvatarUrl())
                             .setTimestamp(Instant.now());
 
                     Main.getInstance().getCommandManager().sendMessage(embedBuilder, messageChannel);

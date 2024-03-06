@@ -5,10 +5,8 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.ISnowflake;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.Interaction;
 
 import java.util.List;
 import java.util.Map;
@@ -235,7 +233,11 @@ public class GuildUtil {
      * @param member the User of the current Guild to check.
      * @return true if the User has supported Ree6 via Donations, false if not.
      */
-    public static boolean isSupporter(ISnowflake member) {
+    public static boolean isSupporter(User member) {
+        if (!member.getJDA().retrieveEntitlements().excludeEnded(true).skuIds(1165934495447384144L).complete().isEmpty()) {
+            return true;
+        }
+
         Guild ree6Guild = BotWorker.getShardManager().getGuildById(805149057004732457L);
 
         if (ree6Guild != null) {

@@ -77,7 +77,7 @@ public class Info implements ICommand {
     public void sendInfo(Member member, CommandEvent commandEvent) {
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setTitle(member.getEffectiveName() + (GuildUtil.isSupporter(member) ? " <a:duckswing:1070690323459735682>" : ""));
+        em.setTitle(member.getEffectiveName() + (GuildUtil.isSupporter(member.getUser()) ? " <a:duckswing:1070690323459735682>" : ""));
         em.setThumbnail(member.getEffectiveAvatarUrl());
 
         if (member.getUser().getDiscriminator().equals("0000")) {
