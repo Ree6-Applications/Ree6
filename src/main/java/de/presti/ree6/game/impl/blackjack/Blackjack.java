@@ -58,6 +58,7 @@ public class Blackjack implements IGame {
 
     /**
      * Constructor.
+     *
      * @param gameSession The game session.
      */
     public Blackjack(GameSession gameSession) {
@@ -71,7 +72,7 @@ public class Blackjack implements IGame {
     Message menuMessage;
 
     /**
-     * @see IGame#createGame() 
+     * @see IGame#createGame()
      */
     @Override
     public void createGame() {
@@ -94,7 +95,7 @@ public class Blackjack implements IGame {
     }
 
     /**
-     * @see IGame#startGame() 
+     * @see IGame#startGame()
      */
     @Override
     public void startGame() {
@@ -221,6 +222,7 @@ public class Blackjack implements IGame {
 
     /**
      * Get a random card from the basic Deck, but check if the card is already a players hand.
+     *
      * @return The random card.
      */
     public BlackJackCard getRandomCard() {
@@ -240,8 +242,9 @@ public class Blackjack implements IGame {
 
     /**
      * Hit the player and give him a new card.
+     *
      * @param currentPlayer The player who hit.
-     * @param nextPlayer The other player.
+     * @param nextPlayer    The other player.
      */
     public void hit(BlackJackPlayer currentPlayer, BlackJackPlayer nextPlayer) {
         standUsed = false;
@@ -255,18 +258,18 @@ public class Blackjack implements IGame {
 
         currentPlayer.getHand().add(card);
 
+        updateViews(currentPlayer, nextPlayer, false);
+
         if (currentPlayer.getHandValue(true) > 21) {
             stopGame(currentPlayer, nextPlayer);
-        } else {
-            updateViews(nextPlayer, currentPlayer);
-            this.currentPlayer = nextPlayer;
         }
     }
 
     /**
      * Stand the player and let the other player play.
+     *
      * @param currentPlayer The player who stand.
-     * @param nextPlayer The other player.
+     * @param nextPlayer    The other player.
      */
     public void stand(BlackJackPlayer currentPlayer, BlackJackPlayer nextPlayer) {
 
@@ -282,8 +285,9 @@ public class Blackjack implements IGame {
 
     /**
      * Stop the game and check who won.
+     *
      * @param currentPlayer The player who won.
-     * @param nextPlayer The other player.
+     * @param nextPlayer    The other player.
      */
     public void stopGame(BlackJackPlayer currentPlayer, BlackJackPlayer nextPlayer) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
@@ -314,10 +318,22 @@ public class Blackjack implements IGame {
 
     /**
      * Called to update the current Views of all Players.
+     *
      * @param currentPlayer The current player.
-     * @param nextPlayer The next player.
+     * @param nextPlayer    The next player.
      */
     public void updateViews(BlackJackPlayer currentPlayer, BlackJackPlayer nextPlayer) {
+        updateViews(currentPlayer, nextPlayer, true);
+    }
+
+    /**
+     * Called to update the current Views of all Players.
+     *
+     * @param currentPlayer The current player.
+     * @param nextPlayer    The next player.
+     * @param addButtons    If the buttons should be added.
+     */
+    public void updateViews(BlackJackPlayer currentPlayer, BlackJackPlayer nextPlayer, boolean addButtons) {
         MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
 
         EmbedBuilder currentPlayerEmbed = new EmbedBuilder();
@@ -332,7 +348,11 @@ public class Blackjack implements IGame {
         currentPlayerEmbed.setFooter(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.turn.player"));
 
         messageEditBuilder.setEmbeds(currentPlayerEmbed.build());
-        messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", LanguageService.getByGuild(session.getGuild(), "label.hit")), Button.success("game_blackjack_stand", LanguageService.getByGuild(session.getGuild(), "label.stand")));
+
+        if (addButtons) {
+            messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", LanguageService.getByGuild(session.getGuild(), "label.hit")),
+                    Button.success("game_blackjack_stand", LanguageService.getByGuild(session.getGuild(), "label.stand")));
+        }
 
         currentPlayer.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
 
@@ -341,8 +361,8 @@ public class Blackjack implements IGame {
         nextPlayerEmbed.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack"));
         nextPlayerEmbed.setColor(Color.red);
         nextPlayerEmbed.setAuthor(nextPlayer.getRelatedUser().getEffectiveName(), null, nextPlayer.getRelatedUser().getEffectiveAvatarUrl());
-        nextPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCardsSelf"), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand",nextPlayer.getHandAsString(true), nextPlayer.getHandValue(true)), true);
-        nextPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCards", currentPlayer.getRelatedUser().getEffectiveName()), LanguageService.getByGuild(session.getGuild(),"message.blackJackGame.playerHand", currentPlayer.getHandAsString(false), currentPlayer.getHandValue(false)), true);
+        nextPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCardsSelf"), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", nextPlayer.getHandAsString(true), nextPlayer.getHandValue(true)), true);
+        nextPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCards", currentPlayer.getRelatedUser().getEffectiveName()), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", currentPlayer.getHandAsString(false), currentPlayer.getHandValue(false)), true);
         nextPlayerEmbed.setFooter(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.turn.wait"));
         messageEditBuilder.setEmbeds(nextPlayerEmbed.build());
 
@@ -351,6 +371,7 @@ public class Blackjack implements IGame {
 
     /**
      * Determine the winner of the game.
+     *
      * @return The winner of the game.
      */
     public BlackJackPlayer findWinner() {
