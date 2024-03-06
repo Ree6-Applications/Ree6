@@ -409,6 +409,7 @@ public class Main {
         // Set the start Time for stats.
         BotWorker.setStartTime(System.currentTimeMillis());
 
+        log.info("Loading AddonManager");
         // Initialize the Addon-Manager.
         getInstance().setAddonManager(new AddonManager());
 

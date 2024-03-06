@@ -162,6 +162,15 @@ public class GameManager {
      *
      * @return A List of Games.
      */
+    public static Collection<String> getGameNames() {
+        return gameCache.keySet();
+    }
+
+    /**
+     * Method that returns every cache Game.
+     *
+     * @return A List of Games.
+     */
     public static Collection<Class<? extends IGame>> getGames() {
         return gameCache.values();
     }
