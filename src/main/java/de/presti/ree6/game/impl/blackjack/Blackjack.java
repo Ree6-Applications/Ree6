@@ -14,7 +14,6 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
-import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -29,7 +28,6 @@ import java.util.Map;
 /**
  * Class used to represent the game of blackjack.
  */
-@Slf4j
 @GameInfo(name = "Blackjack", description = "game.description.blackjack", minPlayers = 2, maxPlayers = 2)
 public class Blackjack implements IGame {
 
@@ -186,18 +184,12 @@ public class Blackjack implements IGame {
      */
     @Override
     public void onButtonInteractionReceive(ButtonInteractionEvent buttonInteractionEvent) {
-        log.info("Button Interaction received: " + buttonInteractionEvent.getComponentId());
-        log.info("Current Player: " + currentPlayer.getRelatedUserId());
-        log.info("Button Interaction User: " + buttonInteractionEvent.getUser().getIdLong());
-
         if (currentPlayer == null) {
-            log.info("Current Player is null");
             return;
         }
 
         if (currentPlayer.getRelatedUserId() != buttonInteractionEvent.getUser().getIdLong()) {
             buttonInteractionEvent.deferEdit().queue();
-            log.info(buttonInteractionEvent.getUser().getIdLong() + " tried to perform an action, but it's not his turn.");
             return;
         }
 
