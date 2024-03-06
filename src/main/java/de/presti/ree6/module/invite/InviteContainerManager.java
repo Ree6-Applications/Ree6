@@ -48,6 +48,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
 
     /**
      * Remove all the cache Information about a Guild and refresh it from the Database.
+     *
      * @param guildId the ID of the Guild.
      */
     public void refreshGuild(long guildId) {
@@ -58,6 +59,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
 
     /**
      * Methode to replace the Invite of a Guild.
+     *
      * @param invite the {@link Invite} to replace.
      */
     public void replaceInvite(Invite invite) {
@@ -125,6 +127,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
 
     /**
      * Convert a {@link VanityInvite} to an {@link Invite}
+     *
      * @param guild the {@link Guild} the {@link VanityInvite} is from.
      * @return the {@link Invite}
      */
@@ -134,7 +137,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
             try {
                 VanityInvite vanityInvite = guild.retrieveVanityInvite().complete();
                 return new InviteImpl(null, vanityInvite.getCode(), true, Objects.requireNonNullElse(guild.getOwner(), guild.getSelfMember()).getUser(), 0, -1242525,
-                        true, OffsetDateTime.now(), vanityInvite.getUses(), null,  null, null, null, Invite.InviteType.UNKNOWN);
+                        true, OffsetDateTime.now(), vanityInvite.getUses(), null, null, null, null, Invite.InviteType.UNKNOWN);
             } catch (Exception ex) {
                 log.error("[InviteManager] Error while retrieving Vanity Invite: " + ex.getMessage());
             }
@@ -153,6 +156,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
         // Every Invite from the Guild.
         ArrayList<Invite> guildInvites = new ArrayList<>(guild.retrieveInvites().complete());
 
+        // Load the Vanity URL into the list so that we can track it as well.
         Invite vanityInvite = convertVanityInvite(guild);
         if (vanityInvite != null) guildInvites.add(vanityInvite);
 
@@ -160,6 +164,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
         for (Invite inv : guildInvites) {
             boolean foundOne = false;
 
+            // Don't even continue with the Loop if the Inviter is null.
             if (inv.getInviter() == null) {
                 continue;
             }
@@ -167,34 +172,42 @@ public class InviteContainerManager implements IManager<InviteContainer> {
             // Go through every Invite of the Guild from our Database.
             for (InviteContainer inv2 : getInvites(guild.getIdLong())) {
 
+                // Check if its correct invite.
                 if (inv.getCode().equalsIgnoreCase(inv2.getCode())) {
                     foundOne = true;
 
-                    if (inv.getCode().equalsIgnoreCase(inv2.getCode())) {
-                        if (inv.getInviter().getIdLong() != inv2.getCreatorId()) {
-                            if (vanityInvite != null && inv.getCode().equalsIgnoreCase(vanityInvite.getCode())) {
-                                inv2.setVanity(true);
-                                inv2.setGuildId(guild.getIdLong());
-                                if (inv2.getCreatorId() == 0) {
-                                    inv2.setCreatorId(guild.getOwnerIdLong());
-                                }
-                            } else {
-                                log.warn("Detected a very weird Invite? Owner does not match database entry! Guild: " + guild.getName() + " (" + guild.getId() + ") Invite: " + inv.getInviter().getIdLong() + " Database: " + inv2.getCreatorId());
-                                break;
-                            }
-                        }
+                    // Check if the Creator of the Invite isn't the same as in our Database.
+                    if (inv.getInviter().getIdLong() != inv2.getCreatorId()) {
 
-                        if (inv.getUses() - 1 == inv2.getUses()) {
-                            inv2.setVanity(vanityInvite != null && inv2.getCode().equalsIgnoreCase(vanityInvite.getCode()));
-                            return inv2;
+                        // Check if its Vanity Invite.
+                        if (vanityInvite != null && inv.getCode().equalsIgnoreCase(vanityInvite.getCode())) {
+                            // Correct the information.
+                            inv2.setVanity(true);
+                            inv2.setGuildId(guild.getIdLong());
+                            if (inv2.getCreatorId() == 0) {
+                                inv2.setCreatorId(guild.getOwnerIdLong());
+                            }
+                        } else {
+                            // This should never be reached so, log it.
+                            log.warn("Detected a very weird Invite? Owner does not match database entry! Guild: " + guild.getName() + " (" + guild.getId() + ") Invite: " + inv.getInviter().getIdLong() + " Database: " + inv2.getCreatorId());
+                            break;
                         }
+                    }
+
+                    // Check if the Invite from Discord exactly one more usage than in our Database.
+                    // If so, we most likely got the correct one.
+                    if (inv.getUses() - 1 == inv2.getUses()) {
+                        inv2.setVanity(vanityInvite != null && inv2.getCode().equalsIgnoreCase(vanityInvite.getCode()));
+                        return inv2;
                     }
                 }
             }
 
+            // If we found one but didn't return it, replace it.
             if (foundOne) {
                 replaceInvite(inv);
             } else {
+                // If we didn't find one, add it.
                 add(new InviteContainer(inv.getInviter().getIdLong(), guild.getIdLong(), inv.getCode(), inv.getUses(), inv.getMaxUses() == -1242525));
             }
         }
