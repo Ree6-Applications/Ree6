@@ -6,6 +6,7 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.audio.music.GuildMusicManager;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
+import de.presti.ree6.commands.impl.mod.Setup;
 import de.presti.ree6.language.Language;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
@@ -33,6 +34,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
@@ -967,12 +969,11 @@ public class MenuEvents extends ListenerAdapter {
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupWelcomeMenu", LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired"), 1, 1, false, optionList)).queue();
                     }
 
-                    case "autorole" -> {
-                        // TODO:: redirect to the new menu.
-                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.setup.steps.autoRole"));
-
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(Button.link(BotConfig.getWebinterface(), "Webinterface")).queue();
-                    }
+                    case "autorole" -> event.editMessageEmbeds(Setup.createAutoRoleSetupMessage(event.getGuild(), event.getHook()).build())
+                            .setComponents(
+                                    ActionRow.of(Setup.createAutoRoleSetupSelectMenu(event.getGuild(), event.getHook())),
+                                    ActionRow.of(Button.link(BotConfig.getWebinterface(), "Webinterface")))
+                            .queue();
 
                     case "tempvoice" -> {
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setup"), "tempVoiceSetup"));

@@ -6,6 +6,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
@@ -14,10 +15,12 @@ import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.others.GuildUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -83,7 +86,7 @@ public class Setup implements ICommand {
             }
 
             if (commandEvent.getSubcommandGroup().isBlank()) {
-                if (commandEvent.getSubcommand().isBlank()) {
+                if (commandEvent.getSubcommand().isBlank() || commandEvent.getSubcommand().equalsIgnoreCase("menu")) {
                     EmbedBuilder embedBuilder = new EmbedBuilder()
                             .setTitle(commandEvent.getResource("label.setup"))
                             .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
@@ -110,34 +113,14 @@ public class Setup implements ICommand {
                                 .addActionRow(selectMenu).queue();
                     }
                 } else if (commandEvent.getSubcommand().equalsIgnoreCase("autorole")) {
-                    EmbedBuilder embedBuilder = new EmbedBuilder()
-                            .setTitle(commandEvent.getResource("label.setup"))
-                            .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
-                            .setColor(Color.cyan)
-                            .setDescription(commandEvent.getResource("message.autoRole.setupDescription"));
-
-                    List<SelectOption> optionList = new ArrayList<>();
-
-                    for (Role role : GuildUtil.getManagableRoles(commandEvent.getGuild())) {
-                        optionList.add(SelectOption.of(role.getName(), role.getId()));
-                    }
-
-                    SQLSession.getSqlConnector().getSqlWorker().getAutoRoles(commandEvent.getGuild().getIdLong()).forEach(autoRole -> {
-                        SelectOption option = optionList.stream().filter(selectOption -> selectOption.getValue().equals(String.valueOf(autoRole.getRoleId()))).findFirst().orElse(null);
-                        if (option != null) {
-                            optionList.remove(option);
-                            optionList.add(option.withDefault(true));
-                        }
-                    });
-
-                    SelectMenu selectMenu = new StringSelectMenuImpl("setupAutoRole", commandEvent.getResource("message.autoRole.setupPlaceholder"), 0, 10, false, optionList);
-
                     if (commandEvent.isSlashCommand()) {
-                        commandEvent.getInteractionHook().sendMessageEmbeds(embedBuilder.build())
-                                .addActionRow(selectMenu).addActionRow(Button.link(BotConfig.getWebinterface(), "Webinterface")).queue();
+                        commandEvent.getInteractionHook().sendMessageEmbeds(createAutoRoleSetupMessage(commandEvent.getGuild(), commandEvent.getInteractionHook()).build())
+                                .addActionRow(createAutoRoleSetupSelectMenu(commandEvent.getGuild(), commandEvent.getInteractionHook()))
+                                .addActionRow(Button.link(BotConfig.getWebinterface(), "Webinterface")).queue();
                     } else {
-                        commandEvent.getChannel().sendMessageEmbeds(embedBuilder.build())
-                                .addActionRow(selectMenu).addActionRow(Button.link(BotConfig.getWebinterface(), "Webinterface")).queue();
+                        commandEvent.getChannel().sendMessageEmbeds(createAutoRoleSetupMessage(commandEvent.getGuild(), commandEvent.getInteractionHook()).build())
+                                .addActionRow(createAutoRoleSetupSelectMenu(commandEvent.getGuild(), commandEvent.getInteractionHook()))
+                                .addActionRow(Button.link(BotConfig.getWebinterface(), "Webinterface")).queue();
                     }
                 }
             } else {
@@ -261,6 +244,33 @@ public class Setup implements ICommand {
         }
         Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
 
+    }
+
+    public static EmbedBuilder createAutoRoleSetupMessage(Guild guild, InteractionHook interactionHook) {
+        return new EmbedBuilder()
+                .setTitle(LanguageService.getByGuildOrInteractionHook(guild, interactionHook,"label.setup"))
+                .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl())
+                .setColor(Color.cyan)
+                .setDescription(LanguageService.getByGuildOrInteractionHook(guild, interactionHook,"message.autoRole.setupDescription"));
+    }
+
+    public static SelectMenu createAutoRoleSetupSelectMenu(Guild guild, InteractionHook interactionHook) {
+        List<SelectOption> optionList = new ArrayList<>();
+
+        for (Role role : GuildUtil.getManagableRoles(guild)) {
+            optionList.add(SelectOption.of(role.getName(), role.getId()));
+        }
+
+        SQLSession.getSqlConnector().getSqlWorker().getAutoRoles(guild.getIdLong()).forEach(autoRole -> {
+            SelectOption option = optionList.stream().filter(selectOption -> selectOption.getValue().equals(String.valueOf(autoRole.getRoleId()))).findFirst().orElse(null);
+            if (option != null) {
+                optionList.remove(option);
+                optionList.add(option.withDefault(true));
+            }
+        });
+
+        return new StringSelectMenuImpl("setupAutoRole", LanguageService.getByGuildOrInteractionHook(guild, interactionHook,"message.autoRole.setupPlaceholder"),
+                0, Math.min(10, optionList.size()),false, optionList);
     }
 
     /**
