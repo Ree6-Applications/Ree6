@@ -1,6 +1,6 @@
 language:
   name: "Français (FR)"
-  locale: "fr-FR"
+  locale: "fr"
   version: "3.1.2"
   author: "JerroNIMO, Axtazer"
 logging:
