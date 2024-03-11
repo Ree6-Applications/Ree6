@@ -627,7 +627,7 @@ command:
     notifier:
       default: "Gérez toutes vos notifications!"
       list: "Lister toutes vos notifications!"
-      add: "Add a new Notifier!"
+      add: "Ajouter une nouvelle notification !"
       remove: "Supprimer une notification!"
     anime: "Recherchez des animes sur kitsu.io!"
     randomcat: "Affiche des images aléatoires de chats, à partir de thecatapi.com."
