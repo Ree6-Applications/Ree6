@@ -1,7 +1,7 @@
 language:
   name: "Chinese (CN)"
-  locale: "zh_CN"
-  version: "1.0.0"
+  locale: "zh-CN"
+  version: "3.1.2"
   author: "Alice"
 logging:
   banned: ":airplane_departure: %s **封禁**"
