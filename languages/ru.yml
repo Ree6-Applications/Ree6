@@ -627,6 +627,7 @@ command:
     notifier:
       default: "Управление уведомлениями!"
       list: "Список всех ваших уведомлений!"
+      add: "Add a new Notifier!"
       remove: "Убрать уведомление!"
     anime: "Ищите аниме на kitsu.io!"
     randomcat: "Показывает рандомные изображения кота с thecatapi.com."
