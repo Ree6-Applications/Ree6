@@ -1,4 +1,4 @@
-package de.presti.ree6.logger.events;
+package de.presti.ree6.logger;
 
 /**
  * The used Log-Types.

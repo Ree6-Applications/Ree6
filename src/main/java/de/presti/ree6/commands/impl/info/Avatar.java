@@ -6,7 +6,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.utils.others.UserUtil;
+import de.presti.ree6.utils.others.GuildUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -75,7 +75,7 @@ public class Avatar implements ICommand {
         EmbedBuilder em = new EmbedBuilder();
 
         em.setTitle(commandEvent.getResource("label.avatar"));
-        em.setAuthor(member.getEffectiveName() + (UserUtil.isSupporter(member) ? " <a:duckswing:1070690323459735682>" : ""), member.getEffectiveAvatarUrl(), member.getEffectiveAvatarUrl());
+        em.setAuthor(member.getEffectiveName() + (GuildUtil.isSupporter(member) ? " <a:duckswing:1070690323459735682>" : ""), member.getEffectiveAvatarUrl(), member.getEffectiveAvatarUrl());
         em.setImage(member.getEffectiveAvatar().getUrl(1024));
         em.setFooter(commandEvent.getResource("label.footerMessage", commandEvent.getMember().getEffectiveName(), BotConfig.getAdvertisement()), commandEvent.getMember().getEffectiveAvatarUrl());
 

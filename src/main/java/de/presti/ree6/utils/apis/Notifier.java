@@ -7,6 +7,8 @@ import com.apptasticsoftware.rssreader.Channel;
 import com.apptasticsoftware.rssreader.Image;
 import com.apptasticsoftware.rssreader.Item;
 import com.apptasticsoftware.rssreader.RssReader;
+import com.apptasticsoftware.rssreader.module.itunes.ItunesItem;
+import com.apptasticsoftware.rssreader.module.itunes.ItunesRssReader;
 import com.github.instagram4j.instagram4j.IGClient;
 import com.github.instagram4j.instagram4j.actions.feed.FeedIterator;
 import com.github.instagram4j.instagram4j.models.media.timeline.TimelineImageMedia;
@@ -191,6 +193,7 @@ public class Notifier {
                 PubSubSubscription[] subscriptions = new PubSubSubscription[3];
                 subscriptions[0] = getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(credential, twitchIntegrations.getChannelId());
                 subscriptions[1] = getTwitchClient().getPubSub().listenForSubscriptionEvents(credential, twitchIntegrations.getChannelId());
+                // TODO:: update this to the new PubSub Event
                 subscriptions[2] = getTwitchClient().getPubSub().listenForFollowingEvents(credential, twitchIntegrations.getChannelId());
 
                 twitchSubscription.put(credential.getUserId(), subscriptions);
@@ -207,6 +210,7 @@ public class Notifier {
                 });
             });
 
+            // TODO:: update this to the new Event.
             twitchClient.getEventManager().onEvent(FollowingEvent.class, event -> {
                 List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(1);
                 list.forEach(container -> {
@@ -361,7 +365,8 @@ public class Notifier {
 
             List<String> checkedIds = new ArrayList<>();
 
-            new RssReader()
+            // To support Podcast RSS.
+            new ItunesRssReader()
                     .addItemExtension("media:description", Item::setDescription)
                     .addItemExtension("media:thumbnail", "url", (item, element) -> {
                         Image image = item.getChannel().getImage().orElse(new Image());
@@ -401,7 +406,7 @@ public class Notifier {
                         OffsetDateTime dateTime = OffsetDateTime.parse(item.getPubDate().orElse(""), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
                         OffsetDateTime now = OffsetDateTime.now();
-                        OffsetDateTime threeMinuteAgo = now.minus(3, ChronoUnit.MINUTES);
+                        OffsetDateTime threeMinuteAgo = now.minusMinutes(3);
 
                         if (dateTime.isBefore(threeMinuteAgo)) return;
 
@@ -486,14 +491,16 @@ public class Notifier {
                                                             URLDecoder.decode(image.getUrl(), StandardCharsets.UTF_8), null)),
                                             () -> webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(), null, null)));
 
+                                    item.getDescription().ifPresent(description -> webhookEmbedBuilder.setDescription(description + "\n"));
 
-                                    webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getTitle().orElse("No Title"), item.getLink().orElse("No Link")));
+                                    if (item instanceof ItunesItem itunesItem) {
+                                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(itunesItem.getItunesTitle().orElse("No Title"), item.getLink().orElse("No Link")));
+                                        itunesItem.getItunesImage().ifPresent(webhookEmbedBuilder::setThumbnailUrl);
+                                    } else {
 
-                                    item.getDescription().ifPresent(description -> {
-                                        webhookEmbedBuilder.setDescription(description + "\n");
-                                    });
+                                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getTitle().orElse("No Title"), item.getLink().orElse("No Link")));
+                                    }
 
-                                    webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getChannel().getTitle(), null));
                                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("RSS Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl(), null));
 
                                     webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(BotConfig.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()));
@@ -816,7 +823,7 @@ public class Notifier {
             log.error("Couldn't run YT checker!", x);
             Sentry.captureException(x);
             // Default is 5 minutes.
-        }, Duration.ofSeconds(20), true, true);
+        }, Duration.ofMinutes(5), true, true);
     }
 
     /**

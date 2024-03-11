@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>3.1.11</version>
+    <version>3.1.12</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -45,9 +45,11 @@
     <dependencies>
         <!-- Discord -->
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <!-- net.dv8tion -->
+            <groupId>io.github.JDA-Fork</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.20</version>
+            <!-- 5.0.0-beta.20 -->
+            <version>a28502724c</version>
         </dependency>
         <dependency>
             <groupId>dev.arbjerg</groupId>
@@ -69,7 +71,7 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
-            <version>7.4.0</version>
+            <version>7.5.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.Carleslc.Simple-YAML</groupId>
@@ -88,7 +90,7 @@
         <dependency>
             <groupId>com.github.masecla22</groupId>
             <artifactId>Reddit4J</artifactId>
-            <version>master-SNAPSHOT</version>
+            <version>74c789155d</version>
         </dependency>
         <dependency>
             <groupId>com.github.twitch4j</groupId>
@@ -103,7 +105,7 @@
         <dependency>
             <groupId>me.presti</groupId>
             <artifactId>YoutubeWrapper</artifactId>
-            <version>1.2</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>me.presti</groupId>
@@ -115,7 +117,7 @@
         <dependency>
             <groupId>se.michaelthelin.spotify</groupId>
             <artifactId>spotify-web-api-java</artifactId>
-            <version>8.3.5</version>
+            <version>8.3.6</version>
         </dependency>
         <dependency>
             <groupId>de.ree6</groupId>
@@ -168,7 +170,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.3</version>
         </dependency>
 
         <!-- Lombok -->
@@ -251,7 +253,7 @@
         <dependency>
             <groupId>best.azura</groupId>
             <artifactId>Azura-Event-Bus</artifactId>
-            <version>3.0.2</version>
+            <version>3.0.3</version>
         </dependency>
 
         <!-- Google -->
@@ -309,7 +311,7 @@
             <plugin>
                 <groupId>io.github.git-commit-id</groupId>
                 <artifactId>git-commit-id-maven-plugin</artifactId>
-                <version>7.0.0</version>
+                <version>8.0.0</version>
                 <executions>
                     <execution>
                         <id>get-the-git-infos</id>

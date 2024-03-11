@@ -5,25 +5,24 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.ISnowflake;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.Interaction;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * Utility class used to handle User specific stuff that is being used multiple times.
+ * Utility class used to handle Guild specific stuff that is being used multiple times.
  */
 @Slf4j
-public class UserUtil {
+public class GuildUtil {
 
     /**
      * Constructor should not be called, since it is a utility class that doesn't need an instance.
      *
      * @throws IllegalStateException it is a utility class.
      */
-    private UserUtil() {
+    private GuildUtil() {
         throw new IllegalStateException("Utility class");
     }
 
@@ -197,7 +196,7 @@ public class UserUtil {
     }
 
     /**
-     * Add a Role to the Member, if Ree6 has enough power to do so.
+     * Add a Role to the Member if Ree6 has enough power to do so.
      *
      * @param guild  the {@link Guild} Entity.
      * @param member the {@link Member} Entity.
@@ -221,11 +220,24 @@ public class UserUtil {
     }
 
     /**
+     * Get all roles that Ree6 can manage.
+     * @param guild the Guild to get the roles from.
+     * @return a List of Roles that Ree6 can manage.
+     */
+    public static List<Role> getManagableRoles(Guild guild) {
+        return guild.getRoles().stream().filter(role -> guild.getSelfMember().canInteract(role) && !role.isManaged() && !role.isPublicRole()).toList();
+    }
+
+    /**
      * Checks if a specific user has supported Ree6 via Donations!
      * @param member the User of the current Guild to check.
      * @return true if the User has supported Ree6 via Donations, false if not.
      */
-    public static boolean isSupporter(ISnowflake member) {
+    public static boolean isSupporter(User member) {
+        if (!member.getJDA().retrieveEntitlements().excludeEnded(true).skuIds(1165934495447384144L).complete().isEmpty()) {
+            return true;
+        }
+
         Guild ree6Guild = BotWorker.getShardManager().getGuildById(805149057004732457L);
 
         if (ree6Guild != null) {
