@@ -627,7 +627,7 @@ command:
     notifier:
       default: "Tüm Bildiricilerinizi yönetin!"
       list: "Tüm Bildiricilerinizi listeleyin!"
-      add: "Add a new Notifier!"
+      add: "Yeni bir bildirim ekleyin!"
       remove: "Bildiriciyi Kaldırın!"
     anime: "Kitsu.io'da anime arayın!"
     randomcat: "thecatapi.com'dan rastgele Kedi Resimleri gösterir."
