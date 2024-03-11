@@ -627,6 +627,7 @@ command:
     notifier:
       default: "Spravujte všechna oznámení!"
       list: "Vypište všechna svá oznámení!"
+      add: "Add a new Notifier!"
       remove: "Odstranění oznámení!"
     anime: "Hledej anime na kitsu.io!"
     randomcat: "Zobrazuje náhodné obrázky koček z thecatapi.com."
