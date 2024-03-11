@@ -627,7 +627,7 @@ command:
     notifier:
       default: "Kelola semua Notifier Anda!"
       list: "Buat daftar semua Notifikasi Anda!"
-      add: "Add a new Notifier!"
+      add: "Tambahkan notifikasi baru!"
       remove: "Hapus Pemberitahuan!"
     anime: "Cari Anime di kitsu.io!"
     randomcat: "Munculkan gambar kucing random dari thecatapi.com."
