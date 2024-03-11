@@ -524,7 +524,7 @@ public class Notifier {
     //region Twitch
 
     /**
-     * Register a EventHandler for the Twitch Livestream Event.
+     * Register an EventHandler for the Twitch Livestream Event.
      */
     public void registerTwitchEventHandler() {
         getTwitchClient().getEventManager().onEvent(ChannelGoLiveEvent.class, channelGoLiveEvent -> {
@@ -536,7 +536,7 @@ public class Notifier {
 
             String twitchUrl = "https://twitch.tv/" + channelGoLiveEvent.getChannel().getName();
 
-            // Create Webhook Message.
+            // Create a Webhook Message.
             WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
             wmb.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl());

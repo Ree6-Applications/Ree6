@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.apis;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.data.RegExUtil;
 import de.presti.wrapper.YouTubeWrapper;
 import de.presti.wrapper.entities.VideoResult;
@@ -72,7 +73,8 @@ public class YouTubeAPIHandler {
         List<VideoResult> playlistItemList = new ArrayList<>();
 
         if (isValidChannelId(channelId)) {
-            log.info("Getting videos for channel: " + channelId);
+            if (BotConfig.isDebug())
+                log.info("Getting videos for channel: " + channelId);
             ChannelVideoResult channelVideo = YouTubeWrapper.getChannelVideo(channelId);
 
             // Convert it to an actual Video instead of a stripped down version.
