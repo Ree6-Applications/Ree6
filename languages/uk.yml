@@ -566,9 +566,9 @@ message:
     deposit: "Ви успішно внесли %s$!"
     send: "Ви успішно відправили %s$ до %s!"
     balance: "Баланс %s містить %s$ готівкою та %s$ у банку!"
-    set: "You have successfully set the balance of %s to %s$!"
-    add: "You have successfully added %s$ to the balance of %s!"
-    remove: "You have successfully removed %s$ from the balance of %s!"
+    set: "Ви успішно встановили баланс користувача %s на %s$!"
+    add: "Ви успішно додали %s$ до балансу користувача %s!"
+    remove: "Ви успішно вилучили %s$ з балансу користувача %s!"
   steal:
     success: "Ви успішно вкрали %s$ в %s!"
     failed: "Не вдалося вкрасти %s$ з %s!"
@@ -596,9 +596,9 @@ message:
       default: "Ось список всіх розіграшів:\n```%s```"
       entry: "ID: %s | Канал: %s | Переможець: %s | Приз: %s | Завершення: %s"
   autoRole:
-    setupDescription: "Set the Roles that a User should get upon joining the Server!"
-    setupPlaceholder: "Select multiple Roles!"
-    setupSuccess: "Successfully set the new Auto-Roles!"
+    setupDescription: "Встановіть ролі, які користувач повинен отримати при приєднанні до сервера!"
+    setupPlaceholder: "Обирайте кілька ролей!"
+    setupSuccess: "Успішне встановлення нових автоматичних ролей!"
 game:
   description:
     blackjack: "Грайте Blackjack з друзями!"
@@ -625,9 +625,9 @@ command:
     tiktokNotifier: "Керуйте вашим сповіщенням TikTok!"
     rssNotifier: "Керуйте вашим сповіщенням RSS-Feed!"
     notifier:
-      default: "Manage all your Notifiers!"
-      list: "List all your Notifiers!"
-      remove: "Remove a Notifier!"
+      default: "Керуйте всіма своїми сповіщеннями!"
+      list: "Перерахуйте всі ваші нотифікатори!"
+      remove: "Видалити сповіщення!"
     anime: "Шукати аніме на kitsu.io!"
     randomcat: "Показує випадкові зображення кота, із thecatapi.com."
     cringe: "Нехай Шрек скаже їм, що їхній меседж був жахливим!"
@@ -703,8 +703,8 @@ command:
     musicpanel: "Отримайте доступ до простого інтерфейсу для управління музичною системою!"
     schedule: "Заплануйте повідомлення на пізніше або на повторний час!"
     money:
-      default: "Manage your money!"
-      admin: "Manage the money of other Users!"
+      default: "Керуйте своїми грошима!"
+      admin: "Керуйте грошима інших користувачів!"
     steal: "Вкрасти гроші інших користувачів!"
     work: "Отримайте свої власні гроші від здійснення роботи!"
     giveaway: "Керування розіграшами!"
