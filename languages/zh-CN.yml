@@ -627,6 +627,7 @@ command:
     notifier:
       default: "管理您所有的通知者！"
       list: "列出您所有的通知者！"
+      add: "Add a new Notifier!"
       remove: "删除通知程序！"
     anime: "在 kitsu.io 上搜索动漫！"
     randomcat: "显示来自 thecatapi.com 的随机猫图像。"
