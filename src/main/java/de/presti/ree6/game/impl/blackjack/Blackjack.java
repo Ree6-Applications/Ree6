@@ -268,7 +268,7 @@ public class Blackjack implements IGame {
     /**
      * Stand the player and let the other player play.
      *
-     * @param currentPlayer The player who stand.
+     * @param currentPlayer The player who stands.
      * @param nextPlayer    The other player.
      */
     public void stand(BlackJackPlayer currentPlayer, BlackJackPlayer nextPlayer) {
