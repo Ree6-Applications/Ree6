@@ -75,12 +75,12 @@ public class LoggerQueue {
 
                     modified = true;
                 }
-                }
-                // Check if it's a VoiceChannel Move log.
-                else if (loggerMessage.getType() == LogTyp.VC_MOVE && loggerMessage instanceof LogMessageVoice logMessageVoice) {
-                    if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
-                            loggerMessages instanceof LogMessageVoice logMessageVoice1 && logMessageVoice1.getMember() == logMessageVoice.getMember() &&
-                            !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.VC_MOVE)) {
+            }
+            // Check if it's a VoiceChannel Move log.
+            else if (loggerMessage.getType() == LogTyp.VC_MOVE && loggerMessage instanceof LogMessageVoice logMessageVoice) {
+                if (logs.stream().filter(loggerMessages -> loggerMessages != loggerMessage && loggerMessages.getId() == loggerMessage.getId() &&
+                        loggerMessages instanceof LogMessageVoice logMessageVoice1 && logMessageVoice1.getMember() == logMessageVoice.getMember() &&
+                        !loggerMessages.isCanceled()).anyMatch(loggerMessages -> loggerMessages.getType() == LogTyp.VC_MOVE)) {
 
                     // Cancel every Log-Message which indicates that the person moved.
                     logs.stream().filter(loggerMessages -> loggerMessages.getId() == loggerMessage.getId() &&
@@ -92,7 +92,7 @@ public class LoggerQueue {
                     // Set the new Webhook Message.
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(logMessageVoice.getMember().getUser().getEffectiveName(),
                             logMessageVoice.getMember().getEffectiveAvatarUrl(), null));
-                        webhookEmbedBuilder.setDescription(LanguageService.getByGuild(loggerMessage.getGuild(), "logging.voicechannel.moveMany", logMessageVoice.getMember().getAsMention(), logMessageVoice.getCurrentVoiceChannel().getAsMention()));
+                    webhookEmbedBuilder.setDescription(LanguageService.getByGuild(loggerMessage.getGuild(), "logging.voicechannel.moveMany", logMessageVoice.getMember().getAsMention(), logMessageVoice.getCurrentVoiceChannel().getAsMention()));
 
                     modified = true;
                 }
@@ -137,7 +137,8 @@ public class LoggerQueue {
                             !loggerMessages.isCanceled() && loggerMessages.getType() == LogTyp.NICKNAME_CHANGE).forEach(LogMessage::cancel);
 
                     // Change the current previous Nickname to the old one.
-                    if (memberData != null && memberData.getPreviousName() != null) logMessageMember.setPreviousName(memberData.getPreviousName());
+                    if (memberData != null && memberData.getPreviousName() != null)
+                        logMessageMember.setPreviousName(memberData.getPreviousName());
 
                     // Set the new Webhook Message.
                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(logMessageMember.getMember().getUser().getEffectiveName(),
@@ -186,7 +187,7 @@ public class LoggerQueue {
                         }
 
                         // Merge both lists with the current List.
-                        if (!logMessageMember.getRemovedRoles().isEmpty()  && !memberData.getAddedRoles().isEmpty()) {
+                        if (!logMessageMember.getRemovedRoles().isEmpty() && !memberData.getAddedRoles().isEmpty()) {
                             memberData.getAddedRoles().forEach(role -> {
                                 if (logMessageMember.getRemovedRoles().contains(role)) {
                                     logMessageMember.getAddedRoles().remove(role);
@@ -194,7 +195,7 @@ public class LoggerQueue {
                             });
                         }
 
-                        if (!logMessageMember.getAddedRoles().isEmpty()  && !memberData.getRemovedRoles().isEmpty()) {
+                        if (!logMessageMember.getAddedRoles().isEmpty() && !memberData.getRemovedRoles().isEmpty()) {
                             memberData.getRemovedRoles().forEach(role -> {
                                 if (logMessageMember.getAddedRoles().contains(role)) {
                                     logMessageMember.getRemovedRoles().remove(role);
