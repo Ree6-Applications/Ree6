@@ -34,7 +34,7 @@ public class PlayTTSStreamAction implements IStreamAction {
 
         String ttsMessage = String.join(" ", event.getArguments()).split("--ttsmonster:")[0];
 
-        String baseUrl = useTTSMonster ? "NOT YET IMPLEMENTED" : "https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=";
+        String baseUrl = /*useTTSMonster ? "NOT YET IMPLEMENTED" : */"https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=";
 
         if (useTTSMonster) return true;
 

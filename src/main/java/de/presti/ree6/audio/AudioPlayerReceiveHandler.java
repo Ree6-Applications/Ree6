@@ -33,9 +33,9 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * All methods in this class are called by JDA threads when resources are available/ready for processing.
+ * JDA threads call all methods in this class when resources are available/ready for processing.
  * The receiver will be provided with the latest 20ms of PCM stereo audio
- * Note you can receive even while setting yourself to deafened
+ * Note you can receive, even while setting yourself to deafen
  */
 @Slf4j
 public class AudioPlayerReceiveHandler implements AudioReceiveHandler {

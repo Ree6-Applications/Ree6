@@ -35,11 +35,11 @@ public class PlayBlerpStreamAction implements IStreamAction {
      */
     @Override
     public boolean runAction(@NotNull StreamActionEvent event) {
-        if (event.getTwitchEvent() == null) return false;
+        if (event.getEvent() == null) return false;
 
         if (!Main.getInstance().getMusicWorker().isConnectedMember(event.getGuild().getSelfMember())) return false;
 
-        if (event.getTwitchEvent() instanceof RewardRedeemedEvent rewardRedeemedEvent) {
+        if (event.getEvent() instanceof RewardRedeemedEvent rewardRedeemedEvent) {
             String prompt = rewardRedeemedEvent.getRedemption().getReward().getPrompt().toLowerCase();
             Matcher matcher = blerpPattern.matcher(prompt);
             if (matcher.find()) {

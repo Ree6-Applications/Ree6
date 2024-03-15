@@ -458,14 +458,14 @@ public class LoggerQueue {
             // add the created WebhookEmbedBuilder as WebhookEmbed to the WebhookMessage Builder.
             webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-            // If the message has been modified change the WebhookMessage.
+            // If the message has been modified, change the WebhookMessage.
             if (modified) {
                 loggerMessage.setWebhookMessage(webhookMessageBuilder.build());
             }
 
-            // Create new Thread for Log-Message to send.
+            // Create a new Thread for Log-Message to send.
             ThreadUtil.createThread(x -> {
-                // If not canceled send it.
+                // If not canceled, send it.
                 if (!loggerMessage.isCanceled()) {
                     WebhookUtil.sendWebhook(loggerMessage, loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode(), true);
                 }
