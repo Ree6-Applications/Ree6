@@ -135,13 +135,6 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
             return;
         }
 
-        if (combinedAudio.getUsers().isEmpty()) {
-            if (audioChannelUnion.getMembers().size() == 1) {
-                endReceiving();
-            }
-            return;
-        }
-
         if (audioChannelUnion.getMembers().size() == 1) {
             endReceiving();
             return;
@@ -231,6 +224,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
         }
 
         audioChannelUnion.getGuild().getAudioManager().closeAudioConnection();
+        audioChannelUnion.getGuild().getAudioManager().setReceivingHandler(null);
         queue.clear();
     }
 }

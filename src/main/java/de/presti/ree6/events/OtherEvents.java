@@ -265,6 +265,12 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
         if (event.getChannelLeft() == null) {
+            if (event.getEntity().getIdLong() == event.getGuild().getSelfMember().getIdLong()) {
+                if (event.getGuild().getAudioManager().getReceivingHandler() != null) {
+                    event.getEntity().deafen(false).queue();
+                }
+            }
+
             if (!ArrayUtil.voiceJoined.containsKey(event.getMember()) && !event.getEntity().getUser().isBot()) {
                 GuildVoiceState voiceState = event.getVoiceState();
 
