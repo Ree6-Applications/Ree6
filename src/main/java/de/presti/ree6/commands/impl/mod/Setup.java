@@ -247,11 +247,13 @@ public class Setup implements ICommand {
     }
 
     public static EmbedBuilder createAutoRoleSetupMessage(Guild guild, InteractionHook interactionHook) {
+        boolean hasRoles = !GuildUtil.getManagableRoles(guild).isEmpty();
+
         return new EmbedBuilder()
                 .setTitle(LanguageService.getByGuildOrInteractionHook(guild, interactionHook,"label.setup"))
                 .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl())
-                .setColor(Color.cyan)
-                .setDescription(LanguageService.getByGuildOrInteractionHook(guild, interactionHook,"message.autoRole.setupDescription"));
+                .setColor(hasRoles ? Color.cyan : Color.red)
+                .setDescription(LanguageService.getByGuildOrInteractionHook(guild, interactionHook, hasRoles ? "message.autoRole.setupDescription" : "message.default.needPermission", (hasRoles ? null : Permission.MANAGE_ROLES.name())));
     }
 
     public static SelectMenu createAutoRoleSetupSelectMenu(Guild guild, InteractionHook interactionHook) {
@@ -269,8 +271,9 @@ public class Setup implements ICommand {
             }
         });
 
-        return new StringSelectMenuImpl("setupAutoRole", LanguageService.getByGuildOrInteractionHook(guild, interactionHook,"message.autoRole.setupPlaceholder"),
-                0, Math.min(10, optionList.size()),false, optionList);
+        return new StringSelectMenuImpl("setupAutoRole", LanguageService.getByGuildOrInteractionHook(guild, interactionHook,
+                "message.autoRole.setupPlaceholder"),
+                0, Math.min(10, Math.max(1, optionList.size())), optionList.isEmpty(), optionList);
     }
 
     /**
