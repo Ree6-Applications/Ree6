@@ -52,9 +52,9 @@
             <version>a28502724c</version>
         </dependency>
         <dependency>
-            <groupId>dev.arbjerg</groupId>
+            <groupId>com.github.lavalink-devs.lavaplayer</groupId>
             <artifactId>lavaplayer</artifactId>
-            <version>2.1.1</version>
+            <version>afec211f05</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
