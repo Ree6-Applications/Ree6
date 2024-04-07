@@ -45,11 +45,9 @@
     <dependencies>
         <!-- Discord -->
         <dependency>
-            <!-- net.dv8tion -->
-            <groupId>io.github.JDA-Fork</groupId>
+            <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <!-- 5.0.0-beta.20 -->
-            <version>a28502724c</version>
+            <version>5.0.0-beta.22</version>
         </dependency>
         <dependency>
             <groupId>com.github.lavalink-devs.lavaplayer</groupId>
