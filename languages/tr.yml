@@ -566,6 +566,9 @@ message:
     deposit: "%s$'ı başarıyla yatırdınız!"
     send: "%s$'ı %s'ye başarıyla gönderdiniz!"
     balance: "%s Bakiyesi nakit olarak %s$ ve Bankada %s$ içeriyor!"
+    set: "Başarılı bir şekilde %s bakiyesini %s$ olarak ayarladınız!"
+    add: "Başarılı bir şekilde %s bakiyesine %s$ eklediniz!"
+    remove: "Başarılı bir şekilde %s$'ı %s bakiyesinden çıkardınız!"
   steal:
     success: "%s'den %s$'ı başarıyla çaldınız!"
     failed: "%s'den %s$ çalmayı başaramadınız!"
@@ -592,6 +595,10 @@ message:
     list:
       default: "İşte tüm hediyelerin listesi:\n```%s```"
       entry: "ID: %s | Kanal: %s | Kazanan: %s | Ödül: %s | Bitiş: %s"
+  autoRole:
+    setupDescription: "Bir Kullanıcının Sunucuya katıldığında alması gereken Rolleri ayarlayın!"
+    setupPlaceholder: "Birden fazla Rol seçin!"
+    setupSuccess: "Yeni Otomatik Rolleri başarıyla kurun!"
 game:
   description:
     blackjack: "Arkadaşlarınızla Blackjack oynayın!"
@@ -617,6 +624,11 @@ command:
     youtubeNotifier: "Youtube-Bildiricinizi yönetin!"
     tiktokNotifier: "TikTok-Bildiricinizi yönetin!"
     rssNotifier: "RSS-Beslemesi Bildiricinizi yönetin!"
+    notifier:
+      default: "Tüm Bildiricilerinizi yönetin!"
+      list: "Tüm Bildiricilerinizi listeleyin!"
+      add: "Yeni bir bildirim ekleyin!"
+      remove: "Bildiriciyi Kaldırın!"
     anime: "Kitsu.io'da anime arayın!"
     randomcat: "thecatapi.com'dan rastgele Kedi Resimleri gösterir."
     cringe: "Shrek onlara mesajlarının utanç verici olduğunu söylesin!"
@@ -691,7 +703,9 @@ command:
     infractions: "Bir kullanıcının sahip olduğu tüm uyarıları göster."
     musicpanel: "Müzik Sistemini yönetmek için basit bir kullanıcı arayüzüne erişin!"
     schedule: "Mesajları daha sonra veya tekrarlanan bir süre için planlayın!"
-    money: "Paranızı yönetin!"
+    money:
+      default: "Paranızı yönetin!"
+      admin: "Diğer Kullanıcıların parasını yönetin!"
     steal: "Diğer kullanıcılardan para çalın!"
     work: "İş yaparak kendi paranı kazan!"
     giveaway: "Hediyeleri Yönet!"

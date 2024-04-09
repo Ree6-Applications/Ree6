@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -182,6 +183,19 @@ public class LanguageService {
         return getByGuild(commandEvent.getGuild(), key, parameter);
     }
 
+    /**
+     * Called to get a specific String from the Language file.
+     *
+     * @param guild       The Guild to receive the locale from.
+     * @param interaction The Interaction to receive the locale from.
+     * @param key         The key of the String.
+     * @param parameter   The Parameters to replace placeholders in the String.
+     * @return The String.
+     */
+    public static @NotNull String getByGuildOrInteractionHook(Guild guild, InteractionHook interaction, @NotNull String key, @Nullable Object... parameter) {
+        return getByGuildOrInteraction(guild, interaction != null ? interaction.getInteraction() :  null, key, parameter);
+    }
+
 
     /**
      * Called to get a specific String from the Language file.
@@ -262,7 +276,7 @@ public class LanguageService {
      * @return The String.
      */
     public static @NotNull String getDefault(@NotNull String key, @Nullable Object... parameter) {
-        return getByLocale(DiscordLocale.ENGLISH_UK, key, parameter);
+        return getByLocale(DiscordLocale.from(BotConfig.getDefaultLanguage()), key, parameter);
     }
 
     /**
@@ -290,7 +304,7 @@ public class LanguageService {
 
         Language language = languageResources.containsKey(discordLocale) ? languageResources.get(discordLocale) :
                 languageResources.get(DiscordLocale.from(BotConfig.getDefaultLanguage()));
-        
+
         return language != null ? language.getResource(key, parameters) : "Missing language resource!";
     }
 

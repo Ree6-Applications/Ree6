@@ -6,7 +6,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.bot.BotConfig;
-import de.presti.ree6.utils.others.UserUtil;
+import de.presti.ree6.utils.others.GuildUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -77,7 +77,7 @@ public class Info implements ICommand {
     public void sendInfo(Member member, CommandEvent commandEvent) {
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setTitle(member.getEffectiveName() + (UserUtil.isSupporter(member) ? " <a:duckswing:1070690323459735682>" : ""));
+        em.setTitle(member.getEffectiveName() + (GuildUtil.isSupporter(member.getUser()) ? " <a:duckswing:1070690323459735682>" : ""));
         em.setThumbnail(member.getEffectiveAvatarUrl());
 
         if (member.getUser().getDiscriminator().equals("0000")) {

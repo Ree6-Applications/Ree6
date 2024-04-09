@@ -566,6 +566,9 @@ message:
     deposit: "Kamu telah berhasil menyimpan %s$!"
     send: "Kamu telah berhasil memberikan %s$ ke %s!"
     balance: "Saldo %s berisi %s$ berupa tunai dan %s$ di bank!"
+    set: "Anda telah berhasil mengatur saldo pengguna %s ke %s$!"
+    add: "Anda telah berhasil menambahkan %s$ ke saldo pengguna %s!"
+    remove: "Anda telah berhasil menghapus %s$ dari saldo pengguna %s!"
   steal:
     success: "Kamu telah berhasil mencuri %s$ dari %s!"
     failed: "Kamu tidak berhasil untuk mencuri %s$ dari %s!"
@@ -592,6 +595,10 @@ message:
     list:
       default: "Berikut adalah daftar semua giveaway:\n```%s```"
       entry: "ID: %s | Saluran: %s | Pemenang: %s | Hadiah: %s | Berakhir: %s"
+  autoRole:
+    setupDescription: "Atur Peran yang harus didapatkan Pengguna saat bergabung dengan Server!"
+    setupPlaceholder: "Pilih beberapa Peran!"
+    setupSuccess: "Berhasil menetapkan Peran Otomatis yang baru!"
 game:
   description:
     blackjack: "Mainkan Blackjack dengan temanmu!"
@@ -617,6 +624,11 @@ command:
     youtubeNotifier: "Atur Youtube-Notifier mu!"
     tiktokNotifier: "Atur Notifier TikTok mu!"
     rssNotifier: "Atur Notifier RSS-Feed mu!"
+    notifier:
+      default: "Kelola semua Notifier Anda!"
+      list: "Buat daftar semua Notifikasi Anda!"
+      add: "Tambahkan notifikasi baru!"
+      remove: "Hapus Pemberitahuan!"
     anime: "Cari Anime di kitsu.io!"
     randomcat: "Munculkan gambar kucing random dari thecatapi.com."
     cringe: "Biarkan shrek kasi tahu kalau pesan mereka cringe!"
@@ -691,7 +703,9 @@ command:
     infractions: "Tampilkan semua peringatan yang dimiliki user."
     musicpanel: "Akses UI sederhana untuk mengelola Sistem Musik!"
     schedule: "Jadwalkan pesan untuk nanti atau untuk diulang!"
-    money: "Mengelola uangmu!"
+    money:
+      default: "Kelola uang Anda!"
+      admin: "Kelola uang Pengguna lain!"
     steal: "Mencuri uang dari orang lain!"
     work: "Dapatkan uangmu dari bekerja!"
     giveaway: "Kelola Giveaway!"

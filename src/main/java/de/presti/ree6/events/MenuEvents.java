@@ -6,11 +6,13 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.audio.music.GuildMusicManager;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
+import de.presti.ree6.commands.impl.mod.Setup;
 import de.presti.ree6.language.Language;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.*;
+import de.presti.ree6.sql.entities.roles.AutoRole;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.base.Webhook;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
@@ -22,6 +24,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -31,6 +34,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
@@ -407,9 +411,9 @@ public class MenuEvents extends ListenerAdapter {
                     EmbedBuilder embedBuilder = new EmbedBuilder()
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.suggestion"))
                             .setColor(Color.ORANGE)
-                            .setThumbnail(event.getUser().getEffectiveAvatarUrl())
+                            .setThumbnail(event.getMember().getEffectiveAvatarUrl())
                             .setDescription("```" + event.getValue("re_suggestion_text").getAsString() + "```")
-                            .setFooter(LanguageService.getByGuild(event.getGuild(), "message.suggestion.footer", event.getUser().getEffectiveName()), event.getUser().getEffectiveAvatarUrl())
+                            .setFooter(LanguageService.getByGuild(event.getGuild(), "message.suggestion.footer", event.getUser().getEffectiveName()), event.getMember().getEffectiveAvatarUrl())
                             .setTimestamp(Instant.now());
 
                     Main.getInstance().getCommandManager().sendMessage(embedBuilder, messageChannel);
@@ -863,14 +867,47 @@ public class MenuEvents extends ListenerAdapter {
             return;
 
         if (event.getMessage().getEmbeds().isEmpty() ||
-                event.getMessage().getEmbeds().get(0) == null ||
-                event.getInteraction().getSelectedOptions().isEmpty())
+                event.getMessage().getEmbeds().get(0) == null)
             return;
 
-        if (event.getInteraction().getValues().isEmpty())
+        if (event.getInteraction().getValues().isEmpty() && !event.getInteraction().getComponent().getId().equals("setupAutoRole"))
             return;
 
         switch (event.getInteraction().getComponent().getId()) {
+            case "setupAutoRole" -> {
+                if (checkPerms(event.getMember(), event.getChannel())) {
+                    return;
+                }
+
+                // We are doing this because a normal List can't be modified.
+                ArrayList<String> values = new ArrayList<>(event.getValues());
+
+                EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
+                if (event.getSelectedOptions().isEmpty()) {
+                    SQLSession.getSqlConnector().getSqlWorker().getAutoRoles(event.getGuild().getIdLong()).forEach(autoRole ->
+                            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(autoRole));
+                } else {
+                    SQLSession.getSqlConnector().getSqlWorker().getAutoRoles(event.getGuild().getIdLong()).forEach(autoRole -> {
+                        String value = String.valueOf(autoRole.getRoleId());
+
+                        if (!event.getValues().contains(value)) {
+                            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(autoRole);
+                            values.remove(value);
+                        }
+                    });
+
+                    for (String roleId : values) {
+                        Role role = event.getGuild().getRoleById(roleId);
+                        if (role != null) {
+                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(new AutoRole(event.getGuild().getIdLong(), role.getIdLong()));
+                        }
+                    }
+                }
+
+                embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.autoRole.setupSuccess"));
+                event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+            }
+
             case "setupActionMenu" -> {
 
                 if (checkPerms(event.getMember(), event.getChannel())) {
@@ -932,11 +969,11 @@ public class MenuEvents extends ListenerAdapter {
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupWelcomeMenu", LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired"), 1, 1, false, optionList)).queue();
                     }
 
-                    case "autorole" -> {
-                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.setup.steps.autoRole"));
-
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(Button.link(BotConfig.getWebinterface(), "Webinterface")).queue();
-                    }
+                    case "autorole" -> event.editMessageEmbeds(Setup.createAutoRoleSetupMessage(event.getGuild(), event.getHook()).build())
+                            .setComponents(
+                                    ActionRow.of(Setup.createAutoRoleSetupSelectMenu(event.getGuild(), event.getHook())),
+                                    ActionRow.of(Button.link(BotConfig.getWebinterface(), "Webinterface")))
+                            .queue();
 
                     case "tempvoice" -> {
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setup"), "tempVoiceSetup"));

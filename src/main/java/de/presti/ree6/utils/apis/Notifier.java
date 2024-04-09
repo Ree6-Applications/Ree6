@@ -6,7 +6,8 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.apptasticsoftware.rssreader.Channel;
 import com.apptasticsoftware.rssreader.Image;
 import com.apptasticsoftware.rssreader.Item;
-import com.apptasticsoftware.rssreader.RssReader;
+import com.apptasticsoftware.rssreader.module.itunes.ItunesItem;
+import com.apptasticsoftware.rssreader.module.itunes.ItunesRssReader;
 import com.github.instagram4j.instagram4j.IGClient;
 import com.github.instagram4j.instagram4j.actions.feed.FeedIterator;
 import com.github.instagram4j.instagram4j.models.media.timeline.TimelineImageMedia;
@@ -21,15 +22,16 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.auth.TwitchAuth;
 import com.github.twitch4j.auth.providers.TwitchIdentityProvider;
+import com.github.twitch4j.chat.events.channel.FollowEvent;
 import com.github.twitch4j.events.ChannelFollowCountUpdateEvent;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.eventsub.events.ChannelSubscribeEvent;
 import com.github.twitch4j.helix.domain.User;
 import com.github.twitch4j.pubsub.PubSubSubscription;
-import com.github.twitch4j.pubsub.events.FollowingEvent;
 import com.github.twitch4j.pubsub.events.RewardRedeemedEvent;
 import de.presti.ree6.actions.streamtools.container.StreamActionContainer;
 import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.language.LanguageService;
@@ -38,7 +40,6 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.*;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.data.DatabaseStorageBackend;
 import de.presti.ree6.utils.others.ThreadUtil;
 import de.presti.wrapper.entities.VideoResult;
@@ -64,9 +65,10 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.time.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -188,10 +190,11 @@ public class Notifier {
 
                 OAuth2Credential credential = new OAuth2Credential("twitch", twitchIntegrations.getToken());
 
-                PubSubSubscription[] subscriptions = new PubSubSubscription[3];
+                PubSubSubscription[] subscriptions = new PubSubSubscription[2];
                 subscriptions[0] = getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(credential, twitchIntegrations.getChannelId());
                 subscriptions[1] = getTwitchClient().getPubSub().listenForSubscriptionEvents(credential, twitchIntegrations.getChannelId());
-                subscriptions[2] = getTwitchClient().getPubSub().listenForFollowingEvents(credential, twitchIntegrations.getChannelId());
+
+                getTwitchClient().getClientHelper().enableFollowEventListener(twitchIntegrations.getChannelId());
 
                 twitchSubscription.put(credential.getUserId(), subscriptions);
             }
@@ -207,12 +210,12 @@ public class Notifier {
                 });
             });
 
-            twitchClient.getEventManager().onEvent(FollowingEvent.class, event -> {
+            twitchClient.getEventManager().onEvent(FollowEvent.class, event -> {
                 List<StreamActionContainer> list = StreamActionContainerCreator.getContainers(1);
                 list.forEach(container -> {
-                    if (!event.getChannelId().equalsIgnoreCase(container.getTwitchChannelId())) return;
+                    if (!event.getChannel().getId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
-                    container.runActions(event, event.getData().getUsername());
+                    container.runActions(event, event.getUser().getName());
                 });
             });
 
@@ -361,7 +364,8 @@ public class Notifier {
 
             List<String> checkedIds = new ArrayList<>();
 
-            new RssReader()
+            // To support Podcast RSS.
+            new ItunesRssReader()
                     .addItemExtension("media:description", Item::setDescription)
                     .addItemExtension("media:thumbnail", "url", (item, element) -> {
                         Image image = item.getChannel().getImage().orElse(new Image());
@@ -401,7 +405,7 @@ public class Notifier {
                         OffsetDateTime dateTime = OffsetDateTime.parse(item.getPubDate().orElse(""), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
                         OffsetDateTime now = OffsetDateTime.now();
-                        OffsetDateTime threeMinuteAgo = now.minus(3, ChronoUnit.MINUTES);
+                        OffsetDateTime threeMinuteAgo = now.minusMinutes(3);
 
                         if (dateTime.isBefore(threeMinuteAgo)) return;
 
@@ -486,14 +490,16 @@ public class Notifier {
                                                             URLDecoder.decode(image.getUrl(), StandardCharsets.UTF_8), null)),
                                             () -> webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(item.getChannel().getTitle(), null, null)));
 
+                                    item.getDescription().ifPresent(description -> webhookEmbedBuilder.setDescription(description + "\n"));
 
-                                    webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getTitle().orElse("No Title"), item.getLink().orElse("No Link")));
+                                    if (item instanceof ItunesItem itunesItem) {
+                                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(itunesItem.getItunesTitle().orElse("No Title"), item.getLink().orElse("No Link")));
+                                        itunesItem.getItunesImage().ifPresent(webhookEmbedBuilder::setThumbnailUrl);
+                                    } else {
 
-                                    item.getDescription().ifPresent(description -> {
-                                        webhookEmbedBuilder.setDescription(description + "\n");
-                                    });
+                                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getTitle().orElse("No Title"), item.getLink().orElse("No Link")));
+                                    }
 
-                                    webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(item.getChannel().getTitle(), null));
                                     webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("RSS Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl(), null));
 
                                     webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(BotConfig.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()));
@@ -517,7 +523,7 @@ public class Notifier {
     //region Twitch
 
     /**
-     * Register a EventHandler for the Twitch Livestream Event.
+     * Register an EventHandler for the Twitch Livestream Event.
      */
     public void registerTwitchEventHandler() {
         getTwitchClient().getEventManager().onEvent(ChannelGoLiveEvent.class, channelGoLiveEvent -> {
@@ -529,7 +535,7 @@ public class Notifier {
 
             String twitchUrl = "https://twitch.tv/" + channelGoLiveEvent.getChannel().getName();
 
-            // Create Webhook Message.
+            // Create a Webhook Message.
             WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
             wmb.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl());
@@ -638,6 +644,7 @@ public class Notifier {
         if (isTwitchRegistered(twitchChannel)) registeredTwitchChannels.remove(twitchChannel);
 
         getTwitchClient().getClientHelper().disableStreamEventListener(twitchChannel);
+        getTwitchClient().getClientHelper().disableFollowEventListener(twitchChannel);
     }
 
     /**
@@ -734,7 +741,7 @@ public class Notifier {
                                         playlistItem.getActualUploadDate() != null && !playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis()))) {
 
                                     Main.getInstance().logAnalytic("Passed! -> " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate());
-                                    // Create Webhook Message.
+                                    // Create a Webhook Message.
                                     WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
                                     webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
@@ -816,7 +823,7 @@ public class Notifier {
             log.error("Couldn't run YT checker!", x);
             Sentry.captureException(x);
             // Default is 5 minutes.
-        }, Duration.ofSeconds(20), true, true);
+        }, Duration.ofMinutes(5), true, true);
     }
 
     /**

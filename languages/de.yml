@@ -566,6 +566,9 @@ message:
     deposit: "Du hast erfolgreich %s$ in die Bank eingezahlt!"
     send: "Du hast erfolgreich %s$ an %s gesendet!"
     balance: "Der Kontostand von %s liegt bei %s$ Bargeld und %s$ auf der Bank!"
+    set: "Der Kontostand von %s wurde auf %s$ gesetzt!"
+    add: "Es wurden %s$ auf das Konto von %s hinzugefügt!"
+    remove: "Es wurde %s$ von %ss Konto abgezogen!"
   steal:
     success: "Du hast erfolgreich %s$ von %s gestohlen!"
     failed: "Du konntest nicht %s$ von %s stehlen!"
@@ -592,6 +595,10 @@ message:
     list:
       default: "Hier ist eine Liste aller Giveaways: ```%s```"
       entry: "ID: %s | Channel: %s | Gewinner: %s | Preis: %s | endet: %s"
+  autoRole:
+    setupDescription: "Gebe an welche Rollen Nutzern beim joinen gegeben werden sollen!"
+    setupPlaceholder: "Wähle mehrere Rollen aus!"
+    setupSuccess: "Die neuen automatische Rollen fürs Joinen wurden gesetzt!"
 game:
   description:
     blackjack: "Spiele Blackjack mit deinen Freunden!"
@@ -617,6 +624,11 @@ command:
     youtubeNotifier: "Manage dein YouTube-Notifier!"
     tiktokNotifier: "Manage dein TikTok-Notifier!"
     rssNotifier: "Manage dein RSS-Notifier!"
+    notifier:
+      default: "Manage deine Benachrichtigungen!"
+      list: "Liste alle Benachrichtigungen!"
+      add: "Füge eine neue Benachrichtigung hinzu!"
+      remove: "Entferne eine Benachrichtigung!"
     anime: "Suche nach Animes auf kitsu.io!"
     randomcat: "Zeigt zufällige Katzenbilder, von thecatapi.com."
     cringe: "Lass Shrek ihnen sagen das ihre Nachricht purer Fremdscharm war!"
@@ -686,12 +698,14 @@ command:
     stream-action: "Verwalte Stream-Aktionen, die dir den Stream in den Voice-Channel bringen können!"
     tickets: "Erstellen Sie ein Ticket-System, um mit Ihrer Community zu kommunizieren!"
     news: "Konfigurieren Sie den Empfang von Nachrichten von Ree6!"
-    levelrole: "Konfiguriere Automatische Rollen für Text und Voice Level."
+    levelrole: "Konfiguriere automatische Rollen für Text und Voice Level!"
     warn: "Warne einen Nutzer und lass ihn automatisch bestraft werden."
     infractions: "Zeige alle Verwarnungen eines Nutzers an."
     musicpanel: "Ein simples UI zum Nutzen vom Musik System!"
     schedule: "Plane Nachrichten für später und für eine wiederholte Zeit!"
-    money: "Verwalten dein Geld!"
+    money:
+      default: "Verwalten dein Geld!"
+      admin: "Verwalten das Geld von anderen Nutzern!"
     steal: "Stehle Geld von anderen!"
     work: "Verdiene dein eigens Geld vom Arbeiten!"
     giveaway: "Verwalte deine Giveaways!"

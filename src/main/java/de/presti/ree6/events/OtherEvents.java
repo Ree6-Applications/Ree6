@@ -4,6 +4,7 @@ import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.presti.ree6.audio.AudioPlayerReceiveHandler;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
@@ -13,13 +14,14 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.ReactionRole;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
 import de.presti.ree6.sql.entities.Tickets;
-import de.presti.ree6.sql.entities.level.VoiceUserLevel;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.data.ImageCreationUtility;
-import de.presti.ree6.utils.others.*;
+import de.presti.ree6.utils.others.ModerationUtil;
+import de.presti.ree6.utils.others.RandomUtils;
+import de.presti.ree6.utils.others.ThreadUtil;
+import de.presti.ree6.utils.others.TimeUtil;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
@@ -129,7 +131,7 @@ public class OtherEvents extends ListenerAdapter {
             }
         });
 
-        UserUtil.handleMemberJoin(event.getGuild(), event.getMember());
+            GuildUtil.handleMemberJoin(event.getGuild(), event.getMember());
 
         SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getIdLong()).thenAccept(x -> {
             if (x) {
@@ -272,6 +274,12 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
         if (event.getChannelLeft() == null) {
+            if (event.getEntity().getIdLong() == event.getGuild().getSelfMember().getIdLong()) {
+                if (event.getGuild().getAudioManager().getReceivingHandler() != null) {
+                    event.getEntity().deafen(false).queue();
+                }
+            }
+
             if (!ArrayUtil.voiceJoined.containsKey(event.getMember()) && !event.getEntity().getUser().isBot()) {
                 GuildVoiceState voiceState = event.getVoiceState();
 
@@ -377,7 +385,9 @@ public class OtherEvents extends ListenerAdapter {
         if (event instanceof GuildVoiceGuildDeafenEvent guildDeafenEvent) {
             if (event.getMember() == event.getGuild().getSelfMember() &&
                     !guildDeafenEvent.isGuildDeafened()) {
-                event.getGuild().getSelfMember().deafen(true).queue();
+                if (event.getGuild().getAudioManager().getReceivingHandler() == null) {
+                    event.getGuild().getSelfMember().deafen(true).queue();
+                }
             }
         }
 
@@ -402,7 +412,6 @@ public class OtherEvents extends ListenerAdapter {
 
     /**
      * Method used to do all the calculations for the Voice XP.
-     *
      * @param member the Member that should be checked.
      */
     public void doVoiceXPStuff(Member member) {
@@ -416,7 +425,7 @@ public class OtherEvents extends ListenerAdapter {
 
                 SQLSession.getSqlConnector().getSqlWorker().addVoiceLevelData(member.getGuild().getIdLong(), x);
 
-                UserUtil.handleVoiceLevelReward(member.getGuild(), member);
+                GuildUtil.handleVoiceLevelReward(member.getGuild(), member);
             });
 
             ArrayUtil.voiceJoined.remove(member);
@@ -517,7 +526,7 @@ public class OtherEvents extends ListenerAdapter {
                             });
                         }
 
-                        UserUtil.handleChatLevelReward(event.getGuild(), event.getMember());
+                        GuildUtil.handleChatLevelReward(event.getGuild(), event.getMember());
                     }
                 }
             });

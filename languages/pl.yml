@@ -566,6 +566,9 @@ message:
     deposit: "Wpłacono %s$!"
     send: "Wysłano %s$ do %s!"
     balance: "Saldo %s zawiera %s$ w gotówce i %s$ w banku!"
+    set: "Ustawiono saldo %s na %s$!"
+    add: "Pomyślnie dodałeś %s$ do salda %s!"
+    remove: "Pomyślnie usunąłeś %s$ z salda %s!"
   steal:
     success: "Pomyślnie skradziłeś/aś %s$ od %s!"
     failed: "Nie udało Ci się ukraść %s$ od %s!"
@@ -592,6 +595,10 @@ message:
     list:
       default: "Oto lista wszystkich rozdań:\n```%s ``` ` `"
       entry: "ID: %s | Kanał: %s | Zwycięzca: %s | Nagroda: %s | Kończy: %s"
+  autoRole:
+    setupDescription: "Ustaw role, które powinien otrzymać użytkownik przy dołączaniu do serwera!"
+    setupPlaceholder: "Wybierz wiele rol!"
+    setupSuccess: "Pomyślnie ustawiono nowe role automatyczne!"
 game:
   description:
     blackjack: "Zagraj w Blackjack z przyjaciółmi!"
@@ -617,6 +624,11 @@ command:
     youtubeNotifier: "Zarządzaj swoimi powiadomieniami YouTube!"
     tiktokNotifier: "Zarządzaj swoimi powiadomieniami z TikToka!"
     rssNotifier: "Zarządzaj swoimi powiadomieniami RSS!"
+    notifier:
+      default: "Zarządzaj wszystkimi powiadomieniami!"
+      list: "Lista wszystkich swoich powiadomień!"
+      add: "Dodaj nowe powiadomienie!"
+      remove: "Usuń powiadomienie!"
     anime: "Szukaj Anime na kitsu.io!"
     randomcat: "Pokazuje losowe obrazy kota z thecatapi.com."
     cringe: "Niech Shrek powie, że ich wiadomość nie jest śmieszna!"
@@ -691,7 +703,9 @@ command:
     infractions: "Pokaż wszystkie ostrzeżenia użytkownika."
     musicpanel: "Uzyskaj dostęp do prostego interfejsu użytkownika, aby zarządzać systemem muzycznym!"
     schedule: "Zaplanuj wiadomości na później lub na powtarzający się czas!"
-    money: "Zarządzaj pieniędzmi!"
+    money:
+      default: "Zarządzaj pieniędzmi!"
+      admin: "Zarządzaj pieniędzmi innych użytkowników!"
     steal: "Ukradnij pieniądze od innych użytkowników!"
     work: "Zdobądź własne pieniądze za pracę!"
     giveaway: "Zarządzaj rozdaniami!"

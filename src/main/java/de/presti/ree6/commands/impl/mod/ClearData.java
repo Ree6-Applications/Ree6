@@ -4,7 +4,8 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.logger.invite.InviteContainerManager;
+import de.presti.ree6.main.Main;
+import de.presti.ree6.module.invite.InviteContainerManager;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.Permission;
@@ -43,6 +44,7 @@ public class ClearData implements ICommand {
                 }
 
                 commandEvent.reply(commandEvent.getResource("message.clearData.success"), 5);
+                Main.getInstance().getInviteContainerManager().refreshGuild(commandEvent.getGuild().getIdLong());
                 ThreadUtil.createThread(x -> timeout.remove(commandEvent.getGuild().getId()), null, Duration.ofMinutes(10), false, false);
             } else {
                 commandEvent.reply(commandEvent.getResource("message.clearData.cooldown"), 5);

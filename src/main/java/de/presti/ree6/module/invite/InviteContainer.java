@@ -1,4 +1,8 @@
-package de.presti.ree6.logger.invite;
+package de.presti.ree6.module.invite;
+
+import de.presti.ree6.sql.entities.Invite;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Classed used to save Data of Invites from the Database.
@@ -8,21 +12,29 @@ public class InviteContainer {
     /**
      * The ID of the Guild.
      */
+    @Getter
+    @Setter
     long guildId;
 
     /**
      * The ID of the creator.
      */
+    @Setter
+    @Getter
     long creatorId;
 
     /**
      * The Code of the Invite.
      */
+    @Getter
+    @Setter
     String code;
 
     /**
      * The use count from our Database.
      */
+    @Getter
+    @Setter
     long uses;
 
     /**
@@ -48,75 +60,19 @@ public class InviteContainer {
     }
 
     /**
-     * Get the UserID of the Invite Creator.
-     *
-     * @return {@link String} as User ID.
+     * Constructor for the InviteContainer which saved the Data.
+     * @param invite the {@link Invite} to save.
      */
-    public long getCreatorId() {
-        return creatorId;
+    public InviteContainer(Invite invite) {
+        this(invite.getUserId(), invite.getGuild(), invite.getCode(), invite.getUses(), false);
     }
 
     /**
-     * Set the ID of the Creator.
-     *
-     * @param creatorId the ID of the Creator.
+     * Constructor for the InviteContainer which saved the Data.
+     * @param invite the {@link Invite} to save.
      */
-    public void setCreatorId(long creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    /**
-     * Get the GuildID of the Guild.
-     *
-     * @return {@link String} as Guild ID.
-     */
-    public long getGuildId() {
-        return guildId;
-    }
-
-    /**
-     * Set the ID of the Guild.
-     *
-     * @param guildId the ID of the Guild.
-     */
-    public void setGuildId(long guildId) {
-        this.guildId = guildId;
-    }
-
-    /**
-     * Get the Invite Code.
-     *
-     * @return {@link String} as Invite code.
-     */
-    public String getCode() {
-        return code;
-    }
-
-    /**
-     * Set the Code of the Invite.
-     *
-     * @param code the Code of the Invite.
-     */
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    /**
-     * Get the Usage Count of the Invite.
-     *
-     * @return {@link Long} as Usage Count.
-     */
-    public long getUses() {
-        return uses;
-    }
-
-    /**
-     * Set the Usage Count of the Invite.
-     *
-     * @param uses the Usage Count of the Invite.
-     */
-    public void setUses(long uses) {
-        this.uses = uses;
+    public InviteContainer(net.dv8tion.jda.api.entities.Invite invite) {
+        this(invite.getInviter().getIdLong(), invite.getGuild().getIdLong(), invite.getCode(), invite.getUses(), false);
     }
 
     /**

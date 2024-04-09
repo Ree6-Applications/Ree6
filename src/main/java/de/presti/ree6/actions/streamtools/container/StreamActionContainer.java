@@ -1,14 +1,15 @@
 package de.presti.ree6.actions.streamtools.container;
 
-import com.github.twitch4j.common.events.TwitchEvent;
+import com.github.philippheuer.events4j.core.domain.Event;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.presti.ree6.actions.streamtools.StreamActionEvent;
 import de.presti.ree6.actions.ActionRunContainer;
+import de.presti.ree6.actions.streamtools.IStreamAction;
+import de.presti.ree6.actions.streamtools.StreamActionEvent;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.sql.entities.StreamAction;
-import de.presti.ree6.actions.streamtools.IStreamAction;
+import de.presti.ree6.utils.others.ThreadUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +69,7 @@ public class StreamActionContainer {
                         jsonObject.get("value").isJsonPrimitive()) {
                     String action = jsonObject.getAsJsonPrimitive("action").getAsString();
                     String value = jsonObject.getAsJsonPrimitive("value").getAsString();
-                    String[] args = value.split(" ");
+                    String[] args = value.split("\\s+");
 
                     Class<? extends IStreamAction> actionClass = StreamActionContainerCreator.getAction(action);
                     if (actionClass != null) {
@@ -87,22 +88,25 @@ public class StreamActionContainer {
     /**
      * Run all Actions.
      *
-     * @param twitchEvent The related Twitch event.
+     * @param event The related Twitch event.
      * @param userInput The User Input.
      */
-    public void runActions(TwitchEvent twitchEvent, String userInput) {
-        actions.forEach(run -> {
+    public void runActions(Event event, String userInput) {
+        ThreadUtil.createThread(x -> {
+            for (ActionRunContainer action : actions) {
+                String[] args = action.getArguments();
 
-            String[] args = run.getArguments();
+                for (int i = 0; i < args.length; i++) {
+                    String arg = args[i];
+                    if (arg.contains("%user_input%")) {
+                        args[i] = arg.replace("%user_input%", userInput);
+                    }
+                }
 
-            for (int i = 0; i < args.length; i++) {
-                String arg = args[i];
-                if (arg.contains("%user_input%")) {
-                    args[i] = arg.replace("%user_input%", userInput);
+                if (!action.getAction().runAction(new StreamActionEvent(guild, event, action.getArguments()))) {
+                    log.warn("Couldn't run StreamAction: " + action.getAction().getClass().getSimpleName() + " for Guild: " + guild.getIdLong() + " and Channel: " + twitchChannelId + "!");
                 }
             }
-
-            run.getAction().runAction(new StreamActionEvent(guild, twitchEvent, args));
         });
     }
 }

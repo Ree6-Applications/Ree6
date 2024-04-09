@@ -566,6 +566,9 @@ message:
     deposit: "Úspěšně jste vložili %s$ do banky!"
     send: "Úspěšně jste odeslali %s$ na adresu %s!"
     balance: "Zůstatek %s obsahuje %s$ v hotovosti a %s$ v bance!"
+    set: "Úspěšně jste změnili zůstatek uživatele %s na %s$!"
+    add: "Úspěšně jste přidali %s$ na zůstatek uživatele %s!"
+    remove: "Úspěšně jste odstranili %s$ ze zůstatku uživatele %s!"
   steal:
     success: "Úspěšně jste ukradli %s$ z %s!"
     failed: "Nepodařilo se vám ukrást %s$ z %s!"
@@ -592,6 +595,10 @@ message:
     list:
       default: "Zde je seznam všech giveawayů:\n```%s```"
       entry: "ID: %s | Kanál: %s | Vítěz: %s | Cena: %s | Končí: %s"
+  autoRole:
+    setupDescription: "Nastavte role, které má uživatel získat po připojení k serveru!"
+    setupPlaceholder: "Vyberte si více rolí!"
+    setupSuccess: "Úspěšné nastavení nových automatických rolí!"
 game:
   description:
     blackjack: "Hrajte Blackjack se svými přáteli!"
@@ -617,6 +624,11 @@ command:
     youtubeNotifier: "Spravujte svůj Youtube-Notifier!"
     tiktokNotifier: "Spravujte své TikTok-Notifikace!"
     rssNotifier: "Spravujte své RSS-Feed notifikace!"
+    notifier:
+      default: "Spravujte všechna oznámení!"
+      list: "Vypište všechna svá oznámení!"
+      add: "Přidejte nové oznámení!"
+      remove: "Odstranění oznámení!"
     anime: "Hledej anime na kitsu.io!"
     randomcat: "Zobrazuje náhodné obrázky koček z thecatapi.com."
     cringe: "Ať jim shrek řekne, že jejich zpráva byla krčení!"
@@ -691,7 +703,9 @@ command:
     infractions: "Zobrazit všechna varování uživatele."
     musicpanel: "Přístup k jednoduchému uživatelskému rozhraní pro správu hudebního systému!"
     schedule: "Naplánovat zprávy na později nebo na opakovaný čas!"
-    money: "Spravujte své peníze!"
+    money:
+      default: "Spravujte své peníze!"
+      admin: "Spravujte peníze ostatních uživatelů!"
     steal: "Krást peníze ostatním uživatelům!"
     work: "Získejte své vlastní peníze za práci!"
     giveaway: "Spravovat giveaway!"

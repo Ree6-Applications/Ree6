@@ -566,6 +566,9 @@ message:
     deposit: "You have successfully deposited %s$!"
     send: "You have successfully sent %s$ to %s!"
     balance: "The Balance of %s contains %s$ in cash and %s$ on the Bank!"
+    set: "You have successfully set the balance of %s to %s$!"
+    add: "You have successfully added %s$ to the balance of %s!"
+    remove: "You have successfully removed %s$ from the balance of %s!"
   steal:
     success: "You have successfully stolen %s$ from %s!"
     failed: "You have failed to steal %s$ from %s!"
@@ -592,6 +595,10 @@ message:
     list:
       default: "Here is a list of all giveaways:\n```%s```"
       entry: "ID: %s | Channel: %s | Winner: %s | Prize: %s | Ends: %s"
+  autoRole:
+    setupDescription: "Set the Roles that a User should get upon joining the Server!"
+    setupPlaceholder: "Select multiple Roles!"
+    setupSuccess: "Successfully set the new Auto-Roles!"
 game:
   description:
     blackjack: "Play Blackjack with your friends!"
@@ -620,6 +627,7 @@ command:
     notifier:
       default: "Manage all your Notifiers!"
       list: "List all your Notifiers!"
+      add: "Add a new Notifier!"
       remove: "Remove a Notifier!"
     anime: "Search for animes on kitsu.io!"
     randomcat: "Shows random Cat Images, from thecatapi.com."
@@ -695,7 +703,9 @@ command:
     infractions: "Show all the warnings a user has."
     musicpanel: "Access a simple UI to manage the Music System!"
     schedule: "Schedule messages for later or for a repeated time!"
-    money: "Manage your money!"
+    money:
+      default: "Manage your money!"
+      admin: "Manage the money of other Users!"
     steal: "Steal money from other users!"
     work: "Get your own money from doing work!"
     giveaway: "Manage Giveaways!"

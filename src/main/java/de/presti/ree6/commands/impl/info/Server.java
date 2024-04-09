@@ -6,7 +6,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.bot.BotConfig;
-import de.presti.ree6.utils.others.UserUtil;
+import de.presti.ree6.utils.others.GuildUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -36,7 +36,7 @@ public class Server implements ICommand {
             boolean addBadge = false;
 
             if (owner != null) {
-                if (UserUtil.isSupporter(owner)) {
+                if (GuildUtil.isSupporter(owner.getUser())) {
                     addBadge = true;
                 }
             }

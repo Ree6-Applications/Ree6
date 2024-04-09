@@ -1,4 +1,4 @@
-package de.presti.ree6.logger.events;
+package de.presti.ree6.logger;
 
 import club.minnced.discord.webhook.send.WebhookMessage;
 import net.dv8tion.jda.api.entities.Guild;

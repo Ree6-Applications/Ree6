@@ -566,6 +566,9 @@ message:
     deposit: "Você depositou com sucesso %s$!"
     send: "Você enviou com sucesso %s$ para %s!"
     balance: "O saldo de %s contém %s$ em dinheiro e %s$ no banco!"
+    set: "Você definiu com sucesso o saldo do usuário %s para %s$!"
+    add: "Você adicionou com sucesso %s$ ao saldo do usuário %s!"
+    remove: "Você removeu com sucesso %s$ do saldo do usuário %s!"
   steal:
     success: "Você roubou com sucesso %s$ de %s!"
     failed: "Você não conseguiu roubar %s$ de %s!"
@@ -592,6 +595,10 @@ message:
     list:
       default: "Aqui está uma lista de todos os sorteios:\n```%s```"
       entry: "ID: %s | Canal: %s | Vencedor: %s | Prêmio: %s | Encerra em: %s"
+  autoRole:
+    setupDescription: "Defina as roles que um usuário obterá ao entrar no servidor!"
+    setupPlaceholder: "Selecione várias roles!"
+    setupSuccess: "Configuração bem-sucedida das novas funções automáticas!"
 game:
   description:
     blackjack: "Jogue Blackjack com seus amigos!"
@@ -617,6 +624,11 @@ command:
     youtubeNotifier: "Gerencie seu Youtube-Notifier!"
     tiktokNotifier: "Gerencie seu TikTok-Notifier!"
     rssNotifier: "Gerencie seu Notificador de Feed RSS!"
+    notifier:
+      default: "Gerencie todos os seus notificadores!"
+      list: "Liste todos os seus notificadores!"
+      add: "Adicione uma nova notificação!"
+      remove: "Remova as notificações!"
     anime: "Procure animes em kitsu.io!"
     randomcat: "Mostra imagens aleatórias de gatos, do thecatapi.com."
     cringe: "Deixe o Shrek dizer a eles que a mensagem deles foi cringe!"
@@ -691,7 +703,9 @@ command:
     infractions: "Mostra todos os avisos de um usuário."
     musicpanel: "Acesse uma interface de usuário simples para gerenciar o sistema de música!"
     schedule: "Agende mensagens para mais tarde ou para um horário repetido!"
-    money: "Gerencie seu dinheiro!"
+    money:
+      default: "Gerencie seu dinheiro!"
+      admin: "Gerencie o dinheiro de outros usuários!"
     steal: "Roube dinheiro de outros usuários!"
     work: "Obtenha seu próprio dinheiro fazendo trabalhos!"
     giveaway: "Gerencie sorteios!"

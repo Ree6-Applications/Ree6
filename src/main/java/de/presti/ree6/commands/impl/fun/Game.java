@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
@@ -48,7 +49,7 @@ public class Game implements ICommand {
                     return;
                 }
 
-                if (GameManager.getGames().stream().noneMatch(c -> c.getName().equalsIgnoreCase(nameMapping.getAsString().trim()))) {
+                if (GameManager.getGameNames().stream().noneMatch(c -> c.equalsIgnoreCase(nameMapping.getAsString().trim()))) {
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append(commandEvent.getResource("message.game.availableGames")).append("```");
                     GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append("- ").append(LanguageService.getByEvent(commandEvent,entryValue.getAnnotation(GameInfo.class).description())));
@@ -93,7 +94,7 @@ public class Game implements ICommand {
             case "list" -> {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append(commandEvent.getResource("message.game.availableGames")).append("```");
-                GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append("- ").append(LanguageService.getByEvent(commandEvent,entryValue.getAnnotation(GameInfo.class).description())));
+                GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append(" ").append("-").append(" ").append(LanguageService.getByEvent(commandEvent,entryValue.getAnnotation(GameInfo.class).description())));
                 stringBuilder.append("```");
                 commandEvent.reply(stringBuilder.toString());
             }
@@ -109,7 +110,7 @@ public class Game implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("game", LanguageService.getDefault("command.description.game"))
                 .addSubcommands(new SubcommandData("create", "Create a new Game match.")
-                        .addOption(OptionType.STRING, "name", "The Game name.", true),
+                        .addOptions(new OptionData(OptionType.STRING, "name", "The Game name.", true).addChoice("Blackjack", "blackjack").addChoice("Music Quiz", "musicquiz")),
                         new SubcommandData("join", "Join a Game match.")
                                 .addOption(OptionType.STRING, "invite", "The Game invite code.", true),
                         new SubcommandData("list", "List all available Games."));

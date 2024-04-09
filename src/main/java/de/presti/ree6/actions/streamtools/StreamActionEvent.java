@@ -1,5 +1,6 @@
 package de.presti.ree6.actions.streamtools;
 
+import com.github.philippheuer.events4j.core.domain.Event;
 import com.github.twitch4j.common.events.TwitchEvent;
 import de.presti.ree6.actions.ActionEvent;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class StreamActionEvent extends ActionEvent {
     /**
      * The related Twitch Event.
      */
-    @Nullable TwitchEvent twitchEvent;
+    @Nullable Event event;
 
     /**
      * The Arguments for the Action.
@@ -32,12 +33,12 @@ public class StreamActionEvent extends ActionEvent {
     /**
      * Constructor to create a StreamActionEvent.
      * @param guild The related Guild.
-     * @param twitchEvent The related Twitch Event.
+     * @param event The related Twitch Event.
      * @param arguments The Arguments for the Action.
      */
-    public StreamActionEvent(@NotNull Guild guild, @Nullable TwitchEvent twitchEvent, @Nullable String[] arguments) {
+    public StreamActionEvent(@NotNull Guild guild, @Nullable Event event, @Nullable String[] arguments) {
         super(guild);
-        this.twitchEvent = twitchEvent;
+        this.event = event;
         this.arguments = arguments;
     }
 }

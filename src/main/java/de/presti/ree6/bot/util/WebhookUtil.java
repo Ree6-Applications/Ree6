@@ -3,7 +3,7 @@ package de.presti.ree6.bot.util;
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import de.presti.ree6.bot.BotWorker;
-import de.presti.ree6.logger.events.LogMessage;
+import de.presti.ree6.logger.LogMessage;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.webhook.*;
@@ -117,7 +117,7 @@ public class WebhookUtil {
         try (WebhookClient wcl = WebhookClient.withId(webhookId, webhookToken)) {
             // Send the message and handle exceptions.
             wcl.send(message).exceptionally(throwable -> {
-                // If the error 404 comes that means that the webhook is invalid.
+                // If error 404 comes, that means that the webhook is invalid.
                 if (throwable.getMessage().contains("failure 404")) {
 
                     // Inform and delete invalid webhook.
@@ -165,7 +165,19 @@ public class WebhookUtil {
                                                                         SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookInstagram);
                                                                         log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                                                                     } else {
-                                                                        log.error("[Webhook] Invalid Webhook: {} - {}, has not been deleted since it is not a Log-Webhook.", webhookId, webhookToken);
+                                                                        SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookTikTok(), "FROM WebhookTikTok WHERE webhookId = :cid AND token = :token", Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).thenAccept(webhookTikTok -> {
+                                                                            if (webhookTikTok != null) {
+                                                                                log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
+                                                                            } else {
+                                                                                SQLSession.getSqlConnector().getSqlWorker().getEntity(new RSSFeed(), "FROM WebhookTikTok WHERE webhookId = :cid AND token = :token", Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).thenAccept(rssFeed -> {
+                                                                                    if (rssFeed != null) {
+                                                                                        log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
+                                                                                    } else {
+                                                                                        log.error("[Webhook] Invalid Webhook: {} - {}, has not been deleted since it is not a Log-Webhook.", webhookId, webhookToken);
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        });
                                                                     }
                                                                 });
                                                             }

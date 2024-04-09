@@ -213,7 +213,11 @@ public class CommandManager {
                 for (DiscordLocale discordLocale : DiscordLocale.values()) {
                     if (!LanguageService.languageResources.containsKey(discordLocale)) continue;
 
+                    if (commandAnnotation.description().endsWith(".") || !commandAnnotation.description().contains("."))
+                        continue;
+
                     String description = LanguageService.getByLocale(discordLocale, commandAnnotation.description());
+
                     if (description.equals("Missing language resource!")) {
                         description = LanguageService.getDefault(commandAnnotation.description());
                     }
@@ -230,7 +234,6 @@ public class CommandManager {
                 if (!description.equals("Missing language resource!")) {
                     commandData1.setDescription(description);
                 }
-
 
                 // TODO:: add the same language check to option names/description and add a translation to it. Also for the love of god Imma need to optimize this.
 
