@@ -75,9 +75,13 @@ public class MusicWorker {
             playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
             playerManager.registerSourceManager(new BandcampAudioSourceManager());
             playerManager.registerSourceManager(new VimeoAudioSourceManager());
-            playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
             playerManager.registerSourceManager(new YoutubeAudioSourceManager());
             playerManager.registerSourceManager(new HttpAudioSourceManager());
+            try {
+                playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
+            } catch (Exception exception) {
+                log.error("Couldn't register TwitchStreamAudioSourceManager", exception);
+            }
         }
     }
 

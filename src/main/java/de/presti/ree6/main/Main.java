@@ -279,9 +279,16 @@ public class Main {
             }
 
             BotWorker.createBot(version, shards);
-
-            getInstance().setMusicWorker(new MusicWorker());
             getInstance().addEvents();
+        } catch (Exception ex) {
+            log.error("[Main] Error while init: " + ex.getMessage());
+            Sentry.captureException(ex);
+            System.exit(0);
+            return;
+        }
+
+        try {
+            getInstance().setMusicWorker(new MusicWorker());
 
             if (BotConfig.shouldUseLavaLink()) {
 
@@ -297,9 +304,7 @@ public class Main {
                 }
             }
         } catch (Exception ex) {
-            log.error("[Main] Error while init: " + ex.getMessage());
-            System.exit(0);
-            return;
+            log.error("Failed to load Music Module: " + ex.getMessage());
         }
 
         if (BotConfig.isModuleActive("music")) {
