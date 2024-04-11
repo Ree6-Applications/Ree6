@@ -193,6 +193,8 @@ public class Main {
         if (Arrays.stream(args).noneMatch("--skip-download"::equalsIgnoreCase)) {
             LanguageService.downloadLanguages();
             downloadMisc("storage");
+        } else {
+            LanguageService.initializeLanguages();
         }
 
         log.info("Finished preparations of the Bot!");
