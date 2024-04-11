@@ -190,8 +190,10 @@ public class Main {
 
         log.info("Starting preparations of the Bot...");
 
-        LanguageService.downloadLanguages();
-        downloadMisc("storage");
+        if (Arrays.stream(args).noneMatch("--skip-download"::equalsIgnoreCase)) {
+            LanguageService.downloadLanguages();
+            downloadMisc("storage");
+        }
 
         log.info("Finished preparations of the Bot!");
 
