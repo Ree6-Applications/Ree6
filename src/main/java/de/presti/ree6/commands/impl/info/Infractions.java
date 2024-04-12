@@ -38,7 +38,7 @@ public class Infractions implements ICommand {
             return;
         }
 
-        Warning warning = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "FROM Warning WHERE guildId = :gid AND userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong()));
+        Warning warning = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "FROM Warning WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong()));
 
         if (warning != null) {
             commandEvent.reply(commandEvent.getResource("message.infractions.success", member.getAsMention(), warning.getWarnings()));
