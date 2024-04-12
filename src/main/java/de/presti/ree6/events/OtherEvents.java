@@ -23,6 +23,7 @@ import de.presti.ree6.utils.data.ImageCreationUtility;
 import de.presti.ree6.utils.others.*;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -30,6 +31,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -326,39 +328,49 @@ public class OtherEvents extends ListenerAdapter {
             }
 
             if (BotConfig.isModuleActive("temporalvoice")) {
-                if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())
-                        && (event.getChannelLeft().getMembers().isEmpty() || (event.getChannelLeft().getMembers().size() == 1 &&
-                        event.getChannelLeft().getMembers().get(0).getIdLong() == event.getJDA().getSelfUser().getIdLong()))) {
-                    event.getChannelLeft().delete().queue(c -> ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId()));
-                }
+                checkChannel(event.getChannelLeft(), event.getJDA());
             }
         } else {
+            if (BotConfig.isModuleActive("temporalvoice")) {
+                if (checkChannel(event.getChannelLeft(), event.getJDA())) return;
 
-            TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getId()));
+                TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getId()));
 
-            if (temporalVoicechannel != null) {
-                VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
+                if (temporalVoicechannel != null) {
+                    VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
 
-                if (voiceChannel == null)
-                    return;
+                    if (voiceChannel == null)
+                        return;
 
-                if (temporalVoicechannel.getGuildChannelId().getChannelId() != voiceChannel.getIdLong()) {
-                    return;
-                }
+                    if (temporalVoicechannel.getGuildChannelId().getChannelId() != voiceChannel.getIdLong()) {
+                        return;
+                    }
 
-                if (voiceChannel.getParentCategory() != null) {
-                    String preName = LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", "SPLIT");
-                    preName = preName.split("SPLIT")[0];
+                    if (voiceChannel.getParentCategory() != null) {
+                        String preName = LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", "SPLIT");
+                        preName = preName.split("SPLIT")[0];
 
-                    String finalPreName = preName;
-                    voiceChannel.getParentCategory().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName",
-                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)).queue(channel -> {
-                        event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
-                        ArrayUtil.temporalVoicechannel.add(channel.getId());
-                    });
+                        String finalPreName = preName;
+                        voiceChannel.getParentCategory().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName",
+                                event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)).queue(channel -> {
+                            event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
+                            ArrayUtil.temporalVoicechannel.add(channel.getId());
+                        });
+                    }
                 }
             }
         }
+    }
+
+    private boolean checkChannel(AudioChannelUnion channel, JDA instance) {
+        if (ArrayUtil.isTemporalVoicechannel(channel)
+                && (channel.getMembers().isEmpty() || (channel.getMembers().size() == 1 &&
+                channel.getMembers().get(0).getIdLong() == instance.getSelfUser().getIdLong()))) {
+            channel.delete().queue(c -> ArrayUtil.temporalVoicechannel.remove(channel.getId()));
+            return true;
+        }
+
+        return false;
     }
 
     /**
