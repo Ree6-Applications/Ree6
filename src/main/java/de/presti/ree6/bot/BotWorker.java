@@ -108,7 +108,7 @@ public class BotWorker {
      * Create a new {@link net.dv8tion.jda.api.sharding.ShardManager} instance and set the rest information for later use.
      *
      * @param version1    the current Bot Version "typ".
-     * @param shardAmount the amount of shards to use.
+     * @param shardAmount the number of shards to use.
      */
     public static void createBot(BotVersion version1, int shardAmount) {
         log.info("Loading git information...");

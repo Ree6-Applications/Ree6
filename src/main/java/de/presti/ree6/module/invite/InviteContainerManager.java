@@ -63,6 +63,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
      * @param invite the {@link Invite} to replace.
      */
     public void replaceInvite(Invite invite) {
+        if (invite.getGuild() == null) return;
         remove(invite.getGuild().getIdLong(), invite.getCode());
         add(new InviteContainer(invite));
     }
@@ -87,7 +88,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
     }
 
     /**
-     * Methode to remove an Invite from the Database.
+     * Methode to remove an Invitation from the Database.
      *
      * @param guildID the ID of the Guild.
      * @param creator the ID of the Invite creator.
@@ -99,7 +100,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
     }
 
     /**
-     * Methode to remove an Invite from the Database.
+     * Methode to remove an Invitation from the Database.
      *
      * @param guildID the ID of the Guild.
      * @param code    the Code of the Invite.
@@ -137,7 +138,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
             try {
                 VanityInvite vanityInvite = guild.retrieveVanityInvite().complete();
                 return new InviteImpl(null, vanityInvite.getCode(), true, Objects.requireNonNullElse(guild.getOwner(), guild.getSelfMember()).getUser(), 0, -1242525,
-                        true, OffsetDateTime.now(), vanityInvite.getUses(), null, null, null, null, Invite.InviteType.UNKNOWN);
+                        true, OffsetDateTime.now(), vanityInvite.getUses(), null, new InviteImpl.GuildImpl(guild), null, null, Invite.InviteType.UNKNOWN);
             } catch (Exception ex) {
                 log.error("[InviteManager] Error while retrieving Vanity Invite: " + ex.getMessage());
             }
