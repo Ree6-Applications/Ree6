@@ -88,7 +88,7 @@ public class CustomEvents implements EventListener {
                     cache.put(typ, List.of(c));
                 }
 
-                cache.values().forEach(entries -> entries.removeIf(c -> !list.contains(c)));
+                cache.values().forEach(entries -> entries.removeIf(z -> !list.contains(z)));
             });
         });
 

@@ -55,35 +55,34 @@ public class Schedule implements ICommand {
 
         switch (subCommand) {
 
-            case "list" -> {
-                StringBuilder stringBuilder = new StringBuilder();
+            case "list" -> SQLSession.getSqlConnector().getSqlWorker()
+                    .getEntityList(new ScheduledMessage(), "FROM ScheduledMessage WHERE guildAndId.guildId = :gid ",
+                            Map.of("gid", commandEvent.getGuild().getIdLong())).thenAccept(scheduledMessages -> {
+                        StringBuilder stringBuilder = new StringBuilder();
 
-                for (ScheduledMessage scheduledMessage : SQLSession.getSqlConnector().getSqlWorker()
-                        .getEntityList(new ScheduledMessage(), "FROM ScheduledMessage WHERE guildAndId.guildId = :gid ",
-                                Map.of("gid", commandEvent.getGuild().getIdLong()))) {
-                    stringBuilder.append(scheduledMessage.getId()).append(" ").append("-").append(" ")
-                            .append(scheduledMessage.getMessage()).append(" ")
-                            .append("->").append(" ")
-                            .append(Instant.ofEpochMilli(scheduledMessage.getDelayAmount())
-                                    .atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH/mm")));
-                }
-
-                commandEvent.reply(commandEvent.getResource("message.schedule.list", stringBuilder.toString()));
-            }
+                        for (ScheduledMessage scheduledMessage : scheduledMessages) {
+                            stringBuilder.append(scheduledMessage.getId()).append(" ").append("-").append(" ")
+                                    .append(scheduledMessage.getMessage()).append(" ")
+                                    .append("->").append(" ")
+                                    .append(Instant.ofEpochMilli(scheduledMessage.getDelayAmount())
+                                            .atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH/mm")));
+                        }
+                        commandEvent.reply(commandEvent.getResource("message.schedule.list", stringBuilder.toString()));
+                    });
 
             case "delete" -> {
                 OptionMapping id = commandEvent.getOption("id");
 
-                ScheduledMessage scheduledMessage = SQLSession.getSqlConnector().getSqlWorker()
+                SQLSession.getSqlConnector().getSqlWorker()
                         .getEntity(new ScheduledMessage(), "FROM ScheduledMessage WHERE guildAndId.guildId = :gid AND guildAndId.id = :id",
-                                Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id.getAsLong()));
-
-                if (scheduledMessage != null) {
-                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
-                    commandEvent.reply(commandEvent.getResource("message.schedule.delete.success"));
-                } else {
-                    commandEvent.reply(commandEvent.getResource("message.schedule.delete.failed"));
-                }
+                                Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id.getAsLong())).thenAccept(scheduledMessage -> {
+                            if (scheduledMessage != null) {
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
+                                commandEvent.reply(commandEvent.getResource("message.schedule.delete.success"));
+                            } else {
+                                commandEvent.reply(commandEvent.getResource("message.schedule.delete.failed"));
+                            }
+                        });
             }
 
             case "create" -> {
@@ -109,22 +108,23 @@ public class Schedule implements ICommand {
 
                 ScheduledMessage scheduledMessage = new ScheduledMessage();
 
-                WebhookScheduledMessage webhookScheduledMessage =
-                        SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookScheduledMessage(),
+                long finalFullTime = fullTime;
+                SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookScheduledMessage(),
                                 "FROM WebhookScheduledMessage WHERE guildAndId.guildId = :gid AND channelId = :channel",
-                                Map.of("gid", commandEvent.getGuild().getId(),"channel", guildChannel.getIdLong()));
+                                Map.of("gid", commandEvent.getGuild().getId(), "channel", guildChannel.getIdLong())).thenAccept(webhookScheduledMessage -> {
+                    if (webhookScheduledMessage == null) {
+                        Webhook webhook = guildChannel.asStandardGuildMessageChannel().createWebhook(BotConfig.getBotName() + "-Schedule").complete();
 
-                if (webhookScheduledMessage == null) {
-                    Webhook webhook = guildChannel.asStandardGuildMessageChannel().createWebhook(BotConfig.getBotName() + "-Schedule").complete();
+                        webhookScheduledMessage = SQLSession.getSqlConnector().getSqlWorker()
+                                .updateEntity(new WebhookScheduledMessage(commandEvent.getGuild().getIdLong(), guildChannel.getIdLong(), webhook.getIdLong(), webhook.getToken())).join();
+                    }
 
-                    webhookScheduledMessage = SQLSession.getSqlConnector().getSqlWorker()
-                            .updateEntity(new WebhookScheduledMessage(commandEvent.getGuild().getIdLong(), guildChannel.getIdLong(), webhook.getIdLong(), webhook.getToken()));
-                }
-
-                scheduledMessage.setScheduledMessageWebhook(webhookScheduledMessage);
-                scheduledMessage.setDelayAmount(fullTime);
-                scheduledMessage.setRepeated(repeat.getAsBoolean());
-                commandEvent.reply(commandEvent.getResource("message.schedule.added"));
+                    scheduledMessage.setScheduledMessageWebhook(webhookScheduledMessage);
+                    scheduledMessage.setDelayAmount(finalFullTime);
+                    scheduledMessage.setRepeated(repeat.getAsBoolean());
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage).join();
+                    commandEvent.reply(commandEvent.getResource("message.schedule.added"));
+                });
             }
 
             default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
@@ -138,8 +138,8 @@ public class Schedule implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("schedule", "command.description.schedule")
                 .addSubcommands(new SubcommandData("create", "Create a new scheduled Message.")
-                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel it should be sent to.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
-                        .addOption(OptionType.BOOLEAN, "repeat", "If the schedule should be repeated.", true)
+                                .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The channel it should be sent to.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT))
+                                .addOption(OptionType.BOOLEAN, "repeat", "If the schedule should be repeated.", true)
                                 .addOption(OptionType.INTEGER, "month", "The months of the delay.", false)
                                 .addOption(OptionType.INTEGER, "day", "The days of the delay.", false)
                                 .addOption(OptionType.INTEGER, "hour", "The hours of the delay.", false)

@@ -73,30 +73,32 @@ public class Suggestion implements ICommand {
      * @param messageChannel the Channel for the Message.
      */
     public void createSuggestions(CommandEvent commandEvent, MessageChannel channel, MessageChannel messageChannel) {
-        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle(commandEvent.getResource("label.suggestionMenu"));
-        embedBuilder.setColor(Color.ORANGE);
-        embedBuilder.setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_suggestion_menu").getStringValue());
-        embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
-        messageCreateBuilder.setEmbeds(embedBuilder.build());
-        messageCreateBuilder.setActionRow(Button.primary("re_suggestion", commandEvent.getResource("message.suggestion.suggestionMenuPlaceholder")));
 
-        Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildChannelId.guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()))
+                .thenApply(suggestions -> {
+            if (suggestions != null) {
+                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(suggestions);
 
-        Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildChannelId.guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()));
+                suggestions.getGuildChannelId().setChannelId(channel.getIdLong());
+                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions);
+            } else {
+                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong()));
+            }
+        }).thenAccept(suggestions -> SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_suggestion_menu").thenAccept(setting -> {
+            MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setTitle(commandEvent.getResource("label.suggestionMenu"));
+            embedBuilder.setColor(Color.ORANGE);
+            embedBuilder.setDescription(setting.getStringValue());
+            embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
+            messageCreateBuilder.setEmbeds(embedBuilder.build());
+            messageCreateBuilder.setActionRow(Button.primary("re_suggestion", commandEvent.getResource("message.suggestion.suggestionMenuPlaceholder")));
 
-        if (suggestions != null) {
-            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(suggestions);
+            Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
 
-            suggestions.getGuildChannelId().setChannelId(channel.getIdLong());
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions);
-        } else {
-            suggestions = new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong());
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions);
-        }
+            commandEvent.reply(commandEvent.getResource("message.suggestion.success"), 5);
+        }));
 
-        commandEvent.reply(commandEvent.getResource("message.suggestion.success"), 5);
     }
 
     /**

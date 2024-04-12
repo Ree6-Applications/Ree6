@@ -116,38 +116,41 @@ public class Warn implements ICommand {
                     }
 
                     case "list" -> {
-                        StringBuilder stringBuilder = new StringBuilder();
-                        for (Punishments punishments : SQLSession.getSqlConnector().getSqlWorker().getEntityList(new Punishments(), "FROM Punishments WHERE guildAndId.guildId = :gid", Map.of("gid", commandEvent.getGuild().getIdLong()))) {
-                            int action = punishments.getAction();
-                            stringBuilder.append(punishments.getId()).append(" - ").append(punishments.getWarnings()).append(" -> ");
+                        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new Punishments(), "FROM Punishments WHERE guildAndId.guildId = :gid", Map.of("gid", commandEvent.getGuild().getIdLong())).thenAccept(punishmentsList -> {
+                            StringBuilder stringBuilder = new StringBuilder();
+                            for (Punishments punishments : punishmentsList) {
+                                int action = punishments.getAction();
+                                stringBuilder.append(punishments.getId()).append(" - ").append(punishments.getWarnings()).append(" -> ");
 
-                            switch (action) {
-                                case 1 ->
-                                        stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.timeout", Duration.ofMillis(punishments.getTimeoutTime()).toSeconds()));
-                                case 2 ->
-                                        stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.roleAdd", punishments.getRoleId()));
-                                case 3 ->
-                                        stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.roleRemove", punishments.getRoleId()));
-                                case 4 ->
-                                        stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.kick", punishments.getReason()));
-                                case 5 ->
-                                        stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.ban", punishments.getReason()));
+                                switch (action) {
+                                    case 1 ->
+                                            stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.timeout", Duration.ofMillis(punishments.getTimeoutTime()).toSeconds()));
+                                    case 2 ->
+                                            stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.roleAdd", punishments.getRoleId()));
+                                    case 3 ->
+                                            stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.roleRemove", punishments.getRoleId()));
+                                    case 4 ->
+                                            stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.kick", punishments.getReason()));
+                                    case 5 ->
+                                            stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.ban", punishments.getReason()));
+                                }
+
+                                stringBuilder.append("\n");
                             }
-
-                            stringBuilder.append("\n");
-                        }
-                        commandEvent.reply(commandEvent.getResource("message.warn.punishment.list", stringBuilder.toString()));
+                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.list", stringBuilder.toString()));
+                        });
                     }
 
                     case "delete" -> {
                         int id = idMapping.getAsInt();
-                        Punishments punishment = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "FROM Punishments WHERE guildAndId.guildId = :gid AND guildAndId.id = :id", Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id));
-                        if (punishment != null) {
-                            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(punishment);
-                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.deleted", id));
-                        } else {
-                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.notFound", id));
-                        }
+                        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "FROM Punishments WHERE guildAndId.guildId = :gid AND guildAndId.id = :id", Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id)).thenAccept(punishment -> {
+                            if (punishment != null) {
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(punishment);
+                                commandEvent.reply(commandEvent.getResource("message.warn.punishment.deleted", id));
+                            } else {
+                                commandEvent.reply(commandEvent.getResource("message.warn.punishment.notFound", id));
+                            }
+                        });
                     }
                 }
             }
@@ -155,46 +158,50 @@ public class Warn implements ICommand {
             default -> {
                 Member member = userMapping.getAsMember();
                 if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
-                    Warning warning = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "FROM Warning WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong()));
-                    int warnings = warning != null ? warning.getWarnings() + 1 : 1;
-                    if (warning == null) {
-                        warning = new Warning();
-                        warning.setUserId(member.getIdLong());
-                        warning.setGuildId(commandEvent.getGuild().getIdLong());
-                    }
-
-                    warning.setWarnings(warnings);
-
-                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(warning);
-
-                    commandEvent.reply(commandEvent.getResource("message.warn.success", userMapping.getAsMember().getAsMention(), warnings));
-                    Punishments punishment = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "FROM Punishments WHERE guildAndId.guildId = :gid AND warnings = :amount", Map.of("gid", commandEvent.getGuild().getIdLong(), "amount", warnings));
-                    if (punishment != null) {
-                        switch (punishment.getAction()) {
-                            case 1 -> member.timeoutFor(Duration.ofMillis(punishment.getTimeoutTime())).reason(commandEvent.getResource("message.warn.reachedWarnings", warnings)).queue();
-                            case 2 -> {
-                                Role role = commandEvent.getGuild().getRoleById(punishment.getRoleId());
-                                if (role == null) {
-                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(punishment);
-                                    return;
-                                }
-
-                                commandEvent.getGuild().addRoleToMember(member, role).reason(commandEvent.getResource("message.warn.reachedWarnings", warnings)).queue();
-                            }
-                            case 3 -> {
-                                Role role = commandEvent.getGuild().getRoleById(punishment.getRoleId());
-                                if (role == null) {
-                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(punishment);
-                                    return;
-                                }
-
-                                commandEvent.getGuild().removeRoleFromMember(member, role).reason(commandEvent.getResource("message.warn.reachedWarnings", warnings)).queue();
-                            }
-                            case 4 -> member.kick().reason(punishment.getReason()).queue();
-                            case 5 -> member.ban(0, TimeUnit.DAYS).reason(punishment.getReason()).queue();
-                            default -> log.error("Unhandled action! {}", punishment.getAction());
+                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "FROM Warning WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong())).thenApplyAsync(warning -> {
+                        int warnings = warning != null ? warning.getWarnings() + 1 : 1;
+                        if (warning == null) {
+                            warning = new Warning();
+                            warning.setUserId(member.getIdLong());
+                            warning.setGuildId(commandEvent.getGuild().getIdLong());
                         }
-                    }
+
+                        warning.setWarnings(warnings);
+
+                        return SQLSession.getSqlConnector().getSqlWorker().updateEntity(warning).join();
+                    }).thenAccept(warning -> {
+                        commandEvent.reply(commandEvent.getResource("message.warn.success", member.getAsMention(), warning.getWarnings()));
+                        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "FROM Punishments WHERE guildAndId.guildId = :gid AND warnings = :amount", Map.of("gid", commandEvent.getGuild().getIdLong(), "amount", warning.getWarnings())).thenAccept(punishment -> {
+                            if (punishment != null) {
+                                switch (punishment.getAction()) {
+                                    case 1 ->
+                                            member.timeoutFor(Duration.ofMillis(punishment.getTimeoutTime())).reason(commandEvent.getResource("message.warn.reachedWarnings", warning.getWarnings())).queue();
+                                    case 2 -> {
+                                        Role role = commandEvent.getGuild().getRoleById(punishment.getRoleId());
+                                        if (role == null) {
+                                            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(punishment);
+                                            return;
+                                        }
+
+                                        commandEvent.getGuild().addRoleToMember(member, role).reason(commandEvent.getResource("message.warn.reachedWarnings", warning.getWarnings())).queue();
+                                    }
+                                    case 3 -> {
+                                        Role role = commandEvent.getGuild().getRoleById(punishment.getRoleId());
+                                        if (role == null) {
+                                            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(punishment);
+                                            return;
+                                        }
+
+                                        commandEvent.getGuild().removeRoleFromMember(member, role).reason(commandEvent.getResource("message.warn.reachedWarnings", warning.getWarnings())).queue();
+                                    }
+                                    case 4 -> member.kick().reason(punishment.getReason()).queue();
+                                    case 5 -> member.ban(0, TimeUnit.DAYS).reason(punishment.getReason()).queue();
+                                    default -> log.error("Unhandled action! {}", punishment.getAction());
+                                }
+                            }
+                        });
+                    });
+
                 } else {
                     if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
                         commandEvent.reply(commandEvent.getResource("message.warn.hierarchySelfError"), 5);

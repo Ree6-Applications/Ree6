@@ -18,10 +18,7 @@ import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.ImageCreationUtility;
-import de.presti.ree6.utils.others.ModerationUtil;
-import de.presti.ree6.utils.others.RandomUtils;
-import de.presti.ree6.utils.others.ThreadUtil;
-import de.presti.ree6.utils.others.TimeUtil;
+import de.presti.ree6.utils.others.*;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
@@ -131,7 +128,7 @@ public class OtherEvents extends ListenerAdapter {
             }
         });
 
-            GuildUtil.handleMemberJoin(event.getGuild(), event.getMember());
+        GuildUtil.handleMemberJoin(event.getGuild(), event.getMember());
 
         SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getIdLong()).thenAccept(x -> {
             if (x) {
@@ -412,6 +409,7 @@ public class OtherEvents extends ListenerAdapter {
 
     /**
      * Method used to do all the calculations for the Voice XP.
+     *
      * @param member the Member that should be checked.
      */
     public void doVoiceXPStuff(Member member) {
@@ -488,47 +486,50 @@ public class OtherEvents extends ListenerAdapter {
 
                 if (moderated.get()) return;
 
-                if (!Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getGuildChannel(), null)) {
+                Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getGuildChannel(), null).thenAccept(value -> {
+                    if (!value) {
+                        if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
+                            if (event.getMessage().getMessageReference() != null) return;
 
-                    if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
-                        if (event.getMessage().getMessageReference() != null) return;
+                            try {
+                                String response = ChatGPTAPI.getResponse(event.getMember(), event.getMessage().getContentDisplay());
 
-                        try {
-                            String response = ChatGPTAPI.getResponse(event.getMember(), event.getMessage().getContentDisplay());
-
-                            if (response != null && !response.isBlank())
-                                Main.getInstance().getCommandManager().sendMessage(response, event.getChannel());
-                        } catch (Exception e) {
-                            Sentry.captureException(e);
-                            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.default.retrievalError"), event.getChannel());
-                        }
-                    }
-
-                    if (BotConfig.isModuleActive("level")) {
-                        if (!ArrayUtil.timeout.contains(event.getMember())) {
-
-                            SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getIdLong(), event.getMember().getIdLong()).thenAccept(userLevel -> {
-                                if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26))) {
-                                    SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "level_message").thenAccept(z -> {
-                                        if (z.getBooleanValue()) {
-                                            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(),
-                                                    "message.levelUp", userLevel.getLevel(), LanguageService.getByGuild(event.getGuild(), "label.chat")
-                                                    , event.getMember().getAsMention()), event.getChannel());
-                                        }
-                                    });
-                                }
-
-                                SQLSession.getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getIdLong(), userLevel);
-
-                                ArrayUtil.timeout.add(event.getMember());
-
-                                ThreadUtil.createThread(y -> ArrayUtil.timeout.remove(event.getMember()), Duration.ofSeconds(30), false, false);
-                            });
+                                if (response != null && !response.isBlank())
+                                    Main.getInstance().getCommandManager().sendMessage(response, event.getChannel());
+                            } catch (Exception e) {
+                                Sentry.captureException(e);
+                                Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.default.retrievalError"), event.getChannel());
+                            }
                         }
 
-                        GuildUtil.handleChatLevelReward(event.getGuild(), event.getMember());
+                        if (BotConfig.isModuleActive("level")) {
+                            if (!ArrayUtil.timeout.contains(event.getMember())) {
+
+                                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getIdLong(), event.getMember().getIdLong()).thenAccept(userLevel -> {
+                                    if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26))) {
+                                        SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "level_message").thenAccept(z -> {
+                                            if (z.getBooleanValue()) {
+                                                Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(),
+                                                        "message.levelUp", userLevel.getLevel(), LanguageService.getByGuild(event.getGuild(), "label.chat")
+                                                        , event.getMember().getAsMention()), event.getChannel());
+                                            }
+                                        });
+                                    }
+
+                                    SQLSession.getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getIdLong(), userLevel);
+
+                                    ArrayUtil.timeout.add(event.getMember());
+
+                                    ThreadUtil.createThread(y -> ArrayUtil.timeout.remove(event.getMember()), Duration.ofSeconds(30), false, false);
+                                });
+                            }
+
+                            GuildUtil.handleChatLevelReward(event.getGuild(), event.getMember());
+                        }
+                    } else {
+                        Main.getInstance().getCommandManager().timeoutUser(event.getAuthor());
                     }
-                }
+                });
             });
         }
     }
@@ -658,6 +659,10 @@ public class OtherEvents extends ListenerAdapter {
 
         event.deferReply(true).queue();
 
-        Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getGuildChannel(), event);
+        Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getGuildChannel(), event).thenAccept(x -> {
+            if (x != null) {
+                Main.getInstance().getCommandManager().timeoutUser(event.getUser());
+            }
+        });
     }
 }
