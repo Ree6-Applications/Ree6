@@ -81,7 +81,7 @@ public class LevelRole implements ICommand {
                 StringBuilder chatStringBuilder = new StringBuilder();
                 createBuilder.setContent(commandEvent.getResource("message.levelRole.list"));
 
-                SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(commandEvent.getGuild().getIdLong())
+                SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelRewards(commandEvent.getGuild().getIdLong())
                         .forEach((level1, role1) -> voiceStringBuilder.append(level1).append(" -> ").append(role1));
                 SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(commandEvent.getGuild().getIdLong())
                         .forEach((level1, role1) -> chatStringBuilder.append(level1).append(" -> ").append(role1));
