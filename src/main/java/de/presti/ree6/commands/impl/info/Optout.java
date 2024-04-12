@@ -18,13 +18,15 @@ public class Optout implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        if (SQLSession.getSqlConnector().getSqlWorker().isOptOut(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong())) {
-            SQLSession.getSqlConnector().getSqlWorker().optIn(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong());
-            commandEvent.reply(commandEvent.getResource("message.optout.optedIn"));
-        } else {
-            SQLSession.getSqlConnector().getSqlWorker().optOut(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong());
-            commandEvent.reply(commandEvent.getResource("message.optout.optedOut"));
-        }
+        SQLSession.getSqlConnector().getSqlWorker().isOptOut(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong()).thenAccept(value -> {
+            if (value) {
+                SQLSession.getSqlConnector().getSqlWorker().optIn(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong());
+                commandEvent.reply(commandEvent.getResource("message.optout.optedIn"));
+            } else {
+                SQLSession.getSqlConnector().getSqlWorker().optOut(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong());
+                commandEvent.reply(commandEvent.getResource("message.optout.optedOut"));
+            }
+        });
     }
 
     /**

@@ -62,167 +62,146 @@ public class StreamActionCommand implements ICommand {
         String subCommand = commandEvent.getSubcommand();
 
         switch (subCommandGroup) {
-            case "manage" -> {
-                StreamAction streamAction = SQLSession.getSqlConnector().getSqlWorker()
-                        .getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.name = :name AND guildAndName.guildId = :gid",
-                                Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong()));
+            case "manage" ->
+                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.name = :name AND guildAndName.guildId = :gid", Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong())).thenAccept(streamAction -> {
+                        if (streamAction != null) {
+                            switch (subCommand) {
+                                case "create" -> {
+                                    OptionMapping action = commandEvent.getOption("action");
 
-                if (streamAction != null) {
-                    switch (subCommand) {
-                        case "create" -> {
-                            OptionMapping action = commandEvent.getOption("action");
+                                    String[] values = action.getAsString().split("\\s+");
 
-                            String[] values = action.getAsString().split("\\s+");
+                                    JsonObject jsonObject = new JsonObject();
+                                    String actionName = values[0];
+                                    jsonObject.addProperty("action", actionName);
 
-                            JsonObject jsonObject = new JsonObject();
-                            String actionName = values[0];
-                            jsonObject.addProperty("action", actionName);
+                                    values = Arrays.stream(values).skip(1).toArray(String[]::new);
 
-                            values = Arrays.stream(values).skip(1).toArray(String[]::new);
+                                    jsonObject.addProperty("value", String.join(" ", values));
 
-                            jsonObject.addProperty("value", String.join(" ", values));
+                                    if (streamAction.getActions() == null || !streamAction.getActions().isJsonArray()) {
+                                        streamAction.setActions(new JsonArray());
+                                    }
 
-                            if (streamAction.getActions() == null || !streamAction.getActions().isJsonArray()) {
-                                streamAction.setActions(new JsonArray());
-                            }
+                                    streamAction.getActions().getAsJsonArray().add(jsonObject);
 
-                            streamAction.getActions().getAsJsonArray().add(jsonObject);
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction).join();
 
-                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
-
-                            commandEvent.reply(commandEvent.getResource("message.stream-action.addedLine", actionName));
-                        }
-
-                        case "delete" -> {
-                            try {
-                                OptionMapping line = commandEvent.getOption("line");
-                                int value = line.getAsInt();
-                                if (streamAction.getActions().getAsJsonArray().size() >= value && value > 0) {
-                                    streamAction.getActions().getAsJsonArray().remove(value - 1);
-                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
-                                    commandEvent.reply(commandEvent.getResource("message.stream-action.deletedLine", "" + value));
-                                } else {
-                                    commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
-                                }
-                            } catch (Exception exception) {
-                                commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
-                            }
-                        }
-
-                        case "list" -> {
-                            StreamActionContainer streamActionContainer = new StreamActionContainer(streamAction);
-
-                            StringBuilder stringBuilder = new StringBuilder();
-                            streamActionContainer.getActions()
-                                    .forEach(actionRun ->
-                                            stringBuilder.append(actionRun.getAction().getClass().getAnnotation(ActionInfo.class).name())
-                                                    .append(" -> ")
-                                                    .append(String.join(" ", actionRun.getArguments())).append("\n"));
-
-                            commandEvent.reply(commandEvent.getResource("message.stream-action.actionList", stringBuilder.toString()));
-                        }
-
-                        case "listener" -> {
-                            OptionMapping listener = commandEvent.getOption("listener");
-                            String[] values = listener.getAsString().split("\\s+");
-
-                            if (values.length >= 1) {
-                                if (values[0].equalsIgnoreCase("redemption")) {
-                                    streamAction.setListener(0);
-                                } else if (values[0].equalsIgnoreCase("follow")) {
-                                    streamAction.setListener(1);
-                                } else if (values[0].equalsIgnoreCase("subscribe")) {
-                                    streamAction.setListener(2);
-                                } else {
-                                    commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
-                                    return;
+                                    commandEvent.reply(commandEvent.getResource("message.stream-action.addedLine", actionName));
                                 }
 
-                                if (values.length >= 2)
-                                    streamAction.setArgument(values[1]);
-
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
-                                if (values.length >= 2) {
-                                    commandEvent.reply(commandEvent.getResource("message.stream-action.listenerArgument", values[0], values[1]));
-                                } else {
-                                    commandEvent.reply(commandEvent.getResource("message.stream-action.listener", values[0]));
+                                case "delete" -> {
+                                    try {
+                                        OptionMapping line = commandEvent.getOption("line");
+                                        int value = line.getAsInt();
+                                        if (streamAction.getActions().getAsJsonArray().size() >= value && value > 0) {
+                                            streamAction.getActions().getAsJsonArray().remove(value - 1);
+                                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction).join();
+                                            commandEvent.reply(commandEvent.getResource("message.stream-action.deletedLine", "" + value));
+                                        } else {
+                                            commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
+                                        }
+                                    } catch (Exception exception) {
+                                        commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
+                                    }
                                 }
-                            } else {
-                                commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
-                            }
-                        }
 
-                        default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
-                    }
-                } else {
-                    commandEvent.reply(commandEvent.getResource("message.stream-action.notFound", name.getAsString()));
-                }
-            }
+                                case "list" -> {
+                                    StreamActionContainer streamActionContainer = new StreamActionContainer(streamAction);
+
+                                    StringBuilder stringBuilder = new StringBuilder();
+                                    streamActionContainer.getActions().forEach(actionRun -> stringBuilder.append(actionRun.getAction().getClass().getAnnotation(ActionInfo.class).name()).append(" -> ").append(String.join(" ", actionRun.getArguments())).append("\n"));
+
+                                    commandEvent.reply(commandEvent.getResource("message.stream-action.actionList", stringBuilder.toString()));
+                                }
+
+                                case "listener" -> {
+                                    OptionMapping listener = commandEvent.getOption("listener");
+                                    String[] values = listener.getAsString().split("\\s+");
+
+                                    if (values.length >= 1) {
+                                        if (values[0].equalsIgnoreCase("redemption")) {
+                                            streamAction.setListener(0);
+                                        } else if (values[0].equalsIgnoreCase("follow")) {
+                                            streamAction.setListener(1);
+                                        } else if (values[0].equalsIgnoreCase("subscribe")) {
+                                            streamAction.setListener(2);
+                                        } else {
+                                            commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
+                                            return;
+                                        }
+
+                                        if (values.length >= 2) streamAction.setArgument(values[1]);
+
+                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction).join();
+                                        if (values.length >= 2) {
+                                            commandEvent.reply(commandEvent.getResource("message.stream-action.listenerArgument", values[0], values[1]));
+                                        } else {
+                                            commandEvent.reply(commandEvent.getResource("message.stream-action.listener", values[0]));
+                                        }
+                                    } else {
+                                        commandEvent.reply(commandEvent.getResource("message.default.missingOption", "manageActionValue"));
+                                    }
+                                }
+
+                                default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
+                            }
+                        } else {
+                            commandEvent.reply(commandEvent.getResource("message.stream-action.notFound", name.getAsString()));
+                        }
+                    });
 
             default -> {
 
                 switch (subCommand) {
-                    case "create" -> {
-                        StreamAction streamAction = SQLSession.getSqlConnector().getSqlWorker()
-                                .getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.actionName = :name AND guildAndName.guildId = :gid",
-                                        Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong()));
+                    case "create" ->
+                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.actionName = :name AND guildAndName.guildId = :gid", Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong())).thenAccept(streamAction -> {
+                                if (streamAction == null) {
+                                    TwitchIntegration twitchIntegration = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(), "FROM TwitchIntegration WHERE userId = :uid", Map.of("uid", commandEvent.getUser().getIdLong())).join();
+                                    if (twitchIntegration != null) {
+                                        streamAction = new StreamAction();
+                                        streamAction.setIntegration(twitchIntegration);
+                                        streamAction.setGuildId(commandEvent.getGuild().getIdLong());
+                                        streamAction.setName(name.getAsString());
 
-                        if (streamAction == null) {
-                            TwitchIntegration twitchIntegration = SQLSession.getSqlConnector().getSqlWorker()
-                                    .getEntity(new TwitchIntegration(),"FROM TwitchIntegration WHERE userId = :uid", Map.of("uid", commandEvent.getUser().getIdLong()));
-                            if (twitchIntegration != null) {
-                                streamAction = new StreamAction();
-                                streamAction.setIntegration(twitchIntegration);
-                                streamAction.setGuildId(commandEvent.getGuild().getIdLong());
-                                streamAction.setName(name.getAsString());
+                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
+                                        commandEvent.reply(commandEvent.getResource("message.stream-action.added", name.getAsString()));
+                                    } else {
+                                        commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", BotConfig.getTwitchAuth()));
+                                    }
+                                } else {
+                                    commandEvent.reply(commandEvent.getResource("message.stream-action.alreadyExisting", name.getAsString()));
+                                }
+                            });
 
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
-                                commandEvent.reply(commandEvent.getResource("message.stream-action.added", name.getAsString()));
-                            } else {
-                                commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", BotConfig.getTwitchAuth()));
-                            }
-                        } else {
-                            commandEvent.reply(commandEvent.getResource("message.stream-action.alreadyExisting", name.getAsString()));
-                        }
-                    }
+                    case "delete" ->
+                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.actionName = :name AND guildAndName.guildId = :gid", Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong())).thenAccept(streamAction -> {
+                                if (streamAction != null) {
+                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(streamAction);
+                                    commandEvent.reply(commandEvent.getResource("message.stream-action.deleted", name.getAsString()));
+                                } else {
+                                    commandEvent.reply(commandEvent.getResource("message.stream-action.notFound", name.getAsString()));
+                                }
+                            });
 
-                    case "delete" -> {
-                        StreamAction streamAction = SQLSession.getSqlConnector().getSqlWorker()
-                                .getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.actionName = :name AND guildAndName.guildId = :gid",
-                                        Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong()));
-                        if (streamAction != null) {
-                            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(streamAction);
-                            commandEvent.reply(commandEvent.getResource("message.stream-action.deleted", name.getAsString()));
-                        } else {
-                            commandEvent.reply(commandEvent.getResource("message.stream-action.notFound", name.getAsString()));
-                        }
-                    }
+                    case "list" ->
+                            SQLSession.getSqlConnector().getSqlWorker().getEntityList(new StreamAction(), "FROM StreamAction WHERE guildAndName.guildId = :gid", Map.of("gid", commandEvent.getGuild().getIdLong())).thenAccept(streamActions -> {
+                                commandEvent.reply(LanguageService.getByEvent(commandEvent, "message.stream-action.list", String.join("\n", streamActions.stream().map(StreamAction::getName).toArray(String[]::new))));
+                            });
 
-                    case "list" -> {
-                        List<StreamAction> streamActions = SQLSession.getSqlConnector().getSqlWorker()
-                                .getEntityList(new StreamAction(), "FROM StreamAction WHERE guildAndName.guildId = :gid",
-                                        Map.of("gid", commandEvent.getGuild().getIdLong()));
-
-                        commandEvent.reply(LanguageService.getByEvent(commandEvent, "message.stream-action.list",
-                                String.join("\n", streamActions.stream().map(StreamAction::getName).toArray(String[]::new))));
-                    }
-
-                    case "points" -> {
-                        TwitchIntegration twitchIntegration = SQLSession.getSqlConnector().getSqlWorker()
-                                .getEntity(new TwitchIntegration(), "FROM TwitchIntegration WHERE userId = :uid", Map.of("uid", commandEvent.getUser().getIdLong()));
-                        if (twitchIntegration != null) {
-                            StringBuilder stringBuilder = new StringBuilder();
-                            Main.getInstance().getNotifier().getTwitchClient().getHelix()
-                                    .getCustomRewards(twitchIntegration.getToken(), twitchIntegration.getChannelId(), null, false)
-                                    .execute().getRewards().forEach(c -> stringBuilder.append(c.getId()).append(" - ").append(c.getTitle()).append("\n"));
-                            MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-                            messageCreateBuilder.setContent(commandEvent.getResource("message.stream-action.points"));
-                            messageCreateBuilder.addFiles(FileUpload.fromData(stringBuilder.toString().getBytes(StandardCharsets.UTF_8), "points.txt"));
-                            commandEvent.reply(messageCreateBuilder.build());
-                        } else {
-                            commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", BotConfig.getTwitchAuth()));
-                        }
-                    }
+                    case "points" ->
+                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(), "FROM TwitchIntegration WHERE userId = :uid", Map.of("uid", commandEvent.getUser().getIdLong())).thenAccept(twitchIntegration -> {
+                                if (twitchIntegration != null) {
+                                    StringBuilder stringBuilder = new StringBuilder();
+                                    Main.getInstance().getNotifier().getTwitchClient().getHelix().getCustomRewards(twitchIntegration.getToken(), twitchIntegration.getChannelId(), null, false).execute().getRewards().forEach(c -> stringBuilder.append(c.getId()).append(" - ").append(c.getTitle()).append("\n"));
+                                    MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+                                    messageCreateBuilder.setContent(commandEvent.getResource("message.stream-action.points"));
+                                    messageCreateBuilder.addFiles(FileUpload.fromData(stringBuilder.toString().getBytes(StandardCharsets.UTF_8), "points.txt"));
+                                    commandEvent.reply(messageCreateBuilder.build());
+                                } else {
+                                    commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", BotConfig.getTwitchAuth()));
+                                }
+                            });
 
                     default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
                 }
@@ -235,26 +214,7 @@ public class StreamActionCommand implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("stream-action",
-                LanguageService.getDefault("command.description.stream-action"))
-                .addSubcommands(new SubcommandData("create", "Create a new Stream-Action.")
-                        .addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true))
-                .addSubcommands(new SubcommandData("delete", "Delete a Stream-Action.")
-                        .addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true))
-                .addSubcommands(new SubcommandData("list", "List all Stream-Actions."))
-                .addSubcommands(new SubcommandData("points", "List all your ChannelPoint Rewards."))
-                .addSubcommandGroups(new SubcommandGroupData("manage", "Manage a existing Stream-action.")
-                        .addSubcommands(new SubcommandData("listener", "Set the listener of the Stream-Action.")
-                                .addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)
-                                .addOption(OptionType.STRING, "listener", "The listener of the Stream-Action.", true),
-                                new SubcommandData("delete", "Delete a line of the Stream-Action.")
-                                        .addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)
-                                        .addOptions(new OptionData(OptionType.INTEGER, "line", "The line of the Stream-Action.", true).setMinValue(1)),
-                                new SubcommandData("create", "Create a action in the Stream-Action.")
-                                        .addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)
-                                        .addOption(OptionType.STRING, "action", "The action of the Stream-Action.", true),
-                                new SubcommandData("list", "List all actions of the Stream-Action.")
-                                        .addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)));
+        return new CommandDataImpl("stream-action", LanguageService.getDefault("command.description.stream-action")).addSubcommands(new SubcommandData("create", "Create a new Stream-Action.").addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)).addSubcommands(new SubcommandData("delete", "Delete a Stream-Action.").addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)).addSubcommands(new SubcommandData("list", "List all Stream-Actions.")).addSubcommands(new SubcommandData("points", "List all your ChannelPoint Rewards.")).addSubcommandGroups(new SubcommandGroupData("manage", "Manage a existing Stream-action.").addSubcommands(new SubcommandData("listener", "Set the listener of the Stream-Action.").addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true).addOption(OptionType.STRING, "listener", "The listener of the Stream-Action.", true), new SubcommandData("delete", "Delete a line of the Stream-Action.").addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true).addOptions(new OptionData(OptionType.INTEGER, "line", "The line of the Stream-Action.", true).setMinValue(1)), new SubcommandData("create", "Create a action in the Stream-Action.").addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true).addOption(OptionType.STRING, "action", "The action of the Stream-Action.", true), new SubcommandData("list", "List all actions of the Stream-Action.").addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)));
     }
 
     /**
