@@ -71,19 +71,19 @@ public class Import implements ICommand {
                         JsonElement xp = player.getAsJsonObject().get("xp");
 
                         if (id.isJsonPrimitive() && xp.isJsonPrimitive()) {
-                            ChatUserLevel chatUserLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), id.getAsLong());
+                            SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), id.getAsLong()).thenAccept(chatUserLevel -> {
+                                if (chatUserLevel != null && chatUserLevel.getExperience() > xp.getAsLong()) {
+                                    return;
+                                }
 
-                            if (chatUserLevel != null && chatUserLevel.getExperience() > xp.getAsLong()) {
-                                return;
-                            }
+                                if (chatUserLevel == null) {
+                                    chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getIdLong(), id.getAsLong(), xp.getAsLong());
+                                } else {
+                                    chatUserLevel.setExperience(xp.getAsLong());
+                                }
 
-                            if (chatUserLevel == null) {
-                                chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getIdLong(), id.getAsLong(), xp.getAsLong());
-                            } else {
-                                chatUserLevel.setExperience(xp.getAsLong());
-                            }
-
-                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel);
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel).join();
+                            });
                         }
                     }
                 });
@@ -122,19 +122,19 @@ public class Import implements ICommand {
             Leaderboard leaderboard = AmariAPI.getAmari4J().getRawLeaderboard(commandEvent.getGuild().getId(), Integer.MAX_VALUE);
 
             leaderboard.getMembers().forEach(member -> {
-                ChatUserLevel chatUserLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), Long.parseLong(member.getUserid()));
+                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), Long.parseLong(member.getUserid())).thenAccept(chatUserLevel -> {
+                    if (chatUserLevel != null && chatUserLevel.getExperience() > member.getExperience()) {
+                        return;
+                    }
 
-                if (chatUserLevel != null && chatUserLevel.getExperience() > member.getExperience()) {
-                    return;
-                }
+                    if (chatUserLevel == null) {
+                        chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getIdLong(), Long.parseLong(member.getUserid()), member.getExperience());
+                    } else {
+                        chatUserLevel.setExperience(member.getExperience());
+                    }
 
-                if (chatUserLevel == null) {
-                    chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getIdLong(), Long.parseLong(member.getUserid()), member.getExperience());
-                } else {
-                    chatUserLevel.setExperience(member.getExperience());
-                }
-
-                SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel);
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel).join();
+                });
             });
             commandEvent.reply(commandEvent.getResource("message.import.success", leaderboard.getCount()), 5);
         } catch (InvalidAPIKeyException | InvalidServerResponseException | RateLimitException e) {

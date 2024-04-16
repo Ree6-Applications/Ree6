@@ -43,51 +43,53 @@ public class Steal implements ICommand {
 
         String entryString = commandEvent.getGuild().getIdLong() + "-" + commandEvent.getMember().getIdLong();
 
-        long delay = Long.parseLong((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_steal_delay")).getValue());
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
+                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_steal_delay")).thenAccept(value -> {
+            long delay = Long.parseLong(value.getStringValue());
 
-        if (stealTimeout.contains(entryString)) {
-            commandEvent.reply(commandEvent.getResource("message.steal.cooldown", delay));
-            return;
-        }
+            if (stealTimeout.contains(entryString)) {
+                commandEvent.reply(commandEvent.getResource("message.steal.cooldown", delay));
+                return;
+            }
 
-        OptionMapping user = commandEvent.getOption("user");
+            OptionMapping user = commandEvent.getOption("user");
 
-        if (user == null) {
-            commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
-            return;
-        }
+            if (user == null) {
+                commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
+                return;
+            }
 
-        Member member = user.getAsMember();
+            Member member = user.getAsMember();
 
-        if (member == null) {
-            commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
-            return;
-        }
+            if (member == null) {
+                commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
+                return;
+            }
 
-        if (member.getIdLong() == commandEvent.getMember().getIdLong()) {
-            commandEvent.reply(commandEvent.getResource("message.steal.self"), 5);
-            return;
-        }
+            if (member.getIdLong() == commandEvent.getMember().getIdLong()) {
+                commandEvent.reply(commandEvent.getResource("message.steal.self"), 5);
+                return;
+            }
 
-        MoneyHolder targetHolder = EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), member.getIdLong(), false);
+            MoneyHolder targetHolder = EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), member.getIdLong(), false);
 
-        // Leave them poor people alone ong.
-        if (!EconomyUtil.hasCash(targetHolder) || targetHolder.getAmount() <= 50) {
-            commandEvent.reply(commandEvent.getResource("message.steal.notEnoughMoney", member.getAsMention()), 5);
-            return;
-        }
+            // Leave them poor people alone ong.
+            if (!EconomyUtil.hasCash(targetHolder) || targetHolder.getAmount() <= 50) {
+                commandEvent.reply(commandEvent.getResource("message.steal.notEnoughMoney", member.getAsMention()), 5);
+                return;
+            }
 
-        double stealAmount = RandomUtils.round(targetHolder.getAmount() * RandomUtils.nextDouble(0.01, 0.25), 2);
-        if (EconomyUtil.pay(targetHolder, EconomyUtil.getMoneyHolder(commandEvent.getMember()), stealAmount, false, false)) {
-            // TODO:: more variation in the messages.
-            commandEvent.reply(commandEvent.getResource("message.steal.success", EconomyUtil.formatMoney(stealAmount), member.getAsMention()), 5);
-        } else {
-            commandEvent.reply(commandEvent.getResource("message.steal.failed", EconomyUtil.formatMoney(stealAmount), member.getAsMention()), 5);
-        }
+            double stealAmount = RandomUtils.round(targetHolder.getAmount() * RandomUtils.nextDouble(0.01, 0.25), 2);
+            if (EconomyUtil.pay(targetHolder, EconomyUtil.getMoneyHolder(commandEvent.getMember()), stealAmount, false, false)) {
+                // TODO:: more variation in the messages.
+                commandEvent.reply(commandEvent.getResource("message.steal.success", EconomyUtil.formatMoney(stealAmount), member.getAsMention()), 5);
+            } else {
+                commandEvent.reply(commandEvent.getResource("message.steal.failed", EconomyUtil.formatMoney(stealAmount), member.getAsMention()), 5);
+            }
 
-        stealTimeout.add(entryString);
-        ThreadUtil.createThread(x -> stealTimeout.remove(entryString), Duration.ofSeconds(delay), false, false);
+            stealTimeout.add(entryString);
+            ThreadUtil.createThread(x -> stealTimeout.remove(entryString), Duration.ofSeconds(delay), false, false);
+        });
     }
 
     /**

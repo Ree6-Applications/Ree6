@@ -75,22 +75,23 @@ public class LevelRole implements ICommand {
                 }
                 commandEvent.reply(commandEvent.getResource("message.levelRole.removed", role.getName(), level));
             }
-            case "list" -> {
-                MessageCreateBuilder createBuilder = new MessageCreateBuilder();
-                StringBuilder voiceStringBuilder = new StringBuilder();
-                StringBuilder chatStringBuilder = new StringBuilder();
-                createBuilder.setContent(commandEvent.getResource("message.levelRole.list"));
+            case "list" ->
+                    SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelRewards(commandEvent.getGuild().getIdLong()).thenAccept(level -> {
+                        MessageCreateBuilder createBuilder = new MessageCreateBuilder();
+                        StringBuilder voiceStringBuilder = new StringBuilder();
+                        StringBuilder chatStringBuilder = new StringBuilder();
+                        createBuilder.setContent(commandEvent.getResource("message.levelRole.list"));
 
-                SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelRewards(commandEvent.getGuild().getIdLong())
-                        .forEach((level1, role1) -> voiceStringBuilder.append(level1).append(" -> ").append(role1));
-                SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(commandEvent.getGuild().getIdLong())
-                        .forEach((level1, role1) -> chatStringBuilder.append(level1).append(" -> ").append(role1));
+                        level.forEach((level1, role1) -> voiceStringBuilder.append(level1).append(" -> ").append(role1));
 
-                createBuilder.addFiles(FileUpload.fromData(voiceStringBuilder.toString().getBytes(StandardCharsets.UTF_8), "voice.txt"),
-                        FileUpload.fromData(chatStringBuilder.toString().getBytes(StandardCharsets.UTF_8), "chat.txt"));
+                        SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(commandEvent.getGuild().getIdLong()).join()
+                                .forEach((level2, role2) -> chatStringBuilder.append(level2).append(" -> ").append(role2));
 
-                commandEvent.reply(createBuilder.build());
-            }
+                        createBuilder.addFiles(FileUpload.fromData(voiceStringBuilder.toString().getBytes(StandardCharsets.UTF_8), "voice.txt"),
+                                FileUpload.fromData(chatStringBuilder.toString().getBytes(StandardCharsets.UTF_8), "chat.txt"));
+
+                        commandEvent.reply(createBuilder.build());
+                    });
 
             default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
         }

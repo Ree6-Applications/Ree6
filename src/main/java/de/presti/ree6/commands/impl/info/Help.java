@@ -65,39 +65,6 @@ public class Help implements ICommand {
         em.setTitle("Help Center");
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
-        if (categoryString == null) {
-            String prefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").getStringValue();
-            for (Category cat : Category.values()) {
-                if (cat != Category.HIDDEN) {
-                    if (!BotConfig.isModuleActive(cat.name().toLowerCase())) continue;
-
-                    String formattedName = cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase();
-                    em.addField("**" + formattedName + "**", prefix + "help " + cat.name().toLowerCase(), true);
-                }
-            }
-        } else {
-            if (isValid(categoryString)) {
-                StringBuilder end = new StringBuilder();
-
-                Category category = getCategoryFromString(categoryString);
-
-                String prefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").getStringValue();
-
-                for (ICommand cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).category() == category).toList()) {
-                    end.append("``")
-                            .append(prefix)
-                            .append(cmd.getClass().getAnnotation(Command.class).name())
-                            .append("``\n")
-                            .append(commandEvent.getResource(cmd.getClass().getAnnotation(Command.class).description()))
-                            .append("\n\n");
-                }
-
-                em.setDescription(end.toString());
-            } else {
-                sendHelpInformation(null, commandEvent);
-                return;
-            }
-        }
 
         messageCreateBuilder
                 .addActionRow(
@@ -111,7 +78,43 @@ public class Help implements ICommand {
                                 Emoji.fromCustom("kiss", 1012765976951009361L, true))
                 );
 
-        commandEvent.reply(messageCreateBuilder.setEmbeds(em.build()).build());
+        if (categoryString == null) {
+            SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").thenAccept(setting -> {
+                for (Category cat : Category.values()) {
+                    if (cat != Category.HIDDEN) {
+                        if (!BotConfig.isModuleActive(cat.name().toLowerCase())) continue;
+
+                        String formattedName = cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase();
+                        em.addField("**" + formattedName + "**", setting.getStringValue() + "help " + cat.name().toLowerCase(), true);
+                    }
+                }
+
+                commandEvent.reply(messageCreateBuilder.setEmbeds(em.build()).build());
+            });
+        } else {
+            if (isValid(categoryString)) {
+                StringBuilder end = new StringBuilder();
+
+                Category category = getCategoryFromString(categoryString);
+
+                SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").thenAccept(setting -> {
+                    for (ICommand cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).category() == category).toList()) {
+                        end.append("``")
+                                .append(setting.getStringValue())
+                                .append(cmd.getClass().getAnnotation(Command.class).name())
+                                .append("``\n")
+                                .append(commandEvent.getResource(cmd.getClass().getAnnotation(Command.class).description()))
+                                .append("\n\n");
+                    }
+
+                    em.setDescription(end.toString());
+                    commandEvent.reply(messageCreateBuilder.setEmbeds(em.build()).build());
+                });
+            } else {
+                sendHelpInformation(null, commandEvent);
+            }
+        }
+
     }
 
     /**

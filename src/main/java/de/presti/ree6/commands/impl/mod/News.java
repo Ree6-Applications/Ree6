@@ -25,23 +25,23 @@ public class News implements ICommand {
             return;
         }
 
-        Setting setting = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news");
+        SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news").thenAccept(setting -> {
+            if (setting == null) {
+                SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getIdLong(), "configuration_news", "Receive News", true);
+                commandEvent.reply(commandEvent.getResource("message.news.enabled"), 5);
+                return;
+            }
 
-        if (setting == null) {
-            SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getIdLong(), "configuration_news", "Receive News", true);
-            commandEvent.reply(commandEvent.getResource("message.news.enabled"), 5);
-            return;
-        }
+            if (setting.getBooleanValue()) {
+                setting.setValue(false);
+                commandEvent.reply(commandEvent.getResource("message.news.disabled"), 5);
+            } else {
+                setting.setValue(true);
+                commandEvent.reply(commandEvent.getResource("message.news.enabled"), 5);
+            }
 
-        if (setting.getBooleanValue()) {
-            setting.setValue(false);
-            commandEvent.reply(commandEvent.getResource("message.news.disabled"), 5);
-        } else {
-            setting.setValue(true);
-            commandEvent.reply(commandEvent.getResource("message.news.enabled"), 5);
-        }
-
-        SQLSession.getSqlConnector().getSqlWorker().updateEntity(setting);
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(setting).join();
+        });
     }
 
     /**

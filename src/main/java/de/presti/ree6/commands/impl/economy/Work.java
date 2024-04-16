@@ -33,31 +33,33 @@ public class Work implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         String entryString = commandEvent.getGuild().getIdLong() + "-" + commandEvent.getMember().getIdLong();
 
-        long delay = Long.parseLong((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_delay")).getValue());
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
+                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_delay")).thenAccept(value -> {
+            long delay = Long.parseLong(value.getStringValue());
 
-        if (workTimeout.contains(entryString)) {
-            commandEvent.reply(commandEvent.getResource("message.work.cooldown", delay));
-            return;
-        }
+            if (workTimeout.contains(entryString)) {
+                commandEvent.reply(commandEvent.getResource("message.work.cooldown", delay));
+                return;
+            }
 
-        double min = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_min")).getValue());
+            double min = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
+                    Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_min")).join().getStringValue());
 
-        double max = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_max")).getValue());
+            double max = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
+                    Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_max")).join().getStringValue());
 
-        double amount = RandomUtils.round(RandomUtils.nextDouble(min, max), 2);
+            double amount = RandomUtils.round(RandomUtils.nextDouble(min, max), 2);
 
-        if (EconomyUtil.pay(null, EconomyUtil.getMoneyHolder(commandEvent.getMember()), amount, false, false, true)) {
-            // TODO:: add more variation messages.
-            commandEvent.reply(commandEvent.getResource("message.work.success", EconomyUtil.formatMoney(amount)));
-        } else {
-            commandEvent.reply(commandEvent.getResource("message.work.fail"));
-        }
+            if (EconomyUtil.pay(null, EconomyUtil.getMoneyHolder(commandEvent.getMember()), amount, false, false, true)) {
+                // TODO:: add more variation messages.
+                commandEvent.reply(commandEvent.getResource("message.work.success", EconomyUtil.formatMoney(amount)));
+            } else {
+                commandEvent.reply(commandEvent.getResource("message.work.fail"));
+            }
 
-        workTimeout.add(entryString);
-        ThreadUtil.createThread(x -> workTimeout.remove(entryString), Duration.ofSeconds(delay), false, false);
+            workTimeout.add(entryString);
+            ThreadUtil.createThread(x -> workTimeout.remove(entryString), Duration.ofSeconds(delay), false, false);
+        });
     }
 
     /**
