@@ -311,8 +311,10 @@ public class Blackjack implements IGame {
         nextPlayer.getInteractionHook().editOriginalComponents(new ArrayList<>()).queue();
 
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), session.getChannel());
-        rewardPlayer(session, winner, SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_blackjack_win")).getValue());
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
+                Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_blackjack_win"))
+                .thenAccept(setting -> rewardPlayer(session, winner, setting.getValue()));
+
         stopGame();
     }
 

@@ -969,11 +969,13 @@ public class MenuEvents extends ListenerAdapter {
                         event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupWelcomeMenu", LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired"), 1, 1, false, optionList)).queue();
                     }
 
-                    case "autorole" -> event.editMessageEmbeds(Setup.createAutoRoleSetupMessage(event.getGuild(), event.getHook()).build())
-                            .setComponents(
-                                    ActionRow.of(Setup.createAutoRoleSetupSelectMenu(event.getGuild(), event.getHook())),
-                                    ActionRow.of(Button.link(BotConfig.getWebinterface(), "Webinterface")))
-                            .queue();
+                    case "autorole" ->
+                            Setup.createAutoRoleSetupSelectMenu(event.getGuild(), event.getHook()).thenAccept(selectMenu ->
+                                    event.editMessageEmbeds(Setup.createAutoRoleSetupMessage(event.getGuild(), event.getHook()).build())
+                                    .setComponents(
+                                            ActionRow.of(selectMenu),
+                                            ActionRow.of(Button.link(BotConfig.getWebinterface(), "Webinterface")))
+                                    .queue());
 
                     case "tempvoice" -> {
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setup"), "tempVoiceSetup"));
