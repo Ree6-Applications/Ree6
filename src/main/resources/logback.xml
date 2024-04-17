@@ -23,7 +23,7 @@
         <file>logs/debug/logs.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/debug/archives/log-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <!--Greater than in one day size Separate them-->
+            <!--Greater than in one-day size Separate them-->
             <maxFileSize>1 GB</maxFileSize>
         </rollingPolicy>
         <encoder>
