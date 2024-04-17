@@ -37,12 +37,9 @@ public class Stats implements ICommand {
 
         long start = System.currentTimeMillis();
 
-        Message message = null;
-        if (commandEvent.isSlashCommand()) {
-            message = commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("label.loading")).complete();
-        } else {
-            message = commandEvent.getChannel().sendMessage(commandEvent.getResource("label.loading")).complete();
-        }
+        Message message = commandEvent.isSlashCommand()
+                ? commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("label.loading")).complete()
+                : commandEvent.getChannel().sendMessage(commandEvent.getResource("label.loading")).complete();
 
         long ping = System.currentTimeMillis() - start;
 
@@ -76,28 +73,32 @@ public class Stats implements ICommand {
 
         StringBuilder end = new StringBuilder();
 
-        for (GuildCommandStats values : SQLSession.getSqlConnector().getSqlWorker().getStats(commandEvent.getGuild().getIdLong())) {
-            end.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
-        }
+        SQLSession.getSqlConnector().getSqlWorker().getStats(commandEvent.getGuild().getIdLong()).thenAccept(stats -> {
+            for (GuildCommandStats values : stats) {
+                end.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
+            }
 
-        StringBuilder end2 = new StringBuilder();
+            StringBuilder end2 = new StringBuilder();
 
-        for (CommandStats values : SQLSession.getSqlConnector().getSqlWorker().getStatsGlobal()) {
-            end2.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
-        }
+            SQLSession.getSqlConnector().getSqlWorker().getStatsGlobal().thenAccept(statsGlobal -> {
+                for (CommandStats values : statsGlobal) {
+                    end2.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
+                }
 
-        em.addField("**" + commandEvent.getResource("label.commandStats") + ":**", "", true);
-        em.addField("**" + commandEvent.getResource("label.topCommands") + "**", end.toString(), true);
-        em.addField("**" + commandEvent.getResource("label.overallTopCommands") + "**", end2.toString(), true);
+                em.addField("**" + commandEvent.getResource("label.commandStats") + ":**", "", true);
+                em.addField("**" + commandEvent.getResource("label.topCommands") + "**", end.toString(), true);
+                em.addField("**" + commandEvent.getResource("label.overallTopCommands") + "**", end2.toString(), true);
 
-        em.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
+                em.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
 
-        MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
+                MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
 
-        messageEditBuilder.setContent("");
-        messageEditBuilder.setEmbeds(em.build());
+                messageEditBuilder.setContent("");
+                messageEditBuilder.setEmbeds(em.build());
 
-        commandEvent.update(message, messageEditBuilder.build());
+                commandEvent.update(message, messageEditBuilder.build());
+            });
+        });
     }
 
     /**
