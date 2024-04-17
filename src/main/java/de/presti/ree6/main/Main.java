@@ -344,71 +344,72 @@ public class Main {
         if (BotConfig.isModuleActive("notifier")) {
             ThreadUtil.createThread(x -> {
                 log.info("Loading Notifier data.");
-                List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "FROM ChannelStats", null);
+                SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "FROM ChannelStats", null).thenAccept(channelStats -> {
+                    try {
+                        // Register all Twitch Channels.
+                        SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames().thenAccept(getInstance().getNotifier()::registerTwitchChannel);
+                        getInstance().getNotifier().registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).toList());
 
-                try {
-                    // Register all Twitch Channels.
-                    getInstance().getNotifier().registerTwitchChannel(SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames());
-                    getInstance().getNotifier().registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).toList());
+                        // Register the Event-handler.
+                        getInstance().getNotifier().registerTwitchEventHandler();
+                    } catch (Exception exception) {
+                        log.error("Error while loading Twitch data: {}", exception.getMessage());
+                        Sentry.captureException(exception);
+                    }
 
-                    // Register the Event-handler.
-                    getInstance().getNotifier().registerTwitchEventHandler();
-                } catch (Exception exception) {
-                    log.error("Error while loading Twitch data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
+                    try {
+                        // Register all Twitter Users.
+                        SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames().thenAccept(getInstance().getNotifier()::registerTwitterUser);
+                        getInstance().getNotifier().registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).filter(Objects::nonNull).toList());
+                    } catch (Exception exception) {
+                        log.error("Error while loading Twitter data: {}", exception.getMessage());
+                        Sentry.captureException(exception);
+                    }
 
-                try {
-                    // Register all Twitter Users.
-                    getInstance().getNotifier().registerTwitterUser(SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames());
-                    getInstance().getNotifier().registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).filter(Objects::nonNull).toList());
-                } catch (Exception exception) {
-                    log.error("Error while loading Twitter data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
+                    try {
+                        // Register all YouTube channels.
+                        SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels().thenAccept(getInstance().getNotifier()::registerYouTubeChannel);
+                        getInstance().getNotifier().registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).filter(Objects::nonNull).toList());
+                    } catch (Exception exception) {
+                        log.error("Error while loading YouTube data: {}", exception.getMessage());
+                        Sentry.captureException(exception);
+                    }
 
-                try {
-                    // Register all YouTube channels.
-                    getInstance().getNotifier().registerYouTubeChannel(SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels());
-                    getInstance().getNotifier().registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).filter(Objects::nonNull).toList());
-                } catch (Exception exception) {
-                    log.error("Error while loading YouTube data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
+                    try {
+                        // Register all Reddit Subreddits.
+                        SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits().thenAccept(getInstance().getNotifier()::registerSubreddit);
+                        getInstance().getNotifier().registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).filter(Objects::nonNull).toList());
+                    } catch (Exception exception) {
+                        log.error("Error while loading Reddit data: {}", exception.getMessage());
+                        Sentry.captureException(exception);
+                    }
 
-                try {
-                    // Register all Reddit Subreddits.
-                    getInstance().getNotifier().registerSubreddit(SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits());
-                    getInstance().getNotifier().registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).filter(Objects::nonNull).toList());
-                } catch (Exception exception) {
-                    log.error("Error while loading Reddit data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
+                    try {
+                        // Register all Instagram Users.
+                        SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers().thenAccept(getInstance().getNotifier()::registerInstagramUser);
+                        getInstance().getNotifier().registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
+                    } catch (Exception exception) {
+                        log.error("Error while loading Instagram data: {}", exception.getMessage());
+                        Sentry.captureException(exception);
+                    }
 
-                try {
-                    // Register all Instagram Users.
-                    getInstance().getNotifier().registerInstagramUser(SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers());
-                    getInstance().getNotifier().registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
-                } catch (Exception exception) {
-                    log.error("Error while loading Instagram data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
+                    try {
+                        // Register all TikTok Users.
+                        SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames().thenAccept(tiktokNames ->
+                                tiktokNames.forEach(tikTokName -> getInstance().getNotifier().registerTikTokUser(Long.parseLong(tikTokName))));
+                    } catch (Exception exception) {
+                        log.error("Error while loading TikTok data: {}", exception.getMessage());
+                        Sentry.captureException(exception);
+                    }
 
-                try {
-                    // Register all TikTok Users.
-                    getInstance().getNotifier().registerTikTokUser(SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames().stream().map(Long::parseLong).toList());
-                } catch (Exception exception) {
-                    log.error("Error while loading TikTok data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
-
-                try {
-                    // Register all RSS-Feeds.
-                    getInstance().getNotifier().registerRSS(SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls());
-                } catch (Exception exception) {
-                    log.error("Error while loading RSS data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
+                    try {
+                        // Register all RSS-Feeds.
+                        SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls().thenAccept(getInstance().getNotifier()::registerRSS);
+                    } catch (Exception exception) {
+                        log.error("Error while loading RSS data: {}", exception.getMessage());
+                        Sentry.captureException(exception);
+                    }
+                });
             }, t -> Sentry.captureException(t.getCause()));
         }
 
@@ -586,30 +587,33 @@ public class Main {
                     log.info("[Stats] ");
 
                     LocalDate yesterday = LocalDate.now().minusDays(1);
-                    Statistics statistics = SQLSession.getSqlConnector().getSqlWorker().getStatistics(yesterday.getDayOfMonth(), yesterday.getMonthValue(), yesterday.getYear());
-                    JsonObject jsonObject = statistics != null ? statistics.getStatsObject() : new JsonObject();
-                    JsonObject guildStats = statistics != null && jsonObject.has("guild") ? jsonObject.getAsJsonObject("guild") : new JsonObject();
+                    SQLSession.getSqlConnector().getSqlWorker().getStatistics(yesterday.getDayOfMonth(), yesterday.getMonthValue(), yesterday.getYear()).thenAccept(statistics -> {
+                        JsonObject jsonObject = statistics != null ? statistics.getStatsObject() : new JsonObject();
+                        JsonObject guildStats = statistics != null && jsonObject.has("guild") ? jsonObject.getAsJsonObject("guild") : new JsonObject();
 
-                    guildStats.addProperty("amount", guildSize);
-                    guildStats.addProperty("users", userSize);
+                        guildStats.addProperty("amount", guildSize);
+                        guildStats.addProperty("users", userSize);
 
-                    jsonObject.add("guild", guildStats);
+                        jsonObject.add("guild", guildStats);
 
-                    SQLSession.getSqlConnector().getSqlWorker().updateStatistic(jsonObject);
-
-                    Calendar currentCalendar = Calendar.getInstance();
+                        SQLSession.getSqlConnector().getSqlWorker().updateStatistic(jsonObject);
+                    });
 
                     SQLSession.getSqlConnector().getSqlWorker()
-                            .getBirthdays().stream().filter(birthday -> {
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.setTime(birthday.getBirthdate());
-                                return calendar.get(Calendar.MONTH) == currentCalendar.get(Calendar.MONTH) &&
-                                        calendar.get(Calendar.DAY_OF_MONTH) == currentCalendar.get(Calendar.DAY_OF_MONTH);
-                            }).forEach(birthday -> {
-                                TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
+                            .getBirthdays().thenAccept(birthdayWishes -> {
+                                Calendar currentCalendar = Calendar.getInstance();
 
-                                if (textChannel != null && textChannel.canTalk())
-                                    textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish", birthday.getUserId())).queue();
+                                birthdayWishes.stream().filter(birthday -> {
+                                    Calendar calendar = Calendar.getInstance();
+                                    calendar.setTime(birthday.getBirthdate());
+                                    return calendar.get(Calendar.MONTH) == currentCalendar.get(Calendar.MONTH) &&
+                                            calendar.get(Calendar.DAY_OF_MONTH) == currentCalendar.get(Calendar.DAY_OF_MONTH);
+                                }).forEach(birthday -> {
+                                    TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
+
+                                    if (textChannel != null && textChannel.canTalk())
+                                        textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish", birthday.getUserId())).queue();
+                                });
                             });
 
                     lastDay = new SimpleDateFormat("dd").format(new Date());
@@ -641,47 +645,49 @@ public class Main {
 
             //region Schedules Message sending.
             try {
-                for (ScheduledMessage scheduledMessage : SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ScheduledMessage(), "FROM ScheduledMessage", null)) {
-                    if (!scheduledMessage.isRepeated()) {
-                        if (scheduledMessage.getLastExecute() == null) {
-                            if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
+                SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ScheduledMessage(), "FROM ScheduledMessage", null).thenAccept(messages -> {
+                    for (ScheduledMessage scheduledMessage : messages) {
+                        if (!scheduledMessage.isRepeated()) {
+                            if (scheduledMessage.getLastExecute() == null) {
+                                if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                                WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                        .setUsername(BotConfig.getBotName() + "-Scheduler")
-                                        .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
-                                        .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
+                                    WebhookUtil.sendWebhook(new WebhookMessageBuilder()
+                                            .setUsername(BotConfig.getBotName() + "-Scheduler")
+                                            .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
+                                            .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
+                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
+                                }
+                            } else {
                                 SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
                             }
                         } else {
-                            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
-                        }
-                    } else {
-                        if (scheduledMessage.getLastUpdated() == null) {
-                            if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
+                            if (scheduledMessage.getLastUpdated() == null) {
+                                if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                                WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                        .setUsername(BotConfig.getBotName() + "-Scheduler")
-                                        .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
-                                        .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
+                                    WebhookUtil.sendWebhook(new WebhookMessageBuilder()
+                                            .setUsername(BotConfig.getBotName() + "-Scheduler")
+                                            .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
+                                            .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
-                                scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
-                            }
-                        } else {
-                            if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
+                                    scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
+                                }
+                            } else {
+                                if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                                WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                        .setUsername(BotConfig.getBotName() + "-Scheduler")
-                                        .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
-                                        .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
+                                    WebhookUtil.sendWebhook(new WebhookMessageBuilder()
+                                            .setUsername(BotConfig.getBotName() + "-Scheduler")
+                                            .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
+                                            .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
-                                scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
+                                    scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
+                                }
                             }
                         }
                     }
-                }
+                });
             } catch (Exception exception) {
                 log.error("Failed to run scheduled Messages.", exception);
                 Sentry.captureException(exception);
@@ -782,22 +788,23 @@ public class Main {
                 if (BotConfig.isModuleActive("notifier"))
                     Main.getInstance().getNotifier().getCredentialManager().load();
 
-                for (TwitchIntegration twitchIntegrations :
-                        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "FROM TwitchIntegration", null)) {
+                SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "FROM TwitchIntegration", null).thenAccept(integrations -> {
+                    for (TwitchIntegration twitchIntegrations : integrations) {
 
-                    CustomOAuth2Credential credential = CustomOAuth2Util.convert(twitchIntegrations);
+                        CustomOAuth2Credential credential = CustomOAuth2Util.convert(twitchIntegrations);
 
-                    OAuth2Credential originalCredential = new OAuth2Credential("twitch", credential.getAccessToken(), credential.getRefreshToken(), credential.getUserId(), credential.getUserName(), credential.getExpiresIn(), credential.getScopes());
+                        OAuth2Credential originalCredential = new OAuth2Credential("twitch", credential.getAccessToken(), credential.getRefreshToken(), credential.getUserId(), credential.getUserName(), credential.getExpiresIn(), credential.getScopes());
 
-                    if (!Main.getInstance().getNotifier().getTwitchSubscription().containsKey(credential.getUserId())) {
-                        PubSubSubscription[] subscriptions = new PubSubSubscription[3];
-                        subscriptions[0] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(originalCredential, twitchIntegrations.getChannelId());
-                        subscriptions[1] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForSubscriptionEvents(originalCredential, twitchIntegrations.getChannelId());
-                        subscriptions[2] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForFollowingEvents(originalCredential, twitchIntegrations.getChannelId());
+                        if (!Main.getInstance().getNotifier().getTwitchSubscription().containsKey(credential.getUserId())) {
+                            PubSubSubscription[] subscriptions = new PubSubSubscription[3];
+                            subscriptions[0] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(originalCredential, twitchIntegrations.getChannelId());
+                            subscriptions[1] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForSubscriptionEvents(originalCredential, twitchIntegrations.getChannelId());
+                            subscriptions[2] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForFollowingEvents(originalCredential, twitchIntegrations.getChannelId());
 
-                        Main.getInstance().getNotifier().getTwitchSubscription().put(credential.getUserId(), subscriptions);
+                            Main.getInstance().getNotifier().getTwitchSubscription().put(credential.getUserId(), subscriptions);
+                        }
                     }
-                }
+                });
             } catch (Exception exception) {
                 log.error("Failed to load Twitch Credentials.", exception);
                 Sentry.captureException(exception);
