@@ -101,11 +101,13 @@ public class BotConfig {
      * @return if the module is activated.
      */
     public static boolean isModuleActive(String moduleName) {
+        moduleName = moduleName.toLowerCase();
+
         if (isDebug()) {
-            log.info("Checking if module " + moduleName + " is active.");
+            log.info("Checking if module {} is active.", moduleName);
             Object object = Main.getInstance().getConfig().getConfiguration().get("bot.misc.modules." + moduleName);
-            log.info("Module is null: " + (object == null));
-            if (object != null) log.info("Module is active: " + ((boolean) object));
+            log.info("Module is null: {}", object == null);
+            if (object != null) log.info("Module is active: {}", object);
         }
         return Main.getInstance().getConfig().getConfiguration().getBoolean("bot.misc.modules." + moduleName, true);
     }
