@@ -47,7 +47,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.22</version>
+            <version>5.0.0-beta.23</version>
         </dependency>
         <dependency>
             <groupId>com.github.lavalink-devs.lavaplayer</groupId>
@@ -115,7 +115,7 @@
         <dependency>
             <groupId>se.michaelthelin.spotify</groupId>
             <artifactId>spotify-web-api-java</artifactId>
-            <version>8.3.6</version>
+            <version>8.4.0</version>
         </dependency>
         <dependency>
             <groupId>de.ree6</groupId>
@@ -168,7 +168,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.5</version>
+            <version>1.5.6</version>
         </dependency>
 
         <!-- Lombok -->
@@ -204,7 +204,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.16.1</version>
+            <version>1.17.0</version>
         </dependency>
 
         <!-- Jersey and Jackson -->
