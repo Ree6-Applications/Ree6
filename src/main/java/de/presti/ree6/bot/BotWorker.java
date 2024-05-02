@@ -16,7 +16,6 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
