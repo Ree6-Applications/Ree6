@@ -52,7 +52,7 @@
         <dependency>
             <groupId>com.github.lavalink-devs.lavaplayer</groupId>
             <artifactId>lavaplayer</artifactId>
-            <version>0ab6311a5f</version>
+            <version>2.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
