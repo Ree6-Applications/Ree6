@@ -1262,9 +1262,7 @@ public class Notifier {
      * @param users the ID of the TikTok Users.
      */
     public void registerTikTokUser(List<Long> users) {
-        users.forEach(s -> {
-            if (!isTikTokUserRegistered(s)) registeredTikTokUsers.add(s);
-        });
+        users.forEach(this::registerTikTokUser);
     }
 
     /**
