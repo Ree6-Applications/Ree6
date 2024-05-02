@@ -754,14 +754,7 @@ public class Notifier {
 
                                     webhookEmbedBuilder.setImageUrl(playlistItem.getThumbnail());
 
-                                    // Set rest of the Information.
-                                    webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", playlistItem.getTitle()));
-                                    webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet()));
-
-                                    webhookEmbedBuilder.setDescription("[Click here to watch the Video](https://www.youtube.com/watch?v=" + playlistItem.getId() + ")");
-
-                                    if (playlistItem.getUploadDate() != -1)
-                                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", TimeFormat.DATE_TIME_SHORT.format(playlistItem.getUploadDate())));
+                                    webhookEmbedBuilder.setDescription("[**" + playlistItem.getTitle() + "**](https://www.youtube.com/watch?v=" + playlistItem.getId() + ")");
 
                                     webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(BotConfig.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
                                     webhookEmbedBuilder.setColor(Color.RED.getRGB());
@@ -772,7 +765,7 @@ public class Notifier {
                                                 .replace("%description%", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet())
                                                 .replace("%url%", "https://www.youtube.com/watch?v=" + playlistItem.getId());
 
-                                        webhookEmbedBuilder.setDescription(message);
+                                        webhookMessageBuilder.setContent(message);
                                         webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
                                         WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
                                     });

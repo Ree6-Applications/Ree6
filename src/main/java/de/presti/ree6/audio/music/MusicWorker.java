@@ -92,14 +92,18 @@ public class MusicWorker {
      * @return the MusicManager of that Guild.
      */
     public synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
-        long guildId = Long.parseLong(guild.getId());
+        musicManagers.putIfAbsent(guild.getIdLong(), new GuildMusicManager(guild, playerManager));
 
-        musicManagers.putIfAbsent(guildId, new GuildMusicManager(guild, playerManager));
-
-        GuildMusicManager musicManager = musicManagers.get(guildId);
+        GuildMusicManager musicManager = musicManagers.get(guild.getIdLong());
 
         if (!BotConfig.shouldUseLavaLink()) {
-            guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+            try {
+                AudioManager audioManager = guild.getAudioManager();
+                audioManager.setSendingHandler(musicManager.getSendHandler());
+            } catch (Exception exception) {
+                Sentry.captureException(exception);
+                log.error("Couldn't set the SendingHandler for the GuildMusicManager", exception);
+            }
         }
 
         return musicManager;
