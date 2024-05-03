@@ -14,6 +14,7 @@ public class Debug implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         StringBuilder debugInfo = new StringBuilder("```")
+                .append("Build:").append(" ").append(BotWorker.getBuild()).append("\n")
                 .append("Version:").append(" ").append(BotWorker.getVersion()).append("\n")
                 .append("State:").append(" ").append(BotWorker.getState()).append("\n")
                 .append("Start:").append(" ").append(BotWorker.getStartTime()).append("\n")
