@@ -55,6 +55,11 @@
             <version>0ab6311a5f</version>
         </dependency>
         <dependency>
+            <groupId>com.github.lavalink-devs</groupId>
+            <artifactId>youtube-source</artifactId>
+            <version>59fe89297b</version>
+        </dependency>
+        <dependency>
             <groupId>com.sedmelluq</groupId>
             <artifactId>lava-common</artifactId>
             <version>1.1.2</version>
