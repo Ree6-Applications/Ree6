@@ -83,18 +83,18 @@ public class Ticket implements ICommand {
 
                     MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
                     messageCreateBuilder.setEmbeds(new EmbedBuilder()
-                            .setTitle(LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket"))
+                            .setTitle(LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket").join())
                             .setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_ticket_menu").join().getStringValue())
                             .setColor(0x55ff00)
                             .setThumbnail(commandEvent.getGuild().getIconUrl())
                             .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
                             .build());
-                    messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket"), Emoji.fromUnicode("U+1F4E9")));
+                    messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket").join(), Emoji.fromUnicode("U+1F4E9")));
                     Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), ticketChannel.getAsChannel().asTextChannel());
                 });
             });
 
-            embedBuilder.setDescription(LanguageService.getByGuild(commandEvent.getGuild(), "message.ticket.setupSuccess"));
+            embedBuilder.setDescription(commandEvent.getResource("message.ticket.setupSuccess"));
             embedBuilder.setColor(Color.GREEN);
 
             commandEvent.reply(embedBuilder.build());
@@ -106,7 +106,7 @@ public class Ticket implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("tickets", LanguageService.getDefault("command.description.tickets"))
+        return new CommandDataImpl("tickets", "command.description.tickets")
                 .addOptions(new OptionData(OptionType.CHANNEL, "supportchannel", "The channel that should have the ticket creation message.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT),
                         new OptionData(OptionType.CHANNEL, "logchannel", "The channel that should receive the transcripts.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT));
     }

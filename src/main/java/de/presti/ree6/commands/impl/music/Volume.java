@@ -105,7 +105,8 @@ public class Volume implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("volume", LanguageService.getDefault("command.description.volume")).addOptions(new OptionData(OptionType.INTEGER, "amount", "The Volume that the Ree6 Music Player should be!").setRequired(true));
+        return new CommandDataImpl("volume", "command.description.volume")
+                .addOptions(new OptionData(OptionType.INTEGER, "amount", "The Volume that the Ree6 Music Player should be!").setRequired(true));
     }
 
     /**

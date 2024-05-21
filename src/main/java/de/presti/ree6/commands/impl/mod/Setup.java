@@ -271,10 +271,10 @@ public class Setup implements ICommand {
         boolean hasRoles = !GuildUtil.getManagableRoles(guild).isEmpty();
 
         return new EmbedBuilder()
-                .setTitle(LanguageService.getByGuildOrInteractionHook(guild, interactionHook, "label.setup"))
+                .setTitle(LanguageService.getByGuildOrInteractionHook(guild, interactionHook, "label.setup").join())
                 .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl())
                 .setColor(hasRoles ? Color.cyan : Color.red)
-                .setDescription(LanguageService.getByGuildOrInteractionHook(guild, interactionHook, hasRoles ? "message.autoRole.setupDescription" : "message.default.needPermission", (hasRoles ? null : Permission.MANAGE_ROLES.name())));
+                .setDescription(LanguageService.getByGuildOrInteractionHook(guild, interactionHook, hasRoles ? "message.autoRole.setupDescription" : "message.default.needPermission", (hasRoles ? null : Permission.MANAGE_ROLES.name())).join());
     }
 
     public static CompletableFuture<SelectMenu> createAutoRoleSetupSelectMenu(Guild guild, InteractionHook interactionHook) {
@@ -294,7 +294,7 @@ public class Setup implements ICommand {
             });
 
             return new StringSelectMenuImpl("setupAutoRole", LanguageService.getByGuildOrInteractionHook(guild, interactionHook,
-                    "message.autoRole.setupPlaceholder"),
+                    "message.autoRole.setupPlaceholder").join(),
                     0, Math.min(10, Math.max(1, optionList.size())), optionList.isEmpty(), optionList);
         });
     }

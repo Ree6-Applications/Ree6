@@ -1,5 +1,6 @@
 package de.presti.ree6.commands;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
@@ -10,7 +11,7 @@ import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.custom.CustomCommand;
 import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.bot.BotConfig;
+import de.presti.ree6.utils.data.RegExUtil;
 import de.presti.ree6.utils.others.ThreadUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,7 +25,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
-import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -211,32 +211,34 @@ public class CommandManager {
 
             if (commandData instanceof CommandDataImpl commandData1) {
 
+                boolean isValidDescription = commandAnnotation.description().matches(RegExUtil.ALLOWED_LANGUAGE_PATHS);
+
                 for (DiscordLocale discordLocale : DiscordLocale.values()) {
                     if (!LanguageService.languageResources.containsKey(discordLocale)) continue;
 
-                    if (commandAnnotation.description().endsWith(".") || !commandAnnotation.description().contains("."))
+                    if (!isValidDescription)
                         continue;
 
-                    String description = LanguageService.getByLocale(discordLocale, commandAnnotation.description());
+                    String localizedDescription = LanguageService.getByLocale(discordLocale, commandAnnotation.description()).join();
 
-                    if (description.equals("Missing language resource!")) {
-                        description = LanguageService.getDefault(commandAnnotation.description());
+                    if (localizedDescription.equals("Missing language resource!")) {
+                        localizedDescription = LanguageService.getDefault(commandAnnotation.description()).join();
                     }
 
-                    if (!description.equals("Missing language resource!")) {
-                        commandData1.setDescriptionLocalization(discordLocale, description);
+                    if (!localizedDescription.equals("Missing language resource!")) {
+                        commandData1.setDescriptionLocalization(discordLocale, localizedDescription);
                     }
 
                     commandData1.getSubcommandGroups().forEach(subcommandGroupData -> translateSubgroups(subcommandGroupData, discordLocale));
                 }
 
-                String description = LanguageService.getDefault(commandAnnotation.description());
+                if (isValidDescription) {
+                    String localizedDescription = LanguageService.getDefault(commandAnnotation.description()).join();
 
-                if (!description.equals("Missing language resource!")) {
-                    commandData1.setDescription(description);
+                    if (!localizedDescription.equals("Missing language resource!")) {
+                        commandData1.setDescription(localizedDescription);
+                    }
                 }
-
-                // TODO:: add the same language check to option names/description and add a translation to it. Also for the love of god Imma need to optimize this.
 
                 if (commandAnnotation.category() == Category.MOD && commandData.getDefaultPermissions() == DefaultMemberPermissions.ENABLED) {
                     commandData1.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
@@ -262,13 +264,15 @@ public class CommandManager {
     }
 
     public void translateSubgroups(SubcommandGroupData subcommandGroupData, DiscordLocale locale) {
+        // TODO:: add the same language check to option names/description and add a translation to it.
+        //  Also for the love of god Imma need to optimize this.
         String groupDescription = subcommandGroupData.getDescription();
 
-        if (groupDescription.contains(".") && !groupDescription.endsWith(".")) {
-            groupDescription = LanguageService.getByLocale(locale, groupDescription);
+        if (groupDescription.matches(RegExUtil.ALLOWED_LANGUAGE_PATHS)) {
+            groupDescription = LanguageService.getByLocale(locale, groupDescription).join();
 
             if (groupDescription.equals("Missing language resource!")) {
-                groupDescription = LanguageService.getDefault(subcommandGroupData.getDescription());
+                groupDescription = LanguageService.getDefault(subcommandGroupData.getDescription()).join();
             }
 
             if (!groupDescription.equals("Missing language resource!")) {
@@ -279,11 +283,11 @@ public class CommandManager {
         for (SubcommandData subcommandData : subcommandGroupData.getSubcommands()) {
             String commandDescription = subcommandData.getDescription();
 
-            if (commandDescription.contains(".") && !commandDescription.endsWith(".")) {
-                commandDescription = LanguageService.getByLocale(locale, commandDescription);
+            if (groupDescription.matches(RegExUtil.ALLOWED_LANGUAGE_PATHS)) {
+                commandDescription = LanguageService.getByLocale(locale, commandDescription).join();
 
                 if (commandDescription.equals("Missing language resource!")) {
-                    commandDescription = LanguageService.getDefault(subcommandData.getDescription());
+                    commandDescription = LanguageService.getDefault(subcommandData.getDescription()).join();
                 }
 
                 if (!commandDescription.equals("Missing language resource!")) {
@@ -366,12 +370,12 @@ public class CommandManager {
 
             // Check if it is a Slash Command or not.
             if (isSlashCommand) {
-                sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown"), 5, messageChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown").join(), 5, messageChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 deleteMessage(message, slashCommandInteractionEvent.getHook().setEphemeral(true));
             } else {
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "chatprefix").thenAccept(setting -> {
                     if (setting != null && messageContent.toLowerCase().startsWith(setting.getStringValue().toLowerCase())) {
-                        sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown"), 5, messageChannel, null);
+                        sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown").join(), 5, messageChannel, null);
                         deleteMessage(message, null);
                     }
                 });
@@ -416,7 +420,7 @@ public class CommandManager {
     private CompletableFuture<Boolean> performMessageCommand(Member member, Guild guild, String messageContent, Message message, GuildMessageChannelUnion textChannel) {
         // Check if the Message is null.
         if (message == null) {
-            sendMessage(LanguageService.getByGuild(guild, "command.perform.error"), 5, textChannel, null);
+            sendMessage(LanguageService.getByGuild(guild, "command.perform.error").join(), 5, textChannel, null);
             return CompletableFuture.completedFuture(false);
         }
 
@@ -432,7 +436,7 @@ public class CommandManager {
             String[] arguments = messageContent.substring(currentPrefix.length()).split("\\s+");
 
             if (arguments.length == 0 || arguments[0].isBlank()) {
-                sendMessage(LanguageService.getByGuild(guild, "command.perform.missingCommand"), 5, textChannel, null);
+                sendMessage(LanguageService.getByGuild(guild, "command.perform.missingCommand").join(), 5, textChannel, null);
                 return false;
             }
 
@@ -461,10 +465,10 @@ public class CommandManager {
                     return true;
                 }
 
-                sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound"), 5, textChannel, null);
+                sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound").join(), 5, textChannel, null);
                 return false;
             } else if (command == null) {
-                sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound"), 5, textChannel, null);
+                sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound").join(), 5, textChannel, null);
                 return false;
             }
 
@@ -473,7 +477,7 @@ public class CommandManager {
 
                 // Check if the Command is blacklisted.
                 if (blacklistSetting != null && !blacklistSetting.getBooleanValue()) {
-                    sendMessage(LanguageService.getByGuild(guild, "command.perform.blocked"), 5, textChannel, null);
+                    sendMessage(LanguageService.getByGuild(guild, "command.perform.blocked").join(), 5, textChannel, null);
                     return false;
                 }
             }
@@ -501,13 +505,13 @@ public class CommandManager {
 
         // Check if there is a command with that Name.
         if (command == null || slashCommandInteractionEvent.getGuild() == null || slashCommandInteractionEvent.getMember() == null) {
-            sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.notFound"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+            sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.notFound").join(), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
             return CompletableFuture.completedFuture(false);
         }
 
         return SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).thenApply(setting -> {
             if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN && setting != null && !setting.getBooleanValue()) {
-                sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked"), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked").join(), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 return false;
             }
 

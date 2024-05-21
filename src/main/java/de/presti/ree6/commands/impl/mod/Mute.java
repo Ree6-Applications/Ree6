@@ -88,7 +88,7 @@ public class Mute implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("mute", LanguageService.getDefault("command.description.mute"))
+        return new CommandDataImpl("mute", "command.description.mute")
                 .addOptions(new OptionData(OptionType.USER, "target", "Which User should be muted.").setRequired(true))
                 .addOptions(new OptionData(OptionType.INTEGER, "time", "How long the User should be muted for. (in minutes)").setRequired(true))
                 .addOptions(new OptionData(OptionType.STRING, "reason", "The Reason why the User should be muted.").setRequired(false))

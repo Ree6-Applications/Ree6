@@ -73,7 +73,8 @@ public class Play implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("play", LanguageService.getDefault("command.description.play")).addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true));
+        return new CommandDataImpl("play", "command.description.play")
+                .addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true));
     }
 
     /**

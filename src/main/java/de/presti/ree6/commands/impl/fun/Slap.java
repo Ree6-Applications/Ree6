@@ -54,7 +54,7 @@ public class Slap implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("gracetheface", LanguageService.getDefault("command.description.slap"))
+        return new CommandDataImpl("gracetheface", "command.description.slap")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should be slapped!").setRequired(true));
     }
 

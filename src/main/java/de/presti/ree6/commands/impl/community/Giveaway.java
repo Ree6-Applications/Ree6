@@ -304,7 +304,7 @@ public class Giveaway implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("giveaway", LanguageService.getDefault("command.description.giveaway"))
+        return new CommandDataImpl("giveaway", "command.description.giveaway")
                 .addSubcommands(new SubcommandData("create", "Create a Giveaway.")
                                 .addOption(OptionType.STRING, "prize", "The Prize of the Giveaway.", true)
                                 .addOption(OptionType.INTEGER, "winners", "The amount of winners.", true)

@@ -57,7 +57,7 @@ public class Info implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("info", LanguageService.getDefault("command.description.info"))
+        return new CommandDataImpl("info", "command.description.info")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User whose profile Information you want.").setRequired(false));
     }
 

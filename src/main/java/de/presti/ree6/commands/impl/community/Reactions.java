@@ -63,7 +63,7 @@ public class Reactions implements ICommand {
                 }).queue(msg -> {
                     if (msg == null) return;
                     MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-                    messageCreateBuilder.setContent(LanguageService.getByGuild(commandEvent.getGuild(), "message.reactions.reactionNeeded", role.getAsRole().getAsMention()));
+                    messageCreateBuilder.setContent(LanguageService.getByGuild(commandEvent.getGuild(), "message.reactions.reactionNeeded", role.getAsRole().getAsMention()).join());
                     msg.reply(messageCreateBuilder.build()).queue();
                 });
 
@@ -105,7 +105,7 @@ public class Reactions implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("reactions", LanguageService.getDefault("command.description.reactions"))
+        return new CommandDataImpl("reactions", "command.description.reactions")
                 .addSubcommands(new SubcommandData("remove", "Remove a reaction role.")
                                 .addOption(OptionType.STRING, "message", "The ID of the Message.", true)
                                 .addOption(OptionType.ROLE, "role", "The Role to be given.", true),

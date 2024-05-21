@@ -186,7 +186,7 @@ public class StreamActionCommand implements ICommand {
 
                     case "list" ->
                             SQLSession.getSqlConnector().getSqlWorker().getEntityList(new StreamAction(), "FROM StreamAction WHERE guildAndName.guildId = :gid", Map.of("gid", commandEvent.getGuild().getIdLong())).thenAccept(streamActions -> {
-                                commandEvent.reply(LanguageService.getByEvent(commandEvent, "message.stream-action.list", String.join("\n", streamActions.stream().map(StreamAction::getName).toArray(String[]::new))));
+                                commandEvent.reply(commandEvent.getResource("message.stream-action.list", String.join("\n", streamActions.stream().map(StreamAction::getName).toArray(String[]::new))));
                             });
 
                     case "points" ->
@@ -214,7 +214,26 @@ public class StreamActionCommand implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("stream-action", LanguageService.getDefault("command.description.stream-action")).addSubcommands(new SubcommandData("create", "Create a new Stream-Action.").addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)).addSubcommands(new SubcommandData("delete", "Delete a Stream-Action.").addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)).addSubcommands(new SubcommandData("list", "List all Stream-Actions.")).addSubcommands(new SubcommandData("points", "List all your ChannelPoint Rewards.")).addSubcommandGroups(new SubcommandGroupData("manage", "Manage a existing Stream-action.").addSubcommands(new SubcommandData("listener", "Set the listener of the Stream-Action.").addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true).addOption(OptionType.STRING, "listener", "The listener of the Stream-Action.", true), new SubcommandData("delete", "Delete a line of the Stream-Action.").addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true).addOptions(new OptionData(OptionType.INTEGER, "line", "The line of the Stream-Action.", true).setMinValue(1)), new SubcommandData("create", "Create a action in the Stream-Action.").addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true).addOption(OptionType.STRING, "action", "The action of the Stream-Action.", true), new SubcommandData("list", "List all actions of the Stream-Action.").addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)));
+        return new CommandDataImpl("stream-action", "command.description.stream-action")
+                .addSubcommands(new SubcommandData("create", "Create a new Stream-Action.")
+                        .addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true))
+                .addSubcommands(new SubcommandData("delete", "Delete a Stream-Action.")
+                        .addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true))
+                .addSubcommands(new SubcommandData("list", "List all Stream-Actions."))
+                .addSubcommands(new SubcommandData("points", "List all your ChannelPoint Rewards."))
+                .addSubcommandGroups(new SubcommandGroupData("manage", "Manage a existing Stream-action.")
+                        .addSubcommands(
+                                new SubcommandData("listener", "Set the listener of the Stream-Action.")
+                                        .addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)
+                                        .addOption(OptionType.STRING, "listener", "The listener of the Stream-Action.", true),
+                                new SubcommandData("delete", "Delete a line of the Stream-Action.")
+                                        .addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)
+                                        .addOptions(new OptionData(OptionType.INTEGER, "line", "The line of the Stream-Action.", true).setMinValue(1)),
+                                new SubcommandData("create", "Create a action in the Stream-Action.")
+                                        .addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)
+                                        .addOption(OptionType.STRING, "action", "The action of the Stream-Action.", true),
+                                new SubcommandData("list", "List all actions of the Stream-Action.")
+                                        .addOption(OptionType.STRING, "name", "The name of the Stream-Action.", true)));
     }
 
     /**

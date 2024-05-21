@@ -93,7 +93,7 @@ public class Birthday implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("birthday",
-                LanguageService.getDefault("command.description.birthday"))
+                "command.description.birthday")
                 .addSubcommands(new SubcommandData("remove", "Remove a Birthday entry!")
                                 .addOptions(new OptionData(OptionType.USER, "user", "The User which should get their birthday entry removed.", false)),
                         new SubcommandData("add", "Add a Birthday entry!")

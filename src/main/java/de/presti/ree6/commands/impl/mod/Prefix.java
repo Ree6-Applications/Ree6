@@ -56,7 +56,7 @@ public class Prefix implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("prefix", LanguageService.getDefault("command.description.prefix"))
+        return new CommandDataImpl("prefix", "command.description.prefix")
                 .addOptions(new OptionData(OptionType.STRING, "new-prefix", "What should the new Prefix be?").setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR, Permission.MANAGE_SERVER));
     }

@@ -151,7 +151,8 @@ public class Import implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("import", LanguageService.getDefault("command.description.import")).addOption(OptionType.STRING, "bot", "The Bot you want to import data from.", true);
+        return new CommandDataImpl("import", "command.description.import")
+                .addOption(OptionType.STRING, "bot", "The Bot you want to import data from.", true);
     }
 
     /**

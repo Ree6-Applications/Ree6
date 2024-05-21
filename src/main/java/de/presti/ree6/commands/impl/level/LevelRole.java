@@ -103,7 +103,7 @@ public class LevelRole implements ICommand {
     @Override
     public CommandData getCommandData() {
         return new CommandDataImpl("levelrole",
-                LanguageService.getDefault("command.description.levelrole"))
+                "command.description.levelrole")
                 .addSubcommands(new SubcommandData("add", "Add a new Level-Role")
                                 .addOptions(new OptionData(OptionType.BOOLEAN, "voice", "True -> Voice-Level and False -> Text-Level").setRequired(true),
                                         new OptionData(OptionType.INTEGER, "level", "The level that needs to be reached to get the role.").setRequired(true).setMinValue(1),

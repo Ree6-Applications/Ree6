@@ -130,7 +130,7 @@ public class Help implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("help", LanguageService.getDefault("command.description.help"))
+        return new CommandDataImpl("help", "command.description.help")
                 .addOptions(new OptionData(OptionType.STRING, "category", "Which Category you want to check out."));
     }
 

@@ -54,7 +54,7 @@ public class Avatar implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("avatar", LanguageService.getDefault("command.description.avatar"))
+        return new CommandDataImpl("avatar", "command.description.avatar")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User whose profile you want.").setRequired(true));
     }
 

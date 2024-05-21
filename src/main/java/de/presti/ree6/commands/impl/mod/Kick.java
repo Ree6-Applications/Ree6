@@ -70,7 +70,7 @@ public class Kick implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("kick", LanguageService.getDefault("command.description.kick"))
+        return new CommandDataImpl("kick", "command.description.kick")
                 .addOptions(new OptionData(OptionType.USER, "target", "Which User should be kicked.").setRequired(true))
                 .addOptions(new OptionData(OptionType.STRING, "reason", "The Reason why the User should be kicked.").setRequired(false))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.KICK_MEMBERS));

@@ -52,7 +52,7 @@ public class Game implements ICommand {
                 if (GameManager.getGameNames().stream().noneMatch(c -> c.equalsIgnoreCase(nameMapping.getAsString().trim()))) {
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append(commandEvent.getResource("message.game.availableGames")).append("```");
-                    GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append("- ").append(LanguageService.getByEvent(commandEvent,entryValue.getAnnotation(GameInfo.class).description())));
+                    GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append("- ").append(commandEvent.getResource(entryValue.getAnnotation(GameInfo.class).description())));
                     stringBuilder.append("```");
                     commandEvent.reply(stringBuilder.toString());
                     return;
@@ -94,7 +94,7 @@ public class Game implements ICommand {
             case "list" -> {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append(commandEvent.getResource("message.game.availableGames")).append("```");
-                GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append(" ").append("-").append(" ").append(LanguageService.getByEvent(commandEvent,entryValue.getAnnotation(GameInfo.class).description())));
+                GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append(" ").append("-").append(" ").append(commandEvent.getResource(entryValue.getAnnotation(GameInfo.class).description())));
                 stringBuilder.append("```");
                 commandEvent.reply(stringBuilder.toString());
             }
@@ -108,7 +108,7 @@ public class Game implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("game", LanguageService.getDefault("command.description.game"))
+        return new CommandDataImpl("game", "command.description.game")
                 .addSubcommands(new SubcommandData("create", "Create a new Game match.")
                         .addOptions(new OptionData(OptionType.STRING, "name", "The Game name.", true).addChoice("Blackjack", "blackjack").addChoice("Music Quiz", "musicquiz")),
                         new SubcommandData("join", "Join a Game match.")

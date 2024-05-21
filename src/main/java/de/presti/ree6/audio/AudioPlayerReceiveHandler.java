@@ -68,39 +68,46 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     /**
      * The first sent message which should be edited.
      */
+    // TODO:: make this async one day, and thread safe.
     Message message;
 
     /**
      * Constructor.
      *
-     * @param member       The member who started the recording.
+     * @param member            The member who started the recording.
      * @param audioChannelUnion The voice channel this handler should handle.
      */
     public AudioPlayerReceiveHandler(Member member, AudioChannelUnion audioChannelUnion) {
         this.creatorId = member.getIdLong();
         this.audioChannelUnion = audioChannelUnion;
         if (audioChannelUnion.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_CHANGE)) {
-            audioChannelUnion.getGuild().getSelfMember().modifyNickname(LanguageService.getByGuild(member.getGuild(), "label.recording.name")).reason(LanguageService.getByGuild(member.getGuild(), "message.recording.startReason", member.getUser().getName())).onErrorMap(throwable -> {
+            LanguageService.getByGuild(member.getGuild(), "label.recording.name").thenAccept(name ->
+                    LanguageService.getByGuild(member.getGuild(), "message.recording.startReason", member.getUser().getName()).thenAccept(reason ->
+                            audioChannelUnion.getGuild().getSelfMember().modifyNickname(name).reason(reason).onErrorMap(throwable -> {
 
-                boolean canTalk = audioChannelUnion.getType() == ChannelType.STAGE ?
-                        audioChannelUnion.asStageChannel().canTalk() :
-                        audioChannelUnion.asVoiceChannel().canTalk();
+                                boolean canTalk = audioChannelUnion.getType() == ChannelType.STAGE ?
+                                        audioChannelUnion.asStageChannel().canTalk() :
+                                        audioChannelUnion.asVoiceChannel().canTalk();
 
-                if (canTalk) audioChannelUnion.asGuildMessageChannel().sendMessage(LanguageService.getByGuild(member.getGuild(), "message.default.nameChangeFailed")).queue();
-                return null;
-            }).queue();
+                                if (canTalk) {
+                                    LanguageService.getByGuild(member.getGuild(), "message.default.nameChangeFailed").thenAccept(message -> {
+                                        audioChannelUnion.asGuildMessageChannel().sendMessage(message).queue();
+                                    });
+                                }
+                                return null;
+                            }).queue()));
         }
 
         message = audioChannelUnion.asGuildMessageChannel().sendMessageEmbeds(new EmbedBuilder()
-                .setDescription(LanguageService.getByGuild(member.getGuild(), "message.recording.started"))
+                .setDescription(LanguageService.getByGuild(member.getGuild(), "message.recording.started").join())
                 .setColor(Color.YELLOW)
-                .setFooter(LanguageService.getByGuild(member.getGuild(),"label.footerMessage", member.getEffectiveName(), BotConfig.getAdvertisement()), member.getEffectiveAvatarUrl())
-                .setTitle(LanguageService.getByGuild(member.getGuild(), "label.recording.start"))
+                .setFooter(LanguageService.getByGuild(member.getGuild(), "label.footerMessage", member.getEffectiveName(), BotConfig.getAdvertisement()).join(), member.getEffectiveAvatarUrl())
+                .setTitle(LanguageService.getByGuild(member.getGuild(), "label.recording.start").join())
                 .build()).complete();
 
         if (audioChannelUnion.getGuild().getSelfMember().hasPermission(Permission.VOICE_SET_STATUS)) {
             if (audioChannelUnion.getType() == ChannelType.VOICE) {
-                audioChannelUnion.asVoiceChannel().modifyStatus(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.recording.name")).queue();
+                audioChannelUnion.asVoiceChannel().modifyStatus(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.recording.name").join()).queue();
             }
         }
     }
@@ -166,11 +173,14 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 audioChannelUnion.asVoiceChannel().canTalk();
 
         if (audioChannelUnion.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_CHANGE)) {
-            audioChannelUnion.getGuild().getSelfMember().modifyNickname(audioChannelUnion.getGuild().getSelfMember().getUser().getName()).reason(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.stopReason")).onErrorMap(throwable -> {
+            LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.stopReason").thenAccept(reason ->
+                    audioChannelUnion.getGuild().getSelfMember().modifyNickname(audioChannelUnion.getGuild().getSelfMember().getUser().getName()).reason(reason).onErrorMap(throwable -> {
 
-                if (canTalk) audioChannelUnion.asGuildMessageChannel().sendMessage(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.default.nameChangeFailed")).queue();
-                return null;
-            }).queue();
+                        if (canTalk)
+                            LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.default.nameChangeFailed")
+                                    .thenAccept(message -> audioChannelUnion.asGuildMessageChannel().sendMessage(message).queue());
+                        return null;
+                    }).queue());
         }
 
         try {
@@ -193,19 +203,19 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
             if (canTalk) {
                 message.editMessageEmbeds(new EmbedBuilder()
-                        .setDescription(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.stopped"))
-                        .setColor(Color.GREEN)
-                        .setFooter(BotConfig.getAdvertisement(), audioChannelUnion.getGuild().getIconUrl())
-                        .setTitle(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.recording.finished"))
-                        .build())
+                                .setDescription(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.stopped").join())
+                                .setColor(Color.GREEN)
+                                .setFooter(BotConfig.getAdvertisement(), audioChannelUnion.getGuild().getIconUrl())
+                                .setTitle(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.recording.finished").join())
+                                .build())
                         .setActionRow(
-                                new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.download"), ButtonStyle.LINK,
-                        BotConfig.getRecordingUrl() + "?id=" + recording.getIdentifier(), failedToUpload, Emoji.fromCustom("shiba", 941219375535509504L, true)),
+                                new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.download").join(), ButtonStyle.LINK,
+                                        BotConfig.getRecordingUrl() + "?id=" + recording.getIdentifier(), failedToUpload, Emoji.fromCustom("shiba", 941219375535509504L, true)),
                                 Button.primary("r_recordingDownload:" + recording.getIdentifier(), Emoji.fromCustom("sip", 1011956355810209852L, false))
-                                        .withLabel(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.sendToChat")).withDisabled(!BotConfig.allowRecordingInChat() || failedToUpload)).complete();
+                                        .withLabel(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.sendToChat").join()).withDisabled(!BotConfig.allowRecordingInChat() || failedToUpload)).complete();
 
                 if (failedToUpload) {
-                    audioChannelUnion.asGuildMessageChannel().sendMessage(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.error", "Upload failed")).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav"));
+                    audioChannelUnion.asGuildMessageChannel().sendMessage(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.error", "Upload failed").join()).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav"));
                 }
             }
             // Find a way to still notify that the bot couldn't send the audio.
@@ -213,10 +223,10 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
             if (canTalk) {
                 message.editMessageEmbeds(new EmbedBuilder()
-                        .setDescription(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.error", ex.getMessage()))
+                        .setDescription(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.error", ex.getMessage()).join())
                         .setColor(Color.RED)
                         .setFooter(BotConfig.getAdvertisement(), audioChannelUnion.getGuild().getIconUrl())
-                        .setTitle(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.error"))
+                        .setTitle(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.error").join())
                         .build()).complete();
             }
 

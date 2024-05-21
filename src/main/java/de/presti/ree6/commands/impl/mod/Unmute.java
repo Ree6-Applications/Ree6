@@ -68,7 +68,7 @@ public class Unmute implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("unmute", LanguageService.getDefault("command.description.unmute"))
+        return new CommandDataImpl("unmute", "command.description.unmute")
                 .addOptions(new OptionData(OptionType.USER, "target", "Which User should be unmuted.").setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MODERATE_MEMBERS));
     }

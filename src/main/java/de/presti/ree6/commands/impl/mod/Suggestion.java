@@ -106,7 +106,7 @@ public class Suggestion implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("suggestion", LanguageService.getDefault("command.description.suggestion"))
+        return new CommandDataImpl("suggestion", "command.description.suggestion")
                 .addOptions(new OptionData(OptionType.CHANNEL, "target", "The channel the suggestions should be shown in.").setChannelTypes(ChannelType.NEWS, ChannelType.TEXT).setRequired(true))
                 .addOptions(new OptionData(OptionType.CHANNEL, "messagetarget", "The channel the bot should send the suggestion message to.").setChannelTypes(ChannelType.NEWS, ChannelType.TEXT).setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));

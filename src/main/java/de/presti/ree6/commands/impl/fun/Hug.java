@@ -54,7 +54,8 @@ public class Hug implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("hug", LanguageService.getDefault("command.description.hug")).addOptions(new OptionData(OptionType.USER, "target", "The User that should be hugged!").setRequired(true));
+        return new CommandDataImpl("hug", "command.description.hug")
+                .addOptions(new OptionData(OptionType.USER, "target", "The User that should be hugged!").setRequired(true));
     }
 
     /**

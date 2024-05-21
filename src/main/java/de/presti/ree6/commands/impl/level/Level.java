@@ -59,7 +59,8 @@ Level implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("level", LanguageService.getDefault("command.description.level")).addOptions(new OptionData(OptionType.STRING, "typ", "Do you want to see chat or voice level?"))
+        return new CommandDataImpl("level", "command.description.level")
+                .addOptions(new OptionData(OptionType.STRING, "typ", "Do you want to see chat or voice level?"))
                 .addOptions(new OptionData(OptionType.USER, "target", "Show the Level of the User."));
     }
 
