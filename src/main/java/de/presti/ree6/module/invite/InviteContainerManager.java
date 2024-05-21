@@ -43,7 +43,8 @@ public class InviteContainerManager implements IManager<InviteContainer> {
 
     @Override
     public void load() {
-        replace(SQLSession.getSqlConnector().getSqlWorker().getEntityList(new de.presti.ree6.sql.entities.Invite(), "FROM Invite", null).stream().map(InviteContainer::new).toList());
+        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new de.presti.ree6.sql.entities.Invite(), "FROM Invite", null)
+                .thenAccept(invites1 -> replace(invites1.stream().map(InviteContainer::new).toList()));
     }
 
     /**
@@ -53,8 +54,8 @@ public class InviteContainerManager implements IManager<InviteContainer> {
      */
     public void refreshGuild(long guildId) {
         invites.removeIf(x -> x.guildId == guildId);
-        getList().addAll(SQLSession.getSqlConnector().getSqlWorker().getEntityList(new de.presti.ree6.sql.entities.Invite(), "FROM Invite WHERE guildAndCode.guildId = :gid", Map.of("gid", guildId))
-                .stream().map(InviteContainer::new).toList());
+        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new de.presti.ree6.sql.entities.Invite(), "FROM Invite WHERE guildAndCode.guildId = :gid", Map.of("gid", guildId))
+                .thenAccept(invites1 -> replace(invites1.stream().map(InviteContainer::new).toList()));
     }
 
     /**

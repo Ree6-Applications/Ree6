@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Member;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Utility class for Economy related stuff.
@@ -20,7 +21,7 @@ public class EconomyUtil {
      * @param member The Member.
      * @return If the MoneyHolder has any cash.
      */
-    public static boolean hasCash(Member member) {
+    public static CompletableFuture<Boolean> hasCash(Member member) {
         return hasCash(member.getGuild().getIdLong(), member.getIdLong());
     }
 
@@ -31,8 +32,8 @@ public class EconomyUtil {
      * @param memberId The ID of the Member.
      * @return If the MoneyHolder has any cash.
      */
-    public static boolean hasCash(long guildId, long memberId) {
-        return hasCash(getMoneyHolder(guildId, memberId));
+    public static CompletableFuture<Boolean> hasCash(long guildId, long memberId) {
+        return getMoneyHolder(guildId, memberId).thenApply(EconomyUtil::hasCash);
     }
 
     /**
@@ -51,7 +52,7 @@ public class EconomyUtil {
      * @param member The Member.
      * @return The MoneyHolder.
      */
-    public static MoneyHolder getMoneyHolder(Member member) {
+    public static CompletableFuture<MoneyHolder> getMoneyHolder(Member member) {
         return getMoneyHolder(member.getGuild().getIdLong(), member.getIdLong());
     }
 
@@ -62,7 +63,7 @@ public class EconomyUtil {
      * @param memberId The ID of the Member.
      * @return The MoneyHolder.
      */
-    public static MoneyHolder getMoneyHolder(long guildId, long memberId) {
+    public static CompletableFuture<MoneyHolder> getMoneyHolder(long guildId, long memberId) {
         return getMoneyHolder(guildId, memberId, true);
     }
 
@@ -74,18 +75,18 @@ public class EconomyUtil {
      * @param createIfNotExists If the MoneyHolder should be created if it does not exist.
      * @return The MoneyHolder.
      */
-    public static MoneyHolder getMoneyHolder(long guildId, long memberId, boolean createIfNotExists) {
-        MoneyHolder moneyHolder = SQLSession.getSqlConnector().getSqlWorker().getEntity(new MoneyHolder(), "FROM MoneyHolder WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid",
-                Map.of("gid", guildId, "uid", memberId));
+    public static CompletableFuture<MoneyHolder> getMoneyHolder(long guildId, long memberId, boolean createIfNotExists) {
+        return SQLSession.getSqlConnector().getSqlWorker().getEntity(new MoneyHolder(), "FROM MoneyHolder WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid",
+                Map.of("gid", guildId, "uid", memberId)).thenApply(moneyHolder -> {
+            if (moneyHolder == null && createIfNotExists) {
+                moneyHolder = new MoneyHolder();
+                moneyHolder.setGuildId(guildId);
+                moneyHolder.setUserId(memberId);
+                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder).join();
+            }
 
-        if (moneyHolder == null && createIfNotExists) {
-            moneyHolder = new MoneyHolder();
-            moneyHolder.setGuildId(guildId);
-            moneyHolder.setUserId(memberId);
-            moneyHolder = SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder);
-        }
-
-        return moneyHolder;
+            return moneyHolder;
+        });
     }
 
     /**

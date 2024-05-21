@@ -1,14 +1,10 @@
 package de.presti.ree6.game.core.base;
 
 import de.presti.ree6.game.core.GameSession;
-import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.economy.MoneyHolder;
 import de.presti.ree6.utils.data.EconomyUtil;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
-
-import java.util.Map;
 
 /**
  * Interface for Games to implement.
@@ -27,12 +23,14 @@ public interface IGame {
 
     /**
      * Called when a User wants to join the Game.
+     *
      * @param user The User who wants to join.
      */
     void joinGame(GamePlayer user);
 
     /**
      * Called when a User wants to leave the Game.
+     *
      * @param user The User who wants to leave.
      */
     void leaveGame(GamePlayer user);
@@ -66,19 +64,23 @@ public interface IGame {
 
     /**
      * Called when a User should be rewarded.
+     *
      * @param gameSession The current Session.
-     * @param player The Player who should be rewarded.
-     * @param parameter Any additional Parameter.
+     * @param player      The Player who should be rewarded.
+     * @param parameter   Any additional Parameter.
      */
     default void rewardPlayer(GameSession gameSession, GamePlayer player, Object parameter) {
         if (parameter instanceof String parameterString) {
             try {
                 parameter = Double.parseDouble(parameterString.replace(",", "."));
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+            }
         }
         if (parameter instanceof Double money) {
-            EconomyUtil.pay(null, EconomyUtil.getMoneyHolder(gameSession.getGuild().getIdLong(), player.getRelatedUserId(), true),
-                    money, false, false, true);
+            EconomyUtil.getMoneyHolder(gameSession.getGuild().getIdLong(), player.getRelatedUserId(), true).thenAccept(moneyHolder -> {
+                if (moneyHolder == null) return;
+                EconomyUtil.pay(null, moneyHolder, money, false, false, true);
+            });
         }
     }
 

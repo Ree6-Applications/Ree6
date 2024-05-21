@@ -6,7 +6,6 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
-import de.presti.ree6.sql.entities.economy.MoneyHolder;
 import de.presti.ree6.utils.data.EconomyUtil;
 import de.presti.ree6.utils.others.RandomUtils;
 import de.presti.ree6.utils.others.ThreadUtil;
@@ -71,24 +70,37 @@ public class Steal implements ICommand {
                 return;
             }
 
-            MoneyHolder targetHolder = EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), member.getIdLong(), false);
+            EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), member.getIdLong(), false).thenAccept(targetHolder -> {
+                if (targetHolder == null) {
+                    commandEvent.reply(commandEvent.getResource("message.steal.notEnoughMoney", member.getAsMention()), 5);
+                    return;
+                }
 
-            // Leave them poor people alone ong.
-            if (!EconomyUtil.hasCash(targetHolder) || targetHolder.getAmount() <= 50) {
-                commandEvent.reply(commandEvent.getResource("message.steal.notEnoughMoney", member.getAsMention()), 5);
-                return;
-            }
+                // Leave them poor people alone ong.
+                if (!EconomyUtil.hasCash(targetHolder) || targetHolder.getAmount() <= 50) {
+                    commandEvent.reply(commandEvent.getResource("message.steal.notEnoughMoney", member.getAsMention()), 5);
+                    return;
+                }
 
-            double stealAmount = RandomUtils.round(targetHolder.getAmount() * RandomUtils.nextDouble(0.01, 0.25), 2);
-            if (EconomyUtil.pay(targetHolder, EconomyUtil.getMoneyHolder(commandEvent.getMember()), stealAmount, false, false)) {
-                // TODO:: more variation in the messages.
-                commandEvent.reply(commandEvent.getResource("message.steal.success", EconomyUtil.formatMoney(stealAmount), member.getAsMention()), 5);
-            } else {
-                commandEvent.reply(commandEvent.getResource("message.steal.failed", EconomyUtil.formatMoney(stealAmount), member.getAsMention()), 5);
-            }
+                double stealAmount = RandomUtils.round(targetHolder.getAmount() * RandomUtils.nextDouble(0.01, 0.25), 2);
 
-            stealTimeout.add(entryString);
-            ThreadUtil.createThread(x -> stealTimeout.remove(entryString), Duration.ofSeconds(delay), false, false);
+                EconomyUtil.getMoneyHolder(commandEvent.getMember()).thenAccept(holder -> {
+                    if (holder == null) {
+                        commandEvent.reply(commandEvent.getResource("message.steal.notEnoughMoney", member.getAsMention()), 5);
+                        return;
+                    }
+
+                    if (EconomyUtil.pay(targetHolder, holder, stealAmount, false, false)) {
+                        // TODO:: more variation in the messages.
+                        commandEvent.reply(commandEvent.getResource("message.steal.success", EconomyUtil.formatMoney(stealAmount), member.getAsMention()), 5);
+                    } else {
+                        commandEvent.reply(commandEvent.getResource("message.steal.failed", EconomyUtil.formatMoney(stealAmount), member.getAsMention()), 5);
+                    }
+
+                    stealTimeout.add(entryString);
+                    ThreadUtil.createThread(x -> stealTimeout.remove(entryString), Duration.ofSeconds(delay), false, false);
+                });
+            });
         });
     }
 

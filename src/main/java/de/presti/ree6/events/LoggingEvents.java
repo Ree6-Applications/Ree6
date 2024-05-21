@@ -3,6 +3,7 @@ package de.presti.ree6.events;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.logger.LogMessage;
 import de.presti.ree6.logger.LogTyp;
@@ -10,14 +11,12 @@ import de.presti.ree6.logger.events.LogMessageMember;
 import de.presti.ree6.logger.events.LogMessageRole;
 import de.presti.ree6.logger.events.LogMessageUser;
 import de.presti.ree6.logger.events.LogMessageVoice;
-import de.presti.ree6.module.invite.InviteContainer;
-import de.presti.ree6.module.invite.InviteContainerManager;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.module.invite.InviteContainer;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Invite;
 import de.presti.ree6.sql.entities.webhook.base.Webhook;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
@@ -91,33 +90,36 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildBan(@Nonnull GuildBanEvent event) {
 
-        if (!SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()) ||
-                !SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberban").getBooleanValue())
-            return;
+        SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).thenAccept(isSetup -> {
+            if (!isSetup) return;
+            SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberban").thenAccept(shouldLog -> {
+                if (!shouldLog.getBooleanValue()) return;
 
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+                WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(BotConfig.getBotName() + "-Logs");
+                wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
+                wm.setUsername(BotConfig.getBotName() + "-Logs");
 
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
-        we.setTimestamp(Instant.now());
-        we.setDescription(LanguageService.getByEvent(event, "logging.banned", event.getUser().getAsMention()));
+                WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+                we.setColor(Color.BLACK.getRGB());
+                we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
+                we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
+                we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
+                we.setTimestamp(Instant.now());
+                we.setDescription(LanguageService.getByEvent(event, "logging.banned", event.getUser().getAsMention()).join());
 
-        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.BAN).limit(5).stream().filter(auditLogEntry ->
-                auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
+                AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.BAN).limit(5).stream().filter(auditLogEntry ->
+                        auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
 
-        if (entry != null && entry.getUser() != null)
-            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
+                if (entry != null && entry.getUser() != null)
+                    we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
 
-        wm.addEmbeds(we.build());
+                wm.addEmbeds(we.build());
 
-        Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong());
-        Main.getInstance().getLoggerQueue().add(new LogMessageUser(webhook.getWebhookId(), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
+                Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).join();
+                Main.getInstance().getLoggerQueue().add(new LogMessageUser(webhook.getWebhookId(), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
+            });
+        });
     }
 
     /**
@@ -126,33 +128,36 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildUnban(@Nonnull GuildUnbanEvent event) {
 
-        if (!SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()) ||
-                !SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberunban").getBooleanValue())
-            return;
+        SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).thenAccept(isSetup -> {
+            if (!isSetup) return;
+            SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberunban").thenAccept(shouldLog -> {
+                if (!shouldLog.getBooleanValue()) return;
 
-        WebhookMessageBuilder wm = new WebhookMessageBuilder();
+                WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-        wm.setUsername(BotConfig.getBotName() + "-Logs");
+                wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
+                wm.setUsername(BotConfig.getBotName() + "-Logs");
 
-        WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-        we.setColor(Color.BLACK.getRGB());
-        we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
-        we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
-        we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
-        we.setTimestamp(Instant.now());
-        we.setDescription(LanguageService.getByEvent(event, "logging.unbanned", event.getUser().getAsMention()));
+                WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+                we.setColor(Color.BLACK.getRGB());
+                we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
+                we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
+                we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
+                we.setTimestamp(Instant.now());
+                we.setDescription(LanguageService.getByEvent(event, "logging.unbanned", event.getUser().getAsMention()).join());
 
-        AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.UNBAN).limit(5).stream().filter(auditLogEntry ->
-                auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
+                AuditLogEntry entry = event.getGuild().retrieveAuditLogs().type(ActionType.UNBAN).limit(5).stream().filter(auditLogEntry ->
+                        auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
 
-        if (entry != null && entry.getUser() != null)
-            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
+                if (entry != null && entry.getUser() != null)
+                    we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
 
-        wm.addEmbeds(we.build());
+                wm.addEmbeds(we.build());
 
-        Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong());
-        Main.getInstance().getLoggerQueue().add(new LogMessageUser(webhook.getWebhookId(), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_UNBAN, event.getUser()));
+                Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).join();
+                Main.getInstance().getLoggerQueue().add(new LogMessageUser(webhook.getWebhookId(), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.USER_UNBAN, event.getUser()));
+            });
+        });
     }
 
     //endregion
@@ -165,72 +170,76 @@ public class LoggingEvents extends ListenerAdapter {
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
 
-        if (!SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()))
-            return;
+        SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).thenAccept(isSetup -> {
+            if(!isSetup) return;
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).thenAccept(webhook -> {
+                SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberjoin").thenAccept(shouldLog -> {
+                    if (!shouldLog.getBooleanValue()) return;
+                    WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
-        Webhook webhook = SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong());
+                    wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
+                    wm.setUsername(BotConfig.getBotName() + "-Logs");
 
-        if (SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberjoin").getBooleanValue()) {
-            WebhookMessageBuilder wm = new WebhookMessageBuilder();
+                    WebhookEmbedBuilder we = new WebhookEmbedBuilder();
+                    we.setColor(Color.BLACK.getRGB());
+                    we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
+                    we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
+                    we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
+                    we.setTimestamp(Instant.now());
+                    we.setDescription(LanguageService.getByEvent(event, "logging.joined.default", event.getUser().getAsMention(), TimeFormat.DATE_TIME_SHORT.format(event.getUser().getTimeCreated()), TimeFormat.RELATIVE.format(event.getUser().getTimeCreated())).join());
 
-            wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-            wm.setUsername(BotConfig.getBotName() + "-Logs");
-
-            WebhookEmbedBuilder we = new WebhookEmbedBuilder();
-            we.setColor(Color.BLACK.getRGB());
-            we.setThumbnailUrl(event.getUser().getEffectiveAvatarUrl());
-            we.setAuthor(new WebhookEmbed.EmbedAuthor(event.getUser().getEffectiveName(), event.getUser().getEffectiveAvatarUrl(), null));
-            we.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
-            we.setTimestamp(Instant.now());
-            we.setDescription(LanguageService.getByEvent(event, "logging.joined.default", event.getUser().getAsMention(), TimeFormat.DATE_TIME_SHORT.format(event.getUser().getTimeCreated()), TimeFormat.RELATIVE.format(event.getUser().getTimeCreated())));
-
-            wm.addEmbeds(we.build());
-            Main.getInstance().getLoggerQueue().add(new LogMessageUser(webhook.getWebhookId(), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.SERVER_JOIN, event.getUser()));
-        }
-
-        if (event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER) && SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_invite").getBooleanValue()) {
-
-            WebhookMessageBuilder wm2 = new WebhookMessageBuilder();
-
-            wm2.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
-            wm2.setUsername(BotConfig.getBotName() + "-InviteLogs");
-
-            if (event.getUser().isBot()) {
-                event.getGuild().retrieveAuditLogs().type(ActionType.BOT_ADD).limit(1).queue(auditLogEntries -> {
-                    if (auditLogEntries.isEmpty()) {
-                        wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()));
-                        return;
-                    }
-                    AuditLogEntry entry = auditLogEntries.get(0);
-
-                    if (entry.getUser() == null) {
-                        wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()));
-                        return;
-                    }
-
-                    if (entry.getTargetId().equals(event.getUser().getId())) {
-                        wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.found", event.getUser().getAsMention(), entry.getUser().getAsMention()));
-                    } else {
-                        wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()));
-                    }
+                    wm.addEmbeds(we.build());
+                    Main.getInstance().getLoggerQueue().add(new LogMessageUser(webhook.getWebhookId(), webhook.getToken(), wm.build(), event.getGuild(), LogTyp.SERVER_JOIN, event.getUser()));
                 });
-            } else {
-                InviteContainer inviteContainer = Main.getInstance().getInviteContainerManager().getRightInvite(event.getGuild());
-                if (inviteContainer != null) {
-                    inviteContainer.setUses(inviteContainer.getUses() + 1);
-                    if (inviteContainer.isVanity()) {
-                        wm2.append(LanguageService.getByEvent(event, "logging.joined.invite.vanity", event.getUser().getAsMention()));
-                    } else {
-                        wm2.append(LanguageService.getByEvent(event, "logging.joined.invite.default", event.getUser().getAsMention(), "<@" + inviteContainer.getCreatorId() + ">", inviteContainer.getCode(), inviteContainer.getUses()));
-                    }
-                    Main.getInstance().getInviteContainerManager().add(inviteContainer);
-                } else {
-                    wm2.append(LanguageService.getByEvent(event, "logging.joined.invite.notFound", event.getMember().getAsMention()));
-                }
-            }
 
-            Main.getInstance().getLoggerQueue().add(new LogMessageUser(webhook.getWebhookId(), webhook.getToken(), wm2.build(), event.getGuild(), LogTyp.SERVER_INVITE, event.getUser()));
-        }
+                if (event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER)) {
+                    SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_invite").thenAccept(shouldLog -> {
+                        if (!shouldLog.getBooleanValue()) return;
+                        WebhookMessageBuilder wm2 = new WebhookMessageBuilder();
+
+                        wm2.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
+                        wm2.setUsername(BotConfig.getBotName() + "-InviteLogs");
+
+                        if (event.getUser().isBot()) {
+                            event.getGuild().retrieveAuditLogs().type(ActionType.BOT_ADD).limit(1).queue(auditLogEntries -> {
+                                if (auditLogEntries.isEmpty()) {
+                                    wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()).join());
+                                    return;
+                                }
+                                AuditLogEntry entry = auditLogEntries.get(0);
+
+                                if (entry.getUser() == null) {
+                                    wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()).join());
+                                    return;
+                                }
+
+                                if (entry.getTargetId().equals(event.getUser().getId())) {
+                                    wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.found", event.getUser().getAsMention(), entry.getUser().getAsMention()).join());
+                                } else {
+                                    wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()).join());
+                                }
+                            });
+                        } else {
+                            InviteContainer inviteContainer = Main.getInstance().getInviteContainerManager().getRightInvite(event.getGuild());
+                            if (inviteContainer != null) {
+                                inviteContainer.setUses(inviteContainer.getUses() + 1);
+                                if (inviteContainer.isVanity()) {
+                                    wm2.append(LanguageService.getByEvent(event, "logging.joined.invite.vanity", event.getUser().getAsMention()).join());
+                                } else {
+                                    wm2.append(LanguageService.getByEvent(event, "logging.joined.invite.default", event.getUser().getAsMention(), "<@" + inviteContainer.getCreatorId() + ">", inviteContainer.getCode(), inviteContainer.getUses()).join());
+                                }
+                                Main.getInstance().getInviteContainerManager().add(inviteContainer);
+                            } else {
+                                wm2.append(LanguageService.getByEvent(event, "logging.joined.invite.notFound", event.getMember().getAsMention()).join());
+                            }
+                        }
+
+                        Main.getInstance().getLoggerQueue().add(new LogMessageUser(webhook.getWebhookId(), webhook.getToken(), wm2.build(), event.getGuild(), LogTyp.SERVER_INVITE, event.getUser()));
+                    });
+                }
+            });
+        });
+
     }
 
     /**

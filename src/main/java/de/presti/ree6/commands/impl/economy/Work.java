@@ -50,15 +50,19 @@ public class Work implements ICommand {
 
             double amount = RandomUtils.round(RandomUtils.nextDouble(min, max), 2);
 
-            if (EconomyUtil.pay(null, EconomyUtil.getMoneyHolder(commandEvent.getMember()), amount, false, false, true)) {
-                // TODO:: add more variation messages.
-                commandEvent.reply(commandEvent.getResource("message.work.success", EconomyUtil.formatMoney(amount)));
-            } else {
-                commandEvent.reply(commandEvent.getResource("message.work.fail"));
-            }
+            EconomyUtil.getMoneyHolder(commandEvent.getMember()).thenAccept(moneyHolder -> {
+                if (moneyHolder == null) return;
 
-            workTimeout.add(entryString);
-            ThreadUtil.createThread(x -> workTimeout.remove(entryString), Duration.ofSeconds(delay), false, false);
+                if (EconomyUtil.pay(null, moneyHolder, amount, false, false, true)) {
+                    // TODO:: add more variation messages.
+                    commandEvent.reply(commandEvent.getResource("message.work.success", EconomyUtil.formatMoney(amount)));
+                } else {
+                    commandEvent.reply(commandEvent.getResource("message.work.fail"));
+                }
+
+                workTimeout.add(entryString);
+                ThreadUtil.createThread(x -> workTimeout.remove(entryString), Duration.ofSeconds(delay), false, false);
+            });
         });
     }
 
