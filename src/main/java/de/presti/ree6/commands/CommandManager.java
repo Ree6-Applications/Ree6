@@ -613,6 +613,50 @@ public class CommandManager {
     /**
      * Send a message to a special Message-Channel.
      *
+     * @param message        the Message content as {@link CompletableFuture<String>}.
+     * @param messageChannel the Message-Channel.
+     */
+    public void sendMessage(CompletableFuture<String> message, MessageChannel messageChannel) {
+        message.thenAccept(s -> sendMessage(s, messageChannel));
+    }
+
+    /**
+     * Send a message to a special Message-Channel, with a deletion delay.
+     *
+     * @param message        the Message content as {@link CompletableFuture<String>}.
+     * @param deleteSecond   the delete delay
+     * @param messageChannel the Message-Channel.
+     */
+    public void sendMessage(CompletableFuture<String> message, int deleteSecond, MessageChannel messageChannel) {
+        message.thenAccept(s -> sendMessage(s, deleteSecond, messageChannel));
+    }
+
+    /**
+     * Send a message to a special Message-Channel.
+     *
+     * @param message         the Message content as {@link CompletableFuture<String>}.
+     * @param messageChannel  the Message-Channel.
+     * @param interactionHook the Interaction-hook if it is a slash command.
+     */
+    public void sendMessage(CompletableFuture<String> message, MessageChannel messageChannel, InteractionHook interactionHook) {
+        message.thenAccept(s -> sendMessage(s, messageChannel, interactionHook));
+    }
+
+    /**
+     * Send a message to a special Message-Channel, with a deletion delay.
+     *
+     * @param messageContent  the Message content as {@link CompletableFuture<String>}.
+     * @param messageChannel  the Message-Channel.
+     * @param interactionHook the Interaction-hook if it is a slash command.
+     * @param deleteSecond    the delete delay
+     */
+    public void sendMessage(CompletableFuture<String> messageContent, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
+        messageContent.thenAccept(s -> sendMessage(s, deleteSecond, messageChannel, interactionHook));
+    }
+
+    /**
+     * Send a message to a special Message-Channel.
+     *
      * @param message        the Message content.
      * @param messageChannel the Message-Channel.
      */

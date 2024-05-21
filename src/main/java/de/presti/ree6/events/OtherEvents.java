@@ -45,6 +45,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -291,31 +292,7 @@ public class OtherEvents extends ListenerAdapter {
             }
 
             if (BotConfig.isModuleActive("temporalvoice")) {
-                SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getId()))
-                        .thenAccept(temporalVoicechannel -> {
-                            if (temporalVoicechannel != null) {
-                                VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
-
-                                if (voiceChannel == null)
-                                    return;
-
-                                if (temporalVoicechannel.getGuildChannelId().getChannelId() != voiceChannel.getIdLong()) {
-                                    return;
-                                }
-
-                                if (voiceChannel.getParentCategory() != null) {
-                                    String preName = LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", "SPLIT");
-                                    preName = preName.split("SPLIT")[0];
-
-                                    String finalPreName = preName;
-                                    voiceChannel.getParentCategory().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName",
-                                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)).queue(channel -> {
-                                        event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
-                                        ArrayUtil.temporalVoicechannel.add(channel.getId());
-                                    });
-                                }
-                            }
-                        });
+                checkCreationChannel(event.getGuild(), event.getMember(), event.getChannelJoined().getIdLong());
             }
         } else if (event.getChannelJoined() == null) {
             doVoiceXPStuff(event.getMember());
@@ -341,33 +318,39 @@ public class OtherEvents extends ListenerAdapter {
             if (BotConfig.isModuleActive("temporalvoice")) {
                 if (checkChannel(event.getChannelLeft(), event.getJDA())) return;
 
-                SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getId()))
-                        .thenAccept(temporalVoicechannel -> {
-                            if (temporalVoicechannel != null) {
-                                VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
-
-                                if (voiceChannel == null)
-                                    return;
-
-                                if (temporalVoicechannel.getGuildChannelId().getChannelId() != voiceChannel.getIdLong()) {
-                                    return;
-                                }
-
-                                if (voiceChannel.getParentCategory() != null) {
-                                    String preName = LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", "SPLIT");
-                                    preName = preName.split("SPLIT")[0];
-
-                                    String finalPreName = preName;
-                                    voiceChannel.getParentCategory().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName",
-                                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)).queue(channel -> {
-                                        event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
-                                        ArrayUtil.temporalVoicechannel.add(channel.getId());
-                                    });
-                                }
-                            }
-                        });
+                checkCreationChannel(event.getGuild(), event.getMember(), event.getChannelJoined().getIdLong());
             }
         }
+    }
+
+    private void checkCreationChannel(Guild guild, Member member, long channelId) {
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", guild.getId()))
+                .thenAccept(temporalVoicechannel -> {
+                    if (temporalVoicechannel != null) {
+                        VoiceChannel voiceChannel = guild.getVoiceChannelById(channelId);
+
+                        if (voiceChannel == null)
+                            return;
+
+                        if (temporalVoicechannel.getGuildChannelId().getChannelId() != voiceChannel.getIdLong()) {
+                            return;
+                        }
+
+                        if (voiceChannel.getParentCategory() != null) {
+                            LanguageService.getByGuild(guild, "label.temporalVoiceName", "SPLIT").thenAccept(preName -> {
+                                preName = preName.split("SPLIT")[0];
+                                String finalPreName = preName;
+                                LanguageService.getByGuild(guild, "label.temporalVoiceName",
+                                                guild.getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)
+                                        .thenAccept(name -> voiceChannel.getParentCategory().createVoiceChannel(name)
+                                                .queue(channel -> {
+                                                    guild.moveVoiceMember(member, channel).queue();
+                                                    ArrayUtil.temporalVoicechannel.add(channel.getId());
+                                                }));
+                            });
+                        }
+                    }
+                });
     }
 
     private boolean checkChannel(AudioChannelUnion channel, JDA instance) {
@@ -490,6 +473,7 @@ public class OtherEvents extends ListenerAdapter {
                     ModerationUtil.checkMessage(event.getGuild().getIdLong(), event.getMessage().getContentRaw()).thenAccept(y -> {
                         if (y) {
                             Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+
                             Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.blacklisted"), event.getChannel(), null);
                             moderated.set(true);
                         }
@@ -573,31 +557,33 @@ public class OtherEvents extends ListenerAdapter {
             if (message.getAuthor().getId().equalsIgnoreCase(event.getJDA().getSelfUser().getId())) {
                 String messageContent = message.getContentRaw();
 
-                if (messageContent.startsWith(LanguageService.getByGuild(event.getGuild(), "message.reactions.reactionNeeded", "SPLIT_HERE").split("SPLIT_HERE")[0])) {
-                    if (event.getMember().hasPermission(Permission.ADMINISTRATOR) && message.getMessageReference() != null) {
-                        if (message.getMentions().getRoles().isEmpty()) {
-                            message.editMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound")).queue();
-                            return;
+                LanguageService.getByGuild(event.getGuild(), "message.reactions.reactionNeeded", "SPLIT_HERE").thenAccept(translation -> {
+                    if (messageContent.startsWith(translation.split("SPLIT_HERE")[0])) {
+                        if (event.getMember().hasPermission(Permission.ADMINISTRATOR) && message.getMessageReference() != null) {
+                            if (message.getMentions().getRoles().isEmpty()) {
+                                LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound").thenApply(message::editMessage).thenAccept(MessageEditAction::queue);
+                                return;
+                            }
+
+                            Role role = message.getMentions().getRoles().get(0);
+
+                            if (role == null) {
+                                LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound").thenApply(message::editMessage).thenAccept(MessageEditAction::queue);
+                                return;
+                            }
+
+                            ReactionRole reactionRole = new ReactionRole(event.getGuild().getIdLong(), emojiId, emojiUnion.getFormatted(), role.getIdLong(), message.getMessageReference().getMessageIdLong());
+                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole);
+
+                            if (message.getMessageReference().getMessage() != null) {
+                                message.getMessageReference().getMessage().addReaction(event.getEmoji()).queue();
+                            }
+
+                            LanguageService.getByGuild(event.getGuild(), "message.reactions.roleAssign", role.getAsMention())
+                                    .thenAccept(x -> message.editMessage(x).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue());
                         }
-
-                        Role role = message.getMentions().getRoles().get(0);
-
-                        if (role == null) {
-                            message.editMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound")).queue();
-                            return;
-                        }
-
-                        ReactionRole reactionRole = new ReactionRole(event.getGuild().getIdLong(), emojiId, emojiUnion.getFormatted(), role.getIdLong(), message.getMessageReference().getMessageIdLong());
-                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole);
-
-                        if (message.getMessageReference().getMessage() != null) {
-                            message.getMessageReference().getMessage().addReaction(event.getEmoji()).queue();
-                        }
-
-                        message.editMessage(LanguageService.getByGuild(event.getGuild(), "message.reactions.roleAssign", role.getAsMention()))
-                                .delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
                     }
-                }
+                });
             } else {
                 SQLSession.getSqlConnector().getSqlWorker()
                         .getEntity(new ReactionRole(), "FROM ReactionRole WHERE guildRoleId.guildId=:gid AND emoteId=:emoteId AND messageId=:messageId",

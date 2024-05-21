@@ -612,7 +612,7 @@ public class Main {
                                     TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
 
                                     if (textChannel != null && textChannel.canTalk())
-                                        textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish", birthday.getUserId())).queue();
+                                        textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish", birthday.getUserId()).join()).queue();
                                 });
                             });
 
@@ -739,13 +739,13 @@ public class Main {
                             MessageEditBuilder messageEditBuilder = MessageEditBuilder.fromMessage(message);
 
                             reaction.retrieveUsers().mapToResult().onErrorMap(throwable -> {
-                                messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.error"));
+                                messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.error").join());
                                 message.editMessage(messageEditBuilder.build()).queue();
                                 toDelete.add(giveaway);
                                 return null;
                             }).queue(users -> {
                                 if (users == null) {
-                                    messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.less"));
+                                    messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.less").join());
                                     message.editMessage(messageEditBuilder.build()).queue();
                                     return;
                                 }
@@ -753,13 +753,13 @@ public class Main {
                                 users.onSuccess(userList -> {
 
                                     if (userList.isEmpty()) {
-                                        messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.none"));
+                                        messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.none").join());
                                         message.editMessage(messageEditBuilder.build()).queue();
                                         return;
                                     }
 
                                     if (userList.stream().filter(user -> !user.isBot()).count() < giveaway.getWinners()) {
-                                        messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.less"));
+                                        messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.less").join());
                                         message.editMessage(messageEditBuilder.build()).queue();
                                         return;
                                     }
