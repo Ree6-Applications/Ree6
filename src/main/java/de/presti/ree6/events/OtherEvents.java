@@ -341,31 +341,31 @@ public class OtherEvents extends ListenerAdapter {
             if (BotConfig.isModuleActive("temporalvoice")) {
                 if (checkChannel(event.getChannelLeft(), event.getJDA())) return;
 
-            SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getId()))
-                    .thenAccept(temporalVoicechannel -> {
-                        if (temporalVoicechannel != null) {
-                            VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
+                SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getId()))
+                        .thenAccept(temporalVoicechannel -> {
+                            if (temporalVoicechannel != null) {
+                                VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(event.getChannelJoined().getId());
 
-                            if (voiceChannel == null)
-                                return;
+                                if (voiceChannel == null)
+                                    return;
 
-                            if (temporalVoicechannel.getGuildChannelId().getChannelId() != voiceChannel.getIdLong()) {
-                                return;
+                                if (temporalVoicechannel.getGuildChannelId().getChannelId() != voiceChannel.getIdLong()) {
+                                    return;
+                                }
+
+                                if (voiceChannel.getParentCategory() != null) {
+                                    String preName = LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", "SPLIT");
+                                    preName = preName.split("SPLIT")[0];
+
+                                    String finalPreName = preName;
+                                    voiceChannel.getParentCategory().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName",
+                                            event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)).queue(channel -> {
+                                        event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
+                                        ArrayUtil.temporalVoicechannel.add(channel.getId());
+                                    });
+                                }
                             }
-
-                            if (voiceChannel.getParentCategory() != null) {
-                                String preName = LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName", "SPLIT");
-                                preName = preName.split("SPLIT")[0];
-
-                                String finalPreName = preName;
-                                voiceChannel.getParentCategory().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.temporalVoiceName",
-                                        event.getGuild().getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)).queue(channel -> {
-                                    event.getGuild().moveVoiceMember(event.getMember(), channel).queue();
-                                    ArrayUtil.temporalVoicechannel.add(channel.getId());
-                                });
-                            }
-                        }
-                    });
+                        });
             }
         }
     }
@@ -421,6 +421,7 @@ public class OtherEvents extends ListenerAdapter {
 
     /**
      * Method used to do all the calculations for the Voice XP.
+     *
      * @param member the Member that should be checked.
      */
     public void doVoiceXPStuff(Member member) {
@@ -645,7 +646,7 @@ public class OtherEvents extends ListenerAdapter {
             emojiId = reactionCode.replace(":", "").hashCode();
         }
 
-        ReactionRole reactionRole = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
                 "FROM ReactionRole WHERE guildRoleId.guildId=:gid AND emoteId=:emoteId AND messageId=:messageId",
                 Map.of("gid", event.getGuild().getIdLong(), "emoteId", emojiId, "messageId", event.getMessageIdLong())).thenAccept(reactionRole -> {
             if (reactionRole != null) {
