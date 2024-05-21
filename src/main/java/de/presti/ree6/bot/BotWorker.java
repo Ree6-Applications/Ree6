@@ -16,7 +16,6 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
@@ -87,18 +86,37 @@ public class BotWorker {
     private static String gitVersion;
 
     /**
+     * Git build version.
+     */
+    private static String gitBranch;
+
+    /**
+     * Git repository.
+     */
+    private static String gitRepository;
+
+    /**
+     * If the repository is dirty.
+     */
+    private static boolean gitDirty;
+
+
+    /**
      * Load the git information from the git.properties file.
      */
     private static void loadGitProperties() {
         try {
             Properties prop = new Properties();
-            //load a properties file from class path, inside static method
+            //load a properties file from a class path, inside static method
             prop.load(Main.class.getClassLoader().getResourceAsStream("git.properties"));
 
             //get the property value and print it out
             gitCommitFull = prop.getProperty("git.commit.id.full");
             gitCommit = prop.getProperty("git.commit.id.abbrev");
             gitVersion = prop.getProperty("git.build.version");
+            gitBranch = prop.getProperty("git.branch");
+            gitRepository = prop.getProperty("git.remote.origin.url");
+            gitDirty = Boolean.parseBoolean(prop.getProperty("git.dirty"));
         } catch (Exception ex) {
             log.error("Failed to read git information from file!", ex);
         }
@@ -114,7 +132,7 @@ public class BotWorker {
         log.info("Loading git information...");
         loadGitProperties();
 
-        log.info("Creating Instance build " + build);
+        log.info("Creating Instance build {}", build);
         version = version1;
         token = Main.getInstance().getConfig().getConfiguration().getString(getVersion().getTokenPath());
         state = BotState.INIT;
@@ -215,14 +233,14 @@ public class BotWorker {
     }
 
     /**
-     * Get the build / the actual version in the x.y.z format.
+     * Get build / the actual version in the x.y.z format.
      *
      * @return the Build.
      */
     public static String getBuild() {
         if (build == null) {
             build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(),
-                    Objects.requireNonNullElse(gitVersion, "3.1.12"));
+                    Objects.requireNonNullElse(gitVersion, "3.1.13"));
         }
         return build;
     }
@@ -243,5 +261,32 @@ public class BotWorker {
      */
     public static String getCommitFull() {
         return gitCommitFull;
+    }
+
+    /**
+     * Get the branch of the current build.
+     *
+     * @return the branch.
+     */
+    public static String getBranch() {
+        return gitBranch;
+    }
+
+    /**
+     * Get the repository of the current build.
+     *
+     * @return the repository.
+     */
+    public static String getRepository() {
+        return gitRepository;
+    }
+
+    /**
+     * Check if the repository is dirty.
+     *
+     * @return true if dirty.
+     */
+    public static boolean isDirty() {
+        return gitDirty;
     }
 }

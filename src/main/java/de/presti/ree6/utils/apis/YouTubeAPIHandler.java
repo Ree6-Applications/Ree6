@@ -112,6 +112,10 @@ public class YouTubeAPIHandler {
      * @throws Exception if something went wrong.
      */
     public ChannelResult getYouTubeChannelBySearch(String channelName) throws Exception {
+        if (isValidChannelId(channelName)) {
+            return YouTubeWrapper.getChannel(channelName);
+        }
+
         List<SearchResult> searchResults = YouTubeWrapper.search(channelName, SearchResult.FILTER.CHANNEL);
 
         if (searchResults.isEmpty()) {
@@ -135,6 +139,10 @@ public class YouTubeAPIHandler {
      * @throws Exception if something went wrong.
      */
     public ChannelResult getYouTubeChannelById(String channelId) throws Exception {
+        if (isValidChannelId(channelId)) {
+            return getYouTubeChannelBySearch(channelId);
+        }
+
         return YouTubeWrapper.getChannel(channelId);
     }
 

@@ -50,7 +50,7 @@ public class NSFW implements ICommand {
         List<String> images = new ArrayList<>();
 
         try {
-            List<RedditPost> request = Main.getInstance().getNotifier().getRedditClient().getSubredditPosts("hentai", Sorting.HOT).limit(50).submit();
+            List<RedditPost> request = Main.getInstance().getNotifier().getSubredditPosts("hentai", Sorting.HOT, 50);
 
             request.forEach(x -> {
                 String fileUrl = x.getUrl().toLowerCase();

@@ -21,6 +21,7 @@ import de.presti.ree6.utils.data.ImageCreationUtility;
 import de.presti.ree6.utils.others.*;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -28,6 +29,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -333,13 +335,11 @@ public class OtherEvents extends ListenerAdapter {
             }
 
             if (BotConfig.isModuleActive("temporalvoice")) {
-                if (ArrayUtil.isTemporalVoicechannel(event.getChannelLeft())
-                        && (event.getChannelLeft().getMembers().isEmpty() || (event.getChannelLeft().getMembers().size() == 1 &&
-                        event.getChannelLeft().getMembers().get(0).getIdLong() == event.getJDA().getSelfUser().getIdLong()))) {
-                    event.getChannelLeft().delete().queue(c -> ArrayUtil.temporalVoicechannel.remove(event.getChannelLeft().getId()));
-                }
+                checkChannel(event.getChannelLeft(), event.getJDA());
             }
         } else {
+            if (BotConfig.isModuleActive("temporalvoice")) {
+                if (checkChannel(event.getChannelLeft(), event.getJDA())) return;
 
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getId()))
                     .thenAccept(temporalVoicechannel -> {
@@ -366,7 +366,19 @@ public class OtherEvents extends ListenerAdapter {
                             }
                         }
                     });
+            }
         }
+    }
+
+    private boolean checkChannel(AudioChannelUnion channel, JDA instance) {
+        if (ArrayUtil.isTemporalVoicechannel(channel)
+                && (channel.getMembers().isEmpty() || (channel.getMembers().size() == 1 &&
+                channel.getMembers().get(0).getIdLong() == instance.getSelfUser().getIdLong()))) {
+            channel.delete().queue(c -> ArrayUtil.temporalVoicechannel.remove(channel.getId()));
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -409,7 +421,6 @@ public class OtherEvents extends ListenerAdapter {
 
     /**
      * Method used to do all the calculations for the Voice XP.
-     *
      * @param member the Member that should be checked.
      */
     public void doVoiceXPStuff(Member member) {
@@ -634,7 +645,7 @@ public class OtherEvents extends ListenerAdapter {
             emojiId = reactionCode.replace(":", "").hashCode();
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
+        ReactionRole reactionRole = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
                 "FROM ReactionRole WHERE guildRoleId.guildId=:gid AND emoteId=:emoteId AND messageId=:messageId",
                 Map.of("gid", event.getGuild().getIdLong(), "emoteId", emojiId, "messageId", event.getMessageIdLong())).thenAccept(reactionRole -> {
             if (reactionRole != null) {

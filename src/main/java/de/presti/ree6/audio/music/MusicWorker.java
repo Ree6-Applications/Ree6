@@ -8,7 +8,6 @@ import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -20,6 +19,7 @@ import de.presti.ree6.utils.apis.SpotifyAPIHandler;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.FormatUtil;
+import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import io.sentry.Sentry;
 import lavalink.client.io.Link;
 import lavalink.client.io.jda.JdaLink;
@@ -33,7 +33,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
-import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -92,14 +91,18 @@ public class MusicWorker {
      * @return the MusicManager of that Guild.
      */
     public synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
-        long guildId = Long.parseLong(guild.getId());
+        musicManagers.putIfAbsent(guild.getIdLong(), new GuildMusicManager(guild, playerManager));
 
-        musicManagers.putIfAbsent(guildId, new GuildMusicManager(guild, playerManager));
-
-        GuildMusicManager musicManager = musicManagers.get(guildId);
+        GuildMusicManager musicManager = musicManagers.get(guild.getIdLong());
 
         if (!BotConfig.shouldUseLavaLink()) {
-            guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+            try {
+                AudioManager audioManager = guild.getAudioManager();
+                audioManager.setSendingHandler(musicManager.getSendHandler());
+            } catch (Exception exception) {
+                Sentry.captureException(exception);
+                log.error("Couldn't set the SendingHandler for the GuildMusicManager", exception);
+            }
         }
 
         return musicManager;

@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Optional;
+import java.util.Scanner;
 
 /**
  * Main class.
@@ -19,7 +21,12 @@ public class Main {
     /**
      * The Config.
      */
-    private static final Config config = new Config();
+    private static final Config CONFIG = new Config();
+
+    /**
+     * The Scanner.
+     */
+    private static final Scanner SCANNER = new Scanner(System.in);
 
     /**
      * Main method.
@@ -30,13 +37,18 @@ public class Main {
         if (getJavaVersion() < 17) {
             print(String.format("""
                     Looks like you are using a version below Java 17!
-                    Ree6 has been developed base on Java 17 you wont be able to run it with %s!
+                    Ree6 has been developed on Java 17 you wont be able to run it with %s!
                     You can still continue with installing everything!""", getJavaVersion()));
         }
 
-        if (Arrays.stream(args).anyMatch(c -> c.equalsIgnoreCase("update"))) {
+        Optional<String> updateArgument = Arrays.stream(args).filter(c -> c.equalsIgnoreCase("update"))
+                .findFirst();
+
+        if (updateArgument.isPresent()) {
+            String version = updateArgument.get().substring("update".length()).trim();
+            version = version.isBlank() ? "latest" : version;
             print("Updating Ree6...");
-            update();
+            update(version);
             return;
         }
 
@@ -47,7 +59,7 @@ public class Main {
             switch (input) {
                 case "update" -> {
                     print("Updating Ree6...");
-                    update();
+                    update("latest");
                 }
                 case "configure" -> {
                     print("Configuring Ree6...");
@@ -89,7 +101,7 @@ public class Main {
      * @throws InterruptedException if the delay fails?
      */
     public static void config() throws InterruptedException {
-        config.init();
+        CONFIG.init();
 
         try {
             setupStepOne();
@@ -131,7 +143,7 @@ public class Main {
      */
     public static void setupStepOne() throws InterruptedException, IOException {
         clear();
-        print("Welcome to the setup System of Ree6!\nLets start by configuration the Config!\nPlease select one of these Database Types: MariaDB, SQLite, Postgres, H2, H2-Server");
+        print("Welcome to the Ree6-Installer!\nLets start with the configuration of the installation!\nPlease select one of the supported Databases: MariaDB, SQLite, Postgres, H2, H2-Server");
 
         switch (getValueOrDefault("sqlite").toLowerCase()) {
             case "mariadb" -> setupGenericDatabase("mariadb", "MariaDB");
@@ -145,7 +157,7 @@ public class Main {
             case "postgres" -> setupGenericDatabase("postgresql", "Postgres");
 
             default -> {
-                print("Unknown Database Typ!");
+                print("Unsupported Database!");
                 Thread.sleep(500);
                 setupStepOne();
             }
@@ -155,95 +167,135 @@ public class Main {
     }
 
     /**
-     * Setup the second step of the configuration.
+     * Set up the second step of the configuration.
      * @throws IOException if something went wrong.
      */
     public static void setupStepTwo() throws IOException {
         clear();
-        print("The Database configuration looks fine!\nLets continue with our API-Keys!\nKeys marked with * are required!");
+        print("The database configuration should be done!\nLets continue with setting other parameters!\nKeys marked with * are required!");
 
         print("Enter your Discord Bot-Token (*)");
-        config.getConfiguration().set("bot.tokens.release", getValueOrDefaultHidden(""));
+        CONFIG.getConfiguration().set("bot.tokens.release", getValueOrDefaultHidden(""));
 
-        print("Do you want to continue configuration not mandatory configs?\nEnter yes if you want to continue if not enter no!");
+        print("Do you wish to configure the none mandatory parameters? (y/n)");
 
         if (getValueOrDefault("no").toLowerCase().startsWith("y")) {
 
+            //region Heartbeat
             print("Enter the Heartbeat-Url (NONE)");
-            config.getConfiguration().set("heartbeat.url", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("heartbeat.url", getValueOrDefault("none"));
 
             print("Enter the Heartbeat-Interval (NONE)");
-            config.getConfiguration().set("heartbeat.url", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("heartbeat.url", getValueOrDefault(""));
+
+            //endregion
 
             print("Enter your Dagpi.xyz-Key (NONE)");
-            config.getConfiguration().set("dagpi.apitoken", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("dagpi.apitoken", getValueOrDefault(""));
 
             print("Enter your AmariBot-Key (NONE)");
-            config.getConfiguration().set("amari.apitoken", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("amari.apitoken", getValueOrDefault(""));
+
+            //region OpenAI
 
             print("Enter your OpenAI API-Token (NONE)");
-            config.getConfiguration().set("openai.apiToken", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("openai.apiToken", getValueOrDefault(""));
 
             print("Enter your OpenAI API-Url (NONE)");
-            config.getConfiguration().set("openai.apiUrl", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("openai.apiUrl", getValueOrDefault("https://api.openai.com/v1/chat/completions"));
 
             print("Enter your OpenAI AI-Model (NONE)");
-            config.getConfiguration().set("openai.model", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("openai.model", getValueOrDefault("gpt-3.5-turbo-0301"));
+
+            //endregion
 
             print("Enter your Sentry DSN (NONE)");
-            config.getConfiguration().set("sentry.dsn", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("sentry.dsn", getValueOrDefault(""));
+
+            //region Spotify
 
             print("Enter your Spotify Client Id (NONE)");
-            config.getConfiguration().set("spotify.client.id", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("spotify.client.id", getValueOrDefault(""));
 
             print("Enter your Spotify Client Secret (NONE)");
-            config.getConfiguration().set("spotify.client.secret", getValueOrDefaultHidden(""));
+            CONFIG.getConfiguration().set("spotify.client.secret", getValueOrDefaultHidden(""));
+
+            //endregion
+
+            //region Twitch
 
             print("Enter your Twitch Client Id (NONE)");
-            config.getConfiguration().set("twitch.client.id", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("twitch.client.id", getValueOrDefault(""));
 
             print("Enter your Twitch Client Secret (NONE)");
-            config.getConfiguration().set("twitch.client.secret", getValueOrDefaultHidden(""));
+            CONFIG.getConfiguration().set("twitch.client.secret", getValueOrDefaultHidden(""));
+
+            //endregion
 
             print("Enter your Twitter Bearer Key (NONE)");
-            config.getConfiguration().set("twitter.bearer", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("twitter.bearer", getValueOrDefault(""));
+
+            //region Reddit
 
             print("Enter your Reddit Client Id (NONE)");
-            config.getConfiguration().set("reddit.client.id", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("reddit.client.id", getValueOrDefault(""));
 
             print("Enter your Reddit Client Secret (NONE)");
-            config.getConfiguration().set("reddit.client.secret", getValueOrDefaultHidden(""));
+            CONFIG.getConfiguration().set("reddit.client.secret", getValueOrDefaultHidden(""));
+
+            //endregion
+
+            //region Instagram
 
             print("Enter your Instagram Account Name (NONE)");
-            config.getConfiguration().set("instagram.username", getValueOrDefault(""));
+            CONFIG.getConfiguration().set("instagram.username", getValueOrDefault(""));
 
             print("Enter your Instagram Account password (NONE)");
-            config.getConfiguration().set("instagram.password", getValueOrDefaultHidden(""));
+            CONFIG.getConfiguration().set("instagram.password", getValueOrDefaultHidden(""));
+
+            //endregion
         }
 
-        config.getConfiguration().save();
+        CONFIG.getConfiguration().save();
 
-        print("Great, we finished setting up everything!\nDo you want me to download the latest version?\nEnter yes if you want to continue if not enter no!");
+        print("The configuration has been completed!\nDo you want me to download the latest version? (y/n)");
         if (getValueOrDefault("no").toLowerCase().startsWith("y")) {
             print("Understood!\nDownloading latest version...");
-            update();
+            update("latest");
         }
     }
 
     /**
      * Update Ree6 to the latest version.
      */
-    public static void update() {
+    public static void update(String version) {
         print("Requesting version list from Github...");
-        JSONArray jsonObject = new JSONArray(RequestUtility.request("https://api.github.com/repos/Ree6-Applications/Ree6/releases"));
+        JSONArray releaseArray = new JSONArray(RequestUtility.request("https://api.github.com/repos/Ree6-Applications/Ree6/releases"));
 
-        JSONObject jsonObject1 = jsonObject.getJSONObject(0);
+        JSONObject selectedVersion = null;
 
-        JSONArray assets = jsonObject1.getJSONArray("assets");
+        if (!version.equalsIgnoreCase("latest")) {
+            for (Object o : releaseArray) {
+                JSONObject release = (JSONObject) o;
+                if (release.getString("tag_name").equalsIgnoreCase(version)) {
+                    selectedVersion = release;
+                    break;
+                }
+            }
+        } else {
+            selectedVersion = releaseArray.getJSONObject(0);
+        }
 
-        String tagName = jsonObject1.getString("tag_name");
+        if (selectedVersion == null) {
+            print("Could not find version: " + version + "!\nPlease check the version and try again!");
+            return;
+        }
 
-        print("Found " + jsonObject.length() + " versions!\nSearching for latest version...");
+        JSONArray assets = selectedVersion.getJSONArray("assets");
+
+        String tagName = selectedVersion.getString("tag_name");
+
+        print("Found " + releaseArray.length() + " versions!\nSearching for latest version...");
 
         for (Object o : assets) {
             JSONObject asset = (JSONObject) o;
@@ -254,9 +306,9 @@ public class Main {
                     print("Found Ree6 version " + tagName + "!\nDownloading it...");
                     InputStream in = new URL(downloadUrl).openStream();
                     Files.copy(in, Paths.get("Ree6.jar"), StandardCopyOption.REPLACE_EXISTING);
-                    print("We downloaded the latest Ree6 version! (" + tagName + ")");
+                    print("Download completed!");
                 } catch (Exception exception) {
-                    print("We could not download the latest Ree6 version!\nManually download it over " + downloadUrl);
+                    print("We could not download the required Ree6 version!\nManually download it over " + downloadUrl);
                     exception.printStackTrace();
                 }
                 break;
@@ -272,30 +324,30 @@ public class Main {
      */
     public static void setupGenericDatabase(String typ, String displayName) throws IOException {
         clear();
-        config.getConfiguration().set("hikari.misc.storage", typ);
+        CONFIG.getConfiguration().set("hikari.misc.storage", typ);
 
-        print("You selected " + displayName + "!\nLets start by setting up the connection between Ree6 and " + displayName + "!\nWhat is the Username that you want to use? (root)");
+        print("You selected " + displayName + "!\nLets start by setting up the connection between Ree6 and " + displayName + "!\nWhat is the username that you want to use? (root)");
         String name = getValueOrDefault("root");
-        config.getConfiguration().set("hikari.sql.name", name);
+        CONFIG.getConfiguration().set("hikari.sql.name", name);
 
         print("What is the host address? (localhost)");
         String host = getValueOrDefault("localhost");
-        config.getConfiguration().set("hikari.sql.host", host);
+        CONFIG.getConfiguration().set("hikari.sql.host", host);
 
         print("What is the host port? (3306)");
         String port = getValueOrDefault("3306");
-        config.getConfiguration().set("hikari.sql.port", Integer.parseInt(port));
+        CONFIG.getConfiguration().set("hikari.sql.port", Integer.parseInt(port));
 
         print("What is the Database name? (root)");
         String databaseName = getValueOrDefault("root");
-        config.getConfiguration().set("hikari.sql.db", databaseName);
+        CONFIG.getConfiguration().set("hikari.sql.db", databaseName);
 
 
         print("What is the User password? (NONE)");
         String password = getValueOrDefaultHidden("");
-        config.getConfiguration().set("hikari.sql.pw", password);
+        CONFIG.getConfiguration().set("hikari.sql.pw", password);
 
-        config.getConfiguration().save();
+        CONFIG.getConfiguration().save();
     }
 
     /**
@@ -304,11 +356,11 @@ public class Main {
      */
     public static void setupSQLite() throws IOException {
         clear();
-        config.getConfiguration().set("hikari.misc.storage", "sqlite");
+        CONFIG.getConfiguration().set("hikari.misc.storage", "sqlite");
 
         print("You selected SQLite!\nYou dont need to set up anything for this one!");
 
-        config.getConfiguration().save();
+        CONFIG.getConfiguration().save();
     }
 
     /**
@@ -317,28 +369,28 @@ public class Main {
      */
     public static void setupH2(boolean server) throws IOException {
         clear();
-        config.getConfiguration().set("hikari.misc.storage", server ? "h2-server" : "h2");
+        CONFIG.getConfiguration().set("hikari.misc.storage", server ? "h2-server" : "h2");
 
         if (server) {
             print("Do you want to run the H2 server?\nEnter yes if you want or no If you dont.");
             String input = getValue();
             if (input.equalsIgnoreCase("yes")) {
-                config.getConfiguration().set("hikari.misc.createEmbeddedServer", true);
+                CONFIG.getConfiguration().set("hikari.misc.createEmbeddedServer", true);
 
-                print("Done!\nRee6 will now start a H2 embedded Server when you start it!\nThe port to connect is: 9092!");
+                print("Done!\nRee6 will now start a H2 embedded Server when you start it!\nThe port to connect to is: 9092!");
             } else {
-                config.getConfiguration().set("hikari.misc.createEmbeddedServer", false);
+                CONFIG.getConfiguration().set("hikari.misc.createEmbeddedServer", false);
 
                 setupGenericDatabase("h2-server", "H2-Server");
 
                 print("Done!\nRee6 will now connect to the H2 server when you start it!");
             }
         } else {
-            config.getConfiguration().set("hikari.misc.createEmbeddedServer", false);
+            CONFIG.getConfiguration().set("hikari.misc.createEmbeddedServer", false);
             print("You selected H2!\nYou dont need to set up anything for this one!");
         }
 
-        config.getConfiguration().save();
+        CONFIG.getConfiguration().save();
     }
 
     /**
@@ -346,6 +398,10 @@ public class Main {
      * @return the value.
      */
     public static String getValue() {
+        if (System.console() == null) {
+            return SCANNER.nextLine();
+        }
+
         return System.console().readLine();
     }
 
@@ -366,7 +422,7 @@ public class Main {
      * @return the value.
      */
     public static String getValueOrDefaultHidden(String defaultValue) {
-        String value = String.valueOf(System.console().readPassword());
+        String value = System.console() == null ? SCANNER.nextLine() : new String(System.console().readPassword());
 
         return value.isBlank() ? defaultValue : value;
     }

@@ -3,6 +3,7 @@ package de.presti.ree6.utils.apis;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import cn.hutool.core.exceptions.ValidateException;
 import com.apptasticsoftware.rssreader.Channel;
 import com.apptasticsoftware.rssreader.Image;
 import com.apptasticsoftware.rssreader.Item;
@@ -55,10 +56,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import masecla.reddit4j.client.Reddit4J;
 import masecla.reddit4j.exceptions.AuthenticationException;
+import masecla.reddit4j.objects.RedditPost;
 import masecla.reddit4j.objects.Sorting;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.utils.TimeFormat;
 import org.jsoup.HttpStatusException;
 
 import java.awt.*;
@@ -754,14 +755,7 @@ public class Notifier {
 
                                     webhookEmbedBuilder.setImageUrl(playlistItem.getThumbnail());
 
-                                    // Set rest of the Information.
-                                    webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Title**", playlistItem.getTitle()));
-                                    webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Description**", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet()));
-
-                                    webhookEmbedBuilder.setDescription("[Click here to watch the Video](https://www.youtube.com/watch?v=" + playlistItem.getId() + ")");
-
-                                    if (playlistItem.getUploadDate() != -1)
-                                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Upload Date**", TimeFormat.DATE_TIME_SHORT.format(playlistItem.getUploadDate())));
+                                    webhookEmbedBuilder.setDescription("[**" + playlistItem.getTitle() + "**](https://www.youtube.com/watch?v=" + playlistItem.getId() + ")");
 
                                     webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(BotConfig.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
                                     webhookEmbedBuilder.setColor(Color.RED.getRGB());
@@ -772,7 +766,7 @@ public class Notifier {
                                                 .replace("%description%", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet())
                                                 .replace("%url%", "https://www.youtube.com/watch?v=" + playlistItem.getId());
 
-                                        webhookEmbedBuilder.setDescription(message);
+                                        webhookMessageBuilder.setContent(message);
                                         webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
                                         WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
                                     });
@@ -879,6 +873,19 @@ public class Notifier {
 
     //region Reddit
 
+    public List<RedditPost> getSubredditPosts(String subreddit, Sorting sorting, int limit) throws AuthenticationException, IOException, InterruptedException {
+        try {
+            return redditClient.getSubredditPosts(subreddit, sorting).limit(limit).submit();
+        } catch (ValidateException exception) {
+            if (exception.getMessage().startsWith("The parameter")) {
+                redditClient.userlessConnect();
+                return redditClient.getSubredditPosts(subreddit, sorting).limit(limit).submit();
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
     /**
      * Used to register a Reddit-Post Event for all Subreddits.
      */
@@ -913,7 +920,7 @@ public class Notifier {
                         }
                     }
 
-                    redditClient.getSubredditPosts(subreddit, Sorting.NEW).submit().stream().filter(redditPost -> redditPost.getCreated() > (Duration.ofMillis(System.currentTimeMillis()).toSeconds() - Duration.ofMinutes(5).toSeconds())).forEach(redditPost -> {
+                    getSubredditPosts(subreddit, Sorting.NEW, 50).stream().filter(redditPost -> redditPost.getCreated() > (Duration.ofMillis(System.currentTimeMillis()).toSeconds() - Duration.ofMinutes(5).toSeconds())).forEach(redditPost -> {
                         List<WebhookReddit> webhooks = SQLSession.getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit);
 
                         if (webhooks.isEmpty()) return;
@@ -1255,9 +1262,7 @@ public class Notifier {
      * @param users the ID of the TikTok Users.
      */
     public void registerTikTokUser(List<Long> users) {
-        users.forEach(s -> {
-            if (!isTikTokUserRegistered(s)) registeredTikTokUsers.add(s);
-        });
+        users.forEach(this::registerTikTokUser);
     }
 
     /**
