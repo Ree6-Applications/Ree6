@@ -1,46 +1,49 @@
 package de.presti.ree6.commands;
 
+import lombok.Getter;
+
 /**
  * Different Categories for the commands.
  */
+@Getter
 public enum Category {
 
     /**
-     * Category used for informativ Commands.
+     * Category used for information Commands.
      */
-    INFO("re_icon_info", 1019221661070917632L, false, "category.info"),
+    INFO("re_icon_info", 1019221661070917632L, false, "category.info", true),
     /**
-     * Category used for moderativ Commands.
+     * Category used for moderate Commands.
      */
-    MOD("re_icon_mod", 1019221710932803624L, false, "category.moderation"),
+    MOD("re_icon_mod", 1019221710932803624L, false, "category.moderation", true),
     /**
      * Category used for music Commands.
      */
-    MUSIC("re_icon_music", 1019221781762023575L, false, "category.music"),
+    MUSIC("re_icon_music", 1019221781762023575L, false, "category.music", true),
     /**
      * Category used for fun Commands.
      */
-    FUN("re_icon_fun", 1019221814670532628L, false, "category.fun"),
+    FUN("re_icon_fun", 1019221814670532628L, false, "category.fun", false),
     /**
      * Category used for level Commands.
      */
-    LEVEL("re_icon_level", 1019221845972635809L, false, "category.level"),
+    LEVEL("re_icon_level", 1019221845972635809L, false, "category.level", true),
     /**
      * Category used for community Commands.
      */
-    COMMUNITY("re_icon_community", 1019221884686057552L, false, "category.community"),
+    COMMUNITY("re_icon_community", 1019221884686057552L, false, "category.community", true),
     /**
      * Category used for economy Commands.
      */
-    ECONOMY("re_icon_economy", 0L, false, "category.economy"),
+    ECONOMY("re_icon_economy", 0L, false, "category.economy", true),
     /**
      * Category used for NSFW Commands.
      */
-    NSFW("re_icon_nsfw", 1019221923466584166L, false, "category.nsfw"),
+    NSFW("re_icon_nsfw", 1019221923466584166L, false, "category.nsfw", false),
     /**
      * Category used for admin Commands.
      */
-    HIDDEN("re_icon_hidden", 1019221957817933865L, false, "category.hidden");
+    HIDDEN("re_icon_hidden", 1019221957817933865L, false, "category.hidden", true);
 
     /**
      * The Name of the Icon.
@@ -63,53 +66,24 @@ public enum Category {
     private final String description;
 
     /**
+     * Value for knowledge about the Command being Guild only or not.
+     */
+    private final boolean guildOnly;
+
+    /**
      * Constructor.
      *
      * @param icon         the Icon Name.
      * @param iconId       the Icon ID.
      * @param iconAnimated the info if the Icon is animated.
      * @param description  a short description.
+     * @param guildOnly    the info if the Command is Guild only.
      */
-    Category(String icon, long iconId, boolean iconAnimated, String description) {
+    Category(String icon, long iconId, boolean iconAnimated, String description, boolean guildOnly) {
         this.icon = icon;
         this.iconId = iconId;
         this.iconAnimated = iconAnimated;
         this.description = description;
-    }
-
-    /**
-     * The Icon Name for the Category.
-     *
-     * @return the Name.
-     */
-    public String getIcon() {
-        return icon;
-    }
-
-    /**
-     * The Icon ID for the Category.
-     *
-     * @return the Icon ID.
-     */
-    public long getIconId() {
-        return iconId;
-    }
-
-    /**
-     * The Information if the Icon is animated.
-     *
-     * @return true, if yes | false, if not.
-     */
-    public boolean isIconAnimated() {
-        return iconAnimated;
-    }
-
-    /**
-     * Short description of the Category.
-     *
-     * @return the short description.
-     */
-    public String getDescription() {
-        return description;
+        this.guildOnly = guildOnly;
     }
 }

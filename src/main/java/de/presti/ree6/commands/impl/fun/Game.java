@@ -11,6 +11,7 @@ import de.presti.ree6.game.core.base.GamePlayer;
 import de.presti.ree6.game.core.base.GameState;
 import de.presti.ree6.language.LanguageService;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -108,7 +109,7 @@ public class Game implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("game", "command.description.game")
+        return new CommandDataImpl("game", "command.description.game").setContexts(InteractionContextType.GUILD)
                 .addSubcommands(new SubcommandData("create", "Create a new Game match.")
                         .addOptions(new OptionData(OptionType.STRING, "name", "The Game name.", true).addChoice("Blackjack", "blackjack").addChoice("Music Quiz", "musicquiz")),
                         new SubcommandData("join", "Join a Game match.")
