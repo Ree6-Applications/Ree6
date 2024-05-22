@@ -26,10 +26,15 @@
             <url>https://jitpack.io</url>
         </repository>
         <repository>
-            <id>central</id>
+            <id>lavalink</id>
+            <name>LavaLink Devs</name>
+            <url>https://maven.lavalink.dev/snapshots</url>
+        </repository>
+        <!--<repository>
+            <id>bintray</id>
             <name>bintray</name>
             <url>https://jcenter.bintray.com</url>
-        </repository>
+        </repository>-->
         <repository>
             <id>dv8tion</id>
             <name>m2-dv8tion</name>
@@ -49,11 +54,17 @@
             <artifactId>JDA</artifactId>
             <version>5.0.0-beta.24</version>
         </dependency>
+        <!-- Fix for the failed Lookup until they release a version -->
         <dependency>
+            <groupId>dev.arbjerg</groupId>
+            <artifactId>lavaplayer</artifactId>
+            <version>83f3633248303439dab16d0f89422e30fae0f83a-SNAPSHOT</version>
+        </dependency>
+        <!--<dependency>
             <groupId>com.github.lavalink-devs.lavaplayer</groupId>
             <artifactId>lavaplayer</artifactId>
             <version>0ab6311a5f</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.github.lavalink-devs</groupId>
             <artifactId>youtube-source</artifactId>
