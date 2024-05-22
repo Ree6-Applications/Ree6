@@ -27,6 +27,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -208,6 +210,16 @@ public class CommandManager {
 
             if (commandAnnotation.category() == Category.NSFW) {
                 commandData.setNSFW(true);
+            }
+
+            if (commandAnnotation.category().isGuildOnly()) {
+                commandData.setIntegrationTypes(IntegrationType.GUILD_INSTALL);
+            } else {
+                if (commandData.getContexts().contains(InteractionContextType.GUILD)) {
+                    commandData.setIntegrationTypes(IntegrationType.GUILD_INSTALL);
+                } else {
+                    commandData.setIntegrationTypes(IntegrationType.ALL);
+                }
             }
 
             if (commandData instanceof CommandDataImpl commandData1) {
