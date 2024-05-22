@@ -56,9 +56,9 @@
     <dependencies>
         <!-- Discord -->
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>io.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.1.2</version>
+            <version>d78a5e5a3a</version>
         </dependency>
         <!-- Fix for the failed Lookup until they release a version -->
         <dependency>
