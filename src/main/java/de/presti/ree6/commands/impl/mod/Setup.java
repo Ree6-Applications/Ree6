@@ -203,8 +203,9 @@ public class Setup implements ICommand {
                     case "tempvoice" -> {
                         if (commandEvent.getSubcommand().equals("set")) {
                             if (guildChannelUnion.getType() == ChannelType.VOICE) {
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new TemporalVoicechannel(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong()));
-                                commandEvent.reply(commandEvent.getResource("message.temporalVoice.setupSuccess"));
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new TemporalVoicechannel(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong())).thenAccept(save -> {
+                                    commandEvent.reply(commandEvent.getResource("message.temporalVoice.setupSuccess"));
+                                });
                             } else {
                                 commandEvent.reply(commandEvent.getResource("message.default.invalidOptionChannel"));
                             }
@@ -252,6 +253,7 @@ public class Setup implements ICommand {
                             for (Setting setting : SettingsManager.getSettings()) {
                                 if (!setting.getName().startsWith("configuration_rewards_")) continue;
 
+                                // TODO:: thing of how to handle this.
                                 SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Setting(commandEvent.getGuild().getIdLong(), setting.getName(), setting.getDisplayName(), setting.getValue()));
                             }
 

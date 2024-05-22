@@ -671,7 +671,7 @@ public class Main {
                                             .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
                                     scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
-                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage).join();
                                 }
                             } else {
                                 if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
@@ -682,7 +682,7 @@ public class Main {
                                             .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
                                     scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
-                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage).join();
                                 }
                             }
                         }

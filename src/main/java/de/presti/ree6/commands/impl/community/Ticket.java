@@ -79,7 +79,7 @@ public class Ticket implements ICommand {
                 finalTickets.setLogChannelWebhookToken(webhook.getToken());
                 commandEvent.getGuild().createCategory("Tickets").addPermissionOverride(commandEvent.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
                     finalTickets.setTicketCategory(category1.getIdLong());
-                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(finalTickets);
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(finalTickets).join();
 
                     MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
                     messageCreateBuilder.setEmbeds(new EmbedBuilder()
