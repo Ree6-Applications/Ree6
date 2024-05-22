@@ -134,7 +134,7 @@ public class EconomyUtil {
             holder.setAmount(amount);
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().updateEntity(holder);
+        SQLSession.getSqlConnector().getSqlWorker().updateEntity(holder).join();
         return true;
     }
 
@@ -160,7 +160,7 @@ public class EconomyUtil {
             receiver.setAmount(receiver.getAmount() + amount);
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().updateEntity(receiver);
+        SQLSession.getSqlConnector().getSqlWorker().updateEntity(receiver).join();
 
         if (!isSystem) {
             if (fromBank) {
@@ -169,10 +169,10 @@ public class EconomyUtil {
                 sender.setAmount(sender.getAmount() - amount);
             }
 
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(sender);
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(sender).join();
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new MoneyTransaction(0L, isSystem, isSystem ? receiver.getGuildUserId().getGuildId() : sender.getGuildUserId().getGuildId(), isSystem && sender == null ? receiver : sender, receiver, toBank, fromBank, amount, Timestamp.from(Instant.now())));
+        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new MoneyTransaction(0L, isSystem, isSystem ? receiver.getGuildUserId().getGuildId() : sender.getGuildUserId().getGuildId(), isSystem && sender == null ? receiver : sender, receiver, toBank, fromBank, amount, Timestamp.from(Instant.now()))).join();
 
         return true;
     }

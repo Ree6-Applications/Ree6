@@ -573,7 +573,7 @@ public class OtherEvents extends ListenerAdapter {
                             }
 
                             ReactionRole reactionRole = new ReactionRole(event.getGuild().getIdLong(), emojiId, emojiUnion.getFormatted(), role.getIdLong(), message.getMessageReference().getMessageIdLong());
-                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole);
+                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole).join();
 
                             if (message.getMessageReference().getMessage() != null) {
                                 message.getMessageReference().getMessage().addReaction(event.getEmoji()).queue();
@@ -608,7 +608,7 @@ public class OtherEvents extends ListenerAdapter {
                                 }
 
                                 if (changes)
-                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole);
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole).join();
                             }
                         });
             }

@@ -196,7 +196,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
             boolean failedToUpload = false;
 
             try {
-                SQLSession.getSqlConnector().getSqlWorker().updateEntity(recording);
+                SQLSession.getSqlConnector().getSqlWorker().updateEntity(recording).join();
             } catch (Exception ignore) {
                 failedToUpload = true;
             }

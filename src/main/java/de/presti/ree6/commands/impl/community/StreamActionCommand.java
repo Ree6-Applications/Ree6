@@ -164,7 +164,7 @@ public class StreamActionCommand implements ICommand {
                                         streamAction.setGuildId(commandEvent.getGuild().getIdLong());
                                         streamAction.setName(name.getAsString());
 
-                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction);
+                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(streamAction).join();
                                         commandEvent.reply(commandEvent.getResource("message.stream-action.added", name.getAsString()));
                                     } else {
                                         commandEvent.reply(commandEvent.getResource("message.stream-action.noTwitch", BotConfig.getTwitchAuth()));

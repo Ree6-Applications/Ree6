@@ -82,7 +82,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
 
         getList().add(inviteContainer);
         try {
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(new de.presti.ree6.sql.entities.Invite(inviteContainer.getGuildId(), inviteContainer.getCreatorId(), inviteContainer.getUses(), inviteContainer.getCode()));
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(new de.presti.ree6.sql.entities.Invite(inviteContainer.getGuildId(), inviteContainer.getCreatorId(), inviteContainer.getUses(), inviteContainer.getCode())).join();
         } catch (Exception ex) {
             log.error("[InviteManager] Error while Saving Invites: " + ex.getMessage());
         }

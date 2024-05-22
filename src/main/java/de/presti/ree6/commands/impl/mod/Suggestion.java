@@ -80,9 +80,9 @@ public class Suggestion implements ICommand {
                 SQLSession.getSqlConnector().getSqlWorker().deleteEntity(suggestions);
 
                 suggestions.getGuildChannelId().setChannelId(channel.getIdLong());
-                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions);
+                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions).join();
             } else {
-                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong()));
+                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong())).join();
             }
         }).thenAccept(suggestions -> SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_suggestion_menu").thenAccept(setting -> {
             MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
