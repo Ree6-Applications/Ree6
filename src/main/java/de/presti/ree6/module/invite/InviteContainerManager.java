@@ -44,7 +44,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
     @Override
     public void load() {
         SQLSession.getSqlConnector().getSqlWorker().getEntityList(new de.presti.ree6.sql.entities.Invite(), "FROM Invite", null)
-                .thenAccept(invites1 -> replace(invites1.stream().map(InviteContainer::new).toList()));
+                .subscribe(invites1 -> replace(invites1.stream().map(InviteContainer::new).toList()));
     }
 
     /**
@@ -55,7 +55,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
     public void refreshGuild(long guildId) {
         invites.removeIf(x -> x.guildId == guildId);
         SQLSession.getSqlConnector().getSqlWorker().getEntityList(new de.presti.ree6.sql.entities.Invite(), "FROM Invite WHERE guildAndCode.guildId = :gid", Map.of("gid", guildId))
-                .thenAccept(invites1 -> replace(invites1.stream().map(InviteContainer::new).toList()));
+                .subscribe(invites1 -> replace(invites1.stream().map(InviteContainer::new).toList()));
     }
 
     /**
@@ -82,7 +82,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
 
         getList().add(inviteContainer);
         try {
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(new de.presti.ree6.sql.entities.Invite(inviteContainer.getGuildId(), inviteContainer.getCreatorId(), inviteContainer.getUses(), inviteContainer.getCode())).join();
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(new de.presti.ree6.sql.entities.Invite(inviteContainer.getGuildId(), inviteContainer.getCreatorId(), inviteContainer.getUses(), inviteContainer.getCode())).block();
         } catch (Exception ex) {
             log.error("[InviteManager] Error while Saving Invites: " + ex.getMessage());
         }

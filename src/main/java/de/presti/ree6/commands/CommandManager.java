@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.reflections.Reflections;
+import reactor.core.publisher.Mono;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
@@ -219,10 +220,10 @@ public class CommandManager {
                     if (!isValidDescription)
                         continue;
 
-                    String localizedDescription = LanguageService.getByLocale(discordLocale, commandAnnotation.description()).join();
+                    String localizedDescription = LanguageService.getByLocale(discordLocale, commandAnnotation.description()).block();
 
                     if (localizedDescription.equals("Missing language resource!")) {
-                        localizedDescription = LanguageService.getDefault(commandAnnotation.description()).join();
+                        localizedDescription = LanguageService.getDefault(commandAnnotation.description()).block();
                     }
 
                     if (!localizedDescription.equals("Missing language resource!")) {
@@ -233,7 +234,7 @@ public class CommandManager {
                 }
 
                 if (isValidDescription) {
-                    String localizedDescription = LanguageService.getDefault(commandAnnotation.description()).join();
+                    String localizedDescription = LanguageService.getDefault(commandAnnotation.description()).block();
 
                     if (!localizedDescription.equals("Missing language resource!")) {
                         commandData1.setDescription(localizedDescription);
@@ -269,10 +270,10 @@ public class CommandManager {
         String groupDescription = subcommandGroupData.getDescription();
 
         if (groupDescription.matches(RegExUtil.ALLOWED_LANGUAGE_PATHS)) {
-            groupDescription = LanguageService.getByLocale(locale, groupDescription).join();
+            groupDescription = LanguageService.getByLocale(locale, groupDescription).block();
 
             if (groupDescription.equals("Missing language resource!")) {
-                groupDescription = LanguageService.getDefault(subcommandGroupData.getDescription()).join();
+                groupDescription = LanguageService.getDefault(subcommandGroupData.getDescription()).block();
             }
 
             if (!groupDescription.equals("Missing language resource!")) {
@@ -284,10 +285,10 @@ public class CommandManager {
             String commandDescription = subcommandData.getDescription();
 
             if (groupDescription.matches(RegExUtil.ALLOWED_LANGUAGE_PATHS)) {
-                commandDescription = LanguageService.getByLocale(locale, commandDescription).join();
+                commandDescription = LanguageService.getByLocale(locale, commandDescription).block();
 
                 if (commandDescription.equals("Missing language resource!")) {
-                    commandDescription = LanguageService.getDefault(subcommandData.getDescription()).join();
+                    commandDescription = LanguageService.getDefault(subcommandData.getDescription()).block();
                 }
 
                 if (!commandDescription.equals("Missing language resource!")) {
@@ -362,7 +363,7 @@ public class CommandManager {
      * @param slashCommandInteractionEvent the Slash Command Event if it was a Slash Command.
      * @return true, if a command has been performed.
      */
-    public CompletableFuture<Boolean> perform(Member member, Guild guild, String messageContent, Message message, GuildMessageChannelUnion messageChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
+    public Mono<Boolean> perform(Member member, Guild guild, String messageContent, Message message, GuildMessageChannelUnion messageChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
         boolean isSlashCommand = slashCommandInteractionEvent != null;
 
         // Check if the User is under Cooldown.
@@ -370,27 +371,27 @@ public class CommandManager {
 
             // Check if it is a Slash Command or not.
             if (isSlashCommand) {
-                sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown").join(), 5, messageChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown").block(), 5, messageChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 deleteMessage(message, slashCommandInteractionEvent.getHook().setEphemeral(true));
             } else {
-                SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "chatprefix").thenAccept(setting -> {
+                SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "chatprefix").subscribe(setting -> {
                     if (setting != null && messageContent.toLowerCase().startsWith(setting.getStringValue().toLowerCase())) {
-                        sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown").join(), 5, messageChannel, null);
+                        sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown").block(), 5, messageChannel, null);
                         deleteMessage(message, null);
                     }
                 });
             }
 
             // Return false.
-            return CompletableFuture.completedFuture(false);
+            return Mono.just(false);
         }
 
         // Check if it is a Slash Command.
         if (isSlashCommand) {
-            if (!BotConfig.isModuleActive("slashcommands")) return CompletableFuture.completedFuture(false);
+            if (!BotConfig.isModuleActive("slashcommands")) return Mono.just(false);
             return performSlashCommand(messageChannel, slashCommandInteractionEvent);
         } else {
-            if (!BotConfig.isModuleActive("messagecommands")) return CompletableFuture.completedFuture(false);
+            if (!BotConfig.isModuleActive("messagecommands")) return Mono.just(false);
             return performMessageCommand(member, guild, messageContent, message, messageChannel);
         }
     }
@@ -417,14 +418,14 @@ public class CommandManager {
      * @param textChannel    the TextChannel where the command has been performed.
      * @return true, if a command has been performed.
      */
-    private CompletableFuture<Boolean> performMessageCommand(Member member, Guild guild, String messageContent, Message message, GuildMessageChannelUnion textChannel) {
+    private Mono<Boolean> performMessageCommand(Member member, Guild guild, String messageContent, Message message, GuildMessageChannelUnion textChannel) {
         // Check if the Message is null.
         if (message == null) {
-            sendMessage(LanguageService.getByGuild(guild, "command.perform.error").join(), 5, textChannel, null);
-            return CompletableFuture.completedFuture(false);
+            sendMessage(LanguageService.getByGuild(guild, "command.perform.error").block(), 5, textChannel, null);
+            return Mono.just(false);
         }
 
-        return SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "chatprefix").thenApply(setting -> {
+        return SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "chatprefix").map(setting -> {
 
             String currentPrefix = setting.getStringValue().toLowerCase();
 
@@ -436,7 +437,7 @@ public class CommandManager {
             String[] arguments = messageContent.substring(currentPrefix.length()).split("\\s+");
 
             if (arguments.length == 0 || arguments[0].isBlank()) {
-                sendMessage(LanguageService.getByGuild(guild, "command.perform.missingCommand").join(), 5, textChannel, null);
+                sendMessage(LanguageService.getByGuild(guild, "command.perform.missingCommand").block(), 5, textChannel, null);
                 return false;
             }
 
@@ -445,7 +446,7 @@ public class CommandManager {
 
             // Check if there is even a Command with that name.
             if (command == null && BotConfig.isModuleActive("customcommands")) {
-                CustomCommand customCommand = SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "FROM CustomCommand WHERE guildId=:gid AND name=:command", Map.of("gid", guild.getIdLong(), "command", arguments[0].toLowerCase())).join();
+                CustomCommand customCommand = SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "FROM CustomCommand WHERE guildId=:gid AND name=:command", Map.of("gid", guild.getIdLong(), "command", arguments[0].toLowerCase())).block();
                 if (customCommand != null) {
                     GuildMessageChannelUnion messageChannelUnion = textChannel;
 
@@ -465,19 +466,19 @@ public class CommandManager {
                     return true;
                 }
 
-                sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound").join(), 5, textChannel, null);
+                sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound").block(), 5, textChannel, null);
                 return false;
             } else if (command == null) {
-                sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound").join(), 5, textChannel, null);
+                sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound").block(), 5, textChannel, null);
                 return false;
             }
 
             if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-                Setting blacklistSetting = SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).join();
+                Setting blacklistSetting = SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).block();
 
                 // Check if the Command is blacklisted.
                 if (blacklistSetting != null && !blacklistSetting.getBooleanValue()) {
-                    sendMessage(LanguageService.getByGuild(guild, "command.perform.blocked").join(), 5, textChannel, null);
+                    sendMessage(LanguageService.getByGuild(guild, "command.perform.blocked").block(), 5, textChannel, null);
                     return false;
                 }
             }
@@ -499,19 +500,19 @@ public class CommandManager {
      * @param slashCommandInteractionEvent the Slash-Command Event.
      * @return true, if a command has been performed.
      */
-    private CompletableFuture<Boolean> performSlashCommand(GuildMessageChannelUnion messageChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
+    private Mono<Boolean> performSlashCommand(GuildMessageChannelUnion messageChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
         //Get the Command by the Slash Command Name.
         ICommand command = getCommandBySlashName(slashCommandInteractionEvent.getName());
 
         // Check if there is a command with that Name.
         if (command == null || slashCommandInteractionEvent.getGuild() == null || slashCommandInteractionEvent.getMember() == null) {
-            sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.notFound").join(), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
-            return CompletableFuture.completedFuture(false);
+            sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.notFound").block(), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+            return Mono.just(false);
         }
 
-        return SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).thenApply(setting -> {
+        return SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).map(setting -> {
             if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN && setting != null && !setting.getBooleanValue()) {
-                sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked").join(), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked").block(), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 return false;
             }
 
@@ -613,45 +614,45 @@ public class CommandManager {
     /**
      * Send a message to a special Message-Channel.
      *
-     * @param message        the Message content as {@link CompletableFuture<String>}.
+     * @param message        the Message content as {@link Mono<String>}.
      * @param messageChannel the Message-Channel.
      */
-    public void sendMessage(CompletableFuture<String> message, MessageChannel messageChannel) {
-        message.thenAccept(s -> sendMessage(s, messageChannel));
+    public void sendMessage(Mono<String> message, MessageChannel messageChannel) {
+        message.subscribe(s -> sendMessage(s, messageChannel));
     }
 
     /**
      * Send a message to a special Message-Channel, with a deletion delay.
      *
-     * @param message        the Message content as {@link CompletableFuture<String>}.
+     * @param message        the Message content as {@link Mono<String>}.
      * @param deleteSecond   the delete delay
      * @param messageChannel the Message-Channel.
      */
-    public void sendMessage(CompletableFuture<String> message, int deleteSecond, MessageChannel messageChannel) {
-        message.thenAccept(s -> sendMessage(s, deleteSecond, messageChannel));
+    public void sendMessage(Mono<String> message, int deleteSecond, MessageChannel messageChannel) {
+        message.subscribe(s -> sendMessage(s, deleteSecond, messageChannel));
     }
 
     /**
      * Send a message to a special Message-Channel.
      *
-     * @param message         the Message content as {@link CompletableFuture<String>}.
+     * @param message         the Message content as {@link Mono<String>}.
      * @param messageChannel  the Message-Channel.
      * @param interactionHook the Interaction-hook if it is a slash command.
      */
-    public void sendMessage(CompletableFuture<String> message, MessageChannel messageChannel, InteractionHook interactionHook) {
-        message.thenAccept(s -> sendMessage(s, messageChannel, interactionHook));
+    public void sendMessage(Mono<String> message, MessageChannel messageChannel, InteractionHook interactionHook) {
+        message.subscribe(s -> sendMessage(s, messageChannel, interactionHook));
     }
 
     /**
      * Send a message to a special Message-Channel, with a deletion delay.
      *
-     * @param messageContent  the Message content as {@link CompletableFuture<String>}.
+     * @param messageContent  the Message content as {@link Mono<String>}.
      * @param messageChannel  the Message-Channel.
      * @param interactionHook the Interaction-hook if it is a slash command.
      * @param deleteSecond    the delete delay
      */
-    public void sendMessage(CompletableFuture<String> messageContent, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
-        messageContent.thenAccept(s -> sendMessage(s, deleteSecond, messageChannel, interactionHook));
+    public void sendMessage(Mono<String> messageContent, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
+        messageContent.subscribe(s -> sendMessage(s, deleteSecond, messageChannel, interactionHook));
     }
 
     /**

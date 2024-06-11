@@ -43,7 +43,7 @@ public interface ICommand {
 
         // Update Stats.
         SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getIdLong(), commandEvent.getCommand());
-        SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news").thenAccept(setting -> {
+        SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news").subscribe(setting -> {
             if (!setting.getBooleanValue()) return;
             AnnouncementManager.getAnnouncementList().forEach(a -> {
                 if (!AnnouncementManager.hasReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id())) {

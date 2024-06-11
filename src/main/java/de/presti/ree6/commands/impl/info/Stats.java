@@ -73,14 +73,14 @@ public class Stats implements ICommand {
 
         StringBuilder end = new StringBuilder();
 
-        SQLSession.getSqlConnector().getSqlWorker().getStats(commandEvent.getGuild().getIdLong()).thenAccept(stats -> {
+        SQLSession.getSqlConnector().getSqlWorker().getStats(commandEvent.getGuild().getIdLong()).subscribe(stats -> {
             for (GuildCommandStats values : stats) {
                 end.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
             }
 
             StringBuilder end2 = new StringBuilder();
 
-            SQLSession.getSqlConnector().getSqlWorker().getStatsGlobal().thenAccept(statsGlobal -> {
+            SQLSession.getSqlConnector().getSqlWorker().getStatsGlobal().subscribe(statsGlobal -> {
                 for (CommandStats values : statsGlobal) {
                     end2.append(values.getCommand()).append(" - ").append(values.getUses()).append("\n");
                 }

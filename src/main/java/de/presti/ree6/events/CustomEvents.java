@@ -78,7 +78,7 @@ public class CustomEvents implements EventListener {
         lastCheck = System.currentTimeMillis();
         SQLSession.getSqlConnector().getSqlWorker().getEntityList(new CustomEventAction(),
                 "FROM CustomEventAction WHERE guildId=:gid",
-                Map.of("gid", guildId)).thenApply(x -> x.stream().map(CustomEventContainer::new).toList()).thenAccept(list -> {
+                Map.of("gid", guildId)).map(x -> x.stream().map(CustomEventContainer::new).toList()).subscribe(list -> {
             CustomEventTyp typ = CustomEventMapper.getEventTyp(clazz);
 
             list.forEach(c -> {

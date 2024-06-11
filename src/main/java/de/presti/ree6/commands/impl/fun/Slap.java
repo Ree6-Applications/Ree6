@@ -79,7 +79,8 @@ public class Slap implements ICommand {
         Image im = null;
         try {
             im = ip.getRandomImage("slap").execute();
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            log.error("Failed to get Image from Neko4J API!", exception);
         }
 
         Main.getInstance().getCommandManager().sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), commandEvent.getChannel(), null);

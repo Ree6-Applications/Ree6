@@ -77,7 +77,7 @@ public interface IGame {
             }
         }
         if (parameter instanceof Double money) {
-            EconomyUtil.getMoneyHolder(gameSession.getGuild().getIdLong(), player.getRelatedUserId(), true).thenAccept(moneyHolder -> {
+            EconomyUtil.getMoneyHolder(gameSession.getGuild().getIdLong(), player.getRelatedUserId(), true).subscribe(moneyHolder -> {
                 if (moneyHolder == null) return;
                 EconomyUtil.pay(null, moneyHolder, money, false, false, true);
             });

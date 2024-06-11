@@ -38,7 +38,7 @@ public class Infractions implements ICommand {
             return;
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "FROM Warning WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong())).thenAccept(warning -> {
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "FROM Warning WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong())).subscribe(warning -> {
             if (warning != null) {
                 commandEvent.reply(commandEvent.getResource("message.infractions.success", member.getAsMention(), warning.getWarnings()));
             } else {

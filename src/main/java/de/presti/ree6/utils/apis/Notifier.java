@@ -184,7 +184,7 @@ public class Notifier {
                     .withCredentialManager(credentialManager)
                     .build();
 
-            SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "FROM TwitchIntegration", null).thenAccept(twitchIntegrations -> {
+            SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "FROM TwitchIntegration", null).subscribe(twitchIntegrations -> {
                 for (TwitchIntegration twitchIntegration : twitchIntegrations) {
                     OAuth2Credential credential = new OAuth2Credential("twitch", twitchIntegration.getToken());
 
@@ -199,7 +199,7 @@ public class Notifier {
             });
 
             twitchClient.getEventManager().onEvent(RewardRedeemedEvent.class, event -> {
-                StreamActionContainerCreator.getContainers(0).thenAccept(list -> {
+                StreamActionContainerCreator.getContainers(0).subscribe(list -> {
                     list.forEach(container -> {
                         if (!event.getRedemption().getChannelId().equalsIgnoreCase(container.getTwitchChannelId()))
                             return;
@@ -212,7 +212,7 @@ public class Notifier {
             });
 
             twitchClient.getEventManager().onEvent(FollowEvent.class, event -> {
-                StreamActionContainerCreator.getContainers(1).thenAccept(list -> {
+                StreamActionContainerCreator.getContainers(1).subscribe(list -> {
                     list.forEach(container -> {
                         if (!event.getChannel().getId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
@@ -222,7 +222,7 @@ public class Notifier {
             });
 
             twitchClient.getEventManager().onEvent(ChannelSubscribeEvent.class, event -> {
-                StreamActionContainerCreator.getContainers(2).thenAccept(list -> {
+                StreamActionContainerCreator.getContainers(2).subscribe(list -> {
                     list.forEach(container -> {
                         if (!event.getBroadcasterUserId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
@@ -305,7 +305,7 @@ public class Notifier {
         ThreadUtil.createThread(x -> {
             for (String twitterName : registeredTwitterUsers) {
                 SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),
-                        "FROM ChannelStats WHERE twitterFollowerChannelUsername=:name", Map.of("name", twitterName)).thenAccept(channelStats -> {
+                        "FROM ChannelStats WHERE twitterFollowerChannelUsername=:name", Map.of("name", twitterName)).subscribe(channelStats -> {
                     if (!channelStats.isEmpty()) {
                         UserV2 twitterUser;
                         try {
@@ -321,7 +321,7 @@ public class Notifier {
                                 GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
                                 if (guildChannel == null) continue;
 
-                                LanguageService.getByGuild(guildChannel.getGuild(), "label.twitterCountName", twitterUser.getFollowersCount()).thenAccept(newName -> {
+                                LanguageService.getByGuild(guildChannel.getGuild(), "label.twitterCountName", twitterUser.getFollowersCount()).subscribe(newName -> {
                                     if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
                                         return;
 
@@ -430,7 +430,7 @@ public class Notifier {
 
 
                             if (typ.equals("tw")) {
-                                SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(item.getChannel().getLink().replace("https://nitter.net/", "")).thenAccept(webhooks -> {
+                                SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(item.getChannel().getLink().replace("https://nitter.net/", "")).subscribe(webhooks -> {
 
                                     if (webhooks.isEmpty()) return;
 
@@ -480,7 +480,7 @@ public class Notifier {
                                 });
                             } else {
                                 try {
-                                    SQLSession.getSqlConnector().getSqlWorker().getRSSWebhooksByUrl(id).thenAccept(webhooks -> {
+                                    SQLSession.getSqlConnector().getSqlWorker().getRSSWebhooksByUrl(id).subscribe(webhooks -> {
                                         if (webhooks.isEmpty()) return;
 
                                         WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
@@ -534,7 +534,7 @@ public class Notifier {
     public void registerTwitchEventHandler() {
         getTwitchClient().getEventManager().onEvent(ChannelGoLiveEvent.class, channelGoLiveEvent -> {
 
-            SQLSession.getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getChannel().getName()).thenAccept(webhooks -> {
+            SQLSession.getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getChannel().getName()).subscribe(webhooks -> {
                 if (webhooks.isEmpty()) {
                     return;
                 }
@@ -582,7 +582,7 @@ public class Notifier {
         getTwitchClient().getEventManager().onEvent(ChannelFollowCountUpdateEvent.class, channelFollowCountUpdateEvent -> {
             SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),
                     "FROM ChannelStats WHERE LOWER(twitchFollowerChannelUsername) = :name",
-                    Map.of("name", channelFollowCountUpdateEvent.getChannel().getName().toLowerCase())).thenAccept(channelStats -> {
+                    Map.of("name", channelFollowCountUpdateEvent.getChannel().getName().toLowerCase())).subscribe(channelStats -> {
                 if (!channelStats.isEmpty()) {
                     for (ChannelStats channelStat : channelStats) {
                         if (channelStat.getTwitchFollowerChannelId() != null) {
@@ -591,7 +591,7 @@ public class Notifier {
                                 if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
                                     continue;
 
-                                LanguageService.getByGuild(guildChannel.getGuild(), "label.twitchCountName", channelFollowCountUpdateEvent.getFollowCount()).thenAccept(newName -> {
+                                LanguageService.getByGuild(guildChannel.getGuild(), "label.twitchCountName", channelFollowCountUpdateEvent.getFollowCount()).subscribe(newName -> {
                                     if (!guildChannel.getName().equalsIgnoreCase(newName)) {
                                         guildChannel.getManager().setName(newName).queue();
                                     }
@@ -650,11 +650,11 @@ public class Notifier {
         twitchChannel = twitchChannel.toLowerCase();
 
         String finalTwitchChannel = twitchChannel;
-        SQLSession.getSqlConnector().getSqlWorker().getTwitchWebhooksByName(twitchChannel).thenAccept(webhooks -> {
+        SQLSession.getSqlConnector().getSqlWorker().getTwitchWebhooksByName(twitchChannel).subscribe(webhooks -> {
             if (!webhooks.isEmpty()) return;
 
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE twitchFollowerChannelUsername=:name", Map.of("name", finalTwitchChannel))
-                    .thenAccept(channelStats -> {
+                    .subscribe(channelStats -> {
                         if (channelStats != null) return;
 
                         if (isTwitchRegistered(finalTwitchChannel))
@@ -715,10 +715,10 @@ public class Notifier {
         twitterUser = twitterUser.toLowerCase();
 
         String finalTwitterUser = twitterUser;
-        SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(twitterUser).thenAccept(webhooks -> {
+        SQLSession.getSqlConnector().getSqlWorker().getTwitterWebhooksByName(twitterUser).subscribe(webhooks -> {
             if (!webhooks.isEmpty()) return;
 
-            SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE twitterFollowerChannelUsername=:name", Map.of("name", finalTwitterUser)).thenAccept(x -> {
+            SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE twitterFollowerChannelUsername=:name", Map.of("name", finalTwitterUser)).subscribe(x -> {
                 if (x != null) return;
 
                 if (isTwitterRegistered(finalTwitterUser)) {
@@ -748,7 +748,7 @@ public class Notifier {
     public void createYTStream() {
         ThreadUtil.createThread(x -> {
             for (String channel : registeredYouTubeChannels) {
-                SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel).thenAccept(webhooks -> {
+                SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel).subscribe(webhooks -> {
                     if (!webhooks.isEmpty()) {
                         try {
                             List<VideoResult> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
@@ -805,7 +805,7 @@ public class Notifier {
                 });
 
                 SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),
-                        "FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", channel)).thenAccept(channelStats -> {
+                        "FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", channel)).subscribe(channelStats -> {
                     if (!channelStats.isEmpty()) {
                         ChannelResult youTubeChannel;
                         try {
@@ -824,7 +824,7 @@ public class Notifier {
 
                                 if (guildChannel == null) continue;
 
-                                LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText()).thenAccept(newName -> {
+                                LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText()).subscribe(newName -> {
                                     if (!guildChannel.getName().equalsIgnoreCase(newName)) {
                                         if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
                                             return;
@@ -876,10 +876,10 @@ public class Notifier {
     public void unregisterYouTubeChannel(String youtubeChannel) {
         if (YouTubeAPIHandler.getInstance() == null) return;
 
-        SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(youtubeChannel).thenAccept(webhooks -> {
+        SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(youtubeChannel).subscribe(webhooks -> {
             if (!webhooks.isEmpty()) return;
 
-            SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", youtubeChannel)).thenAccept(channelStats -> {
+            SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", youtubeChannel)).subscribe(channelStats -> {
                 if (channelStats != null) return;
 
                 if (isYouTubeRegistered(youtubeChannel)) registeredYouTubeChannels.remove(youtubeChannel);
@@ -922,7 +922,7 @@ public class Notifier {
             try {
                 for (String subreddit : registeredSubreddits) {
                     SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),
-                            "FROM ChannelStats WHERE subredditMemberChannelSubredditName=:name", Map.of("name", subreddit)).thenAccept(channelStats -> {
+                            "FROM ChannelStats WHERE subredditMemberChannelSubredditName=:name", Map.of("name", subreddit)).subscribe(channelStats -> {
                         if (!channelStats.isEmpty()) {
                             RedditSubreddit subredditEntity;
                             try {
@@ -949,7 +949,7 @@ public class Notifier {
                     });
 
                     getSubredditPosts(subreddit, Sorting.NEW, 50).stream().filter(redditPost -> redditPost.getCreated() > (Duration.ofMillis(System.currentTimeMillis()).toSeconds() - Duration.ofMinutes(5).toSeconds())).forEach(redditPost -> {
-                        SQLSession.getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit).thenAccept(webhooks -> {
+                        SQLSession.getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit).subscribe(webhooks -> {
                             if (webhooks.isEmpty()) return;
 
                             // Create Webhook Message.
@@ -1043,10 +1043,10 @@ public class Notifier {
     public void unregisterSubreddit(String subreddit) {
         if (getRedditClient() == null) return;
 
-        SQLSession.getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit).thenAccept(webhooks -> {
+        SQLSession.getSqlConnector().getSqlWorker().getRedditWebhookBySub(subreddit).subscribe(webhooks -> {
             if (!webhooks.isEmpty()) return;
 
-            SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE subredditMemberChannelSubredditName=:name", Map.of("name", subreddit)).thenAccept(channelStats -> {
+            SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE subredditMemberChannelSubredditName=:name", Map.of("name", subreddit)).subscribe(channelStats -> {
                 if (channelStats != null) return;
 
                 if (isSubredditRegistered(subreddit)) registeredSubreddits.remove(subreddit);
@@ -1081,7 +1081,7 @@ public class Notifier {
                     com.github.instagram4j.instagram4j.models.user.User user = userAction.getUser();
 
                     SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),
-                            "FROM ChannelStats WHERE instagramFollowerChannelUsername=:name", Map.of("name", username)).thenAccept(channelStats -> {
+                            "FROM ChannelStats WHERE instagramFollowerChannelUsername=:name", Map.of("name", username)).subscribe(channelStats -> {
                         if (!channelStats.isEmpty()) {
                             for (ChannelStats channelStat : channelStats) {
                                 if (channelStat.getInstagramFollowerChannelId() != null) {
@@ -1089,7 +1089,7 @@ public class Notifier {
 
                                     if (guildChannel == null) continue;
 
-                                    LanguageService.getByGuild(guildChannel.getGuild(), "label.instagramCountName", user.getFollower_count()).thenAccept(newName -> {
+                                    LanguageService.getByGuild(guildChannel.getGuild(), "label.instagramCountName", user.getFollower_count()).subscribe(newName -> {
                                         if (!guildChannel.getName().equalsIgnoreCase(newName)) {
                                             if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
                                                 return;
@@ -1102,7 +1102,7 @@ public class Notifier {
                         }
                     });
 
-                    SQLSession.getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).thenAccept(webhooks -> {
+                    SQLSession.getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).subscribe(webhooks -> {
                         if (webhooks.isEmpty()) return;
 
                         if (!user.is_private()) {
@@ -1190,7 +1190,7 @@ public class Notifier {
     public void unregisterInstagramUser(String username) {
         if (getInstagramClient() == null) return;
 
-        SQLSession.getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).thenAccept(webhooks -> {
+        SQLSession.getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).subscribe(webhooks -> {
             if (!webhooks.isEmpty()) return;
 
             if (SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE instagramFollowerChannelUsername=:name", Map.of("name", username)) != null)
@@ -1223,7 +1223,7 @@ public class Notifier {
                 try {
                     TikTokUser user = TikTokWrapper.getUser(id);
 
-                    SQLSession.getSqlConnector().getSqlWorker().getTikTokWebhooksByName(user.getId()).thenAccept(webhooks -> {
+                    SQLSession.getSqlConnector().getSqlWorker().getTikTokWebhooksByName(user.getId()).subscribe(webhooks -> {
                         if (webhooks.isEmpty()) {
                             return;
                         }

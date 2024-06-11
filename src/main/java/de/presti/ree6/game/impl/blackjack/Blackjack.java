@@ -77,20 +77,20 @@ public class Blackjack implements IGame {
     @Override
     public void createGame() {
         if (session.getParticipants().isEmpty() || session.getParticipants().size() > 2) {
-            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.gameCore.needMore", 2).join(), session.getChannel());
+            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.gameCore.needMore", 2).block(), session.getChannel());
             stopGame();
         }
 
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack").join());
+        embedBuilder.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack").block());
         embedBuilder.setColor(BotWorker.randomEmbedColor());
-        embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.welcome", session.getGameIdentifier()).join());
+        embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.welcome", session.getGameIdentifier()).block());
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
-        messageCreateBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame").join()).asDisabled(),
-                Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame").join()).asEnabled());
+        messageCreateBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame").block()).asDisabled(),
+                Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame").block()).asEnabled());
         session.getChannel().sendMessage(messageCreateBuilder.build()).queue(message -> menuMessage = message);
     }
 
@@ -127,17 +127,17 @@ public class Blackjack implements IGame {
     @Override
     public void joinGame(GamePlayer user) {
         if (session.getGameState() == GameState.STARTED) {
-            user.getInteractionHook().editOriginal(LanguageService.getByInteraction(user.getInteractionHook().getInteraction(), "message.gameCore.alreadyStarted").join()).queue();
+            user.getInteractionHook().editOriginal(LanguageService.getByInteraction(user.getInteractionHook().getInteraction(), "message.gameCore.alreadyStarted").block()).queue();
             return;
         }
 
         if (player != null && playerTwo != null) {
-            user.getInteractionHook().editOriginal(LanguageService.getByInteraction(user.getInteractionHook().getInteraction(), "message.gameCore.full").join()).queue();
+            user.getInteractionHook().editOriginal(LanguageService.getByInteraction(user.getInteractionHook().getInteraction(), "message.gameCore.full").block()).queue();
             return;
         }
 
         if ((player != null && user.getRelatedUserId() == player.getRelatedUserId()) || (playerTwo != null && user.getRelatedUserId() == playerTwo.getRelatedUserId())) {
-            user.getInteractionHook().editOriginal(LanguageService.getByInteraction(user.getInteractionHook().getInteraction(), "message.gameCore.alreadyIn").join()).queue();
+            user.getInteractionHook().editOriginal(LanguageService.getByInteraction(user.getInteractionHook().getInteraction(), "message.gameCore.alreadyIn").block()).queue();
             return;
         }
 
@@ -151,18 +151,18 @@ public class Blackjack implements IGame {
             MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
             messageEditBuilder.applyMessage(menuMessage);
             EmbedBuilder embedBuilder = new EmbedBuilder(messageEditBuilder.getEmbeds().get(0));
-            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.minimalReached").join());
+            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.minimalReached").block());
             messageEditBuilder.setEmbeds(embedBuilder.build());
-            messageEditBuilder.setActionRow(Button.success("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame").join()).asEnabled());
+            messageEditBuilder.setActionRow(Button.success("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame").block()).asEnabled());
             menuMessage.editMessage(messageEditBuilder.build()).queue();
 
             messageEditBuilder.clear();
-            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.joined").join());
+            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.joined").block());
             messageEditBuilder.setEmbeds(embedBuilder.build());
             playerTwo.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
 
             messageEditBuilder.clear();
-            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.minimalReachedHost").join());
+            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.minimalReachedHost").block());
             messageEditBuilder.setEmbeds(embedBuilder.build());
             player.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
         }
@@ -292,18 +292,18 @@ public class Blackjack implements IGame {
     public void stopGame(BlackJackPlayer currentPlayer, BlackJackPlayer nextPlayer) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack").join());
+        embedBuilder.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack").block());
         embedBuilder.setColor(BotWorker.randomEmbedColor());
         BlackJackPlayer winner = findWinner();
 
         if (winner == null) {
-            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.end.draw").join());
+            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.end.draw").block());
         } else {
-            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.end.win", winner.getRelatedUser().getAsMention(), winner.getHandValue(true)).join());
+            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.end.win", winner.getRelatedUser().getAsMention(), winner.getHandValue(true)).block());
         }
 
-        embedBuilder.addField(LanguageService.getByGuild(session.getGuild(), "label.userCards", currentPlayer.getRelatedUser().getEffectiveName()).join(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", currentPlayer.getHandAsString(true), currentPlayer.getHandValue(true)).join(), true);
-        embedBuilder.addField(LanguageService.getByGuild(session.getGuild(), "label.userCards", nextPlayer.getRelatedUser().getEffectiveName()).join(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", nextPlayer.getHandAsString(true), nextPlayer.getHandValue(true)).join(), true);
+        embedBuilder.addField(LanguageService.getByGuild(session.getGuild(), "label.userCards", currentPlayer.getRelatedUser().getEffectiveName()).block(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", currentPlayer.getHandAsString(true), currentPlayer.getHandValue(true)).block(), true);
+        embedBuilder.addField(LanguageService.getByGuild(session.getGuild(), "label.userCards", nextPlayer.getRelatedUser().getEffectiveName()).block(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", nextPlayer.getHandAsString(true), nextPlayer.getHandValue(true)).block(), true);
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
         messageCreateBuilder.setComponents(new ArrayList<>());
@@ -313,7 +313,7 @@ public class Blackjack implements IGame {
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), session.getChannel());
         SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
                 Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_blackjack_win"))
-                .thenAccept(setting -> rewardPlayer(session, winner, setting.getValue()));
+                .subscribe(setting -> rewardPlayer(session, winner, setting.getValue()));
 
         stopGame();
     }
@@ -339,33 +339,33 @@ public class Blackjack implements IGame {
         MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
 
         EmbedBuilder currentPlayerEmbed = new EmbedBuilder();
-        currentPlayerEmbed.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack").join());
+        currentPlayerEmbed.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack").block());
         currentPlayerEmbed.setColor(Color.GREEN);
         currentPlayerEmbed.setAuthor(currentPlayer.getRelatedUser().getEffectiveName(), null, currentPlayer.getRelatedUser().getEffectiveAvatarUrl());
-        currentPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCardsSelf").join(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand",
-                currentPlayer.getHandAsString(true), currentPlayer.getHandValue(true)).join(), true);
-        currentPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCards", nextPlayer.getRelatedUser().getEffectiveName()).join(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand",
-                nextPlayer.getHandAsString(false), nextPlayer.getHandValue(false)).join(), true);
+        currentPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCardsSelf").block(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand",
+                currentPlayer.getHandAsString(true), currentPlayer.getHandValue(true)).block(), true);
+        currentPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCards", nextPlayer.getRelatedUser().getEffectiveName()).block(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand",
+                nextPlayer.getHandAsString(false), nextPlayer.getHandValue(false)).block(), true);
 
-        currentPlayerEmbed.setFooter(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.turn.player").join());
+        currentPlayerEmbed.setFooter(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.turn.player").block());
 
         messageEditBuilder.setEmbeds(currentPlayerEmbed.build());
 
         if (addButtons) {
-            messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", LanguageService.getByGuild(session.getGuild(), "label.hit").join()),
-                    Button.success("game_blackjack_stand", LanguageService.getByGuild(session.getGuild(), "label.stand").join()));
+            messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", LanguageService.getByGuild(session.getGuild(), "label.hit").block()),
+                    Button.success("game_blackjack_stand", LanguageService.getByGuild(session.getGuild(), "label.stand").block()));
         }
 
         currentPlayer.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
 
         EmbedBuilder nextPlayerEmbed = new EmbedBuilder();
 
-        nextPlayerEmbed.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack").join());
+        nextPlayerEmbed.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack").block());
         nextPlayerEmbed.setColor(Color.red);
         nextPlayerEmbed.setAuthor(nextPlayer.getRelatedUser().getEffectiveName(), null, nextPlayer.getRelatedUser().getEffectiveAvatarUrl());
-        nextPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCardsSelf").join(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", nextPlayer.getHandAsString(true), nextPlayer.getHandValue(true)).join(), true);
-        nextPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCards", currentPlayer.getRelatedUser().getEffectiveName()).join(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", currentPlayer.getHandAsString(false), currentPlayer.getHandValue(false)).join(), true);
-        nextPlayerEmbed.setFooter(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.turn.wait").join());
+        nextPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCardsSelf").block(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", nextPlayer.getHandAsString(true), nextPlayer.getHandValue(true)).block(), true);
+        nextPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCards", currentPlayer.getRelatedUser().getEffectiveName()).block(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", currentPlayer.getHandAsString(false), currentPlayer.getHandValue(false)).block(), true);
+        nextPlayerEmbed.setFooter(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.turn.wait").block());
         messageEditBuilder.setEmbeds(nextPlayerEmbed.build());
 
         nextPlayer.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();

@@ -183,7 +183,7 @@ public class CommandEvent {
      * @return the Message.
      */
     public String getResource(String key, Object... parameters) {
-        return LanguageService.getByEvent(this, key, parameters).join();
+        return LanguageService.getByEvent(this, key, parameters).block();
     }
 
     /**

@@ -34,7 +34,7 @@ public class Work implements ICommand {
         String entryString = commandEvent.getGuild().getIdLong() + "-" + commandEvent.getMember().getIdLong();
 
         SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_delay")).thenAccept(value -> {
+                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_delay")).subscribe(value -> {
             long delay = Long.parseLong(value.getStringValue());
 
             if (workTimeout.contains(entryString)) {
@@ -43,14 +43,14 @@ public class Work implements ICommand {
             }
 
             double min = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                    Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_min")).join().getStringValue());
+                    Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_min")).block().getStringValue());
 
             double max = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                    Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_max")).join().getStringValue());
+                    Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_max")).block().getStringValue());
 
             double amount = RandomUtils.round(RandomUtils.nextDouble(min, max), 2);
 
-            EconomyUtil.getMoneyHolder(commandEvent.getMember()).thenAccept(moneyHolder -> {
+            EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder -> {
                 if (moneyHolder == null) return;
 
                 if (EconomyUtil.pay(null, moneyHolder, amount, false, false, true)) {

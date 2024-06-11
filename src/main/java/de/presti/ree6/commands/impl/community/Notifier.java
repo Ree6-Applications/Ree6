@@ -70,7 +70,7 @@ public class Notifier implements ICommand {
 
                 switch (command) {
                     case "instagram" ->
-                            SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers(commandEvent.getGuild().getIdLong()).thenAccept(users -> {
+                            SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers(commandEvent.getGuild().getIdLong()).subscribe(users -> {
                                 for (String user : users) {
                                     end.append(user).append("\n");
                                 }
@@ -79,7 +79,7 @@ public class Notifier implements ICommand {
                             });
 
                     case "youtube" ->
-                            SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels(commandEvent.getGuild().getIdLong()).thenAccept(userList -> {
+                            SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels(commandEvent.getGuild().getIdLong()).subscribe(userList -> {
                                 for (String users : userList) {
 
                                     ChannelResult channelResult = null;
@@ -104,7 +104,7 @@ public class Notifier implements ICommand {
                             });
 
                     case "twitch" ->
-                            SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames(commandEvent.getGuild().getIdLong()).thenAccept(users -> {
+                            SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames(commandEvent.getGuild().getIdLong()).subscribe(users -> {
                                 for (String user : users) {
                                     end.append(user).append("\n");
                                 }
@@ -113,7 +113,7 @@ public class Notifier implements ICommand {
                             });
 
                     case "twitter" ->
-                            SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames(commandEvent.getGuild().getIdLong()).thenAccept(users -> {
+                            SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames(commandEvent.getGuild().getIdLong()).subscribe(users -> {
                                 for (String user : users) {
                                     end.append(user).append("\n");
                                 }
@@ -122,7 +122,7 @@ public class Notifier implements ICommand {
                             });
 
                     case "tiktok" ->
-                            SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames(commandEvent.getGuild().getIdLong()).thenAccept(users -> {
+                            SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames(commandEvent.getGuild().getIdLong()).subscribe(users -> {
                                 for (String user : users) {
                                     end.append(user);
                                     try {
@@ -137,7 +137,7 @@ public class Notifier implements ICommand {
                             });
 
                     case "reddit" ->
-                            SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits(commandEvent.getGuild().getIdLong()).thenAccept(users -> {
+                            SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits(commandEvent.getGuild().getIdLong()).subscribe(users -> {
                                 for (String user : users) {
                                     end.append(user).append("\n");
                                 }
@@ -146,7 +146,7 @@ public class Notifier implements ICommand {
                             });
 
                     case "rss" ->
-                            SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls(commandEvent.getGuild().getIdLong()).thenAccept(users -> {
+                            SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls(commandEvent.getGuild().getIdLong()).subscribe(users -> {
                                 for (String user : users) {
                                     end.append(user).append("\n");
                                 }

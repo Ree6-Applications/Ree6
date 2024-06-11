@@ -43,7 +43,7 @@ public class Steal implements ICommand {
         String entryString = commandEvent.getGuild().getIdLong() + "-" + commandEvent.getMember().getIdLong();
 
         SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_steal_delay")).thenAccept(value -> {
+                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_steal_delay")).subscribe(value -> {
             long delay = Long.parseLong(value.getStringValue());
 
             if (stealTimeout.contains(entryString)) {
@@ -70,7 +70,7 @@ public class Steal implements ICommand {
                 return;
             }
 
-            EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), member.getIdLong(), false).thenAccept(targetHolder -> {
+            EconomyUtil.getMoneyHolder(commandEvent.getGuild().getIdLong(), member.getIdLong(), false).subscribe(targetHolder -> {
                 if (targetHolder == null) {
                     commandEvent.reply(commandEvent.getResource("message.steal.notEnoughMoney", member.getAsMention()), 5);
                     return;
@@ -84,7 +84,7 @@ public class Steal implements ICommand {
 
                 double stealAmount = RandomUtils.round(targetHolder.getAmount() * RandomUtils.nextDouble(0.01, 0.25), 2);
 
-                EconomyUtil.getMoneyHolder(commandEvent.getMember()).thenAccept(holder -> {
+                EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(holder -> {
                     if (holder == null) {
                         commandEvent.reply(commandEvent.getResource("message.steal.notEnoughMoney", member.getAsMention()), 5);
                         return;

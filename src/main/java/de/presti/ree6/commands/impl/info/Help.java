@@ -79,7 +79,7 @@ public class Help implements ICommand {
                 );
 
         if (categoryString == null) {
-            SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").thenAccept(setting -> {
+            SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").subscribe(setting -> {
                 for (Category cat : Category.values()) {
                     if (cat != Category.HIDDEN) {
                         if (!BotConfig.isModuleActive(cat.name().toLowerCase())) continue;
@@ -97,7 +97,7 @@ public class Help implements ICommand {
 
                 Category category = getCategoryFromString(categoryString);
 
-                SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").thenAccept(setting -> {
+                SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").subscribe(setting -> {
                     for (ICommand cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).category() == category).toList()) {
                         end.append("``")
                                 .append(setting.getStringValue())

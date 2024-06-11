@@ -36,7 +36,7 @@ public class GuildUtil {
      */
     public static void handleMemberJoin(Guild guild, Member member) {
 
-        SQLSession.getSqlConnector().getSqlWorker().isAutoRoleSetup(guild.getIdLong()).thenAccept(x -> {
+        SQLSession.getSqlConnector().getSqlWorker().isAutoRoleSetup(guild.getIdLong()).subscribe(x -> {
             if (!x) return;
 
             if (member.getIdLong() == guild.getOwnerIdLong()) return;
@@ -47,14 +47,14 @@ public class GuildUtil {
                 log.error("[AutoRole] Member: {} ({})", member.getUser().getName(), member.getId());
 
                 if (guild.getOwner() != null)
-                    LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone").thenAccept(message ->
+                    LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone").subscribe(message ->
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
                                     privateChannel.sendMessage(message)
                                             .queue()));
                 return;
             }
 
-            SQLSession.getSqlConnector().getSqlWorker().getAutoRoles(guild.getIdLong()).thenAccept(roles -> {
+            SQLSession.getSqlConnector().getSqlWorker().getAutoRoles(guild.getIdLong()).subscribe(roles -> {
                 for (de.presti.ree6.sql.entities.roles.Role roleEntry : roles) {
                     Role role = guild.getRoleById(roleEntry.getRoleId());
 
@@ -62,7 +62,7 @@ public class GuildUtil {
                         if (guild.getOwner() != null)
                             LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
                                     "message.brs.autoRole.hierarchy"
-                                    : "message.brs.autoRole.missingPermission", role.getName()).thenAccept(message ->
+                                    : "message.brs.autoRole.missingPermission", role.getName()).subscribe(message ->
                                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
                                             privateChannel.sendMessage(message)
                                                     .queue()));
@@ -70,7 +70,7 @@ public class GuildUtil {
                     } else if (role == null) {
                         if (guild.getOwner() != null)
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                    LanguageService.getByGuild(guild, "message.brs.autoRole.deleted").thenAccept(message ->
+                                    LanguageService.getByGuild(guild, "message.brs.autoRole.deleted").subscribe(message ->
                                             privateChannel.sendMessage(message)
                                                     .queue()));
 
@@ -92,12 +92,12 @@ public class GuildUtil {
      */
     public static void handleVoiceLevelReward(Guild guild, Member member) {
 
-        SQLSession.getSqlConnector().getSqlWorker().isVoiceLevelRewardSetup(guild.getIdLong()).thenAccept(x -> {
+        SQLSession.getSqlConnector().getSqlWorker().isVoiceLevelRewardSetup(guild.getIdLong()).subscribe(x -> {
             if (!x) return;
 
             if (member.getIdLong() == guild.getOwnerIdLong()) return;
 
-            SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(guild.getIdLong(), member.getUser().getIdLong()).thenAccept(data -> {
+            SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(guild.getIdLong(), member.getUser().getIdLong()).subscribe(data -> {
                 if (data == null) return;
 
                 if (!guild.getSelfMember().canInteract(member)) {
@@ -107,13 +107,13 @@ public class GuildUtil {
 
                     if (guild.getOwner() != null)
                         guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone").thenAccept(message ->
+                                LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone").subscribe(message ->
                                         privateChannel.sendMessage(message).queue()));
 
                     return;
                 }
 
-                SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelRewards(guild.getIdLong()).thenAccept(roles -> {
+                SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelRewards(guild.getIdLong()).subscribe(roles -> {
                     for (Map.Entry<Long, Long> entry : roles.entrySet()) {
 
                         if (entry.getKey() <= data.getLevel()) {
@@ -125,13 +125,13 @@ public class GuildUtil {
                                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
                                             LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
                                                     "message.brs.autoRole.hierarchy"
-                                                    : "message.brs.autoRole.missingPermission", role.getName()).thenAccept(message ->
+                                                    : "message.brs.autoRole.missingPermission", role.getName()).subscribe(message ->
                                                     privateChannel.sendMessage(message).queue()));
                                 return;
                             } else if (role == null) {
                                 if (guild.getOwner() != null)
                                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                            LanguageService.getByGuild(guild, "message.brs.autoRole.deleted").thenAccept(message ->
+                                            LanguageService.getByGuild(guild, "message.brs.autoRole.deleted").subscribe(message ->
                                                     privateChannel.sendMessage(message).queue()));
 
                                 SQLSession.getSqlConnector().getSqlWorker().removeAutoRole(guild.getIdLong(), entry.getValue());
@@ -154,12 +154,12 @@ public class GuildUtil {
      */
     public static void handleChatLevelReward(Guild guild, Member member) {
 
-        SQLSession.getSqlConnector().getSqlWorker().isChatLevelRewardSetup(guild.getIdLong()).thenAccept(x -> {
+        SQLSession.getSqlConnector().getSqlWorker().isChatLevelRewardSetup(guild.getIdLong()).subscribe(x -> {
             if (!x) return;
 
             if (member.getIdLong() == guild.getOwnerIdLong()) return;
 
-            SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(guild.getIdLong(), member.getUser().getIdLong()).thenAccept(data -> {
+            SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(guild.getIdLong(), member.getUser().getIdLong()).subscribe(data -> {
                 if (data == null) return;
 
                 if (!guild.getSelfMember().canInteract(member)) {
@@ -170,11 +170,11 @@ public class GuildUtil {
                     if (guild.getOwner() != null)
                         guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
                                 LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone")
-                                        .thenAccept(message -> privateChannel.sendMessage(message).queue()));
+                                        .subscribe(message -> privateChannel.sendMessage(message).queue()));
                     return;
                 }
 
-                SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(guild.getIdLong()).thenAccept(roles -> {
+                SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(guild.getIdLong()).subscribe(roles -> {
                     for (Map.Entry<Long, Long> entry : roles.entrySet()) {
 
                         if (entry.getKey() <= data.getLevel()) {
@@ -185,12 +185,12 @@ public class GuildUtil {
                                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
                                             LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
                                                     "message.brs.autoRole.hierarchy"
-                                                    : "message.brs.autoRole.missingPermission", role.getName()).thenAccept(message ->
+                                                    : "message.brs.autoRole.missingPermission", role.getName()).subscribe(message ->
                                                     privateChannel.sendMessage(message).queue()));
                             } else if (role == null) {
                                 if (guild.getOwner() != null)
                                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                            LanguageService.getByGuild(guild, "message.brs.autoRole.deleted").thenAccept(message ->
+                                            LanguageService.getByGuild(guild, "message.brs.autoRole.deleted").subscribe(message ->
                                                     privateChannel.sendMessage(message).queue()));
 
                                 SQLSession.getSqlConnector().getSqlWorker().removeAutoRole(guild.getIdLong(), entry.getValue());
@@ -224,7 +224,7 @@ public class GuildUtil {
                 guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
                         LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
                                 "message.brs.autoRole.hierarchy"
-                                : "message.brs.autoRole.missingPermission", role.getName()).thenAccept(message ->
+                                : "message.brs.autoRole.missingPermission", role.getName()).subscribe(message ->
                                 privateChannel.sendMessage(message).queue()));
         }
     }
