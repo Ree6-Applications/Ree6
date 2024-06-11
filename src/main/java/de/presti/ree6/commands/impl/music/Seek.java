@@ -54,7 +54,8 @@ public class Seek implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("seek", LanguageService.getDefault("command.description.seek")).addOptions(new OptionData(OptionType.INTEGER, "seconds", "The seconds that should be seeked (negativ numbers work)").setRequired(true));
+        return new CommandDataImpl("seek", "command.description.seek")
+                .addOptions(new OptionData(OptionType.INTEGER, "seconds", "The seconds that should be seeked (negativ numbers work)").setRequired(true));
     }
 
     /**

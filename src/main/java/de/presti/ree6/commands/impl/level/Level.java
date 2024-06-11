@@ -49,7 +49,7 @@ Level implements ICommand {
                     sendLevel(commandEvent.getMessage().getMentions().getMembers().get(0), commandEvent, typ);
                 }
             } else {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","level chat/voice [@user]"));
+                commandEvent.reply(commandEvent.getResource("message.default.usage", "level chat/voice [@user]"));
             }
         }
     }
@@ -59,7 +59,8 @@ Level implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("level", LanguageService.getDefault("command.description.level")).addOptions(new OptionData(OptionType.STRING, "typ", "Do you want to see chat or voice level?"))
+        return new CommandDataImpl("level", "command.description.level")
+                .addOptions(new OptionData(OptionType.STRING, "typ", "Do you want to see chat or voice level?"))
                 .addOptions(new OptionData(OptionType.USER, "target", "Show the Level of the User."));
     }
 
@@ -68,21 +69,20 @@ Level implements ICommand {
      */
     @Override
     public String[] getAlias() {
-        return new String[] {"lvl", "xp", "rank"};
+        return new String[]{"lvl", "xp", "rank"};
     }
 
     /**
      * Sends the Level of the User.
-     * @param member The Member to get the Level of.
+     *
+     * @param member       The Member to get the Level of.
      * @param commandEvent The CommandEvent.
-     * @param type The Type of the Level.
+     * @param type         The Type of the Level.
      */
     public void sendLevel(Member member, CommandEvent commandEvent, String type) {
-
-        UserLevel userLevel = type.equalsIgnoreCase("voice") ?
+        (type.equalsIgnoreCase("voice") ?
                 SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getIdLong(), member.getIdLong()) :
-                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), member.getIdLong());
-
+                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), member.getIdLong())).subscribe(userLevel -> {
             try {
                 MessageCreateBuilder createBuilder = new MessageCreateBuilder();
                 createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createRankImage(userLevel), "rank.png"));
@@ -92,5 +92,6 @@ Level implements ICommand {
                 commandEvent.reply(commandEvent.getResource("command.perform.error"));
                 log.error("Couldn't generated Rank Image!", exception);
             }
+        });
     }
 }

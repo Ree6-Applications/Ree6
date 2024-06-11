@@ -157,7 +157,7 @@ public class Anime implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("anime", LanguageService.getDefault("command.description.anime"))
+        return new CommandDataImpl("anime", "command.description.anime")
                 .addOption(OptionType.STRING, "search", "The search query to search for.", true);
     }
 

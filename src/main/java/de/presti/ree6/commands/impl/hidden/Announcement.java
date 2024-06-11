@@ -62,7 +62,7 @@ public class Announcement implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("announcement", LanguageService.getDefault("command.description.announcement"))
+        return new CommandDataImpl("announcement","command.description.announcement")
                 .addOptions(new OptionData(OptionType.STRING, "title", "The title of the announcement.", false),
                         new OptionData(OptionType.STRING, "content", "The content of the announcement.", false),
                         new OptionData(OptionType.STRING, "id", "The to delete announcement id.", false));

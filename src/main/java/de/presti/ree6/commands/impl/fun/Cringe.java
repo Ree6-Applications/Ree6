@@ -35,7 +35,7 @@ public class Cringe implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("shrekimage", LanguageService.getDefault("command.description.cringe_slash"));
+        return new CommandDataImpl("shrekimage", "command.description.cringe_slash");
     }
 
     /**

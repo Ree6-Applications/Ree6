@@ -54,7 +54,8 @@ public class Skip implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("skip", LanguageService.getDefault("command.description.skip")).addOptions(new OptionData(OptionType.INTEGER, "amount", "The amount of songs that should be skipped!").setRequired(false));
+        return new CommandDataImpl("skip", "command.description.skip")
+                .addOptions(new OptionData(OptionType.INTEGER, "amount", "The amount of songs that should be skipped!").setRequired(false));
     }
 
     /**

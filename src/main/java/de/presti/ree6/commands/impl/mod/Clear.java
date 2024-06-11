@@ -67,7 +67,7 @@ public class Clear implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("clear", LanguageService.getDefault("command.description.clear"))
+        return new CommandDataImpl("clear", "command.description.clear")
                 .addOptions(new OptionData(OptionType.INTEGER, "amount", "How many messages should be removed.")
                         .setRequired(true)
                         .setMinValue(2)

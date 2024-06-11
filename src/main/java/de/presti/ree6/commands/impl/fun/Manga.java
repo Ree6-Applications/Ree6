@@ -203,7 +203,7 @@ public class Manga implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("manga", LanguageService.getDefault("command.description.manga"))
+        return new CommandDataImpl("manga", "command.description.manga")
                 .addOption(OptionType.STRING, "search", "The search query to search for.", true);
     }
 

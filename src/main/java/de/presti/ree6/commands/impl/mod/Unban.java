@@ -70,7 +70,7 @@ public class Unban implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("unban", LanguageService.getDefault("command.description.unban"))
+        return new CommandDataImpl("unban", "command.description.unban")
                 .addOptions(new OptionData(OptionType.STRING, "id", "Which User should be unbanned.").setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS));
     }

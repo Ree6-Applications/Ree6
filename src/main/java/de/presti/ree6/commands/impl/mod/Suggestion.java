@@ -73,30 +73,32 @@ public class Suggestion implements ICommand {
      * @param messageChannel the Channel for the Message.
      */
     public void createSuggestions(CommandEvent commandEvent, MessageChannel channel, MessageChannel messageChannel) {
-        MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle(commandEvent.getResource("label.suggestionMenu"));
-        embedBuilder.setColor(Color.ORANGE);
-        embedBuilder.setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_suggestion_menu").getStringValue());
-        embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
-        messageCreateBuilder.setEmbeds(embedBuilder.build());
-        messageCreateBuilder.setActionRow(Button.primary("re_suggestion", commandEvent.getResource("message.suggestion.suggestionMenuPlaceholder")));
 
-        Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildChannelId.guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()))
+                .map(suggestions -> {
+            if (suggestions != null) {
+                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(suggestions);
 
-        Suggestions suggestions = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildChannelId.guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()));
+                suggestions.getGuildChannelId().setChannelId(channel.getIdLong());
+                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions).block();
+            } else {
+                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong())).block();
+            }
+        }).subscribe(suggestions -> SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_suggestion_menu").subscribe(setting -> {
+            MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setTitle(commandEvent.getResource("label.suggestionMenu"));
+            embedBuilder.setColor(Color.ORANGE);
+            embedBuilder.setDescription(setting.getStringValue());
+            embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
+            messageCreateBuilder.setEmbeds(embedBuilder.build());
+            messageCreateBuilder.setActionRow(Button.primary("re_suggestion", commandEvent.getResource("message.suggestion.suggestionMenuPlaceholder")));
 
-        if (suggestions != null) {
-            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(suggestions);
+            Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
 
-            suggestions.getGuildChannelId().setChannelId(channel.getIdLong());
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions);
-        } else {
-            suggestions = new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong());
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions);
-        }
+            commandEvent.reply(commandEvent.getResource("message.suggestion.success"), 5);
+        }));
 
-        commandEvent.reply(commandEvent.getResource("message.suggestion.success"), 5);
     }
 
     /**
@@ -104,7 +106,7 @@ public class Suggestion implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("suggestion", LanguageService.getDefault("command.description.suggestion"))
+        return new CommandDataImpl("suggestion", "command.description.suggestion")
                 .addOptions(new OptionData(OptionType.CHANNEL, "target", "The channel the suggestions should be shown in.").setChannelTypes(ChannelType.NEWS, ChannelType.TEXT).setRequired(true))
                 .addOptions(new OptionData(OptionType.CHANNEL, "messagetarget", "The channel the bot should send the suggestion message to.").setChannelTypes(ChannelType.NEWS, ChannelType.TEXT).setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
