@@ -63,7 +63,7 @@ public class Reactions implements ICommand {
                 }).queue(msg -> {
                     if (msg == null) return;
                     MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-                    messageCreateBuilder.setContent(LanguageService.getByGuild(commandEvent.getGuild(), "message.reactions.reactionNeeded", role.getAsRole().getAsMention()).join());
+                    messageCreateBuilder.setContent(LanguageService.getByGuild(commandEvent.getGuild(), "message.reactions.reactionNeeded", role.getAsRole().getAsMention()).block());
                     msg.reply(messageCreateBuilder.build()).queue();
                 });
 
@@ -87,7 +87,7 @@ public class Reactions implements ICommand {
 
                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
                         "FROM ReactionRole WHERE guildRoleId.guildId=:gid AND guildRoleId.roleId=:roleId AND messageId=:messageId",
-                        Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsRole().getIdLong(), "messageId", messageId)).thenAccept(reactionRole -> {
+                        Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsRole().getIdLong(), "messageId", messageId)).subscribe(reactionRole -> {
                     if (reactionRole != null) {
                         SQLSession.getSqlConnector().getSqlWorker().deleteEntity(reactionRole);
 

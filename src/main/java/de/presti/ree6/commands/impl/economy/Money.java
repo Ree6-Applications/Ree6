@@ -19,7 +19,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * Command to manage the player specific economy.
  */
-@Command(name = "money", description = "command.description.money", category = Category.ECONOMY)
+@Command(name = "money", description = "command.description.money.default", category = Category.ECONOMY)
 public class Money implements ICommand {
 
     @Override
@@ -45,7 +45,7 @@ public class Money implements ICommand {
 
                     double withdrawAmount = RandomUtils.round(amount.getAsDouble(), 2);
 
-                    EconomyUtil.getMoneyHolder(commandEvent.getMember()).thenAccept(moneyHolder -> {
+                    EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder -> {
                         if (EconomyUtil.hasEnoughMoney(moneyHolder, withdrawAmount, true)) {
                             EconomyUtil.pay(moneyHolder, moneyHolder, withdrawAmount, true, false);
                             commandEvent.reply(commandEvent.getResource("message.money.withdraw", EconomyUtil.formatMoney(withdrawAmount)), 5);
@@ -62,7 +62,7 @@ public class Money implements ICommand {
 
                     double depositAmount = RandomUtils.round(amount.getAsDouble(), 2);
 
-                    EconomyUtil.getMoneyHolder(commandEvent.getMember()).thenAccept(moneyHolder -> {
+                    EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder -> {
                         if (EconomyUtil.hasEnoughMoney(moneyHolder, depositAmount, false)) {
                             EconomyUtil.pay(moneyHolder, moneyHolder, depositAmount, false, true);
                             commandEvent.reply(commandEvent.getResource("message.money.deposit", EconomyUtil.formatMoney(depositAmount)), 5);
@@ -86,8 +86,8 @@ public class Money implements ICommand {
 
                     double sendAmount = RandomUtils.round(amount.getAsDouble(), 2);
 
-                    EconomyUtil.getMoneyHolder(commandEvent.getMember()).thenAccept(moneyHolder -> {
-                        EconomyUtil.getMoneyHolder(member).thenAccept(target -> {
+                    EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder -> {
+                        EconomyUtil.getMoneyHolder(member).subscribe(target -> {
                             if (EconomyUtil.pay(moneyHolder, target, sendAmount, true, true)) {
                                 commandEvent.reply(commandEvent.getResource("message.money.send", EconomyUtil.formatMoney(sendAmount), member.getAsMention()));
                             } else {
@@ -105,11 +105,11 @@ public class Money implements ICommand {
                             return;
                         }
 
-                        EconomyUtil.getMoneyHolder(member).thenAccept(moneyHolder ->
+                        EconomyUtil.getMoneyHolder(member).subscribe(moneyHolder ->
                                 commandEvent.reply(commandEvent.getResource("message.money.balance", member.getAsMention(),
                                         EconomyUtil.formatMoney(moneyHolder.getAmount()), EconomyUtil.formatMoney(moneyHolder.getBankAmount()))));
                     } else {
-                        EconomyUtil.getMoneyHolder(commandEvent.getMember()).thenAccept(moneyHolder ->
+                        EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder ->
                                 commandEvent.reply(commandEvent.getResource("message.money.balance", commandEvent.getMember().getAsMention(),
                                         EconomyUtil.formatMoney(moneyHolder.getAmount()), EconomyUtil.formatMoney(moneyHolder.getBankAmount()))));
                     }
@@ -142,22 +142,22 @@ public class Money implements ICommand {
             if (subcommandGroup.equals("admin")) {
                 switch (subcommand) {
                     case "add" -> {
-                        EconomyUtil.getMoneyHolder(commandEvent.getMember()).thenAccept(moneyHolder -> {
-                            EconomyUtil.getMoneyHolder(member).thenAccept(target -> {
+                        EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder -> {
+                            EconomyUtil.getMoneyHolder(member).subscribe(target -> {
                                 EconomyUtil.pay(moneyHolder, target, optionAmount, false, transferToBank, true);
                                 commandEvent.reply(commandEvent.getResource("message.money.add", EconomyUtil.formatMoney(optionAmount), member.getAsMention()), 5);
                             });
                         });
                     }
                     case "set" -> {
-                        EconomyUtil.getMoneyHolder(member).thenAccept(moneyHolder -> {
+                        EconomyUtil.getMoneyHolder(member).subscribe(moneyHolder -> {
                             EconomyUtil.set(moneyHolder, optionAmount, transferToBank);
                             commandEvent.reply(commandEvent.getResource("message.money.set", member.getAsMention(), EconomyUtil.formatMoney(optionAmount)), 5);
                         });
                     }
                     case "remove" -> {
-                        EconomyUtil.getMoneyHolder(commandEvent.getMember()).thenAccept(moneyHolder -> {
-                            EconomyUtil.getMoneyHolder(member).thenAccept(target -> {
+                        EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder -> {
+                            EconomyUtil.getMoneyHolder(member).subscribe(target -> {
                                 EconomyUtil.pay(moneyHolder, target, -optionAmount, false, transferToBank, true);
                                 commandEvent.reply(commandEvent.getResource("message.money.remove", EconomyUtil.formatMoney(optionAmount), member.getAsMention()), 5);
                             });

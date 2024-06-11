@@ -2,6 +2,7 @@ package de.presti.ree6.utils.others;
 
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.bot.BotConfig;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +30,7 @@ public class ModerationUtil {
      * @param guildId the ID of the Guild.
      * @return an {@link ArrayList} with every Blacklisted word from the Guild.
      */
-    public static CompletableFuture<List<String>> getBlacklist(long guildId) {
+    public static Mono<List<String>> getBlacklist(long guildId) {
         return SQLSession.getSqlConnector().getSqlWorker().getChatProtectorWords(guildId);
     }
 
@@ -40,8 +41,8 @@ public class ModerationUtil {
      * @param message the Message-Content.
      * @return true, if there is a blacklisted for contained.
      */
-    public static CompletableFuture<Boolean> checkMessage(long guildId, String message) {
-        return getBlacklist(guildId).thenApply(blacklist ->
+    public static Mono<Boolean> checkMessage(long guildId, String message) {
+        return getBlacklist(guildId).map(blacklist ->
                 Arrays.stream(message.toLowerCase().split(" ")).anyMatch(blacklist::contains));
     }
 
@@ -50,9 +51,9 @@ public class ModerationUtil {
      *
      * @param guildId the ID of the Guild.
      * @param word    the word to check.
-     * @return true, if there is a blacklisted for contained.
+     * @return true, if the word is in the blacklist.
      */
-    public static CompletableFuture<Boolean> checkBlacklist(long guildId, String word) {
+    public static Mono<Boolean> checkBlacklist(long guildId, String word) {
         return SQLSession.getSqlConnector().getSqlWorker().isChatProtectorSetup(guildId, word);
     }
 
@@ -62,8 +63,9 @@ public class ModerationUtil {
      * @param guildId the ID of the Guild.
      * @return true, if the Server should be moderated.
      */
-    public static CompletableFuture<Boolean> shouldModerate(long guildId) {
-        return SQLSession.getSqlConnector().getSqlWorker().isChatProtectorSetup(guildId).thenApply(x -> x && BotConfig.isModuleActive("moderation"));
+    public static Mono<Boolean> shouldModerate(long guildId) {
+        if (!BotConfig.isModuleActive("moderation")) return Mono.just(false);
+        return SQLSession.getSqlConnector().getSqlWorker().isChatProtectorSetup(guildId);
     }
 
     /**
@@ -73,7 +75,7 @@ public class ModerationUtil {
      * @param word    the Word you want to blacklist.
      */
     public static void blacklist(long guildId, String word) {
-        checkBlacklist(guildId, word).thenAccept(x -> {
+        checkBlacklist(guildId, word).subscribe(x -> {
             if (x) return;
             SQLSession.getSqlConnector().getSqlWorker().addChatProtectorWord(guildId, word);
         });

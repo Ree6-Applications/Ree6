@@ -25,7 +25,7 @@ public class News implements ICommand {
             return;
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news").thenAccept(setting -> {
+        SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news").subscribe(setting -> {
             if (setting == null) {
                 SQLSession.getSqlConnector().getSqlWorker().setSetting(commandEvent.getGuild().getIdLong(), "configuration_news", "Receive News", true);
                 commandEvent.reply(commandEvent.getResource("message.news.enabled"), 5);
@@ -40,7 +40,7 @@ public class News implements ICommand {
                 commandEvent.reply(commandEvent.getResource("message.news.enabled"), 5);
             }
 
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(setting).join();
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(setting).block();
         });
     }
 

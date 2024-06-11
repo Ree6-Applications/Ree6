@@ -104,7 +104,7 @@ public class OtherEvents extends ListenerAdapter {
     @Override
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
 
-        SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId())).thenAccept(channelStats -> {
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId())).subscribe(channelStats -> {
             if (channelStats != null) {
                 if (channelStats.getMemberStatsChannelId() != null) {
                     GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
@@ -133,20 +133,20 @@ public class OtherEvents extends ListenerAdapter {
 
         GuildUtil.handleMemberJoin(event.getGuild(), event.getMember());
 
-        SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getIdLong()).thenAccept(x -> {
+        SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getIdLong()).subscribe(x -> {
             if (x) {
                 WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
                 wmb.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
                 wmb.setUsername("Welcome!");
 
-                SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "message_join").thenAccept(messageSetting -> {
+                SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "message_join").subscribe(messageSetting -> {
                     final String messageContent = messageSetting.getStringValue()
                             .replace("%user_name%", event.getMember().getUser().getName())
                             .replace("%guild_name%", event.getGuild().getName())
                             .replace("%guild_member_count%", String.valueOf(event.getGuild().getMemberCount()));
 
-                    SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "message_join_image").thenAccept(joinImage -> {
+                    SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "message_join_image").subscribe(joinImage -> {
                         if (!joinImage.getStringValue().isBlank()) {
                             try {
                                 wmb.addFile("welcome.png", ImageCreationUtility.createJoinImage(event.getUser(), joinImage.getStringValue(),
@@ -159,7 +159,7 @@ public class OtherEvents extends ListenerAdapter {
                             wmb.setContent(messageContent.replace("%user_mention%", event.getMember().getUser().getAsMention()));
                         }
 
-                        SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getIdLong()).thenAccept(webhook -> {
+                        SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
                             if (webhook == null) return;
 
                             WebhookUtil.sendWebhook(wmb.build(), webhook);
@@ -178,7 +178,7 @@ public class OtherEvents extends ListenerAdapter {
     public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
         super.onGuildMemberRemove(event);
 
-        SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId())).thenAccept(channelStats -> {
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getId())).subscribe(channelStats -> {
             if (channelStats != null) {
                 if (channelStats.getMemberStatsChannelId() != null) {
                     GuildChannel guildChannel = event.getGuild().getGuildChannelById(channelStats.getMemberStatsChannelId());
@@ -206,7 +206,7 @@ public class OtherEvents extends ListenerAdapter {
         });
 
         if (BotConfig.isModuleActive("tickets")) {
-            SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).thenAccept(tickets -> {
+            SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(tickets -> {
                 if (tickets != null) {
                     Category category = event.getGuild().getCategoryById(tickets.getTicketCategory());
 
@@ -325,7 +325,7 @@ public class OtherEvents extends ListenerAdapter {
 
     private void checkCreationChannel(Guild guild, Member member, long channelId) {
         SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", guild.getId()))
-                .thenAccept(temporalVoicechannel -> {
+                .subscribe(temporalVoicechannel -> {
                     if (temporalVoicechannel != null) {
                         VoiceChannel voiceChannel = guild.getVoiceChannelById(channelId);
 
@@ -337,12 +337,12 @@ public class OtherEvents extends ListenerAdapter {
                         }
 
                         if (voiceChannel.getParentCategory() != null) {
-                            LanguageService.getByGuild(guild, "label.temporalVoiceName", "SPLIT").thenAccept(preName -> {
+                            LanguageService.getByGuild(guild, "label.temporalVoiceName", "SPLIT").subscribe(preName -> {
                                 preName = preName.split("SPLIT")[0];
                                 String finalPreName = preName;
                                 LanguageService.getByGuild(guild, "label.temporalVoiceName",
                                                 guild.getVoiceChannels().stream().filter(c -> c.getName().startsWith(finalPreName)).count() + 1)
-                                        .thenAccept(name -> voiceChannel.getParentCategory().createVoiceChannel(name)
+                                        .subscribe(name -> voiceChannel.getParentCategory().createVoiceChannel(name)
                                                 .queue(channel -> {
                                                     guild.moveVoiceMember(member, channel).queue();
                                                     ArrayUtil.temporalVoicechannel.add(channel.getId());
@@ -413,7 +413,7 @@ public class OtherEvents extends ListenerAdapter {
 
             int addXP = IntStream.rangeClosed(1, min).map(i -> RandomUtils.random.nextInt(5, 11)).sum();
 
-            SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(member.getGuild().getIdLong(), member.getIdLong()).thenAccept(x -> {
+            SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(member.getGuild().getIdLong(), member.getIdLong()).subscribe(x -> {
                 x.addExperience(addXP);
 
                 SQLSession.getSqlConnector().getSqlWorker().addVoiceLevelData(member.getGuild().getIdLong(), x);
@@ -449,7 +449,7 @@ public class OtherEvents extends ListenerAdapter {
 
         if (event.isFromType(ChannelType.NEWS) &&
                 BotConfig.isModuleActive("autopublish")) {
-            SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "configuration_autopublish").thenAccept(x -> {
+            SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "configuration_autopublish").subscribe(x -> {
                 if (x.getBooleanValue())
                     event.getMessage().crosspost().queue(c -> c.addReaction(Emoji.fromUnicode("U+1F4E2")).queue());
             });
@@ -467,22 +467,26 @@ public class OtherEvents extends ListenerAdapter {
                 ArrayUtil.messageIDwithUser.put(event.getMessageId(), event.getAuthor());
             }
 
-            ModerationUtil.shouldModerate(event.getGuild().getIdLong()).thenAccept(x -> {
-                AtomicBoolean moderated = new AtomicBoolean(false);
-                if (x) {
-                    ModerationUtil.checkMessage(event.getGuild().getIdLong(), event.getMessage().getContentRaw()).thenAccept(y -> {
-                        if (y) {
-                            Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+            ModerationUtil.shouldModerate(event.getGuild().getIdLong()).subscribe(x -> {
 
-                            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.blacklisted"), event.getChannel(), null);
-                            moderated.set(true);
-                        }
-                    });
+                log.info("Message received from {} in {} with content: {}", event.getAuthor().getGlobalName(), event.getChannel().getName(), event.getMessage().getContentRaw());
+
+                boolean moderated = false;
+                if (x) {
+                    moderated = Boolean.TRUE.equals(ModerationUtil.checkMessage(event.getGuild().getIdLong(), event.getMessage().getContentRaw()).block());
+
+                    if (moderated) {
+                        Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+
+                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.blacklisted"), event.getChannel(), null);
+                    }
                 }
 
-                if (moderated.get()) return;
+                log.info("Message was moderated: {}", moderated);
 
-                Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getGuildChannel(), null).thenAccept(value -> {
+                if (moderated) return;
+
+                Main.getInstance().getCommandManager().perform(event.getMember(), event.getGuild(), event.getMessage().getContentRaw(), event.getMessage(), event.getGuildChannel(), null).subscribe(value -> {
                     if (!value) {
                         if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
                             if (event.getMessage().getMessageReference() != null) return;
@@ -501,9 +505,9 @@ public class OtherEvents extends ListenerAdapter {
                         if (BotConfig.isModuleActive("level")) {
                             if (!ArrayUtil.timeout.contains(event.getMember())) {
 
-                                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getIdLong(), event.getMember().getIdLong()).thenAccept(userLevel -> {
+                                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getIdLong(), event.getMember().getIdLong()).subscribe(userLevel -> {
                                     if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26))) {
-                                        SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "level_message").thenAccept(z -> {
+                                        SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "level_message").subscribe(z -> {
                                             if (z.getBooleanValue()) {
                                                 Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(),
                                                         "message.levelUp", userLevel.getLevel(), LanguageService.getByGuild(event.getGuild(), "label.chat")
@@ -557,37 +561,37 @@ public class OtherEvents extends ListenerAdapter {
             if (message.getAuthor().getId().equalsIgnoreCase(event.getJDA().getSelfUser().getId())) {
                 String messageContent = message.getContentRaw();
 
-                LanguageService.getByGuild(event.getGuild(), "message.reactions.reactionNeeded", "SPLIT_HERE").thenAccept(translation -> {
+                LanguageService.getByGuild(event.getGuild(), "message.reactions.reactionNeeded", "SPLIT_HERE").subscribe(translation -> {
                     if (messageContent.startsWith(translation.split("SPLIT_HERE")[0])) {
                         if (event.getMember().hasPermission(Permission.ADMINISTRATOR) && message.getMessageReference() != null) {
                             if (message.getMentions().getRoles().isEmpty()) {
-                                LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound").thenApply(message::editMessage).thenAccept(MessageEditAction::queue);
+                                LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound").map(message::editMessage).subscribe(MessageEditAction::queue);
                                 return;
                             }
 
                             Role role = message.getMentions().getRoles().get(0);
 
                             if (role == null) {
-                                LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound").thenApply(message::editMessage).thenAccept(MessageEditAction::queue);
+                                LanguageService.getByGuild(event.getGuild(), "message.reactions.roleNotFound").map(message::editMessage).subscribe(MessageEditAction::queue);
                                 return;
                             }
 
                             ReactionRole reactionRole = new ReactionRole(event.getGuild().getIdLong(), emojiId, emojiUnion.getFormatted(), role.getIdLong(), message.getMessageReference().getMessageIdLong());
-                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole).join();
+                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole).block();
 
                             if (message.getMessageReference().getMessage() != null) {
                                 message.getMessageReference().getMessage().addReaction(event.getEmoji()).queue();
                             }
 
                             LanguageService.getByGuild(event.getGuild(), "message.reactions.roleAssign", role.getAsMention())
-                                    .thenAccept(x -> message.editMessage(x).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue());
+                                    .subscribe(x -> message.editMessage(x).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue());
                         }
                     }
                 });
             } else {
                 SQLSession.getSqlConnector().getSqlWorker()
                         .getEntity(new ReactionRole(), "FROM ReactionRole WHERE guildRoleId.guildId=:gid AND emoteId=:emoteId AND messageId=:messageId",
-                                Map.of("gid", event.getGuild().getIdLong(), "emoteId", emojiId, "messageId", message.getIdLong())).thenAccept(reactionRole -> {
+                                Map.of("gid", event.getGuild().getIdLong(), "emoteId", emojiId, "messageId", message.getIdLong())).subscribe(reactionRole -> {
                             if (reactionRole != null) {
                                 Role role = event.getGuild().getRoleById(reactionRole.getId());
 
@@ -608,7 +612,7 @@ public class OtherEvents extends ListenerAdapter {
                                 }
 
                                 if (changes)
-                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole).join();
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole).block();
                             }
                         });
             }
@@ -634,7 +638,7 @@ public class OtherEvents extends ListenerAdapter {
 
         SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
                 "FROM ReactionRole WHERE guildRoleId.guildId=:gid AND emoteId=:emoteId AND messageId=:messageId",
-                Map.of("gid", event.getGuild().getIdLong(), "emoteId", emojiId, "messageId", event.getMessageIdLong())).thenAccept(reactionRole -> {
+                Map.of("gid", event.getGuild().getIdLong(), "emoteId", emojiId, "messageId", event.getMessageIdLong())).subscribe(reactionRole -> {
             if (reactionRole != null) {
                 Role role = event.getGuild().getRoleById(reactionRole.getId());
 
@@ -657,7 +661,7 @@ public class OtherEvents extends ListenerAdapter {
 
         event.deferReply(true).queue();
 
-        Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getGuildChannel(), event).thenAccept(x -> {
+        Main.getInstance().getCommandManager().perform(Objects.requireNonNull(event.getMember()), event.getGuild(), null, null, event.getGuildChannel(), event).subscribe(x -> {
             if (x != null) {
                 Main.getInstance().getCommandManager().timeoutUser(event.getUser());
             }

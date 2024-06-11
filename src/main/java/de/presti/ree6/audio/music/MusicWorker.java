@@ -186,10 +186,10 @@ public class MusicWorker {
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                                 .setAuthor(guild.getJDA().getSelfUser().getName(), BotConfig.getWebsite(),
                                         guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
-                                .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer").join())
+                                .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer").block())
                                 .setThumbnail(guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
                                 .setColor(Color.RED)
-                                .setDescription(LanguageService.getByGuild(guild, "message.music.notPlaying").join())
+                                .setDescription(LanguageService.getByGuild(guild, "message.music.notPlaying").block())
                                 .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl())
                         , channel, interactionHook);
                 return;
@@ -210,10 +210,10 @@ public class MusicWorker {
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(), BotConfig.getWebsite(), guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
-                            .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer").join())
+                            .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer").block())
                             .setImage((track.getInfo().artworkUrl != null && track.getInfo().artworkUrl.isBlank()) ? guild.getJDA().getSelfUser().getEffectiveAvatarUrl() : track.getInfo().artworkUrl)
                             .setColor(Color.GREEN)
-                            .setDescription(LanguageService.getByGuild(guild, "message.music.queueAdded.default", FormatUtil.filter(track.getInfo().title)).join())
+                            .setDescription(LanguageService.getByGuild(guild, "message.music.queueAdded.default", FormatUtil.filter(track.getInfo().title)).block())
                             .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl()), 5, messageChannel, interactionHook);
 
                 play(finalAudioChannel, musicManager, track, force);
@@ -235,10 +235,10 @@ public class MusicWorker {
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(), BotConfig.getWebsite(), guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
-                            .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer").join())
+                            .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer").block())
                             .setThumbnail(guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
                             .setColor(Color.GREEN)
-                            .setDescription(LanguageService.getByGuild(guild, "message.music.queueAdded.firstOfList", FormatUtil.filter(firstTrack.getInfo().title), FormatUtil.filter(playlist.getName())).join())
+                            .setDescription(LanguageService.getByGuild(guild, "message.music.queueAdded.firstOfList", FormatUtil.filter(firstTrack.getInfo().title), FormatUtil.filter(playlist.getName())).block())
                             .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl()), 5, messageChannel, interactionHook);
 
                 play(finalAudioChannel, musicManager, firstTrack, force);
@@ -260,10 +260,10 @@ public class MusicWorker {
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(), BotConfig.getWebsite(), guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
-                            .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer").join())
+                            .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer").block())
                             .setThumbnail(guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
                             .setColor(Color.GREEN)
-                            .setDescription(LanguageService.getByGuild(guild, "message.music.searchUrlFailed", FormatUtil.filter(trackUrl)).join())
+                            .setDescription(LanguageService.getByGuild(guild, "message.music.searchUrlFailed", FormatUtil.filter(trackUrl)).block())
                             .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl()), 5, messageChannel, interactionHook);
             }
 
@@ -277,10 +277,10 @@ public class MusicWorker {
                 if (!silent)
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(), BotConfig.getWebsite(), guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
-                            .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer").join())
+                            .setTitle(LanguageService.getByGuild(guild, "label.musicPlayer").block())
                             .setThumbnail(guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
                             .setColor(Color.GREEN)
-                            .setDescription(LanguageService.getByGuild(guild, "message.music.failedLoading", exception.getMessage()).join())
+                            .setDescription(LanguageService.getByGuild(guild, "message.music.failedLoading", exception.getMessage()).block())
                             .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl()), 5, messageChannel, interactionHook);
             }
         });
@@ -370,10 +370,10 @@ public class MusicWorker {
                     EmbedBuilder em = new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(),
                                     BotConfig.getWebsite(), guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
-                            .setTitle(LanguageService.getByGuildOrInteraction(guild, interaction, "label.musicPlayer").join())
+                            .setTitle(LanguageService.getByGuildOrInteraction(guild, interaction, "label.musicPlayer").block())
                             .setThumbnail(guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
                             .setColor(Color.GREEN)
-                            .setDescription(LanguageService.getByGuildOrInteraction(guild, interaction, "message.music.notFound", value).join())
+                            .setDescription(LanguageService.getByGuildOrInteraction(guild, interaction, "message.music.notFound", value).block())
                             .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl());
                     Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
                     return;
@@ -407,10 +407,10 @@ public class MusicWorker {
                     EmbedBuilder em = new EmbedBuilder()
                             .setAuthor(guild.getJDA().getSelfUser().getName(),
                                     BotConfig.getWebsite(), guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
-                            .setTitle(LanguageService.getByGuildOrInteraction(guild, interaction, "label.musicPlayer").join())
+                            .setTitle(LanguageService.getByGuildOrInteraction(guild, interaction, "label.musicPlayer").block())
                             .setThumbnail(guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
                             .setColor(Color.GREEN)
-                            .setDescription(LanguageService.getByGuildOrInteraction(guild, interaction, "message.music.notFoundMultiple", loadFailed.size()).join())
+                            .setDescription(LanguageService.getByGuildOrInteraction(guild, interaction, "message.music.notFoundMultiple", loadFailed.size()).block())
                             .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl());
                     Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
                 }
@@ -423,10 +423,10 @@ public class MusicWorker {
             } catch (Exception exception) {
                 EmbedBuilder em = new EmbedBuilder()
                         .setAuthor(guild.getJDA().getSelfUser().getName(), BotConfig.getWebsite(), guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
-                        .setTitle(LanguageService.getByGuildOrInteraction(guild, interaction, "label.musicPlayer").join())
+                        .setTitle(LanguageService.getByGuildOrInteraction(guild, interaction, "label.musicPlayer").block())
                         .setThumbnail(guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
                         .setColor(Color.RED)
-                        .setDescription(LanguageService.getByGuildOrInteraction(guild, interaction, "message.music.searchFailed").join())
+                        .setDescription(LanguageService.getByGuildOrInteraction(guild, interaction, "message.music.searchFailed").block())
                         .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl());
                 Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
                 log.error("Error while searching for " + value + " on YouTube", exception);
@@ -436,10 +436,10 @@ public class MusicWorker {
             if (ytResult == null) {
                 EmbedBuilder em = new EmbedBuilder()
                         .setAuthor(guild.getJDA().getSelfUser().getName(), BotConfig.getWebsite(), guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
-                        .setTitle(LanguageService.getByGuildOrInteraction(guild, interaction, "label.musicPlayer").join())
+                        .setTitle(LanguageService.getByGuildOrInteraction(guild, interaction, "label.musicPlayer").block())
                         .setThumbnail(guild.getJDA().getSelfUser().getEffectiveAvatarUrl())
                         .setColor(Color.YELLOW)
-                        .setDescription(LanguageService.getByGuildOrInteraction(guild, interaction, "message.music.notFound", FormatUtil.filter(value)).join())
+                        .setDescription(LanguageService.getByGuildOrInteraction(guild, interaction, "message.music.notFound", FormatUtil.filter(value)).block())
                         .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl());
                 Main.getInstance().getCommandManager().sendMessage(em, 5, channel, interactionHook);
             } else {
@@ -470,10 +470,10 @@ public class MusicWorker {
     public void skipTrack(GuildMessageChannelUnion channel, InteractionHook interactionHook, int skipAmount, boolean silent) {
         if (!silent) {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setAuthor(channel.getJDA().getSelfUser().getName(), BotConfig.getWebsite(), channel.getJDA().getSelfUser().getAvatarUrl())
-                    .setTitle(LanguageService.getByGuild(channel.getGuild(), "label.musicPlayer").join())
+                    .setTitle(LanguageService.getByGuild(channel.getGuild(), "label.musicPlayer").block())
                     .setThumbnail(channel.getJDA().getSelfUser().getAvatarUrl())
                     .setColor(Color.GREEN)
-                    .setDescription(LanguageService.getByGuild(channel.getGuild(), "message.music.skip").join())
+                    .setDescription(LanguageService.getByGuild(channel.getGuild(), "message.music.skip").block())
                     .setFooter(channel.getGuild().getName() + " - " + BotConfig.getAdvertisement(), channel.getGuild().getIconUrl()), 5, channel, interactionHook);
         }
 

@@ -75,16 +75,16 @@ public class Suggestion implements ICommand {
     public void createSuggestions(CommandEvent commandEvent, MessageChannel channel, MessageChannel messageChannel) {
 
         SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildChannelId.guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()))
-                .thenApply(suggestions -> {
+                .map(suggestions -> {
             if (suggestions != null) {
                 SQLSession.getSqlConnector().getSqlWorker().deleteEntity(suggestions);
 
                 suggestions.getGuildChannelId().setChannelId(channel.getIdLong());
-                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions).join();
+                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions).block();
             } else {
-                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong())).join();
+                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Suggestions(commandEvent.getGuild().getIdLong(), channel.getIdLong())).block();
             }
-        }).thenAccept(suggestions -> SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_suggestion_menu").thenAccept(setting -> {
+        }).subscribe(suggestions -> SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_suggestion_menu").subscribe(setting -> {
             MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle(commandEvent.getResource("label.suggestionMenu"));

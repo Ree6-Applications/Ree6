@@ -71,7 +71,7 @@ public class Import implements ICommand {
                         JsonElement xp = player.getAsJsonObject().get("xp");
 
                         if (id.isJsonPrimitive() && xp.isJsonPrimitive()) {
-                            SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), id.getAsLong()).thenAccept(chatUserLevel -> {
+                            SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), id.getAsLong()).subscribe(chatUserLevel -> {
                                 if (chatUserLevel != null && chatUserLevel.getExperience() > xp.getAsLong()) {
                                     return;
                                 }
@@ -82,7 +82,7 @@ public class Import implements ICommand {
                                     chatUserLevel.setExperience(xp.getAsLong());
                                 }
 
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel).join();
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel).block();
                             });
                         }
                     }
@@ -122,7 +122,7 @@ public class Import implements ICommand {
             Leaderboard leaderboard = AmariAPI.getAmari4J().getRawLeaderboard(commandEvent.getGuild().getId(), Integer.MAX_VALUE);
 
             leaderboard.getMembers().forEach(member -> {
-                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), Long.parseLong(member.getUserid())).thenAccept(chatUserLevel -> {
+                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), Long.parseLong(member.getUserid())).subscribe(chatUserLevel -> {
                     if (chatUserLevel != null && chatUserLevel.getExperience() > member.getExperience()) {
                         return;
                     }
@@ -133,7 +133,7 @@ public class Import implements ICommand {
                         chatUserLevel.setExperience(member.getExperience());
                     }
 
-                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel).join();
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel).block();
                 });
             });
             commandEvent.reply(commandEvent.getResource("message.import.success", leaderboard.getCount()), 5);

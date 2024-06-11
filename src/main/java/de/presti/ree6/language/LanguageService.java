@@ -14,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.simpleyaml.configuration.file.YamlConfiguration;
+import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.IOException;
@@ -164,7 +165,7 @@ public class LanguageService {
      * @param parameter    the parameter to replace.
      * @return the String.
      */
-    public static @NotNull CompletableFuture<String> getByEvent(@NotNull CommandEvent commandEvent, @NotNull String key, @Nullable Object... parameter) {
+    public static @NotNull Mono<String> getByEvent(@NotNull CommandEvent commandEvent, @NotNull String key, @Nullable Object... parameter) {
         if (commandEvent.isSlashCommand()) {
             return getByInteraction(commandEvent.getInteractionHook().getInteraction(), key, parameter);
         } else {
@@ -180,7 +181,7 @@ public class LanguageService {
      * @param parameter    the parameter to replace.
      * @return the String.
      */
-    public static @NotNull CompletableFuture<String> getByEvent(@NotNull GenericGuildEvent commandEvent, @NotNull String key, @Nullable Object... parameter) {
+    public static @NotNull Mono<String> getByEvent(@NotNull GenericGuildEvent commandEvent, @NotNull String key, @Nullable Object... parameter) {
         return getByGuild(commandEvent.getGuild(), key, parameter);
     }
 
@@ -193,7 +194,7 @@ public class LanguageService {
      * @param parameter   The Parameters to replace placeholders in the String.
      * @return The String.
      */
-    public static @NotNull CompletableFuture<String> getByGuildOrInteractionHook(Guild guild, InteractionHook interaction, @NotNull String key, @Nullable Object... parameter) {
+    public static @NotNull Mono<String> getByGuildOrInteractionHook(Guild guild, InteractionHook interaction, @NotNull String key, @Nullable Object... parameter) {
         return getByGuildOrInteraction(guild, interaction != null ? interaction.getInteraction() :  null, key, parameter);
     }
 
@@ -207,7 +208,7 @@ public class LanguageService {
      * @param parameter   The Parameters to replace placeholders in the String.
      * @return The String.
      */
-    public static @NotNull CompletableFuture<String> getByGuildOrInteraction(Guild guild, Interaction interaction, @NotNull String key, @Nullable Object... parameter) {
+    public static @NotNull Mono<String> getByGuildOrInteraction(Guild guild, Interaction interaction, @NotNull String key, @Nullable Object... parameter) {
         if (interaction != null) {
             return getByInteraction(interaction, key, parameter);
         } else {
@@ -223,7 +224,7 @@ public class LanguageService {
      * @param parameter The Parameters to replace placeholders in the String.
      * @return The String.
      */
-    public static @NotNull CompletableFuture<String> getByGuild(Guild guild, @NotNull String key, @Nullable Object... parameter) {
+    public static @NotNull Mono<String> getByGuild(Guild guild, @NotNull String key, @Nullable Object... parameter) {
         return getByGuild(guild != null ? guild.getIdLong() : -1, key, parameter);
     }
 
@@ -235,15 +236,15 @@ public class LanguageService {
      * @param parameter The Parameters to replace placeholders in the String.
      * @return The String.
      */
-    public static @NotNull CompletableFuture<String> getByGuild(long guildId, @NotNull String key, @Nullable Object... parameter) {
+    public static @NotNull Mono<String> getByGuild(long guildId, @NotNull String key, @Nullable Object... parameter) {
         if (guildId == -1) {
             return getDefault(key, parameter);
         }
 
         return SQLSession.getSqlConnector().getSqlWorker().getSetting(guildId, "configuration_language")
-                .thenApply(setting -> getByLocale(setting.getStringValue(), key, parameter).join())
-                .thenApply(resource -> SQLSession.getSqlConnector().getSqlWorker().getSetting(guildId, "chatprefix").
-                        thenApply(prefix -> resource.replace("{guild_prefix}", prefix.getStringValue())).join());
+                .mapNotNull(setting -> getByLocale(setting.getStringValue(), key, parameter).block())
+                .mapNotNull(resource -> SQLSession.getSqlConnector().getSqlWorker().getSetting(guildId, "chatprefix").
+                        map(prefix -> resource.replace("{guild_prefix}", prefix.getStringValue())).block());
     }
 
     /**
@@ -254,15 +255,15 @@ public class LanguageService {
      * @param parameter   The Parameters to replace placeholders in the String.
      * @return The String.
      */
-    public static @NotNull CompletableFuture<String> getByInteraction(Interaction interaction, @NotNull String key, @Nullable Object... parameter) {
+    public static @NotNull Mono<String> getByInteraction(Interaction interaction, @NotNull String key, @Nullable Object... parameter) {
         if (!interaction.isFromGuild()) {
             return getByLocale(interaction.getUserLocale(), key, parameter);
         }
 
-        return getByLocale(interaction.getUserLocale(), key, parameter).thenApply(resource -> {
+        return getByLocale(interaction.getUserLocale(), key, parameter).mapNotNull(resource -> {
             if (resource.contains("{guild_prefix}")) {
                 return SQLSession.getSqlConnector().getSqlWorker().getSetting(interaction.getGuild().getIdLong(), "chatprefix")
-                        .thenApply(prefix -> resource.replace("{guild_prefix}", prefix.getStringValue())).join();
+                        .map(prefix -> resource.replace("{guild_prefix}", prefix.getStringValue())).block();
             }
 
             return resource;
@@ -276,7 +277,7 @@ public class LanguageService {
      * @param parameter The Parameters to replace placeholders in the String.
      * @return The String.
      */
-    public static @NotNull CompletableFuture<String> getDefault(@NotNull String key, @Nullable Object... parameter) {
+    public static @NotNull Mono<String> getDefault(@NotNull String key, @Nullable Object... parameter) {
         return getByLocale(DiscordLocale.from(BotConfig.getDefaultLanguage()), key, parameter);
     }
 
@@ -288,7 +289,7 @@ public class LanguageService {
      * @param parameters The Parameters to replace placeholders in the String.
      * @return The String.
      */
-    public static @NotNull CompletableFuture<String> getByLocale(@NotNull String locale, @NotNull String key, @Nullable Object... parameters) {
+    public static @NotNull Mono<String> getByLocale(@NotNull String locale, @NotNull String key, @Nullable Object... parameters) {
         return getByLocale(DiscordLocale.from(locale), key, parameters);
     }
 
@@ -300,15 +301,15 @@ public class LanguageService {
      * @param parameters    The Parameters to replace placeholders in the String.
      * @return The String.
      */
-    public static @NotNull CompletableFuture<String> getByLocale(@NotNull DiscordLocale discordLocale, @NotNull String key, @Nullable Object... parameters) {
-        return CompletableFuture.supplyAsync(() -> {
-            if (discordLocale == DiscordLocale.UNKNOWN) return getDefault(key, parameters).join();
+    public static @NotNull Mono<String> getByLocale(@NotNull DiscordLocale discordLocale, @NotNull String key, @Nullable Object... parameters) {
+        return Mono.fromFuture(CompletableFuture.supplyAsync(() -> {
+            if (discordLocale == DiscordLocale.UNKNOWN) return getDefault(key, parameters).block();
 
             Language language = languageResources.containsKey(discordLocale) ? languageResources.get(discordLocale) :
                     languageResources.get(DiscordLocale.from(BotConfig.getDefaultLanguage()));
 
             return language != null ? language.getResource(key, parameters) : "Missing language resource!";
-        });
+        }));
     }
 
     /**

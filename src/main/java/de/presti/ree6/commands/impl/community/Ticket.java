@@ -59,7 +59,7 @@ public class Ticket implements ICommand {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
 
-        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", commandEvent.getGuild().getId())).thenAccept(tickets -> {
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", commandEvent.getGuild().getId())).subscribe(tickets -> {
 
             if (tickets != null) {
                 SQLSession.getSqlConnector().getSqlWorker().deleteEntity(tickets);
@@ -79,17 +79,17 @@ public class Ticket implements ICommand {
                 finalTickets.setLogChannelWebhookToken(webhook.getToken());
                 commandEvent.getGuild().createCategory("Tickets").addPermissionOverride(commandEvent.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
                     finalTickets.setTicketCategory(category1.getIdLong());
-                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(finalTickets).join();
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(finalTickets).block();
 
                     MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
                     messageCreateBuilder.setEmbeds(new EmbedBuilder()
-                            .setTitle(LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket").join())
-                            .setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_ticket_menu").join().getStringValue())
+                            .setTitle(LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket").block())
+                            .setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_ticket_menu").block().getStringValue())
                             .setColor(0x55ff00)
                             .setThumbnail(commandEvent.getGuild().getIconUrl())
                             .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
                             .build());
-                    messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket").join(), Emoji.fromUnicode("U+1F4E9")));
+                    messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket").block(), Emoji.fromUnicode("U+1F4E9")));
                     Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), ticketChannel.getAsChannel().asTextChannel());
                 });
             });

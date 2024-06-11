@@ -18,7 +18,7 @@ public class Optout implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        SQLSession.getSqlConnector().getSqlWorker().isOptOut(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong()).thenAccept(value -> {
+        SQLSession.getSqlConnector().getSqlWorker().isOptOut(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong()).subscribe(value -> {
             if (value) {
                 SQLSession.getSqlConnector().getSqlWorker().optIn(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong());
                 commandEvent.reply(commandEvent.getResource("message.optout.optedIn"));

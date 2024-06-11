@@ -59,9 +59,9 @@ public class Blacklist implements ICommand {
                     }
 
                     default -> {
-                        ModerationUtil.shouldModerate(commandEvent.getGuild().getIdLong()).thenAccept(aBoolean -> {
+                        ModerationUtil.shouldModerate(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
                             if (aBoolean) {
-                                ModerationUtil.getBlacklist(commandEvent.getGuild().getIdLong()).thenAccept(blacklists -> {
+                                ModerationUtil.getBlacklist(commandEvent.getGuild().getIdLong()).subscribe(blacklists -> {
                                     StringBuilder end = new StringBuilder();
 
                                     for (String s : blacklists) {
@@ -88,9 +88,9 @@ public class Blacklist implements ICommand {
                             commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
                             commandEvent.reply(commandEvent.getResource("message.default.usage", "blacklist remove WORD"), 5);
                         } else if (commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
-                            ModerationUtil.shouldModerate(commandEvent.getGuild().getIdLong()).thenAccept(aBoolean -> {
+                            ModerationUtil.shouldModerate(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
                                 if (aBoolean) {
-                                    ModerationUtil.getBlacklist(commandEvent.getGuild().getIdLong()).thenAccept(blacklists -> {
+                                    ModerationUtil.getBlacklist(commandEvent.getGuild().getIdLong()).subscribe(blacklists -> {
                                         StringBuilder end = new StringBuilder();
 
                                         for (String s : blacklists) {

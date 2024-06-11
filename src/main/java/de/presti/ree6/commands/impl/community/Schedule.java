@@ -57,7 +57,7 @@ public class Schedule implements ICommand {
 
             case "list" -> SQLSession.getSqlConnector().getSqlWorker()
                     .getEntityList(new ScheduledMessage(), "FROM ScheduledMessage WHERE guildAndId.guildId = :gid ",
-                            Map.of("gid", commandEvent.getGuild().getIdLong())).thenAccept(scheduledMessages -> {
+                            Map.of("gid", commandEvent.getGuild().getIdLong())).subscribe(scheduledMessages -> {
                         StringBuilder stringBuilder = new StringBuilder();
 
                         for (ScheduledMessage scheduledMessage : scheduledMessages) {
@@ -75,7 +75,7 @@ public class Schedule implements ICommand {
 
                 SQLSession.getSqlConnector().getSqlWorker()
                         .getEntity(new ScheduledMessage(), "FROM ScheduledMessage WHERE guildAndId.guildId = :gid AND guildAndId.id = :id",
-                                Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id.getAsLong())).thenAccept(scheduledMessage -> {
+                                Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id.getAsLong())).subscribe(scheduledMessage -> {
                             if (scheduledMessage != null) {
                                 SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
                                 commandEvent.reply(commandEvent.getResource("message.schedule.delete.success"));
@@ -92,6 +92,8 @@ public class Schedule implements ICommand {
                 OptionMapping minute = commandEvent.getOption("minute");
                 OptionMapping channel = commandEvent.getOption("channel");
                 OptionMapping repeat = commandEvent.getOption("repeat");
+
+                boolean shouldRepeat = repeat != null && repeat.getAsBoolean();
 
                 long fullTime = 0;
                 if (month != null) fullTime += Duration.ofDays(31 * month.getAsLong()).toMillis();
@@ -111,19 +113,18 @@ public class Schedule implements ICommand {
                 long finalFullTime = fullTime;
                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookScheduledMessage(),
                                 "FROM WebhookScheduledMessage WHERE guildAndId.guildId = :gid AND channelId = :channel",
-                                Map.of("gid", commandEvent.getGuild().getId(), "channel", guildChannel.getIdLong())).thenAccept(webhookScheduledMessage -> {
+                                Map.of("gid", commandEvent.getGuild().getId(), "channel", guildChannel.getIdLong())).subscribe(webhookScheduledMessage -> {
                     if (webhookScheduledMessage == null) {
                         Webhook webhook = guildChannel.asStandardGuildMessageChannel().createWebhook(BotConfig.getBotName() + "-Schedule").complete();
 
                         webhookScheduledMessage = SQLSession.getSqlConnector().getSqlWorker()
-                                .updateEntity(new WebhookScheduledMessage(commandEvent.getGuild().getIdLong(), guildChannel.getIdLong(), webhook.getIdLong(), webhook.getToken())).join();
+                                .updateEntity(new WebhookScheduledMessage(commandEvent.getGuild().getIdLong(), guildChannel.getIdLong(), webhook.getIdLong(), webhook.getToken())).block();
                     }
 
                     scheduledMessage.setScheduledMessageWebhook(webhookScheduledMessage);
                     scheduledMessage.setDelayAmount(finalFullTime);
-                    scheduledMessage.setRepeated(repeat.getAsBoolean());
-                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage).join();
-                    commandEvent.reply(commandEvent.getResource("message.schedule.added"));
+                    scheduledMessage.setRepeated(shouldRepeat);
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage).subscribe(x -> commandEvent.reply(commandEvent.getResource("message.schedule.added")));
                 });
             }
 

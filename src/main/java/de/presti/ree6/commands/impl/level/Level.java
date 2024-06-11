@@ -82,7 +82,7 @@ Level implements ICommand {
     public void sendLevel(Member member, CommandEvent commandEvent, String type) {
         (type.equalsIgnoreCase("voice") ?
                 SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getIdLong(), member.getIdLong()) :
-                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), member.getIdLong())).thenAccept(userLevel -> {
+                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), member.getIdLong())).subscribe(userLevel -> {
             try {
                 MessageCreateBuilder createBuilder = new MessageCreateBuilder();
                 createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createRankImage(userLevel), "rank.png"));

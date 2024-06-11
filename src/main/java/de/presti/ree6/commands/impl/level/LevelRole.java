@@ -76,7 +76,7 @@ public class LevelRole implements ICommand {
                 commandEvent.reply(commandEvent.getResource("message.levelRole.removed", role.getName(), level));
             }
             case "list" ->
-                    SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelRewards(commandEvent.getGuild().getIdLong()).thenAccept(level -> {
+                    SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelRewards(commandEvent.getGuild().getIdLong()).subscribe(level -> {
                         MessageCreateBuilder createBuilder = new MessageCreateBuilder();
                         StringBuilder voiceStringBuilder = new StringBuilder();
                         StringBuilder chatStringBuilder = new StringBuilder();
@@ -84,7 +84,7 @@ public class LevelRole implements ICommand {
 
                         level.forEach((level1, role1) -> voiceStringBuilder.append(level1).append(" -> ").append(role1));
 
-                        SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(commandEvent.getGuild().getIdLong()).join()
+                        SQLSession.getSqlConnector().getSqlWorker().getChatLevelRewards(commandEvent.getGuild().getIdLong()).block()
                                 .forEach((level2, role2) -> chatStringBuilder.append(level2).append(" -> ").append(role2));
 
                         createBuilder.addFiles(FileUpload.fromData(voiceStringBuilder.toString().getBytes(StandardCharsets.UTF_8), "voice.txt"),
