@@ -1,6 +1,7 @@
 package de.presti.ree6.commands.impl.fun;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
@@ -23,7 +24,14 @@ public class ShibaImage implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        JsonArray js = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true").build()).getAsJsonArray();
+        JsonElement jsonElement = RequestUtility.requestJson(RequestUtility.Request.builder().url("https://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true").build());
+
+        if (jsonElement.isJsonObject()) {
+            commandEvent.reply(commandEvent.getResource("message.default.retrievalError"), 5);
+            return;
+        }
+
+        JsonArray js = jsonElement.getAsJsonArray();
 
         EmbedBuilder em = new EmbedBuilder();
 
