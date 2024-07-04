@@ -143,6 +143,11 @@ public class Setup implements ICommand {
 
                 switch (commandEvent.getSubcommandGroup()) {
                     case "auditlog" -> {
+                        if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
+                            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MANAGE_WEBHOOKS.name()));
+                            return;
+                        }
+
                         if (commandEvent.getSubcommand().equals("set")) {
                             if (guildChannelUnion.getType() == ChannelType.TEXT) {
                                 guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Logs").queue(webhook -> {
@@ -174,6 +179,11 @@ public class Setup implements ICommand {
                         }
                     }
                     case "welcome" -> {
+                        if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
+                            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MANAGE_WEBHOOKS.name()));
+                            return;
+                        }
+
                         if (commandEvent.getSubcommand().equals("set")) {
                             if (guildChannelUnion.getType() == ChannelType.TEXT) {
                                 guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Welcome").queue(webhook -> {
