@@ -37,9 +37,12 @@ public class Stats implements ICommand {
 
         long start = System.currentTimeMillis();
 
-        Message message = commandEvent.isSlashCommand()
-                ? commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("label.loading")).complete()
-                : commandEvent.getChannel().sendMessage(commandEvent.getResource("label.loading")).complete();
+        Message message = null;
+        if (commandEvent.isSlashCommand()) {
+            message = commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("label.loading")).complete();
+        } else {
+            message = commandEvent.getChannel().sendMessage(commandEvent.getResource("label.loading")).complete();
+        }
 
         long ping = System.currentTimeMillis() - start;
         long computeTimeStart = System.currentTimeMillis();
@@ -100,6 +103,7 @@ public class Stats implements ICommand {
                 if (BotConfig.isDebug()) {
                     em.addField("**DEV ONLY**", "", true);
                     em.addField("**Compute Time**", computeTime + "ms", true);
+                    em.addField("**DEV ONLY*", "", true);
                 }
 
                 messageEditBuilder.setEmbeds(em.build());
