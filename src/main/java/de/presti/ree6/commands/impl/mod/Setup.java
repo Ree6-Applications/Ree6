@@ -222,8 +222,8 @@ public class Setup implements ICommand {
                             }
                         } else {
                             SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", commandEvent.getGuild().getId())).subscribe(temporalVoicechannel -> {
-                                if (temporalVoicechannel != null) {
-                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel);
+                                if (temporalVoicechannel.isPresent()) {
+                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel.get()).block();
                                     commandEvent.reply(commandEvent.getResource("message.temporalVoice.deleted"));
                                 } else {
                                     commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
@@ -265,7 +265,7 @@ public class Setup implements ICommand {
                                 if (!setting.getName().startsWith("configuration_rewards_")) continue;
 
                                 // TODO:: thing of how to handle this.
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Setting(commandEvent.getGuild().getIdLong(), setting.getName(), setting.getDisplayName(), setting.getValue()));
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Setting(commandEvent.getGuild().getIdLong(), setting.getName(), setting.getDisplayName(), setting.getValue())).block();
                             }
 
                             commandEvent.reply(commandEvent.getResource("message.rewards.success"));

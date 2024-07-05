@@ -88,8 +88,8 @@ public class Reactions implements ICommand {
                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
                         "FROM ReactionRole WHERE guildRoleId.guildId=:gid AND guildRoleId.roleId=:roleId AND messageId=:messageId",
                         Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsRole().getIdLong(), "messageId", messageId)).subscribe(reactionRole -> {
-                    if (reactionRole != null) {
-                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(reactionRole);
+                    if (reactionRole.isPresent()) {
+                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(reactionRole.get()).block();
 
                         commandEvent.reply(commandEvent.getResource("message.reactions.removed", role.getAsRole().getIdLong()), 5);
                     }

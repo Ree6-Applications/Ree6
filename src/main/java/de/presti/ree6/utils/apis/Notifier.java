@@ -655,7 +655,7 @@ public class Notifier {
 
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE twitchFollowerChannelUsername=:name", Map.of("name", finalTwitchChannel))
                     .subscribe(channelStats -> {
-                        if (channelStats != null) return;
+                        if (channelStats.isPresent()) return;
 
                         if (isTwitchRegistered(finalTwitchChannel))
                             registeredTwitchChannels.remove(finalTwitchChannel);
@@ -719,7 +719,7 @@ public class Notifier {
             if (!webhooks.isEmpty()) return;
 
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE twitterFollowerChannelUsername=:name", Map.of("name", finalTwitterUser)).subscribe(x -> {
-                if (x != null) return;
+                if (x.isPresent()) return;
 
                 if (isTwitterRegistered(finalTwitterUser)) {
                     registeredTwitterUsers.remove(finalTwitterUser);
@@ -880,7 +880,7 @@ public class Notifier {
             if (!webhooks.isEmpty()) return;
 
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", youtubeChannel)).subscribe(channelStats -> {
-                if (channelStats != null) return;
+                if (channelStats.isPresent()) return;
 
                 if (isYouTubeRegistered(youtubeChannel)) registeredYouTubeChannels.remove(youtubeChannel);
             });
@@ -1047,7 +1047,7 @@ public class Notifier {
             if (!webhooks.isEmpty()) return;
 
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE subredditMemberChannelSubredditName=:name", Map.of("name", subreddit)).subscribe(channelStats -> {
-                if (channelStats != null) return;
+                if (channelStats.isPresent()) return;
 
                 if (isSubredditRegistered(subreddit)) registeredSubreddits.remove(subreddit);
             });
@@ -1193,7 +1193,7 @@ public class Notifier {
         SQLSession.getSqlConnector().getSqlWorker().getInstagramWebhookByName(username).subscribe(webhooks -> {
             if (!webhooks.isEmpty()) return;
 
-            if (SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE instagramFollowerChannelUsername=:name", Map.of("name", username)) != null)
+            if (SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE instagramFollowerChannelUsername=:name", Map.of("name", username)).block().isPresent())
                 return;
 
             if (isInstagramUserRegistered(username)) registeredInstagramUsers.remove(username);

@@ -76,8 +76,8 @@ public class Schedule implements ICommand {
                 SQLSession.getSqlConnector().getSqlWorker()
                         .getEntity(new ScheduledMessage(), "FROM ScheduledMessage WHERE guildAndId.guildId = :gid AND guildAndId.id = :id",
                                 Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id.getAsLong())).subscribe(scheduledMessage -> {
-                            if (scheduledMessage != null) {
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
+                            if (scheduledMessage.isPresent()) {
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage.get()).block();
                                 commandEvent.reply(commandEvent.getResource("message.schedule.delete.success"));
                             } else {
                                 commandEvent.reply(commandEvent.getResource("message.schedule.delete.failed"));

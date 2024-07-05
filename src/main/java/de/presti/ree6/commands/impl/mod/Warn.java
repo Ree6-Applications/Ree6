@@ -150,8 +150,8 @@ public class Warn implements ICommand {
                     case "delete" -> {
                         int id = idMapping.getAsInt();
                         SQLSession.getSqlConnector().getSqlWorker().getEntity(new Punishments(), "FROM Punishments WHERE guildAndId.guildId = :gid AND guildAndId.id = :id", Map.of("gid", commandEvent.getGuild().getIdLong(), "id", id)).subscribe(punishment -> {
-                            if (punishment != null) {
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(punishment);
+                            if (punishment.isPresent()) {
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(punishment.get()).block();
                                 commandEvent.reply(commandEvent.getResource("message.warn.punishment.deleted", id));
                             } else {
                                 commandEvent.reply(commandEvent.getResource("message.warn.punishment.notFound", id));

@@ -1340,7 +1340,7 @@ public class MenuEvents extends ListenerAdapter {
                                 embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.deleted").block());
                                 embedBuilder.setColor(Color.GREEN);
                                 event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel).block();
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel.get()).block();
                             }
                         });
                     }
