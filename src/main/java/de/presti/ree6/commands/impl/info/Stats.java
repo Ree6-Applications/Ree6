@@ -45,6 +45,7 @@ public class Stats implements ICommand {
         }
 
         long ping = System.currentTimeMillis() - start;
+        long computeTimeStart = System.currentTimeMillis();
 
         EmbedBuilder em = new EmbedBuilder();
 
@@ -95,6 +96,15 @@ public class Stats implements ICommand {
         MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
 
         messageEditBuilder.setContent("");
+
+        long computeTime = System.currentTimeMillis() - computeTimeStart;
+
+        if (BotConfig.isDebug()) {
+            em.addField("**DEV ONLY**", "", true);
+            em.addField("**Compute Time**", computeTime + "ms", true);
+            em.addField("**DEV ONLY*", "", true);
+        }
+
         messageEditBuilder.setEmbeds(em.build());
 
         commandEvent.update(message, messageEditBuilder.build());
