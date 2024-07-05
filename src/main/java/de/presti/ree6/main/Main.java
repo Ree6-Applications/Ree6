@@ -345,61 +345,12 @@ public class Main {
             ThreadUtil.createThread(x -> {
                 log.info("Loading Notifier data.");
                 SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "FROM ChannelStats", null).subscribe(channelStats -> {
-                    try {
-                        // Register all Twitch Channels.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames().subscribe(getInstance().getNotifier()::registerTwitchChannel);
-                        getInstance().getNotifier().registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).toList());
-
-                        // Register the Event-handler.
-                        getInstance().getNotifier().registerTwitchEventHandler();
-                    } catch (Exception exception) {
-                        log.error("Error while loading Twitch data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
-
-                    try {
-                        // Register all Twitter Users.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames().subscribe(getInstance().getNotifier()::registerTwitterUser);
-                        getInstance().getNotifier().registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).filter(Objects::nonNull).toList());
-                    } catch (Exception exception) {
-                        log.error("Error while loading Twitter data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
-
-                    try {
-                        // Register all Reddit Subreddits.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits().subscribe(getInstance().getNotifier()::registerSubreddit);
-                        getInstance().getNotifier().registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).filter(Objects::nonNull).toList());
-                    } catch (Exception exception) {
-                        log.error("Error while loading Reddit data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
-
-                    try {
-                        // Register all Instagram Users.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers().subscribe(getInstance().getNotifier()::registerInstagramUser);
-                        getInstance().getNotifier().registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
-                    } catch (Exception exception) {
-                        log.error("Error while loading Instagram data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
-
-                    try {
-                        // Register all TikTok Users.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames().subscribe(tiktokNames ->
-                                tiktokNames.forEach(tikTokName -> getInstance().getNotifier().registerTikTokUser(Long.parseLong(tikTokName))));
-                    } catch (Exception exception) {
-                        log.error("Error while loading TikTok data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
-
-                    try {
-                        // Register all RSS-Feeds.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls().subscribe(getInstance().getNotifier()::registerRSS);
-                    } catch (Exception exception) {
-                        log.error("Error while loading RSS data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
+                    getInstance().getNotifier().getYouTubeSonic().load(channelStats);
+                    getInstance().getNotifier().getTwitchSonic().load(channelStats);
+                    getInstance().getNotifier().getInstagramSonic().load(channelStats);
+                    getInstance().getNotifier().getTwitterSonic().load(channelStats);
+                    getInstance().getNotifier().getTikTokSonic().load(channelStats);
+                    getInstance().getNotifier().getRssSonic().load(channelStats);
                 });
             }, t -> Sentry.captureException(t.getCause()));
         }

@@ -1,12 +1,18 @@
 package de.presti.ree6.module.notifications;
 
 import de.presti.ree6.module.IManager;
+import de.presti.ree6.sql.entities.stats.ChannelStats;
+
+import java.util.List;
 
 /**
  * Interface for Secure Online Notification Interoperable Class Modules.
  */
 public interface ISonic extends IManager<SonicIdentifier> {
 
+    default void load(List<ChannelStats> channelStats) {
+        load();
+    }
     void load();
     void run();
     void unload();

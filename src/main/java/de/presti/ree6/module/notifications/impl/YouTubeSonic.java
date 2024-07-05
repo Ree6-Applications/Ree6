@@ -21,26 +21,29 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import java.awt.*;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class YouTubeSonic implements ISonic {
     ArrayList<SonicIdentifier> youtubeChannels = new ArrayList<>();
 
     @Override
-    public void load() {
+    public void load(List<ChannelStats> channelStats) {
         try {
-            // Register all YouTube channels.
-            SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels().subscribe(channel ->
-                    channel.forEach(youtubeChannel ->
-                            add(new SonicIdentifier(youtubeChannel))));
+            channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).filter(Objects::nonNull).forEach(this::add);
+            load();
         } catch (Exception exception) {
             log.error("Error while loading YouTube data: {}", exception.getMessage());
             Sentry.captureException(exception);
         }
+    }
+
+    @Override
+    public void load() {
+        // Register all YouTube channels.
+        SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels().subscribe(channel ->
+                channel.forEach(this::add));
     }
 
     @Override

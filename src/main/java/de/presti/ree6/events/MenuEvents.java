@@ -490,7 +490,7 @@ public class MenuEvents extends ListenerAdapter {
                                             channelStatsEntity.setTwitchFollowerChannelId(voiceChannel.getId());
                                             channelStatsEntity.setTwitchFollowerChannelUsername(twitchUsername);
                                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStatsEntity).block();
-                                            Main.getInstance().getNotifier().registerTwitchChannel(twitchUsername);
+                                            Main.getInstance().getNotifier().getTwitchSonic().add(twitchUsername);
                                         } else {
                                             ChannelStats channelStatsEntity = new ChannelStats(event.getGuild().getIdLong(),
                                                     null,
@@ -507,7 +507,7 @@ public class MenuEvents extends ListenerAdapter {
                                                     null,
                                                     null);
                                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStatsEntity).block();
-                                            Main.getInstance().getNotifier().registerTwitchChannel(twitchUsername);
+                                            Main.getInstance().getNotifier().getTwitterSonic().add(twitchUsername);
                                         }
                                     });
                                 });
@@ -648,7 +648,7 @@ public class MenuEvents extends ListenerAdapter {
 
                     RedditSubreddit subreddit;
                     try {
-                        subreddit = Main.getInstance().getNotifier().getSubreddit(subredditName);
+                        subreddit = Main.getInstance().getNotifier().getRedditSonic().getSubreddit(subredditName);
                     } catch (IOException | InterruptedException e) {
                         embedBuilder
                                 .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
@@ -674,7 +674,7 @@ public class MenuEvents extends ListenerAdapter {
                                         channelStats.setSubredditMemberChannelId(voiceChannel.getId());
                                         channelStats.setSubredditMemberChannelSubredditName(subredditName);
                                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats).block();
-                                        Main.getInstance().getNotifier().registerSubreddit(subredditName);
+                                        Main.getInstance().getNotifier().getRedditSonic().add(subredditName);
                                     } else {
                                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(new ChannelStats(event.getGuild().getIdLong(),
                                                 null,
@@ -690,7 +690,7 @@ public class MenuEvents extends ListenerAdapter {
                                                 null,
                                                 voiceChannel.getId(),
                                                 subredditName)).block();
-                                        Main.getInstance().getNotifier().registerSubreddit(subredditName);
+                                        Main.getInstance().getNotifier().getRedditSonic().add(subredditName);
                                     }
                                 });
                             });
@@ -758,7 +758,7 @@ public class MenuEvents extends ListenerAdapter {
                                         channelStats.setTwitterFollowerChannelId(voiceChannel.getId());
                                         channelStats.setTwitterFollowerChannelUsername(twitterName);
                                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats).block();
-                                        Main.getInstance().getNotifier().registerTwitterUser(twitterName);
+                                        Main.getInstance().getNotifier().getTwitterSonic().add(twitterName);
                                     } else {
                                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(new ChannelStats(event.getGuild().getIdLong(),
                                                 null,
@@ -774,7 +774,7 @@ public class MenuEvents extends ListenerAdapter {
                                                 null,
                                                 null,
                                                 null)).block();
-                                        Main.getInstance().getNotifier().registerTwitterUser(twitterName);
+                                        Main.getInstance().getNotifier().getTwitterSonic().add(twitterName);
                                     }
                                 });
                             });
@@ -842,7 +842,7 @@ public class MenuEvents extends ListenerAdapter {
                                         channelStats.setInstagramFollowerChannelId(voiceChannel.getId());
                                         channelStats.setInstagramFollowerChannelUsername(instagramName);
                                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats).block();
-                                        Main.getInstance().getNotifier().registerInstagramUser(instagramName);
+                                        Main.getInstance().getNotifier().getInstagramSonic().add(instagramName);
                                     } else {
                                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(new ChannelStats(event.getGuild().getIdLong(),
                                                 null,
@@ -858,7 +858,7 @@ public class MenuEvents extends ListenerAdapter {
                                                 null,
                                                 null,
                                                 null)).block();
-                                        Main.getInstance().getNotifier().registerInstagramUser(instagramName);
+                                        Main.getInstance().getNotifier().getInstagramSonic().add(instagramName);
                                     }
                                 });
 
