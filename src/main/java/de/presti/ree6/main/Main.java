@@ -367,15 +367,6 @@ public class Main {
                     }
 
                     try {
-                        // Register all YouTube channels.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels().subscribe(getInstance().getNotifier()::registerYouTubeChannel);
-                        getInstance().getNotifier().registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).filter(Objects::nonNull).toList());
-                    } catch (Exception exception) {
-                        log.error("Error while loading YouTube data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
-
-                    try {
                         // Register all Reddit Subreddits.
                         SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits().subscribe(getInstance().getNotifier()::registerSubreddit);
                         getInstance().getNotifier().registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).filter(Objects::nonNull).toList());

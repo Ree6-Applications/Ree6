@@ -36,6 +36,7 @@ import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.module.notifications.impl.YouTubeSonic;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
@@ -119,6 +120,12 @@ public class Notifier {
     private IGClient instagramClient;
 
     /**
+     * Instance of the YouTube Sonic Manager.
+     */
+    @Getter(AccessLevel.PUBLIC)
+    private YouTubeSonic youTubeSonic;
+
+    /**
      * Local list of registered Twitch Channels.
      */
     private final ArrayList<String> registeredTwitchChannels = new ArrayList<>();
@@ -129,10 +136,6 @@ public class Notifier {
     @Getter(AccessLevel.PUBLIC)
     private final HashMap<String, PubSubSubscription[]> twitchSubscription = new HashMap<>();
 
-    /**
-     * Local list of registered YouTube Channels.
-     */
-    private final ArrayList<String> registeredYouTubeChannels = new ArrayList<>();
     /**
      * Local list of registered Twitter Users.
      */
@@ -299,7 +302,8 @@ public class Notifier {
         log.info("Initializing Streams...");
 
         log.info("Creating YouTube Streams...");
-        createYTStream();
+        youTubeSonic = new YouTubeSonic();
+        // TODO:: Create a YouTube Stream for the Sonic Channel.
 
         log.info("Creating Twitter Streams...");
         ThreadUtil.createThread(x -> {
@@ -736,165 +740,6 @@ public class Notifier {
      */
     public boolean isTwitterRegistered(String twitterUser) {
         return registeredTwitterUsers.contains(twitterUser.toLowerCase());
-    }
-
-    //endregion
-
-    //region YouTube
-
-    /**
-     * Create an API Stream used to update ChannelStats and Notifier of YT.
-     */
-    public void createYTStream() {
-        ThreadUtil.createThread(x -> {
-            for (String channel : registeredYouTubeChannels) {
-                SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(channel).subscribe(webhooks -> {
-                    if (!webhooks.isEmpty()) {
-                        try {
-                            List<VideoResult> playlistItemList = YouTubeAPIHandler.getInstance().getYouTubeUploads(channel);
-                            if (!playlistItemList.isEmpty()) {
-                                for (VideoResult playlistItem : playlistItemList) {
-
-                                    Main.getInstance().logAnalytic("Video: " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate() + " | " + playlistItem.getTimeAgo());
-                                    Main.getInstance().logAnalytic("Current: " + System.currentTimeMillis() + " | " + (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis()) + " | "
-                                            + (playlistItem.getActualUploadDate() != null && playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis()))) + " | " + (playlistItem.getTimeAgo() > 0 && Duration.ofMinutes(5).toMillis() >= playlistItem.getTimeAgo()));
-
-                                    if (playlistItem.getUploadDate() != -1 && (playlistItem.getUploadDate() > System.currentTimeMillis() - Duration.ofMinutes(5).toMillis() ||
-                                            (playlistItem.getTimeAgo() > 0 && Duration.ofMinutes(5).toMillis() >= playlistItem.getTimeAgo())) &&
-                                            playlistItem.getActualUploadDate() != null && !playlistItem.getActualUploadDate().before(new Date(System.currentTimeMillis() - Duration.ofDays(2).toMillis()))) {
-
-                                        Main.getInstance().logAnalytic("Passed! -> " + playlistItem.getTitle() + " | " + playlistItem.getUploadDate() + " | " + playlistItem.getActualUploadDate());
-                                        // Create a Webhook Message.
-                                        WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
-
-                                        webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
-                                        webhookMessageBuilder.setUsername(BotConfig.getBotName());
-
-                                        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
-
-                                        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(playlistItem.getOwnerName(), null));
-                                        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("YouTube Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
-
-                                        webhookEmbedBuilder.setImageUrl(playlistItem.getThumbnail());
-
-                                        webhookEmbedBuilder.setDescription("[**" + playlistItem.getTitle() + "**](https://www.youtube.com/watch?v=" + playlistItem.getId() + ")");
-
-                                        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(BotConfig.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
-                                        webhookEmbedBuilder.setColor(Color.RED.getRGB());
-
-                                        webhooks.forEach(webhook -> {
-                                            String message = webhook.getMessage().replace("%name%", playlistItem.getOwnerName())
-                                                    .replace("%title%", playlistItem.getTitle())
-                                                    .replace("%description%", playlistItem.getDescriptionSnippet() != null ? "No Description" : playlistItem.getDescriptionSnippet())
-                                                    .replace("%url%", "https://www.youtube.com/watch?v=" + playlistItem.getId());
-
-                                            webhookMessageBuilder.setContent(message);
-                                            webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-                                            WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
-                                        });
-
-                                        break;
-                                    }
-                                }
-                            }
-                        } catch (Exception exception) {
-                            Sentry.captureException(exception);
-                            log.error("Couldn't get user data of " + channel + "!", exception);
-                        }
-                    }
-                });
-
-                SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),
-                        "FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", channel)).subscribe(channelStats -> {
-                    if (!channelStats.isEmpty()) {
-                        ChannelResult youTubeChannel;
-                        try {
-                            // TODO:: change YT Tracker to use the ID instead of username.
-                            youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelById(channel);
-                        } catch (Exception e) {
-                            Sentry.captureException(e);
-                            return;
-                        }
-
-                        if (youTubeChannel == null) return;
-
-                        for (ChannelStats channelStat : channelStats) {
-                            if (channelStat.getYoutubeSubscribersChannelId() != null) {
-                                GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getYoutubeSubscribersChannelId());
-
-                                if (guildChannel == null) continue;
-
-                                LanguageService.getByGuild(guildChannel.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText()).subscribe(newName -> {
-                                    if (!guildChannel.getName().equalsIgnoreCase(newName)) {
-                                        if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
-                                            return;
-
-                                        guildChannel.getManager().setName(newName).queue();
-                                    }
-                                });
-                            }
-                        }
-                    }
-                });
-            }
-        }, x -> {
-            log.error("Couldn't run YT checker!", x);
-            Sentry.captureException(x);
-            // Default is 5 minutes.
-        }, Duration.ofMinutes(5), true, true);
-    }
-
-    /**
-     * Used to register an Upload Event for the given YouTube Channel.
-     *
-     * @param youtubeChannel the Name of the YouTube Channel.
-     */
-    public void registerYouTubeChannel(String youtubeChannel) {
-        if (YouTubeAPIHandler.getInstance() == null) return;
-
-        if (!isYouTubeRegistered(youtubeChannel)) registeredYouTubeChannels.add(youtubeChannel);
-    }
-
-    /**
-     * Used to register an upload Event for the given YouTube Channels.
-     *
-     * @param youtubeChannels the Names of the YouTube Channels.
-     */
-    public void registerYouTubeChannel(List<String> youtubeChannels) {
-        if (YouTubeAPIHandler.getInstance() == null) return;
-
-        youtubeChannels.forEach(s -> {
-            if (!isYouTubeRegistered(s)) registeredYouTubeChannels.add(s);
-        });
-    }
-
-    /**
-     * Used to unregister an Upload Event for the given YouTube Channel
-     *
-     * @param youtubeChannel the Name of the YouTube Channel.
-     */
-    public void unregisterYouTubeChannel(String youtubeChannel) {
-        if (YouTubeAPIHandler.getInstance() == null) return;
-
-        SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(youtubeChannel).subscribe(webhooks -> {
-            if (!webhooks.isEmpty()) return;
-
-            SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE youtubeSubscribersChannelUsername=:name", Map.of("name", youtubeChannel)).subscribe(channelStats -> {
-                if (channelStats.isPresent()) return;
-
-                if (isYouTubeRegistered(youtubeChannel)) registeredYouTubeChannels.remove(youtubeChannel);
-            });
-        });
-    }
-
-    /**
-     * Check if a YouTube Channel is already being checked.
-     *
-     * @param youtubeChannel the Name of the YouTube Channel.
-     * @return true, if there is an Event for the Channel | false, if there isn't an Event for the Channel.
-     */
-    public boolean isYouTubeRegistered(String youtubeChannel) {
-        return registeredYouTubeChannels.contains(youtubeChannel);
     }
 
     //endregion

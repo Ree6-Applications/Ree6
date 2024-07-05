@@ -240,8 +240,8 @@ public class Notifier implements ICommand {
                         });
                         commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isYouTubeRegistered(channelResult.getId())) {
-                            Main.getInstance().getNotifier().registerYouTubeChannel(channelResult.getId());
+                        if (!Main.getInstance().getNotifier().getYouTubeSonic().contains(channelResult.getId())) {
+                            Main.getInstance().getNotifier().getYouTubeSonic().add(channelResult.getId());
                         }
                     }
 
@@ -449,8 +449,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeYouTubeWebhook(commandEvent.getGuild().getIdLong(), channelResult.getId());
                         commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isYouTubeRegistered(channelResult.getId())) {
-                            Main.getInstance().getNotifier().unregisterYouTubeChannel(channelResult.getId());
+                        if (Main.getInstance().getNotifier().getYouTubeSonic().contains(channelResult.getId())) {
+                            Main.getInstance().getNotifier().getYouTubeSonic().remove(channelResult.getId());
                         }
                     }
 
