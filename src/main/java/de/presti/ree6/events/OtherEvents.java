@@ -475,7 +475,8 @@ public class OtherEvents extends ListenerAdapter {
 
             ModerationUtil.shouldModerate(event.getGuild().getIdLong()).publishOn(Schedulers.boundedElastic()).map(x -> {
 
-                log.info("Message received from {} in {} with content: {}", event.getAuthor().getGlobalName(), event.getChannel().getName(), event.getMessage().getContentRaw());
+                if (BotConfig.isDebug())
+                    log.info("Message received from {} in {} with content: {}", event.getAuthor().getGlobalName(), event.getChannel().getName(), event.getMessage().getContentRaw());
 
                 boolean moderated = false;
                 if (x) {
@@ -488,7 +489,8 @@ public class OtherEvents extends ListenerAdapter {
                     }
                 }
 
-                log.info("Message was moderated: {}", moderated);
+                if (BotConfig.isDebug())
+                    log.info("Message was moderated: {}", moderated);
 
                 return moderated;
             }).flatMap((aBoolean) -> handleCommand(aBoolean, event)).publishOn(Schedulers.boundedElastic()).doOnNext(handled -> {

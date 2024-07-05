@@ -369,7 +369,9 @@ public class CommandManager {
      */
     public Mono<Boolean> perform(Member member, Guild guild, String messageContent, Message message, GuildMessageChannelUnion messageChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
         boolean isSlashCommand = slashCommandInteractionEvent != null;
-        log.info("Called perform");
+
+        if (BotConfig.isDebug())
+            log.info("Called perform");
 
         // Check if the User is under Cooldown.
         if (isTimeout(member.getUser())) {
@@ -436,11 +438,13 @@ public class CommandManager {
             return Mono.just(false);
         }
 
-        log.info("Called performMessageCommand");
+        if (BotConfig.isDebug())
+            log.info("Called performMessageCommand");
 
         return SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "chatprefix").publishOn(Schedulers.boundedElastic()).mapNotNull(setting -> {
 
-            log.info("Got to prefix check.");
+            if (BotConfig.isDebug())
+                log.info("Got to prefix check.");
 
             String currentPrefix = setting.orElseGet(() -> new Setting(-1, "chatprefix", "Chat Prefix", BotConfig.getDefaultPrefix())).getStringValue();
 
@@ -458,7 +462,8 @@ public class CommandManager {
                 }).block();
             }
 
-            log.info("Passed parsing.");
+            if (BotConfig.isDebug())
+                log.info("Passed parsing.");
 
             // Get the Command by the name.
             ICommand command = getCommandByName(arguments[0]);
@@ -495,7 +500,8 @@ public class CommandManager {
                 }).block();
             }
 
-            log.info("Finished custom command.");
+            if (BotConfig.isDebug())
+                log.info("Finished custom command.");
 
             if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
                 Optional<Setting> blacklist = SQLSession.getSqlConnector().getSqlWorker()
@@ -510,7 +516,8 @@ public class CommandManager {
                 }
             }
 
-            log.info("Finished blacklist.");
+            if (BotConfig.isDebug())
+                log.info("Finished blacklist.");
 
             // Parse the arguments.
             String[] argumentsParsed = Arrays.copyOfRange(arguments, 1, arguments.length);

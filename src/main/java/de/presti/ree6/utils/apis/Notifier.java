@@ -136,6 +136,7 @@ public class Notifier {
         if (!BotConfig.isModuleActive("notifier")) return;
 
         log.info("Initializing Twitch Client...");
+        twitchSonic = new TwitchSonic();
         try {
             credentialManager = CredentialManagerBuilder.builder()
                     .withStorageBackend(new DatabaseStorageBackend())
@@ -207,7 +208,7 @@ public class Notifier {
         }
 
         log.info("Initializing Twitter Client...");
-
+        twitterSonic = new TwitterSonic();
         try {
             twitterClient = new TwitterClient(TwitterCredentials.builder()
                     .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
@@ -216,7 +217,7 @@ public class Notifier {
         }
 
         log.info("Initializing Reddit Client...");
-
+        redditSonic = new RedditSonic();
         try {
             redditClient = Reddit4J
                     .rateLimited()
@@ -235,7 +236,7 @@ public class Notifier {
         }
 
         log.info("Initializing Instagram Client...");
-
+        instagramSonic = new InstagramSonic();
         // Callable that returns inputted code from System.in
         Callable<String> inputCode = () -> {
             Scanner scanner = new Scanner(System.in);
@@ -275,7 +276,6 @@ public class Notifier {
         }, Duration.ofMinutes(5), true, true);
 
         log.info("Creating Twitter Streams...");
-        twitterSonic = new TwitterSonic();
         ThreadUtil.createThread(x -> twitterSonic.run(), x -> {
             log.error("Failed to run Twitter Follower count checker!", x);
             Sentry.captureException(x);
@@ -296,14 +296,12 @@ public class Notifier {
         }, Duration.ofMinutes(5), true, true);
 
         log.info("Creating Instagram Streams...");
-        instagramSonic = new InstagramSonic();
         ThreadUtil.createThread(x -> instagramSonic.run(), x -> {
             log.error("Failed to run Instagram Stream!", x);
             Sentry.captureException(x);
         }, Duration.ofMinutes(5), true, true);
 
         log.info("Creating Reddit Streams...");
-        redditSonic = new RedditSonic();
         ThreadUtil.createThread(x -> redditSonic.run(), x -> {
             log.error("Failed to run Reddit Stream!", x);
             Sentry.captureException(x);
