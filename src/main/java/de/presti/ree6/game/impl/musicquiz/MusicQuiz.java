@@ -216,7 +216,7 @@ public class MusicQuiz implements IGame {
 
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
                             Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_title"))
-                    .subscribe(setting -> rewardPlayer(session, musicQuizPlayer, setting.getValue()));
+                    .subscribe(setting -> rewardPlayer(session, musicQuizPlayer, setting.get().getValue()));
 
             messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundTitle", currentEntry.getTitle()).block()).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
             messageReceivedEvent.getMessage().delete().queue();
@@ -227,7 +227,7 @@ public class MusicQuiz implements IGame {
 
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
                     Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_artist"))
-                    .subscribe(setting -> rewardPlayer(session, musicQuizPlayer, setting.getValue()));
+                    .subscribe(setting -> rewardPlayer(session, musicQuizPlayer, setting.get().getValue()));
 
             messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundArtists", currentEntry.getArtist()).block()).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
             messageReceivedEvent.getMessage().delete().queue();
@@ -238,7 +238,7 @@ public class MusicQuiz implements IGame {
 
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
                     Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_feature"))
-                    .subscribe(setting -> rewardPlayer(session, musicQuizPlayer, setting.getValue()));
+                    .subscribe(setting -> rewardPlayer(session, musicQuizPlayer, setting.get().getValue()));
 
             messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundFeature", String.join(",", currentEntry.getFeatures())).block()).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
             messageReceivedEvent.getMessage().delete().queue();
@@ -288,7 +288,7 @@ public class MusicQuiz implements IGame {
 
         SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
                         Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_win"))
-                .subscribe(setting -> rewardPlayer(session, sortedList.get(0), setting.getValue()));
+                .subscribe(setting -> rewardPlayer(session, sortedList.get(0), setting.get().getValue()));
 
         Main.getInstance().getMusicWorker().disconnect(session.getGuild());
     }
