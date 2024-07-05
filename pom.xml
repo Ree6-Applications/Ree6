@@ -58,7 +58,7 @@
         <dependency>
             <groupId>dev.arbjerg</groupId>
             <artifactId>lavaplayer</artifactId>
-            <version>83f3633248303439dab16d0f89422e30fae0f83a-SNAPSHOT</version>
+            <version>83fc16cce7b6a37e7d878ecfe922b8059ca30189-SNAPSHOT</version>
         </dependency>
         <!--<dependency>
             <groupId>com.github.lavalink-devs.lavaplayer</groupId>
