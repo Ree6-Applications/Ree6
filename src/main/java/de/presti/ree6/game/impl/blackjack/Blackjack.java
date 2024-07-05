@@ -313,7 +313,7 @@ public class Blackjack implements IGame {
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), session.getChannel());
         SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
                 Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_blackjack_win"))
-                .subscribe(setting -> rewardPlayer(session, winner, setting.getValue()));
+                .subscribe(setting -> rewardPlayer(session, winner, setting.get().getValue()));
 
         stopGame();
     }

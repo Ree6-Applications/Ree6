@@ -80,11 +80,7 @@ public class Info implements ICommand {
         em.setTitle(member.getEffectiveName() + (GuildUtil.isSupporter(member.getUser()) ? " <a:duckswing:1070690323459735682>" : ""));
         em.setThumbnail(member.getEffectiveAvatarUrl());
 
-        if (member.getUser().getDiscriminator().equals("0000")) {
-            em.addField("**Username**", member.getUser().getName(), true);
-        } else {
-            em.addField("**UserTag**", member.getUser().getAsTag(), true);
-        }
+        em.addField("**Username**", member.getUser().getName(), true);
 
         em.addField("**Created Date**", member.getTimeCreated().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
         em.addField("**Joined Date**", member.getTimeJoined().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);

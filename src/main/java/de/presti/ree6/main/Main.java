@@ -345,70 +345,12 @@ public class Main {
             ThreadUtil.createThread(x -> {
                 log.info("Loading Notifier data.");
                 SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "FROM ChannelStats", null).subscribe(channelStats -> {
-                    try {
-                        // Register all Twitch Channels.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames().subscribe(getInstance().getNotifier()::registerTwitchChannel);
-                        getInstance().getNotifier().registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).toList());
-
-                        // Register the Event-handler.
-                        getInstance().getNotifier().registerTwitchEventHandler();
-                    } catch (Exception exception) {
-                        log.error("Error while loading Twitch data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
-
-                    try {
-                        // Register all Twitter Users.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames().subscribe(getInstance().getNotifier()::registerTwitterUser);
-                        getInstance().getNotifier().registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).filter(Objects::nonNull).toList());
-                    } catch (Exception exception) {
-                        log.error("Error while loading Twitter data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
-
-                    try {
-                        // Register all YouTube channels.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels().subscribe(getInstance().getNotifier()::registerYouTubeChannel);
-                        getInstance().getNotifier().registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).filter(Objects::nonNull).toList());
-                    } catch (Exception exception) {
-                        log.error("Error while loading YouTube data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
-
-                    try {
-                        // Register all Reddit Subreddits.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits().subscribe(getInstance().getNotifier()::registerSubreddit);
-                        getInstance().getNotifier().registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).filter(Objects::nonNull).toList());
-                    } catch (Exception exception) {
-                        log.error("Error while loading Reddit data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
-
-                    try {
-                        // Register all Instagram Users.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers().subscribe(getInstance().getNotifier()::registerInstagramUser);
-                        getInstance().getNotifier().registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
-                    } catch (Exception exception) {
-                        log.error("Error while loading Instagram data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
-
-                    try {
-                        // Register all TikTok Users.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames().subscribe(tiktokNames ->
-                                tiktokNames.forEach(tikTokName -> getInstance().getNotifier().registerTikTokUser(Long.parseLong(tikTokName))));
-                    } catch (Exception exception) {
-                        log.error("Error while loading TikTok data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
-
-                    try {
-                        // Register all RSS-Feeds.
-                        SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls().subscribe(getInstance().getNotifier()::registerRSS);
-                    } catch (Exception exception) {
-                        log.error("Error while loading RSS data: {}", exception.getMessage());
-                        Sentry.captureException(exception);
-                    }
+                    getInstance().getNotifier().getYouTubeSonic().load(channelStats);
+                    getInstance().getNotifier().getTwitchSonic().load(channelStats);
+                    getInstance().getNotifier().getInstagramSonic().load(channelStats);
+                    getInstance().getNotifier().getTwitterSonic().load(channelStats);
+                    getInstance().getNotifier().getTikTokSonic().load(channelStats);
+                    getInstance().getNotifier().getRssSonic().load(channelStats);
                 });
             }, t -> Sentry.captureException(t.getCause()));
         }
@@ -588,8 +530,8 @@ public class Main {
 
                     LocalDate yesterday = LocalDate.now().minusDays(1);
                     SQLSession.getSqlConnector().getSqlWorker().getStatistics(yesterday.getDayOfMonth(), yesterday.getMonthValue(), yesterday.getYear()).subscribe(statistics -> {
-                        JsonObject jsonObject = statistics != null ? statistics.getStatsObject() : new JsonObject();
-                        JsonObject guildStats = statistics != null && jsonObject.has("guild") ? jsonObject.getAsJsonObject("guild") : new JsonObject();
+                        JsonObject jsonObject = statistics.isPresent() ? statistics.get().getStatsObject() : new JsonObject();
+                        JsonObject guildStats = statistics.isPresent() && jsonObject.has("guild") ? jsonObject.getAsJsonObject("guild") : new JsonObject();
 
                         guildStats.addProperty("amount", guildSize);
                         guildStats.addProperty("users", userSize);
@@ -656,10 +598,10 @@ public class Main {
                                             .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
                                             .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
-                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
+                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage).block();
                                 }
                             } else {
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage).block();
                             }
                         } else {
                             if (scheduledMessage.getLastUpdated() == null) {

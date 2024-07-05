@@ -222,7 +222,7 @@ public class LoggerQueue {
                             logMessageMember.getMember().getAsMention()).block());
 
                     if (!logMessageMember.getAddedRoles().isEmpty() || !logMessageMember.getRemovedRoles().isEmpty())
-                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.roles") + ":**", stringBuilder.toString()));
+                        webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.roles").block() + ":**", stringBuilder.toString()));
 
                     modified = true;
                 }
@@ -321,8 +321,8 @@ public class LoggerQueue {
                         if (logMessageRole.getPreviousName() != null && logMessageRole.getCurrentName() != null) {
 
                             // Add new Fields with Information.
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.oldName") + "**", logMessageRole.getPreviousName()));
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newName") + "**", logMessageRole.getCurrentName()));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.oldName").block() + "**", logMessageRole.getPreviousName()));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newName").block() + "**", logMessageRole.getCurrentName()));
                             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "** **", "** **"));
                         }
 
@@ -330,8 +330,8 @@ public class LoggerQueue {
                         if (logMessageRole.isChangedMentioned()) {
 
                             // Add new Fields with Information.
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.oldMentionable") + "**", String.valueOf(!logMessageRole.isMentioned())));
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newMentionable") + "**", String.valueOf(logMessageRole.isMentioned())));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.oldMentionable").block() + "**", String.valueOf(!logMessageRole.isMentioned())));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newMentionable").block() + "**", String.valueOf(logMessageRole.isMentioned())));
                             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "** **", "** **"));
                         }
 
@@ -339,8 +339,8 @@ public class LoggerQueue {
                         if (logMessageRole.isChangedHoisted()) {
 
                             // Add new Fields with Information.
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.oldHoist") + "**", String.valueOf(!logMessageRole.isHoisted())));
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newHoist") + "**", String.valueOf(logMessageRole.isHoisted())));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.oldHoist").block() + "**", String.valueOf(!logMessageRole.isHoisted())));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newHoist").block() + "**", String.valueOf(logMessageRole.isHoisted())));
                             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "** **", "** **"));
                         }
 
@@ -348,9 +348,9 @@ public class LoggerQueue {
                         if (logMessageRole.getPreviousColor() != null || logMessageRole.getCurrentColor() != null) {
 
                             // Add new Fields with Information.
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.oldColor") + "**", String.valueOf((logMessageRole.getPreviousColor() != null ?
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.oldColor").block() + "**", String.valueOf((logMessageRole.getPreviousColor() != null ?
                                     logMessageRole.getPreviousColor() : Color.gray).getRGB())));
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newColor") + "**", String.valueOf((logMessageRole.getCurrentColor() != null ?
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newColor").block() + "**", String.valueOf((logMessageRole.getCurrentColor() != null ?
                                     logMessageRole.getCurrentColor() : Color.gray).getRGB())));
                             webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "** **", "** **"));
                         }
@@ -388,7 +388,7 @@ public class LoggerQueue {
 
                         // Add the String from the StringBuilder as Embed to the Message
                         if (!stringBuilder.toString().isEmpty())
-                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newPermissions") + "**", stringBuilder.toString()));
+                            webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(loggerMessage.getGuild(), "label.newPermissions").block() + "**", stringBuilder.toString()));
 
                     } else {
                         // Check if the Role has been created.

@@ -143,13 +143,18 @@ public class Setup implements ICommand {
 
                 switch (commandEvent.getSubcommandGroup()) {
                     case "auditlog" -> {
+                        if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
+                            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MANAGE_WEBHOOKS.name()));
+                            return;
+                        }
+
                         if (commandEvent.getSubcommand().equals("set")) {
                             if (guildChannelUnion.getType() == ChannelType.TEXT) {
                                 guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Logs").queue(webhook -> {
                                     SQLSession.getSqlConnector().getSqlWorker().isLogSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
                                         if (aBoolean) {
                                             SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> {
-                                                WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), webhookEntity);
+                                                webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity));
                                             });
                                         }
 
@@ -164,7 +169,7 @@ public class Setup implements ICommand {
                             SQLSession.getSqlConnector().getSqlWorker().isLogSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
                                 if (aBoolean) {
                                     SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> {
-                                        WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), webhookEntity);
+                                        webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity));
                                         commandEvent.reply(commandEvent.getResource("message.auditLog.deleted"));
                                     });
                                 } else {
@@ -174,13 +179,18 @@ public class Setup implements ICommand {
                         }
                     }
                     case "welcome" -> {
+                        if (!commandEvent.getGuild().getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
+                            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MANAGE_WEBHOOKS.name()));
+                            return;
+                        }
+
                         if (commandEvent.getSubcommand().equals("set")) {
                             if (guildChannelUnion.getType() == ChannelType.TEXT) {
                                 guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Welcome").queue(webhook -> {
                                     SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
                                         if (aBoolean) {
                                             SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> {
-                                                WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), webhookEntity);
+                                                webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity));
                                             });
                                         }
                                         SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
@@ -194,7 +204,7 @@ public class Setup implements ICommand {
                             SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
                                 if (aBoolean) {
                                     SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity ->
-                                            WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), webhookEntity));
+                                            webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity)));
                                     commandEvent.reply(commandEvent.getResource("message.welcome.deleted"));
                                 }
                                 commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
@@ -212,8 +222,8 @@ public class Setup implements ICommand {
                             }
                         } else {
                             SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", commandEvent.getGuild().getId())).subscribe(temporalVoicechannel -> {
-                                if (temporalVoicechannel != null) {
-                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel);
+                                if (temporalVoicechannel.isPresent()) {
+                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel.get()).block();
                                     commandEvent.reply(commandEvent.getResource("message.temporalVoice.deleted"));
                                 } else {
                                     commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
@@ -255,7 +265,7 @@ public class Setup implements ICommand {
                                 if (!setting.getName().startsWith("configuration_rewards_")) continue;
 
                                 // TODO:: thing of how to handle this.
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Setting(commandEvent.getGuild().getIdLong(), setting.getName(), setting.getDisplayName(), setting.getValue()));
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Setting(commandEvent.getGuild().getIdLong(), setting.getName(), setting.getDisplayName(), setting.getValue())).block();
                             }
 
                             commandEvent.reply(commandEvent.getResource("message.rewards.success"));

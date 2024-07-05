@@ -15,7 +15,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.module.invite.InviteContainer;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Invite;
-import de.presti.ree6.sql.entities.webhook.base.Webhook;
+import de.presti.ree6.sql.entities.webhook.WebhookLog;
 import de.presti.ree6.utils.data.ArrayUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -77,9 +77,12 @@ public class LoggingEvents extends ListenerAdapter {
                     SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Invite(event.getGuild().getIdLong(), event.getGuild().getOwnerIdLong(), vanityInvite.getUses(), event.getNewVanityCode())).block());
         } else {
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new Invite(), "FROM Invite WHERE guildAndCode.guildId = :gid AND guildAndCode.code = :code",
-                    Map.of("gid", event.getGuild().getIdLong(), "code", event.getOldVanityCode())).subscribe(invite -> {
-                invite.setCode(event.getNewVanityCode());
-                SQLSession.getSqlConnector().getSqlWorker().updateEntity(invite).block();
+                    Map.of("gid", event.getGuild().getIdLong(), "code", event.getOldVanityCode())).subscribe(inviteOptional -> {
+                if (inviteOptional.isPresent()) {
+                    Invite invite = inviteOptional.get();
+                    invite.setCode(event.getNewVanityCode());
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(invite).block();
+                }
             });
         }
     }
@@ -93,7 +96,7 @@ public class LoggingEvents extends ListenerAdapter {
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
             SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberban").subscribe(shouldLog -> {
-                if (!shouldLog.getBooleanValue()) return;
+                if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                 WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -116,9 +119,8 @@ public class LoggingEvents extends ListenerAdapter {
 
                 wm.addEmbeds(we.build());
 
-                SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(x -> {
-                    Main.getInstance().getLoggerQueue().add(new LogMessageUser(x.getWebhookId(), x.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
-                });
+                SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookOptional ->
+                        webhookOptional.ifPresent(webhookLog -> Main.getInstance().getLoggerQueue().add(new LogMessageUser(webhookLog.getWebhookId(), webhookLog.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()))));
             });
         });
     }
@@ -132,7 +134,7 @@ public class LoggingEvents extends ListenerAdapter {
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
             SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberunban").subscribe(shouldLog -> {
-                if (!shouldLog.getBooleanValue()) return;
+                if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                 WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -155,9 +157,8 @@ public class LoggingEvents extends ListenerAdapter {
 
                 wm.addEmbeds(we.build());
 
-                SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(x -> {
-                    Main.getInstance().getLoggerQueue().add(new LogMessageUser(x.getWebhookId(), x.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
-                });
+                SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookOptional ->
+                        webhookOptional.ifPresent(webhookLog -> Main.getInstance().getLoggerQueue().add(new LogMessageUser(webhookLog.getWebhookId(), webhookLog.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()))));
             });
         });
     }
@@ -174,9 +175,12 @@ public class LoggingEvents extends ListenerAdapter {
 
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberjoin").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
                     wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
@@ -196,7 +200,7 @@ public class LoggingEvents extends ListenerAdapter {
 
                 if (event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER)) {
                     SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_invite").subscribe(shouldLog -> {
-                        if (!shouldLog.getBooleanValue()) return;
+                        if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
                         WebhookMessageBuilder wm2 = new WebhookMessageBuilder();
 
                         wm2.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
@@ -253,9 +257,12 @@ public class LoggingEvents extends ListenerAdapter {
 
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberleave").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
                     wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
@@ -278,7 +285,7 @@ public class LoggingEvents extends ListenerAdapter {
                             auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
 
                     if (entry != null && entry.getUser() != null)
-                        we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
+                        we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor").block() + "**", entry.getUser().getAsMention()));
 
                     wm.addEmbeds(we.build());
 
@@ -297,9 +304,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_timeout").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -348,9 +359,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_nickname").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
                     wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
@@ -373,7 +388,7 @@ public class LoggingEvents extends ListenerAdapter {
                             auditLogEntry.getTargetIdLong() == event.getUser().getIdLong()).findFirst().orElse(null);
 
                     if (entry != null && entry.getUser() != null)
-                        we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
+                        we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor").block() + "**", entry.getUser().getAsMention()));
 
                     wm.addEmbeds(we.build());
 
@@ -396,10 +411,14 @@ public class LoggingEvents extends ListenerAdapter {
         super.onGuildVoiceUpdate(event);
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 if (event.getChannelLeft() == null) {
                     SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_voicejoin").subscribe(shouldLog -> {
-                        if (!shouldLog.getBooleanValue()) return;
+                        if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -419,7 +438,7 @@ public class LoggingEvents extends ListenerAdapter {
                     });
                 } else if (event.getChannelJoined() == null) {
                     SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_voiceleave").subscribe(shouldLog -> {
-                        if (!shouldLog.getBooleanValue()) return;
+                        if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -437,7 +456,7 @@ public class LoggingEvents extends ListenerAdapter {
                                 auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
 
                         if (entry != null && entry.getUser() != null)
-                            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
+                            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor").block() + "**", entry.getUser().getAsMention()));
 
                         wm.addEmbeds(we.build());
 
@@ -445,7 +464,7 @@ public class LoggingEvents extends ListenerAdapter {
                     });
                 } else {
                     SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_voicemove").subscribe(shouldLog -> {
-                        if (!shouldLog.getBooleanValue()) return;
+                        if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -463,7 +482,7 @@ public class LoggingEvents extends ListenerAdapter {
                                 auditLogEntry.getTargetIdLong() == event.getMember().getIdLong()).findFirst().orElse(null);
 
                         if (entry != null && entry.getUser() != null)
-                            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor") + "**", entry.getUser().getAsMention()));
+                            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByEvent(event, "label.actor").block() + "**", entry.getUser().getAsMention()));
 
                         wm.addEmbeds(we.build());
 
@@ -486,10 +505,14 @@ public class LoggingEvents extends ListenerAdapter {
 
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 if (event.getChannelType().isAudio()) {
                     SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_voicechannel").subscribe(shouldLog -> {
-                        if (!shouldLog.getBooleanValue()) return;
+                        if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                         WebhookMessageBuilder wm = new WebhookMessageBuilder();
                         wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
@@ -533,7 +556,7 @@ public class LoggingEvents extends ListenerAdapter {
                     });
                 } else {
                     SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_textchannel").subscribe(shouldLog -> {
-                        if (!shouldLog.getBooleanValue()) return;
+                        if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                         WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -560,14 +583,14 @@ public class LoggingEvents extends ListenerAdapter {
                             entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_DELETE).limit(5).stream().filter(auditLogEntry ->
                                     auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
                         } else if (event instanceof ChannelUpdateNameEvent channelUpdateNameEvent) {
-                            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.oldName") + "**", channelUpdateNameEvent.getOldValue() != null
+                            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.oldName").block() + "**", channelUpdateNameEvent.getOldValue() != null
                                     ? ((ChannelUpdateNameEvent) event).getOldValue() : event.getChannel().getName()));
-                            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.newName") + "**", channelUpdateNameEvent.getNewValue() != null
+                            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.newName").block() + "**", channelUpdateNameEvent.getNewValue() != null
                                     ? ((ChannelUpdateNameEvent) event).getNewValue() : event.getChannel().getName()));
                             entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_UPDATE).limit(5).stream().filter(auditLogEntry ->
                                     auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
                         } else if (event instanceof ChannelUpdateNSFWEvent channelUpdateNSFWEvent) {
-                            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.nsfw") + "**", channelUpdateNSFWEvent.getNewValue() + ""));
+                            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.nsfw").block() + "**", channelUpdateNSFWEvent.getNewValue() + ""));
                             entry = event.getGuild().retrieveAuditLogs().type(ActionType.CHANNEL_UPDATE).limit(5).stream().filter(auditLogEntry ->
                                     auditLogEntry.getTargetIdLong() == event.getChannel().getIdLong()).findFirst().orElse(null);
                         } else {
@@ -575,7 +598,7 @@ public class LoggingEvents extends ListenerAdapter {
                         }
 
                         if (entry != null && entry.getUser() != null)
-                            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.actor") + "**", entry.getUser().getAsMention()));
+                            we.addField(new WebhookEmbed.EmbedField(true, "**" + LanguageService.getByGuild(event.getGuild(), "label.actor").block() + "**", entry.getUser().getAsMention()));
 
                         wm.addEmbeds(we.build());
 
@@ -598,9 +621,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_roleadd").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -645,9 +672,13 @@ public class LoggingEvents extends ListenerAdapter {
 
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_roleremove").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -692,9 +723,13 @@ public class LoggingEvents extends ListenerAdapter {
     public void onRoleCreate(@Nonnull RoleCreateEvent event) {
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_rolecreate").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -729,9 +764,13 @@ public class LoggingEvents extends ListenerAdapter {
     public void onRoleDelete(@Nonnull RoleDeleteEvent event) {
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_roledelete").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -766,9 +805,13 @@ public class LoggingEvents extends ListenerAdapter {
     public void onRoleUpdateName(@Nonnull RoleUpdateNameEvent event) {
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_rolename").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -805,9 +848,13 @@ public class LoggingEvents extends ListenerAdapter {
     public void onRoleUpdateMentionable(@Nonnull RoleUpdateMentionableEvent event) {
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_rolemention").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
                     wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
@@ -843,9 +890,13 @@ public class LoggingEvents extends ListenerAdapter {
     public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_rolehoisted").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -884,9 +935,13 @@ public class LoggingEvents extends ListenerAdapter {
     public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_rolepermission").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -950,9 +1005,13 @@ public class LoggingEvents extends ListenerAdapter {
     public void onRoleUpdateColor(@Nonnull RoleUpdateColorEvent event) {
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_rolecolor").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -995,9 +1054,13 @@ public class LoggingEvents extends ListenerAdapter {
     public void onMessageDelete(@Nonnull MessageDeleteEvent event) {
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
-            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
+            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookLogOptional -> {
+                if (webhookLogOptional.isEmpty()) return;
+
+                WebhookLog webhook = webhookLogOptional.get();
+
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_messagedelete").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                     User user = ArrayUtil.getUserFromMessageList(event.getMessageId());
 

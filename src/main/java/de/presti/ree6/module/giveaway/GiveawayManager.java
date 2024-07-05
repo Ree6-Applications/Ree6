@@ -59,10 +59,10 @@ public class GiveawayManager implements IManager<Giveaway> {
             }
         }
 
-        return SQLSession.getSqlConnector().getSqlWorker().getEntity(new Giveaway(), "FROM Giveaway WHERE messageId = :id", Map.of("id", value)).map(giveaway -> {
-            if (giveaway != null) {
-                giveaways.add(giveaway);
-                return giveaway;
+        return SQLSession.getSqlConnector().getSqlWorker().getEntity(new Giveaway(), "FROM Giveaway WHERE messageId = :id", Map.of("id", value)).mapNotNull(giveaway -> {
+            if (giveaway.isPresent()) {
+                giveaways.add(giveaway.get());
+                return giveaway.get();
             }
             return null;
         }).block();
@@ -70,7 +70,7 @@ public class GiveawayManager implements IManager<Giveaway> {
 
     @Override
     public void remove(Giveaway object) {
-        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(object);
+        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(object).block();
         IManager.super.remove(object);
     }
 

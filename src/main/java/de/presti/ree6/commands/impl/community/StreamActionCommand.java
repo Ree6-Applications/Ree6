@@ -61,8 +61,9 @@ public class StreamActionCommand implements ICommand {
 
         switch (subCommandGroup) {
             case "manage" ->
-                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.name = :name AND guildAndName.guildId = :gid", Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong())).subscribe(streamAction -> {
-                        if (streamAction != null) {
+                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.name = :name AND guildAndName.guildId = :gid", Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong())).subscribe(streamActionOptional -> {
+                        if (streamActionOptional.isPresent()) {
+                            StreamAction streamAction = streamActionOptional.get();
                             switch (subCommand) {
                                 case "create" -> {
                                     OptionMapping action = commandEvent.getOption("action");
@@ -154,13 +155,13 @@ public class StreamActionCommand implements ICommand {
 
                 switch (subCommand) {
                     case "create" ->
-                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.actionName = :name AND guildAndName.guildId = :gid", Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong())).subscribe(streamAction -> {
-                                if (streamAction == null) {
+                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.actionName = :name AND guildAndName.guildId = :gid", Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong())).subscribe(streamActionOptional -> {
+                                if (streamActionOptional.isEmpty()) {
                                     SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(), "FROM TwitchIntegration WHERE userId = :uid", Map.of("uid", commandEvent.getUser().getIdLong()))
-                                            .subscribe(twitchIntegration -> {
-                                                if (twitchIntegration != null) {
+                                            .subscribe(twitchIntegrationOptional -> {
+                                                if (twitchIntegrationOptional.isPresent()) {
                                                     StreamAction newStreamAction = new StreamAction();
-                                                    newStreamAction.setIntegration(twitchIntegration);
+                                                    newStreamAction.setIntegration(twitchIntegrationOptional.get());
                                                     newStreamAction.setGuildId(commandEvent.getGuild().getIdLong());
                                                     newStreamAction.setName(name.getAsString());
 
@@ -177,8 +178,8 @@ public class StreamActionCommand implements ICommand {
 
                     case "delete" ->
                             SQLSession.getSqlConnector().getSqlWorker().getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.actionName = :name AND guildAndName.guildId = :gid", Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong())).subscribe(streamAction -> {
-                                if (streamAction != null) {
-                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(streamAction);
+                                if (streamAction.isPresent()) {
+                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(streamAction.get()).block();
                                     commandEvent.reply(commandEvent.getResource("message.stream-action.deleted", name.getAsString()));
                                 } else {
                                     commandEvent.reply(commandEvent.getResource("message.stream-action.notFound", name.getAsString()));
@@ -191,8 +192,9 @@ public class StreamActionCommand implements ICommand {
                             });
 
                     case "points" ->
-                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(), "FROM TwitchIntegration WHERE userId = :uid", Map.of("uid", commandEvent.getUser().getIdLong())).subscribe(twitchIntegration -> {
-                                if (twitchIntegration != null) {
+                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(), "FROM TwitchIntegration WHERE userId = :uid", Map.of("uid", commandEvent.getUser().getIdLong())).subscribe(twitchIntegrationOptional -> {
+                                if (twitchIntegrationOptional.isPresent()) {
+                                    TwitchIntegration twitchIntegration = twitchIntegrationOptional.get();
                                     StringBuilder stringBuilder = new StringBuilder();
                                     Main.getInstance().getNotifier().getTwitchClient().getHelix().getCustomRewards(twitchIntegration.getToken(), twitchIntegration.getChannelId(), null, false).execute().getRewards().forEach(c -> stringBuilder.append(c.getId()).append(" - ").append(c.getTitle()).append("\n"));
                                     MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();

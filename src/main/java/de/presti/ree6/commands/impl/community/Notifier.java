@@ -188,8 +188,8 @@ public class Notifier implements ICommand {
                         });
                         commandEvent.reply(commandEvent.getResource("message.instagramNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
-                            Main.getInstance().getNotifier().registerInstagramUser(name);
+                        if (!Main.getInstance().getNotifier().getInstagramSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getInstagramSonic().add(name);
                         }
                     }
 
@@ -240,8 +240,8 @@ public class Notifier implements ICommand {
                         });
                         commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isYouTubeRegistered(channelResult.getId())) {
-                            Main.getInstance().getNotifier().registerYouTubeChannel(channelResult.getId());
+                        if (!Main.getInstance().getNotifier().getYouTubeSonic().contains(channelResult.getId())) {
+                            Main.getInstance().getNotifier().getYouTubeSonic().add(channelResult.getId());
                         }
                     }
 
@@ -267,8 +267,8 @@ public class Notifier implements ICommand {
                         });
                         commandEvent.reply(commandEvent.getResource("message.twitchNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isTwitchRegistered(name)) {
-                            Main.getInstance().getNotifier().registerTwitchChannel(name);
+                        if (!Main.getInstance().getNotifier().getTwitchSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getTwitchSonic().add(name);
                         }
                     }
 
@@ -301,8 +301,8 @@ public class Notifier implements ICommand {
                         });
                         commandEvent.reply(commandEvent.getResource("message.twitterNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isTwitterRegistered(name)) {
-                            Main.getInstance().getNotifier().registerTwitterUser(name);
+                        if (!Main.getInstance().getNotifier().getTwitterSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getTwitterSonic().add(name);
                         }
                     }
 
@@ -337,8 +337,8 @@ public class Notifier implements ICommand {
                             });
                             commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.added", name), 5);
 
-                            if (!Main.getInstance().getNotifier().isTikTokUserRegistered(Long.parseLong(tikTokUser.getId()))) {
-                                Main.getInstance().getNotifier().registerTikTokUser(Long.parseLong(tikTokUser.getId()));
+                            if (!Main.getInstance().getNotifier().getTikTokSonic().contains(Long.parseLong(tikTokUser.getId()))) {
+                                Main.getInstance().getNotifier().getTikTokSonic().add(Long.parseLong(tikTokUser.getId()));
                             }
                         } catch (Exception e) {
                             commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.invalidUser", name), 5);
@@ -367,8 +367,8 @@ public class Notifier implements ICommand {
                         });
                         commandEvent.reply(commandEvent.getResource("message.redditNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isSubredditRegistered(name)) {
-                            Main.getInstance().getNotifier().registerSubreddit(name);
+                        if (!Main.getInstance().getNotifier().getRedditSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getRedditSonic().add(name);
                         }
                     }
 
@@ -395,8 +395,8 @@ public class Notifier implements ICommand {
                                 SQLSession.getSqlConnector().getSqlWorker().addRSSWebhook(commandEvent.getGuild().getIdLong(), channel.getIdLong(), w.getIdLong(), w.getToken(), name.toLowerCase()));
                         commandEvent.reply(commandEvent.getResource("message.rssNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isRSSRegistered(name)) {
-                            Main.getInstance().getNotifier().registerRSS(name);
+                        if (!Main.getInstance().getNotifier().getRssSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getRedditSonic().add(name);
                         }
                     }
 
@@ -415,8 +415,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeInstagramWebhook(commandEvent.getGuild().getIdLong(), name);
                         commandEvent.reply(commandEvent.getResource("message.instagramNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
-                            Main.getInstance().getNotifier().unregisterInstagramUser(name);
+                        if (Main.getInstance().getNotifier().getInstagramSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getInstagramSonic().remove(name);
                         }
                     }
 
@@ -449,8 +449,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeYouTubeWebhook(commandEvent.getGuild().getIdLong(), channelResult.getId());
                         commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isYouTubeRegistered(channelResult.getId())) {
-                            Main.getInstance().getNotifier().unregisterYouTubeChannel(channelResult.getId());
+                        if (Main.getInstance().getNotifier().getYouTubeSonic().contains(channelResult.getId())) {
+                            Main.getInstance().getNotifier().getYouTubeSonic().remove(channelResult.getId());
                         }
                     }
 
@@ -464,8 +464,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeTwitchWebhook(commandEvent.getGuild().getIdLong(), name);
                         commandEvent.reply(commandEvent.getResource("message.twitchNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isTwitchRegistered(name)) {
-                            Main.getInstance().getNotifier().unregisterTwitchChannel(name);
+                        if (Main.getInstance().getNotifier().getTwitchSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getTwitchSonic().remove(name);
                         }
                     }
 
@@ -479,8 +479,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeTwitterWebhook(commandEvent.getGuild().getIdLong(), name);
                         commandEvent.reply(commandEvent.getResource("message.twitterNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isTwitterRegistered(name)) {
-                            Main.getInstance().getNotifier().unregisterTwitterUser(name);
+                        if (Main.getInstance().getNotifier().getTwitterSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getTwitterSonic().remove(name);
                         }
                     }
 
@@ -499,8 +499,8 @@ public class Notifier implements ICommand {
 
                             commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.removed", name), 5);
 
-                            if (Main.getInstance().getNotifier().isTikTokUserRegistered(Long.parseLong(tikTokUser.getId()))) {
-                                Main.getInstance().getNotifier().unregisterTikTokUser(Long.parseLong(tikTokUser.getId()));
+                            if (Main.getInstance().getNotifier().getTikTokSonic().contains(Long.parseLong(tikTokUser.getId()))) {
+                                Main.getInstance().getNotifier().getTikTokSonic().remove(Long.parseLong(tikTokUser.getId()));
                             }
                         } catch (Exception e) {
                             commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.invalidUser", name), 5);
@@ -517,8 +517,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeRedditWebhook(commandEvent.getGuild().getIdLong(), name);
                         commandEvent.reply(commandEvent.getResource("message.redditNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isSubredditRegistered(name)) {
-                            Main.getInstance().getNotifier().unregisterSubreddit(name);
+                        if (Main.getInstance().getNotifier().getRedditSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getRedditSonic().remove(name);
                         }
                     }
 
@@ -532,8 +532,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeRSSWebhook(commandEvent.getGuild().getIdLong(), name);
                         commandEvent.reply(commandEvent.getResource("message.rssNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isRSSRegistered(name)) {
-                            Main.getInstance().getNotifier().unregisterRSS(name);
+                        if (Main.getInstance().getNotifier().getRssSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getRssSonic().remove(name);
                         }
                     }
 

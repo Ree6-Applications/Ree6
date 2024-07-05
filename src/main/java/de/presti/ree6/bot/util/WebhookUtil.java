@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Class to handle Webhook sends.
@@ -95,7 +94,6 @@ public class WebhookUtil {
                 if (!x) {
                     // If not, inform about invalid send.
                     log.error("[Webhook] Invalid Webhook: {} - {}", webhookId, webhookToken);
-                    return;
                 } else {
                     // Check if the LoggerMessage is canceled.
                     if ((loggerMessage == null || loggerMessage.isCanceled())) {
@@ -128,49 +126,51 @@ public class WebhookUtil {
                         // TODO:: this has become worst so please for the love of god find a better solution brain.
                         SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookWelcome(), "FROM WebhookWelcome WHERE webhookId = :cid AND token = :token",
                                 Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(welcome -> {
-                            if (welcome != null) {
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(welcome);
+                            if (welcome.isPresent()) {
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(welcome.get()).block();
                                 log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                             } else {
                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookYouTube(), "FROM WebhookYouTube WHERE webhookId = :cid AND token = :token",
                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(webhookYouTube -> {
-                                    if (webhookYouTube != null) {
-                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookYouTube);
+                                    if (webhookYouTube.isPresent()) {
+                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookYouTube.get()).block();
                                         log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                                     } else {
                                         SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookTwitter(), "FROM WebhookTwitter WHERE webhookId = :cid AND token = :token",
                                                 Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(webhookTwitter -> {
-                                            if (webhookTwitter != null) {
-                                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookTwitter);
+                                            if (webhookTwitter.isPresent()) {
+                                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookTwitter.get()).block();
                                                 log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                                             } else {
                                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookTwitch(), "FROM WebhookTwitch WHERE webhookId = :cid AND token = :token",
                                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(webhookTwitch -> {
 
-                                                    if (webhookTwitch != null) {
-                                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookTwitch);
+                                                    if (webhookTwitch.isPresent()) {
+                                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookTwitch.get()).block();
                                                         log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                                                     } else {
                                                         SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookReddit(), "FROM WebhookReddit WHERE webhookId = :cid AND token = :token",
                                                                 Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(webhookReddit -> {
 
-                                                            if (webhookReddit != null) {
-                                                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookReddit);
+                                                            if (webhookReddit.isPresent()) {
+                                                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookReddit.get()).block();
                                                                 log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                                                             } else {
                                                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookInstagram(), "FROM WebhookInstagram WHERE webhookId = :cid AND token = :token",
                                                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(webhookInstagram -> {
 
-                                                                    if (webhookInstagram != null) {
-                                                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookInstagram);
+                                                                    if (webhookInstagram.isPresent()) {
+                                                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookInstagram.get()).block();
                                                                         log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                                                                     } else {
                                                                         SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookTikTok(), "FROM WebhookTikTok WHERE webhookId = :cid AND token = :token", Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(webhookTikTok -> {
-                                                                            if (webhookTikTok != null) {
+                                                                            if (webhookTikTok.isPresent()) {
+                                                                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookTikTok.get()).block();
                                                                                 log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                                                                             } else {
                                                                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new RSSFeed(), "FROM WebhookTikTok WHERE webhookId = :cid AND token = :token", Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(rssFeed -> {
-                                                                                    if (rssFeed != null) {
+                                                                                    if (rssFeed.isPresent()) {
+                                                                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(rssFeed.get()).block();
                                                                                         log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
                                                                                     } else {
                                                                                         log.error("[Webhook] Invalid Webhook: {} - {}, has not been deleted since it is not a Log-Webhook.", webhookId, webhookToken);

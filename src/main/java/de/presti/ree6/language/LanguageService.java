@@ -3,6 +3,7 @@ package de.presti.ree6.language;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.utils.external.RequestUtility;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
@@ -242,9 +243,10 @@ public class LanguageService {
         }
 
         return SQLSession.getSqlConnector().getSqlWorker().getSetting(guildId, "configuration_language")
-                .mapNotNull(setting -> getByLocale(setting.getStringValue(), key, parameter).block())
+                .mapNotNull(setting -> getByLocale(setting.get().getStringValue(), key, parameter).block())
                 .mapNotNull(resource -> SQLSession.getSqlConnector().getSqlWorker().getSetting(guildId, "chatprefix").
-                        map(prefix -> resource.replace("{guild_prefix}", prefix.getStringValue())).block());
+                        map(prefix -> resource.replace("{guild_prefix}", prefix.orElse(new Setting(-1, "chatprefix", "chatprefix", BotConfig.getDefaultPrefix()))
+                                .getStringValue())).block());
     }
 
     /**
@@ -263,7 +265,8 @@ public class LanguageService {
         return getByLocale(interaction.getUserLocale(), key, parameter).mapNotNull(resource -> {
             if (resource.contains("{guild_prefix}")) {
                 return SQLSession.getSqlConnector().getSqlWorker().getSetting(interaction.getGuild().getIdLong(), "chatprefix")
-                        .map(prefix -> resource.replace("{guild_prefix}", prefix.getStringValue())).block();
+                        .map(prefix -> resource.replace("{guild_prefix}", prefix.orElse(new Setting(-1, "chatprefix", "chatprefix", BotConfig.getDefaultPrefix()))
+                                .getStringValue())).block();
             }
 
             return resource;

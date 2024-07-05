@@ -5,6 +5,7 @@ import de.presti.ree6.sql.entities.economy.MoneyHolder;
 import de.presti.ree6.sql.entities.economy.MoneyTransaction;
 import net.dv8tion.jda.api.entities.Member;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -78,15 +79,15 @@ public class EconomyUtil {
      */
     public static Mono<MoneyHolder> getMoneyHolder(long guildId, long memberId, boolean createIfNotExists) {
         return SQLSession.getSqlConnector().getSqlWorker().getEntity(new MoneyHolder(), "FROM MoneyHolder WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid",
-                Map.of("gid", guildId, "uid", memberId)).map(moneyHolder -> {
-            if (moneyHolder == null && createIfNotExists) {
-                moneyHolder = new MoneyHolder();
+                Map.of("gid", guildId, "uid", memberId)).publishOn(Schedulers.boundedElastic()).mapNotNull(moneyHolderOptional -> {
+            if (moneyHolderOptional.isEmpty() && createIfNotExists) {
+                MoneyHolder moneyHolder = new MoneyHolder();
                 moneyHolder.setGuildId(guildId);
                 moneyHolder.setUserId(memberId);
                 return SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder).block();
             }
 
-            return moneyHolder;
+            return moneyHolderOptional.get();
         });
     }
 

@@ -85,7 +85,7 @@ public class Help implements ICommand {
                         if (!BotConfig.isModuleActive(cat.name().toLowerCase())) continue;
 
                         String formattedName = cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase();
-                        em.addField("**" + formattedName + "**", setting.getStringValue() + "help " + cat.name().toLowerCase(), true);
+                        em.addField("**" + formattedName + "**", setting.get().getStringValue() + "help " + cat.name().toLowerCase(), true);
                     }
                 }
 
@@ -100,7 +100,7 @@ public class Help implements ICommand {
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").subscribe(setting -> {
                     for (ICommand cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).category() == category).toList()) {
                         end.append("``")
-                                .append(setting.getStringValue())
+                                .append(setting.get().getStringValue())
                                 .append(cmd.getClass().getAnnotation(Command.class).name())
                                 .append("``\n")
                                 .append(commandEvent.getResource(cmd.getClass().getAnnotation(Command.class).description()))

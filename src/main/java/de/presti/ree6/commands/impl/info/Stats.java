@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl.info;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
@@ -9,7 +10,6 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.stats.CommandStats;
 import de.presti.ree6.sql.entities.stats.GuildCommandStats;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.TimeUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -42,7 +42,7 @@ public class Stats implements ICommand {
                 : commandEvent.getChannel().sendMessage(commandEvent.getResource("label.loading")).complete();
 
         long ping = System.currentTimeMillis() - start;
-
+        long computeTimeStart = System.currentTimeMillis();
         EmbedBuilder em = new EmbedBuilder();
 
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), BotConfig.getWebsite(),
@@ -65,7 +65,7 @@ public class Stats implements ICommand {
 
         em.addField("**" + commandEvent.getResource("label.discordStats") + ":**", "", true);
         em.addField("**" + commandEvent.getResource("label.gatewayTime") + "**", BotWorker.getShardManager().getAverageGatewayPing() + "ms", true);
-        em.addField("**" + commandEvent.getResource("label.shardAmount") + "**", BotWorker.getShardManager().getShards().size() + " "  + commandEvent.getResource("label.shards"), true);
+        em.addField("**" + commandEvent.getResource("label.shardAmount") + "**", BotWorker.getShardManager().getShards().size() + " " + commandEvent.getResource("label.shards"), true);
 
         em.addField("**" + commandEvent.getResource("label.networkStats") + ":**", "", true);
         em.addField("**" + commandEvent.getResource("label.responseTime") + "**", (Integer.parseInt((ping) + "")) + "ms", true);
@@ -94,6 +94,15 @@ public class Stats implements ICommand {
                 MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
 
                 messageEditBuilder.setContent("");
+
+                long computeTime = System.currentTimeMillis() - computeTimeStart;
+
+                if (BotConfig.isDebug()) {
+                    em.addField("**DEV ONLY**", "", true);
+                    em.addField("**Compute Time**", computeTime + "ms", true);
+                    em.addField("**DEV ONLY**", "", true);
+                }
+
                 messageEditBuilder.setEmbeds(em.build());
 
                 commandEvent.update(message, messageEditBuilder.build());

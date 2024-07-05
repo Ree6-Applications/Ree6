@@ -44,7 +44,7 @@ public class Steal implements ICommand {
 
         SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
                 Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_steal_delay")).subscribe(value -> {
-            long delay = Long.parseLong(value.getStringValue());
+            long delay = Long.parseLong(value.get().getStringValue());
 
             if (stealTimeout.contains(entryString)) {
                 commandEvent.reply(commandEvent.getResource("message.steal.cooldown", delay));
