@@ -784,7 +784,7 @@ public class CommandManager {
                 !message.isEphemeral() &&
                 interactionHook == null) {
             message.delete().onErrorMap(throwable -> {
-                log.error("[CommandManager] Couldn't delete a Message!", throwable);
+                log.error("[CommandManager] Couldn't delete a Message -> {}", throwable.getMessage());
                 return null;
             }).queue();
         }
