@@ -35,7 +35,7 @@ public class Work implements ICommand {
 
         SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
                 Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_delay")).subscribe(value -> {
-            long delay = Long.parseLong(value.getStringValue());
+            long delay = Long.parseLong(value.get().getStringValue());
 
             if (workTimeout.contains(entryString)) {
                 commandEvent.reply(commandEvent.getResource("message.work.cooldown", delay));
@@ -43,10 +43,10 @@ public class Work implements ICommand {
             }
 
             double min = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                    Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_min")).block().getStringValue());
+                    Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_min")).block().get().getStringValue());
 
             double max = Double.parseDouble((String) SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                    Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_max")).block().getStringValue());
+                    Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_max")).block().get().getStringValue());
 
             double amount = RandomUtils.round(RandomUtils.nextDouble(min, max), 2);
 

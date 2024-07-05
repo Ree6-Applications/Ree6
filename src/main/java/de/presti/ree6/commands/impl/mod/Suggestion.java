@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import reactor.core.scheduler.Schedulers;
 
 import java.awt.*;
 import java.util.Map;
@@ -75,9 +76,11 @@ public class Suggestion implements ICommand {
     public void createSuggestions(CommandEvent commandEvent, MessageChannel channel, MessageChannel messageChannel) {
 
         SQLSession.getSqlConnector().getSqlWorker().getEntity(new Suggestions(), "FROM Suggestions WHERE guildChannelId.guildId = :id", Map.of("id", commandEvent.getGuild().getIdLong()))
-                .map(suggestions -> {
-            if (suggestions != null) {
-                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(suggestions);
+                .publishOn(Schedulers.boundedElastic())
+                .mapNotNull(suggestionsOptional -> {
+            if (suggestionsOptional.isPresent()) {
+                Suggestions suggestions = suggestionsOptional.get();
+                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(suggestions).block();
 
                 suggestions.getGuildChannelId().setChannelId(channel.getIdLong());
                 return SQLSession.getSqlConnector().getSqlWorker().updateEntity(suggestions).block();
@@ -89,7 +92,7 @@ public class Suggestion implements ICommand {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle(commandEvent.getResource("label.suggestionMenu"));
             embedBuilder.setColor(Color.ORANGE);
-            embedBuilder.setDescription(setting.getStringValue());
+            embedBuilder.setDescription(setting.get().getStringValue());
             embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
             messageCreateBuilder.setEmbeds(embedBuilder.build());
             messageCreateBuilder.setActionRow(Button.primary("re_suggestion", commandEvent.getResource("message.suggestion.suggestionMenuPlaceholder")));
