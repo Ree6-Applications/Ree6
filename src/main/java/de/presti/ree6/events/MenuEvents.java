@@ -913,13 +913,13 @@ public class MenuEvents extends ListenerAdapter {
                     EmbedBuilder embedBuilder = new EmbedBuilder(event.getMessage().getEmbeds().get(0));
                     if (event.getSelectedOptions().isEmpty()) {
                         roles.forEach(autoRole ->
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(autoRole));
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(autoRole).block());
                     } else {
                         roles.forEach(autoRole -> {
                             String value = String.valueOf(autoRole.getRoleId());
 
                             if (!event.getValues().contains(value)) {
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(autoRole);
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(autoRole).block();
                                 values.remove(value);
                             }
                         });
@@ -992,8 +992,9 @@ public class MenuEvents extends ListenerAdapter {
                         LanguageService.getByGuild(event.getGuild(), "label.setup").subscribe(label -> {
                             optionList.add(SelectOption.of(label, "welcomeSetup"));
 
-                            if (SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(event.getGuild().getIdLong()).block())
+                            SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getIdLong()).block().ifPresent(welcomeWebhook -> {
                                 optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete").block(), "welcomeDelete"));
+                            });
 
                             optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setImage").block(), "welcomeImage"));
 
@@ -1017,8 +1018,11 @@ public class MenuEvents extends ListenerAdapter {
                         LanguageService.getByGuild(event.getGuild(), "label.setup").subscribe(label -> {
                             optionList.add(SelectOption.of(label, "tempVoiceSetup"));
 
-                            if (SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).block() != null)
+                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid",
+                                    Map.of("gid", event.getGuild().getIdLong())).block().ifPresent(temporalVoicechannel -> {
                                 optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete").block(), "tempVoiceDelete"));
+                            });
+
 
                             optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.backToMenu").block(), "backToSetupMenu"));
 
@@ -1049,8 +1053,9 @@ public class MenuEvents extends ListenerAdapter {
                         LanguageService.getByGuild(event.getGuild(), "label.setup").subscribe(label -> {
                             optionList.add(SelectOption.of(label, "ticketsSetup"));
 
-                            if (SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).block() != null)
+                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).block().ifPresent(tickets -> {
                                 optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete").block(), "ticketsDelete"));
+                            });
 
                             optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.backToMenu").block(), "backToSetupMenu"));
 
@@ -1236,11 +1241,11 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "ticketsDelete" -> {
                         SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(tickets -> {
-                            if (tickets != null) {
+                            if (tickets.isPresent()) {
                                 embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.deleted").block());
                                 embedBuilder.setColor(Color.GREEN);
                                 event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(tickets);
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(tickets.get()).block();
                             }
                         });
                     }
@@ -1331,11 +1336,11 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "tempVoiceDelete" -> {
                         SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(temporalVoicechannel -> {
-                            if (temporalVoicechannel != null) {
+                            if (temporalVoicechannel.isPresent()) {
                                 embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.deleted").block());
                                 embedBuilder.setColor(Color.GREEN);
                                 event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel);
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel).block();
                             }
                         });
                     }
@@ -1409,15 +1414,14 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     case "logDelete" -> {
-                        SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
-                            webhook.ifPresent(webhookLog -> event.getJDA().retrieveWebhookById(webhookLog.getChannelId()).queue(webhook1 -> {
-                                webhook1.delete().queue();
-                                embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.deleted").block());
-                                embedBuilder.setColor(Color.GREEN);
-                                event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookLog).block();
-                            }));
-                        });
+                        SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook ->
+                                webhook.ifPresent(webhookLog -> event.getJDA().retrieveWebhookById(webhookLog.getChannelId()).queue(webhook1 -> {
+                                    webhook1.delete().queue();
+                                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.deleted").block());
+                                    embedBuilder.setColor(Color.GREEN);
+                                    event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookLog).block();
+                                })));
                     }
 
                     default -> {
@@ -1520,15 +1524,14 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     case "welcomeDelete" -> {
-                        SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
-                            webhook.ifPresent(webhookWelcome -> event.getJDA().retrieveWebhookById(webhookWelcome.getChannelId()).queue(webhook1 -> {
-                                webhook1.delete().queue();
-                                embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.deleted").block());
-                                embedBuilder.setColor(Color.GREEN);
-                                event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookWelcome).block();
-                            }));
-                        });
+                        SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getIdLong()).subscribe(webhook ->
+                                webhook.ifPresent(webhookWelcome -> event.getJDA().retrieveWebhookById(webhookWelcome.getChannelId()).queue(webhook1 -> {
+                                    webhook1.delete().queue();
+                                    embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.deleted").block());
+                                    embedBuilder.setColor(Color.GREEN);
+                                    event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
+                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookWelcome).block();
+                                })));
                     }
 
                     default -> {
