@@ -15,7 +15,6 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.module.invite.InviteContainer;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Invite;
-import de.presti.ree6.sql.entities.webhook.base.Webhook;
 import de.presti.ree6.utils.data.ArrayUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -77,9 +76,12 @@ public class LoggingEvents extends ListenerAdapter {
                     SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Invite(event.getGuild().getIdLong(), event.getGuild().getOwnerIdLong(), vanityInvite.getUses(), event.getNewVanityCode())).block());
         } else {
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new Invite(), "FROM Invite WHERE guildAndCode.guildId = :gid AND guildAndCode.code = :code",
-                    Map.of("gid", event.getGuild().getIdLong(), "code", event.getOldVanityCode())).subscribe(invite -> {
-                invite.setCode(event.getNewVanityCode());
-                SQLSession.getSqlConnector().getSqlWorker().updateEntity(invite).block();
+                    Map.of("gid", event.getGuild().getIdLong(), "code", event.getOldVanityCode())).subscribe(inviteOptional -> {
+                if (inviteOptional.isPresent()) {
+                    Invite invite = inviteOptional.get();
+                    invite.setCode(event.getNewVanityCode());
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(invite).block();
+                }
             });
         }
     }
@@ -93,7 +95,7 @@ public class LoggingEvents extends ListenerAdapter {
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
             SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberban").subscribe(shouldLog -> {
-                if (!shouldLog.getBooleanValue()) return;
+                if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                 WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -116,8 +118,8 @@ public class LoggingEvents extends ListenerAdapter {
 
                 wm.addEmbeds(we.build());
 
-                SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(x -> {
-                    Main.getInstance().getLoggerQueue().add(new LogMessageUser(x.getWebhookId(), x.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
+                SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookOptional -> {
+                    webhookOptional.ifPresent(webhookLog -> Main.getInstance().getLoggerQueue().add(new LogMessageUser(webhookLog.getWebhookId(), webhookLog.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser())));
                 });
             });
         });
@@ -132,7 +134,7 @@ public class LoggingEvents extends ListenerAdapter {
         SQLSession.getSqlConnector().getSqlWorker().isLogSetup(event.getGuild().getIdLong()).subscribe(isSetup -> {
             if (!isSetup) return;
             SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberunban").subscribe(shouldLog -> {
-                if (!shouldLog.getBooleanValue()) return;
+                if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
 
                 WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
@@ -155,8 +157,8 @@ public class LoggingEvents extends ListenerAdapter {
 
                 wm.addEmbeds(we.build());
 
-                SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(x -> {
-                    Main.getInstance().getLoggerQueue().add(new LogMessageUser(x.getWebhookId(), x.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser()));
+                SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhookOptional -> {
+                    webhookOptional.ifPresent(webhookLog -> Main.getInstance().getLoggerQueue().add(new LogMessageUser(webhookLog.getWebhookId(), webhookLog.getToken(), wm.build(), event.getGuild(), LogTyp.USER_BAN, event.getUser())));
                 });
             });
         });
@@ -176,7 +178,7 @@ public class LoggingEvents extends ListenerAdapter {
             if (!isSetup) return;
             SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "logging_memberjoin").subscribe(shouldLog -> {
-                    if (!shouldLog.getBooleanValue()) return;
+                    if (shouldLog.isEmpty() || !shouldLog.get().getBooleanValue()) return;
                     WebhookMessageBuilder wm = new WebhookMessageBuilder();
 
                     wm.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());

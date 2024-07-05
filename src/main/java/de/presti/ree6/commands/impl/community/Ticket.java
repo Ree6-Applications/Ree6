@@ -61,30 +61,26 @@ public class Ticket implements ICommand {
 
         SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", commandEvent.getGuild().getId())).subscribe(tickets -> {
 
-            if (tickets != null) {
-                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(tickets);
-            }
+            tickets.ifPresent(value -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(value).block());
 
             StandardGuildMessageChannel channel = logChannel.getAsChannel().asStandardGuildMessageChannel();
 
-            tickets = new Tickets();
-            tickets.setChannelId(ticketChannel.getAsChannel().getIdLong());
-            tickets.setGuildId(commandEvent.getGuild().getIdLong());
-            tickets.setLogChannelId(logChannel.getAsChannel().getIdLong());
-
-            Tickets finalTickets = tickets;
+            Tickets ticketEntity = new Tickets();
+            ticketEntity.setChannelId(ticketChannel.getAsChannel().getIdLong());
+            ticketEntity.setGuildId(commandEvent.getGuild().getIdLong());
+            ticketEntity.setLogChannelId(logChannel.getAsChannel().getIdLong());
 
             channel.createWebhook("Ticket-Log").queue(webhook -> {
-                finalTickets.setLogChannelWebhookId(webhook.getIdLong());
-                finalTickets.setLogChannelWebhookToken(webhook.getToken());
+                ticketEntity.setLogChannelWebhookId(webhook.getIdLong());
+                ticketEntity.setLogChannelWebhookToken(webhook.getToken());
                 commandEvent.getGuild().createCategory("Tickets").addPermissionOverride(commandEvent.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
-                    finalTickets.setTicketCategory(category1.getIdLong());
-                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(finalTickets).block();
+                    ticketEntity.setTicketCategory(category1.getIdLong());
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(ticketEntity).block();
 
                     MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
                     messageCreateBuilder.setEmbeds(new EmbedBuilder()
                             .setTitle(LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket").block())
-                            .setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_ticket_menu").block().getStringValue())
+                            .setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_ticket_menu").block().get().getStringValue())
                             .setColor(0x55ff00)
                             .setThumbnail(commandEvent.getGuild().getIconUrl())
                             .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())

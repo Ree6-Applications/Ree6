@@ -588,8 +588,8 @@ public class Main {
 
                     LocalDate yesterday = LocalDate.now().minusDays(1);
                     SQLSession.getSqlConnector().getSqlWorker().getStatistics(yesterday.getDayOfMonth(), yesterday.getMonthValue(), yesterday.getYear()).subscribe(statistics -> {
-                        JsonObject jsonObject = statistics != null ? statistics.getStatsObject() : new JsonObject();
-                        JsonObject guildStats = statistics != null && jsonObject.has("guild") ? jsonObject.getAsJsonObject("guild") : new JsonObject();
+                        JsonObject jsonObject = statistics.isPresent() ? statistics.get().getStatsObject() : new JsonObject();
+                        JsonObject guildStats = statistics.isPresent() && jsonObject.has("guild") ? jsonObject.getAsJsonObject("guild") : new JsonObject();
 
                         guildStats.addProperty("amount", guildSize);
                         guildStats.addProperty("users", userSize);
@@ -656,10 +656,10 @@ public class Main {
                                             .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
                                             .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
 
-                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
+                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage).block();
                                 }
                             } else {
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage).block();
                             }
                         } else {
                             if (scheduledMessage.getLastUpdated() == null) {

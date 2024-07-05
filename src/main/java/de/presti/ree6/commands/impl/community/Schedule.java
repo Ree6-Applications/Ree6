@@ -114,14 +114,15 @@ public class Schedule implements ICommand {
                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookScheduledMessage(),
                                 "FROM WebhookScheduledMessage WHERE guildAndId.guildId = :gid AND channelId = :channel",
                                 Map.of("gid", commandEvent.getGuild().getId(), "channel", guildChannel.getIdLong())).subscribe(webhookScheduledMessage -> {
-                    if (webhookScheduledMessage == null) {
+                                    WebhookScheduledMessage webhookScheduledMessageEntity = webhookScheduledMessage.orElse(new WebhookScheduledMessage());
+                    if (webhookScheduledMessage.isEmpty()) {
                         Webhook webhook = guildChannel.asStandardGuildMessageChannel().createWebhook(BotConfig.getBotName() + "-Schedule").complete();
 
-                        webhookScheduledMessage = SQLSession.getSqlConnector().getSqlWorker()
+                        webhookScheduledMessageEntity = SQLSession.getSqlConnector().getSqlWorker()
                                 .updateEntity(new WebhookScheduledMessage(commandEvent.getGuild().getIdLong(), guildChannel.getIdLong(), webhook.getIdLong(), webhook.getToken())).block();
                     }
 
-                    scheduledMessage.setScheduledMessageWebhook(webhookScheduledMessage);
+                    scheduledMessage.setScheduledMessageWebhook(webhookScheduledMessageEntity);
                     scheduledMessage.setDelayAmount(finalFullTime);
                     scheduledMessage.setRepeated(shouldRepeat);
                     SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage).subscribe(x -> commandEvent.reply(commandEvent.getResource("message.schedule.added")));

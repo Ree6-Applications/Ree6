@@ -7,13 +7,16 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.news.AnnouncementManager;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.bot.BotConfig;
-import de.presti.ree6.utils.others.ThreadUtil;
+import de.presti.ree6.sql.entities.Setting;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -25,6 +28,35 @@ public interface ICommand {
      * The Logger for this class.
      */
     Logger log = LoggerFactory.getLogger(ICommand.class);
+
+    default Mono<Boolean> onMonoPerform(CommandEvent commandEvent) {
+        return Mono.fromRunnable(() -> onPerform(commandEvent)).thenReturn(true).onErrorResume(throwable -> {
+            if (!throwable.getMessage().contains("Unknown Message")) {
+                commandEvent.reply(commandEvent.getResource("command.perform.internalError"), 5);
+                log.error("An error occurred while executing the command!", throwable);
+                Sentry.captureException(throwable);
+            }
+            return Mono.just(false);
+        }).publishOn(Schedulers.boundedElastic()).doOnSuccess(success -> {
+            if (success) {
+                // Update Stats.
+                SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getIdLong(), commandEvent.getCommand());
+                Optional<Setting> setting = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news").block();
+                if (setting.isEmpty() || !setting.get().getBooleanValue()) return;
+                AnnouncementManager.getAnnouncementList().forEach(a -> {
+                    if (!AnnouncementManager.hasReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id())) {
+                        Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setTitle(a.title())
+                                .setAuthor(BotConfig.getBotName() + "-Info")
+                                .setDescription(a.content().replace("\\n", "\n") + "\n\n" + LanguageService.getByGuild(commandEvent.getGuild(), "message.news.notice").block())
+                                .setFooter(BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
+                                .setColor(BotWorker.randomEmbedColor()), 15, commandEvent.getChannel());
+
+                        AnnouncementManager.addReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id());
+                    }
+                });
+            }
+        });
+    }
 
     /**
      * Will be fired when the Command is called.
@@ -44,12 +76,12 @@ public interface ICommand {
         // Update Stats.
         SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getIdLong(), commandEvent.getCommand());
         SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news").subscribe(setting -> {
-            if (!setting.getBooleanValue()) return;
+            if (setting.isEmpty() || !setting.get().getBooleanValue()) return;
             AnnouncementManager.getAnnouncementList().forEach(a -> {
                 if (!AnnouncementManager.hasReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id())) {
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setTitle(a.title())
                             .setAuthor(BotConfig.getBotName() + "-Info")
-                            .setDescription(a.content().replace("\\n", "\n") + "\n\n" + LanguageService.getByGuild(commandEvent.getGuild(), "message.news.notice"))
+                            .setDescription(a.content().replace("\\n", "\n") + "\n\n" + LanguageService.getByGuild(commandEvent.getGuild(), "message.news.notice").block())
                             .setFooter(BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
                             .setColor(BotWorker.randomEmbedColor()), 15, commandEvent.getChannel());
 

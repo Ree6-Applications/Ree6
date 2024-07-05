@@ -40,11 +40,11 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.reflections.Reflections;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -222,11 +222,11 @@ public class CommandManager {
 
                     String localizedDescription = LanguageService.getByLocale(discordLocale, commandAnnotation.description()).block();
 
-                    if (localizedDescription.equals("Missing language resource!")) {
+                    if (localizedDescription != null && localizedDescription.equals("Missing language resource!")) {
                         localizedDescription = LanguageService.getDefault(commandAnnotation.description()).block();
                     }
 
-                    if (!localizedDescription.equals("Missing language resource!")) {
+                    if (localizedDescription != null && !localizedDescription.equals("Missing language resource!")) {
                         commandData1.setDescriptionLocalization(discordLocale, localizedDescription);
                     }
 
@@ -236,7 +236,7 @@ public class CommandManager {
                 if (isValidDescription) {
                     String localizedDescription = LanguageService.getDefault(commandAnnotation.description()).block();
 
-                    if (!localizedDescription.equals("Missing language resource!")) {
+                    if (localizedDescription != null && !localizedDescription.equals("Missing language resource!")) {
                         commandData1.setDescription(localizedDescription);
                     }
                 }
@@ -272,26 +272,28 @@ public class CommandManager {
         if (groupDescription.matches(RegExUtil.ALLOWED_LANGUAGE_PATHS)) {
             groupDescription = LanguageService.getByLocale(locale, groupDescription).block();
 
-            if (groupDescription.equals("Missing language resource!")) {
-                groupDescription = LanguageService.getDefault(subcommandGroupData.getDescription()).block();
-            }
+            if (groupDescription != null) {
+                if (groupDescription.equals("Missing language resource!")) {
+                    groupDescription = LanguageService.getDefault(subcommandGroupData.getDescription()).block();
+                }
 
-            if (!groupDescription.equals("Missing language resource!")) {
-                subcommandGroupData.setDescriptionLocalization(locale, groupDescription);
+                if (groupDescription != null && !groupDescription.equals("Missing language resource!")) {
+                    subcommandGroupData.setDescriptionLocalization(locale, groupDescription);
+                }
             }
         }
 
         for (SubcommandData subcommandData : subcommandGroupData.getSubcommands()) {
             String commandDescription = subcommandData.getDescription();
 
-            if (groupDescription.matches(RegExUtil.ALLOWED_LANGUAGE_PATHS)) {
+            if (groupDescription != null && groupDescription.matches(RegExUtil.ALLOWED_LANGUAGE_PATHS)) {
                 commandDescription = LanguageService.getByLocale(locale, commandDescription).block();
 
-                if (commandDescription.equals("Missing language resource!")) {
+                if (commandDescription != null && commandDescription.equals("Missing language resource!")) {
                     commandDescription = LanguageService.getDefault(subcommandData.getDescription()).block();
                 }
 
-                if (!commandDescription.equals("Missing language resource!")) {
+                if (commandDescription != null && !commandDescription.equals("Missing language resource!")) {
                     subcommandData.setDescriptionLocalization(locale, commandDescription);
                 }
             }
@@ -328,7 +330,8 @@ public class CommandManager {
      * @return the {@link ICommand} with the same Name.
      */
     public ICommand getCommandByName(String name) {
-        return getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).name().equalsIgnoreCase(name) || Arrays.stream(command.getAlias()).anyMatch(s -> s.equalsIgnoreCase(name))).findFirst().orElse(null);
+        return getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).name().equalsIgnoreCase(name) ||
+                Arrays.stream(command.getAlias()).anyMatch(s -> s.equalsIgnoreCase(name))).findFirst().orElse(null);
 
     }
 
@@ -339,7 +342,8 @@ public class CommandManager {
      * @return the {@link ICommand} with the same Name.
      */
     public ICommand getCommandBySlashName(String name) {
-        return getCommands().stream().filter(command -> (command.getCommandData() != null && command.getCommandData().getName().equalsIgnoreCase(name)) || (command.getClass().isAnnotationPresent(Command.class) && command.getClass().getAnnotation(Command.class).name().equalsIgnoreCase(name))).findFirst().orElse(null);
+        return getCommands().stream().filter(command -> (command.getCommandData() != null && command.getCommandData().getName().equalsIgnoreCase(name)) ||
+                (command.getClass().isAnnotationPresent(Command.class) && command.getClass().getAnnotation(Command.class).name().equalsIgnoreCase(name))).findFirst().orElse(null);
     }
 
     /**
@@ -365,25 +369,32 @@ public class CommandManager {
      */
     public Mono<Boolean> perform(Member member, Guild guild, String messageContent, Message message, GuildMessageChannelUnion messageChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
         boolean isSlashCommand = slashCommandInteractionEvent != null;
+        log.info("Called perform");
 
         // Check if the User is under Cooldown.
         if (isTimeout(member.getUser())) {
 
             // Check if it is a Slash Command or not.
             if (isSlashCommand) {
-                sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown").block(), 5, messageChannel, slashCommandInteractionEvent.getHook().setEphemeral(true));
-                deleteMessage(message, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                return LanguageService.getByGuild(guild, "command.perform.cooldown").map(messageCreateData -> {
+                    slashCommandInteractionEvent.getHook().sendMessage(messageCreateData).queue();
+                    deleteMessage(message, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                    return false;
+                });
             } else {
-                SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "chatprefix").subscribe(setting -> {
-                    if (setting != null && messageContent.toLowerCase().startsWith(setting.getStringValue().toLowerCase())) {
-                        sendMessage(LanguageService.getByGuild(guild, "command.perform.cooldown").block(), 5, messageChannel, null);
-                        deleteMessage(message, null);
+                return SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "chatprefix").publishOn(Schedulers.boundedElastic()).mapNotNull(setting -> {
+                    if (setting.isPresent() && messageContent.toLowerCase().startsWith(setting.get().getStringValue().toLowerCase())) {
+                        final Mono<Boolean> booleanMono = LanguageService.getByGuild(guild, "command.perform.cooldown").map(translation -> {
+                            sendMessage(String.valueOf(translation), 5, messageChannel, null);
+                            deleteMessage(message, null);
+                            return false;
+                        }).thenReturn(false);
+                        return booleanMono.block();
                     }
+
+                    return false;
                 });
             }
-
-            // Return false.
-            return Mono.just(false);
         }
 
         // Check if it is a Slash Command.
@@ -425,9 +436,13 @@ public class CommandManager {
             return Mono.just(false);
         }
 
-        return SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "chatprefix").map(setting -> {
+        log.info("Called performMessageCommand");
 
-            String currentPrefix = setting.getStringValue().toLowerCase();
+        return SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "chatprefix").publishOn(Schedulers.boundedElastic()).mapNotNull(setting -> {
+
+            log.info("Got to prefix check.");
+
+            String currentPrefix = setting.orElseGet(() -> new Setting(-1, "chatprefix", "Chat Prefix", BotConfig.getDefaultPrefix())).getStringValue();
 
             // Check if the message starts with the prefix.
             if (!messageContent.toLowerCase().startsWith(currentPrefix))
@@ -437,59 +452,71 @@ public class CommandManager {
             String[] arguments = messageContent.substring(currentPrefix.length()).split("\\s+");
 
             if (arguments.length == 0 || arguments[0].isBlank()) {
-                sendMessage(LanguageService.getByGuild(guild, "command.perform.missingCommand").block(), 5, textChannel, null);
-                return false;
+                return LanguageService.getByGuild(guild, "command.perform.missingCommand").map(translated -> {
+                    sendMessage(translated, 5, textChannel, null);
+                    return false;
+                }).block();
             }
+
+            log.info("Passed parsing.");
 
             // Get the Command by the name.
             ICommand command = getCommandByName(arguments[0]);
 
             // Check if there is even a Command with that name.
             if (command == null && BotConfig.isModuleActive("customcommands")) {
-                CustomCommand customCommand = SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "FROM CustomCommand WHERE guildId=:gid AND name=:command", Map.of("gid", guild.getIdLong(), "command", arguments[0].toLowerCase())).block();
-                if (customCommand != null) {
-                    GuildMessageChannelUnion messageChannelUnion = textChannel;
+                return SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "FROM CustomCommand WHERE guildId=:gid AND name=:command", Map.of("gid", guild.getIdLong(), "command", arguments[0].toLowerCase()))
+                        .flatMap(customCommand -> {
+                            if (customCommand.isPresent()) {
+                                GuildMessageChannelUnion messageChannelUnion = textChannel;
+                                CustomCommand customCommandEntity = customCommand.get();
+                                if (customCommandEntity.getChannelId() != -1) {
+                                    messageChannelUnion = guild.getChannelById(GuildMessageChannelUnion.class, customCommandEntity.getChannelId());
+                                }
 
-                    if (customCommand.getChannelId() != -1) {
-                        messageChannelUnion = guild.getChannelById(GuildMessageChannelUnion.class, customCommand.getChannelId());
-                    }
+                                if (customCommandEntity.getMessageResponse() != null) {
+                                    sendMessage(customCommandEntity.getMessageResponse(), 5, messageChannelUnion, null);
+                                }
 
-                    if (customCommand.getMessageResponse() != null) {
-                        sendMessage(customCommand.getMessageResponse(), 5, messageChannelUnion, null);
-                    }
+                                if (customCommandEntity.getEmbedResponse() != null) {
+                                    EmbedBuilder embedBuilder = EmbedBuilder.fromData(DataObject.fromJson(customCommandEntity.getEmbedResponse().toString()));
+                                    sendMessage(embedBuilder, 5, messageChannelUnion, null);
+                                }
 
-                    if (customCommand.getEmbedResponse() != null) {
-                        EmbedBuilder embedBuilder = EmbedBuilder.fromData(DataObject.fromJson(customCommand.getEmbedResponse().toString()));
-                        sendMessage(embedBuilder, 5, messageChannelUnion, null);
-                    }
+                                return Mono.just(true);
+                            }
 
-                    return true;
-                }
-
-                sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound").block(), 5, textChannel, null);
-                return false;
+                            return Mono.just(false);
+                        }).block();
             } else if (command == null) {
-                sendMessage(LanguageService.getByGuild(guild, "command.perform.notFound").block(), 5, textChannel, null);
-                return false;
+                return LanguageService.getByGuild(guild, "command.perform.notFound").map(translated -> {
+                    sendMessage(translated, 5, textChannel, null);
+                    return false;
+                }).block();
             }
+
+            log.info("Finished custom command.");
 
             if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
-                Setting blacklistSetting = SQLSession.getSqlConnector().getSqlWorker().getSetting(guild.getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).block();
+                Optional<Setting> blacklist = SQLSession.getSqlConnector().getSqlWorker()
+                        .getSetting(guild.getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).block();
 
                 // Check if the Command is blacklisted.
-                if (blacklistSetting != null && !blacklistSetting.getBooleanValue()) {
-                    sendMessage(LanguageService.getByGuild(guild, "command.perform.blocked").block(), 5, textChannel, null);
-                    return false;
+                if (blacklist != null && blacklist.isPresent() && !blacklist.get().getBooleanValue()) {
+                    return LanguageService.getByGuild(guild, "command.perform.blocked").map(translated -> {
+                        sendMessage(translated, 5, textChannel, null);
+                        return false;
+                    }).block();
                 }
             }
+
+            log.info("Finished blacklist.");
 
             // Parse the arguments.
             String[] argumentsParsed = Arrays.copyOfRange(arguments, 1, arguments.length);
 
             // Perform the Command.
-            command.onASyncPerform(new CommandEvent(command.getClass().getAnnotation(Command.class).name(), member, guild, message, textChannel, argumentsParsed, null));
-
-            return true;
+            return command.onMonoPerform(new CommandEvent(command.getClass().getAnnotation(Command.class).name(), member, guild, message, textChannel, argumentsParsed, null)).block();
         });
     }
 
@@ -510,15 +537,16 @@ public class CommandManager {
             return Mono.just(false);
         }
 
-        return SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).map(setting -> {
-            if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN && setting != null && !setting.getBooleanValue()) {
+        return SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).publishOn(Schedulers.boundedElastic()).mapNotNull(setting -> {
+            if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN && setting.isPresent() && !setting.get().getBooleanValue()) {
                 sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked").block(), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
                 return false;
             }
 
+            CommandEvent commandEvent = new CommandEvent(command.getClass().getAnnotation(Command.class).name(), slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, messageChannel, null, slashCommandInteractionEvent);
+
             // Perform the Command.
-            command.onASyncPerform(new CommandEvent(command.getClass().getAnnotation(Command.class).name(), slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, messageChannel, null, slashCommandInteractionEvent));
-            return true;
+            return command.onMonoPerform(commandEvent).block();
         });
     }
 
