@@ -100,7 +100,7 @@ public class Stats implements ICommand {
                 if (BotConfig.isDebug()) {
                     em.addField("**DEV ONLY**", "", true);
                     em.addField("**Compute Time**", computeTime + "ms", true);
-                    em.addField("**DEV ONLY*", "", true);
+                    em.addField("**DEV ONLY**", "", true);
                 }
 
                 messageEditBuilder.setEmbeds(em.build());
