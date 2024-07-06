@@ -129,7 +129,7 @@
         <dependency>
             <groupId>com.github.jwdeveloper.TikTok-Live-Java</groupId>
             <artifactId>Client</artifactId>
-            <version>1.6.1-Release</version>
+            <version>1.8.2-Release</version>
         </dependency>
 
         <!-- Music -->
