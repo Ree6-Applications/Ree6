@@ -30,11 +30,11 @@
             <name>LavaLink Release</name>
             <url>https://maven.lavalink.dev/releases</url>
         </repository>
-        <repository>
+        <!--<repository>
             <id>lavalink</id>
             <name>LavaLink Devs</name>
             <url>https://maven.lavalink.dev/snapshots</url>
-        </repository>
+        </repository>-->
         <!--<repository>
             <id>bintray</id>
             <name>bintray</name>
