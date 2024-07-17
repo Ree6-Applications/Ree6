@@ -31,7 +31,7 @@
             <url>https://maven.lavalink.dev/releases</url>
         </repository>
         <!--<repository>
-            <id>lavalink</id>
+            <id>lavalink-snapshot</id>
             <name>LavaLink Devs</name>
             <url>https://maven.lavalink.dev/snapshots</url>
         </repository>-->
