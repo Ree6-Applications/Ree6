@@ -36,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
 public class LanguageService {
 
     /**
-     * A Hashmap containing the locale as key and the YamlConfiguration as value.
+     * A Hashmap containing the locale as a key and the YamlConfiguration as value.
      */
     public static final HashMap<DiscordLocale, Language> languageResources = new HashMap<>();
 
