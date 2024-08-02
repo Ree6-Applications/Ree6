@@ -27,9 +27,19 @@
         </repository>
         <repository>
             <id>lavalink</id>
+            <name>LavaLink Release</name>
+            <url>https://maven.lavalink.dev/releases</url>
+        </repository>
+        <!--<repository>
+            <id>lavalink-snapshot</id>
             <name>LavaLink Devs</name>
             <url>https://maven.lavalink.dev/snapshots</url>
-        </repository>
+        </repository>-->
+        <!--<repository>
+            <id>bintray</id>
+            <name>bintray</name>
+            <url>https://jcenter.bintray.com</url>
+        </repository>-->
         <repository>
             <id>dv8tion</id>
             <name>m2-dv8tion</name>
@@ -47,13 +57,13 @@
         <dependency>
             <groupId>io.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>d78a5e5a3a</version>
+            <version>70e5e5ca33</version>
         </dependency>
         <!-- Fix for the failed Lookup until they release a version -->
         <dependency>
             <groupId>dev.arbjerg</groupId>
             <artifactId>lavaplayer</artifactId>
-            <version>83f3633248303439dab16d0f89422e30fae0f83a-SNAPSHOT</version>
+            <version>2.2.1</version>
         </dependency>
         <!--<dependency>
             <groupId>com.github.lavalink-devs.lavaplayer</groupId>
@@ -61,9 +71,9 @@
             <version>0ab6311a5f</version>
         </dependency>-->
         <dependency>
-            <groupId>com.github.lavalink-devs</groupId>
-            <artifactId>youtube-source</artifactId>
-            <version>59fe89297b</version>
+            <groupId>dev.lavalink.youtube</groupId>
+            <artifactId>v2</artifactId>
+            <version>1.5.1</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
@@ -80,7 +90,7 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
-            <version>7.9.0</version>
+            <version>7.13.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.Carleslc.Simple-YAML</groupId>
@@ -124,7 +134,7 @@
         <dependency>
             <groupId>com.github.jwdeveloper.TikTok-Live-Java</groupId>
             <artifactId>Client</artifactId>
-            <version>1.6.1-Release</version>
+            <version>1.8.5-Release</version>
         </dependency>
 
         <!-- Music -->
@@ -220,34 +230,34 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.17.0</version>
+            <version>1.17.1</version>
         </dependency>
 
         <!-- Jersey and Jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.17.1</version>
+            <version>2.17.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.17.1</version>
+            <version>2.17.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.17.1</version>
+            <version>2.17.2</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
-            <version>3.1.6</version>
+            <version>3.1.7</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>3.1.6</version>
+            <version>3.1.7</version>
         </dependency>
 
 
@@ -267,7 +277,7 @@
         <dependency>
             <groupId>best.azura</groupId>
             <artifactId>Azura-Event-Bus</artifactId>
-            <version>3.0.3</version>
+            <version>3.1.0</version>
         </dependency>
 
         <!-- Google -->
@@ -294,7 +304,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.6.3</version>
+                    <version>3.8.0</version>
                     <inherited>false</inherited>
                     <executions>
                         <execution>
