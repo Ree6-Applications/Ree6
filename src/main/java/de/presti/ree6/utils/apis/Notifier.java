@@ -173,7 +173,7 @@ public class Notifier {
                     .build();
 
             TwitchAuth.registerIdentityProvider(credentialManager, Main.getInstance().getConfig().getConfiguration().getString("twitch.client.id"),
-                    Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"), BotConfig.getTwitchAuth());
+                    Main.getInstance().getConfig().getConfiguration().getString("twitch.client.secret"), BotConfig.getTwitchAuth(), false);
 
             twitchIdentityProvider = (TwitchIdentityProvider) credentialManager.getIdentityProviderByName("twitch").orElse(null);
 
