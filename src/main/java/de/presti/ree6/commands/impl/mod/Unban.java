@@ -62,7 +62,7 @@ public class Unban implements ICommand {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.BAN_MEMBERS.name()), 5);
         }
 
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        commandEvent.delete();
     }
 
     /**

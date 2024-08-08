@@ -434,6 +434,8 @@ public class CommandManager {
     private Mono<Boolean> performMessageCommand(Member member, Guild guild, String messageContent, Message message, GuildMessageChannelUnion textChannel) {
         // Check if the Message is null.
         if (message == null) {
+            if (BotConfig.isDebug())
+                log.info("Message is null.");
             sendMessage(LanguageService.getByGuild(guild, "command.perform.error").block(), 5, textChannel, null);
             return Mono.just(false);
         }
@@ -449,8 +451,11 @@ public class CommandManager {
             String currentPrefix = setting.orElseGet(() -> new Setting(-1, "chatprefix", "Chat Prefix", BotConfig.getDefaultPrefix())).getStringValue();
 
             // Check if the message starts with the prefix.
-            if (!messageContent.toLowerCase().startsWith(currentPrefix))
+            if (!messageContent.toLowerCase().startsWith(currentPrefix)) {
+                if (BotConfig.isDebug())
+                    log.info("Wrong prefix");
                 return false;
+            }
 
             // Split all Arguments.
             String[] arguments = messageContent.substring(currentPrefix.length()).split("\\s+");
@@ -458,6 +463,8 @@ public class CommandManager {
             if (arguments.length == 0 || arguments[0].isBlank()) {
                 return LanguageService.getByGuild(guild, "command.perform.missingCommand").map(translated -> {
                     sendMessage(translated, 5, textChannel, null);
+                    if (BotConfig.isDebug())
+                        log.info("Missing command from string.");
                     return false;
                 }).block();
             }
@@ -470,9 +477,15 @@ public class CommandManager {
 
             // Check if there is even a Command with that name.
             if (command == null && BotConfig.isModuleActive("customcommands")) {
-                return SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "FROM CustomCommand WHERE guildId=:gid AND name=:command", Map.of("gid", guild.getIdLong(), "command", arguments[0].toLowerCase()))
+                return SQLSession.getSqlConnector().getSqlWorker().getEntity(new CustomCommand(), "FROM CustomCommand WHERE guildId=:gid AND name=:command",
+                                Map.of("gid", guild.getIdLong(), "command", arguments[0].toLowerCase()))
                         .flatMap(customCommand -> {
+                            if (BotConfig.isDebug())
+                                log.info("Got custom command.");
+
                             if (customCommand.isPresent()) {
+                                if (BotConfig.isDebug())
+                                    log.info("Custom command is present.");
                                 GuildMessageChannelUnion messageChannelUnion = textChannel;
                                 CustomCommand customCommandEntity = customCommand.get();
                                 if (customCommandEntity.getChannelId() != -1) {
@@ -491,7 +504,13 @@ public class CommandManager {
                                 return Mono.just(true);
                             }
 
-                            return Mono.just(false);
+                            if (BotConfig.isDebug())
+                                log.info("Custom command is not present.");
+
+                            return LanguageService.getByGuild(guild, "command.perform.notFound").map(translated -> {
+                                sendMessage(translated, 5, textChannel, null);
+                                return false;
+                            });
                         }).block();
             } else if (command == null) {
                 return LanguageService.getByGuild(guild, "command.perform.notFound").map(translated -> {
@@ -501,11 +520,13 @@ public class CommandManager {
             }
 
             if (BotConfig.isDebug())
-                log.info("Finished custom command.");
+                log.info("Finished command check.");
 
-            if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN) {
+            Command commandAnnotation = command.getClass().getAnnotation(Command.class);
+
+            if (commandAnnotation.category() != Category.HIDDEN) {
                 Optional<Setting> blacklist = SQLSession.getSqlConnector().getSqlWorker()
-                        .getSetting(guild.getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).block();
+                        .getSetting(guild.getIdLong(), "command_" + commandAnnotation.name().toLowerCase()).block();
 
                 // Check if the Command is blacklisted.
                 if (blacklist != null && blacklist.isPresent() && !blacklist.get().getBooleanValue()) {
@@ -523,7 +544,7 @@ public class CommandManager {
             String[] argumentsParsed = Arrays.copyOfRange(arguments, 1, arguments.length);
 
             // Perform the Command.
-            return command.onMonoPerform(new CommandEvent(command.getClass().getAnnotation(Command.class).name(), member, guild, message, textChannel, argumentsParsed, null)).block();
+            return command.onMonoPerform(new CommandEvent(commandAnnotation.name(), member, guild, message, textChannel, argumentsParsed, null)).block();
         });
     }
 
@@ -794,6 +815,20 @@ public class CommandManager {
                 log.error("[CommandManager] Couldn't delete a Message -> {}", throwable.getMessage());
                 return null;
             }).queue();
+        }
+    }
+
+    /**
+     * Delete a specific message.
+     *
+     * @param message         the {@link Message} entity.
+     * @param interactionHook the Interaction-hook, if it is a slash event.
+     */
+    public void deleteMessageWithoutException(Message message, InteractionHook interactionHook) {
+        try {
+            deleteMessage(message, interactionHook);
+        } catch (Exception e) {
+            log.error("[CommandManager] Couldn't delete a Message -> {}", e.getMessage());
         }
     }
 

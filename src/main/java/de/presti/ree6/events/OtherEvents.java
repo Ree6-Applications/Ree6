@@ -483,7 +483,7 @@ public class OtherEvents extends ListenerAdapter {
                     moderated = Boolean.TRUE.equals(ModerationUtil.checkMessage(event.getGuild().getIdLong(), event.getMessage().getContentRaw()).block());
 
                     if (moderated) {
-                        Main.getInstance().getCommandManager().deleteMessage(event.getMessage(), null);
+                        Main.getInstance().getCommandManager().deleteMessageWithoutException(event.getMessage(), null);
 
                         Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.blacklisted"), event.getChannel(), null);
                     }
@@ -493,7 +493,7 @@ public class OtherEvents extends ListenerAdapter {
                     log.info("Message was moderated: {}", moderated);
 
                 return moderated;
-            }).flatMap((aBoolean) -> handleCommand(aBoolean, event)).publishOn(Schedulers.boundedElastic()).doOnNext(handled -> {
+            }).flatMap((aBoolean) -> handleCommand(aBoolean, event)).doOnNext(handled -> {
                 if (!handled) {
                     if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
                         if (event.getMessage().getMessageReference() != null) return;
