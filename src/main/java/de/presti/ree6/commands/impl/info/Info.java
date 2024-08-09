@@ -57,7 +57,7 @@ public class Info implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("info", LanguageService.getDefault("command.description.info"))
+        return new CommandDataImpl("info", "command.description.info")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User whose profile Information you want.").setRequired(false));
     }
 
@@ -80,11 +80,7 @@ public class Info implements ICommand {
         em.setTitle(member.getEffectiveName() + (GuildUtil.isSupporter(member.getUser()) ? " <a:duckswing:1070690323459735682>" : ""));
         em.setThumbnail(member.getEffectiveAvatarUrl());
 
-        if (member.getUser().getDiscriminator().equals("0000")) {
-            em.addField("**Username**", member.getUser().getName(), true);
-        } else {
-            em.addField("**UserTag**", member.getUser().getAsTag(), true);
-        }
+        em.addField("**Username**", member.getUser().getName(), true);
 
         em.addField("**Created Date**", member.getTimeCreated().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);
         em.addField("**Joined Date**", member.getTimeJoined().toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), true);

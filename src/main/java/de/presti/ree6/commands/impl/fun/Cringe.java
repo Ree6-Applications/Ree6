@@ -27,7 +27,7 @@ public class Cringe implements ICommand {
             commandEvent.getChannel().getHistoryBefore(commandEvent.getMessage().getIdLong(), 1).complete().getRetrievedHistory().get(0).reply("https://images.ree6.de/cringe.gif").queue();
         }
 
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        commandEvent.delete();
     }
 
     /**
@@ -35,7 +35,7 @@ public class Cringe implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("shrekimage", LanguageService.getDefault("command.description.cringe_slash"));
+        return new CommandDataImpl("shrekimage", "command.description.cringe_slash");
     }
 
     /**

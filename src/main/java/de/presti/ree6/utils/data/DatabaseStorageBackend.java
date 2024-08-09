@@ -19,16 +19,14 @@ public class DatabaseStorageBackend implements IStorageBackend {
      */
     @Override
     public List<Credential> loadCredentials() {
-        List<TwitchIntegration> twitchIntegrations =
-                SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(),
-                        "FROM TwitchIntegration", null);
+        return SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(),
+                "FROM TwitchIntegration", null).map(twitchIntegrations -> {
+            List<Credential> credentials = new ArrayList<>();
 
-        List<Credential> credentials = new ArrayList<>();
-
-        twitchIntegrations.forEach(twitchIntegration -> credentials.add(new CustomOAuth2Credential(twitchIntegration.getUserId(),"twitch", twitchIntegration.getToken(),
-                twitchIntegration.getRefresh(), twitchIntegration.getChannelId(), twitchIntegration.getName(), twitchIntegration.getExpiresIn(), Collections.emptyList())));
-
-        return credentials;
+            twitchIntegrations.forEach(twitchIntegration -> credentials.add(new CustomOAuth2Credential(twitchIntegration.getUserId(), "twitch", twitchIntegration.getToken(),
+                    twitchIntegration.getRefresh(), twitchIntegration.getChannelId(), twitchIntegration.getName(), twitchIntegration.getExpiresIn(), Collections.emptyList())));
+            return credentials;
+        }).block();
     }
 
     /**
@@ -40,21 +38,20 @@ public class DatabaseStorageBackend implements IStorageBackend {
     public void saveCredentials(List<Credential> list) {
         list.forEach(credential -> {
             if (credential instanceof CustomOAuth2Credential oAuth2Credential) {
-                TwitchIntegration twitchIntegration =
-                        SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(),
-                                "FROM TwitchIntegration WHERE channelId = :userid", Map.of("userid",oAuth2Credential.getUserId()));
+                SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(),
+                        "FROM TwitchIntegration WHERE channelId = :userid", Map.of("userid", oAuth2Credential.getUserId())).subscribe(twitchIntegrationOptional -> {
+                    TwitchIntegration twitchIntegration = twitchIntegrationOptional.orElse(new TwitchIntegration());
+                    if (twitchIntegrationOptional.isEmpty()) {
+                        twitchIntegration.setChannelId(oAuth2Credential.getUserId());
+                        twitchIntegration.setUserId(oAuth2Credential.getDiscordId());
+                    }
 
-                if (twitchIntegration == null) {
-                    twitchIntegration = new TwitchIntegration();
-                    twitchIntegration.setChannelId(oAuth2Credential.getUserId());
-                    twitchIntegration.setUserId(oAuth2Credential.getDiscordId());
-                }
-
-                twitchIntegration.setToken(oAuth2Credential.getAccessToken());
-                twitchIntegration.setRefresh(oAuth2Credential.getRefreshToken());
-                twitchIntegration.setName(oAuth2Credential.getUserName());
-                twitchIntegration.setExpiresIn(oAuth2Credential.getExpiresIn());
-                SQLSession.getSqlConnector().getSqlWorker().updateEntity(twitchIntegration);
+                    twitchIntegration.setToken(oAuth2Credential.getAccessToken());
+                    twitchIntegration.setRefresh(oAuth2Credential.getRefreshToken());
+                    twitchIntegration.setName(oAuth2Credential.getUserName());
+                    twitchIntegration.setExpiresIn(oAuth2Credential.getExpiresIn());
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(twitchIntegration).block();
+                });
             }
         });
     }
@@ -67,13 +64,13 @@ public class DatabaseStorageBackend implements IStorageBackend {
      */
     @Override
     public Optional<Credential> getCredentialByUserId(String userId) {
-        Optional<TwitchIntegration> twitchIntegration = Optional.ofNullable(SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(),
-                "FROM TwitchIntegration WHERE channelId = :userid", Map.of("userid", userId)));
+        Optional<TwitchIntegration> twitchIntegration = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(),
+                "FROM TwitchIntegration WHERE channelId = :userid", Map.of("userid", userId)).block();
 
-        if (twitchIntegration.isPresent()) {
+        if (twitchIntegration != null && twitchIntegration.isPresent()) {
             TwitchIntegration twitchIntegration1 = twitchIntegration.get();
             CustomOAuth2Credential oAuth2Credential
-                    = new CustomOAuth2Credential(twitchIntegration1.getUserId(),"twitch", twitchIntegration1.getToken(),
+                    = new CustomOAuth2Credential(twitchIntegration1.getUserId(), "twitch", twitchIntegration1.getToken(),
                     twitchIntegration1.getRefresh(), twitchIntegration1.getChannelId(), twitchIntegration1.getName(), twitchIntegration1.getExpiresIn(), Collections.emptyList());
 
             return Optional.of(oAuth2Credential);

@@ -71,7 +71,7 @@ public class Twitter implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("twitter", LanguageService.getDefault("command.description.twitter"))
+        return new CommandDataImpl("twitter", "command.description.twitter")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should tweet something!").setRequired(true))
                 .addOptions(new OptionData(OptionType.STRING, "content", "The Tweet Content!").setRequired(true));
     }

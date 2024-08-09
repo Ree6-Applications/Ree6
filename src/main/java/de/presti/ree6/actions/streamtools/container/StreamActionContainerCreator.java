@@ -8,11 +8,13 @@ import de.presti.ree6.sql.entities.StreamAction;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A Utility class used to create StreamActionContainers.
@@ -77,10 +79,10 @@ public class StreamActionContainerCreator {
      * @param listenerId The Listener to get the Containers for.
      * @return A List of StreamActionContainers.
      */
-    public static List<StreamActionContainer> getContainers(int listenerId) {
+    public static Mono<List<StreamActionContainer>> getContainers(int listenerId) {
         return SQLSession.getSqlConnector().getSqlWorker()
                 .getEntityList(new StreamAction(), "FROM StreamAction WHERE listener = :listener", Map.of("listener", listenerId))
-                .stream().map(StreamActionContainer::new).toList();
+                .map(list -> list.stream().map(StreamActionContainer::new).toList());
     }
 
 }

@@ -74,7 +74,7 @@ public class Ban implements ICommand {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.ADMINISTRATOR.name()), 5);
         }
 
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        commandEvent.delete();
     }
 
     /**
@@ -82,7 +82,7 @@ public class Ban implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("ban", LanguageService.getDefault("command.description.ban"))
+        return new CommandDataImpl("ban", "command.description.ban")
                 .addOptions(new OptionData(OptionType.USER, "target", "Which User should be banned.", true))
                 .addOptions(new OptionData(OptionType.INTEGER, "del_days", "Delete messages from the past days.")
                         .setRequiredRange(0, 7))

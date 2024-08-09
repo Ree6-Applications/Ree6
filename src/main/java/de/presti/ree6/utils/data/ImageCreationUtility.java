@@ -138,15 +138,6 @@ public class ImageCreationUtility {
         Main.getInstance().logAnalytic("Finished drawing User Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        String discriminatorText = "#" + user.getDiscriminator();
-
-        Font verdana60 = retrieveFont(60, discriminatorText);
-        Font verdana50 = retrieveFont(50, rank);
-        Font verdana40 = retrieveFont(40, formattedExperience + " Rank Level");
-
-        Main.getInstance().logAnalytic("Finished creating Fonts. ({}ms)", System.currentTimeMillis() - actionPerformance);
-        actionPerformance = System.currentTimeMillis();
-
         String username = new String(user.getName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 
         if (username.length() > 13) {
@@ -156,16 +147,17 @@ public class ImageCreationUtility {
         Main.getInstance().logAnalytic("Finished substring on Username. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
+        Font verdana60 = retrieveFont(60, username);
+        Font verdana50 = retrieveFont(50, rank);
+        Font verdana40 = retrieveFont(40, formattedExperience + " Rank Level");
+
+        Main.getInstance().logAnalytic("Finished creating Fonts. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
+
         graphics2D.setColor(BotConfig.getRankTextColor());
         graphics2D.setFont(verdana60);
         graphics2D.drawString(username, 425, 675);
-
-        // TODO:: remove this once discord removes discriminators.
-        if (!user.getDiscriminator().equals("#0000")) {
-            graphics2D.setColor(BotConfig.getRankDetailColor());
-            graphics2D.setFont(verdana40);
-            graphics2D.drawString(discriminatorText, 425, 675 - graphics2D.getFontMetrics(verdana60).getHeight() + 5);
-        }
 
         graphics2D.setColor(BotConfig.getRankProgressbarBackgroundColor());
         graphics2D.fillRoundRect(175, 705, base.getWidth() - 950, 50, 50, 50);

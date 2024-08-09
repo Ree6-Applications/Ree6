@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
@@ -32,6 +33,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.component.StringSelectMenuImpl;
+import reactor.core.publisher.Mono;
 
 import java.awt.*;
 import java.io.InputStream;
@@ -39,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A command to set Ree6 up.
@@ -113,15 +116,20 @@ public class Setup implements ICommand {
                                 .addActionRow(selectMenu).queue();
                     }
                 } else if (commandEvent.getSubcommand().equalsIgnoreCase("autorole")) {
-                    if (commandEvent.isSlashCommand()) {
-                        commandEvent.getInteractionHook().sendMessageEmbeds(createAutoRoleSetupMessage(commandEvent.getGuild(), commandEvent.getInteractionHook()).build())
-                                .addActionRow(createAutoRoleSetupSelectMenu(commandEvent.getGuild(), commandEvent.getInteractionHook()))
-                                .addActionRow(Button.link(BotConfig.getWebinterface(), "Webinterface")).queue();
-                    } else {
-                        commandEvent.getChannel().sendMessageEmbeds(createAutoRoleSetupMessage(commandEvent.getGuild(), commandEvent.getInteractionHook()).build())
-                                .addActionRow(createAutoRoleSetupSelectMenu(commandEvent.getGuild(), commandEvent.getInteractionHook()))
-                                .addActionRow(Button.link(BotConfig.getWebinterface(), "Webinterface")).queue();
-                    }
+                    createAutoRoleSetupSelectMenu(commandEvent.getGuild(), commandEvent.getInteractionHook()).subscribe(menu -> {
+                        MessageEmbed embed = createAutoRoleSetupMessage(commandEvent.getGuild(), commandEvent.getInteractionHook()).build();
+                        Button webinterface = Button.link(BotConfig.getWebinterface(), "Webinterface");
+
+                        if (commandEvent.isSlashCommand()) {
+                            commandEvent.getInteractionHook().sendMessageEmbeds(embed)
+                                    .addActionRow(menu)
+                                    .addActionRow(webinterface).queue();
+                        } else {
+                            commandEvent.getChannel().sendMessageEmbeds(embed)
+                                    .addActionRow(menu)
+                                    .addActionRow(webinterface).queue();
+                        }
+                    });
                 }
             } else {
                 OptionMapping optionMapping = commandEvent.getOption("channel");
@@ -143,23 +151,31 @@ public class Setup implements ICommand {
                         if (commandEvent.getSubcommand().equals("set")) {
                             if (guildChannelUnion.getType() == ChannelType.TEXT) {
                                 guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Logs").queue(webhook -> {
-                                    if (SQLSession.getSqlConnector().getSqlWorker().isLogSetup(commandEvent.getGuild().getIdLong())) {
-                                        WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()));
-                                    }
+                                    SQLSession.getSqlConnector().getSqlWorker().isLogSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
+                                        if (aBoolean) {
+                                            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> {
+                                                webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity));
+                                            });
+                                        }
 
-                                    SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
-                                    commandEvent.reply(commandEvent.getResource("message.auditLog.setupSuccess"));
+                                        SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
+                                        commandEvent.reply(commandEvent.getResource("message.auditLog.setupSuccess"));
+                                    });
                                 });
                             } else {
                                 commandEvent.reply(commandEvent.getResource("message.default.invalidOptionChannel"));
                             }
                         } else {
-                            if (SQLSession.getSqlConnector().getSqlWorker().isLogSetup(commandEvent.getGuild().getIdLong())) {
-                                WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()));
-                                commandEvent.reply(commandEvent.getResource("message.auditLog.deleted"));
-                            } else {
-                                commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
-                            }
+                            SQLSession.getSqlConnector().getSqlWorker().isLogSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
+                                if (aBoolean) {
+                                    SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> {
+                                        webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity));
+                                        commandEvent.reply(commandEvent.getResource("message.auditLog.deleted"));
+                                    });
+                                } else {
+                                    commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
+                                }
+                            });
                         }
                     }
                     case "welcome" -> {
@@ -171,41 +187,48 @@ public class Setup implements ICommand {
                         if (commandEvent.getSubcommand().equals("set")) {
                             if (guildChannelUnion.getType() == ChannelType.TEXT) {
                                 guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Welcome").queue(webhook -> {
-                                    if (SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(commandEvent.getGuild().getIdLong())) {
-                                        WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()));
-                                    }
-
-                                    SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
-                                    commandEvent.reply(commandEvent.getResource("message.welcome.setupSuccess"));
+                                    SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
+                                        if (aBoolean) {
+                                            SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> {
+                                                webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity));
+                                            });
+                                        }
+                                        SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
+                                        commandEvent.reply(commandEvent.getResource("message.welcome.setupSuccess"));
+                                    });
                                 });
                             } else {
                                 commandEvent.reply(commandEvent.getResource("message.default.invalidOptionChannel"));
                             }
                         } else {
-                            if (SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(commandEvent.getGuild().getIdLong())) {
-                                WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()));
-                                commandEvent.reply(commandEvent.getResource("message.welcome.deleted"));
-                            } else {
+                            SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
+                                if (aBoolean) {
+                                    SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity ->
+                                            webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity)));
+                                    commandEvent.reply(commandEvent.getResource("message.welcome.deleted"));
+                                }
                                 commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
-                            }
+                            });
                         }
                     }
                     case "tempvoice" -> {
                         if (commandEvent.getSubcommand().equals("set")) {
                             if (guildChannelUnion.getType() == ChannelType.VOICE) {
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new TemporalVoicechannel(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong()));
-                                commandEvent.reply(commandEvent.getResource("message.temporalVoice.setupSuccess"));
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new TemporalVoicechannel(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong())).subscribe(save -> {
+                                    commandEvent.reply(commandEvent.getResource("message.temporalVoice.setupSuccess"));
+                                });
                             } else {
                                 commandEvent.reply(commandEvent.getResource("message.default.invalidOptionChannel"));
                             }
                         } else {
-                            TemporalVoicechannel temporalVoicechannel = SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", commandEvent.getGuild().getId()));
-                            if (temporalVoicechannel != null) {
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel);
-                                commandEvent.reply(commandEvent.getResource("message.temporalVoice.deleted"));
-                            } else {
-                                commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
-                            }
+                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", commandEvent.getGuild().getId())).subscribe(temporalVoicechannel -> {
+                                if (temporalVoicechannel.isPresent()) {
+                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel.get()).block();
+                                    commandEvent.reply(commandEvent.getResource("message.temporalVoice.deleted"));
+                                } else {
+                                    commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
+                                }
+                            });
                         }
                     }
                     case "rewards" -> {
@@ -241,7 +264,8 @@ public class Setup implements ICommand {
                             for (Setting setting : SettingsManager.getSettings()) {
                                 if (!setting.getName().startsWith("configuration_rewards_")) continue;
 
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Setting(commandEvent.getGuild().getIdLong(), setting.getName(), setting.getDisplayName(), setting.getValue()));
+                                // TODO:: thing of how to handle this.
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Setting(commandEvent.getGuild().getIdLong(), setting.getName(), setting.getDisplayName(), setting.getValue())).block();
                             }
 
                             commandEvent.reply(commandEvent.getResource("message.rewards.success"));
@@ -252,38 +276,40 @@ public class Setup implements ICommand {
         } else {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.ADMINISTRATOR.name() + "/" + Permission.MANAGE_SERVER.name()));
         }
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
 
+        commandEvent.delete();
     }
 
     public static EmbedBuilder createAutoRoleSetupMessage(Guild guild, InteractionHook interactionHook) {
         boolean hasRoles = !GuildUtil.getManagableRoles(guild).isEmpty();
 
         return new EmbedBuilder()
-                .setTitle(LanguageService.getByGuildOrInteractionHook(guild, interactionHook,"label.setup"))
+                .setTitle(LanguageService.getByGuildOrInteractionHook(guild, interactionHook, "label.setup").block())
                 .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl())
                 .setColor(hasRoles ? Color.cyan : Color.red)
-                .setDescription(LanguageService.getByGuildOrInteractionHook(guild, interactionHook, hasRoles ? "message.autoRole.setupDescription" : "message.default.needPermission", (hasRoles ? null : Permission.MANAGE_ROLES.name())));
+                .setDescription(LanguageService.getByGuildOrInteractionHook(guild, interactionHook, hasRoles ? "message.autoRole.setupDescription" : "message.default.needPermission", (hasRoles ? null : Permission.MANAGE_ROLES.name())).block());
     }
 
-    public static SelectMenu createAutoRoleSetupSelectMenu(Guild guild, InteractionHook interactionHook) {
+    public static Mono<SelectMenu> createAutoRoleSetupSelectMenu(Guild guild, InteractionHook interactionHook) {
         List<SelectOption> optionList = new ArrayList<>();
 
         for (Role role : GuildUtil.getManagableRoles(guild)) {
             optionList.add(SelectOption.of(role.getName(), role.getId()));
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().getAutoRoles(guild.getIdLong()).forEach(autoRole -> {
-            SelectOption option = optionList.stream().filter(selectOption -> selectOption.getValue().equals(String.valueOf(autoRole.getRoleId()))).findFirst().orElse(null);
-            if (option != null) {
-                optionList.remove(option);
-                optionList.add(option.withDefault(true));
-            }
-        });
+        return SQLSession.getSqlConnector().getSqlWorker().getAutoRoles(guild.getIdLong()).map(list -> {
+            list.forEach(autoRole -> {
+                SelectOption option = optionList.stream().filter(selectOption -> selectOption.getValue().equals(String.valueOf(autoRole.getRoleId()))).findFirst().orElse(null);
+                if (option != null) {
+                    optionList.remove(option);
+                    optionList.add(option.withDefault(true));
+                }
+            });
 
-        return new StringSelectMenuImpl("setupAutoRole", LanguageService.getByGuildOrInteractionHook(guild, interactionHook,
-                "message.autoRole.setupPlaceholder"),
-                0, Math.min(10, Math.max(1, optionList.size())), optionList.isEmpty(), optionList);
+            return new StringSelectMenuImpl("setupAutoRole", LanguageService.getByGuildOrInteractionHook(guild, interactionHook,
+                    "message.autoRole.setupPlaceholder").block(),
+                    0, Math.min(10, Math.max(1, optionList.size())), optionList.isEmpty(), optionList);
+        });
     }
 
     /**
@@ -297,15 +323,18 @@ public class Setup implements ICommand {
                 .addSubcommandGroups(
                         new SubcommandGroupData("auditlog", "Auditlog Setup")
                                 .addSubcommands(new SubcommandData("set", "Set the Auditlog channel.")
-                                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The Welcome Channel.", true).setChannelTypes(ChannelType.TEXT)))
+                                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The Welcome Channel.", true)
+                                                .setChannelTypes(ChannelType.TEXT)))
                                 .addSubcommands(new SubcommandData("remove", "Remove the Auditlog channel.")),
                         new SubcommandGroupData("welcome", "Welcome Setup")
                                 .addSubcommands(new SubcommandData("set", "Set the Welcome channel.")
-                                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The Auditlog Channel.", true).setChannelTypes(ChannelType.TEXT)))
+                                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The Auditlog Channel.", true)
+                                                .setChannelTypes(ChannelType.TEXT)))
                                 .addSubcommands(new SubcommandData("remove", "Remove the Welcome channel.")),
                         new SubcommandGroupData("tempvoice", "Temporal Voice Setup")
                                 .addSubcommands(new SubcommandData("set", "Set a Temporal Voice Channel.")
-                                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The Temporal Voice Channel.", true).setChannelTypes(ChannelType.VOICE)))
+                                        .addOptions(new OptionData(OptionType.CHANNEL, "channel", "The Temporal Voice Channel.", true)
+                                                .setChannelTypes(ChannelType.VOICE)))
                                 .addSubcommands(new SubcommandData("remove", "Remove a Temporal Voice Channel.")),
                         // TODO:: think about a better way to implement it.
                         /*new SubcommandGroupData("statistics", "Statistics Setup")

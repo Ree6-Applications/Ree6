@@ -105,20 +105,20 @@ public class MusicQuiz implements IGame {
     public void createGame() {
 
         if (session.getHost().getVoiceState() == null || session.getHost().getVoiceState().getChannel() == null) {
-            session.getChannel().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.default.notInVoiceChannel")).queue();
+            session.getChannel().sendMessage(LanguageService.getByGuild(session.getGuild(), "message.default.notInVoiceChannel").block()).queue();
             return;
         }
 
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle(LanguageService.getByGuild(session.getGuild(), "label.musicQuiz"));
+        embedBuilder.setTitle(LanguageService.getByGuild(session.getGuild(), "label.musicQuiz").block());
         embedBuilder.setColor(BotWorker.randomEmbedColor());
-        embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.welcome", session.getGameIdentifier()));
+        embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.welcome", session.getGameIdentifier()).block());
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
-        messageCreateBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame")).asDisabled(),
-                Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame")).asEnabled());
+        messageCreateBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame").block()).asDisabled(),
+                Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame").block()).asEnabled());
         menuMessage = session.getChannel().sendMessage(messageCreateBuilder.build()).complete();
     }
 
@@ -150,7 +150,7 @@ public class MusicQuiz implements IGame {
     public void joinGame(GamePlayer user) {
 
         if (participants.stream().anyMatch(c -> c.getRelatedUserId() == user.getRelatedUserId())) {
-            user.getInteractionHook().editOriginal(LanguageService.getByInteraction(user.getInteractionHook().getInteraction(), "message.gameCore.alreadyJoined")).queue();
+            user.getInteractionHook().editOriginal(LanguageService.getByInteraction(user.getInteractionHook().getInteraction(), "message.gameCore.alreadyJoined").block()).queue();
             return;
         }
 
@@ -159,16 +159,16 @@ public class MusicQuiz implements IGame {
         MessageEditBuilder messageEditBuilder = new MessageEditBuilder();
         EmbedBuilder embedBuilder = new EmbedBuilder(menuMessage.getEmbeds().get(0));
 
-        embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.joined"));
+        embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.joined").block());
         messageEditBuilder.setEmbeds(embedBuilder.build());
-        messageEditBuilder.setActionRow(Button.secondary("game_leave:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.leaveGame")).asEnabled());
+        messageEditBuilder.setActionRow(Button.secondary("game_leave:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.leaveGame").block()).asEnabled());
         user.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();
 
         if (participants.size() >= 2) {
-            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.welcome", session.getGameIdentifier()));
+            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.welcome", session.getGameIdentifier()).block());
             messageEditBuilder.setEmbeds(embedBuilder.build());
-            messageEditBuilder.setActionRow(Button.success("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame")).asEnabled(),
-                    Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame")).asEnabled());
+            messageEditBuilder.setActionRow(Button.success("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame").block()).asEnabled(),
+                    Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame").block()).asEnabled());
             menuMessage.editMessage(messageEditBuilder.build()).queue();
         }
     }
@@ -186,10 +186,10 @@ public class MusicQuiz implements IGame {
             messageEditBuilder.applyMessage(menuMessage);
             EmbedBuilder embedBuilder = new EmbedBuilder(messageEditBuilder.getEmbeds().get(0));
 
-            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.joined"));
+            embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.joined").block());
             messageEditBuilder.setEmbeds(embedBuilder.build());
-            messageEditBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame")).asDisabled(),
-                    Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame")).asEnabled());
+            messageEditBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame").block()).asDisabled(),
+                    Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame").block()).asEnabled());
             menuMessage = menuMessage.editMessage(messageEditBuilder.build()).complete();
         }
     }
@@ -213,33 +213,39 @@ public class MusicQuiz implements IGame {
 
         if (currentEntry.checkTitle(messageContent)) {
             musicQuizPlayer.addPoints(1);
-            rewardPlayer(session, musicQuizPlayer,SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                    Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_title")).getValue());
 
-            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundTitle", currentEntry.getTitle())).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+            SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
+                            Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_title"))
+                    .subscribe(setting -> rewardPlayer(session, musicQuizPlayer, setting.get().getValue()));
+
+            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundTitle", currentEntry.getTitle()).block()).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
             messageReceivedEvent.getMessage().delete().queue();
         }
 
         if (currentEntry.checkArtist(messageContent)) {
             musicQuizPlayer.addPoints(2);
-            rewardPlayer(session, musicQuizPlayer,SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                    Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_artist")).getValue());
 
-            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundArtists", currentEntry.getArtist())).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+            SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
+                    Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_artist"))
+                    .subscribe(setting -> rewardPlayer(session, musicQuizPlayer, setting.get().getValue()));
+
+            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundArtists", currentEntry.getArtist()).block()).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
             messageReceivedEvent.getMessage().delete().queue();
         }
 
         if (currentEntry.checkFeatures(messageContent)) {
             musicQuizPlayer.addPoints(3);
-            rewardPlayer(session, musicQuizPlayer,SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                    Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_feature")).getValue());
 
-            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundFeature", String.join(",", currentEntry.getFeatures()))).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
+            SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
+                    Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_feature"))
+                    .subscribe(setting -> rewardPlayer(session, musicQuizPlayer, setting.get().getValue()));
+
+            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundFeature", String.join(",", currentEntry.getFeatures())).block()).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
             messageReceivedEvent.getMessage().delete().queue();
         }
 
         if (currentEntry.isTitleGuessed() && currentEntry.isArtistGuessed() && currentEntry.isFeaturesGuessed()) {
-            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundAll")).queue();
+            messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundAll").block()).queue();
             selectNextSong();
         }
     }
@@ -266,22 +272,23 @@ public class MusicQuiz implements IGame {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         EmbedBuilder embedBuilder = new EmbedBuilder(menuMessage.getEmbeds().get(0));
 
-        embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.newSong"));
+        embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.newSong").block());
         List<MusicQuizPlayer> sortedList = participants.stream().sorted(Comparator.comparingInt(MusicQuizPlayer::getPoints).reversed()).toList();
 
         for (int i = 0; i < sortedList.size(); i++) {
             MusicQuizPlayer musicQuizPlayer = sortedList.get(i);
-            embedBuilder.addField(LanguageService.getByGuild(session.getGuild(), "label.position", i + 1),
+            embedBuilder.addField(LanguageService.getByGuild(session.getGuild(), "label.position", i + 1).block(),
                     LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.points", musicQuizPlayer.getRelatedUser().getAsMention(),
-                            musicQuizPlayer.getPoints()), false);
+                            musicQuizPlayer.getPoints()).block(), false);
         }
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
         menuMessage.delete().queue();
         session.getChannel().sendMessage(messageCreateBuilder.build()).queue();
 
-        rewardPlayer(session, sortedList.get(0), SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_win")).getValue());
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
+                        Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_win"))
+                .subscribe(setting -> rewardPlayer(session, sortedList.get(0), setting.get().getValue()));
 
         Main.getInstance().getMusicWorker().disconnect(session.getGuild());
     }
@@ -317,9 +324,9 @@ public class MusicQuiz implements IGame {
         messageEditBuilder.applyMessage(menuMessage);
         EmbedBuilder embedBuilder = new EmbedBuilder(messageEditBuilder.getEmbeds().get(0));
 
-        embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.newSong"));
+        embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.newSong").block());
         messageEditBuilder.setEmbeds(embedBuilder.build());
-        messageEditBuilder.setActionRow(Button.success("game_musicquiz_skip", LanguageService.getByGuild(session.getGuild(), "label.skip")).asEnabled());
+        messageEditBuilder.setActionRow(Button.success("game_musicquiz_skip", LanguageService.getByGuild(session.getGuild(), "label.skip").block()).asEnabled());
         menuMessage.editMessage(messageEditBuilder.build()).queue();
 
         AudioChannel audioChannel = session.getGuild().getMember(session.getHost()).getVoiceState().getChannel();

@@ -8,6 +8,7 @@ import de.presti.ree6.sql.entities.custom.CustomEventTyp;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.List;
@@ -72,10 +73,10 @@ public class CustomEventContainerCreator {
      * @param typ The typ of the CustomEventAction.
      * @return A List of CustomEventContainer.
      */
-    public static List<CustomEventContainer> getContainers(CustomEventTyp typ) {
+    public static Mono<List<CustomEventContainer>> getContainers(CustomEventTyp typ) {
         return SQLSession.getSqlConnector().getSqlWorker()
                 .getEntityList(new CustomEventAction(), "FROM CustomEventAction WHERE event = :typ", Map.of("typ", typ.name()))
-                .stream().map(CustomEventContainer::new).toList();
+                .map(list -> list.stream().map(CustomEventContainer::new).toList());
     }
 
     /**
@@ -85,10 +86,10 @@ public class CustomEventContainerCreator {
      * @param typ     The typ of the CustomEventAction.
      * @return A List of CustomEventContainer.
      */
-    public static List<CustomEventContainer> getContainers(String guildId, CustomEventTyp typ) {
+    public static Mono<List<CustomEventContainer>> getContainers(String guildId, CustomEventTyp typ) {
         return SQLSession.getSqlConnector().getSqlWorker()
                 .getEntityList(new CustomEventAction(), "FROM CustomEventAction WHERE guildId = :guild AND event = :typ", Map.of("guild", guildId, "typ", typ.name()))
-                .stream().map(CustomEventContainer::new).toList();
+                .map(list -> list.stream().map(CustomEventContainer::new).toList());
     }
 
 }

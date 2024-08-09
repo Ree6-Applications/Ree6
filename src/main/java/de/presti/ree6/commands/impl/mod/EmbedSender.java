@@ -93,7 +93,7 @@ public class EmbedSender implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("embed", LanguageService.getDefault("command.description.embedSender"))
+        return new CommandDataImpl("embed", "command.description.embedSender")
                 .addOption(OptionType.STRING, "title", "The title of the embed!", true)
                 .addOption(OptionType.STRING, "description", "The description of the embed!", true)
                 .addOption(OptionType.INTEGER, "color", "The color of the embed!", false)

@@ -4,10 +4,13 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.economy.MoneyHolder;
 import de.presti.ree6.sql.entities.economy.MoneyTransaction;
 import net.dv8tion.jda.api.entities.Member;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Utility class for Economy related stuff.
@@ -20,7 +23,7 @@ public class EconomyUtil {
      * @param member The Member.
      * @return If the MoneyHolder has any cash.
      */
-    public static boolean hasCash(Member member) {
+    public static Mono<Boolean> hasCash(Member member) {
         return hasCash(member.getGuild().getIdLong(), member.getIdLong());
     }
 
@@ -31,8 +34,8 @@ public class EconomyUtil {
      * @param memberId The ID of the Member.
      * @return If the MoneyHolder has any cash.
      */
-    public static boolean hasCash(long guildId, long memberId) {
-        return hasCash(getMoneyHolder(guildId, memberId));
+    public static Mono<Boolean> hasCash(long guildId, long memberId) {
+        return getMoneyHolder(guildId, memberId).map(EconomyUtil::hasCash);
     }
 
     /**
@@ -51,7 +54,7 @@ public class EconomyUtil {
      * @param member The Member.
      * @return The MoneyHolder.
      */
-    public static MoneyHolder getMoneyHolder(Member member) {
+    public static Mono<MoneyHolder> getMoneyHolder(Member member) {
         return getMoneyHolder(member.getGuild().getIdLong(), member.getIdLong());
     }
 
@@ -62,7 +65,7 @@ public class EconomyUtil {
      * @param memberId The ID of the Member.
      * @return The MoneyHolder.
      */
-    public static MoneyHolder getMoneyHolder(long guildId, long memberId) {
+    public static Mono<MoneyHolder> getMoneyHolder(long guildId, long memberId) {
         return getMoneyHolder(guildId, memberId, true);
     }
 
@@ -74,18 +77,18 @@ public class EconomyUtil {
      * @param createIfNotExists If the MoneyHolder should be created if it does not exist.
      * @return The MoneyHolder.
      */
-    public static MoneyHolder getMoneyHolder(long guildId, long memberId, boolean createIfNotExists) {
-        MoneyHolder moneyHolder = SQLSession.getSqlConnector().getSqlWorker().getEntity(new MoneyHolder(), "FROM MoneyHolder WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid",
-                Map.of("gid", guildId, "uid", memberId));
+    public static Mono<MoneyHolder> getMoneyHolder(long guildId, long memberId, boolean createIfNotExists) {
+        return SQLSession.getSqlConnector().getSqlWorker().getEntity(new MoneyHolder(), "FROM MoneyHolder WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid",
+                Map.of("gid", guildId, "uid", memberId)).publishOn(Schedulers.boundedElastic()).mapNotNull(moneyHolderOptional -> {
+            if (moneyHolderOptional.isEmpty() && createIfNotExists) {
+                MoneyHolder moneyHolder = new MoneyHolder();
+                moneyHolder.setGuildId(guildId);
+                moneyHolder.setUserId(memberId);
+                return SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder).block();
+            }
 
-        if (moneyHolder == null && createIfNotExists) {
-            moneyHolder = new MoneyHolder();
-            moneyHolder.setGuildId(guildId);
-            moneyHolder.setUserId(memberId);
-            moneyHolder = SQLSession.getSqlConnector().getSqlWorker().updateEntity(moneyHolder);
-        }
-
-        return moneyHolder;
+            return moneyHolderOptional.get();
+        });
     }
 
     /**
@@ -133,7 +136,7 @@ public class EconomyUtil {
             holder.setAmount(amount);
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().updateEntity(holder);
+        SQLSession.getSqlConnector().getSqlWorker().updateEntity(holder).block();
         return true;
     }
 
@@ -159,7 +162,7 @@ public class EconomyUtil {
             receiver.setAmount(receiver.getAmount() + amount);
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().updateEntity(receiver);
+        SQLSession.getSqlConnector().getSqlWorker().updateEntity(receiver).block();
 
         if (!isSystem) {
             if (fromBank) {
@@ -168,10 +171,10 @@ public class EconomyUtil {
                 sender.setAmount(sender.getAmount() - amount);
             }
 
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(sender);
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(sender).block();
         }
 
-        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new MoneyTransaction(0L, isSystem, isSystem ? receiver.getGuildUserId().getGuildId() : sender.getGuildUserId().getGuildId(), isSystem && sender == null ? receiver : sender, receiver, toBank, fromBank, amount, Timestamp.from(Instant.now())));
+        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new MoneyTransaction(0L, isSystem, isSystem ? receiver.getGuildUserId().getGuildId() : sender.getGuildUserId().getGuildId(), isSystem && sender == null ? receiver : sender, receiver, toBank, fromBank, amount, Timestamp.from(Instant.now()))).block();
 
         return true;
     }

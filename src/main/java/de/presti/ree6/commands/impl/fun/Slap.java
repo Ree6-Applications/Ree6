@@ -54,7 +54,7 @@ public class Slap implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("gracetheface", LanguageService.getDefault("command.description.slap"))
+        return new CommandDataImpl("gracetheface", "command.description.slap")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should be slapped!").setRequired(true));
     }
 
@@ -79,7 +79,8 @@ public class Slap implements ICommand {
         Image im = null;
         try {
             im = ip.getRandomImage("slap").execute();
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            log.error("Failed to get Image from Neko4J API!", exception);
         }
 
         Main.getInstance().getCommandManager().sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), commandEvent.getChannel(), null);

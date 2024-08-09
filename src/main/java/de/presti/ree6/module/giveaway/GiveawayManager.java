@@ -35,8 +35,9 @@ public class GiveawayManager implements IManager<Giveaway> {
      */
     @Override
     public void load() {
-        replace(SQLSession.getSqlConnector().getSqlWorker()
-                .getEntityList(new Giveaway(), "FROM Giveaway", null));
+        SQLSession.getSqlConnector().getSqlWorker()
+                .getEntityList(new Giveaway(), "FROM Giveaway", null)
+                .subscribe(this::replace);
     }
 
     /**
@@ -58,18 +59,18 @@ public class GiveawayManager implements IManager<Giveaway> {
             }
         }
 
-        Giveaway giveaway = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Giveaway(), "FROM Giveaway WHERE messageId = :id", Map.of("id", value));
-
-        if (giveaway != null) {
-            giveaways.add(giveaway);
-            return giveaway;
-        }
-        return null;
+        return SQLSession.getSqlConnector().getSqlWorker().getEntity(new Giveaway(), "FROM Giveaway WHERE messageId = :id", Map.of("id", value)).mapNotNull(giveaway -> {
+            if (giveaway.isPresent()) {
+                giveaways.add(giveaway.get());
+                return giveaway.get();
+            }
+            return null;
+        }).block();
     }
 
     @Override
     public void remove(Giveaway object) {
-        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(object);
+        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(object).block();
         IManager.super.remove(object);
     }
 

@@ -67,7 +67,7 @@ public class Clear implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("clear", LanguageService.getDefault("command.description.clear"))
+        return new CommandDataImpl("clear", "command.description.clear")
                 .addOptions(new OptionData(OptionType.INTEGER, "amount", "How many messages should be removed.")
                         .setRequired(true)
                         .setMinValue(2)
@@ -92,7 +92,7 @@ public class Clear implements ICommand {
 
         if (amount <= 200 && amount >= 2) {
             try {
-                Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+                commandEvent.delete();
                 commandEvent.getChannel().getIterableHistory().takeAsync(amount).thenAccept(messages -> {
                     commandEvent.getChannel().purgeMessages(messages);
                     commandEvent.reply(commandEvent.getResource("message.clear.success", amount), 5);
