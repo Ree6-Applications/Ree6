@@ -92,7 +92,7 @@ public class Clear implements ICommand {
 
         if (amount <= 200 && amount >= 2) {
             try {
-                Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+                commandEvent.delete();
                 commandEvent.getChannel().getIterableHistory().takeAsync(amount).thenAccept(messages -> {
                     commandEvent.getChannel().purgeMessages(messages);
                     commandEvent.reply(commandEvent.getResource("message.clear.success", amount), 5);

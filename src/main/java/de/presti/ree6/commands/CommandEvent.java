@@ -3,10 +3,10 @@ package de.presti.ree6.commands;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import lombok.Getter;
+import lombok.extern.java.Log;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
-import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 /**
  * Event class used to parse and provide Information about a command execution.
  */
+@Log
 public class CommandEvent {
 
     /**
@@ -152,7 +153,8 @@ public class CommandEvent {
 
     /**
      * Update a Message that has been sent.
-     * @param message the Message that has been sent.
+     *
+     * @param message         the Message that has been sent.
      * @param messageEditData the Message Edit that is being used to update the message.
      */
     public void update(@Nullable Message message, MessageEditData messageEditData) {
@@ -167,12 +169,20 @@ public class CommandEvent {
 
     /**
      * If the message default should be ephemeral or not.
+     *
      * @param ephemeral if the message should be ephemeral.
      */
     public void setEphemeral(boolean ephemeral) {
         if (isSlashCommand()) {
             getInteractionHook().setEphemeral(ephemeral);
         }
+    }
+
+    /**
+     * Delete the Message that has been sent.
+     */
+    public void delete() {
+        Main.getInstance().getCommandManager().deleteMessageWithoutException(message, getInteractionHook());
     }
 
     /**
@@ -249,7 +259,6 @@ public class CommandEvent {
      * Get the Arguments associated with the Event.
      *
      * @param parseFromSlash if the Arguments should be parsed from the SlashCommandInteractionEvent.
-     *
      * @return the Arguments.
      */
     public String[] getArguments(boolean parseFromSlash) {
@@ -280,6 +289,7 @@ public class CommandEvent {
 
     /**
      * Get an option from the slash command!
+     *
      * @param name The option name.
      * @return the {@link OptionMapping} of the option | or null.
      */
@@ -291,6 +301,7 @@ public class CommandEvent {
 
     /**
      * Get the Subcommand of the Slash Command.
+     *
      * @return the Subcommand.
      */
     public String getSubcommand() {
@@ -303,6 +314,7 @@ public class CommandEvent {
 
     /**
      * Get the Subcommand Group of the Slash Command.
+     *
      * @return the Subcommand Group.
      */
     public String getSubcommandGroup() {

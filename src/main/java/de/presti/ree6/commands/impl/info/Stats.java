@@ -32,8 +32,7 @@ public class Stats implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        commandEvent.delete();
 
         long start = System.currentTimeMillis();
 
@@ -59,7 +58,7 @@ public class Stats implements ICommand {
         em.addField("**" + commandEvent.getResource("label.users") + "**", String.valueOf(memberCount), true);
 
         em.addField("**" + commandEvent.getResource("label.botStats") + ":**", "", true);
-        em.addField("**" + commandEvent.getResource("label.version") + "**", BotWorker.getBuild() + "-" + BotWorker.getVersion().name().toUpperCase()
+        em.addField("**" + commandEvent.getResource("label.version") + "**", BotWorker.getBuild() + "-" + BotWorker.getVersion().getName().toUpperCase()
                 + " [[" + BotWorker.getCommit() + "](" + BotWorker.getRepository().replace(".git", "") + "/commit/" + BotWorker.getCommit() + ")]", true);
         em.addField("**" + commandEvent.getResource("label.uptime") + "**", TimeUtil.getTime(BotWorker.getStartTime()), true);
 

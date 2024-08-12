@@ -117,7 +117,7 @@ public class Blackjack implements IGame {
         playerTwo.getHand().add(getRandomCard());
 
         updateViews(player, playerTwo);
-        Main.getInstance().getCommandManager().deleteMessage(menuMessage, null);
+        Main.getInstance().getCommandManager().deleteMessageWithoutException(menuMessage, null);
         currentPlayer = player;
     }
 

@@ -4,6 +4,7 @@ import io.sentry.Sentry;
 import io.sentry.SentryEvent;
 import io.sentry.SentryLevel;
 import io.sentry.protocol.Message;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
@@ -21,26 +22,31 @@ public class Language {
     /**
      * The Locale-Tag of the Language.
      */
+    @Getter
     private final String locale;
 
     /**
      * The Name of the Language.
      */
+    @Getter
     private final String name;
 
     /**
      * The Author of the Language-File.
      */
+    @Getter
     private final String author;
 
     /**
      * The corresponding Ree6 Version.
      */
+    @Getter
     private final String version;
 
     /**
      * The DiscordLocale of the Language.
      */
+    @Getter
     private final DiscordLocale discordLocale;
 
     /**
@@ -82,46 +88,6 @@ public class Language {
         this.version = version;
         this.resources.putAll(resources);
         discordLocale = DiscordLocale.from(locale);
-    }
-
-    /**
-     * Called to get the Locale-Tag of the Language.
-     * @return The Locale-Tag.
-     */
-    public String getLocale() {
-        return locale;
-    }
-
-    /**
-     * Called to get the Name of the Language.
-     * @return The Name.
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Called to get the Author of the Language-File.
-     * @return The Author.
-     */
-    public String getAuthor() {
-        return author;
-    }
-
-    /**
-     * Called to get the corresponding Ree6 Version.
-     * @return The Version.
-     */
-    public String getVersion() {
-        return version;
-    }
-
-    /**
-     * Called to get the DiscordLocale of the Language.
-     * @return The DiscordLocale.
-     */
-    public DiscordLocale getDiscordLocale() {
-        return discordLocale;
     }
 
     /**

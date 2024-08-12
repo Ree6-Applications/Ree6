@@ -33,18 +33,20 @@ public interface ICommand {
         if (BotConfig.isDebug())
             log.info("Command {} called by {} in {} ({}).", commandEvent.getCommand(), commandEvent.getMember().getUser().getName(), commandEvent.getGuild().getName(), commandEvent.getGuild().getId());
 
-        return Mono.fromRunnable(() -> onPerform(commandEvent)).thenReturn(true).onErrorResume(throwable -> {
+        return Mono.fromRunnable(() -> onPerformWithLog(commandEvent)).thenReturn(true).onErrorResume(throwable -> {
             if (!throwable.getMessage().contains("Unknown Message")) {
                 commandEvent.reply(commandEvent.getResource("command.perform.internalError"), 5);
                 log.error("An error occurred while executing the command!", throwable);
                 Sentry.captureException(throwable);
             }
             return Mono.just(false);
-        }).publishOn(Schedulers.boundedElastic()).doOnSuccess(success -> {
+        }).doOnSuccess(success -> {
+            if (BotConfig.isDebug())
+                log.info("Updating Stats {} in {} ({}).", commandEvent.getCommand(), commandEvent.getGuild().getName(), commandEvent.getGuild().getId());
             // Update Stats.
             SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getIdLong(), commandEvent.getCommand());
             Optional<Setting> setting = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_news").block();
-            if (setting.isEmpty() || !setting.get().getBooleanValue()) return;
+            if (setting == null || setting.isEmpty() || !setting.get().getBooleanValue()) return;
             AnnouncementManager.getAnnouncementList().forEach(a -> {
                 if (!AnnouncementManager.hasReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id())) {
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder().setTitle(a.title())
@@ -62,7 +64,7 @@ public interface ICommand {
     /**
      * Will be fired when the Command is called.
      *
-     * @param commandEvent the Event, with every needed data.
+     * @param commandEvent the Event, with every necessary data.
      * @deprecated Use {@link #onMonoPerform(CommandEvent)} instead.
      */
     @Deprecated(forRemoval = true, since = "4.0.0")
@@ -94,10 +96,16 @@ public interface ICommand {
         });
     }
 
+    default void onPerformWithLog(CommandEvent commandEvent) {
+        onPerform(commandEvent);
+        if (BotConfig.isDebug())
+            log.info("Command {} has ended, called by {} in {} ({}).", commandEvent.getCommand(), commandEvent.getMember().getUser().getName(), commandEvent.getGuild().getName(), commandEvent.getGuild().getId());
+    }
+
     /**
      * Will be fired when the Command is called.
      *
-     * @param commandEvent the Event, with every needed data.
+     * @param commandEvent the Event, with every necessary data.
      */
     void onPerform(CommandEvent commandEvent);
 
