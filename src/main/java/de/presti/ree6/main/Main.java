@@ -6,8 +6,7 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.google.gson.JsonObject;
 import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator;
-import de.presti.ree6.addons.AddonLoader;
-import de.presti.ree6.addons.AddonManager;
+import de.presti.ree6.addons.ReePluginManager;
 import de.presti.ree6.audio.music.MusicWorker;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
@@ -15,6 +14,8 @@ import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.CommandManager;
+import de.presti.ree6.commands.exceptions.CommandInitializerException;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.events.*;
 import de.presti.ree6.game.core.GameManager;
 import de.presti.ree6.game.impl.musicquiz.util.MusicQuizUtil;
@@ -52,6 +53,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
+import org.pf4j.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,9 +100,9 @@ public class Main {
     CommandManager commandManager;
 
     /**
-     * Addon Manager, used to manage the Addons.
+     * Instance of the PluginManager, used to manage the Plugins.
      */
-    AddonManager addonManager;
+    PluginManager pluginManager;
 
     /**
      * Instance of the GiveawayManager, used to manage the Giveaways.
@@ -361,16 +363,27 @@ public class Main {
         // Set the start Time for stats.
         BotWorker.setStartTime(System.currentTimeMillis());
 
-        log.info("Loading AddonManager");
-        // Initialize the Addon-Manager.
-        getInstance().setAddonManager(new AddonManager());
+        log.info("Loading PluginManager");
+        // Initialize the Plugin-Manager.
+        getInstance().setPluginManager(new ReePluginManager());
 
         if (BotConfig.isModuleActive("addons")) {
-            // Initialize the Addon-Loader.
-            AddonLoader.loadAllAddons();
+            log.info("Loading all Plugins.");
+            getInstance().getPluginManager().loadPlugins();
 
-            // Start all Addons.
-            getInstance().getAddonManager().startAddons();
+            log.info("Starting all Plugins.");
+            getInstance().getPluginManager().startPlugins();
+
+            log.info("Registering all Commands of plugins.");
+            List<ICommand> commands = getInstance().getPluginManager().getExtensions(ICommand.class);
+            log.info("Found {} commands in all plugins.", commands.size());
+            commands.forEach(command -> {
+                try {
+                    getInstance().getCommandManager().addCommand(command);
+                } catch (CommandInitializerException e) {
+                    log.warn("Failed to initialize command: {}", command.getClass().getSimpleName(), e);
+                }
+            });
         }
 
         // Create checker Thread.
@@ -436,7 +449,7 @@ public class Main {
         if (BotConfig.isModuleActive("addons")) {
             // Shutdown every Addon.
             log.info("[Main] Disabling every Addon!");
-            getAddonManager().stopAddons();
+            getPluginManager().unloadPlugins();
             log.info("[Main] Every Addon has been disabled!");
         }
 
