@@ -1,6 +1,5 @@
 package de.presti.ree6.addons;
 
-import org.apache.commons.digester.plugins.PluginContext;
 import org.pf4j.Plugin;
 
 /**
@@ -8,9 +7,9 @@ import org.pf4j.Plugin;
  */
 public abstract class ReePlugin extends Plugin {
 
-    protected final PluginContext context;
+    protected final ReePluginContext context;
 
-    protected ReePlugin(PluginContext context) {
+    protected ReePlugin(ReePluginContext context) {
         super();
         this.context = context;
     }
