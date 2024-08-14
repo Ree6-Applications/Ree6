@@ -11,6 +11,7 @@ import de.presti.ree6.sql.entities.Setting;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import org.pf4j.ExtensionPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
@@ -22,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * An Interface class, used to make it easier for the creation of Commands.
  */
-public interface ICommand {
+public interface ICommand extends ExtensionPoint {
 
     /**
      * The Logger for this class.

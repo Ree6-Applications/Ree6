@@ -260,7 +260,6 @@
             <version>3.1.8</version>
         </dependency>
 
-
         <!-- HTTP Clients -->
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
@@ -285,6 +284,19 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.11.0</version>
+        </dependency>
+
+        <!-- Addons -->
+        <dependency>
+            <groupId>org.pf4j</groupId>
+            <artifactId>pf4j</artifactId>
+            <version>3.12.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
