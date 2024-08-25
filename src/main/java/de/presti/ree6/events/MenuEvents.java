@@ -199,7 +199,7 @@ public class MenuEvents extends ListenerAdapter {
                     webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
                     webhookMessageBuilder.addFile(tickets.getTicketCount() + "_transcript.txt", stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
 
-                    WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), tickets.getLogChannelId(), tickets.getLogChannelWebhookToken(), false);
+                    WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), tickets.getLogChannelWebhookId(), tickets.getLogChannelWebhookToken(), false);
 
                     event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.close")).queue();
                     event.getChannel().delete().delay(2, TimeUnit.SECONDS).queue();
