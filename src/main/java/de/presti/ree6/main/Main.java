@@ -693,8 +693,8 @@ public class Main {
                 ArrayList<Giveaway> toDelete = new ArrayList<>();
                 Instant currentTime = Instant.now();
                 for (Giveaway giveaway : giveawayManager.getList()) {
-                    Instant giveAwayTime = giveaway.getEnding().toInstant();
-                    if (giveAwayTime.isBefore(Instant.now()) && giveAwayTime.isAfter(currentTime.minus(1, ChronoUnit.MINUTES))) {
+                    Instant giveAwayEndingTime = giveaway.getEnding().toInstant();
+                    if (giveAwayEndingTime.isBefore(Instant.now()) && giveAwayEndingTime.isAfter(currentTime.minus(1, ChronoUnit.MINUTES))) {
                         Guild guild = BotWorker.getShardManager().getGuildById(giveaway.getGuildId());
 
                         if (guild == null) {
