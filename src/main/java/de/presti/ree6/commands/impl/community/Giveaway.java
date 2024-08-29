@@ -54,7 +54,7 @@ public class Giveaway implements ICommand {
                 String prize = commandEvent.getOption("prize").getAsString();
                 String duration = commandEvent.getOption("duration").getAsString();
 
-                long days = 0, hours = 0, minutes = 0;
+                long days = 0, hours = 0, minutes = 0, seconds = 0;
 
                 Matcher matcher = Pattern.compile(RegExUtil.TIME_INPUT_REGEX).matcher(duration);
 
@@ -70,8 +70,10 @@ public class Giveaway implements ICommand {
                             days = value;
                         } else if (letter == 'h') {
                             hours = value;
-                        } else {
+                        } else if (letter == 'm') {
                             minutes = value;
+                        } else {
+                            seconds = value;
                         }
 
                         letters.add(letter);
@@ -79,6 +81,7 @@ public class Giveaway implements ICommand {
                 }
 
                 Instant endInstant = Instant.now();
+                endInstant = endInstant.plusSeconds(seconds);
                 endInstant = endInstant.plusSeconds(minutes * 60);
                 endInstant = endInstant.plusSeconds(hours * 60 * 60);
                 endInstant = endInstant.plusSeconds(days * 24 * 60 * 60);
