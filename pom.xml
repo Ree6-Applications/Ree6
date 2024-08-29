@@ -73,7 +73,7 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>v2</artifactId>
-            <version>1.7.1</version>
+            <version>1.7.2</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
@@ -158,7 +158,7 @@
         <dependency>
             <groupId>com.apptasticsoftware</groupId>
             <artifactId>rssreader</artifactId>
-            <version>3.8.1</version>
+            <version>3.8.2</version>
         </dependency>
         <dependency>
             <groupId>me.presti</groupId>

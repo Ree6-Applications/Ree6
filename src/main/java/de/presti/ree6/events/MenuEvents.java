@@ -15,7 +15,9 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.*;
 import de.presti.ree6.sql.entities.roles.AutoRole;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
+import de.presti.ree6.sql.entities.webhook.base.Webhook;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.wrapper.entities.channel.ChannelResult;
 import io.github.redouane59.twitter.dto.user.UserV2;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
@@ -206,7 +208,7 @@ public class MenuEvents extends ListenerAdapter {
                         webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
                         webhookMessageBuilder.addFile(ticketEntity.getTicketCount() + "_transcript.txt", stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
 
-                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), ticketEntity.getLogChannelId(), ticketEntity.getLogChannelWebhookToken(), false);
+                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), ticketEntity.getLogChannelWebhookId(), ticketEntity.getLogChannelWebhookToken(), false);
 
                         event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.close").block()).queue();
                         event.getChannel().delete().delay(2, TimeUnit.SECONDS).queue();

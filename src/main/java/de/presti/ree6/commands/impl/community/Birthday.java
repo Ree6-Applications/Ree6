@@ -16,6 +16,11 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.apache.commons.validator.GenericValidator;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoField;
+
 /**
  * This command is used to let the bot remember your Birthday.
  */
@@ -34,7 +39,9 @@ public class Birthday implements ICommand {
 
         String command = commandEvent.getSubcommand();
         OptionMapping userMapping = commandEvent.getOption("user");
-        OptionMapping dateMapping = commandEvent.getOption("birthday");
+        OptionMapping birthDayMapping = commandEvent.getOption("day");
+        OptionMapping birthMonthMapping = commandEvent.getOption("month");
+        OptionMapping birthYearMapping = commandEvent.getOption("year");
 
         switch (command) {
             case "remove" -> {
@@ -58,7 +65,8 @@ public class Birthday implements ICommand {
             }
 
             default -> {
-                String date = dateMapping.getAsString();
+                NumberFormat formatter = new DecimalFormat("00");
+                String date = formatter.format(birthDayMapping.getAsInt()) + "." + formatter.format(birthMonthMapping.getAsInt()) + "." + (birthYearMapping == null ? "2024" : formatter.format(birthYearMapping.getAsInt()));
                 if (userMapping == null) {
                     if (GenericValidator.isDate(date, "dd.MM.yyyy", true)) {
                         SQLSession.getSqlConnector().getSqlWorker().addBirthday(commandEvent.getGuild().getIdLong(), commandEvent.getChannel().getIdLong(), commandEvent.getMember().getIdLong(), date);
@@ -97,7 +105,9 @@ public class Birthday implements ICommand {
                 .addSubcommands(new SubcommandData("remove", "Remove a Birthday entry!")
                                 .addOptions(new OptionData(OptionType.USER, "user", "The User which should get their birthday entry removed.", false)),
                         new SubcommandData("add", "Add a Birthday entry!")
-                                .addOptions(new OptionData(OptionType.STRING, "birthday", "The Birthday that should be added. Format -> day.month.year", true),
+                                .addOptions(new OptionData(OptionType.INTEGER, "day", "The day of the month.", true).setMinValue(1).setMaxValue(31),
+                                        new OptionData(OptionType.INTEGER, "month", "Your birth month.", true).setMinValue(1).setMaxValue(12),
+                                        new OptionData(OptionType.INTEGER, "year", "Your birth year.", false).setMinValue(1900).setMaxValue(Instant.now().get(ChronoField.YEAR)),
                                         new OptionData(OptionType.USER, "user", "The User which should get their birthday entry added.", false)));
     }
 
