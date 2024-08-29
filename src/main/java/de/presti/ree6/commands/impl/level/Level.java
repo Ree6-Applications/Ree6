@@ -4,9 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.level.UserLevel;
 import de.presti.ree6.utils.data.ImageCreationUtility;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -82,16 +80,17 @@ Level implements ICommand {
     public void sendLevel(Member member, CommandEvent commandEvent, String type) {
         (type.equalsIgnoreCase("voice") ?
                 SQLSession.getSqlConnector().getSqlWorker().getVoiceLevelData(commandEvent.getGuild().getIdLong(), member.getIdLong()) :
-                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), member.getIdLong())).subscribe(userLevel -> {
-            try {
-                MessageCreateBuilder createBuilder = new MessageCreateBuilder();
-                createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createRankImage(userLevel), "rank.png"));
+                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), member.getIdLong())).subscribe(userLevel ->
+                SQLSession.getSqlConnector().getSqlWorker().getUserRankCard(member.getIdLong()).subscribe(rankCard -> {
+                    try {
+                        MessageCreateBuilder createBuilder = new MessageCreateBuilder();
+                        createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createRankImage(userLevel, rankCard), "rank.png"));
 
-                commandEvent.reply(createBuilder.build());
-            } catch (Exception exception) {
-                commandEvent.reply(commandEvent.getResource("command.perform.error"));
-                log.error("Couldn't generated Rank Image!", exception);
-            }
-        });
+                        commandEvent.reply(createBuilder.build());
+                    } catch (Exception exception) {
+                        commandEvent.reply(commandEvent.getResource("command.perform.error"));
+                        log.error("Couldn't generated Rank Image!", exception);
+                    }
+                }));
     }
 }

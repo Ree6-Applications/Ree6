@@ -3,6 +3,7 @@ package de.presti.ree6.utils.data;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.entities.UserRankCard;
 import de.presti.ree6.sql.entities.level.UserLevel;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.User;
@@ -19,6 +20,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Optional;
 
 // TODO:: translate.
 
@@ -53,7 +55,7 @@ public class ImageCreationUtility {
      * @return the bytes of the Image.
      * @throws IOException when URL-Format is Invalid or the URL is not a valid Image.
      */
-    public static byte[] createRankImage(UserLevel userLevel) throws IOException {
+    public static byte[] createRankImage(UserLevel userLevel, Optional<UserRankCard> card) throws IOException {
         long start = System.currentTimeMillis();
         long actionPerformance = System.currentTimeMillis();
 
@@ -88,8 +90,11 @@ public class ImageCreationUtility {
         Main.getInstance().logAnalytic("Loading and creating Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        // Generate a 885x211 Image Background.
+        // Generate a 1920x1080 Image Background. Dog what is this?
         if (rankBackgroundBase == null) rankBackgroundBase = ImageIO.read(new File("storage/images/base.png"));
+
+        BufferedImage background = card.isPresent() ? ImageIO.read(new ByteArrayInputStream(card.get().getRankCard())) : rankBackgroundBase;
+
         BufferedImage base = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_ARGB);
 
         Main.getInstance().logAnalytic("Loaded and created Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
@@ -122,7 +127,7 @@ public class ImageCreationUtility {
         actionPerformance = System.currentTimeMillis();
         // Draw Background art.
         graphics2D.setComposite(AlphaComposite.Src);
-        graphics2D.drawImage(rankBackgroundBase, null, 0, 0);
+        graphics2D.drawImage(background, null, 0, 0);
         graphics2D.setColor(Color.WHITE);
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Main.getInstance().logAnalytic("Finished drawing Background Image. ({}ms)", System.currentTimeMillis() - actionPerformance);

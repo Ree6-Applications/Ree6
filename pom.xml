@@ -182,7 +182,7 @@
         <dependency>
             <groupId>de.ree6</groupId>
             <artifactId>Ree6-SQL</artifactId>
-            <version>79819ffcbc</version>
+            <version>0586650f02</version>
         </dependency>
 
         <!-- Logging -->
