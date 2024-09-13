@@ -18,6 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>dxssucuk</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <build.plugins.plugin.version>3.4.2</build.plugins.plugin.version>
     </properties>
 
     <repositories>
@@ -81,9 +82,9 @@
             <version>1.1.2</version>
         </dependency>
         <dependency>
-            <groupId>club.minnced</groupId>
+            <groupId>de.ree6</groupId>
             <artifactId>discord-webhooks</artifactId>
-            <version>0.8.4</version>
+            <version>f67bf93e5f</version>
         </dependency>
 
         <!-- Sentry and YAML -->
