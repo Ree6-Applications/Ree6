@@ -252,7 +252,7 @@ public class SpotifyAPIHandler {
      */
     public Paging<AlbumSimplified> getArtistAlbums(String artistId) throws ParseException, SpotifyWebApiException, IOException {
         if (!isSpotifyConnected) return null;
-        return spotifyApi.getArtistsAlbums(artistId).build().execute();
+        return spotifyApi.getArtistsAlbums(artistId).album_type("album,single").build().execute();
     }
 
     /**
