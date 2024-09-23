@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+// TODO:: Rework the Config System to make the Config class be the actual config structure and use it to serialize and deserialize while making a new ConfigManager class that loads and saves the config.
 /**
  * Config.
  */
