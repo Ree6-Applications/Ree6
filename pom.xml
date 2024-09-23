@@ -58,13 +58,13 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.1.0</version>
+            <version>5.1.1</version>
         </dependency>
         <!-- Fix for the failed Lookup until they release a version -->
         <dependency>
             <groupId>dev.arbjerg</groupId>
             <artifactId>lavaplayer</artifactId>
-            <version>2.2.1</version>
+            <version>2.2.2</version>
         </dependency>
         <!--<dependency>
             <groupId>com.github.lavalink-devs.lavaplayer</groupId>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>v2</artifactId>
-            <version>1.7.2</version>
+            <version>1.8.1</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
@@ -115,7 +115,7 @@
         <dependency>
             <groupId>com.github.twitch4j</groupId>
             <artifactId>twitch4j</artifactId>
-            <version>1.21.0</version>
+            <version>1.22.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.redouane59.twitter</groupId>
@@ -135,7 +135,7 @@
         <dependency>
             <groupId>com.github.jwdeveloper.TikTok-Live-Java</groupId>
             <artifactId>Client</artifactId>
-            <version>1.8.6-Release</version>
+            <version>1.8.7-Release</version>
         </dependency>
 
         <!-- Music -->
@@ -195,7 +195,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.7</version>
+            <version>1.5.8</version>
         </dependency>
 
         <!-- Lombok -->
@@ -226,7 +226,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.16.1</version>
+            <version>2.17.0</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -265,7 +265,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
-            <version>5.3.1</version>
+            <version>5.4</version>
         </dependency>
 
         <!-- Utility -->
@@ -317,7 +317,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.8.0</version>
+                    <version>3.10.0</version>
                     <inherited>false</inherited>
                     <executions>
                         <execution>
