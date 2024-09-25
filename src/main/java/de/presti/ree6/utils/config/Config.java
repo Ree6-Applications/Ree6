@@ -1,4 +1,4 @@
-package de.presti.ree6.utils.data;
+package de.presti.ree6.utils.config;
 
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.utils.others.VersionUtil;
@@ -35,7 +35,7 @@ public class Config {
     /**
      * The config version.
      */
-    private final String version = "3.1.12";
+    private final String version = "4.0.0";
 
     /**
      * Initialize the Configuration.

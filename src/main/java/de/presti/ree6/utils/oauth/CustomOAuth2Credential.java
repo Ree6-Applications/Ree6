@@ -1,8 +1,7 @@
-package de.presti.ree6.utils.data;
+package de.presti.ree6.utils.oauth;
 
 import com.github.philippheuer.credentialmanager.domain.Credential;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
-import io.sentry.MeasurementUnit;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

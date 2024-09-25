@@ -1,4 +1,4 @@
-package de.presti.ree6.utils.data;
+package de.presti.ree6.utils.oauth;
 
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.credentialmanager.identityprovider.OAuth2IdentityProvider;

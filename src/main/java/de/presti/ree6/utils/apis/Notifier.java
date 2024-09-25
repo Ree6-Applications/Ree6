@@ -20,7 +20,7 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.module.notifications.impl.*;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.TwitchIntegration;
-import de.presti.ree6.utils.data.DatabaseStorageBackend;
+import de.presti.ree6.utils.oauth.DatabaseStorageBackend;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.github.redouane59.twitter.TwitterClient;
 import io.github.redouane59.twitter.signature.TwitterCredentials;

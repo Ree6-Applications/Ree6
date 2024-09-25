@@ -1,4 +1,4 @@
-package de.presti.ree6.utils.data;
+package de.presti.ree6.utils.oauth;
 
 import com.github.philippheuer.credentialmanager.api.IStorageBackend;
 import com.github.philippheuer.credentialmanager.domain.Credential;
