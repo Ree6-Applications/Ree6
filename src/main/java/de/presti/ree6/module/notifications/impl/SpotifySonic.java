@@ -127,6 +127,13 @@ public class SpotifySonic implements ISonic {
     public void remove(SonicIdentifier object) {
         if (SpotifyAPIHandler.getInstance() == null) return;
         if (!contains(object)) return;
+        String actualId = object.getIdentifier();
+        actualId = actualId.substring(actualId.lastIndexOf(':') + 1);
 
+        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new WebhookSpotify(), "FROM WebhookSpotify WHERE entityId=:id", Map.of("id", actualId)).subscribe(webhooks -> {
+            if (!webhooks.isEmpty()) return;
+
+            spotifyEntries.remove(object);
+        });
     }
 }

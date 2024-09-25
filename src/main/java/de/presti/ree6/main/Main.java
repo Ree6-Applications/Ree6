@@ -346,6 +346,7 @@ public class Main {
         getInstance().setNotifier(new Notifier());
 
         if (BotConfig.isModuleActive("notifier")) {
+            getInstance().getNotifier().getSpotifySonic().load();
             ThreadUtil.createThread(x -> {
                 log.info("Loading Notifier data.");
                 SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "FROM ChannelStats", null).subscribe(channelStats -> {
