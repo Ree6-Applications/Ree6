@@ -124,6 +124,12 @@ public class Notifier {
     private RSSSonic rssSonic;
 
     /**
+     * Instance of the Spotify Sonic Manager.
+     */
+    @Getter(AccessLevel.PUBLIC)
+    private SpotifySonic spotifySonic;
+
+    /**
      * A list with all the Twitch Subscription for the Streaming Tools.
      */
     @Getter(AccessLevel.PUBLIC)
@@ -304,6 +310,13 @@ public class Notifier {
         log.info("Creating Reddit Streams...");
         ThreadUtil.createThread(x -> redditSonic.run(), x -> {
             log.error("Failed to run Reddit Stream!", x);
+            Sentry.captureException(x);
+        }, Duration.ofMinutes(5), true, true);
+
+        log.info("Creating Spotify Streams...");
+        spotifySonic = new SpotifySonic();
+        ThreadUtil.createThread(x -> spotifySonic.run(), x -> {
+            log.error("Failed to run Spotify Stream!", x);
             Sentry.captureException(x);
         }, Duration.ofMinutes(5), true, true);
     }
