@@ -14,16 +14,23 @@ import de.presti.ree6.sql.entities.webhook.WebhookSpotify;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
 import lombok.extern.slf4j.Slf4j;
 import se.michaelthelin.spotify.model_objects.specification.AlbumSimplified;
+import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.EpisodeSimplified;
 
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
 public class SpotifySonic implements ISonic {
     ArrayList<SonicIdentifier> spotifyEntries = new ArrayList<>();
+
+    SimpleDateFormat spotifyTimestamp = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ssZ");
 
     @Override
     public void load(List<ChannelStats> channelStats) {
@@ -51,8 +58,8 @@ public class SpotifySonic implements ISonic {
 
     @Override
     public void run() {
-        // TODO:: fix the actual checks.
         SQLSession.getSqlConnector().getSqlWorker().getEntityList(new WebhookSpotify(), "FROM WebhookSpotify", Map.of()).subscribe(spotifyNotify -> {
+            Date yesterday = Date.from(Instant.now().minus(1, ChronoUnit.DAYS));
             for (String entry : spotifyEntries.stream().map(SonicIdentifier::getIdentifier).toList()) {
                 String actualId = entry.substring(entry.lastIndexOf(':') + 1);
                 try {
@@ -63,10 +70,16 @@ public class SpotifySonic implements ISonic {
                         if (album == null) return;
                         if (album.getReleaseDatePrecision().precision.equals("year")) continue;
                         if (album.getReleaseDatePrecision().precision.equals("month")) continue;
-                        if (album.getReleaseDate().equals("d")) {
-                            sendWebhooks(album.getArtists()[0].getName(), album.getArtists()[0].getHref(),
-                                    album.getImages()[0].getUrl(), album.getHref(), album.getName(),
-                                    spotifyNotify.stream().filter(x -> x.getEntityTyp() == 0).toList());
+
+                        Date date = spotifyTimestamp.parse(album.getReleaseDate());
+
+                        if (date.after(yesterday)) {
+                            ArtistSimplified artistSimplified = album.getArtists()[0];
+                            WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+                            webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(artistSimplified.getName(), artistSimplified.getHref()));
+                            webhookEmbedBuilder.setImageUrl(album.getImages()[0].getUrl());
+
+                            sendWebhooks(webhookEmbedBuilder, album.getName(), artistSimplified.getName(), album.getHref(), spotifyNotify);
                         }
                     } else {
                         ArrayList<EpisodeSimplified> episodes = SpotifyAPIHandler.getInstance().getPodcastEpisodes(actualId);
@@ -75,10 +88,16 @@ public class SpotifySonic implements ISonic {
                         if (episode == null) continue;
                         if (episode.getReleaseDatePrecision().precision.equals("year")) continue;
                         if (episode.getReleaseDatePrecision().precision.equals("month")) continue;
-                        if (episode.getReleaseDate().equals("d")) {
-                            sendWebhooks(episode.getName(), episode.getAudioPreviewUrl(),
-                                    episode.getImages()[0].getUrl(), episode.getHref(), episode.getDescription(),
-                                    spotifyNotify.stream().filter(x -> x.getEntityTyp() == 0).toList());
+
+                        Date date = spotifyTimestamp.parse(episode.getReleaseDate());
+
+                        if (date.after(yesterday)) {
+                            WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+
+                            webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(episode.getName(), episode.getHref()));
+                            webhookEmbedBuilder.setImageUrl(episode.getImages()[0].getUrl());
+
+                            sendWebhooks(webhookEmbedBuilder, episode.getDescription(), episode.getName(), episode.getHref(), spotifyNotify);
                         }
                     }
                 } catch (Exception exception) {
@@ -88,31 +107,24 @@ public class SpotifySonic implements ISonic {
         });
     }
 
-    public void sendWebhooks(String authorName, String authorUrl, String imageUrl, String redirectUrl, String description, List<WebhookSpotify> webhooks) {
+    public void sendWebhooks(WebhookEmbedBuilder webhookEmbed, String description, String authorName, String redirect, List<WebhookSpotify> webhooks) {
         WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
 
         webhookMessageBuilder.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl());
         webhookMessageBuilder.setUsername(BotConfig.getBotName());
 
-        WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+        webhookEmbed.setAuthor(new WebhookEmbed.EmbedAuthor("Spotify Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
+        webhookEmbed.setFooter(new WebhookEmbed.EmbedFooter(BotConfig.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
+        webhookEmbed.setColor(Color.GREEN.getRGB());
 
-        webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(authorName, authorUrl));
-        webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Spotify Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl(), null));
-
-        webhookEmbedBuilder.setImageUrl(imageUrl);
-
-        webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(BotConfig.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getAvatarUrl()));
-
-        webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
-
-        webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
+        webhookMessageBuilder.addEmbeds(webhookEmbed.build());
 
         webhooks.forEach(webhook -> {
             String message = webhook.getMessage()
                     .replace("%description%", description)
                     .replace("%author%", authorName)
                     .replace("%name%", authorName)
-                    .replace("%url%", redirectUrl);
+                    .replace("%url%", redirect);
             webhookMessageBuilder.setContent(message);
             WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
         });
