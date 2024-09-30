@@ -272,6 +272,9 @@ public class Notifier {
             return null;
         });
 
+        log.info("Initializing Spotify Client...");
+        spotifySonic = new SpotifySonic();
+
         log.info("Initializing Streams...");
 
         log.info("Creating YouTube Streams...");
@@ -315,7 +318,6 @@ public class Notifier {
 
         // Use 1 day instead of minutes, because Spotify release date is at max precise to the day
         log.info("Creating Spotify Streams...");
-        spotifySonic = new SpotifySonic();
         ThreadUtil.createThread(x -> spotifySonic.run(), x -> {
             log.error("Failed to run Spotify Stream!", x);
             Sentry.captureException(x);

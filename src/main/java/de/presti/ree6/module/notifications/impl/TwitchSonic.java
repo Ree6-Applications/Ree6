@@ -3,7 +3,6 @@ package de.presti.ree6.module.notifications.impl;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
-import club.minnced.discord.webhook.send.component.ComponentElement;
 import club.minnced.discord.webhook.send.component.button.Button;
 import club.minnced.discord.webhook.send.component.layout.ActionRow;
 import com.github.twitch4j.events.ChannelFollowCountUpdateEvent;
@@ -24,8 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 @Slf4j
 public class TwitchSonic implements ISonic {
@@ -37,9 +36,6 @@ public class TwitchSonic implements ISonic {
         try {
             channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).forEach(this::add);
             load();
-
-            // Register the Event-handler.
-            run();
         } catch (Exception exception) {
             log.error("Error while loading Twitch data: {}", exception.getMessage());
             Sentry.captureException(exception);
@@ -51,6 +47,8 @@ public class TwitchSonic implements ISonic {
         // Register all Twitch Channels.
         SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames().subscribe(channel ->
                 channel.forEach(this::add));
+        // Register the Event-handler.
+        run();
     }
 
     @Override
