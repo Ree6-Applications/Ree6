@@ -12,6 +12,7 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.sql.entities.webhook.WebhookSpotify;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
+import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import se.michaelthelin.spotify.model_objects.specification.AlbumSimplified;
 import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
@@ -34,12 +35,13 @@ public class SpotifySonic implements ISonic {
 
     @Override
     public void load(List<ChannelStats> channelStats) {
+        load();
         // No need for this.
     }
 
     @Override
     public void load() {
-        // Register all YouTube channels.
+        // Register all Spotify artists and podcasts.
         SQLSession.getSqlConnector().getSqlWorker().getEntityList(new WebhookSpotify(), "FROM WebhookSpotify", Map.of()).subscribe(spotifyNotify -> {
             spotifyNotify.forEach(x -> {
                 if (x.getEntityTyp() == 0) {
@@ -101,6 +103,7 @@ public class SpotifySonic implements ISonic {
                         }
                     }
                 } catch (Exception exception) {
+                    Sentry.captureException(exception);
                     // TODO:: handle this shit
                 }
             }
