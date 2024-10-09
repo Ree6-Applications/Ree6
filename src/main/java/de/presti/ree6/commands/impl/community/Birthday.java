@@ -4,7 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -18,8 +17,7 @@ import org.apache.commons.validator.GenericValidator;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.time.Instant;
-import java.time.temporal.ChronoField;
+import java.util.Calendar;
 
 /**
  * This command is used to let the bot remember your Birthday.
@@ -107,7 +105,7 @@ public class Birthday implements ICommand {
                         new SubcommandData("add", "Add a Birthday entry!")
                                 .addOptions(new OptionData(OptionType.INTEGER, "day", "The day of the month.", true).setMinValue(1).setMaxValue(31),
                                         new OptionData(OptionType.INTEGER, "month", "Your birth month.", true).setMinValue(1).setMaxValue(12),
-                                        new OptionData(OptionType.INTEGER, "year", "Your birth year.", false).setMinValue(1900).setMaxValue(Instant.now().get(ChronoField.YEAR)),
+                                        new OptionData(OptionType.INTEGER, "year", "Your birth year.", false).setMinValue(1900).setMaxValue(Calendar.getInstance().get(Calendar.YEAR)),
                                         new OptionData(OptionType.USER, "user", "The User which should get their birthday entry added.", false)));
     }
 
