@@ -13,14 +13,14 @@ import com.github.twitch4j.chat.events.channel.FollowEvent;
 import com.github.twitch4j.eventsub.events.ChannelSubscribeEvent;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.github.twitch4j.pubsub.events.RewardRedeemedEvent;
-import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator;
+import de.presti.ree6.module.actions.streamtools.container.StreamActionContainerCreator;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.module.notifications.impl.*;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.TwitchIntegration;
-import de.presti.ree6.utils.data.DatabaseStorageBackend;
+import de.presti.ree6.utils.oauth.DatabaseStorageBackend;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.github.redouane59.twitter.TwitterClient;
 import io.github.redouane59.twitter.signature.TwitterCredentials;
@@ -122,6 +122,12 @@ public class Notifier {
      */
     @Getter(AccessLevel.PUBLIC)
     private RSSSonic rssSonic;
+
+    /**
+     * Instance of the Spotify Sonic Manager.
+     */
+    @Getter(AccessLevel.PUBLIC)
+    private SpotifySonic spotifySonic;
 
     /**
      * A list with all the Twitch Subscription for the Streaming Tools.
@@ -266,6 +272,9 @@ public class Notifier {
             return null;
         });
 
+        log.info("Initializing Spotify Client...");
+        spotifySonic = new SpotifySonic();
+
         log.info("Initializing Streams...");
 
         log.info("Creating YouTube Streams...");
@@ -306,5 +315,12 @@ public class Notifier {
             log.error("Failed to run Reddit Stream!", x);
             Sentry.captureException(x);
         }, Duration.ofMinutes(5), true, true);
+
+        // Use 1 day instead of minutes, because Spotify release date is at max precise to the day
+        log.info("Creating Spotify Streams...");
+        ThreadUtil.createThread(x -> spotifySonic.run(), x -> {
+            log.error("Failed to run Spotify Stream!", x);
+            Sentry.captureException(x);
+        }, Duration.ofDays(1), true, true);
     }
 }

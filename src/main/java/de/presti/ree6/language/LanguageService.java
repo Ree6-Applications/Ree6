@@ -55,7 +55,7 @@ public class LanguageService {
 
                 try {
                     Language language = new Language(YamlConfiguration.loadConfiguration(file));
-                    loadLanguageFromFile(language.getDiscordLocale());
+                    languageResources.putIfAbsent(language.getDiscordLocale(), language);
                 } catch (Exception e) {
                     log.error("Couldn't load the language file {}!", file.getName(), e);
                 }

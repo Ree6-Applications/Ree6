@@ -15,7 +15,10 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.*;
 import de.presti.ree6.sql.entities.roles.AutoRole;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
+import de.presti.ree6.sql.entities.webhook.base.Webhook;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
+import de.presti.ree6.bot.BotConfig;
+import de.presti.ree6.utils.data.TranscriptUtil;
 import de.presti.wrapper.entities.channel.ChannelResult;
 import io.github.redouane59.twitter.dto.user.UserV2;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
@@ -160,38 +163,6 @@ public class MenuEvents extends ListenerAdapter {
                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(tickets -> {
                     if (tickets.isPresent()) {
                         Tickets ticketEntity = tickets.get();
-                        StringBuilder stringBuilder = new StringBuilder();
-                        stringBuilder.append(BotConfig.getBotName()).append(" Ticket transcript")
-                                .append(" ")
-                                .append(ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)))
-                                .append("\n")
-                                .append("\n");
-
-
-                        for (Message message : event.getChannel().asTextChannel().getIterableHistory().reverse()) {
-                            stringBuilder
-                                    .append("[")
-                                    .append(message.getTimeCreated().toZonedDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
-                                    .append("]")
-                                    .append(" ")
-                                    .append(message.getAuthor().getName())
-                                    .append(" ")
-                                    .append("->")
-                                    .append(" ")
-                                    .append(message.getContentRaw());
-
-                            if (!message.getAttachments().isEmpty()) {
-                                for (Message.Attachment attachment : message.getAttachments()) {
-                                    stringBuilder.append("\n").append(attachment.getUrl());
-                                }
-                            }
-
-                            stringBuilder.append("\n");
-                        }
-
-                        // TODO:: translate and fix the date being shown as UTC+1 and instead use the current server region.
-
-                        stringBuilder.append("\n").append("Closed by").append(" ").append(event.getUser().getName());
 
                         WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
                         webhookMessageBuilder.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
@@ -204,9 +175,12 @@ public class MenuEvents extends ListenerAdapter {
                         webhookEmbedBuilder.setColor(BotWorker.randomEmbedColor().getRGB());
 
                         webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-                        webhookMessageBuilder.addFile(ticketEntity.getTicketCount() + "_transcript.txt", stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
+                        webhookMessageBuilder.addFile(event.getGuild().getId() + "_" + ticketEntity.getTicketCount() + "_transcript.html",
+                                TranscriptUtil.generateTranscript(event.getJDA(), event.getChannel().asTextChannel().getIterableHistory().reverse().stream().toList(),
+                                        event.getChannel().getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " "),
+                                        ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " ")).getBytes(StandardCharsets.UTF_8));
 
-                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), ticketEntity.getLogChannelId(), ticketEntity.getLogChannelWebhookToken(), false);
+                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), ticketEntity.getLogChannelWebhookId(), ticketEntity.getLogChannelWebhookToken(), false);
 
                         event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.close").block()).queue();
                         event.getChannel().delete().delay(2, TimeUnit.SECONDS).queue();

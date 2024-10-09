@@ -29,7 +29,7 @@ public class Addon implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        if (!commandEvent.getMember().getUser().getId().equalsIgnoreCase(BotConfig.getBotOwner())) {
+        if (!commandEvent.isBotOwner()) {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", "BE DEVELOPER"), 5);
             return;
         }

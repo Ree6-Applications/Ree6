@@ -235,7 +235,7 @@ public class GuildUtil {
      * @param guild the Guild to get the roles from.
      * @return a List of Roles that Ree6 can manage.
      */
-    public static List<Role> getManagableRoles(Guild guild) {
+    public static List<Role> getManageableRoles(Guild guild) {
         return guild.getRoles().stream().filter(role -> guild.getSelfMember().canInteract(role) && !role.isManaged() && !role.isPublicRole()).toList();
     }
 

@@ -5,6 +5,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -13,6 +14,11 @@ public class Debug implements ICommand {
 
     @Override
     public void onPerform(CommandEvent commandEvent) {
+        if (!commandEvent.isBotOwner()) {
+            commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", "BE DEVELOPER"), 5);
+            return;
+        }
+
         StringBuilder debugInfo = new StringBuilder("```")
                 .append("Build:").append(" ").append(BotWorker.getBuild()).append("\n")
                 .append("Version:").append(" ").append(BotWorker.getVersion()).append("\n")
@@ -27,6 +33,7 @@ public class Debug implements ICommand {
                 .append("Java:").append(" ").append(System.getProperty("java.version")).append("\n")
                 .append("OS:").append(" ").append(System.getProperty("os.name")).append("\n")
                 .append("OS-Version:").append(" ").append(System.getProperty("os.version")).append("\n")
+                .append("Addons: ").append(" ").append(Main.getInstance().getPluginManager().getPlugins().size()).append("\n")
                 .append("```");
 
         commandEvent.reply(debugInfo.toString(), 5);

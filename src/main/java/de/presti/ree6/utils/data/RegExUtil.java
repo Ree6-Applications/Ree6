@@ -49,7 +49,7 @@ public class RegExUtil {
      * The Regex to detect any dhm based time input.
      * For example, 1d, 2h, 3m
      */
-    public static final String TIME_INPUT_REGEX = "\\d+[dhm]";
+    public static final String TIME_INPUT_REGEX = "\\d+[dhms]";
 
     /**
      * The Regex to detect if the given string is a valid language path.

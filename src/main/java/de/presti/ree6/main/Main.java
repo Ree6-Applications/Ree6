@@ -5,7 +5,7 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.google.gson.JsonObject;
-import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator;
+import de.presti.ree6.module.actions.streamtools.container.StreamActionContainerCreator;
 import de.presti.ree6.addons.ReePluginManager;
 import de.presti.ree6.audio.music.MusicWorker;
 import de.presti.ree6.bot.BotConfig;
@@ -17,10 +17,10 @@ import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.events.*;
-import de.presti.ree6.game.core.GameManager;
-import de.presti.ree6.game.impl.musicquiz.util.MusicQuizUtil;
+import de.presti.ree6.module.game.core.GameManager;
+import de.presti.ree6.module.game.impl.musicquiz.util.MusicQuizUtil;
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.logger.LoggerQueue;
+import de.presti.ree6.module.logger.LoggerQueue;
 import de.presti.ree6.module.giveaway.GiveawayManager;
 import de.presti.ree6.module.invite.InviteContainerManager;
 import de.presti.ree6.sql.DatabaseTyp;
@@ -30,14 +30,16 @@ import de.presti.ree6.sql.entities.ScheduledMessage;
 import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
-import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.sql.util.SQLConfig;
 import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
-import de.presti.ree6.utils.data.*;
+import de.presti.ree6.utils.config.Config;
+import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.external.RequestUtility;
+import de.presti.ree6.utils.oauth.CustomOAuth2Credential;
+import de.presti.ree6.utils.oauth.CustomOAuth2Util;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
 import lavalink.client.io.jda.JdaLavalink;
@@ -347,6 +349,7 @@ public class Main {
             ThreadUtil.createThread(x -> {
                 log.info("Loading Notifier data.");
                 SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "FROM ChannelStats", null).subscribe(channelStats -> {
+                    getInstance().getNotifier().getSpotifySonic().load(channelStats);
                     getInstance().getNotifier().getYouTubeSonic().load(channelStats);
                     getInstance().getNotifier().getTwitchSonic().load(channelStats);
                     getInstance().getNotifier().getInstagramSonic().load(channelStats);
@@ -654,8 +657,8 @@ public class Main {
                 ArrayList<Giveaway> toDelete = new ArrayList<>();
                 Instant currentTime = Instant.now();
                 for (Giveaway giveaway : giveawayManager.getList()) {
-                    Instant giveAwayTime = giveaway.getEnding().toInstant();
-                    if (giveAwayTime.isBefore(Instant.now()) && giveAwayTime.isAfter(currentTime.minus(1, ChronoUnit.MINUTES))) {
+                    Instant giveAwayEndingTime = giveaway.getEnding().toInstant();
+                    if (giveAwayEndingTime.isBefore(Instant.now()) && giveAwayEndingTime.isAfter(currentTime.minus(1, ChronoUnit.MINUTES))) {
                         Guild guild = BotWorker.getShardManager().getGuildById(giveaway.getGuildId());
 
                         if (guild == null) {

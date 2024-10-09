@@ -2,8 +2,8 @@ package de.presti.ree6.commands.impl.community;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import de.presti.ree6.actions.ActionInfo;
-import de.presti.ree6.actions.streamtools.container.StreamActionContainer;
+import de.presti.ree6.module.actions.ActionInfo;
+import de.presti.ree6.module.actions.streamtools.container.StreamActionContainer;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;

@@ -3,8 +3,11 @@ package de.presti.ree6.module.notifications.impl;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import club.minnced.discord.webhook.send.component.button.Button;
+import club.minnced.discord.webhook.send.component.layout.ActionRow;
 import com.github.twitch4j.events.ChannelFollowCountUpdateEvent;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
+import com.github.twitch4j.helix.domain.GameList;
 import com.github.twitch4j.helix.domain.User;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
@@ -20,8 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 @Slf4j
 public class TwitchSonic implements ISonic {
@@ -33,9 +36,6 @@ public class TwitchSonic implements ISonic {
         try {
             channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).forEach(this::add);
             load();
-
-            // Register the Event-handler.
-            run();
         } catch (Exception exception) {
             log.error("Error while loading Twitch data: {}", exception.getMessage());
             Sentry.captureException(exception);
@@ -47,6 +47,8 @@ public class TwitchSonic implements ISonic {
         // Register all Twitch Channels.
         SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames().subscribe(channel ->
                 channel.forEach(this::add));
+        // Register the Event-handler.
+        run();
     }
 
     @Override
@@ -81,15 +83,20 @@ public class TwitchSonic implements ISonic {
                 if (twitchUserRequest.isPresent()) {
                     webhookEmbedBuilder.setThumbnailUrl(twitchUserRequest.orElseThrow().getProfileImageUrl());
                 }
-                webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrl());
 
                 // Set rest of the Information.
-                webhookEmbedBuilder.setDescription("**" + channelGoLiveEvent.getStream().getTitle() + "**\n[Watch Stream](" + twitchUrl + ")");
-                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Game**", channelGoLiveEvent.getStream().getGameName()));
-                webhookEmbedBuilder.addField(new WebhookEmbed.EmbedField(true, "**Viewer**", String.valueOf(channelGoLiveEvent.getStream().getViewerCount())));
-                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(BotConfig.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()));
+                webhookEmbedBuilder.setDescription("**" + channelGoLiveEvent.getStream().getTitle() + "**");
+                GameList gameList = Main.getInstance().getNotifier().getTwitchClient().getClientHelper().getTwitchHelix().getGames(null, List.of(channelGoLiveEvent.getStream().getGameId()), null, null).execute();
+                if (!gameList.getGames().isEmpty()) {
+                    webhookEmbedBuilder.setThumbnailUrl(gameList.getGames().get(0).getBoxArtUrl());
+                }
+
+                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(channelGoLiveEvent.getStream().getUserName(), twitchUserRequest.map(User::getProfileImageUrl).orElse(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()), twitchUrl));
+                webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrlTemplate());
+                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(channelGoLiveEvent.getStream().getGameName(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()));
                 webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
 
+                wmb.addComponents(ActionRow.of(new Button(Button.Style.LINK, twitchUrl).setLabel(twitchUserRequest.isPresent() ? twitchUserRequest.get().getDisplayName() : "Watch Stream")));
                 wmb.addEmbeds(webhookEmbedBuilder.build());
 
                 // Go through every Webhook that is registered for the Twitch Channel

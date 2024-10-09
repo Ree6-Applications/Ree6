@@ -1,5 +1,6 @@
 package de.presti.ree6.commands;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import lombok.Getter;
@@ -216,6 +217,14 @@ public class CommandEvent {
      */
     public @Nonnull Member getMember() {
         return member;
+    }
+
+    /**
+     * Check if the Member is the Bot Owner.
+     * @return true, if the Member is the Bot Owner. | false, if not.
+     */
+    public boolean isBotOwner() {
+        return BotConfig.getBotOwner().equals(member.getId());
     }
 
     /**

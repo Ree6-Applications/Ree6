@@ -5,7 +5,7 @@ import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.news.AnnouncementManager;
+import de.presti.ree6.module.news.AnnouncementManager;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
 import io.sentry.Sentry;
@@ -15,7 +15,6 @@ import org.pf4j.ExtensionPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;

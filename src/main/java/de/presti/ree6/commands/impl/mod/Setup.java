@@ -7,7 +7,6 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.TemporalVoicechannel;
@@ -41,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * A command to set Ree6 up.
@@ -281,7 +279,7 @@ public class Setup implements ICommand {
     }
 
     public static EmbedBuilder createAutoRoleSetupMessage(Guild guild, InteractionHook interactionHook) {
-        boolean hasRoles = !GuildUtil.getManagableRoles(guild).isEmpty();
+        boolean hasRoles = !GuildUtil.getManageableRoles(guild).isEmpty();
 
         return new EmbedBuilder()
                 .setTitle(LanguageService.getByGuildOrInteractionHook(guild, interactionHook, "label.setup").block())
@@ -293,7 +291,7 @@ public class Setup implements ICommand {
     public static Mono<SelectMenu> createAutoRoleSetupSelectMenu(Guild guild, InteractionHook interactionHook) {
         List<SelectOption> optionList = new ArrayList<>();
 
-        for (Role role : GuildUtil.getManagableRoles(guild)) {
+        for (Role role : GuildUtil.getManageableRoles(guild)) {
             optionList.add(SelectOption.of(role.getName(), role.getId()));
         }
 

@@ -18,6 +18,7 @@ import de.presti.ree6.sql.entities.stats.ChannelStats;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.data.ImageCreationUtility;
+import de.presti.ree6.utils.data.TranscriptUtil;
 import de.presti.ree6.utils.others.*;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
@@ -219,37 +220,6 @@ public class OtherEvents extends ListenerAdapter {
                         List<TextChannel> channels = category.getTextChannels().stream().filter(c -> c.getTopic() != null && c.getTopic().equalsIgnoreCase(event.getUser().getId())).toList();
                         if (!channels.isEmpty()) {
                             TextChannel channel = channels.get(0);
-                            StringBuilder stringBuilder = new StringBuilder();
-                            stringBuilder.append(BotConfig.getBotName())
-                                    .append(" Ticket transcript")
-                                    .append(" ")
-                                    .append(ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)))
-                                    .append("\n")
-                                    .append("\n");
-
-
-                            for (Message message : channel.getIterableHistory().reverse()) {
-                                stringBuilder
-                                        .append("[")
-                                        .append(message.getTimeCreated().toZonedDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
-                                        .append("]")
-                                        .append(" ")
-                                        .append(message.getAuthor().getName())
-                                        .append(" ")
-                                        .append("->")
-                                        .append(" ")
-                                        .append(message.getContentRaw());
-
-                                if (!message.getAttachments().isEmpty()) {
-                                    for (Message.Attachment attachment : message.getAttachments()) {
-                                        stringBuilder.append("\n").append(attachment.getUrl());
-                                    }
-                                }
-
-                                stringBuilder.append("\n");
-                            }
-
-                            stringBuilder.append("\n").append("Closed by").append(" ").append(event.getUser().getEffectiveName());
 
                             WebhookMessageBuilder webhookMessageBuilder = new WebhookMessageBuilder();
                             webhookMessageBuilder.setAvatarUrl(event.getJDA().getSelfUser().getEffectiveAvatarUrl());
@@ -262,7 +232,10 @@ public class OtherEvents extends ListenerAdapter {
                             webhookEmbedBuilder.setColor(BotWorker.randomEmbedColor().getRGB());
 
                             webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-                            webhookMessageBuilder.addFile(ticketsEntity.getTicketCount() + "_transcript.txt", stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
+                            webhookMessageBuilder.addFile(event.getGuild().getId() + "_" + ticketsEntity.getTicketCount() + "_transcript.html",
+                                    TranscriptUtil.generateTranscript(event.getJDA(), channel.getIterableHistory().reverse().stream().toList(),
+                                            channel.getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " "),
+                                            ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " ")).getBytes(StandardCharsets.UTF_8));
 
                             WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), ticketsEntity.getLogChannelId(), ticketsEntity.getLogChannelWebhookToken(), false);
                             channel.delete().queue();
