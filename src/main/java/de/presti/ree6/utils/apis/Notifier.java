@@ -13,7 +13,7 @@ import com.github.twitch4j.chat.events.channel.FollowEvent;
 import com.github.twitch4j.eventsub.events.ChannelSubscribeEvent;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.github.twitch4j.pubsub.events.RewardRedeemedEvent;
-import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator;
+import de.presti.ree6.module.actions.streamtools.container.StreamActionContainerCreator;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.main.Main;
