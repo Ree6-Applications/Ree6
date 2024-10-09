@@ -31,7 +31,7 @@ public interface ICommand extends ExtensionPoint {
 
     default Mono<Boolean> onMonoPerform(CommandEvent commandEvent) {
         if (BotConfig.isDebug())
-            log.info("Command {} called by {} in {} ({}).", commandEvent.getCommand(), commandEvent.getMember().getUser().getName(), commandEvent.getGuild().getName(), commandEvent.getGuild().getId());
+            log.info("Command {} called by {} in {} ({}).", commandEvent.getCommand(), commandEvent.getUser().getName(), commandEvent.getGuild().getName(), commandEvent.getGuild().getId());
 
         return Mono.fromRunnable(() -> onPerformWithLog(commandEvent)).thenReturn(true).onErrorResume(throwable -> {
             if (!throwable.getMessage().contains("Unknown Message")) {
@@ -41,6 +41,7 @@ public interface ICommand extends ExtensionPoint {
             }
             return Mono.just(false);
         }).doOnSuccess(success -> {
+            if (commandEvent.getGuild().isDetached()) return;
             if (BotConfig.isDebug())
                 log.info("Updating Stats {} in {} ({}).", commandEvent.getCommand(), commandEvent.getGuild().getName(), commandEvent.getGuild().getId());
             // Update Stats.
@@ -77,6 +78,7 @@ public interface ICommand extends ExtensionPoint {
             }
             return null;
         });
+        if (commandEvent.getGuild().isDetached()) return;
 
         // Update Stats.
         SQLSession.getSqlConnector().getSqlWorker().addStats(commandEvent.getGuild().getIdLong(), commandEvent.getCommand());

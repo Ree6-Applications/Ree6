@@ -382,6 +382,10 @@ public class CommandManager {
     public Mono<Boolean> perform(Member member, Guild guild, String messageContent, Message message, GuildMessageChannelUnion messageChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
         boolean isSlashCommand = slashCommandInteractionEvent != null;
 
+        if (!isSlashCommand && guild.isDetached()) {
+            return Mono.just(false);
+        }
+
         if (BotConfig.isDebug())
             log.info("Called perform");
 
@@ -577,17 +581,23 @@ public class CommandManager {
             return Mono.just(false);
         }
 
-        return SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).publishOn(Schedulers.boundedElastic()).mapNotNull(setting -> {
-            if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN && setting.isPresent() && !setting.get().getBooleanValue()) {
-                sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked").block(), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
-                return false;
-            }
+        Guild guild = slashCommandInteractionEvent.getGuild();
 
-            CommandEvent commandEvent = new CommandEvent(command.getClass().getAnnotation(Command.class).name(), slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, messageChannel, null, slashCommandInteractionEvent);
+        CommandEvent commandEvent = new CommandEvent(command.getClass().getAnnotation(Command.class).name(), slashCommandInteractionEvent.getMember(), guild, null, messageChannel, null, slashCommandInteractionEvent);
 
-            // Perform the Command.
-            return command.onMonoPerform(commandEvent).block();
-        });
+        if (guild.isDetached()) {
+            return command.onMonoPerform(commandEvent);
+        } else {
+            return SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).publishOn(Schedulers.boundedElastic()).mapNotNull(setting -> {
+                if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN && setting.isPresent() && !setting.get().getBooleanValue()) {
+                    sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked").block(), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                    return false;
+                }
+
+                // Perform the Command.
+                return command.onMonoPerform(commandEvent).block();
+            });
+        }
     }
 
     /**
