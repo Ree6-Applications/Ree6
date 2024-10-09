@@ -58,7 +58,7 @@
         <dependency>
             <groupId>io.github.JDA-Fork</groupId>
             <artifactId>JDA</artifactId>
-            <version>4a928cde24</version>
+            <version>55d824408c</version>
         </dependency>
         <!-- Fix for the failed Lookup until they release a version -->
         <dependency>
