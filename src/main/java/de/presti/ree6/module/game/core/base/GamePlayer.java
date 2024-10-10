@@ -50,7 +50,7 @@ public class GamePlayer {
      */
     public User getRelatedUser() {
         if (relatedUser == null)
-            return relatedUser = BotWorker.getShardManager().getUserById(relatedUserId);
+            relatedUser = BotWorker.getShardManager().getUserById(relatedUserId);
 
         return relatedUser;
     }

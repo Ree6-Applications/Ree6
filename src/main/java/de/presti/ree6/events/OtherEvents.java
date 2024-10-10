@@ -466,7 +466,7 @@ public class OtherEvents extends ListenerAdapter {
                     log.info("Message was moderated: {}", moderated);
 
                 return moderated;
-            }).flatMap((aBoolean) -> handleCommand(aBoolean, event)).doOnNext(handled -> {
+            }).flatMap(aBoolean -> handleCommand(aBoolean, event)).doOnNext(handled -> {
                 if (!handled) {
                     if (!event.getMessage().getMentions().getUsers().isEmpty() && event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
                         if (event.getMessage().getMessageReference() != null) return;
