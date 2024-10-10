@@ -74,6 +74,7 @@ public interface IGame {
             try {
                 parameter = Double.parseDouble(parameterString.replace(",", "."));
             } catch (Exception ignore) {
+                // Parsing failed.
             }
         }
         if (parameter instanceof Double money) {
