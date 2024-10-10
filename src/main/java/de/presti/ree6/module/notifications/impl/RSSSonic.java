@@ -54,17 +54,18 @@ public class RSSSonic implements ISonic {
         Collection<String> urls = getList().stream().map(SonicIdentifier::getIdentifier).toList();
 
         /*
-         *  TODO:: Either switch to RSSHub, YouTubes RSS or stay on API based.
+         *  Either switch to RSSHub, YouTubes RSS or stay on API based.
          *  Issue with RSSHub is that it takes 2 hours to update, because of caching.
          *  Issue with YouTube is RSS that it takes over 30 minutes to update, because of idk random internal stuff.
+         *
+         *  ////Collection<String> urls = new ArrayList<>(registeredYouTubeChannels.stream().map(c -> "https://rsshub.app/youtube/channel/" + c).toList());
+         *
+         *  Wait till Nitter has fixed their RSS Feeds. Or Twitter finally gets the stick out of their ass and stop limiting simple scraping. 05.07: Twitter still has a stick up their ass and Nitter died because of it. WoW.
+         *  ////urls.addAll(registeredTwitterUsers.stream().map(c -> "https://nitter.net/" + c + "/rss").toList());
+         *
+         *  ////urls.addAll(registeredRSSFeeds);
          */
 
-        ////Collection<String> urls = new ArrayList<>(registeredYouTubeChannels.stream().map(c -> "https://rsshub.app/youtube/channel/" + c).toList());
-
-        // TODO:: Wait till Nitter has fixed their RSS Feeds. Or Twitter finally gets the stick out of their ass and stop limiting simple scraping. 05.07: Twitter still has a stick up their ass and Nitter died because of it. WoW.
-        ////urls.addAll(registeredTwitterUsers.stream().map(c -> "https://nitter.net/" + c + "/rss").toList());
-
-        ////urls.addAll(registeredRSSFeeds);
 
         List<String> checkedIds = new ArrayList<>();
 
@@ -117,10 +118,10 @@ public class RSSSonic implements ISonic {
 
                         String id = "";
 
-                        switch (typ) {
-                            case "tw" -> id = item.getChannel().getLink().replace("https://nitter.net/", "");
-
-                            case "other" -> id = item.getChannel().getLink();
+                        if (typ.equals("tw")) {
+                            id = item.getChannel().getLink().replace("https://nitter.net/", "");
+                        } else {
+                            id = item.getChannel().getLink();
                         }
 
                         if (checkedIds.contains(id)) {
