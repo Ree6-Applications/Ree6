@@ -13,10 +13,10 @@ import com.github.twitch4j.chat.events.channel.FollowEvent;
 import com.github.twitch4j.eventsub.events.ChannelSubscribeEvent;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.github.twitch4j.pubsub.events.RewardRedeemedEvent;
-import de.presti.ree6.module.actions.streamtools.container.StreamActionContainerCreator;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.module.actions.streamtools.container.StreamActionContainerCreator;
 import de.presti.ree6.module.notifications.impl.*;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.TwitchIntegration;
@@ -176,38 +176,26 @@ public class Notifier {
                 }
             });
 
-            twitchClient.getEventManager().onEvent(RewardRedeemedEvent.class, event -> {
-                StreamActionContainerCreator.getContainers(0).subscribe(list -> {
-                    list.forEach(container -> {
-                        if (!event.getRedemption().getChannelId().equalsIgnoreCase(container.getTwitchChannelId()))
-                            return;
+            twitchClient.getEventManager().onEvent(RewardRedeemedEvent.class, event -> StreamActionContainerCreator.getContainers(0).subscribe(list -> list.forEach(container -> {
+                if (!event.getRedemption().getChannelId().equalsIgnoreCase(container.getTwitchChannelId()))
+                    return;
 
-                        if (container.getExtraArgument() == null || event.getRedemption().getReward().getId().equals(container.getExtraArgument())) {
-                            container.runActions(event, event.getRedemption().getUserInput());
-                        }
-                    });
-                });
-            });
+                if (container.getExtraArgument() == null || event.getRedemption().getReward().getId().equals(container.getExtraArgument())) {
+                    container.runActions(event, event.getRedemption().getUserInput());
+                }
+            })));
 
-            twitchClient.getEventManager().onEvent(FollowEvent.class, event -> {
-                StreamActionContainerCreator.getContainers(1).subscribe(list -> {
-                    list.forEach(container -> {
-                        if (!event.getChannel().getId().equalsIgnoreCase(container.getTwitchChannelId())) return;
+            twitchClient.getEventManager().onEvent(FollowEvent.class, event -> StreamActionContainerCreator.getContainers(1).subscribe(list -> list.forEach(container -> {
+                if (!event.getChannel().getId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
-                        container.runActions(event, event.getUser().getName());
-                    });
-                });
-            });
+                container.runActions(event, event.getUser().getName());
+            })));
 
-            twitchClient.getEventManager().onEvent(ChannelSubscribeEvent.class, event -> {
-                StreamActionContainerCreator.getContainers(2).subscribe(list -> {
-                    list.forEach(container -> {
-                        if (!event.getBroadcasterUserId().equalsIgnoreCase(container.getTwitchChannelId())) return;
+            twitchClient.getEventManager().onEvent(ChannelSubscribeEvent.class, event -> StreamActionContainerCreator.getContainers(2).subscribe(list -> list.forEach(container -> {
+                if (!event.getBroadcasterUserId().equalsIgnoreCase(container.getTwitchChannelId())) return;
 
-                        container.runActions(null, event.getUserName());
-                    });
-                });
-            });
+                container.runActions(null, event.getUserName());
+            })));
         } catch (Exception exception) {
             Sentry.captureException(exception);
             log.error("Failed to create Twitch Client.", exception);

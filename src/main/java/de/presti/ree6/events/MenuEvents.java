@@ -443,41 +443,39 @@ public class MenuEvents extends ListenerAdapter {
                         }
 
                         event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.twitchCountName", Main.getInstance().getNotifier().getTwitchClient().getHelix().getChannelFollowers(null, channelId, null, 1, null).execute().getTotal()).block(), category)
-                                .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> {
-                                    SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(channelStats -> {
-                                        if (channelStats.isPresent()) {
-                                            ChannelStats channelStatsEntity = channelStats.get();
-                                            if (channelStatsEntity.getTwitchFollowerChannelId() != null) {
-                                                VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStatsEntity.getTwitchFollowerChannelId());
+                                .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(channelStats -> {
+                                    if (channelStats.isPresent()) {
+                                        ChannelStats channelStatsEntity = channelStats.get();
+                                        if (channelStatsEntity.getTwitchFollowerChannelId() != null) {
+                                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStatsEntity.getTwitchFollowerChannelId());
 
-                                                if (voiceChannel3 != null)
-                                                    voiceChannel3.delete().queue();
-                                            }
-
-                                            channelStatsEntity.setTwitchFollowerChannelId(voiceChannel.getId());
-                                            channelStatsEntity.setTwitchFollowerChannelUsername(twitchUsername);
-                                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStatsEntity).block();
-                                            Main.getInstance().getNotifier().getTwitchSonic().add(twitchUsername);
-                                        } else {
-                                            ChannelStats channelStatsEntity = new ChannelStats(event.getGuild().getIdLong(),
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    voiceChannel.getId(),
-                                                    twitchUsername,
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    null);
-                                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStatsEntity).block();
-                                            Main.getInstance().getNotifier().getTwitterSonic().add(twitchUsername);
+                                            if (voiceChannel3 != null)
+                                                voiceChannel3.delete().queue();
                                         }
-                                    });
-                                });
+
+                                        channelStatsEntity.setTwitchFollowerChannelId(voiceChannel.getId());
+                                        channelStatsEntity.setTwitchFollowerChannelUsername(twitchUsername);
+                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStatsEntity).block();
+                                        Main.getInstance().getNotifier().getTwitchSonic().add(twitchUsername);
+                                    } else {
+                                        ChannelStats channelStatsEntity = new ChannelStats(event.getGuild().getIdLong(),
+                                                null,
+                                                null,
+                                                null,
+                                                voiceChannel.getId(),
+                                                twitchUsername,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null);
+                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStatsEntity).block();
+                                        Main.getInstance().getNotifier().getTwitterSonic().add(twitchUsername);
+                                    }
+                                }));
 
                         EmbedBuilder embedBuilder = new EmbedBuilder()
                                 .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
@@ -543,40 +541,38 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.youtubeCountName", youTubeChannel.getSubscriberCountText()).block(), category)
-                            .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> {
-                                SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(channelStatsOptional -> {
-                                    if (channelStatsOptional.isPresent()) {
-                                        ChannelStats channelStats = channelStatsOptional.get();
-                                        if (channelStats.getYoutubeSubscribersChannelId() != null) {
-                                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getYoutubeSubscribersChannelId());
+                            .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(channelStatsOptional -> {
+                                if (channelStatsOptional.isPresent()) {
+                                    ChannelStats channelStats = channelStatsOptional.get();
+                                    if (channelStats.getYoutubeSubscribersChannelId() != null) {
+                                        VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getYoutubeSubscribersChannelId());
 
-                                            if (voiceChannel3 != null)
-                                                voiceChannel3.delete().queue();
-                                        }
-
-                                        channelStats.setYoutubeSubscribersChannelId(voiceChannel.getId());
-                                        channelStats.setYoutubeSubscribersChannelUsername(youTubeChannel.getId());
-                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats).block();
-                                        Main.getInstance().getNotifier().getYouTubeSonic().add(youTubeChannel.getId());
-                                    } else {
-                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new ChannelStats(event.getGuild().getIdLong(),
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                voiceChannel.getId(),
-                                                youTubeChannel.getId(),
-                                                null,
-                                                null)).block();
-                                        Main.getInstance().getNotifier().getYouTubeSonic().add(youTubeChannel.getId());
+                                        if (voiceChannel3 != null)
+                                            voiceChannel3.delete().queue();
                                     }
-                                });
-                            });
+
+                                    channelStats.setYoutubeSubscribersChannelId(voiceChannel.getId());
+                                    channelStats.setYoutubeSubscribersChannelUsername(youTubeChannel.getId());
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats).block();
+                                    Main.getInstance().getNotifier().getYouTubeSonic().add(youTubeChannel.getId());
+                                } else {
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(new ChannelStats(event.getGuild().getIdLong(),
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            voiceChannel.getId(),
+                                            youTubeChannel.getId(),
+                                            null,
+                                            null)).block();
+                                    Main.getInstance().getNotifier().getYouTubeSonic().add(youTubeChannel.getId());
+                                }
+                            }));
 
                     embedBuilder = embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
@@ -627,40 +623,38 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.redditCountName", subreddit.getActiveUserCount()).block(), category)
-                            .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> {
-                                SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(channelStatsOptional -> {
-                                    if (channelStatsOptional.isPresent()) {
-                                        ChannelStats channelStats = channelStatsOptional.get();
-                                        if (channelStats.getSubredditMemberChannelId() != null) {
-                                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getSubredditMemberChannelId());
+                            .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(channelStatsOptional -> {
+                                if (channelStatsOptional.isPresent()) {
+                                    ChannelStats channelStats = channelStatsOptional.get();
+                                    if (channelStats.getSubredditMemberChannelId() != null) {
+                                        VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getSubredditMemberChannelId());
 
-                                            if (voiceChannel3 != null)
-                                                voiceChannel3.delete().queue();
-                                        }
-
-                                        channelStats.setSubredditMemberChannelId(voiceChannel.getId());
-                                        channelStats.setSubredditMemberChannelSubredditName(subredditName);
-                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats).block();
-                                        Main.getInstance().getNotifier().getRedditSonic().add(subredditName);
-                                    } else {
-                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new ChannelStats(event.getGuild().getIdLong(),
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                voiceChannel.getId(),
-                                                subredditName)).block();
-                                        Main.getInstance().getNotifier().getRedditSonic().add(subredditName);
+                                        if (voiceChannel3 != null)
+                                            voiceChannel3.delete().queue();
                                     }
-                                });
-                            });
+
+                                    channelStats.setSubredditMemberChannelId(voiceChannel.getId());
+                                    channelStats.setSubredditMemberChannelSubredditName(subredditName);
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats).block();
+                                    Main.getInstance().getNotifier().getRedditSonic().add(subredditName);
+                                } else {
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(new ChannelStats(event.getGuild().getIdLong(),
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            voiceChannel.getId(),
+                                            subredditName)).block();
+                                    Main.getInstance().getNotifier().getRedditSonic().add(subredditName);
+                                }
+                            }));
 
                     embedBuilder = embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
@@ -711,40 +705,38 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.twitterCountName", twitterUser.getFollowersCount()).block(), category)
-                            .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> {
-                                SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(channelStatsOptional -> {
-                                    if (channelStatsOptional.isPresent()) {
-                                        ChannelStats channelStats = channelStatsOptional.get();
-                                        if (channelStats.getTwitterFollowerChannelId() != null) {
-                                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getTwitterFollowerChannelId());
+                            .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(channelStatsOptional -> {
+                                if (channelStatsOptional.isPresent()) {
+                                    ChannelStats channelStats = channelStatsOptional.get();
+                                    if (channelStats.getTwitterFollowerChannelId() != null) {
+                                        VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getTwitterFollowerChannelId());
 
-                                            if (voiceChannel3 != null)
-                                                voiceChannel3.delete().queue();
-                                        }
-
-                                        channelStats.setTwitterFollowerChannelId(voiceChannel.getId());
-                                        channelStats.setTwitterFollowerChannelUsername(twitterName);
-                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats).block();
-                                        Main.getInstance().getNotifier().getTwitterSonic().add(twitterName);
-                                    } else {
-                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new ChannelStats(event.getGuild().getIdLong(),
-                                                null,
-                                                null,
-                                                null,
-                                                voiceChannel.getId(),
-                                                twitterName,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null)).block();
-                                        Main.getInstance().getNotifier().getTwitterSonic().add(twitterName);
+                                        if (voiceChannel3 != null)
+                                            voiceChannel3.delete().queue();
                                     }
-                                });
-                            });
+
+                                    channelStats.setTwitterFollowerChannelId(voiceChannel.getId());
+                                    channelStats.setTwitterFollowerChannelUsername(twitterName);
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats).block();
+                                    Main.getInstance().getNotifier().getTwitterSonic().add(twitterName);
+                                } else {
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(new ChannelStats(event.getGuild().getIdLong(),
+                                            null,
+                                            null,
+                                            null,
+                                            voiceChannel.getId(),
+                                            twitterName,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null)).block();
+                                    Main.getInstance().getNotifier().getTwitterSonic().add(twitterName);
+                                }
+                            }));
 
                     embedBuilder = embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
@@ -795,41 +787,38 @@ public class MenuEvents extends ListenerAdapter {
                     }
 
                     event.getGuild().createVoiceChannel(LanguageService.getByGuild(event.getGuild(), "label.instagramCountName", instagramUser.getFollower_count()).block(), category)
-                            .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> {
-                                SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(channelStatsOptional -> {
-                                    if (channelStatsOptional.isPresent()) {
-                                        ChannelStats channelStats = channelStatsOptional.get();
-                                        if (channelStats.getInstagramFollowerChannelId() != null) {
-                                            VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getInstagramFollowerChannelId());
+                            .addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VOICE_CONNECT.getRawValue()).queue(voiceChannel -> SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(channelStatsOptional -> {
+                                if (channelStatsOptional.isPresent()) {
+                                    ChannelStats channelStats = channelStatsOptional.get();
+                                    if (channelStats.getInstagramFollowerChannelId() != null) {
+                                        VoiceChannel voiceChannel3 = event.getGuild().getVoiceChannelById(channelStats.getInstagramFollowerChannelId());
 
-                                            if (voiceChannel3 != null)
-                                                voiceChannel3.delete().queue();
-                                        }
-
-                                        channelStats.setInstagramFollowerChannelId(voiceChannel.getId());
-                                        channelStats.setInstagramFollowerChannelUsername(instagramName);
-                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats).block();
-                                        Main.getInstance().getNotifier().getInstagramSonic().add(instagramName);
-                                    } else {
-                                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(new ChannelStats(event.getGuild().getIdLong(),
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                voiceChannel.getId(),
-                                                instagramName,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null)).block();
-                                        Main.getInstance().getNotifier().getInstagramSonic().add(instagramName);
+                                        if (voiceChannel3 != null)
+                                            voiceChannel3.delete().queue();
                                     }
-                                });
 
-                            });
+                                    channelStats.setInstagramFollowerChannelId(voiceChannel.getId());
+                                    channelStats.setInstagramFollowerChannelUsername(instagramName);
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(channelStats).block();
+                                    Main.getInstance().getNotifier().getInstagramSonic().add(instagramName);
+                                } else {
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(new ChannelStats(event.getGuild().getIdLong(),
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            voiceChannel.getId(),
+                                            instagramName,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null)).block();
+                                    Main.getInstance().getNotifier().getInstagramSonic().add(instagramName);
+                                }
+                            }));
 
                     embedBuilder = embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
@@ -954,9 +943,7 @@ public class MenuEvents extends ListenerAdapter {
                     case "welcome" -> LanguageService.getByGuild(event.getGuild(), "label.setup").subscribe(label -> {
                         optionList.add(SelectOption.of(label, "welcomeSetup"));
 
-                        SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getIdLong()).block().ifPresent(welcomeWebhook -> {
-                            optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete").block(), "welcomeDelete"));
-                        });
+                        SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getIdLong()).block().ifPresent(welcomeWebhook -> optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete").block(), "welcomeDelete")));
 
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.setImage").block(), "welcomeImage"));
 
@@ -979,9 +966,7 @@ public class MenuEvents extends ListenerAdapter {
                         optionList.add(SelectOption.of(label, "tempVoiceSetup"));
 
                         SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid",
-                                Map.of("gid", event.getGuild().getIdLong())).block().ifPresent(temporalVoicechannel -> {
-                            optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete").block(), "tempVoiceDelete"));
-                        });
+                                Map.of("gid", event.getGuild().getIdLong())).block().ifPresent(temporalVoicechannel -> optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete").block(), "tempVoiceDelete")));
 
 
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.backToMenu").block(), "backToSetupMenu"));
@@ -1010,9 +995,7 @@ public class MenuEvents extends ListenerAdapter {
                     case "tickets" -> LanguageService.getByGuild(event.getGuild(), "label.setup").subscribe(label -> {
                         optionList.add(SelectOption.of(label, "ticketsSetup"));
 
-                        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).block().ifPresent(tickets -> {
-                            optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete").block(), "ticketsDelete"));
-                        });
+                        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).block().ifPresent(tickets -> optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.delete").block(), "ticketsDelete")));
 
                         optionList.add(SelectOption.of(LanguageService.getByGuild(event.getGuild(), "label.backToMenu").block(), "backToSetupMenu"));
 

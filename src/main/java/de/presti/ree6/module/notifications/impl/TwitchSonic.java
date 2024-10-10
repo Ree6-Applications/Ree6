@@ -58,81 +58,76 @@ public class TwitchSonic implements ISonic {
 
     @Override
     public void run() {
-        Main.getInstance().getNotifier().getTwitchClient().getEventManager().onEvent(ChannelGoLiveEvent.class, channelGoLiveEvent -> {
+        Main.getInstance().getNotifier().getTwitchClient().getEventManager().onEvent(ChannelGoLiveEvent.class, channelGoLiveEvent -> SQLSession.getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getChannel().getName()).subscribe(webhooks -> {
+            if (webhooks.isEmpty()) {
+                return;
+            }
 
-            SQLSession.getSqlConnector().getSqlWorker().getTwitchWebhooksByName(channelGoLiveEvent.getChannel().getName()).subscribe(webhooks -> {
-                if (webhooks.isEmpty()) {
-                    return;
-                }
+            String twitchUrl = "https://twitch.tv/" + channelGoLiveEvent.getChannel().getName();
 
-                String twitchUrl = "https://twitch.tv/" + channelGoLiveEvent.getChannel().getName();
+            // Create a Webhook Message.
+            WebhookMessageBuilder wmb = new WebhookMessageBuilder();
 
-                // Create a Webhook Message.
-                WebhookMessageBuilder wmb = new WebhookMessageBuilder();
+            wmb.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl());
+            wmb.setUsername(BotConfig.getBotName());
 
-                wmb.setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl());
-                wmb.setUsername(BotConfig.getBotName());
+            WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
 
-                WebhookEmbedBuilder webhookEmbedBuilder = new WebhookEmbedBuilder();
+            webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(channelGoLiveEvent.getStream().getUserName(), twitchUrl));
+            webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitch Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl(), null));
 
-                webhookEmbedBuilder.setTitle(new WebhookEmbed.EmbedTitle(channelGoLiveEvent.getStream().getUserName(), twitchUrl));
-                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor("Twitch Notifier", BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl(), null));
+            // Try getting the User.
+            Optional<User> twitchUserRequest = Main.getInstance().getNotifier().getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(channelGoLiveEvent.getStream().getUserName())).execute().getUsers().stream().findFirst();
+            if (twitchUserRequest.isPresent()) {
+                webhookEmbedBuilder.setThumbnailUrl(twitchUserRequest.orElseThrow().getProfileImageUrl());
+            }
 
-                // Try getting the User.
-                Optional<User> twitchUserRequest = Main.getInstance().getNotifier().getTwitchClient().getHelix().getUsers(null, null, Collections.singletonList(channelGoLiveEvent.getStream().getUserName())).execute().getUsers().stream().findFirst();
-                if (twitchUserRequest.isPresent()) {
-                    webhookEmbedBuilder.setThumbnailUrl(twitchUserRequest.orElseThrow().getProfileImageUrl());
-                }
+            // Set rest of the Information.
+            webhookEmbedBuilder.setDescription("**" + channelGoLiveEvent.getStream().getTitle() + "**");
+            GameList gameList = Main.getInstance().getNotifier().getTwitchClient().getClientHelper().getTwitchHelix().getGames(null, List.of(channelGoLiveEvent.getStream().getGameId()), null, null).execute();
+            if (!gameList.getGames().isEmpty()) {
+                webhookEmbedBuilder.setThumbnailUrl(gameList.getGames().get(0).getBoxArtUrl());
+            }
 
-                // Set rest of the Information.
-                webhookEmbedBuilder.setDescription("**" + channelGoLiveEvent.getStream().getTitle() + "**");
-                GameList gameList = Main.getInstance().getNotifier().getTwitchClient().getClientHelper().getTwitchHelix().getGames(null, List.of(channelGoLiveEvent.getStream().getGameId()), null, null).execute();
-                if (!gameList.getGames().isEmpty()) {
-                    webhookEmbedBuilder.setThumbnailUrl(gameList.getGames().get(0).getBoxArtUrl());
-                }
+            webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(channelGoLiveEvent.getStream().getUserName(), twitchUserRequest.map(User::getProfileImageUrl).orElse(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()), twitchUrl));
+            webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrlTemplate());
+            webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(channelGoLiveEvent.getStream().getGameName(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()));
+            webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
 
-                webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(channelGoLiveEvent.getStream().getUserName(), twitchUserRequest.map(User::getProfileImageUrl).orElse(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()), twitchUrl));
-                webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrlTemplate());
-                webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(channelGoLiveEvent.getStream().getGameName(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()));
-                webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
+            wmb.addComponents(ActionRow.of(new Button(Button.Style.LINK, twitchUrl).setLabel(twitchUserRequest.isPresent() ? twitchUserRequest.get().getDisplayName() : "Watch Stream")));
+            wmb.addEmbeds(webhookEmbedBuilder.build());
 
-                wmb.addComponents(ActionRow.of(new Button(Button.Style.LINK, twitchUrl).setLabel(twitchUserRequest.isPresent() ? twitchUserRequest.get().getDisplayName() : "Watch Stream")));
-                wmb.addEmbeds(webhookEmbedBuilder.build());
-
-                // Go through every Webhook that is registered for the Twitch Channel
-                webhooks.forEach(webhook -> {
-                    String message = webhook.getMessage()
-                            .replace("%name%", channelGoLiveEvent.getStream().getUserName())
-                            .replace("%url%", twitchUrl);
-                    wmb.setContent(message);
-                    WebhookUtil.sendWebhook(wmb.build(), webhook);
-                });
+            // Go through every Webhook that is registered for the Twitch Channel
+            webhooks.forEach(webhook -> {
+                String message = webhook.getMessage()
+                        .replace("%name%", channelGoLiveEvent.getStream().getUserName())
+                        .replace("%url%", twitchUrl);
+                wmb.setContent(message);
+                WebhookUtil.sendWebhook(wmb.build(), webhook);
             });
-        });
+        }));
 
-        Main.getInstance().getNotifier().getTwitchClient().getEventManager().onEvent(ChannelFollowCountUpdateEvent.class, channelFollowCountUpdateEvent -> {
-            SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),
-                    "FROM ChannelStats WHERE LOWER(twitchFollowerChannelUsername) = :name",
-                    Map.of("name", channelFollowCountUpdateEvent.getChannel().getName().toLowerCase())).subscribe(channelStats -> {
-                if (!channelStats.isEmpty()) {
-                    for (ChannelStats channelStat : channelStats) {
-                        if (channelStat.getTwitchFollowerChannelId() != null) {
-                            GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
-                            if (guildChannel != null) {
-                                if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
-                                    continue;
+        Main.getInstance().getNotifier().getTwitchClient().getEventManager().onEvent(ChannelFollowCountUpdateEvent.class, channelFollowCountUpdateEvent -> SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(),
+                "FROM ChannelStats WHERE LOWER(twitchFollowerChannelUsername) = :name",
+                Map.of("name", channelFollowCountUpdateEvent.getChannel().getName().toLowerCase())).subscribe(channelStats -> {
+            if (!channelStats.isEmpty()) {
+                for (ChannelStats channelStat : channelStats) {
+                    if (channelStat.getTwitchFollowerChannelId() != null) {
+                        GuildChannel guildChannel = BotWorker.getShardManager().getGuildChannelById(channelStat.getTwitchFollowerChannelId());
+                        if (guildChannel != null) {
+                            if (!guildChannel.getGuild().getSelfMember().hasAccess(guildChannel))
+                                continue;
 
-                                LanguageService.getByGuild(guildChannel.getGuild(), "label.twitchCountName", channelFollowCountUpdateEvent.getFollowCount()).subscribe(newName -> {
-                                    if (!guildChannel.getName().equalsIgnoreCase(newName)) {
-                                        guildChannel.getManager().setName(newName).queue();
-                                    }
-                                });
-                            }
+                            LanguageService.getByGuild(guildChannel.getGuild(), "label.twitchCountName", channelFollowCountUpdateEvent.getFollowCount()).subscribe(newName -> {
+                                if (!guildChannel.getName().equalsIgnoreCase(newName)) {
+                                    guildChannel.getManager().setName(newName).queue();
+                                }
+                            });
                         }
                     }
                 }
-            });
-        });
+            }
+        }));
     }
 
     @Override

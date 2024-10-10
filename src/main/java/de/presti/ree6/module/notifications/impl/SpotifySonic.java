@@ -42,15 +42,13 @@ public class SpotifySonic implements ISonic {
     @Override
     public void load() {
         // Register all Spotify artists and podcasts.
-        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new WebhookSpotify(), "FROM WebhookSpotify", Map.of()).subscribe(spotifyNotify -> {
-            spotifyNotify.forEach(x -> {
-                if (x.getEntityTyp() == 0) {
-                    add("art:" + x.getEntityId());
-                } else {
-                    add("pot:" + x.getEntityId());
-                }
-            });
-        });
+        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new WebhookSpotify(), "FROM WebhookSpotify", Map.of()).subscribe(spotifyNotify -> spotifyNotify.forEach(x -> {
+            if (x.getEntityTyp() == 0) {
+                add("art:" + x.getEntityId());
+            } else {
+                add("pot:" + x.getEntityId());
+            }
+        }));
     }
 
     @Override

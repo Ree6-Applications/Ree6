@@ -72,9 +72,7 @@ public class Warn implements ICommand {
                         punishments.setWarnings(warningMapping.getAsInt());
                         punishments.setAction(2);
                         punishments.setRoleId(roleMapping.getAsRole().getIdLong());
-                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(punishments).subscribe(save -> {
-                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.created"));
-                        });
+                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(punishments).subscribe(save -> commandEvent.reply(commandEvent.getResource("message.warn.punishment.created")));
                     }
 
                     case "roleremove" -> {
@@ -83,9 +81,7 @@ public class Warn implements ICommand {
                         punishments.setWarnings(warningMapping.getAsInt());
                         punishments.setAction(3);
                         punishments.setRoleId(roleMapping.getAsRole().getIdLong());
-                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(punishments).subscribe(save -> {
-                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.created"));
-                        });
+                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(punishments).subscribe(save -> commandEvent.reply(commandEvent.getResource("message.warn.punishment.created")));
                     }
 
                     case "timeout" -> {
@@ -94,9 +90,7 @@ public class Warn implements ICommand {
                         punishments.setWarnings(warningMapping.getAsInt());
                         punishments.setAction(1);
                         punishments.setTimeoutTime(secondsMapping.getAsLong() * 1000);
-                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(punishments).subscribe(save -> {
-                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.created"));
-                        });
+                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(punishments).subscribe(save -> commandEvent.reply(commandEvent.getResource("message.warn.punishment.created")));
                     }
 
                     case "kick" -> {
@@ -105,9 +99,7 @@ public class Warn implements ICommand {
                         punishments.setWarnings(warningMapping.getAsInt());
                         punishments.setAction(4);
                         if (reasonMapping != null) punishments.setReason(reasonMapping.getAsString());
-                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(punishments).subscribe(save -> {
-                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.created"));
-                        });
+                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(punishments).subscribe(save -> commandEvent.reply(commandEvent.getResource("message.warn.punishment.created")));
                     }
 
                     case "ban" -> {
@@ -116,9 +108,7 @@ public class Warn implements ICommand {
                         punishments.setWarnings(warningMapping.getAsInt());
                         punishments.setAction(5);
                         if (reasonMapping != null) punishments.setReason(reasonMapping.getAsString());
-                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(punishments).subscribe(save -> {
-                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.created"));
-                        });
+                        SQLSession.getSqlConnector().getSqlWorker().updateEntity(punishments).subscribe(save -> commandEvent.reply(commandEvent.getResource("message.warn.punishment.created")));
                     }
 
                     case "list" ->

@@ -148,18 +148,14 @@ public class Setup implements ICommand {
 
                         if (commandEvent.getSubcommand().equals("set")) {
                             if (guildChannelUnion.getType() == ChannelType.TEXT) {
-                                guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Logs").queue(webhook -> {
-                                    SQLSession.getSqlConnector().getSqlWorker().isLogSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
-                                        if (aBoolean) {
-                                            SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> {
-                                                webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity));
-                                            });
-                                        }
+                                guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Logs").queue(webhook -> SQLSession.getSqlConnector().getSqlWorker().isLogSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
+                                    if (aBoolean) {
+                                        SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity)));
+                                    }
 
-                                        SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
-                                        commandEvent.reply(commandEvent.getResource("message.auditLog.setupSuccess"));
-                                    });
-                                });
+                                    SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
+                                    commandEvent.reply(commandEvent.getResource("message.auditLog.setupSuccess"));
+                                }));
                             } else {
                                 commandEvent.reply(commandEvent.getResource("message.default.invalidOptionChannel"));
                             }
@@ -184,17 +180,13 @@ public class Setup implements ICommand {
 
                         if (commandEvent.getSubcommand().equals("set")) {
                             if (guildChannelUnion.getType() == ChannelType.TEXT) {
-                                guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Welcome").queue(webhook -> {
-                                    SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
-                                        if (aBoolean) {
-                                            SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> {
-                                                webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity));
-                                            });
-                                        }
-                                        SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
-                                        commandEvent.reply(commandEvent.getResource("message.welcome.setupSuccess"));
-                                    });
-                                });
+                                guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Welcome").queue(webhook -> SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
+                                    if (aBoolean) {
+                                        SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity)));
+                                    }
+                                    SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
+                                    commandEvent.reply(commandEvent.getResource("message.welcome.setupSuccess"));
+                                }));
                             } else {
                                 commandEvent.reply(commandEvent.getResource("message.default.invalidOptionChannel"));
                             }
@@ -212,9 +204,7 @@ public class Setup implements ICommand {
                     case "tempvoice" -> {
                         if (commandEvent.getSubcommand().equals("set")) {
                             if (guildChannelUnion.getType() == ChannelType.VOICE) {
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new TemporalVoicechannel(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong())).subscribe(save -> {
-                                    commandEvent.reply(commandEvent.getResource("message.temporalVoice.setupSuccess"));
-                                });
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(new TemporalVoicechannel(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong())).subscribe(save -> commandEvent.reply(commandEvent.getResource("message.temporalVoice.setupSuccess")));
                             } else {
                                 commandEvent.reply(commandEvent.getResource("message.default.invalidOptionChannel"));
                             }
