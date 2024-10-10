@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -210,6 +211,16 @@ public class CommandManager {
                 commandData.setNSFW(true);
             }
 
+            if (commandAnnotation.category().isGuildOnly()) {
+                commandData.setIntegrationTypes(IntegrationType.GUILD_INSTALL);
+            } else {
+                if (commandAnnotation.allowAppInstall()) {
+                    commandData.setIntegrationTypes(IntegrationType.ALL);
+                } else {
+                    commandData.setIntegrationTypes(IntegrationType.GUILD_INSTALL);
+                }
+            }
+
             if (commandData instanceof CommandDataImpl commandData1) {
 
                 boolean isValidDescription = commandAnnotation.description().matches(RegExUtil.ALLOWED_LANGUAGE_PATHS);
@@ -369,6 +380,10 @@ public class CommandManager {
      */
     public Mono<Boolean> perform(Member member, Guild guild, String messageContent, Message message, GuildMessageChannelUnion messageChannel, SlashCommandInteractionEvent slashCommandInteractionEvent) {
         boolean isSlashCommand = slashCommandInteractionEvent != null;
+
+        if (!isSlashCommand && guild.isDetached()) {
+            return Mono.just(false);
+        }
 
         if (BotConfig.isDebug())
             log.info("Called perform");
@@ -565,17 +580,27 @@ public class CommandManager {
             return Mono.just(false);
         }
 
-        return SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).publishOn(Schedulers.boundedElastic()).mapNotNull(setting -> {
-            if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN && setting.isPresent() && !setting.get().getBooleanValue()) {
-                sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked").block(), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
-                return false;
-            }
+        Command annotation = command.getClass().getAnnotation(Command.class);
 
-            CommandEvent commandEvent = new CommandEvent(command.getClass().getAnnotation(Command.class).name(), slashCommandInteractionEvent.getMember(), slashCommandInteractionEvent.getGuild(), null, messageChannel, null, slashCommandInteractionEvent);
+        Guild guild = slashCommandInteractionEvent.getGuild();
 
-            // Perform the Command.
-            return command.onMonoPerform(commandEvent).block();
-        });
+        if (!annotation.allowAppInstall() && guild.isDetached()) return Mono.just(false);
+
+        CommandEvent commandEvent = new CommandEvent(annotation.name(), slashCommandInteractionEvent.getMember(), guild, null, messageChannel, null, slashCommandInteractionEvent);
+
+        if (guild.isDetached()) {
+            return command.onMonoPerform(commandEvent);
+        } else {
+            return SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + annotation.name().toLowerCase()).publishOn(Schedulers.boundedElastic()).mapNotNull(setting -> {
+                if (annotation.category() != Category.HIDDEN && setting.isPresent() && !setting.get().getBooleanValue()) {
+                    sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked").block(), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
+                    return false;
+                }
+
+                // Perform the Command.
+                return command.onMonoPerform(commandEvent).block();
+            });
+        }
     }
 
     /**

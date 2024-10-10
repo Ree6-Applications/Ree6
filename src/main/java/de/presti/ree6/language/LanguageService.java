@@ -36,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
 public class LanguageService {
 
     /**
-     * A Hashmap containing the locale as key and the YamlConfiguration as value.
+     * A Hashmap containing the locale as a key and the YamlConfiguration as value.
      */
     public static final HashMap<DiscordLocale, Language> languageResources = new HashMap<>();
 
@@ -226,7 +226,7 @@ public class LanguageService {
      * @return The String.
      */
     public static @NotNull Mono<String> getByGuild(Guild guild, @NotNull String key, @Nullable Object... parameter) {
-        return getByGuild(guild != null ? guild.getIdLong() : -1, key, parameter);
+        return getByGuild(guild != null && !guild.isDetached() ? guild.getIdLong() : -1, key, parameter);
     }
 
     /**

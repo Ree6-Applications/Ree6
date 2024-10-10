@@ -56,9 +56,9 @@
     <dependencies>
         <!-- Discord -->
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>io.github.JDA-Fork</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.1.2</version>
+            <version>55d824408c</version>
         </dependency>
         <!-- Fix for the failed Lookup until they release a version -->
         <dependency>

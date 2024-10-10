@@ -228,6 +228,14 @@ public class CommandEvent {
     }
 
     /**
+     * Check if the command event is run via App-Command.
+     * @return true, if it has been run via App-Command.
+     */
+    public boolean isDetached() {
+        return getGuild().isDetached();
+    }
+
+    /**
      * Get the {@link Guild} Entity associated with the Event.
      *
      * @return the {@link Guild} Entity.

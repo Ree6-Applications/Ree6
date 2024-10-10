@@ -22,7 +22,7 @@ import java.util.ArrayList;
 /**
  * Command used to access the Game System.
  */
-@Command(name = "game", description = "command.description.game", category = Category.FUN)
+@Command(name = "game", description = "command.description.game", category = Category.FUN, allowAppInstall = false)
 public class Game implements ICommand {
 
     /**
