@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationType;
-import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -215,10 +214,10 @@ public class CommandManager {
             if (commandAnnotation.category().isGuildOnly()) {
                 commandData.setIntegrationTypes(IntegrationType.GUILD_INSTALL);
             } else {
-                if (commandData.getContexts().contains(InteractionContextType.GUILD)) {
-                    commandData.setIntegrationTypes(IntegrationType.GUILD_INSTALL);
-                } else {
+                if (commandAnnotation.allowAppInstall()) {
                     commandData.setIntegrationTypes(IntegrationType.ALL);
+                } else {
+                    commandData.setIntegrationTypes(IntegrationType.GUILD_INSTALL);
                 }
             }
 
@@ -581,15 +580,19 @@ public class CommandManager {
             return Mono.just(false);
         }
 
+        Command annotation = command.getClass().getAnnotation(Command.class);
+
         Guild guild = slashCommandInteractionEvent.getGuild();
 
-        CommandEvent commandEvent = new CommandEvent(command.getClass().getAnnotation(Command.class).name(), slashCommandInteractionEvent.getMember(), guild, null, messageChannel, null, slashCommandInteractionEvent);
+        if (!annotation.allowAppInstall() && guild.isDetached()) return Mono.just(false);
+
+        CommandEvent commandEvent = new CommandEvent(annotation.name(), slashCommandInteractionEvent.getMember(), guild, null, messageChannel, null, slashCommandInteractionEvent);
 
         if (guild.isDetached()) {
             return command.onMonoPerform(commandEvent);
         } else {
-            return SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + command.getClass().getAnnotation(Command.class).name().toLowerCase()).publishOn(Schedulers.boundedElastic()).mapNotNull(setting -> {
-                if (command.getClass().getAnnotation(Command.class).category() != Category.HIDDEN && setting.isPresent() && !setting.get().getBooleanValue()) {
+            return SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + annotation.name().toLowerCase()).publishOn(Schedulers.boundedElastic()).mapNotNull(setting -> {
+                if (annotation.category() != Category.HIDDEN && setting.isPresent() && !setting.get().getBooleanValue()) {
                     sendMessage(LanguageService.getByGuild(slashCommandInteractionEvent.getGuild(), "command.perform.blocked").block(), 5, null, slashCommandInteractionEvent.getHook().setEphemeral(true));
                     return false;
                 }

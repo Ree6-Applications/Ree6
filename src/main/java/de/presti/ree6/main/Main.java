@@ -5,7 +5,6 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.google.gson.JsonObject;
-import de.presti.ree6.module.actions.streamtools.container.StreamActionContainerCreator;
 import de.presti.ree6.addons.ReePluginManager;
 import de.presti.ree6.audio.music.MusicWorker;
 import de.presti.ree6.bot.BotConfig;
@@ -17,12 +16,13 @@ import de.presti.ree6.commands.CommandManager;
 import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.events.*;
+import de.presti.ree6.language.LanguageService;
+import de.presti.ree6.module.actions.streamtools.container.StreamActionContainerCreator;
 import de.presti.ree6.module.game.core.GameManager;
 import de.presti.ree6.module.game.impl.musicquiz.util.MusicQuizUtil;
-import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.module.logger.LoggerQueue;
 import de.presti.ree6.module.giveaway.GiveawayManager;
 import de.presti.ree6.module.invite.InviteContainerManager;
+import de.presti.ree6.module.logger.LoggerQueue;
 import de.presti.ree6.sql.DatabaseTyp;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Giveaway;
@@ -398,10 +398,10 @@ public class Main {
         log.info("Any previous messages about \"Error executing DDL\" can be most likely ignored.");
         log.info("Initialization finished.");
         log.info("Bot is ready to use.");
-        log.info("You are running on: v" + BotWorker.getBuild());
-        log.info("You are running on: " + BotWorker.getShardManager().getShardsTotal() + " Shards.");
-        log.info("You are running on: " + BotWorker.getShardManager().getGuilds().size() + " Guilds.");
-        log.info("You are running on: " + BotWorker.getShardManager().getUsers().size() + " Users.");
+        log.info("You are running on: v{}", BotWorker.getBuild());
+        log.info("You are running on: {} Shards.", BotWorker.getShardManager().getShardsTotal());
+        log.info("You are running on: {} Guilds.", BotWorker.getShardManager().getGuilds().size());
+        log.info("You are running on: {} Users.", BotWorker.getShardManager().getUsers().size());
         log.info("Have fun!");
     }
 

@@ -10,7 +10,6 @@ import de.presti.ree6.module.game.core.base.GameInfo;
 import de.presti.ree6.module.game.core.base.GamePlayer;
 import de.presti.ree6.module.game.core.base.GameState;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -23,7 +22,7 @@ import java.util.ArrayList;
 /**
  * Command used to access the Game System.
  */
-@Command(name = "game", description = "command.description.game", category = Category.FUN)
+@Command(name = "game", description = "command.description.game", category = Category.FUN, allowAppInstall = false)
 public class Game implements ICommand {
 
     /**
@@ -108,7 +107,7 @@ public class Game implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("game", "command.description.game").setContexts(InteractionContextType.GUILD)
+        return new CommandDataImpl("game", "command.description.game")
                 .addSubcommands(new SubcommandData("create", "Create a new Game match.")
                         .addOptions(new OptionData(OptionType.STRING, "name", "The Game name.", true).addChoice("Blackjack", "blackjack").addChoice("Music Quiz", "musicquiz")),
                         new SubcommandData("join", "Join a Game match.")

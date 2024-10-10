@@ -4,7 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ImageCreationUtility;
 import net.dv8tion.jda.api.entities.Member;
@@ -74,9 +73,15 @@ public class HornyJail implements ICommand {
         try {
             MessageCreateBuilder createBuilder = new MessageCreateBuilder();
             createBuilder.addFiles(FileUpload.fromData(ImageCreationUtility.createHornyJailImage(member.getUser()), "hornyjail.png"));
-            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("message.hornyJail", member.getAsMention()), commandEvent.getChannel(), commandEvent.getInteractionHook());
-            commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
-            if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).queue();
+            String messageContent = commandEvent.getResource("message.hornyJail", member.getAsMention());
+            if (commandEvent.isDetached()) {
+                createBuilder.setContent(messageContent);
+                commandEvent.reply(createBuilder.build());
+            } else {
+                Main.getInstance().getCommandManager().sendMessage(messageContent, commandEvent.getChannel(), commandEvent.getInteractionHook());
+                commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
+                if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).queue();
+            }
         } catch (Exception ex) {
             Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("command.perform.error"), commandEvent.getChannel(), commandEvent.getInteractionHook());
             log.error("Error while sending Horny-jail!", ex);

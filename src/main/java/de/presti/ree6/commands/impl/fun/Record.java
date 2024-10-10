@@ -6,24 +6,18 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
-import net.dv8tion.jda.api.interactions.InteractionContextType;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 /**
  * A command used to record the conversation of a voice channel.
  */
-@Command(name = "record", description = "command.description.record", category = Category.FUN)
+@Command(name = "record", description = "command.description.record", category = Category.FUN, allowAppInstall = false)
 public class Record implements ICommand {
 
     /**
@@ -90,7 +84,7 @@ public class Record implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("record", "command.description.record").setContexts(InteractionContextType.GUILD);
+        return new CommandDataImpl("record", "command.description.record");
     }
 
     /**

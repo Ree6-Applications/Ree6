@@ -1,5 +1,6 @@
 package de.presti.ree6.utils.others;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
@@ -246,6 +247,8 @@ public class GuildUtil {
      * @return true if the User has supported Ree6 via Donations, false if not.
      */
     public static boolean isSupporter(User member) {
+        if (member.getId().equalsIgnoreCase(BotConfig.getBotOwner())) return true;
+
         if (!member.getJDA().retrieveEntitlements().excludeEnded(true).skuIds(1165934495447384144L).complete().isEmpty()) {
             return true;
         }
