@@ -33,7 +33,7 @@ public class CustomOAuth2Util {
         // OAuth2
         OAuth2IdentityProvider oAuth2IdentityProvider = Main.getInstance().getNotifier().getCredentialManager().getIdentityProviderByName("twitch")
                 .filter(idp -> idp.getProviderType().equalsIgnoreCase("oauth2") && idp instanceof OAuth2IdentityProvider)
-                .map(idp -> (OAuth2IdentityProvider) idp)
+                .map(OAuth2IdentityProvider.class::cast)
                 .orElseThrow(() -> new RuntimeException("Can't find a unique identity provider for the specified credential!"));
 
         Optional<OAuth2Credential> enrichedCredential = oAuth2IdentityProvider.getAdditionalCredentialInformation(oAuth2Credential);

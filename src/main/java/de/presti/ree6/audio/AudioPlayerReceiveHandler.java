@@ -68,7 +68,6 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
     /**
      * The first sent message which should be edited.
      */
-    // TODO:: make this async one day, and thread safe.
     Message message;
 
     /**
@@ -90,9 +89,8 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                                         audioChannelUnion.asVoiceChannel().canTalk();
 
                                 if (canTalk) {
-                                    LanguageService.getByGuild(member.getGuild(), "message.default.nameChangeFailed").subscribe(message -> {
-                                        audioChannelUnion.asGuildMessageChannel().sendMessage(message).queue();
-                                    });
+                                    LanguageService.getByGuild(member.getGuild(), "message.default.nameChangeFailed").subscribe(message ->
+                                            audioChannelUnion.asGuildMessageChannel().sendMessage(message).queue());
                                 }
                                 return null;
                             }).queue()));
@@ -194,9 +192,9 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
             Recording recording = new Recording(audioChannelUnion.getGuild().getIdLong(), audioChannelUnion.getIdLong(), creatorId, AudioUtil.convertPCMtoWAV(byteBuffer),
                     JsonParser.parseString(new Gson().toJson(participants)).getAsJsonArray());
 
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(recording).doOnError(x -> {
-                audioChannelUnion.asGuildMessageChannel().sendMessage(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.error", "Upload failed").block()).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav"));
-            }).subscribe(newRecording -> {
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(recording).doOnError(x ->
+                    audioChannelUnion.asGuildMessageChannel().sendMessage(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.error", "Upload failed").block()).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav")))
+                    .subscribe(newRecording -> {
                 if (canTalk) {
                     message.editMessageEmbeds(new EmbedBuilder()
                                     .setDescription(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.stopped").block())

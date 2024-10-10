@@ -17,7 +17,6 @@ import de.presti.ree6.module.notifications.ISonic;
 import de.presti.ree6.module.notifications.SonicIdentifier;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
-import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;

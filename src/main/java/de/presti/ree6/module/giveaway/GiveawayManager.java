@@ -5,7 +5,6 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Giveaway;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 

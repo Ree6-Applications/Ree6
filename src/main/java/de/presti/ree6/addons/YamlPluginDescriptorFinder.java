@@ -63,7 +63,7 @@ public class YamlPluginDescriptorFinder implements PluginDescriptorFinder {
             }
 
             try (InputStream input = Files.newInputStream(yamlPath)) {
-                yamlConfiguration = YamlConfiguration.loadConfiguration(input);
+                yamlConfiguration = YamlConfiguration.loadConfiguration(() -> input);
             } catch (IOException e) {
                 throw new PluginRuntimeException(e);
             }

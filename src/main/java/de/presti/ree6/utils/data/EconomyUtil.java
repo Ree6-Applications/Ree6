@@ -10,7 +10,6 @@ import reactor.core.scheduler.Schedulers;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Utility class for Economy related stuff.
