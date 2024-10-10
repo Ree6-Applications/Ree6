@@ -4,8 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -60,7 +58,7 @@ public class Unmute implements ICommand {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.MODERATE_MEMBERS.name()), 5);
         }
 
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        commandEvent.delete();
     }
 
     /**
@@ -68,7 +66,7 @@ public class Unmute implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("unmute", LanguageService.getDefault("command.description.unmute"))
+        return new CommandDataImpl("unmute", "command.description.unmute")
                 .addOptions(new OptionData(OptionType.USER, "target", "Which User should be unmuted.").setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MODERATE_MEMBERS));
     }

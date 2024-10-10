@@ -5,7 +5,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.others.GuildUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
@@ -54,7 +53,7 @@ public class Avatar implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("avatar", LanguageService.getDefault("command.description.avatar"))
+        return new CommandDataImpl("avatar", "command.description.avatar")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User whose profile you want.").setRequired(true));
     }
 

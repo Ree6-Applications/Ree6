@@ -4,7 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -93,7 +92,7 @@ public class EmbedSender implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("embed", LanguageService.getDefault("command.description.embedSender"))
+        return new CommandDataImpl("embed", "command.description.embedSender")
                 .addOption(OptionType.STRING, "title", "The title of the embed!", true)
                 .addOption(OptionType.STRING, "description", "The description of the embed!", true)
                 .addOption(OptionType.INTEGER, "color", "The color of the embed!", false)

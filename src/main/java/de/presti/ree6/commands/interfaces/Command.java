@@ -34,4 +34,10 @@ public @interface Command {
      * @return retrieve the category of the Command.
      */
     Category category();
+
+    /**
+     * Allow a command to be used as app command.
+     * @return if the command is allowed to be used via command.
+     */
+    boolean allowAppInstall() default true;
 }

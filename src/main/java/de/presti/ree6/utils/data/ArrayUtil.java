@@ -27,10 +27,10 @@ public class ArrayUtil {
     }
 
     /**
-     * HashMap used to store conversations between the user and the Chat-GPT implementation.
+     * HashMap used to store conversations between the user and the ChatGPT implementation.
      * These are being stored guild specific so Ree6 will not continue a conversation in another guild.
-     * While at the same time we store them in memory to protect users privacy, since there is no actual
-     * reason for us to keep these longer then the current application uptime.
+     * While at the same time we store them in memory to protect users' privacy, since there is no actual
+     * reason for us to keep these longer than the current application uptime.
      */
     public static final Map<String, List<com.lilittlecat.chatgpt.offical.entity.Message>> chatGPTMessages = new HashMap<>();
 
@@ -40,7 +40,7 @@ public class ArrayUtil {
     public static final Map<String, Message> messageIDwithMessage = new HashMap<>();
 
     /**
-     * HashMap used to store user Ids that are associated with a message, to show the content when the message gets deleted.
+     * HashMap used to store user Ids that are associated with a message to show the content when the message gets deleted.
      */
     public static final Map<String, User> messageIDwithUser = new HashMap<>();
 
@@ -55,12 +55,12 @@ public class ArrayUtil {
     public static final Map<Long, Message> musicPanelList = new HashMap<>();
 
     /**
-     * HashMap used to store a users Ids, to keep them from spamming commands.
+     * HashMap used to store a user's Ids, to keep them from spamming commands.
      */
     public static final List<String> commandCooldown = new ArrayList<>();
 
     /**
-     * HashMap used to store a users Ids, to keep them from earning XP with every message.
+     * HashMap used to store a user's Ids, to keep them from earning XP with every message.
      */
     public static final List<Member> timeout = new ArrayList<>();
 

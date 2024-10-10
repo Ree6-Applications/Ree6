@@ -7,7 +7,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
@@ -136,7 +135,7 @@ public class Rule34 implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("nsfw34", LanguageService.getDefault("command.description.rule34_slash"))
+        return new CommandDataImpl("nsfw34", "command.description.rule34_slash")
                 .addOptions(new OptionData(OptionType.STRING, "tags", "Tags for the image search"));
     }
 

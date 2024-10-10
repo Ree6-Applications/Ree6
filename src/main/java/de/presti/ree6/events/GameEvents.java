@@ -1,9 +1,9 @@
 package de.presti.ree6.events;
 
-import de.presti.ree6.game.core.GameManager;
-import de.presti.ree6.game.core.GameSession;
-import de.presti.ree6.game.core.base.GamePlayer;
-import de.presti.ree6.game.core.base.GameState;
+import de.presti.ree6.module.game.core.GameManager;
+import de.presti.ree6.module.game.core.GameSession;
+import de.presti.ree6.module.game.core.base.GamePlayer;
+import de.presti.ree6.module.game.core.base.GameState;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;

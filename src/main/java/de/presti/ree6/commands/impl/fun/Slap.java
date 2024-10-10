@@ -4,7 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.apis.Neko4JsAPI;
 import net.dv8tion.jda.api.entities.Member;
@@ -12,6 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import pw.aru.api.nekos4j.image.Image;
 import pw.aru.api.nekos4j.image.ImageProvider;
@@ -54,7 +54,7 @@ public class Slap implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("gracetheface", LanguageService.getDefault("command.description.slap"))
+        return new CommandDataImpl("gracetheface", "command.description.slap")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should be slapped!").setRequired(true));
     }
 
@@ -72,17 +72,24 @@ public class Slap implements ICommand {
      * @param commandEvent The CommandEvent.
      */
     public void sendSlap(Member member, CommandEvent commandEvent) {
-        Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("message.slap", member.getAsMention(), commandEvent.getMember().getAsMention()), commandEvent.getChannel(), null);
-
         ImageProvider ip = Neko4JsAPI.imageAPI.getImageProvider();
 
         Image im = null;
         try {
             im = ip.getRandomImage("slap").execute();
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            log.error("Failed to get Image from Neko4J API!", exception);
         }
 
-        Main.getInstance().getCommandManager().sendMessage((im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"), commandEvent.getChannel(), null);
-        if (commandEvent.isSlashCommand()) commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).queue();
+        if (!commandEvent.isDetached()) {
+            Main.getInstance().getCommandManager().sendMessage(commandEvent.getResource("message.slap", member.getAsMention(), commandEvent.getMember().getAsMention()), commandEvent.getChannel(), null);
+            Main.getInstance().getCommandManager().sendMessage(im != null ? im.getUrl() : "https://images.ree6.de/notfound.png", commandEvent.getChannel(), null);
+            if (commandEvent.isSlashCommand())
+                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).queue();
+        } else {
+            MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+            messageCreateBuilder.setContent(commandEvent.getResource("message.slap", member.getAsMention(), commandEvent.getMember().getAsMention()) + "\n" + (im != null ? im.getUrl() : "https://images.ree6.de/notfound.png"));
+            commandEvent.reply(messageCreateBuilder.build());
+        }
     }
 }

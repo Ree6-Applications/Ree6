@@ -4,9 +4,7 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.news.AnnouncementManager;
-import de.presti.ree6.bot.BotConfig;
+import de.presti.ree6.module.news.AnnouncementManager;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -26,7 +24,7 @@ public class Announcement implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
 
-        if (!commandEvent.getMember().getUser().getId().equalsIgnoreCase(BotConfig.getBotOwner())) {
+        if (!commandEvent.isBotOwner()) {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", "BE DEVELOPER"), 5);
             return;
         }
@@ -41,8 +39,8 @@ public class Announcement implements ICommand {
         OptionMapping toDeleteId = commandEvent.getOption("id");
 
         if (title != null && content != null) {
-            de.presti.ree6.news.Announcement announcement =
-                    new de.presti.ree6.news.Announcement(RandomUtils.randomString(16, false), title.getAsString(),
+            de.presti.ree6.module.news.Announcement announcement =
+                    new de.presti.ree6.module.news.Announcement(RandomUtils.randomString(16, false), title.getAsString(),
                             content.getAsString());
 
             AnnouncementManager.addAnnouncement(announcement);
@@ -62,7 +60,7 @@ public class Announcement implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("announcement", LanguageService.getDefault("command.description.announcement"))
+        return new CommandDataImpl("announcement","command.description.announcement")
                 .addOptions(new OptionData(OptionType.STRING, "title", "The title of the announcement.", false),
                         new OptionData(OptionType.STRING, "content", "The content of the announcement.", false),
                         new OptionData(OptionType.STRING, "id", "The to delete announcement id.", false));

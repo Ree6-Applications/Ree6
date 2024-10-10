@@ -65,11 +65,11 @@ public class MusicPanel implements ICommand {
             embedBuilder1 = embedBuilder1
                     .setImage(audioTrackInfo1 != null && (audioTrackInfo1.artworkUrl != null && !audioTrackInfo1.artworkUrl.isBlank()) ? audioTrackInfo1.artworkUrl : "https://images.unsplash.com/photo-1546977463-943d58b78c19")
                     .setTitle("**" + (audioTrackInfo1 != null ? LanguageService.getByGuild(event.getGuild(), "message.music.songInfoSlim", audioTrackInfo1.title, audioTrackInfo1.author)
-                            : LanguageService.getByGuild(event.getGuild(), "message.music.notPlaying")) + "**");
+                            : LanguageService.getByGuild(event.getGuild(), "message.music.notPlaying")).block() + "**");
         } else if (event.getState() != MusicPlayerStateChangeEvent.State.QUEUE_ADD) {
             embedBuilder1 = embedBuilder1
                     .setImage("https://images.unsplash.com/photo-1546977463-943d58b78c19")
-                    .setTitle("**" + LanguageService.getByGuild(event.getGuild(), "message.music.notPlaying") + "**");
+                    .setTitle("**" + LanguageService.getByGuild(event.getGuild(), "message.music.notPlaying").block() + "**");
         }
 
         messageEditBuilder.setEmbeds(embedBuilder1.build());
