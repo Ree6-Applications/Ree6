@@ -21,17 +21,24 @@ import java.util.*;
 public class GameManager {
 
     /**
+     * Constructor to prevent instance creation of the GameManager.
+     */
+    private GameManager() {
+        throw new UnsupportedOperationException("Do not instance this.");
+    }
+
+    /**
      * A HashMap used to cache the Games.
      * The Key is the Name of the Game.
      */
     @Getter
-    private final static HashMap<String, Class<? extends IGame>> gameCache = new HashMap<>();
+    private static final HashMap<String, Class<? extends IGame>> gameCache = new HashMap<>();
 
     /**
      * A HashMap used to cache the GameSessions.
      * The Key is the ID of the Channel.
      */
-    private final static HashMap<String, GameSession> gameSessions = new HashMap<>();
+    private static final HashMap<String, GameSession> gameSessions = new HashMap<>();
 
     /**
      * Should be called to load all Games into the cache.
