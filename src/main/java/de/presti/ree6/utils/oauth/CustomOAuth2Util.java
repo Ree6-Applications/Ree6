@@ -13,6 +13,13 @@ import java.util.Optional;
 public class CustomOAuth2Util {
 
     /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     */
+    private CustomOAuth2Util() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
      * A bridge method to convert a CustomOAuth2Credential to an enriched CustomOAuth2Credential.
      * @param customOAuth2Credential The CustomOAuth2Credential to convert.
      * @return The converted CustomOAuth2Credential.

@@ -28,7 +28,7 @@ public class CustomEventContainerCreator {
     /**
      * Constructor should not be called, since it is a utility class that doesn't need an instance.
      */
-    public CustomEventContainerCreator() {
+    private CustomEventContainerCreator() {
         throw new IllegalStateException("Utility class");
     }
 

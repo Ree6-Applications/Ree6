@@ -13,6 +13,13 @@ import java.util.List;
 public class AnnouncementManager {
 
     /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     */
+    private AnnouncementManager() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
      * List of all announcements.
      */
     @Getter

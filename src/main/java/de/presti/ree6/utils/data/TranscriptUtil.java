@@ -8,6 +8,13 @@ import java.util.List;
 public class TranscriptUtil {
 
     /**
+     * Constructor should not be called, since it is a utility class that doesn't need an instance.
+     */
+    private TranscriptUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
      * The HTML template that should be used for the transcripts.
      */
     public static final String template = """
