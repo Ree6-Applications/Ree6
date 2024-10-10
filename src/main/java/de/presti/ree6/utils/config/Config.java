@@ -405,10 +405,12 @@ public class Config {
      */
     public YamlFile createTemporal() {
         try {
-            return yamlTempFile = new YamlFile(getTemporalFile());
+            yamlTempFile = new YamlFile(getTemporalFile());
         } catch (Exception e) {
             return new YamlFile();
         }
+
+        return yamlTempFile;
     }
 
     /**

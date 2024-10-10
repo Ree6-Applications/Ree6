@@ -184,7 +184,7 @@ public class LogMessageMember extends LogMessage {
      */
     public List<Role> getRemovedRoles() {
         if (removedRoles == null)
-            return removedRoles = new ArrayList<>();
+            removedRoles = new ArrayList<>();
 
         return removedRoles;
     }
@@ -205,7 +205,7 @@ public class LogMessageMember extends LogMessage {
      */
     public List<Role> getAddedRoles() {
         if (addedRoles == null)
-            return addedRoles = new ArrayList<>();
+            addedRoles = new ArrayList<>();
 
         return addedRoles;
     }
