@@ -132,7 +132,10 @@ public class TwitchSonic implements ISonic {
 
     @Override
     public void unload() {
-
+        twitchChannels.forEach(channel -> {
+            Main.getInstance().getNotifier().getTwitchClient().getClientHelper().disableStreamEventListener(channel.getIdentifier());
+            Main.getInstance().getNotifier().getTwitchClient().getClientHelper().disableFollowEventListener(channel.getIdentifier());
+        });
     }
 
     @Override
