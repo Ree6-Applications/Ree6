@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 // TODO:: Rework the Config System to make the Config class be the actual config structure and use it to serialize and deserialize while making a new ConfigManager class that loads and saves the config.
+
 /**
  * Config.
  */
@@ -278,77 +279,69 @@ public class Config {
             log.warn("This means the config file is not backed up by us!");
         }
 
-        if (getFile().delete()) {
-            init();
+        try {
+            if (Files.deleteIfExists(getFile().toPath())) {
+                init();
 
-            for (Map.Entry<String, Object> entry : resources.entrySet()) {
-                String key = entry.getKey();
+                for (Map.Entry<String, Object> entry : resources.entrySet()) {
+                    String key = entry.getKey();
 
-                boolean modified = false;
+                    boolean modified = false;
 
-                if (key.startsWith("config"))
-                    continue;
-
-                if (entry.getValue() instanceof MemorySection)
-                    continue;
-
-                // Migrate to 1.10.0
-                if (compareVersion("1.10.0", configVersion)) {
-
-                    if (key.startsWith("mysql"))
-                        key = key.replace("mysql", "hikari.sql");
-
-                    if (key.endsWith(".rel"))
-                        key = key.replace(".rel", ".release");
-
-                    yamlFile.set(key, entry.getValue());
-                    modified = true;
-                }
-
-                // Migrate to 2.2.0
-                if (compareVersion("2.2.0", configVersion)) {
-
-                    if (key.startsWith("youtube"))
+                    if (key.startsWith("config") || entry.getValue() instanceof MemorySection)
                         continue;
 
-                    yamlFile.set(key, entry.getValue());
-                    modified = true;
+                    // Migrate to 1.10.0
+                    if (compareVersion("1.10.0", configVersion)) {
+
+                        if (key.startsWith("mysql"))
+                            key = key.replace("mysql", "hikari.sql");
+
+                        if (key.endsWith(".rel"))
+                            key = key.replace(".rel", ".release");
+
+                        yamlFile.set(key, entry.getValue());
+                        modified = true;
+                    }
+
+                    // Migrate to 2.2.0
+                    if (compareVersion("2.2.0", configVersion) && !key.startsWith("youtube")) {
+                        yamlFile.set(key, entry.getValue());
+                        modified = true;
+                    }
+
+
+                    // Migrate to 2.4.11
+                    if (compareVersion("2.4.11", configVersion) && key.startsWith("twitter") && !key.endsWith("bearer"))
+                        continue;
+
+                    // Migrate to 3.1.9
+                    if (compareVersion("3.1.9", configVersion)) {
+
+                        if (key.startsWith("bot.misc.leveling.modules."))
+                            key = key.replace("bot.misc.leveling.modules.", "bot.misc.modules.");
+
+                        if (key.endsWith("bot.misc.leveling.rankCard."))
+                            key = key.replace("bot.misc.leveling.rankCard.", "bot.misc.rankCard.");
+
+                        yamlFile.set(key, entry.getValue());
+                        modified = true;
+                    }
+
+
+                    if (!modified) {
+                        yamlFile.set(key, entry.getValue());
+                    }
                 }
 
-
-                // Migrate to 2.4.11
-                if (compareVersion("2.4.11", configVersion)) {
-                    if (key.startsWith("twitter") && !key.endsWith("bearer")) continue;
+                if (compareVersion("2.2.0", configVersion)) {
+                    yamlFile.remove("youtube");
                 }
 
-                // Migrate to 3.1.9
-                if (compareVersion("3.1.9", configVersion)) {
-
-                    if (key.startsWith("bot.misc.leveling.modules."))
-                        key = key.replace("bot.misc.leveling.modules.", "bot.misc.modules.");
-
-                    if (key.endsWith("bot.misc.leveling.rankCard."))
-                        key = key.replace("bot.misc.leveling.rankCard.", "bot.misc.rankCard.");
-
-                    yamlFile.set(key, entry.getValue());
-                    modified = true;
-                }
-
-
-                if (!modified) {
-                    yamlFile.set(key, entry.getValue());
-                }
-            }
-
-            if (compareVersion("2.2.0", configVersion)) {
-                yamlFile.remove("youtube");
-            }
-
-            try {
                 yamlFile.save(getFile());
-            } catch (Exception exception) {
-                log.error("Failed to save migrated config!", exception);
             }
+        } catch (Exception exception) {
+            log.error("Could not migrate old config!", exception);
         }
     }
 
