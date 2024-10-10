@@ -47,7 +47,7 @@ public class CustomOAuth2Credential extends Credential {
     /**
      * OAuth Scopes
      */
-    private List<String> scopes;
+    private final List<String> scopes;
 
     /**
      * Access Token context that can be used to store additional information

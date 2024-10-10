@@ -17,7 +17,7 @@ public class LogMessageVoice extends LogMessage {
     /**
      * An instance of the Member Entity.
      */
-    private Member member;
+    private final Member member;
 
     /**
      * The Audio Channels associated with the Events.

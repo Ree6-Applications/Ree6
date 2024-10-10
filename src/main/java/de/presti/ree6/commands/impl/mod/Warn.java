@@ -121,31 +121,30 @@ public class Warn implements ICommand {
                         });
                     }
 
-                    case "list" -> {
-                        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new Punishments(), "FROM Punishments WHERE guildAndId.guildId = :gid", Map.of("gid", commandEvent.getGuild().getIdLong())).subscribe(punishmentsList -> {
-                            StringBuilder stringBuilder = new StringBuilder();
-                            for (Punishments punishments : punishmentsList) {
-                                int action = punishments.getAction();
-                                stringBuilder.append(punishments.getId()).append(" - ").append(punishments.getWarnings()).append(" -> ");
+                    case "list" ->
+                            SQLSession.getSqlConnector().getSqlWorker().getEntityList(new Punishments(), "FROM Punishments WHERE guildAndId.guildId = :gid", Map.of("gid", commandEvent.getGuild().getIdLong())).subscribe(punishmentsList -> {
+                                StringBuilder stringBuilder = new StringBuilder();
+                                for (Punishments punishments : punishmentsList) {
+                                    int action = punishments.getAction();
+                                    stringBuilder.append(punishments.getId()).append(" - ").append(punishments.getWarnings()).append(" -> ");
 
-                                switch (action) {
-                                    case 1 ->
-                                            stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.timeout", Duration.ofMillis(punishments.getTimeoutTime()).toSeconds()));
-                                    case 2 ->
-                                            stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.roleAdd", punishments.getRoleId()));
-                                    case 3 ->
-                                            stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.roleRemove", punishments.getRoleId()));
-                                    case 4 ->
-                                            stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.kick", punishments.getReason()));
-                                    case 5 ->
-                                            stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.ban", punishments.getReason()));
+                                    switch (action) {
+                                        case 1 ->
+                                                stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.timeout", Duration.ofMillis(punishments.getTimeoutTime()).toSeconds()));
+                                        case 2 ->
+                                                stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.roleAdd", punishments.getRoleId()));
+                                        case 3 ->
+                                                stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.roleRemove", punishments.getRoleId()));
+                                        case 4 ->
+                                                stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.kick", punishments.getReason()));
+                                        case 5 ->
+                                                stringBuilder.append(commandEvent.getResource("message.warn.punishment.listEntry.ban", punishments.getReason()));
+                                    }
+
+                                    stringBuilder.append("\n");
                                 }
-
-                                stringBuilder.append("\n");
-                            }
-                            commandEvent.reply(commandEvent.getResource("message.warn.punishment.list", stringBuilder.toString()));
-                        });
-                    }
+                                commandEvent.reply(commandEvent.getResource("message.warn.punishment.list", stringBuilder.toString()));
+                            });
 
                     case "delete" -> {
                         int id = idMapping.getAsInt();

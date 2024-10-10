@@ -347,7 +347,7 @@ public class Config {
             try {
                 yamlFile.save(getFile());
             } catch (Exception exception) {
-                exception.printStackTrace();
+                log.error("Failed to save migrated config!", exception);
             }
         }
     }
