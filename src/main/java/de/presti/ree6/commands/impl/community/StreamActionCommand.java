@@ -2,14 +2,14 @@ package de.presti.ree6.commands.impl.community;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import de.presti.ree6.module.actions.ActionInfo;
-import de.presti.ree6.module.actions.streamtools.container.StreamActionContainer;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.module.actions.ActionInfo;
+import de.presti.ree6.module.actions.streamtools.container.StreamActionContainer;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.StreamAction;
 import de.presti.ree6.sql.entities.TwitchIntegration;
@@ -187,9 +187,8 @@ public class StreamActionCommand implements ICommand {
                             });
 
                     case "list" ->
-                            SQLSession.getSqlConnector().getSqlWorker().getEntityList(new StreamAction(), "FROM StreamAction WHERE guildAndName.guildId = :gid", Map.of("gid", commandEvent.getGuild().getIdLong())).subscribe(streamActions -> {
-                                commandEvent.reply(commandEvent.getResource("message.stream-action.list", String.join("\n", streamActions.stream().map(StreamAction::getName).toArray(String[]::new))));
-                            });
+                            SQLSession.getSqlConnector().getSqlWorker().getEntityList(new StreamAction(), "FROM StreamAction WHERE guildAndName.guildId = :gid", Map.of("gid", commandEvent.getGuild().getIdLong())).subscribe(streamActions ->
+                                    commandEvent.reply(commandEvent.getResource("message.stream-action.list", String.join("\n", streamActions.stream().map(StreamAction::getName).toArray(String[]::new)))));
 
                     case "points" ->
                             SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(), "FROM TwitchIntegration WHERE userId = :uid", Map.of("uid", commandEvent.getUser().getIdLong())).subscribe(twitchIntegrationOptional -> {

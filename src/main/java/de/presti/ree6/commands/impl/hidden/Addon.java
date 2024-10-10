@@ -2,6 +2,7 @@ package de.presti.ree6.commands.impl.hidden;
 
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
@@ -14,6 +15,7 @@ import org.pf4j.PluginState;
 import org.pf4j.PluginWrapper;
 
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * A command to either reload all Addons or list all of them.
@@ -43,8 +45,24 @@ public class Addon implements ICommand {
         switch (subcommand) {
             case "reload" -> {
                 commandEvent.reply(commandEvent.getResource("message.addon.reloadAll"));
-                //Main.getInstance().getPluginManager().reload();
+
+                List<ICommand> commands = Main.getInstance().getPluginManager().getExtensions(ICommand.class);
+                commands.forEach(command -> Main.getInstance().getCommandManager().removeCommand(command));
+                Main.getInstance().getPluginManager().stopPlugins();
+                Main.getInstance().getPluginManager().unloadPlugins();
+                Main.getInstance().getPluginManager().loadPlugins();
+                Main.getInstance().getPluginManager().startPlugins();
                 commandEvent.reply(commandEvent.getResource("message.addon.reloadedAll"));
+
+                commands = Main.getInstance().getPluginManager().getExtensions(ICommand.class);
+                log.info("Found {} commands in all plugins.", commands.size());
+                commands.forEach(command -> {
+                    try {
+                        Main.getInstance().getCommandManager().addCommand(command);
+                    } catch (CommandInitializerException e) {
+                        log.warn("Failed to initialize command: {}", command.getClass().getSimpleName(), e);
+                    }
+                });
             }
 
             case "list" -> {

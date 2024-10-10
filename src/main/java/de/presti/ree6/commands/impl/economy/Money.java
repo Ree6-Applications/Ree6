@@ -86,15 +86,14 @@ public class Money implements ICommand {
 
                     double sendAmount = RandomUtils.round(amount.getAsDouble(), 2);
 
-                    EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder -> {
-                        EconomyUtil.getMoneyHolder(member).subscribe(target -> {
-                            if (EconomyUtil.pay(moneyHolder, target, sendAmount, true, true)) {
-                                commandEvent.reply(commandEvent.getResource("message.money.send", EconomyUtil.formatMoney(sendAmount), member.getAsMention()));
-                            } else {
-                                commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
-                            }
-                        });
-                    });
+                    EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder ->
+                            EconomyUtil.getMoneyHolder(member).subscribe(target -> {
+                                if (EconomyUtil.pay(moneyHolder, target, sendAmount, true, true)) {
+                                    commandEvent.reply(commandEvent.getResource("message.money.send", EconomyUtil.formatMoney(sendAmount), member.getAsMention()));
+                                } else {
+                                    commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
+                                }
+                            }));
                 }
                 default -> {
                     if (user != null) {
@@ -141,28 +140,22 @@ public class Money implements ICommand {
 
             if (subcommandGroup.equals("admin")) {
                 switch (subcommand) {
-                    case "add" -> {
-                        EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder -> {
+                    case "add" -> EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder ->
                             EconomyUtil.getMoneyHolder(member).subscribe(target -> {
                                 EconomyUtil.pay(moneyHolder, target, optionAmount, false, transferToBank, true);
                                 commandEvent.reply(commandEvent.getResource("message.money.add", EconomyUtil.formatMoney(optionAmount), member.getAsMention()), 5);
-                            });
-                        });
-                    }
-                    case "set" -> {
-                        EconomyUtil.getMoneyHolder(member).subscribe(moneyHolder -> {
-                            EconomyUtil.set(moneyHolder, optionAmount, transferToBank);
-                            commandEvent.reply(commandEvent.getResource("message.money.set", member.getAsMention(), EconomyUtil.formatMoney(optionAmount)), 5);
-                        });
-                    }
-                    case "remove" -> {
-                        EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder -> {
+                            }));
+                    case "set" -> EconomyUtil.getMoneyHolder(member).subscribe(moneyHolder -> {
+                        EconomyUtil.set(moneyHolder, optionAmount, transferToBank);
+                        commandEvent.reply(commandEvent.getResource("message.money.set", member.getAsMention(), EconomyUtil.formatMoney(optionAmount)), 5);
+                    });
+                    case "remove" -> EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder ->
                             EconomyUtil.getMoneyHolder(member).subscribe(target -> {
                                 EconomyUtil.pay(moneyHolder, target, -optionAmount, false, transferToBank, true);
                                 commandEvent.reply(commandEvent.getResource("message.money.remove", EconomyUtil.formatMoney(optionAmount), member.getAsMention()), 5);
-                            });
-                        });
-                    }
+                            }));
+
+                    default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
                 }
             } else {
                 commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);

@@ -57,24 +57,22 @@ public class Blacklist implements ICommand {
                         commandEvent.reply(commandEvent.getResource("message.blacklist.removed", word), 5);
                     }
 
-                    default -> {
-                        ModerationUtil.shouldModerate(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
-                            if (aBoolean) {
-                                ModerationUtil.getBlacklist(commandEvent.getGuild().getIdLong()).subscribe(blacklists -> {
-                                    StringBuilder end = new StringBuilder();
+                    default -> ModerationUtil.shouldModerate(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
+                        if (aBoolean) {
+                            ModerationUtil.getBlacklist(commandEvent.getGuild().getIdLong()).subscribe(blacklists -> {
+                                StringBuilder end = new StringBuilder();
 
-                                    for (String s : blacklists) {
-                                        end.append("\n").append(s);
-                                    }
+                                for (String s : blacklists) {
+                                    end.append("\n").append(s);
+                                }
 
-                                    commandEvent.reply("```" + end + "```");
-                                });
-                            } else {
-                                commandEvent.reply(commandEvent.getResource("message.blacklist.setupNeeded"));
-                                commandEvent.reply(commandEvent.getResource("message.default.usage", "blacklist add [WORD...]"), 5);
-                            }
-                        });
-                    }
+                                commandEvent.reply("```" + end + "```");
+                            });
+                        } else {
+                            commandEvent.reply(commandEvent.getResource("message.blacklist.setupNeeded"));
+                            commandEvent.reply(commandEvent.getResource("message.default.usage", "blacklist add [WORD...]"), 5);
+                        }
+                    });
                 }
 
             } else {

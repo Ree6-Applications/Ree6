@@ -120,21 +120,20 @@ public class Import implements ICommand {
         try {
             Leaderboard leaderboard = AmariAPI.getAmari4J().getRawLeaderboard(commandEvent.getGuild().getId(), Integer.MAX_VALUE);
 
-            leaderboard.getMembers().forEach(member -> {
-                SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), Long.parseLong(member.getUserid())).subscribe(chatUserLevel -> {
-                    if (chatUserLevel != null && chatUserLevel.getExperience() > member.getExperience()) {
-                        return;
-                    }
+            leaderboard.getMembers().forEach(member ->
+                    SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), Long.parseLong(member.getUserid())).subscribe(chatUserLevel -> {
+                if (chatUserLevel != null && chatUserLevel.getExperience() > member.getExperience()) {
+                    return;
+                }
 
-                    if (chatUserLevel == null) {
-                        chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getIdLong(), Long.parseLong(member.getUserid()), member.getExperience());
-                    } else {
-                        chatUserLevel.setExperience(member.getExperience());
-                    }
+                if (chatUserLevel == null) {
+                    chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getIdLong(), Long.parseLong(member.getUserid()), member.getExperience());
+                } else {
+                    chatUserLevel.setExperience(member.getExperience());
+                }
 
-                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel).block();
-                });
-            });
+                SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel).block();
+            }));
             commandEvent.reply(commandEvent.getResource("message.import.success", leaderboard.getCount()), 5);
         } catch (InvalidAPIKeyException | InvalidServerResponseException | RateLimitException e) {
             // TODO:: make some extra stuff for the rate-limit.

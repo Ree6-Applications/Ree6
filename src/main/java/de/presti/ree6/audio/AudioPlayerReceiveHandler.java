@@ -89,8 +89,8 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                                         audioChannelUnion.asVoiceChannel().canTalk();
 
                                 if (canTalk) {
-                                    LanguageService.getByGuild(member.getGuild(), "message.default.nameChangeFailed").subscribe(message ->
-                                            audioChannelUnion.asGuildMessageChannel().sendMessage(message).queue());
+                                    LanguageService.getByGuild(member.getGuild(), "message.default.nameChangeFailed").subscribe(messageContent ->
+                                            audioChannelUnion.asGuildMessageChannel().sendMessage(messageContent).queue());
                                 }
                                 return null;
                             }).queue()));
@@ -177,7 +177,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
                         if (canTalk)
                             LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.default.nameChangeFailed")
-                                    .subscribe(message -> audioChannelUnion.asGuildMessageChannel().sendMessage(message).queue());
+                                    .subscribe(messageContent -> audioChannelUnion.asGuildMessageChannel().sendMessage(messageContent).queue());
                         return null;
                     }).queue());
         }
