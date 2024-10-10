@@ -36,6 +36,19 @@ public class CustomEventContainerCreator {
      * Load all actions.
      */
     public static void loadAll() {
+        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.addClassLoaders(ClasspathHelper.staticClassLoader());
+        Reflections reflections = new Reflections(configurationBuilder);
+        Set<Class<? extends IEventAction>> classes = reflections.getSubTypesOf(IEventAction.class);
+
+        for (Class<? extends IEventAction> aClass : classes) {
+            if (aClass.isAnnotationPresent(ActionInfo.class)) {
+                String actionName = aClass.getAnnotation(ActionInfo.class).name();
+                if (!cachedActions.containsKey(actionName)) {
+                    cachedActions.put(actionName, aClass);
+                }
+            }
+        }
     }
 
     /**
