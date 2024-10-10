@@ -159,16 +159,11 @@ public class RedditSonic implements ISonic {
     }
 
     @Override
-    public void unload() {
-
-    }
-
-    @Override
     public void remove(SonicIdentifier object) {
         if (Main.getInstance().getNotifier().getRedditClient() == null) return;
         if (!contains(object)) return;
 
-        SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(object.getIdentifier()).subscribe(webhooks -> {
+        SQLSession.getSqlConnector().getSqlWorker().getRedditWebhookBySub(object.getIdentifier()).subscribe(webhooks -> {
             if (!webhooks.isEmpty()) return;
 
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE subredditMemberChannelSubredditName=:name",

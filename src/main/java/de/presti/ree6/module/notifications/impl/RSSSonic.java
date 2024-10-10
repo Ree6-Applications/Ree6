@@ -226,7 +226,13 @@ public class RSSSonic implements ISonic {
     }
 
     @Override
-    public void unload() {
+    public void remove(SonicIdentifier object) {
+        if (!contains(object)) return;
 
+        SQLSession.getSqlConnector().getSqlWorker().getRSSWebhooksByUrl(object.getIdentifier()).subscribe(webhooks -> {
+            if (!webhooks.isEmpty()) return;
+
+            rssUrls.remove(object);
+        });
     }
 }

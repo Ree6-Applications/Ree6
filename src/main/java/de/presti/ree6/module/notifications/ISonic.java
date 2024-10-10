@@ -15,7 +15,9 @@ public interface ISonic extends IManager<SonicIdentifier> {
     }
     void load();
     void run();
-    void unload();
+    default void unload() {
+        clear();
+    }
 
     default void add(long identifier) {
         add(new SonicIdentifier(String.valueOf(identifier)));

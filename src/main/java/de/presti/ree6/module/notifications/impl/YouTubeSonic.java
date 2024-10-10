@@ -146,11 +146,6 @@ public class YouTubeSonic implements ISonic {
     }
 
     @Override
-    public void unload() {
-
-    }
-
-    @Override
     public void remove(SonicIdentifier object) {
         if (YouTubeAPIHandler.getInstance() == null) return;
         if (!contains(object)) return;

@@ -132,11 +132,6 @@ public class SpotifySonic implements ISonic {
     }
 
     @Override
-    public void unload() {
-
-    }
-
-    @Override
     public void remove(SonicIdentifier object) {
         if (SpotifyAPIHandler.getInstance() == null) return;
         if (!contains(object)) return;

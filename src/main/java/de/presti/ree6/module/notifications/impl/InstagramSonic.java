@@ -139,16 +139,11 @@ public class InstagramSonic implements ISonic {
     }
 
     @Override
-    public void unload() {
-
-    }
-
-    @Override
     public void remove(SonicIdentifier object) {
         if (Main.getInstance().getNotifier().getInstagramClient() == null) return;
         if (!contains(object)) return;
 
-        SQLSession.getSqlConnector().getSqlWorker().getYouTubeWebhooksByName(object.getIdentifier()).subscribe(webhooks -> {
+        SQLSession.getSqlConnector().getSqlWorker().getInstagramWebhookByName(object.getIdentifier()).subscribe(webhooks -> {
             if (!webhooks.isEmpty()) return;
 
             SQLSession.getSqlConnector().getSqlWorker().getEntity(new ChannelStats(), "FROM ChannelStats WHERE instagramFollowerChannelUsername=:name",

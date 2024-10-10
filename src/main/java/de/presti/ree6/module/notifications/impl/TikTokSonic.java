@@ -110,7 +110,13 @@ public class TikTokSonic implements ISonic {
     }
 
     @Override
-    public void unload() {
+    public void remove(SonicIdentifier object) {
+        if (!contains(object)) return;
 
+        SQLSession.getSqlConnector().getSqlWorker().getTikTokWebhooksByName(object.getIdentifier()).subscribe(webhooks -> {
+            if (!webhooks.isEmpty()) return;
+
+            tiktokChannels.remove(object);
+        });
     }
 }
