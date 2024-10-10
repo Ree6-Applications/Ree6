@@ -150,7 +150,7 @@ public class Setup implements ICommand {
                             if (guildChannelUnion.getType() == ChannelType.TEXT) {
                                 guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Logs").queue(webhook -> SQLSession.getSqlConnector().getSqlWorker().isLogSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
                                     if (aBoolean) {
-                                        SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity)));
+                                        SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> webhookEntity.ifPresent(entity -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity)));
                                     }
 
                                     SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
@@ -163,7 +163,7 @@ public class Setup implements ICommand {
                             SQLSession.getSqlConnector().getSqlWorker().isLogSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
                                 if (aBoolean) {
                                     SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> {
-                                        webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity));
+                                        webhookEntity.ifPresent(entity -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity));
                                         commandEvent.reply(commandEvent.getResource("message.auditLog.deleted"));
                                     });
                                 } else {
@@ -182,7 +182,7 @@ public class Setup implements ICommand {
                             if (guildChannelUnion.getType() == ChannelType.TEXT) {
                                 guildChannelUnion.asTextChannel().createWebhook(BotConfig.getBotName() + "-Welcome").queue(webhook -> SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
                                     if (aBoolean) {
-                                        SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity)));
+                                        SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity -> webhookEntity.ifPresent(entity -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity)));
                                     }
                                     SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(commandEvent.getGuild().getIdLong(), guildChannelUnion.getIdLong(), webhook.getIdLong(), webhook.getToken());
                                     commandEvent.reply(commandEvent.getResource("message.welcome.setupSuccess"));
@@ -194,7 +194,7 @@ public class Setup implements ICommand {
                             SQLSession.getSqlConnector().getSqlWorker().isWelcomeSetup(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
                                 if (aBoolean) {
                                     SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(commandEvent.getGuild().getIdLong()).subscribe(webhookEntity ->
-                                            webhookEntity.ifPresent((entity) -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity)));
+                                            webhookEntity.ifPresent(entity -> WebhookUtil.deleteWebhook(commandEvent.getGuild().getIdLong(), entity)));
                                     commandEvent.reply(commandEvent.getResource("message.welcome.deleted"));
                                 }
                                 commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
