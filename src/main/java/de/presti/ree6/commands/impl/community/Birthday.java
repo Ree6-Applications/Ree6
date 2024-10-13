@@ -107,7 +107,7 @@ public class Birthday implements ICommand {
                         new SubcommandData("add", "Add a Birthday entry!")
                                 .addOptions(new OptionData(OptionType.INTEGER, "day", "The day of the month.", true).setMinValue(1).setMaxValue(31),
                                         new OptionData(OptionType.INTEGER, "month", "Your birth month.", true).setMinValue(1).setMaxValue(12),
-                                        new OptionData(OptionType.INTEGER, "year", "Your birth year.", false).setMinValue(1900).setMaxValue(Instant.now().get(ChronoField.YEAR)),
+                                        new OptionData(OptionType.INTEGER, "year", "Your birth year.", false).setMinValue(1900).setMaxValue(Calendar.getInstance().get(Calendar.YEAR)),
                                         new OptionData(OptionType.USER, "user", "The User which should get their birthday entry added.", false)));
     }
 
