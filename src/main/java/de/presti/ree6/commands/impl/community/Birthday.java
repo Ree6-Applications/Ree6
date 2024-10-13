@@ -18,8 +18,7 @@ import org.apache.commons.validator.GenericValidator;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.time.Instant;
-import java.time.temporal.ChronoField;
+import java.util.Calendar;
 
 /**
  * This command is used to let the bot remember your Birthday.
