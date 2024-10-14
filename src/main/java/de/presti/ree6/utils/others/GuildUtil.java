@@ -48,7 +48,7 @@ public class GuildUtil {
                 log.error("[AutoRole] Member: {} ({})", member.getUser().getName(), member.getId());
 
                 if (guild.getOwner() != null)
-                    LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone").subscribe(message ->
+                    LanguageService.getByGuild(guild, "message.brs.autoRole.user", member.getAsMention()).subscribe(message ->
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
                                     privateChannel.sendMessage(message)
                                             .queue()));
@@ -108,7 +108,7 @@ public class GuildUtil {
 
                     if (guild.getOwner() != null)
                         guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone").subscribe(message ->
+                                LanguageService.getByGuild(guild, "message.brs.autoRole.user", member.getAsMention()).subscribe(message ->
                                         privateChannel.sendMessage(message).queue()));
 
                     return;
@@ -170,7 +170,7 @@ public class GuildUtil {
 
                     if (guild.getOwner() != null)
                         guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone")
+                                LanguageService.getByGuild(guild, "message.brs.autoRole.user", member.getAsMention())
                                         .subscribe(message -> privateChannel.sendMessage(message).queue()));
                     return;
                 }
