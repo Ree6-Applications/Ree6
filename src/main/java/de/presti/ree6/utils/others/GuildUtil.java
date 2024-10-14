@@ -5,8 +5,10 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.List;
 import java.util.Map;
@@ -46,7 +48,7 @@ public class GuildUtil {
 
                 if (guild.getOwner() != null)
                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                            privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone"))
+                            privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.user", member.getAsMention()))
                                     .queue());
                 return;
             }
@@ -100,7 +102,7 @@ public class GuildUtil {
 
                 if (guild.getOwner() != null)
                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                            privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone"))
+                            privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.user", member.getAsMention()))
                             .queue());
 
                 return;
@@ -160,7 +162,7 @@ public class GuildUtil {
 
                 if (guild.getOwner() != null)
                     guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                            privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.hierarchy", "@everyone"))
+                            privateChannel.sendMessage(LanguageService.getByGuild(guild, "message.brs.autoRole.user", member.getAsMention()))
                                     .queue());
 
                 return;
