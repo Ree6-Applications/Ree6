@@ -155,7 +155,7 @@ public class StreamActionCommand implements ICommand {
 
                 switch (subCommand) {
                     case "create" ->
-                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.actionName = :name AND guildAndName.guildId = :gid", Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong())).subscribe(streamActionOptional -> {
+                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.name = :name AND guildAndName.guildId = :gid", Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong())).subscribe(streamActionOptional -> {
                                 if (streamActionOptional.isEmpty()) {
                                     SQLSession.getSqlConnector().getSqlWorker().getEntity(new TwitchIntegration(), "FROM TwitchIntegration WHERE userId = :uid", Map.of("uid", commandEvent.getUser().getIdLong()))
                                             .subscribe(twitchIntegrationOptional -> {
@@ -177,7 +177,7 @@ public class StreamActionCommand implements ICommand {
                             });
 
                     case "delete" ->
-                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.actionName = :name AND guildAndName.guildId = :gid", Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong())).subscribe(streamAction -> {
+                            SQLSession.getSqlConnector().getSqlWorker().getEntity(new StreamAction(), "FROM StreamAction WHERE guildAndName.name = :name AND guildAndName.guildId = :gid", Map.of("name", name.getAsString(), "gid", commandEvent.getGuild().getIdLong())).subscribe(streamAction -> {
                                 if (streamAction.isPresent()) {
                                     SQLSession.getSqlConnector().getSqlWorker().deleteEntity(streamAction.get()).block();
                                     commandEvent.reply(commandEvent.getResource("message.stream-action.deleted", name.getAsString()));
