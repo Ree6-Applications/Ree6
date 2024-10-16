@@ -173,7 +173,6 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
         }
 
         if (track != null) {
-            // TODO:: Really stupid workaround for https://github.com/Ree6-Applications/Ree6/issues/299! This should be rechecked later if it even worked.
             if (!silent)
                 Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                         .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), BotConfig.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())

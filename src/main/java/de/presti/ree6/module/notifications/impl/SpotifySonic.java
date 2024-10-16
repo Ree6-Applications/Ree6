@@ -102,7 +102,6 @@ public class SpotifySonic implements ISonic {
                     }
                 } catch (Exception exception) {
                     Sentry.captureException(exception);
-                    // TODO:: handle this shit
                 }
             }
         });

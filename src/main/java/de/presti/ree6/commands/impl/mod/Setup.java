@@ -252,7 +252,6 @@ public class Setup implements ICommand {
                             for (Setting setting : SettingsManager.getSettings()) {
                                 if (!setting.getName().startsWith("configuration_rewards_")) continue;
 
-                                // TODO:: thing of how to handle this.
                                 SQLSession.getSqlConnector().getSqlWorker().updateEntity(new Setting(commandEvent.getGuild().getIdLong(), setting.getName(), setting.getDisplayName(), setting.getValue())).block();
                             }
 

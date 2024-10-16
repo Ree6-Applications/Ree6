@@ -91,7 +91,6 @@ public class Steal implements ICommand {
                     }
 
                     if (EconomyUtil.pay(targetHolder, holder, stealAmount, false, false)) {
-                        // TODO:: more variation in the messages.
                         commandEvent.reply(commandEvent.getResource("message.steal.success", EconomyUtil.formatMoney(stealAmount), member.getAsMention()), 5);
                     } else {
                         commandEvent.reply(commandEvent.getResource("message.steal.failed", EconomyUtil.formatMoney(stealAmount), member.getAsMention()), 5);

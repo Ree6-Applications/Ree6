@@ -115,7 +115,6 @@ public class YouTubeSonic implements ISonic {
                 if (!channelStats.isEmpty()) {
                     ChannelResult youTubeChannel;
                     try {
-                        // TODO:: change YT Tracker to use the ID instead of username.
                         youTubeChannel = YouTubeAPIHandler.getInstance().getYouTubeChannelById(channel);
                     } catch (Exception e) {
                         Sentry.captureException(e);

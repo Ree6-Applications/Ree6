@@ -22,8 +22,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Optional;
 
-// TODO:: translate.
-
 /**
  * A utility to create Images.
  */

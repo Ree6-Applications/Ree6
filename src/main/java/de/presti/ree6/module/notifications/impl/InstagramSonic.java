@@ -123,9 +123,8 @@ public class InstagramSonic implements ISonic {
 
                                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                                // TODO:: add this with message.
-
-                                webhooks.forEach(webhook -> WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook));
+                                webhooks.forEach(webhook -> WebhookUtil.sendWebhook(webhookMessageBuilder.setContent(webhook.getMessage()
+                                        .replace("%username%", user.getUsername())).build(), webhook));
                             });
                         }
                     }

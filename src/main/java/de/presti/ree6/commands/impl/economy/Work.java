@@ -54,7 +54,6 @@ public class Work implements ICommand {
                 if (moneyHolder == null) return;
 
                 if (EconomyUtil.pay(null, moneyHolder, amount, false, false, true)) {
-                    // TODO:: add more variation messages.
                     commandEvent.reply(commandEvent.getResource("message.work.success", EconomyUtil.formatMoney(amount)));
                 } else {
                     commandEvent.reply(commandEvent.getResource("message.work.fail"));
