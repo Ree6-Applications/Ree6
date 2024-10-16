@@ -101,11 +101,12 @@ public class MenuEvents extends ListenerAdapter {
         }
 
         switch (event.getComponentId()) {
-            case "re_feedback" -> LanguageService.getByGuild(event.getGuild(), "label.feedback").subscribe(modalString -> {
-                Modal.Builder builder = Modal.create("re_feedback_modal", modalString);
-                builder.addActionRow(TextInput.create("re_feedback_text", modalString, TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
-                event.replyModal(builder.build()).queue();
-            });
+            case "re_feedback" ->
+                    LanguageService.getByGuild(event.getGuild(), "label.feedback").subscribe(modalString -> {
+                        Modal.Builder builder = Modal.create("re_feedback_modal", modalString);
+                        builder.addActionRow(TextInput.create("re_feedback_text", modalString, TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
+                        event.replyModal(builder.build()).queue();
+                    });
 
             case "re_suggestion" ->
                     LanguageService.getByGuild(event.getGuild(), "label.suggestion").subscribe(modalString -> {
@@ -136,6 +137,7 @@ public class MenuEvents extends ListenerAdapter {
                                             MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
                                             messageCreateBuilder.setEmbeds(new EmbedBuilder().setTitle(LanguageService.getByGuild(event.getGuild(), "label.ticket").block())
                                                     .setDescription(ticketMessage.get().getStringValue())
+                                                    .setColor(BotConfig.getMainColor())
                                                     .setThumbnail(event.getMember().getEffectiveAvatarUrl()).setColor(BotConfig.getMainColor()).setTimestamp(Instant.now()).build());
                                             messageCreateBuilder.addActionRow(Button.primary("re_ticket_close", LanguageService.getByGuild(event.getGuild(), "label.closeTicket").block()));
                                             Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), channel);
@@ -1321,20 +1323,21 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "backToSetupMenu" -> sendDefaultChoice(event);
 
-                    case "logSetup" -> LanguageService.getByGuild(event.getGuild(), "label.more").subscribe(labelMore -> {
-                        for (TextChannel channel : event.getGuild().getTextChannels()) {
-                            if (optionList.size() == 24) {
-                                optionList.add(SelectOption.of(labelMore, "more"));
-                                break;
-                            }
+                    case "logSetup" ->
+                            LanguageService.getByGuild(event.getGuild(), "label.more").subscribe(labelMore -> {
+                                for (TextChannel channel : event.getGuild().getTextChannels()) {
+                                    if (optionList.size() == 24) {
+                                        optionList.add(SelectOption.of(labelMore, "more"));
+                                        break;
+                                    }
 
-                            optionList.add(SelectOption.of(channel.getName(), channel.getId()));
-                        }
+                                    optionList.add(SelectOption.of(channel.getName(), channel.getId()));
+                                }
 
-                        embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupDescription").block());
+                                embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupDescription").block());
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupLogChannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block(), 1, 1, false, optionList)).queue();
-                    });
+                                event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupLogChannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block(), 1, 1, false, optionList)).queue();
+                            });
 
                     case "logDelete" ->
                             SQLSession.getSqlConnector().getSqlWorker().getLogWebhook(event.getGuild().getIdLong()).subscribe(webhook ->
