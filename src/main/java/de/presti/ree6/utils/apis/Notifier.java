@@ -36,9 +36,6 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 
-// TODO:: translate
-// TODO:: fix the Twitter Stream handler, wait for responses via https://github.com/redouane59/twittered/issues/447
-
 /**
  * Utility class used for Event Notifiers. Such as Twitch Livestream, YouTube Upload or Twitter Tweet.
  */

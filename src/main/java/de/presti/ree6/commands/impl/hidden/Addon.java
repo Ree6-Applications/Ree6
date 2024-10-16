@@ -23,8 +23,6 @@ import java.util.List;
 @Command(name = "addon", description = "command.description.addon", category = Category.HIDDEN)
 public class Addon implements ICommand {
 
-    // TODO:: add messages to language file.
-
     /**
      * @inheritDoc
      */

@@ -47,7 +47,6 @@ import java.util.regex.Matcher;
 /**
  * Wrapper class that handles most Music-related stuff.
  */
-// TODO:: async all these messages.
 @Slf4j
 public class MusicWorker {
 

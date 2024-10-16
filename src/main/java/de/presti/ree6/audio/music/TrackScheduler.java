@@ -28,7 +28,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  * This class schedules tracks for the audio player. It contains the queue of
  * tracks.
  */
-// TODO:: async all these messages.
 @Slf4j
 @SuppressWarnings("ALL")
 public class TrackScheduler extends AudioEventAdapterWrapped {
