@@ -60,7 +60,7 @@ public class Game implements ICommand {
                 ArrayList<User> participants = new ArrayList<>();
                 participants.add(commandEvent.getUser());
 
-                GamePlayer gamePlayer = new GamePlayer(commandEvent.getMember().getUser());
+                GamePlayer gamePlayer = new GamePlayer(commandEvent.getUser());
                 gamePlayer.setInteractionHook(commandEvent.getInteractionHook());
 
                 GameManager.createGameSession(GameManager.generateInvite(), nameMapping.getAsString(), commandEvent.getMember(),
@@ -84,8 +84,8 @@ public class Game implements ICommand {
                     return;
                 }
 
-                gameSession.getParticipants().add(commandEvent.getMember().getUser());
-                GamePlayer gamePlayer = new GamePlayer(commandEvent.getMember().getUser());
+                gameSession.getParticipants().add(commandEvent.getUser());
+                GamePlayer gamePlayer = new GamePlayer(commandEvent.getUser());
                 gamePlayer.setInteractionHook(commandEvent.getInteractionHook());
                 gameSession.getGame().joinGame(gamePlayer);
             }

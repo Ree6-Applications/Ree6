@@ -63,7 +63,7 @@ public interface ICommand extends ExtensionPoint {
     default void onPerformWithLog(CommandEvent commandEvent) {
         onPerform(commandEvent);
         if (BotConfig.isDebug())
-            log.info("Command {} has ended, called by {} in {} ({}).", commandEvent.getCommand(), commandEvent.getMember().getUser().getName(), commandEvent.getGuild().getName(), commandEvent.getGuild().getId());
+            log.info("Command {} has ended, called by {} in {} ({}).", commandEvent.getCommand(), commandEvent.getUser().getName(), commandEvent.getGuild().getName(), commandEvent.getGuild().getId());
     }
 
     /**

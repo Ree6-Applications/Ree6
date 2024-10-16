@@ -31,7 +31,7 @@ public class Avatar implements ICommand {
             if (targetOption != null && targetOption.getAsMember() != null) {
                 sendAvatar(targetOption.getAsUser(), commandEvent);
             } else {
-                sendAvatar(commandEvent.getMember().getUser(), commandEvent);
+                sendAvatar(commandEvent.getUser(), commandEvent);
             }
 
         } else {
@@ -43,7 +43,7 @@ public class Avatar implements ICommand {
                     sendAvatar(commandEvent.getMessage().getMentions().getUsers().get(0), commandEvent);
                 }
             } else {
-                sendAvatar(commandEvent.getMember().getUser(), commandEvent);
+                sendAvatar(commandEvent.getUser(), commandEvent);
             }
         }
     }
