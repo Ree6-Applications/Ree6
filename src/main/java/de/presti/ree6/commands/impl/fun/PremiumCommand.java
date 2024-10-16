@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 public class PremiumCommand implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        if (GuildUtil.isSupporter(commandEvent.getMember().getUser())) {
+        if (GuildUtil.isSupporter(commandEvent.getUser())) {
             commandEvent.setEphemeral(false);
             commandEvent.reply("Thank you for helping with funding Ree6 " + commandEvent.getMember().getAsMention() + "!");
         } else {

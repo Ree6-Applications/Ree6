@@ -1,14 +1,12 @@
 package de.presti.ree6.commands.impl.info;
 
-import de.presti.ree6.bot.BotWorker;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -61,43 +59,10 @@ public class Help implements ICommand {
 
         EmbedBuilder em = new EmbedBuilder();
 
-        em.setColor(BotWorker.randomEmbedColor());
+        em.setColor(BotConfig.getMainColor());
         em.setTitle("Help Center");
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
-        if (categoryString == null) {
-            String prefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").getStringValue();
-            for (Category cat : Category.values()) {
-                if (cat != Category.HIDDEN) {
-                    if (!BotConfig.isModuleActive(cat.name().toLowerCase())) continue;
-
-                    String formattedName = cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase();
-                    em.addField("**" + formattedName + "**", prefix + "help " + cat.name().toLowerCase(), true);
-                }
-            }
-        } else {
-            if (isValid(categoryString)) {
-                StringBuilder end = new StringBuilder();
-
-                Category category = getCategoryFromString(categoryString);
-
-                String prefix = SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").getStringValue();
-
-                for (ICommand cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).category() == category).toList()) {
-                    end.append("``")
-                            .append(prefix)
-                            .append(cmd.getClass().getAnnotation(Command.class).name())
-                            .append("``\n")
-                            .append(commandEvent.getResource(cmd.getClass().getAnnotation(Command.class).description()))
-                            .append("\n\n");
-                }
-
-                em.setDescription(end.toString());
-            } else {
-                sendHelpInformation(null, commandEvent);
-                return;
-            }
-        }
 
         messageCreateBuilder
                 .addActionRow(
@@ -111,7 +76,43 @@ public class Help implements ICommand {
                                 Emoji.fromCustom("kiss", 1012765976951009361L, true))
                 );
 
-        commandEvent.reply(messageCreateBuilder.setEmbeds(em.build()).build());
+        if (categoryString == null) {
+            SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").subscribe(setting -> {
+                for (Category cat : Category.values()) {
+                    if (cat != Category.HIDDEN) {
+                        if (!BotConfig.isModuleActive(cat.name().toLowerCase())) continue;
+
+                        String formattedName = cat.name().toUpperCase().charAt(0) + cat.name().substring(1).toLowerCase();
+                        em.addField("**" + formattedName + "**", setting.get().getStringValue() + "help " + cat.name().toLowerCase(), true);
+                    }
+                }
+
+                commandEvent.reply(messageCreateBuilder.setEmbeds(em.build()).build());
+            });
+        } else {
+            if (isValid(categoryString)) {
+                StringBuilder end = new StringBuilder();
+
+                Category category = getCategoryFromString(categoryString);
+
+                SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").subscribe(setting -> {
+                    for (ICommand cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).category() == category).toList()) {
+                        end.append("``")
+                                .append(setting.get().getStringValue())
+                                .append(cmd.getClass().getAnnotation(Command.class).name())
+                                .append("``\n")
+                                .append(commandEvent.getResource(cmd.getClass().getAnnotation(Command.class).description()))
+                                .append("\n\n");
+                    }
+
+                    em.setDescription(end.toString());
+                    commandEvent.reply(messageCreateBuilder.setEmbeds(em.build()).build());
+                });
+            } else {
+                sendHelpInformation(null, commandEvent);
+            }
+        }
+
     }
 
     /**
@@ -127,7 +128,7 @@ public class Help implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("help", LanguageService.getDefault("command.description.help"))
+        return new CommandDataImpl("help", "command.description.help")
                 .addOptions(new OptionData(OptionType.STRING, "category", "Which Category you want to check out."));
     }
 

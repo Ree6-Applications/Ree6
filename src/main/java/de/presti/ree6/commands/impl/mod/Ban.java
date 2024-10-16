@@ -4,8 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -74,7 +72,7 @@ public class Ban implements ICommand {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.ADMINISTRATOR.name()), 5);
         }
 
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        commandEvent.delete();
     }
 
     /**
@@ -82,7 +80,7 @@ public class Ban implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("ban", LanguageService.getDefault("command.description.ban"))
+        return new CommandDataImpl("ban", "command.description.ban")
                 .addOptions(new OptionData(OptionType.USER, "target", "Which User should be banned.", true))
                 .addOptions(new OptionData(OptionType.INTEGER, "del_days", "Delete messages from the past days.")
                         .setRequiredRange(0, 7))

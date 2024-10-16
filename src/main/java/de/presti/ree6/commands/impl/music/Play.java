@@ -1,20 +1,17 @@
 package de.presti.ree6.commands.impl.music;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
-
-import java.awt.*;
 
 /**
  * Play a Song.
@@ -44,7 +41,7 @@ public class Play implements ICommand {
                         commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-                em.setColor(Color.GREEN);
+                em.setColor(BotConfig.getMainColor());
                 em.setDescription(commandEvent.getResource("message.default.usage","play (Url)"));
                 em.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
                 commandEvent.reply(em.build(), 5);
@@ -57,7 +54,7 @@ public class Play implements ICommand {
                         commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-                em.setColor(Color.GREEN);
+                em.setColor(BotConfig.getMainColor());
                 em.setDescription(commandEvent.getResource("message.default.usage","play (Url)"));
                 em.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
                 commandEvent.reply(em.build(), 5);
@@ -73,7 +70,8 @@ public class Play implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("play", LanguageService.getDefault("command.description.play")).addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true));
+        return new CommandDataImpl("play", "command.description.play")
+                .addOptions(new OptionData(OptionType.STRING, "name", "The YouTube URL, Song Name or the Spotify URL you want to play!").setRequired(true));
     }
 
     /**

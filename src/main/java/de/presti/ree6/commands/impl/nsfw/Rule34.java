@@ -3,12 +3,11 @@ package de.presti.ree6.commands.impl.nsfw;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -108,6 +107,7 @@ public class Rule34 implements ICommand {
 
                     if (object.has("sample_url")) {
                         EmbedBuilder em = new EmbedBuilder();
+                        em.setColor(BotConfig.getMainColor());
                         em.setImage(object.get("sample_url").getAsString());
                         em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + BotConfig.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
 
@@ -136,7 +136,7 @@ public class Rule34 implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("nsfw34", LanguageService.getDefault("command.description.rule34_slash"))
+        return new CommandDataImpl("nsfw34", "command.description.rule34_slash")
                 .addOptions(new OptionData(OptionType.STRING, "tags", "Tags for the image search"));
     }
 

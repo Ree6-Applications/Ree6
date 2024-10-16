@@ -1,11 +1,10 @@
 package de.presti.ree6.commands.impl.fun;
 
-import de.presti.ree6.bot.BotWorker;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -23,7 +22,7 @@ public class Monkey implements ICommand {
 		final EmbedBuilder em = new EmbedBuilder();
 
 		em.setTitle(commandEvent.getResource("label.monkey"));
-		em.setColor(BotWorker.randomEmbedColor());
+		em.setColor(BotConfig.getMainColor());
 		em.setImage("https://c.tenor.com/Y89PE1f7exQAAAAd/reject-modernity-return-to-monke.gif");
 		em.setFooter(commandEvent.getResource("label.footerMessage", commandEvent.getMember().getEffectiveName(), BotConfig.getAdvertisement()), commandEvent.getMember().getEffectiveAvatarUrl());
 
