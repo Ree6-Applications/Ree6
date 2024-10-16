@@ -5,8 +5,10 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.sql.entities.BirthdayWish;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -42,6 +44,21 @@ public class Birthday implements ICommand {
         OptionMapping birthYearMapping = commandEvent.getOption("year");
 
         switch (command) {
+            case "list" -> {
+                if (commandEvent.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+                    SQLSession.getSqlConnector().getSqlWorker().getBirthdays(commandEvent.getGuild().getIdLong()).subscribe(birthdayWishes -> {
+                        StringBuilder sb = new StringBuilder();
+                        for (BirthdayWish wish : birthdayWishes) {
+                            Member member = commandEvent.getGuild().getMemberById(wish.getUserId());
+                            GuildChannel guildChannel = commandEvent.getGuild().getGuildChannelById(wish.getChannelId());
+                            sb.append("@" + member.getUser().getName()).append(" ").append("-").append(" ").append("#").append(guildChannel.getName()).append("\n");
+                        }
+                        commandEvent.reply(commandEvent.getResource("message.birthday.list", sb));
+                    });
+                } else {
+                    commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.ADMINISTRATOR.getName()), 5);
+                }
+            }
             case "remove" -> {
                 if (userMapping == null) {
                     SQLSession.getSqlConnector().getSqlWorker().removeBirthday(commandEvent.getGuild().getIdLong(), commandEvent.getMember().getIdLong());
