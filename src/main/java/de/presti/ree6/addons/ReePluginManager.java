@@ -8,7 +8,6 @@ import org.pf4j.PluginFactory;
 @Slf4j
 public class ReePluginManager extends DefaultPluginManager {
 
-
     public ReePluginManager() {
         super();
         addPluginStateListener(x -> {
