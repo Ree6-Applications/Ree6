@@ -8,8 +8,6 @@ import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.Nullable;
 
-// TODO:: gotta think about a better naming schema.
-
 /**
  * A Container class containing the needed Information to run a CustomEventAction.
  */

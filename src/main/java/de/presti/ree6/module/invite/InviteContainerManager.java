@@ -18,7 +18,6 @@ import java.util.Objects;
 /**
  * Utility class to contain every Invite and manage the Invites in our Database.
  */
-// TODO:: continue with the rework of this entire system
 @Slf4j
 public class InviteContainerManager implements IManager<InviteContainer> {
 
