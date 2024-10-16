@@ -48,7 +48,7 @@ public class GuildUtil {
                 log.error("[AutoRole] Member: {} ({})", member.getUser().getName(), member.getId());
 
                 if (guild.getOwner() != null)
-                    LanguageService.getByGuild(guild, "message.brs.autoRole.user", member.getAsMention()).subscribe(message ->
+                    LanguageService.getByGuild(guild, "message.brs.autoRole.user", member.getUser().getName()).subscribe(message ->
                             guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
                                     privateChannel.sendMessage(message)
                                             .queue()));
@@ -108,7 +108,7 @@ public class GuildUtil {
 
                     if (guild.getOwner() != null)
                         guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                LanguageService.getByGuild(guild, "message.brs.autoRole.user", member.getAsMention()).subscribe(message ->
+                                LanguageService.getByGuild(guild, "message.brs.autoRole.user", member.getUser().getName()).subscribe(message ->
                                         privateChannel.sendMessage(message).queue()));
 
                     return;
@@ -170,7 +170,7 @@ public class GuildUtil {
 
                     if (guild.getOwner() != null)
                         guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                                LanguageService.getByGuild(guild, "message.brs.autoRole.user", member.getAsMention())
+                                LanguageService.getByGuild(guild, "message.brs.autoRole.user", member.getUser().getName())
                                         .subscribe(message -> privateChannel.sendMessage(message).queue()));
                     return;
                 }
@@ -222,12 +222,30 @@ public class GuildUtil {
             log.error("[AutoRole] Failed to give a Role!");
             log.error("[AutoRole] Server: {} ({})", guild.getName(), guild.getId());
             if (guild.getOwner() != null)
-                guild.getOwner().getUser().openPrivateChannel().queue(privateChannel ->
-                        LanguageService.getByGuild(guild, guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES) ?
-                                "message.brs.autoRole.hierarchy"
-                                : "message.brs.autoRole.missingPermission", role.getName()).subscribe(message ->
-                                privateChannel.sendMessage(message).queue()));
+                guild.getOwner().getUser().openPrivateChannel().queue(privateChannel -> {
+                    String[] languageResource = getFailedRoleReason(guild, member, role);
+                    LanguageService.getByGuild(guild, languageResource[0], languageResource[1]).subscribe(message ->
+                            privateChannel.sendMessage(message).queue());
+                });
         }
+    }
+
+    /**
+     * Get a String Array with the Language Path and the correct Parameter.
+     *
+     * @param guild  the {@link Guild} Entity.
+     * @param member the {@link Member} Entity.
+     * @param role   the {@link Role} Entity.
+     * @return the String Array with two entries, 0 = language path and 1 = parameter.
+     */
+    private static String[] getFailedRoleReason(Guild guild, Member member, Role role) {
+        String languageResource = "message.brs.autoRole.missingPermission";
+
+        if (!guild.getSelfMember().canInteract(member)) languageResource = "message.brs.autoRole.user";
+        if (guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+            languageResource = "message.brs.autoRole.hierarchy";
+
+        return new String[]{languageResource, guild.getSelfMember().canInteract(member) ? role.getName() : member.getUser().getName()};
     }
 
     /**
