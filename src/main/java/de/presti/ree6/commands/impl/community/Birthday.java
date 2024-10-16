@@ -119,6 +119,7 @@ public class Birthday implements ICommand {
                 "command.description.birthday")
                 .addSubcommands(new SubcommandData("remove", "Remove a Birthday entry!")
                                 .addOptions(new OptionData(OptionType.USER, "user", "The User which should get their birthday entry removed.", false)),
+                        new SubcommandData("list", "See all of the Birthday entries!"),
                         new SubcommandData("add", "Add a Birthday entry!")
                                 .addOptions(new OptionData(OptionType.INTEGER, "day", "The day of the month.", true).setMinValue(1).setMaxValue(31),
                                         new OptionData(OptionType.INTEGER, "month", "Your birth month.", true).setMinValue(1).setMaxValue(12),
