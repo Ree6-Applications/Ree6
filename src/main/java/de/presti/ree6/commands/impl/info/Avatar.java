@@ -73,6 +73,7 @@ public class Avatar implements ICommand {
     public void sendAvatar(User member, CommandEvent commandEvent) {
         EmbedBuilder em = new EmbedBuilder();
 
+        em.setColor(BotConfig.getMainColor());
         em.setTitle(commandEvent.getResource("label.avatar"));
         em.setAuthor(member.getEffectiveName() + (GuildUtil.isSupporter(member) ? " <a:duckswing:1070690323459735682>" : ""), member.getEffectiveAvatarUrl(), member.getEffectiveAvatarUrl());
         em.setImage(member.getEffectiveAvatar().getUrl(1024));

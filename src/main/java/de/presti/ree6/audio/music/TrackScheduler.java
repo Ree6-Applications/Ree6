@@ -5,9 +5,9 @@ import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.presti.ree6.api.events.MusicPlayerStateChangeEvent;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.FormatUtil;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.event.AudioEventAdapterWrapped;
@@ -179,7 +179,7 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
                         .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), BotConfig.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                         .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer").block())
                         .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                        .setColor(Color.GREEN)
+                        .setColor(BotConfig.getMainColor())
                         .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.songNext", FormatUtil.filter(track.getInfo().title)).block())
                         .setFooter(guildMusicManager.getGuild().getName() + " - " + BotConfig.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
 
@@ -203,9 +203,10 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
      * Seek to a specific position in the current track.
      *
      * @param channel             the Text-Channel where the command have been performed from.
+     * @param interactionHook     the Interactionhook if it was used in a slashcommand
      * @param seekAmountInSeconds the amount of seconds to seek to.
      */
-    public void seekPosition(GuildMessageChannelUnion channel, int seekAmountInSeconds) {
+    public void seekPosition(GuildMessageChannelUnion channel, InteractionHook interactionHook, long seekAmountInSeconds) {
         if (player.getPlayingTrack() == null) {
             Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                     .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), BotConfig.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
@@ -213,7 +214,7 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
                     .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                     .setColor(Color.RED)
                     .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.notPlaying").block())
-                    .setFooter(guildMusicManager.getGuild().getName() + " - " + BotConfig.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+                    .setFooter(guildMusicManager.getGuild().getName() + " - " + BotConfig.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel(), interactionHook);
             return;
         }
 
@@ -224,11 +225,11 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
                     .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                     .setColor(Color.RED)
                     .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.seek.failed").block())
-                    .setFooter(guildMusicManager.getGuild().getName() + " - " + BotConfig.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+                    .setFooter(guildMusicManager.getGuild().getName() + " - " + BotConfig.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel(), interactionHook);
             return;
         }
 
-        long skipPosition = player.getPlayingTrack().getPosition() + ((long) seekAmountInSeconds * 1000);
+        long skipPosition = player.getPlayingTrack().getPosition() + (seekAmountInSeconds * 1000);
         if (skipPosition < 0) {
             player.getPlayingTrack().setPosition(0L);
         } else {
@@ -239,9 +240,9 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
                 .setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), BotConfig.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
                 .setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer").block())
                 .setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl())
-                .setColor(Color.GREEN)
+                .setColor(BotConfig.getMainColor())
                 .setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.seek.success", FormatUtil.formatTime(player.getPlayingTrack().getPosition())).block())
-                .setFooter(guildMusicManager.getGuild().getName() + " - " + BotConfig.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel());
+                .setFooter(guildMusicManager.getGuild().getName() + " - " + BotConfig.getAdvertisement(), guildMusicManager.getGuild().getIconUrl()), 5, getChannel(), interactionHook);
     }
 
     @Override
@@ -343,7 +344,7 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
             em.setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), BotConfig.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());
             em.setTitle(LanguageService.getByGuild(guildMusicManager.getGuild(), "label.musicPlayer").block());
             em.setThumbnail(guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());
-            em.setColor(Color.GREEN);
+            em.setColor(BotConfig.getMainColor());
             em.setDescription(LanguageService.getByGuild(guildMusicManager.getGuild(), "message.music.stop").block());
         } else {
             em.setAuthor(guildMusicManager.getGuild().getSelfMember().getEffectiveName(), BotConfig.getWebsite(), guildMusicManager.getGuild().getSelfMember().getEffectiveAvatarUrl());

@@ -91,7 +91,7 @@ public class Setup implements ICommand {
                     EmbedBuilder embedBuilder = new EmbedBuilder()
                             .setTitle(commandEvent.getResource("label.setup"))
                             .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
-                            .setColor(Color.cyan)
+                            .setColor(BotConfig.getMainColor())
                             .setDescription(commandEvent.getResource("message.setup.setupMenu"));
 
                     List<SelectOption> optionList = new ArrayList<>();
@@ -274,7 +274,7 @@ public class Setup implements ICommand {
         return new EmbedBuilder()
                 .setTitle(LanguageService.getByGuildOrInteractionHook(guild, interactionHook, "label.setup").block())
                 .setFooter(guild.getName() + " - " + BotConfig.getAdvertisement(), guild.getIconUrl())
-                .setColor(hasRoles ? Color.cyan : Color.red)
+                .setColor(hasRoles ? BotConfig.getMainColor() : Color.RED)
                 .setDescription(LanguageService.getByGuildOrInteractionHook(guild, interactionHook, hasRoles ? "message.autoRole.setupDescription" : "message.default.needPermission", (hasRoles ? null : Permission.MANAGE_ROLES.name())).block());
     }
 

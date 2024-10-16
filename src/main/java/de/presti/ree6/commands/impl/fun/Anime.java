@@ -131,6 +131,7 @@ public class Anime implements ICommand {
             em.setTitle(name, url);
             em.setThumbnail(thumbnailUrl);
             em.setDescription(description);
+            em.setColor(BotConfig.getMainColor());
             em.addField(":hourglass_flowing_sand: **" + commandEvent.getResource("label.status") + "**", status, true);
             em.addField(":dividers: **" + commandEvent.getResource("label.typ") + "**", type, true);
             em.addField(":arrow_right: **" + commandEvent.getResource("label.genres") + "**", genres, false);

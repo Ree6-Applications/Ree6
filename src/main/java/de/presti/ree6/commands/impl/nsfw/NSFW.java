@@ -73,6 +73,7 @@ public class NSFW implements ICommand {
                 String randomUrl = images.get(RandomUtils.secureRandom.nextInt(images.size() - 1));
                 EmbedBuilder em = new EmbedBuilder();
 
+                em.setColor(BotConfig.getMainColor());
                 em.setImage(randomUrl);
                 em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + BotConfig.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
 

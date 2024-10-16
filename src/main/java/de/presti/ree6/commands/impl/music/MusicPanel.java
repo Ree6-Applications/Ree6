@@ -4,6 +4,7 @@ import best.azura.eventbus.handler.EventHandler;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import de.presti.ree6.api.events.MusicPlayerStateChangeEvent;
 import de.presti.ree6.audio.music.GuildMusicManager;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
@@ -11,7 +12,6 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -21,8 +21,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
-
-import java.awt.*;
 
 /**
  * Creates a small typeof UI to control music in a channel.
@@ -95,7 +93,7 @@ public class MusicPanel implements ICommand {
                         guildMusicManager.getPlayer().getPlayingTrack().getInfo() : null;
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
-                .setColor(Color.MAGENTA)
+                .setColor(BotConfig.getMainColor())
                 .setImage(audioTrackInfo != null && (audioTrackInfo.artworkUrl != null && !audioTrackInfo.artworkUrl.isBlank()) ? audioTrackInfo.artworkUrl : "https://images.unsplash.com/photo-1546977463-943d58b78c19")
                 .setTitle("**" + (audioTrackInfo != null ? commandEvent.getResource("message.music.songInfoSlim", audioTrackInfo.title, audioTrackInfo.author)
                         : commandEvent.getResource("message.music.notPlaying")) + "**")

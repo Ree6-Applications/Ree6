@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl.community;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
@@ -8,7 +9,6 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Tickets;
-import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.awt.*;
 import java.util.EnumSet;
 import java.util.Map;
 
@@ -91,7 +90,7 @@ public class Ticket implements ICommand {
             });
 
             embedBuilder.setDescription(commandEvent.getResource("message.ticket.setupSuccess"));
-            embedBuilder.setColor(Color.GREEN);
+            embedBuilder.setColor(BotConfig.getMainColor());
 
             commandEvent.reply(embedBuilder.build());
         });

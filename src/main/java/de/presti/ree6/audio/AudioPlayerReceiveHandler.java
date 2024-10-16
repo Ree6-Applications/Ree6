@@ -98,7 +98,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
 
         message = audioChannelUnion.asGuildMessageChannel().sendMessageEmbeds(new EmbedBuilder()
                 .setDescription(LanguageService.getByGuild(member.getGuild(), "message.recording.started").block())
-                .setColor(Color.YELLOW)
+                .setColor(Color.RED)
                 .setFooter(LanguageService.getByGuild(member.getGuild(), "label.footerMessage", member.getEffectiveName(), BotConfig.getAdvertisement()).block(), member.getEffectiveAvatarUrl())
                 .setTitle(LanguageService.getByGuild(member.getGuild(), "label.recording.start").block())
                 .build()).complete();
@@ -198,7 +198,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 if (canTalk) {
                     message.editMessageEmbeds(new EmbedBuilder()
                                     .setDescription(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.stopped").block())
-                                    .setColor(Color.GREEN)
+                                    .setColor(BotConfig.getMainColor())
                                     .setFooter(BotConfig.getAdvertisement(), audioChannelUnion.getGuild().getIconUrl())
                                     .setTitle(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.recording.finished").block())
                                     .build())

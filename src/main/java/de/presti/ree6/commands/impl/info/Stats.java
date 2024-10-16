@@ -47,7 +47,7 @@ public class Stats implements ICommand {
                 commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setTitle(commandEvent.getResource("label.statistics"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-        em.setColor(BotWorker.randomEmbedColor());
+        em.setColor(BotConfig.getMainColor());
 
         long memberCount = firstBoot ? BotWorker.getShardManager().getUsers().size() : BotWorker.getShardManager().getUserCache().size();
         firstBoot = true;

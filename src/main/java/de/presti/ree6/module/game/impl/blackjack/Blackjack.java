@@ -1,6 +1,8 @@
 package de.presti.ree6.module.game.impl.blackjack;
 
-import de.presti.ree6.bot.BotWorker;
+import de.presti.ree6.bot.BotConfig;
+import de.presti.ree6.language.LanguageService;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.module.game.core.GameManager;
 import de.presti.ree6.module.game.core.GameSession;
 import de.presti.ree6.module.game.core.base.GameInfo;
@@ -10,8 +12,6 @@ import de.presti.ree6.module.game.core.base.IGame;
 import de.presti.ree6.module.game.impl.blackjack.entities.BlackJackCard;
 import de.presti.ree6.module.game.impl.blackjack.entities.BlackJackPlayer;
 import de.presti.ree6.module.game.impl.blackjack.util.BlackJackCardUtility;
-import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -85,7 +85,7 @@ public class Blackjack implements IGame {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack").block());
-        embedBuilder.setColor(BotWorker.randomEmbedColor());
+        embedBuilder.setColor(BotConfig.getMainColor());
         embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.welcome", session.getGameIdentifier()).block());
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
@@ -293,7 +293,7 @@ public class Blackjack implements IGame {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack").block());
-        embedBuilder.setColor(BotWorker.randomEmbedColor());
+        embedBuilder.setColor(BotConfig.getMainColor());
         BlackJackPlayer winner = findWinner();
 
         if (winner == null) {
@@ -340,7 +340,7 @@ public class Blackjack implements IGame {
 
         EmbedBuilder currentPlayerEmbed = new EmbedBuilder();
         currentPlayerEmbed.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack").block());
-        currentPlayerEmbed.setColor(Color.GREEN);
+        currentPlayerEmbed.setColor(BotConfig.getMainColor());
         currentPlayerEmbed.setAuthor(currentPlayer.getRelatedUser().getEffectiveName(), null, currentPlayer.getRelatedUser().getEffectiveAvatarUrl());
         currentPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCardsSelf").block(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand",
                 currentPlayer.getHandAsString(true), currentPlayer.getHandValue(true)).block(), true);
@@ -361,7 +361,7 @@ public class Blackjack implements IGame {
         EmbedBuilder nextPlayerEmbed = new EmbedBuilder();
 
         nextPlayerEmbed.setTitle(LanguageService.getByGuild(session.getGuild(), "label.blackJack").block());
-        nextPlayerEmbed.setColor(Color.red);
+        nextPlayerEmbed.setColor(Color.RED);
         nextPlayerEmbed.setAuthor(nextPlayer.getRelatedUser().getEffectiveName(), null, nextPlayer.getRelatedUser().getEffectiveAvatarUrl());
         nextPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCardsSelf").block(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", nextPlayer.getHandAsString(true), nextPlayer.getHandValue(true)).block(), true);
         nextPlayerEmbed.addField(LanguageService.getByGuild(session.getGuild(), "label.userCards", currentPlayer.getRelatedUser().getEffectiveName()).block(), LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.playerHand", currentPlayer.getHandAsString(false), currentPlayer.getHandValue(false)).block(), true);

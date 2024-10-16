@@ -79,7 +79,7 @@ public class MenuEvents extends ListenerAdapter {
                     if (recording.isPresent()) {
                         messageEditBuilder.setEmbeds(new EmbedBuilder()
                                 .setDescription(LanguageService.getByGuild(event.getGuild(), "message.recording.inChat").block())
-                                .setColor(Color.GREEN)
+                                .setColor(BotConfig.getMainColor())
                                 .setFooter(BotConfig.getAdvertisement(), event.getGuild().getIconUrl())
                                 .setTitle(LanguageService.getByGuild(event.getGuild(), "label.recording.finished").block())
                                 .build());
@@ -136,7 +136,7 @@ public class MenuEvents extends ListenerAdapter {
                                             MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
                                             messageCreateBuilder.setEmbeds(new EmbedBuilder().setTitle(LanguageService.getByGuild(event.getGuild(), "label.ticket").block())
                                                     .setDescription(ticketMessage.get().getStringValue())
-                                                    .setThumbnail(event.getMember().getEffectiveAvatarUrl()).setColor(Color.GREEN).setTimestamp(Instant.now()).build());
+                                                    .setThumbnail(event.getMember().getEffectiveAvatarUrl()).setColor(BotConfig.getMainColor()).setTimestamp(Instant.now()).build());
                                             messageCreateBuilder.addActionRow(Button.primary("re_ticket_close", LanguageService.getByGuild(event.getGuild(), "label.closeTicket").block()));
                                             Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), channel);
                                             event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.created", channel.getAsMention()).block()).queue();
@@ -166,7 +166,7 @@ public class MenuEvents extends ListenerAdapter {
 
                         webhookEmbedBuilder.setDescription("Here is the transcript of the ticket " + ticketEntity.getTicketCount() + "!");
                         webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
-                        webhookEmbedBuilder.setColor(BotWorker.randomEmbedColor().getRGB());
+                        webhookEmbedBuilder.setColor(BotConfig.getMainColor().getRGB());
 
                         webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
                         webhookMessageBuilder.addFile(event.getGuild().getId() + "_" + ticketEntity.getTicketCount() + "_transcript.html",
@@ -194,7 +194,7 @@ public class MenuEvents extends ListenerAdapter {
                                         event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
                                 .setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer").block())
                                 .setThumbnail(event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
-                                .setColor(Color.GREEN)
+                                .setColor(BotConfig.getMainColor())
                                 .setDescription(LanguageService.getByGuild(event.getGuild(), "message.music.resume").block())
                                 .setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl());
                         Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
@@ -204,7 +204,7 @@ public class MenuEvents extends ListenerAdapter {
                                         event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
                                 .setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer").block())
                                 .setThumbnail(event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
-                                .setColor(Color.GREEN)
+                                .setColor(BotConfig.getMainColor())
                                 .setDescription(LanguageService.getByGuild(event.getGuild(), "message.music.pause").block())
                                 .setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl());
                         Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
@@ -226,7 +226,7 @@ public class MenuEvents extends ListenerAdapter {
                                     event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer").block())
                             .setThumbnail(event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl())
-                            .setColor(Color.GREEN)
+                            .setColor(BotConfig.getMainColor())
                             .setDescription(LanguageService.getByGuild(event.getGuild(), "message.music.pause").block())
                             .setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl());
                     Main.getInstance().getCommandManager().sendMessage(em, event.getChannel(), event.getHook());
@@ -259,7 +259,7 @@ public class MenuEvents extends ListenerAdapter {
                             event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                     em.setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer").block());
                     em.setThumbnail(event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-                    em.setColor(Color.GREEN);
+                    em.setColor(BotConfig.getMainColor());
                     em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(event.getGuild()).getScheduler().loop() ?
                             LanguageService.getByGuild(event.getGuild(), "message.music.loop.enabled").block() :
                             LanguageService.getByGuild(event.getGuild(), "message.music.loop.disabled").block());
@@ -285,7 +285,7 @@ public class MenuEvents extends ListenerAdapter {
                             event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                     em.setTitle(LanguageService.getByGuild(event.getGuild(), "label.musicPlayer").block());
                     em.setThumbnail(event.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-                    em.setColor(Color.GREEN);
+                    em.setColor(BotConfig.getMainColor());
                     em.setDescription(LanguageService.getByGuild(event.getGuild(), "message.music.shuffle").block());
                     em.setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl());
 
@@ -355,7 +355,7 @@ public class MenuEvents extends ListenerAdapter {
 
                     Main.getInstance().getCommandManager().sendMessage(new EmbedBuilder()
                             .setTitle(title)
-                            .setColor(Color.GREEN)
+                            .setColor(BotConfig.getMainColor())
                             .setDescription(LanguageService.getByGuild(event.getGuild(), "message.rewards.success").block())
                             .setFooter(BotConfig.getAdvertisement(), event.getGuild().getIconUrl()), null, event.getInteraction().getHook());
                 });
@@ -368,7 +368,7 @@ public class MenuEvents extends ListenerAdapter {
                 LanguageService.getByGuild(event.getGuild(), "label.feedback").subscribe(title -> {
                     EmbedBuilder embedBuilder = new EmbedBuilder()
                             .setTitle(title)
-                            .setColor(Color.GREEN)
+                            .setColor(BotConfig.getMainColor())
                             .setThumbnail(event.getUser().getEffectiveAvatarUrl())
                             .setDescription("```" + event.getValue("re_feedback_text").getAsString() + "```")
                             .setFooter("By " + event.getUser().getEffectiveName() + " (" + event.getUser().getId() + ")", event.getUser().getEffectiveAvatarUrl())
@@ -480,7 +480,7 @@ public class MenuEvents extends ListenerAdapter {
                         EmbedBuilder embedBuilder = new EmbedBuilder()
                                 .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
                                 .setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl())
-                                .setColor(Color.GREEN)
+                                .setColor(BotConfig.getMainColor())
                                 .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.twitchSuccess").block());
                         event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     });
@@ -504,7 +504,7 @@ public class MenuEvents extends ListenerAdapter {
                     EmbedBuilder embedBuilder = new EmbedBuilder()
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
                             .setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl())
-                            .setColor(Color.GREEN)
+                            .setColor(BotConfig.getMainColor())
                             .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.youtubeSuccess").block());
 
                     if (categories.isEmpty()) {
@@ -577,7 +577,7 @@ public class MenuEvents extends ListenerAdapter {
                     embedBuilder = embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
                             .setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl())
-                            .setColor(Color.GREEN)
+                            .setColor(BotConfig.getMainColor())
                             .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.youtubeSuccess").block());
                     event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                 });
@@ -600,7 +600,7 @@ public class MenuEvents extends ListenerAdapter {
                     EmbedBuilder embedBuilder = new EmbedBuilder()
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
                             .setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl())
-                            .setColor(Color.GREEN)
+                            .setColor(BotConfig.getMainColor())
                             .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.redditSuccess").block());
 
                     if (categories.isEmpty()) {
@@ -659,7 +659,7 @@ public class MenuEvents extends ListenerAdapter {
                     embedBuilder = embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
                             .setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl())
-                            .setColor(Color.GREEN)
+                            .setColor(BotConfig.getMainColor())
                             .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.redditSuccess").block());
                     event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                 });
@@ -682,7 +682,7 @@ public class MenuEvents extends ListenerAdapter {
                     EmbedBuilder embedBuilder = new EmbedBuilder()
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
                             .setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl())
-                            .setColor(Color.GREEN)
+                            .setColor(BotConfig.getMainColor())
                             .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.twitterSuccess").block());
 
                     if (categories.isEmpty()) {
@@ -741,7 +741,7 @@ public class MenuEvents extends ListenerAdapter {
                     embedBuilder = embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
                             .setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl())
-                            .setColor(Color.GREEN)
+                            .setColor(BotConfig.getMainColor())
                             .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.twitterSuccess").block());
                     event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                 });
@@ -764,7 +764,7 @@ public class MenuEvents extends ListenerAdapter {
                     EmbedBuilder embedBuilder = new EmbedBuilder()
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
                             .setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl())
-                            .setColor(Color.GREEN)
+                            .setColor(BotConfig.getMainColor())
                             .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.instagramSuccess").block());
 
                     if (categories.isEmpty()) {
@@ -823,7 +823,7 @@ public class MenuEvents extends ListenerAdapter {
                     embedBuilder = embedBuilder
                             .setTitle(LanguageService.getByGuild(event.getGuild(), "label.setupMenu").block())
                             .setFooter(event.getGuild().getName() + " - " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl())
-                            .setColor(Color.GREEN)
+                            .setColor(BotConfig.getMainColor())
                             .setDescription(LanguageService.getByGuild(event.getGuild(), "message.statistics.instagramSuccess").block());
                     event.deferEdit().setEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                 });
@@ -1027,7 +1027,7 @@ public class MenuEvents extends ListenerAdapter {
                     case "statisticsSetupMember" ->
                             LanguageService.getByGuild(event.getGuild(), "message.statistics.memberSuccess").subscribe(description -> {
                                 embedBuilder.setDescription(description);
-                                embedBuilder.setColor(Color.GREEN);
+                                embedBuilder.setColor(BotConfig.getMainColor());
                                 event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                                 List<Category> categories = event.getGuild().getCategoriesByName(LanguageService.getByGuild(event.getGuild(), "label.statistics").block(), true);
 
@@ -1171,7 +1171,7 @@ public class MenuEvents extends ListenerAdapter {
                             SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(tickets -> {
                                 if (tickets.isPresent()) {
                                     embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.deleted").block());
-                                    embedBuilder.setColor(Color.GREEN);
+                                    embedBuilder.setColor(BotConfig.getMainColor());
                                     event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                                     SQLSession.getSqlConnector().getSqlWorker().deleteEntity(tickets.get()).block();
                                 }
@@ -1219,7 +1219,7 @@ public class MenuEvents extends ListenerAdapter {
                     LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.setupSuccess").subscribe(description -> {
                         SQLSession.getSqlConnector().getSqlWorker().updateEntity(new TemporalVoicechannel(event.getGuild().getIdLong(), voiceChannel.getIdLong())).block();
                         embedBuilder.setDescription(description);
-                        embedBuilder.setColor(Color.GREEN);
+                        embedBuilder.setColor(BotConfig.getMainColor());
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     });
                 } else {
@@ -1264,7 +1264,7 @@ public class MenuEvents extends ListenerAdapter {
                             SQLSession.getSqlConnector().getSqlWorker().getEntity(new TemporalVoicechannel(), "FROM TemporalVoicechannel WHERE guildChannelId.guildId=:gid", Map.of("gid", event.getGuild().getIdLong())).subscribe(temporalVoicechannel -> {
                                 if (temporalVoicechannel.isPresent()) {
                                     embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.deleted").block());
-                                    embedBuilder.setColor(Color.GREEN);
+                                    embedBuilder.setColor(BotConfig.getMainColor());
                                     event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                                     SQLSession.getSqlConnector().getSqlWorker().deleteEntity(temporalVoicechannel.get()).block();
                                 }
@@ -1296,7 +1296,7 @@ public class MenuEvents extends ListenerAdapter {
                     LanguageService.getByGuild(event.getGuild(), "message.lang.setupSuccess", language.getName() + " by " + language.getAuthor()).subscribe(description -> {
                         SQLSession.getSqlConnector().getSqlWorker().setSetting(event.getGuild().getIdLong(), "configuration_language", "Language", selectedLocale.getLocale());
                         embedBuilder.setDescription(description);
-                        embedBuilder.setColor(Color.GREEN);
+                        embedBuilder.setColor(BotConfig.getMainColor());
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     });
                 } else {
@@ -1341,7 +1341,7 @@ public class MenuEvents extends ListenerAdapter {
                                     webhook.ifPresent(webhookLog -> event.getJDA().retrieveWebhookById(webhookLog.getChannelId()).queue(webhook1 -> {
                                         webhook1.delete().queue();
                                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.deleted").block());
-                                        embedBuilder.setColor(Color.GREEN);
+                                        embedBuilder.setColor(BotConfig.getMainColor());
                                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                                         SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookLog).block();
                                     })));
@@ -1397,7 +1397,7 @@ public class MenuEvents extends ListenerAdapter {
                                 WebhookUtil.deleteWebhook(event.getGuild().getIdLong(), webhookEntity));
                         SQLSession.getSqlConnector().getSqlWorker().setLogWebhook(event.getGuild().getIdLong(), textChannel.getIdLong(), webhook.getIdLong(), webhook.getToken());
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupSuccess").block());
-                        embedBuilder.setColor(Color.GREEN);
+                        embedBuilder.setColor(BotConfig.getMainColor());
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     });
                 } else {
@@ -1448,7 +1448,7 @@ public class MenuEvents extends ListenerAdapter {
                                     webhook.ifPresent(webhookWelcome -> event.getJDA().retrieveWebhookById(webhookWelcome.getChannelId()).queue(webhook1 -> {
                                         webhook1.delete().queue();
                                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.deleted").block());
-                                        embedBuilder.setColor(Color.GREEN);
+                                        embedBuilder.setColor(BotConfig.getMainColor());
                                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                                         SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookWelcome).block();
                                     })));
@@ -1505,7 +1505,7 @@ public class MenuEvents extends ListenerAdapter {
 
                         SQLSession.getSqlConnector().getSqlWorker().setWelcomeWebhook(event.getGuild().getIdLong(), textChannel.getIdLong(), webhook.getIdLong(), webhook.getToken());
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.setupSuccess").block());
-                        embedBuilder.setColor(Color.GREEN);
+                        embedBuilder.setColor(BotConfig.getMainColor());
                         event.editMessageEmbeds(embedBuilder.build()).setComponents(new ArrayList<>()).queue();
                     });
                 } else {

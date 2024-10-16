@@ -17,7 +17,6 @@ import de.presti.ree6.sql.SQLSession;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 
-import java.awt.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -161,7 +160,7 @@ public class RSSSonic implements ISonic {
 
                                 webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(BotConfig.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()));
                                 webhookEmbedBuilder.setTimestamp(Instant.now());
-                                webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
+                                webhookEmbedBuilder.setColor(BotConfig.getMainColor().getRGB());
 
                                 webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
@@ -209,7 +208,7 @@ public class RSSSonic implements ISonic {
 
                                     webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(BotConfig.getAdvertisement(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()));
                                     webhookEmbedBuilder.setTimestamp(Instant.now());
-                                    webhookEmbedBuilder.setColor(Color.CYAN.getRGB());
+                                    webhookEmbedBuilder.setColor(BotConfig.getMainColor().getRGB());
 
                                     webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 

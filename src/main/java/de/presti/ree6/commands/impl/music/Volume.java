@@ -1,11 +1,11 @@
 package de.presti.ree6.commands.impl.music;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.bot.BotConfig;
 import lavalink.client.player.IPlayer;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -13,8 +13,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
-
-import java.awt.*;
 
 /**
  * Set the Volume of the AudioPlayer of Ree6.
@@ -54,14 +52,14 @@ public class Volume implements ICommand {
                         commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-                em.setColor(Color.GREEN);
+                em.setColor(BotConfig.getMainColor());
                 em.setDescription(commandEvent.getResource("message.music.volume.success", volume));
             } else {
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), BotConfig.getWebsite(),
                         commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-                em.setColor(Color.RED);
+                em.setColor(BotConfig.getMainColor());
                 em.setDescription(commandEvent.getResource("message.music.volume.default"));
             }
 
@@ -82,14 +80,14 @@ public class Volume implements ICommand {
                         commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-                em.setColor(Color.GREEN);
+                em.setColor(BotConfig.getMainColor());
                 em.setDescription(commandEvent.getResource("message.music.volume.success", vol));
             } else {
                 em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), BotConfig.getWebsite(),
                         commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
                 em.setTitle(commandEvent.getResource("label.musicPlayer"));
                 em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-                em.setColor(Color.GREEN);
+                em.setColor(BotConfig.getMainColor());
                 em.setDescription(commandEvent.getResource("message.music.volume.default", player.getVolume()));
             }
         }

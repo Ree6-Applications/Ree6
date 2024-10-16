@@ -1,7 +1,6 @@
 package de.presti.ree6.commands.interfaces;
 
 import de.presti.ree6.bot.BotConfig;
-import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
@@ -53,7 +52,7 @@ public interface ICommand extends ExtensionPoint {
                             .setAuthor(BotConfig.getBotName() + "-Info")
                             .setDescription(a.content().replace("\\n", "\n") + "\n\n" + LanguageService.getByGuild(commandEvent.getGuild(), "message.news.notice").block())
                             .setFooter(BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
-                            .setColor(BotWorker.randomEmbedColor()), 15, commandEvent.getChannel());
+                            .setColor(BotConfig.getMainColor()), 15, commandEvent.getChannel());
 
                     AnnouncementManager.addReceivedAnnouncement(commandEvent.getGuild().getIdLong(), a.id());
                 }

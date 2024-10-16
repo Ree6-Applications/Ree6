@@ -122,6 +122,7 @@ public class Config {
                     .parent().path("dev").addDefault("DevTokenhere").commentSide("Token used when set to dev build.")
                     .parent().parent().path("misc").comment("Configuration for the Bot itself.").blankLine()
                     .path("status").addDefault("ree6.de | %guilds% Servers. (%shard%)").commentSide("The Status of the Bot.")
+                    .parent().path("mainColor").addDefault("#B9010B").commentSide("Color that should be used in various places.")
                     .parent().path("feedbackChannelId").addDefault(0L).commentSide("The Channel used for Feedback.")
                     .parent().path("ownerId").addDefault(321580743488831490L).commentSide("The ID of the Bot Owner. Change this to yours!")
                     .parent().path("predefineInformation").addDefault("""

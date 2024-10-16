@@ -22,12 +22,12 @@ public class Seek implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        int seekAmountInSeconds = 1;
+        long seekAmountInSeconds = 1;
 
         if (commandEvent.isSlashCommand()) {
             OptionMapping optionMapping = commandEvent.getOption("seconds");
             if (optionMapping != null) {
-                seekAmountInSeconds = optionMapping.getAsInt();
+                seekAmountInSeconds = optionMapping.getAsLong();
             }
         } else if (commandEvent.getArguments().length >= 1) {
             try {
@@ -45,7 +45,7 @@ public class Seek implements ICommand {
             return;
         }
 
-        Main.getInstance().getMusicWorker().seekInTrack(commandEvent.getChannel(), seekAmountInSeconds);
+        Main.getInstance().getMusicWorker().seekInTrack(commandEvent.getChannel(), commandEvent.getInteractionHook(), seekAmountInSeconds);
     }
 
     /**

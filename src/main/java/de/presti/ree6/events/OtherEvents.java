@@ -89,7 +89,7 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
-        SQLSession.getSqlConnector().getSqlWorker().createSettings(event.getGuild().getIdLong());
+        SQLSession.getSqlConnector().getSqlWorker().createCommandSettings(event.getGuild().getIdLong());
     }
 
     /**
@@ -229,7 +229,7 @@ public class OtherEvents extends ListenerAdapter {
 
                             webhookEmbedBuilder.setDescription("Here is the transcript of the ticket " + ticketsEntity.getTicketCount() + "!");
                             webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(event.getGuild().getName() + " " + BotConfig.getAdvertisement(), event.getGuild().getIconUrl()));
-                            webhookEmbedBuilder.setColor(BotWorker.randomEmbedColor().getRGB());
+                            webhookEmbedBuilder.setColor(BotConfig.getMainColor().getRGB());
 
                             webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
                             webhookMessageBuilder.addFile(event.getGuild().getId() + "_" + ticketsEntity.getTicketCount() + "_transcript.html",

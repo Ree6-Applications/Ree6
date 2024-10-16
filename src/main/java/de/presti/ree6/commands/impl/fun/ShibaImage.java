@@ -3,7 +3,6 @@ package de.presti.ree6.commands.impl.fun;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import de.presti.ree6.bot.BotConfig;
-import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
@@ -35,7 +34,7 @@ public class ShibaImage implements ICommand {
         EmbedBuilder em = new EmbedBuilder();
 
         em.setTitle(commandEvent.getResource("label.randomShibaImage"));
-        em.setColor(BotWorker.randomEmbedColor());
+        em.setColor(BotConfig.getMainColor());
         em.setImage(js.get(0).getAsString());
         em.setFooter(commandEvent.getResource("label.footerMessage", commandEvent.getMember().getEffectiveName(), BotConfig.getAdvertisement()), commandEvent.getMember().getEffectiveAvatarUrl());
         commandEvent.reply(em.build());

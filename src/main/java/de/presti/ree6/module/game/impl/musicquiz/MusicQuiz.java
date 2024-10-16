@@ -1,6 +1,8 @@
 package de.presti.ree6.module.game.impl.musicquiz;
 
-import de.presti.ree6.bot.BotWorker;
+import de.presti.ree6.bot.BotConfig;
+import de.presti.ree6.language.LanguageService;
+import de.presti.ree6.main.Main;
 import de.presti.ree6.module.game.core.GameSession;
 import de.presti.ree6.module.game.core.base.GameInfo;
 import de.presti.ree6.module.game.core.base.GamePlayer;
@@ -9,8 +11,6 @@ import de.presti.ree6.module.game.core.base.IGame;
 import de.presti.ree6.module.game.impl.musicquiz.entities.MusicQuizEntry;
 import de.presti.ree6.module.game.impl.musicquiz.entities.MusicQuizPlayer;
 import de.presti.ree6.module.game.impl.musicquiz.util.MusicQuizUtil;
-import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.utils.others.ThreadUtil;
@@ -113,7 +113,7 @@ public class MusicQuiz implements IGame {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle(LanguageService.getByGuild(session.getGuild(), "label.musicQuiz").block());
-        embedBuilder.setColor(BotWorker.randomEmbedColor());
+        embedBuilder.setColor(BotConfig.getMainColor());
         embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.musicQuiz.welcome", session.getGameIdentifier()).block());
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
