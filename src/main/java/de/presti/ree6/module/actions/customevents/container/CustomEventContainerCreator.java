@@ -44,9 +44,7 @@ public class CustomEventContainerCreator {
         for (Class<? extends IEventAction> aClass : classes) {
             if (aClass.isAnnotationPresent(ActionInfo.class)) {
                 String actionName = aClass.getAnnotation(ActionInfo.class).name();
-                if (!cachedActions.containsKey(actionName)) {
-                    cachedActions.put(actionName, aClass);
-                }
+                cachedActions.computeIfAbsent(actionName, s -> aClass);
             }
         }
     }
@@ -69,9 +67,7 @@ public class CustomEventContainerCreator {
 
         for (Class<? extends IEventAction> aClass : classes) {
             if (aClass.isAnnotationPresent(ActionInfo.class) && aClass.getAnnotation(ActionInfo.class).name().trim().equalsIgnoreCase(action)) {
-                if (!cachedActions.containsKey(action)) {
-                    cachedActions.put(action, aClass);
-                }
+                cachedActions.computeIfAbsent(action, s -> aClass);
 
                 return aClass;
             }
