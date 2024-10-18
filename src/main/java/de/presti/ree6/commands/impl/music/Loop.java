@@ -1,15 +1,13 @@
 package de.presti.ree6.commands.impl.music;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-
-import java.awt.*;
 
 /**
  * Set the Song onto Loop.
@@ -37,7 +35,7 @@ public class Loop implements ICommand {
                 commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setTitle(commandEvent.getResource("label.musicPlayer"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-        em.setColor(Color.GREEN);
+        em.setColor(BotConfig.getMainColor());
         em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().loop() ?
                 commandEvent.getResource("message.music.loop.enabled") :
                 commandEvent.getResource("message.music.loop.disabled"));

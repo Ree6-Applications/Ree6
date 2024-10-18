@@ -21,7 +21,7 @@ public class BotConfig {
     /**
      * Color values to be preset to prevent parsing hex codes from the config over and over and over and over and over again.
      */
-    private static Color rankTextColor, rankDetailColor, rankHighlightColor,  rankProgressbarColor, rankProgressbarBackgroundColor;
+    private static Color rankTextColor, rankDetailColor, rankHighlightColor,  rankProgressbarColor, rankProgressbarBackgroundColor, mainColor;
 
     /**
      * Get the configured Discord Bot status.
@@ -290,5 +290,16 @@ public class BotConfig {
     }
 
     //endregion
+
+    /**
+     * Get the configured color for the background of the progressbar on the rank card.
+     * @return the color for the background of the progressbar on the rank card from the config.
+     */
+    public static Color getMainColor() {
+        if (mainColor == null) {
+            mainColor = Color.decode(Main.getInstance().getConfig().getConfiguration().getString("bot.misc.mainColor", "#B9010B"));
+        }
+        return mainColor;
+    }
 }
 

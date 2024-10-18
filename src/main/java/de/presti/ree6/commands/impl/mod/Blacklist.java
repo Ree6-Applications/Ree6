@@ -4,7 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.others.ModerationUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -58,20 +57,22 @@ public class Blacklist implements ICommand {
                         commandEvent.reply(commandEvent.getResource("message.blacklist.removed", word), 5);
                     }
 
-                    default -> {
-                        if (ModerationUtil.shouldModerate(commandEvent.getGuild().getIdLong())) {
-                            StringBuilder end = new StringBuilder();
+                    default -> ModerationUtil.shouldModerate(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
+                        if (aBoolean) {
+                            ModerationUtil.getBlacklist(commandEvent.getGuild().getIdLong()).subscribe(blacklists -> {
+                                StringBuilder end = new StringBuilder();
 
-                            for (String s : ModerationUtil.getBlacklist(commandEvent.getGuild().getIdLong())) {
-                                end.append("\n").append(s);
-                            }
+                                for (String s : blacklists) {
+                                    end.append("\n").append(s);
+                                }
 
-                            commandEvent.reply("```" + end + "```");
+                                commandEvent.reply("```" + end + "```");
+                            });
                         } else {
                             commandEvent.reply(commandEvent.getResource("message.blacklist.setupNeeded"));
                             commandEvent.reply(commandEvent.getResource("message.default.usage", "blacklist add [WORD...]"), 5);
                         }
-                    }
+                    });
                 }
 
             } else {
@@ -84,18 +85,22 @@ public class Blacklist implements ICommand {
                             commandEvent.reply(commandEvent.getResource("message.default.invalidQuery"), 5);
                             commandEvent.reply(commandEvent.getResource("message.default.usage", "blacklist remove WORD"), 5);
                         } else if (commandEvent.getArguments()[0].equalsIgnoreCase("list")) {
-                            if (ModerationUtil.shouldModerate(commandEvent.getGuild().getIdLong())) {
-                                StringBuilder end = new StringBuilder();
+                            ModerationUtil.shouldModerate(commandEvent.getGuild().getIdLong()).subscribe(aBoolean -> {
+                                if (aBoolean) {
+                                    ModerationUtil.getBlacklist(commandEvent.getGuild().getIdLong()).subscribe(blacklists -> {
+                                        StringBuilder end = new StringBuilder();
 
-                                for (String s : ModerationUtil.getBlacklist(commandEvent.getGuild().getIdLong())) {
-                                    end.append("\n").append(s);
+                                        for (String s : blacklists) {
+                                            end.append("\n").append(s);
+                                        }
+
+                                        commandEvent.reply("```" + end + "```");
+                                    });
+                                } else {
+                                    commandEvent.reply(commandEvent.getResource("message.blacklist.setupNeeded"));
+                                    commandEvent.reply(commandEvent.getResource("message.default.usage", "blacklist add [WORD...]"), 5);
                                 }
-
-                                commandEvent.reply("```" + end + "```");
-                            } else {
-                                commandEvent.reply(commandEvent.getResource("message.blacklist.setupNeeded"));
-                                commandEvent.reply(commandEvent.getResource("message.default.usage", "blacklist add [WORD...]"), 5);
-                            }
+                            });
                         } else {
                             commandEvent.reply(commandEvent.getResource("message.blacklist.notFound", commandEvent.getArguments()[0]), 5);
                             commandEvent.reply(commandEvent.getResource("message.default.usage", "blacklist add/remove/list"), 5);
@@ -131,7 +136,7 @@ public class Blacklist implements ICommand {
         } else {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.ADMINISTRATOR.name()), 5);
         }
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        commandEvent.delete();
     }
 
     /**

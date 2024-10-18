@@ -238,6 +238,7 @@ message:
       other: "The Birthday of %s has been removed!"
       noPerms: "You don't have the permission to remove a Birthday!"
     wish: "Happy birthday to <@%s>!"
+    list: "Here are all Birthday wishes:\n```%s```"
   instagramNotifier:
     added: "A Instagram Notifier has been created for the User %s!"
     list: "Here are all Instagram Notifier that have been setup:\n```%s```"

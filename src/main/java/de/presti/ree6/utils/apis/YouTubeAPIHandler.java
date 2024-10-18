@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-// TODO:: check if there is a way to make this more efficient, maybe use a cache system or merge multiple requests into one and split the result for further use again?
-
 /**
  * YouTubeAPIHandler.
  */

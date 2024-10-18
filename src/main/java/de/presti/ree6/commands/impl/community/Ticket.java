@@ -1,5 +1,6 @@
 package de.presti.ree6.commands.impl.community;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
@@ -8,7 +9,6 @@ import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Tickets;
-import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.awt.*;
 import java.util.EnumSet;
 import java.util.Map;
 
@@ -59,45 +58,42 @@ public class Ticket implements ICommand {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
 
-        Tickets tickets = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", commandEvent.getGuild().getId()));
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE guildId=:gid", Map.of("gid", commandEvent.getGuild().getId())).subscribe(tickets -> {
 
-        if (tickets != null) {
-            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(tickets);
-        }
+            tickets.ifPresent(value -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(value).block());
 
-        StandardGuildMessageChannel channel = logChannel.getAsChannel().asStandardGuildMessageChannel();
+            StandardGuildMessageChannel channel = logChannel.getAsChannel().asStandardGuildMessageChannel();
 
-        tickets = new Tickets();
-        tickets.setChannelId(ticketChannel.getAsChannel().getIdLong());
-        tickets.setGuildId(commandEvent.getGuild().getIdLong());
-        tickets.setLogChannelId(logChannel.getAsChannel().getIdLong());
+            Tickets ticketEntity = new Tickets();
+            ticketEntity.setChannelId(ticketChannel.getAsChannel().getIdLong());
+            ticketEntity.setGuildId(commandEvent.getGuild().getIdLong());
+            ticketEntity.setLogChannelId(logChannel.getAsChannel().getIdLong());
 
-        Tickets finalTickets = tickets;
+            channel.createWebhook("Ticket-Log").queue(webhook -> {
+                ticketEntity.setLogChannelWebhookId(webhook.getIdLong());
+                ticketEntity.setLogChannelWebhookToken(webhook.getToken());
+                commandEvent.getGuild().createCategory("Tickets").addPermissionOverride(commandEvent.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
+                    ticketEntity.setTicketCategory(category1.getIdLong());
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(ticketEntity).block();
 
-        channel.createWebhook("Ticket-Log").queue(webhook -> {
-            finalTickets.setLogChannelWebhookId(webhook.getIdLong());
-            finalTickets.setLogChannelWebhookToken(webhook.getToken());
-            commandEvent.getGuild().createCategory("Tickets").addPermissionOverride(commandEvent.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue(category1 -> {
-                finalTickets.setTicketCategory(category1.getIdLong());
-                SQLSession.getSqlConnector().getSqlWorker().updateEntity(finalTickets);
-
-                MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-                messageCreateBuilder.setEmbeds(new EmbedBuilder()
-                        .setTitle(LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket"))
-                        .setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_ticket_menu").getStringValue())
-                        .setColor(0x55ff00)
-                        .setThumbnail(commandEvent.getGuild().getIconUrl())
-                        .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
-                        .build());
-                messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket"), Emoji.fromUnicode("U+1F4E9")));
-                Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), ticketChannel.getAsChannel().asTextChannel());
+                    MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
+                    messageCreateBuilder.setEmbeds(new EmbedBuilder()
+                            .setTitle(LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket").block())
+                            .setDescription(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "message_ticket_menu").block().get().getStringValue())
+                            .setColor(0x55ff00)
+                            .setThumbnail(commandEvent.getGuild().getIconUrl())
+                            .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
+                            .build());
+                    messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket").block(), Emoji.fromUnicode("U+1F4E9")));
+                    Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), ticketChannel.getAsChannel().asTextChannel());
+                });
             });
+
+            embedBuilder.setDescription(commandEvent.getResource("message.ticket.setupSuccess"));
+            embedBuilder.setColor(BotConfig.getMainColor());
+
+            commandEvent.reply(embedBuilder.build());
         });
-
-        embedBuilder.setDescription(LanguageService.getByGuild(commandEvent.getGuild(), "message.ticket.setupSuccess"));
-        embedBuilder.setColor(Color.GREEN);
-
-        commandEvent.reply(embedBuilder.build());
     }
 
     /**
@@ -105,7 +101,7 @@ public class Ticket implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("tickets", LanguageService.getDefault("command.description.tickets"))
+        return new CommandDataImpl("tickets", "command.description.tickets")
                 .addOptions(new OptionData(OptionType.CHANNEL, "supportchannel", "The channel that should have the ticket creation message.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT),
                         new OptionData(OptionType.CHANNEL, "logchannel", "The channel that should receive the transcripts.", true).setChannelTypes(ChannelType.NEWS, ChannelType.TEXT));
     }

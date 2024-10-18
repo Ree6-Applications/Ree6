@@ -50,7 +50,7 @@ public class NSFW implements ICommand {
         List<String> images = new ArrayList<>();
 
         try {
-            List<RedditPost> request = Main.getInstance().getNotifier().getSubredditPosts("hentai", Sorting.HOT, 50);
+            List<RedditPost> request = Main.getInstance().getNotifier().getRedditSonic().getSubredditPosts("hentai", Sorting.HOT, 50);
 
             request.forEach(x -> {
                 String fileUrl = x.getUrl().toLowerCase();
@@ -73,6 +73,7 @@ public class NSFW implements ICommand {
                 String randomUrl = images.get(RandomUtils.secureRandom.nextInt(images.size() - 1));
                 EmbedBuilder em = new EmbedBuilder();
 
+                em.setColor(BotConfig.getMainColor());
                 em.setImage(randomUrl);
                 em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + BotConfig.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
 
