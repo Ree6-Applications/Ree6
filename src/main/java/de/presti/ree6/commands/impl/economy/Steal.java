@@ -5,7 +5,6 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.utils.data.EconomyUtil;
 import de.presti.ree6.utils.others.RandomUtils;
 import de.presti.ree6.utils.others.ThreadUtil;
@@ -17,7 +16,6 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Steal money from other users.
@@ -42,8 +40,8 @@ public class Steal implements ICommand {
 
         String entryString = commandEvent.getGuild().getIdLong() + "-" + commandEvent.getMember().getIdLong();
 
-        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_steal_delay")).subscribe(value -> {
+        SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(),
+                "configuration_steal_delay").subscribe(value -> {
             long delay = Long.parseLong(value.get().getStringValue());
 
             if (stealTimeout.contains(entryString)) {

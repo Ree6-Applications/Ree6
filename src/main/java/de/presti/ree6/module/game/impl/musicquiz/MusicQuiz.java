@@ -12,7 +12,6 @@ import de.presti.ree6.module.game.impl.musicquiz.entities.MusicQuizEntry;
 import de.presti.ree6.module.game.impl.musicquiz.entities.MusicQuizPlayer;
 import de.presti.ree6.module.game.impl.musicquiz.util.MusicQuizUtil;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.utils.others.ThreadUtil;
 import lavalink.client.player.event.IPlayerEventListener;
 import lavalink.client.player.event.TrackEndEvent;
@@ -29,7 +28,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -214,8 +212,7 @@ public class MusicQuiz implements IGame {
         if (currentEntry.checkTitle(messageContent)) {
             musicQuizPlayer.addPoints(1);
 
-            SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                            Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_title"))
+            SQLSession.getSqlConnector().getSqlWorker().getSetting(session.getGuild().getIdLong(), "configuration_rewards_musicquiz_title")
                     .subscribe(setting -> rewardPlayer(session, musicQuizPlayer, setting.get().getValue()));
 
             messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundTitle", currentEntry.getTitle()).block()).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
@@ -225,8 +222,8 @@ public class MusicQuiz implements IGame {
         if (currentEntry.checkArtist(messageContent)) {
             musicQuizPlayer.addPoints(2);
 
-            SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                    Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_artist"))
+            SQLSession.getSqlConnector().getSqlWorker().getSetting(session.getGuild().getIdLong(),
+                            "configuration_rewards_musicquiz_artist")
                     .subscribe(setting -> rewardPlayer(session, musicQuizPlayer, setting.get().getValue()));
 
             messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundArtists", currentEntry.getArtist()).block()).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
@@ -236,8 +233,8 @@ public class MusicQuiz implements IGame {
         if (currentEntry.checkFeatures(messageContent)) {
             musicQuizPlayer.addPoints(3);
 
-            SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                    Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_feature"))
+            SQLSession.getSqlConnector().getSqlWorker().getSetting(session.getGuild().getIdLong(),
+                    "configuration_rewards_musicquiz_feature")
                     .subscribe(setting -> rewardPlayer(session, musicQuizPlayer, setting.get().getValue()));
 
             messageReceivedEvent.getMessage().reply(LanguageService.getByGuild(messageReceivedEvent.getGuild(), "message.musicQuiz.foundFeature", String.join(",", currentEntry.getFeatures())).block()).delay(5, TimeUnit.SECONDS).flatMap(Message::delete).queue();
@@ -286,8 +283,8 @@ public class MusicQuiz implements IGame {
         menuMessage.delete().queue();
         session.getChannel().sendMessage(messageCreateBuilder.build()).queue();
 
-        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                        Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_musicquiz_win"))
+        SQLSession.getSqlConnector().getSqlWorker().getSetting(session.getGuild().getIdLong(),
+                "configuration_rewards_musicquiz_win")
                 .subscribe(setting -> rewardPlayer(session, sortedList.get(0), setting.get().getValue()));
 
         Main.getInstance().getMusicWorker().disconnect(session.getGuild());

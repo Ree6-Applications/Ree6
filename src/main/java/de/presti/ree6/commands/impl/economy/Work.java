@@ -5,7 +5,6 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.utils.data.EconomyUtil;
 import de.presti.ree6.utils.others.RandomUtils;
 import de.presti.ree6.utils.others.ThreadUtil;
@@ -13,7 +12,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Work for money.
@@ -33,8 +31,7 @@ public class Work implements ICommand {
     public void onPerform(CommandEvent commandEvent) {
         String entryString = commandEvent.getGuild().getIdLong() + "-" + commandEvent.getMember().getIdLong();
 
-        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_delay")).subscribe(value -> {
+        SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "configuration_work_delay").subscribe(value -> {
             long delay = Long.parseLong(value.get().getStringValue());
 
             if (workTimeout.contains(entryString)) {
@@ -42,11 +39,11 @@ public class Work implements ICommand {
                 return;
             }
 
-            double min = Double.parseDouble(SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                    Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_min")).block().get().getStringValue());
+            double min = Double.parseDouble(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(),
+                    "configuration_work_min").block().get().getStringValue());
 
-            double max = Double.parseDouble(SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                    Map.of("gid", commandEvent.getGuild().getId(), "name", "configuration_work_max")).block().get().getStringValue());
+            double max = Double.parseDouble(SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(),
+                            "configuration_work_max").block().get().getStringValue());
 
             double amount = RandomUtils.round(RandomUtils.nextDouble(min, max), 2);
 

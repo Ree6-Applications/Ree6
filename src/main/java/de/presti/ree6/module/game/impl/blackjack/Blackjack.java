@@ -13,7 +13,6 @@ import de.presti.ree6.module.game.impl.blackjack.entities.BlackJackCard;
 import de.presti.ree6.module.game.impl.blackjack.entities.BlackJackPlayer;
 import de.presti.ree6.module.game.impl.blackjack.util.BlackJackCardUtility;
 import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -23,7 +22,6 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Class used to represent the game of blackjack.
@@ -311,8 +309,8 @@ public class Blackjack implements IGame {
         nextPlayer.getInteractionHook().editOriginalComponents(new ArrayList<>()).queue();
 
         Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), session.getChannel());
-        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Setting(), "FROM Setting WHERE settingId.guildId=:gid AND settingId.name=:name",
-                Map.of("gid", session.getGuild().getIdLong(), "name", "configuration_rewards_blackjack_win"))
+        SQLSession.getSqlConnector().getSqlWorker().getSetting(session.getGuild().getIdLong(),
+                "configuration_rewards_blackjack_win")
                 .subscribe(setting -> rewardPlayer(session, winner, setting.get().getValue()));
 
         stopGame();
