@@ -92,7 +92,7 @@ public class TwitchSonic implements ISonic {
             webhookEmbedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(channelGoLiveEvent.getStream().getUserName(), twitchUserRequest.map(User::getProfileImageUrl).orElse(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()), twitchUrl));
             webhookEmbedBuilder.setImageUrl(channelGoLiveEvent.getStream().getThumbnailUrlTemplate());
             webhookEmbedBuilder.setFooter(new WebhookEmbed.EmbedFooter(channelGoLiveEvent.getStream().getGameName(), BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl()));
-            webhookEmbedBuilder.setColor(Color.MAGENTA.getRGB());
+            webhookEmbedBuilder.setColor(Color.MAGENTA.darker().getRGB());
 
             wmb.addComponents(ActionRow.of(new Button(Button.Style.LINK, twitchUrl).setLabel(twitchUserRequest.isPresent() ? twitchUserRequest.get().getDisplayName() : "Watch Stream")));
             wmb.addEmbeds(webhookEmbedBuilder.build());
