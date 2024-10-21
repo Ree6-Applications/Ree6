@@ -126,7 +126,7 @@ public class SpotifySonic implements ISonic {
                     .replace("%name%", authorName)
                     .replace("%url%", redirect);
             webhookMessageBuilder.setContent(message);
-            WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
+            WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook, WebhookUtil.WebhookTyp.SPOTIFY);
         });
     }
 

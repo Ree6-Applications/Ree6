@@ -122,7 +122,7 @@ public class RedditSonic implements ISonic {
                                 .replace("%name%", redditPost.getSubreddit())
                                 .replace("%url%", redditPost.getUrl());
                         webhookMessageBuilder.setContent(message);
-                        WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
+                        WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook, WebhookUtil.WebhookTyp.REDDIT);
                     });
                 }));
             }

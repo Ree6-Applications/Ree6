@@ -176,7 +176,7 @@ public class MenuEvents extends ListenerAdapter {
                                         event.getChannel().getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " "),
                                         ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " ")).getBytes(StandardCharsets.UTF_8));
 
-                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), ticketEntity.getLogChannelWebhookId(), ticketEntity.getLogChannelWebhookToken(), false);
+                        WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), ticketEntity.getLogChannelWebhookId(), ticketEntity.getLogChannelWebhookToken(), WebhookUtil.WebhookTyp.TICKET);
 
                         event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.close").block()).queue();
                         event.getChannel().delete().delay(2, TimeUnit.SECONDS).queue();

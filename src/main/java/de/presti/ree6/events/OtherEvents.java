@@ -166,7 +166,7 @@ public class OtherEvents extends ListenerAdapter {
                             SQLSession.getSqlConnector().getSqlWorker().getWelcomeWebhook(event.getGuild().getIdLong()).subscribe(webhook -> {
                                 if (webhook.isEmpty()) return;
 
-                                WebhookUtil.sendWebhook(wmb.build(), webhook.get());
+                                WebhookUtil.sendWebhook(wmb.build(), webhook.get(), WebhookUtil.WebhookTyp.WELCOME);
                             });
                         });
                     }
@@ -237,7 +237,7 @@ public class OtherEvents extends ListenerAdapter {
                                             channel.getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " "),
                                             ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " ")).getBytes(StandardCharsets.UTF_8));
 
-                            WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), ticketsEntity.getLogChannelId(), ticketsEntity.getLogChannelWebhookToken(), false);
+                            WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), ticketsEntity.getLogChannelId(), ticketsEntity.getLogChannelWebhookToken(), WebhookUtil.WebhookTyp.TICKET);
                             channel.delete().queue();
                         }
                     }

@@ -96,7 +96,7 @@ public class YouTubeSonic implements ISonic {
 
                                         webhookMessageBuilder.setContent(message);
                                         webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-                                        WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
+                                        WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook, WebhookUtil.WebhookTyp.YOUTUBE);
                                     });
 
                                     break;

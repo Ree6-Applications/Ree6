@@ -92,7 +92,7 @@ public class TikTokSonic implements ISonic {
                                         .replace("%name%", user.getDisplayName())
                                         .replace("%url%", "https://tiktok.com/share/video/" + post.getId());
                                 webhookMessageBuilder.setContent(message);
-                                WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
+                                WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook, WebhookUtil.WebhookTyp.TIKTOK);
                             });
                         }
                         limit.incrementAndGet();

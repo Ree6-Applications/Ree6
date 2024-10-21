@@ -3,13 +3,13 @@ package de.presti.ree6.module.logger;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.module.logger.events.LogMessageMember;
 import de.presti.ree6.module.logger.events.LogMessageRole;
 import de.presti.ree6.module.logger.events.LogMessageUser;
 import de.presti.ree6.module.logger.events.LogMessageVoice;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.Permission;
 
@@ -470,7 +470,7 @@ public class LoggerQueue {
             ThreadUtil.createThread(x -> {
                 // If not canceled, send it.
                 if (!loggerMessage.isCanceled()) {
-                    WebhookUtil.sendWebhook(loggerMessage, loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode(), true);
+                    WebhookUtil.sendWebhook(loggerMessage, loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode(), WebhookUtil.WebhookTyp.LOG);
                 }
 
                 // Remove it from the list.

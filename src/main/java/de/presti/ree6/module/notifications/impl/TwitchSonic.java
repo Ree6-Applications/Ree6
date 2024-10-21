@@ -103,7 +103,7 @@ public class TwitchSonic implements ISonic {
                         .replace("%name%", channelGoLiveEvent.getStream().getUserName())
                         .replace("%url%", twitchUrl);
                 wmb.setContent(message);
-                WebhookUtil.sendWebhook(wmb.build(), webhook);
+                WebhookUtil.sendWebhook(wmb.build(), webhook, WebhookUtil.WebhookTyp.TWITCH);
             });
         }));
 

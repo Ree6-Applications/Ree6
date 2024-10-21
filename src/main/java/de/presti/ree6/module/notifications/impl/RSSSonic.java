@@ -174,7 +174,7 @@ public class RSSSonic implements ISonic {
                                                 .replace("#m", "");
                                     }
                                     webhookMessageBuilder.setContent(message);
-                                    WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook);
+                                    WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook, WebhookUtil.WebhookTyp.RSS);
                                 });
                             });
                         } else {
@@ -212,7 +212,7 @@ public class RSSSonic implements ISonic {
 
                                     webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
 
-                                    webhooks.forEach(webhook -> WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook));
+                                    webhooks.forEach(webhook -> WebhookUtil.sendWebhook(webhookMessageBuilder.build(), webhook, WebhookUtil.WebhookTyp.RSS));
                                 });
                             } catch (Exception exception) {
                                 Sentry.captureException(exception);
