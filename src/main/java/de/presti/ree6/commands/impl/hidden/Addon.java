@@ -1,17 +1,21 @@
 package de.presti.ree6.commands.impl.hidden;
 
-import de.presti.ree6.addons.AddonLoader;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
+import de.presti.ree6.commands.exceptions.CommandInitializerException;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.bot.BotConfig;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import org.pf4j.PluginState;
+import org.pf4j.PluginWrapper;
+
+import java.nio.file.Path;
+import java.util.List;
 
 /**
  * A command to either reload all Addons or list all of them.
@@ -19,14 +23,12 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 @Command(name = "addon", description = "command.description.addon", category = Category.HIDDEN)
 public class Addon implements ICommand {
 
-    // TODO:: add messages to language file.
-
     /**
      * @inheritDoc
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        if (!commandEvent.getMember().getUser().getId().equalsIgnoreCase(BotConfig.getBotOwner())) {
+        if (!commandEvent.isBotOwner()) {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", "BE DEVELOPER"), 5);
             return;
         }
@@ -41,15 +43,30 @@ public class Addon implements ICommand {
         switch (subcommand) {
             case "reload" -> {
                 commandEvent.reply(commandEvent.getResource("message.addon.reloadAll"));
-                Main.getInstance().getAddonManager().reload();
+
+                List<ICommand> commands = Main.getInstance().getPluginManager().getExtensions(ICommand.class);
+                commands.forEach(command -> Main.getInstance().getCommandManager().removeCommand(command));
+                Main.getInstance().getPluginManager().stopPlugins();
+                Main.getInstance().getPluginManager().unloadPlugins();
+                Main.getInstance().getPluginManager().loadPlugins();
+                Main.getInstance().getPluginManager().startPlugins();
                 commandEvent.reply(commandEvent.getResource("message.addon.reloadedAll"));
+
+                commands = Main.getInstance().getPluginManager().getExtensions(ICommand.class);
+                log.info("Found {} commands in all plugins.", commands.size());
+                commands.forEach(command -> {
+                    try {
+                        Main.getInstance().getCommandManager().addCommand(command);
+                    } catch (CommandInitializerException e) {
+                        log.warn("Failed to initialize command: {}", command.getClass().getSimpleName(), e);
+                    }
+                });
             }
 
             case "list" -> {
                 StringBuilder stringBuilder = new StringBuilder("```");
-                for (de.presti.ree6.addons.Addon addon : Main.getInstance().getAddonManager().addons) {
-                    stringBuilder.append(addon.getName()).append("v").append(addon.getVersion())
-                            .append(" ").append("for").append(" ").append("by").append(" ").append(addon.getAuthor()).append("\n");
+                for (PluginWrapper addon : Main.getInstance().getPluginManager().getPlugins()) {
+                    stringBuilder.append(addon.getPluginId()).append("v").append(addon.getDescriptor().getVersion()).append(" ").append("by").append(" ").append(addon.getDescriptor().getProvider()).append("\n");
                 }
                 stringBuilder.append("```");
                 commandEvent.reply(commandEvent.getResource("message.addon.list") + " " + (stringBuilder.length() == 6 ? "None" : stringBuilder));
@@ -59,13 +76,10 @@ public class Addon implements ICommand {
                 String addonName = commandEvent.getOption("addon").getAsString();
 
                 try {
-                    de.presti.ree6.addons.Addon addon = AddonLoader.loadAddon(addonName);
-                    if (addon == null) {
-                        commandEvent.reply("Couldn't find a addon called " + addonName, 5);
-                        return;
-                    }
-                    Main.getInstance().getAddonManager().loadAddon(addon);
-                    Main.getInstance().getAddonManager().startAddon(addon);
+                    String id = Main.getInstance().getPluginManager().loadPlugin(Path.of("plugins", addonName));
+                    PluginState state = Main.getInstance().getPluginManager().startPlugin(id);
+
+                    commandEvent.reply("Loading attempt for addon with the name " + addonName + " and id " + id + " resulted in: " + state);
                 } catch (Exception exception) {
                     commandEvent.reply("Couldn't load the addon called " + addonName, 5);
                     Sentry.captureException(exception);
@@ -73,13 +87,16 @@ public class Addon implements ICommand {
             }
 
             case "stop" -> {
-                de.presti.ree6.addons.Addon addon = Main.getInstance().getAddonManager().addons.stream()
-                        .filter(a -> a.getName().equalsIgnoreCase(commandEvent.getOption("addon").getAsString())).findFirst().orElse(null);
-
-                if (addon != null) {
-                    Main.getInstance().getAddonManager().stopAddon(addon);
-                    Main.getInstance().getAddonManager().addons.remove(addon);
-                    commandEvent.reply("Stopped addon with the name " + addon.getName() + "!");
+                String addonName = commandEvent.getOption("addon").getAsString();
+                try {
+                    if (Main.getInstance().getPluginManager().unloadPlugin(addonName)) {
+                        commandEvent.reply("Unloaded addon with the name " + addonName + "!");
+                    } else {
+                        commandEvent.reply("Couldn't unload the addon called " + addonName, 5);
+                    }
+                } catch (Exception exception) {
+                    commandEvent.reply("Couldn't unload the addon called " + addonName, 5);
+                    Sentry.captureException(exception);
                 }
             }
 

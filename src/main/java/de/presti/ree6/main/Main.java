@@ -5,9 +5,7 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.google.gson.JsonObject;
-import de.presti.ree6.actions.streamtools.container.StreamActionContainerCreator;
-import de.presti.ree6.addons.AddonLoader;
-import de.presti.ree6.addons.AddonManager;
+import de.presti.ree6.addons.ReePluginManager;
 import de.presti.ree6.audio.music.MusicWorker;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
@@ -15,13 +13,16 @@ import de.presti.ree6.bot.util.WebhookUtil;
 import de.presti.ree6.bot.version.BotState;
 import de.presti.ree6.bot.version.BotVersion;
 import de.presti.ree6.commands.CommandManager;
+import de.presti.ree6.commands.exceptions.CommandInitializerException;
+import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.events.*;
-import de.presti.ree6.game.core.GameManager;
-import de.presti.ree6.game.impl.musicquiz.util.MusicQuizUtil;
 import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.logger.LoggerQueue;
+import de.presti.ree6.module.actions.streamtools.container.StreamActionContainerCreator;
+import de.presti.ree6.module.game.core.GameManager;
+import de.presti.ree6.module.game.impl.musicquiz.util.MusicQuizUtil;
 import de.presti.ree6.module.giveaway.GiveawayManager;
 import de.presti.ree6.module.invite.InviteContainerManager;
+import de.presti.ree6.module.logger.LoggerQueue;
 import de.presti.ree6.sql.DatabaseTyp;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Giveaway;
@@ -29,14 +30,16 @@ import de.presti.ree6.sql.entities.ScheduledMessage;
 import de.presti.ree6.sql.entities.Setting;
 import de.presti.ree6.sql.entities.TwitchIntegration;
 import de.presti.ree6.sql.entities.stats.ChannelStats;
-import de.presti.ree6.sql.entities.stats.Statistics;
 import de.presti.ree6.sql.util.SQLConfig;
 import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.apis.ChatGPTAPI;
 import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
-import de.presti.ree6.utils.data.*;
+import de.presti.ree6.utils.config.Config;
+import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.external.RequestUtility;
+import de.presti.ree6.utils.oauth.CustomOAuth2Credential;
+import de.presti.ree6.utils.oauth.CustomOAuth2Util;
 import de.presti.ree6.utils.others.ThreadUtil;
 import io.sentry.Sentry;
 import lavalink.client.io.jda.JdaLavalink;
@@ -52,6 +55,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
+import org.pf4j.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,9 +102,9 @@ public class Main {
     CommandManager commandManager;
 
     /**
-     * Addon Manager, used to manage the Addons.
+     * Instance of the PluginManager, used to manage the Plugins.
      */
-    AddonManager addonManager;
+    PluginManager pluginManager;
 
     /**
      * Instance of the GiveawayManager, used to manage the Giveaways.
@@ -344,71 +348,15 @@ public class Main {
         if (BotConfig.isModuleActive("notifier")) {
             ThreadUtil.createThread(x -> {
                 log.info("Loading Notifier data.");
-                List<ChannelStats> channelStats = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "FROM ChannelStats", null);
-
-                try {
-                    // Register all Twitch Channels.
-                    getInstance().getNotifier().registerTwitchChannel(SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames());
-                    getInstance().getNotifier().registerTwitchChannel(channelStats.stream().map(ChannelStats::getTwitchFollowerChannelUsername).filter(Objects::nonNull).toList());
-
-                    // Register the Event-handler.
-                    getInstance().getNotifier().registerTwitchEventHandler();
-                } catch (Exception exception) {
-                    log.error("Error while loading Twitch data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
-
-                try {
-                    // Register all Twitter Users.
-                    getInstance().getNotifier().registerTwitterUser(SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames());
-                    getInstance().getNotifier().registerTwitterUser(channelStats.stream().map(ChannelStats::getTwitterFollowerChannelUsername).filter(Objects::nonNull).toList());
-                } catch (Exception exception) {
-                    log.error("Error while loading Twitter data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
-
-                try {
-                    // Register all YouTube channels.
-                    getInstance().getNotifier().registerYouTubeChannel(SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels());
-                    getInstance().getNotifier().registerYouTubeChannel(channelStats.stream().map(ChannelStats::getYoutubeSubscribersChannelUsername).filter(Objects::nonNull).toList());
-                } catch (Exception exception) {
-                    log.error("Error while loading YouTube data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
-
-                try {
-                    // Register all Reddit Subreddits.
-                    getInstance().getNotifier().registerSubreddit(SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits());
-                    getInstance().getNotifier().registerSubreddit(channelStats.stream().map(ChannelStats::getSubredditMemberChannelSubredditName).filter(Objects::nonNull).toList());
-                } catch (Exception exception) {
-                    log.error("Error while loading Reddit data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
-
-                try {
-                    // Register all Instagram Users.
-                    getInstance().getNotifier().registerInstagramUser(SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers());
-                    getInstance().getNotifier().registerInstagramUser(channelStats.stream().map(ChannelStats::getInstagramFollowerChannelUsername).filter(Objects::nonNull).toList());
-                } catch (Exception exception) {
-                    log.error("Error while loading Instagram data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
-
-                try {
-                    // Register all TikTok Users.
-                    getInstance().getNotifier().registerTikTokUser(SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames().stream().map(Long::parseLong).toList());
-                } catch (Exception exception) {
-                    log.error("Error while loading TikTok data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
-
-                try {
-                    // Register all RSS-Feeds.
-                    getInstance().getNotifier().registerRSS(SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls());
-                } catch (Exception exception) {
-                    log.error("Error while loading RSS data: " + exception.getMessage());
-                    Sentry.captureException(exception);
-                }
+                SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ChannelStats(), "FROM ChannelStats", null).subscribe(channelStats -> {
+                    getInstance().getNotifier().getSpotifySonic().load(channelStats);
+                    getInstance().getNotifier().getYouTubeSonic().load(channelStats);
+                    getInstance().getNotifier().getTwitchSonic().load(channelStats);
+                    getInstance().getNotifier().getInstagramSonic().load(channelStats);
+                    getInstance().getNotifier().getTwitterSonic().load(channelStats);
+                    getInstance().getNotifier().getTikTokSonic().load(channelStats);
+                    getInstance().getNotifier().getRssSonic().load(channelStats);
+                });
             }, t -> Sentry.captureException(t.getCause()));
         }
 
@@ -418,16 +366,27 @@ public class Main {
         // Set the start Time for stats.
         BotWorker.setStartTime(System.currentTimeMillis());
 
-        log.info("Loading AddonManager");
-        // Initialize the Addon-Manager.
-        getInstance().setAddonManager(new AddonManager());
+        log.info("Loading PluginManager");
+        // Initialize the Plugin-Manager.
+        getInstance().setPluginManager(new ReePluginManager());
 
         if (BotConfig.isModuleActive("addons")) {
-            // Initialize the Addon-Loader.
-            AddonLoader.loadAllAddons();
+            log.info("Loading all Plugins.");
+            getInstance().getPluginManager().loadPlugins();
 
-            // Start all Addons.
-            getInstance().getAddonManager().startAddons();
+            log.info("Starting all Plugins.");
+            getInstance().getPluginManager().startPlugins();
+
+            log.info("Registering all Commands of plugins.");
+            List<ICommand> commands = getInstance().getPluginManager().getExtensions(ICommand.class);
+            log.info("Found {} commands in all plugins.", commands.size());
+            commands.forEach(command -> {
+                try {
+                    getInstance().getCommandManager().addCommand(command);
+                } catch (CommandInitializerException e) {
+                    log.warn("Failed to initialize command: {}", command.getClass().getSimpleName(), e);
+                }
+            });
         }
 
         // Create checker Thread.
@@ -439,10 +398,10 @@ public class Main {
         log.info("Any previous messages about \"Error executing DDL\" can be most likely ignored.");
         log.info("Initialization finished.");
         log.info("Bot is ready to use.");
-        log.info("You are running on: v" + BotWorker.getBuild());
-        log.info("You are running on: " + BotWorker.getShardManager().getShardsTotal() + " Shards.");
-        log.info("You are running on: " + BotWorker.getShardManager().getGuilds().size() + " Guilds.");
-        log.info("You are running on: " + BotWorker.getShardManager().getUsers().size() + " Users.");
+        log.info("You are running on: v{}", BotWorker.getBuild());
+        log.info("You are running on: {} Shards.", BotWorker.getShardManager().getShardsTotal());
+        log.info("You are running on: {} Guilds.", BotWorker.getShardManager().getGuilds().size());
+        log.info("You are running on: {} Users.", BotWorker.getShardManager().getUsers().size());
         log.info("Have fun!");
     }
 
@@ -493,7 +452,7 @@ public class Main {
         if (BotConfig.isModuleActive("addons")) {
             // Shutdown every Addon.
             log.info("[Main] Disabling every Addon!");
-            getAddonManager().stopAddons();
+            getPluginManager().unloadPlugins();
             log.info("[Main] Every Addon has been disabled!");
         }
 
@@ -586,30 +545,33 @@ public class Main {
                     log.info("[Stats] ");
 
                     LocalDate yesterday = LocalDate.now().minusDays(1);
-                    Statistics statistics = SQLSession.getSqlConnector().getSqlWorker().getStatistics(yesterday.getDayOfMonth(), yesterday.getMonthValue(), yesterday.getYear());
-                    JsonObject jsonObject = statistics != null ? statistics.getStatsObject() : new JsonObject();
-                    JsonObject guildStats = statistics != null && jsonObject.has("guild") ? jsonObject.getAsJsonObject("guild") : new JsonObject();
+                    SQLSession.getSqlConnector().getSqlWorker().getStatistics(yesterday.getDayOfMonth(), yesterday.getMonthValue(), yesterday.getYear()).subscribe(statistics -> {
+                        JsonObject jsonObject = statistics.isPresent() ? statistics.get().getStatsObject() : new JsonObject();
+                        JsonObject guildStats = statistics.isPresent() && jsonObject.has("guild") ? jsonObject.getAsJsonObject("guild") : new JsonObject();
 
-                    guildStats.addProperty("amount", guildSize);
-                    guildStats.addProperty("users", userSize);
+                        guildStats.addProperty("amount", guildSize);
+                        guildStats.addProperty("users", userSize);
 
-                    jsonObject.add("guild", guildStats);
+                        jsonObject.add("guild", guildStats);
 
-                    SQLSession.getSqlConnector().getSqlWorker().updateStatistic(jsonObject);
-
-                    Calendar currentCalendar = Calendar.getInstance();
+                        SQLSession.getSqlConnector().getSqlWorker().updateStatistic(jsonObject);
+                    });
 
                     SQLSession.getSqlConnector().getSqlWorker()
-                            .getBirthdays().stream().filter(birthday -> {
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.setTime(birthday.getBirthdate());
-                                return calendar.get(Calendar.MONTH) == currentCalendar.get(Calendar.MONTH) &&
-                                        calendar.get(Calendar.DAY_OF_MONTH) == currentCalendar.get(Calendar.DAY_OF_MONTH);
-                            }).forEach(birthday -> {
-                                TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
+                            .getBirthdays().subscribe(birthdayWishes -> {
+                                Calendar currentCalendar = Calendar.getInstance();
 
-                                if (textChannel != null && textChannel.canTalk())
-                                    textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish", birthday.getUserId())).queue();
+                                birthdayWishes.stream().filter(birthday -> {
+                                    Calendar calendar = Calendar.getInstance();
+                                    calendar.setTime(birthday.getBirthdate());
+                                    return calendar.get(Calendar.MONTH) == currentCalendar.get(Calendar.MONTH) &&
+                                            calendar.get(Calendar.DAY_OF_MONTH) == currentCalendar.get(Calendar.DAY_OF_MONTH);
+                                }).forEach(birthday -> {
+                                    TextChannel textChannel = BotWorker.getShardManager().getTextChannelById(birthday.getChannelId());
+
+                                    if (textChannel != null && textChannel.canTalk())
+                                        textChannel.sendMessage(LanguageService.getByGuild(textChannel.getGuild(), "message.birthday.wish", birthday.getUserId()).block()).queue();
+                                });
                             });
 
                     lastDay = new SimpleDateFormat("dd").format(new Date());
@@ -641,47 +603,49 @@ public class Main {
 
             //region Schedules Message sending.
             try {
-                for (ScheduledMessage scheduledMessage : SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ScheduledMessage(), "FROM ScheduledMessage", null)) {
-                    if (!scheduledMessage.isRepeated()) {
-                        if (scheduledMessage.getLastExecute() == null) {
-                            if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
+                SQLSession.getSqlConnector().getSqlWorker().getEntityList(new ScheduledMessage(), "FROM ScheduledMessage", null).subscribe(messages -> {
+                    for (ScheduledMessage scheduledMessage : messages) {
+                        if (!scheduledMessage.isRepeated()) {
+                            if (scheduledMessage.getLastExecute() == null) {
+                                if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                                WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                        .setUsername(BotConfig.getBotName() + "-Scheduler")
-                                        .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
-                                        .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
+                                    WebhookUtil.sendWebhook(new WebhookMessageBuilder()
+                                            .setUsername(BotConfig.getBotName() + "-Scheduler")
+                                            .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
+                                            .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), WebhookUtil.WebhookTyp.SCHEDULE);
 
-                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
+                                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage).block();
+                                }
+                            } else {
+                                SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage).block();
                             }
                         } else {
-                            SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage);
-                        }
-                    } else {
-                        if (scheduledMessage.getLastUpdated() == null) {
-                            if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
+                            if (scheduledMessage.getLastUpdated() == null) {
+                                if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getCreated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                                WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                        .setUsername(BotConfig.getBotName() + "-Scheduler")
-                                        .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
-                                        .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
+                                    WebhookUtil.sendWebhook(new WebhookMessageBuilder()
+                                            .setUsername(BotConfig.getBotName() + "-Scheduler")
+                                            .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
+                                            .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), WebhookUtil.WebhookTyp.SCHEDULE);
 
-                                scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
-                            }
-                        } else {
-                            if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
+                                    scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage).block();
+                                }
+                            } else {
+                                if (Timestamp.from(Instant.now()).after(Timestamp.from(scheduledMessage.getLastUpdated().toInstant().plusMillis(scheduledMessage.getDelayAmount())))) {
 
-                                WebhookUtil.sendWebhook(new WebhookMessageBuilder()
-                                        .setUsername(BotConfig.getBotName() + "-Scheduler")
-                                        .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
-                                        .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook());
+                                    WebhookUtil.sendWebhook(new WebhookMessageBuilder()
+                                            .setUsername(BotConfig.getBotName() + "-Scheduler")
+                                            .setAvatarUrl(BotWorker.getShardManager().getShards().get(0).getSelfUser().getEffectiveAvatarUrl())
+                                            .append(scheduledMessage.getMessage()).build(), scheduledMessage.getScheduledMessageWebhook(), WebhookUtil.WebhookTyp.SCHEDULE);
 
-                                scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
-                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage);
+                                    scheduledMessage.setLastExecute(Timestamp.from(Instant.now()));
+                                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(scheduledMessage).block();
+                                }
                             }
                         }
                     }
-                }
+                });
             } catch (Exception exception) {
                 log.error("Failed to run scheduled Messages.", exception);
                 Sentry.captureException(exception);
@@ -733,13 +697,13 @@ public class Main {
                             MessageEditBuilder messageEditBuilder = MessageEditBuilder.fromMessage(message);
 
                             reaction.retrieveUsers().mapToResult().onErrorMap(throwable -> {
-                                messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.error"));
+                                messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.error").block());
                                 message.editMessage(messageEditBuilder.build()).queue();
                                 toDelete.add(giveaway);
                                 return null;
                             }).queue(users -> {
                                 if (users == null) {
-                                    messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.less"));
+                                    messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.less").block());
                                     message.editMessage(messageEditBuilder.build()).queue();
                                     return;
                                 }
@@ -747,13 +711,13 @@ public class Main {
                                 users.onSuccess(userList -> {
 
                                     if (userList.isEmpty()) {
-                                        messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.none"));
+                                        messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.none").block());
                                         message.editMessage(messageEditBuilder.build()).queue();
                                         return;
                                     }
 
                                     if (userList.stream().filter(user -> !user.isBot()).count() < giveaway.getWinners()) {
-                                        messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.less"));
+                                        messageEditBuilder.setContent(LanguageService.getByGuild(guild, "message.giveaway.reaction.less").block());
                                         message.editMessage(messageEditBuilder.build()).queue();
                                         return;
                                     }
@@ -782,22 +746,23 @@ public class Main {
                 if (BotConfig.isModuleActive("notifier"))
                     Main.getInstance().getNotifier().getCredentialManager().load();
 
-                for (TwitchIntegration twitchIntegrations :
-                        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "FROM TwitchIntegration", null)) {
+                SQLSession.getSqlConnector().getSqlWorker().getEntityList(new TwitchIntegration(), "FROM TwitchIntegration", null).subscribe(integrations -> {
+                    for (TwitchIntegration twitchIntegrations : integrations) {
 
-                    CustomOAuth2Credential credential = CustomOAuth2Util.convert(twitchIntegrations);
+                        CustomOAuth2Credential credential = CustomOAuth2Util.convert(twitchIntegrations);
 
-                    OAuth2Credential originalCredential = new OAuth2Credential("twitch", credential.getAccessToken(), credential.getRefreshToken(), credential.getUserId(), credential.getUserName(), credential.getExpiresIn(), credential.getScopes());
+                        OAuth2Credential originalCredential = new OAuth2Credential("twitch", credential.getAccessToken(), credential.getRefreshToken(), credential.getUserId(), credential.getUserName(), credential.getExpiresIn(), credential.getScopes());
 
-                    if (!Main.getInstance().getNotifier().getTwitchSubscription().containsKey(credential.getUserId())) {
-                        PubSubSubscription[] subscriptions = new PubSubSubscription[3];
-                        subscriptions[0] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(originalCredential, twitchIntegrations.getChannelId());
-                        subscriptions[1] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForSubscriptionEvents(originalCredential, twitchIntegrations.getChannelId());
-                        subscriptions[2] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForFollowingEvents(originalCredential, twitchIntegrations.getChannelId());
+                        if (!Main.getInstance().getNotifier().getTwitchSubscription().containsKey(credential.getUserId())) {
+                            PubSubSubscription[] subscriptions = new PubSubSubscription[3];
+                            subscriptions[0] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(originalCredential, twitchIntegrations.getChannelId());
+                            subscriptions[1] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForSubscriptionEvents(originalCredential, twitchIntegrations.getChannelId());
+                            subscriptions[2] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForFollowingEvents(originalCredential, twitchIntegrations.getChannelId());
 
-                        Main.getInstance().getNotifier().getTwitchSubscription().put(credential.getUserId(), subscriptions);
+                            Main.getInstance().getNotifier().getTwitchSubscription().put(credential.getUserId(), subscriptions);
+                        }
                     }
-                }
+                });
             } catch (Exception exception) {
                 log.error("Failed to load Twitch Credentials.", exception);
                 Sentry.captureException(exception);

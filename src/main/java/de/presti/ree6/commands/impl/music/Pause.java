@@ -1,15 +1,13 @@
 package de.presti.ree6.commands.impl.music;
 
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-
-import java.awt.*;
 
 /**
  * Pauses the current Song.
@@ -40,7 +38,7 @@ public class Pause implements ICommand {
                 commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setTitle(commandEvent.getResource("label.musicPlayer"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-        em.setColor(Color.GREEN);
+        em.setColor(BotConfig.getMainColor());
         em.setDescription(commandEvent.getResource("message.music.pause"));
         em.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
         commandEvent.reply(em.build(), 5);

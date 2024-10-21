@@ -240,7 +240,7 @@ public class BotWorker {
     public static String getBuild() {
         if (build == null) {
             build = Objects.requireNonNullElse(Main.class.getPackage().getImplementationVersion(),
-                    Objects.requireNonNullElse(gitVersion, "3.1.13"));
+                    Objects.requireNonNullElse(gitVersion, "4.0.0"));
         }
         return build;
     }
@@ -278,7 +278,10 @@ public class BotWorker {
      * @return the repository.
      */
     public static String getRepository() {
-        return gitRepository == null ? "https://github.com/Ree6-Applications/Ree6" : gitRepository;
+        if (gitRepository == null) {
+            gitRepository = "https://github.com/Ree6-Applications/Ree6";
+        }
+        return gitRepository;
     }
 
     /**

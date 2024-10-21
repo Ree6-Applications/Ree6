@@ -5,7 +5,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.utils.others.GuildUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
@@ -32,7 +31,7 @@ public class Avatar implements ICommand {
             if (targetOption != null && targetOption.getAsMember() != null) {
                 sendAvatar(targetOption.getAsUser(), commandEvent);
             } else {
-                sendAvatar(commandEvent.getMember().getUser(), commandEvent);
+                sendAvatar(commandEvent.getUser(), commandEvent);
             }
 
         } else {
@@ -44,7 +43,7 @@ public class Avatar implements ICommand {
                     sendAvatar(commandEvent.getMessage().getMentions().getUsers().get(0), commandEvent);
                 }
             } else {
-                sendAvatar(commandEvent.getMember().getUser(), commandEvent);
+                sendAvatar(commandEvent.getUser(), commandEvent);
             }
         }
     }
@@ -54,7 +53,7 @@ public class Avatar implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("avatar", LanguageService.getDefault("command.description.avatar"))
+        return new CommandDataImpl("avatar", "command.description.avatar")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User whose profile you want.").setRequired(true));
     }
 
@@ -74,6 +73,7 @@ public class Avatar implements ICommand {
     public void sendAvatar(User member, CommandEvent commandEvent) {
         EmbedBuilder em = new EmbedBuilder();
 
+        em.setColor(BotConfig.getMainColor());
         em.setTitle(commandEvent.getResource("label.avatar"));
         em.setAuthor(member.getEffectiveName() + (GuildUtil.isSupporter(member) ? " <a:duckswing:1070690323459735682>" : ""), member.getEffectiveAvatarUrl(), member.getEffectiveAvatarUrl());
         em.setImage(member.getEffectiveAvatar().getUrl(1024));

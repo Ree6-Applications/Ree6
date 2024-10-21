@@ -4,15 +4,13 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 /**
  * A command to let the bot response to the last Message with a cringe Image.
  */
-@Command(name = "cringe", description = "command.description.cringe", category = Category.FUN)
+@Command(name = "cringe", description = "command.description.cringe", category = Category.FUN, allowAppInstall = false)
 public class Cringe implements ICommand {
 
     /**
@@ -27,7 +25,7 @@ public class Cringe implements ICommand {
             commandEvent.getChannel().getHistoryBefore(commandEvent.getMessage().getIdLong(), 1).complete().getRetrievedHistory().get(0).reply("https://images.ree6.de/cringe.gif").queue();
         }
 
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        commandEvent.delete();
     }
 
     /**
@@ -35,7 +33,7 @@ public class Cringe implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("shrekimage", LanguageService.getDefault("command.description.cringe_slash"));
+        return new CommandDataImpl("shrekimage", "command.description.cringe_slash");
     }
 
     /**

@@ -3,6 +3,7 @@ package de.presti.ree6.utils.data;
 import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.main.Main;
+import de.presti.ree6.sql.entities.UserRankCard;
 import de.presti.ree6.sql.entities.level.UserLevel;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.User;
@@ -19,8 +20,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
-
-// TODO:: translate.
+import java.util.Optional;
 
 /**
  * A utility to create Images.
@@ -53,7 +53,7 @@ public class ImageCreationUtility {
      * @return the bytes of the Image.
      * @throws IOException when URL-Format is Invalid or the URL is not a valid Image.
      */
-    public static byte[] createRankImage(UserLevel userLevel) throws IOException {
+    public static byte[] createRankImage(UserLevel userLevel, Optional<UserRankCard> card) throws IOException {
         long start = System.currentTimeMillis();
         long actionPerformance = System.currentTimeMillis();
 
@@ -88,8 +88,11 @@ public class ImageCreationUtility {
         Main.getInstance().logAnalytic("Loading and creating Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        // Generate a 885x211 Image Background.
+        // Generate a 1920x1080 Image Background. Dog what is this?
         if (rankBackgroundBase == null) rankBackgroundBase = ImageIO.read(new File("storage/images/base.png"));
+
+        BufferedImage background = card.isPresent() ? ImageIO.read(new ByteArrayInputStream(card.get().getRankCard())) : rankBackgroundBase;
+
         BufferedImage base = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_ARGB);
 
         Main.getInstance().logAnalytic("Loaded and created Background base. ({}ms)", System.currentTimeMillis() - actionPerformance);
@@ -122,7 +125,7 @@ public class ImageCreationUtility {
         actionPerformance = System.currentTimeMillis();
         // Draw Background art.
         graphics2D.setComposite(AlphaComposite.Src);
-        graphics2D.drawImage(rankBackgroundBase, null, 0, 0);
+        graphics2D.drawImage(background, null, 0, 0);
         graphics2D.setColor(Color.WHITE);
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Main.getInstance().logAnalytic("Finished drawing Background Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
@@ -138,15 +141,6 @@ public class ImageCreationUtility {
         Main.getInstance().logAnalytic("Finished drawing User Image. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
-        String discriminatorText = "#" + user.getDiscriminator();
-
-        Font verdana60 = retrieveFont(60, discriminatorText);
-        Font verdana50 = retrieveFont(50, rank);
-        Font verdana40 = retrieveFont(40, formattedExperience + " Rank Level");
-
-        Main.getInstance().logAnalytic("Finished creating Fonts. ({}ms)", System.currentTimeMillis() - actionPerformance);
-        actionPerformance = System.currentTimeMillis();
-
         String username = new String(user.getName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 
         if (username.length() > 13) {
@@ -156,16 +150,17 @@ public class ImageCreationUtility {
         Main.getInstance().logAnalytic("Finished substring on Username. ({}ms)", System.currentTimeMillis() - actionPerformance);
         actionPerformance = System.currentTimeMillis();
 
+        Font verdana60 = retrieveFont(60, username);
+        Font verdana50 = retrieveFont(50, rank);
+        Font verdana40 = retrieveFont(40, formattedExperience + " Rank Level");
+
+        Main.getInstance().logAnalytic("Finished creating Fonts. ({}ms)", System.currentTimeMillis() - actionPerformance);
+        actionPerformance = System.currentTimeMillis();
+
+
         graphics2D.setColor(BotConfig.getRankTextColor());
         graphics2D.setFont(verdana60);
         graphics2D.drawString(username, 425, 675);
-
-        // TODO:: remove this once discord removes discriminators.
-        if (!user.getDiscriminator().equals("#0000")) {
-            graphics2D.setColor(BotConfig.getRankDetailColor());
-            graphics2D.setFont(verdana40);
-            graphics2D.drawString(discriminatorText, 425, 675 - graphics2D.getFontMetrics(verdana60).getHeight() + 5);
-        }
 
         graphics2D.setColor(BotConfig.getRankProgressbarBackgroundColor());
         graphics2D.fillRoundRect(175, 705, base.getWidth() - 950, 50, 50, 50);

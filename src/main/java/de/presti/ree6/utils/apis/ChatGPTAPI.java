@@ -79,7 +79,7 @@ public class ChatGPTAPI {
             response = getResponse(messages);
         } catch (BizException e) {
             Sentry.captureException(e);
-            return LanguageService.getByGuild(member.getGuild(), "message.default.retrievalError");
+            return LanguageService.getByGuild(member.getGuild(), "message.default.retrievalError").block();
         }
 
         messages.add(new Message("assistant", response));

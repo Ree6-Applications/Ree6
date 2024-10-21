@@ -4,7 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -23,12 +22,12 @@ public class Seek implements ICommand {
      */
     @Override
     public void onPerform(CommandEvent commandEvent) {
-        int seekAmountInSeconds = 1;
+        long seekAmountInSeconds = 1;
 
         if (commandEvent.isSlashCommand()) {
             OptionMapping optionMapping = commandEvent.getOption("seconds");
             if (optionMapping != null) {
-                seekAmountInSeconds = optionMapping.getAsInt();
+                seekAmountInSeconds = optionMapping.getAsLong();
             }
         } else if (commandEvent.getArguments().length >= 1) {
             try {
@@ -46,7 +45,7 @@ public class Seek implements ICommand {
             return;
         }
 
-        Main.getInstance().getMusicWorker().seekInTrack(commandEvent.getChannel(), seekAmountInSeconds);
+        Main.getInstance().getMusicWorker().seekInTrack(commandEvent.getChannel(), commandEvent.getInteractionHook(), seekAmountInSeconds);
     }
 
     /**
@@ -54,7 +53,8 @@ public class Seek implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("seek", LanguageService.getDefault("command.description.seek")).addOptions(new OptionData(OptionType.INTEGER, "seconds", "The seconds that should be seeked (negativ numbers work)").setRequired(true));
+        return new CommandDataImpl("seek", "command.description.seek")
+                .addOptions(new OptionData(OptionType.INTEGER, "seconds", "The seconds that should be seeked (negativ numbers work)").setRequired(true));
     }
 
     /**
