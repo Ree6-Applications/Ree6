@@ -31,7 +31,7 @@ import java.util.Map;
 public class SpotifySonic implements ISonic {
     ArrayList<SonicIdentifier> spotifyEntries = new ArrayList<>();
 
-    SimpleDateFormat spotifyTimestamp = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ssZ");
+    SimpleDateFormat spotifyTimestamp = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public void load(List<ChannelStats> channelStats) {

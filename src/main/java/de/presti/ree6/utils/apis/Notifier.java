@@ -198,18 +198,18 @@ public class Notifier {
             log.error("Failed to create Twitch Client.", exception);
         }
 
-        log.info("Initializing Twitter Client...");
-        twitterSonic = new TwitterSonic();
         try {
+            log.info("Initializing Twitter Client...");
+            twitterSonic = new TwitterSonic();
             twitterClient = new TwitterClient(TwitterCredentials.builder()
                     .bearerToken(Main.getInstance().getConfig().getConfiguration().getString("twitter.bearer")).build());
         } catch (Exception exception) {
             log.error("Failed to create Twitter Client.", exception);
         }
 
-        log.info("Initializing Reddit Client...");
-        redditSonic = new RedditSonic();
         try {
+            log.info("Initializing Reddit Client...");
+            redditSonic = new RedditSonic();
             redditClient = Reddit4J
                     .rateLimited()
                     .setClientId(Main.getInstance().getConfig().getConfiguration().getString("reddit.client.id"))
@@ -225,87 +225,122 @@ public class Notifier {
                 Sentry.captureException(exception);
             }
         }
+        try {
+            log.info("Initializing Instagram Client...");
+            instagramSonic = new InstagramSonic();
+            // Callable that returns inputted code from System.in
+            Callable<String> inputCode = () -> {
+                Scanner scanner = new Scanner(System.in);
+                log.error("Please input code: ");
+                String code = scanner.nextLine();
+                scanner.close();
+                return code;
+            };
 
-        log.info("Initializing Instagram Client...");
-        instagramSonic = new InstagramSonic();
-        // Callable that returns inputted code from System.in
-        Callable<String> inputCode = () -> {
-            Scanner scanner = new Scanner(System.in);
-            log.error("Please input code: ");
-            String code = scanner.nextLine();
-            scanner.close();
-            return code;
-        };
+            // handler for challenge login
+            IGClient.Builder.LoginHandler challengeHandler = (client, response) -> IGChallengeUtils.resolveChallenge(client, response, inputCode);
 
-        // handler for challenge login
-        IGClient.Builder.LoginHandler challengeHandler = (client, response) -> IGChallengeUtils.resolveChallenge(client, response, inputCode);
+            instagramClient = IGClient.builder()
+                    .username(Main.getInstance().getConfig().getConfiguration().getString("instagram.username"))
+                    .password(Main.getInstance().getConfig().getConfiguration().getString("instagram.password"))
+                    .onChallenge(challengeHandler).build();
 
-        instagramClient = IGClient.builder()
-                .username(Main.getInstance().getConfig().getConfiguration().getString("instagram.username"))
-                .password(Main.getInstance().getConfig().getConfiguration().getString("instagram.password"))
-                .onChallenge(challengeHandler).build();
+            instagramClient.sendLoginRequest().exceptionally(throwable -> {
+                if (BotConfig.isDebug()) {
+                    log.error("Failed to login to Instagram API, you can ignore this if you don't use Instagram.", throwable);
+                } else {
+                    log.error("Failed to login to Instagram API, you can ignore this if you don't use Instagram.");
+                    log.error("Error Message: {}", throwable.getMessage()
+                            .replace("com.github.instagram4j.instagram4j.exceptions.IGResponseException: ", "")
+                            .replace("&#039;", "'"));
+                }
+                return null;
+            });
+        } catch (Exception exception) {
+            log.error("Failed to create Instagram Client.", exception);
+        }
 
-        instagramClient.sendLoginRequest().exceptionally(throwable -> {
-            if (BotConfig.isDebug()) {
-                log.error("Failed to login to Instagram API, you can ignore this if you don't use Instagram.", throwable);
-            } else {
-                log.error("Failed to login to Instagram API, you can ignore this if you don't use Instagram.");
-                log.error("Error Message: {}", throwable.getMessage()
-                        .replace("com.github.instagram4j.instagram4j.exceptions.IGResponseException: ", "")
-                        .replace("&#039;", "'"));
-            }
-            return null;
-        });
-
-        log.info("Initializing Spotify Client...");
-        spotifySonic = new SpotifySonic();
+        try {
+            log.info("Initializing Spotify Client...");
+            spotifySonic = new SpotifySonic();
+        } catch (Exception exception) {
+            log.error("Failed to create Spotify Client.", exception);
+        }
 
         log.info("Initializing Streams...");
 
-        log.info("Creating YouTube Streams...");
-        youTubeSonic = new YouTubeSonic();
-        ThreadUtil.createThread(x -> youTubeSonic.run(), x -> {
-            log.error("Failed to run YouTube Stream!", x);
-            Sentry.captureException(x);
-        }, Duration.ofMinutes(5), true, true);
+        try {
+            log.info("Creating YouTube Streams...");
+            youTubeSonic = new YouTubeSonic();
+            ThreadUtil.createThread(x -> youTubeSonic.run(), x -> {
+                log.error("Failed to run YouTube Stream!", x);
+                Sentry.captureException(x);
+            }, Duration.ofMinutes(5), true, true);
+        } catch (Exception exception) {
+            log.error("Failed to create YouTube Streams.", exception);
+        }
 
-        log.info("Creating Twitter Streams...");
-        ThreadUtil.createThread(x -> twitterSonic.run(), x -> {
-            log.error("Failed to run Twitter Follower count checker!", x);
-            Sentry.captureException(x);
-        }, Duration.ofMinutes(5), true, true);
+        try {
+            log.info("Creating Twitter Streams...");
+            ThreadUtil.createThread(x -> twitterSonic.run(), x -> {
+                log.error("Failed to run Twitter Follower count checker!", x);
+                Sentry.captureException(x);
+            }, Duration.ofMinutes(5), true, true);
+        } catch (Exception exception) {
+            log.error("Failed to create Twitter Streams.", exception);
+        }
 
-        log.info("Creating RSS Streams...");
-        rssSonic = new RSSSonic();
-        ThreadUtil.createThread(x -> rssSonic.run(), x -> {
-            log.error("Failed to run RSS Feed Stream!", x);
-            Sentry.captureException(x);
-        }, Duration.ofMinutes(3), true, true);
+        try {
+            log.info("Creating RSS Streams...");
+            rssSonic = new RSSSonic();
+            ThreadUtil.createThread(x -> rssSonic.run(), x -> {
+                log.error("Failed to run RSS Feed Stream!", x);
+                Sentry.captureException(x);
+            }, Duration.ofMinutes(3), true, true);
+        } catch (Exception exception) {
+            log.error("Failed to create RSS Streams.", exception);
+        }
 
-        log.info("Creating TikTok Streams...");
-        tikTokSonic = new TikTokSonic();
-        ThreadUtil.createThread(x -> tikTokSonic.run(), x -> {
-            log.error("Failed to run TikTok Stream!", x);
-            Sentry.captureException(x);
-        }, Duration.ofMinutes(5), true, true);
+        try {
+            log.info("Creating TikTok Streams...");
+            tikTokSonic = new TikTokSonic();
+            ThreadUtil.createThread(x -> tikTokSonic.run(), x -> {
+                log.error("Failed to run TikTok Stream!", x);
+                Sentry.captureException(x);
+            }, Duration.ofMinutes(5), true, true);
+        } catch (Exception exception) {
+            log.error("Failed to create TikTok Streams.", exception);
+        }
 
-        log.info("Creating Instagram Streams...");
-        ThreadUtil.createThread(x -> instagramSonic.run(), x -> {
-            log.error("Failed to run Instagram Stream!", x);
-            Sentry.captureException(x);
-        }, Duration.ofMinutes(5), true, true);
+        try {
+            log.info("Creating Instagram Streams...");
+            ThreadUtil.createThread(x -> instagramSonic.run(), x -> {
+                log.error("Failed to run Instagram Stream!", x);
+                Sentry.captureException(x);
+            }, Duration.ofMinutes(5), true, true);
+        } catch (Exception exception) {
+            log.error("Failed to create Instagram Streams.", exception);
+        }
 
-        log.info("Creating Reddit Streams...");
-        ThreadUtil.createThread(x -> redditSonic.run(), x -> {
-            log.error("Failed to run Reddit Stream!", x);
-            Sentry.captureException(x);
-        }, Duration.ofMinutes(5), true, true);
+        try {
+            log.info("Creating Reddit Streams...");
+            ThreadUtil.createThread(x -> redditSonic.run(), x -> {
+                log.error("Failed to run Reddit Stream!", x);
+                Sentry.captureException(x);
+            }, Duration.ofMinutes(5), true, true);
+        } catch (Exception exception) {
+            log.error("Failed to create Reddit Streams.", exception);
+        }
 
-        // Use 1 day instead of minutes, because Spotify release date is at max precise to the day
-        log.info("Creating Spotify Streams...");
-        ThreadUtil.createThread(x -> spotifySonic.run(), x -> {
-            log.error("Failed to run Spotify Stream!", x);
-            Sentry.captureException(x);
-        }, Duration.ofDays(1), true, true);
+        try {
+            // Use 1 day instead of minutes, because Spotify release date is at max precise to the day
+            log.info("Creating Spotify Streams...");
+            ThreadUtil.createThread(x -> spotifySonic.run(), x -> {
+                log.error("Failed to run Spotify Stream!", x);
+                Sentry.captureException(x);
+            }, Duration.ofDays(1), true, true);
+        } catch (Exception exception) {
+            log.error("Failed to create Spotify Streams.", exception);
+        }
     }
 }
