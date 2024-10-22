@@ -79,7 +79,7 @@ public class LanguageService {
         }
 
         try {
-            RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.github.com/repos/Ree6-Applications/Language/contents/languages").build()).getAsJsonArray().forEach(jsonElement -> {
+            RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.github.com/repos/Ree6-Applications/Language/contents").build()).getAsJsonArray().forEach(jsonElement -> {
                 String language = jsonElement.getAsJsonObject().get("name").getAsString().replace(".yml", "");
                 String download = jsonElement.getAsJsonObject().get("download_url").getAsString();
 
