@@ -99,9 +99,9 @@ public class TikTokSonic implements ISonic {
                     });
                 });
             } catch (IOException e) {
-                if (e instanceof HttpStatusException httpStatusException) {
-                    if (httpStatusException.getStatusCode() == 404) return;
+                if (e instanceof HttpStatusException httpStatusException && httpStatusException.getStatusCode() == 404) {
                     // TODO:: check, maybe delete on 404?
+                    return;
                 }
 
                 Sentry.captureException(e);
