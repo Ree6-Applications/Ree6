@@ -196,7 +196,7 @@ public class LanguageService {
      * @return The String.
      */
     public static @NotNull Mono<String> getByGuildOrInteractionHook(Guild guild, InteractionHook interaction, @NotNull String key, @Nullable Object... parameter) {
-        return getByGuildOrInteraction(guild, interaction != null ? interaction.getInteraction() :  null, key, parameter);
+        return getByGuildOrInteraction(guild, interaction != null ? interaction.getInteraction() : null, key, parameter);
     }
 
 
@@ -313,6 +313,32 @@ public class LanguageService {
 
             return language != null ? language.getResource(key, parameters) : "Missing language resource!";
         }));
+    }
+
+    /**
+     * Check if given Locale has a translation for the key
+     *
+     * @param discordLocale The locale of the Language file.
+     * @param key           The key of the String.
+     * @return true, if the key is translated.
+     */
+    public static @NotNull Mono<Boolean> hasTranslation(@NotNull DiscordLocale discordLocale, @NotNull String key) {
+        return Mono.fromFuture(CompletableFuture.supplyAsync(() -> {
+            if (discordLocale == DiscordLocale.UNKNOWN) return false;
+
+            return languageResources.containsKey(discordLocale) && languageResources.get(discordLocale).resources.containsKey(key);
+        }));
+    }
+
+    /**
+     * Check if the default Locale has a translation for the key
+     *
+     * @param key The key of the String.
+     * @return true, if the key is translated.
+     */
+    public static @NotNull Mono<Boolean> hasDefaultTranslation(@NotNull String key) {
+        DiscordLocale discordLocale = DiscordLocale.from(BotConfig.getDefaultLanguage());
+        return hasTranslation(discordLocale, key);
     }
 
     /**

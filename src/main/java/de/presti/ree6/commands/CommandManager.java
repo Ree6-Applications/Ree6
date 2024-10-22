@@ -276,39 +276,67 @@ public class CommandManager {
         listUpdateAction.queue();
     }
 
-    public void translateSubgroups(SubcommandGroupData subcommandGroupData, DiscordLocale locale) {
-        // TODO:: add the same language check to option names/description and add a translation to it.
-        //  Also for the love of god Imma need to optimize this.
+    private void translateSubgroups(SubcommandGroupData subcommandGroupData, DiscordLocale locale) {
         String groupDescription = subcommandGroupData.getDescription();
 
         if (groupDescription.matches(RegExUtil.ALLOWED_LANGUAGE_PATHS)) {
-            groupDescription = LanguageService.getByLocale(locale, groupDescription).block();
-
-            if (groupDescription != null) {
-                if (groupDescription.equals("Missing language resource!")) {
-                    groupDescription = LanguageService.getDefault(subcommandGroupData.getDescription()).block();
-                }
-
-                if (groupDescription != null && !groupDescription.equals("Missing language resource!")) {
-                    subcommandGroupData.setDescriptionLocalization(locale, groupDescription);
-                }
+            if (LanguageService.hasTranslation(locale, groupDescription).block()) {
+                groupDescription = LanguageService.getByLocale(locale, groupDescription).block();
+            } else if (LanguageService.hasDefaultTranslation(groupDescription).block()) {
+                groupDescription = LanguageService.getDefault(groupDescription).block();
             }
+
+            subcommandGroupData.setDescriptionLocalization(locale, groupDescription);
         }
 
+        // Translate Subcommands
         for (SubcommandData subcommandData : subcommandGroupData.getSubcommands()) {
-            String commandDescription = subcommandData.getDescription();
+            translateSubcomand(subcommandData, locale);
+        }
+    }
 
-            if (groupDescription != null && groupDescription.matches(RegExUtil.ALLOWED_LANGUAGE_PATHS)) {
+    private void translateSubcomand(SubcommandData subcommandData, DiscordLocale locale) {
+        String commandDescription = subcommandData.getDescription();
+
+        if (commandDescription != null && commandDescription.matches(RegExUtil.ALLOWED_LANGUAGE_PATHS)) {
+            if (LanguageService.hasTranslation(locale, commandDescription).block()) {
                 commandDescription = LanguageService.getByLocale(locale, commandDescription).block();
-
-                if (commandDescription != null && commandDescription.equals("Missing language resource!")) {
-                    commandDescription = LanguageService.getDefault(subcommandData.getDescription()).block();
-                }
-
-                if (commandDescription != null && !commandDescription.equals("Missing language resource!")) {
-                    subcommandData.setDescriptionLocalization(locale, commandDescription);
-                }
+            } else if (LanguageService.hasDefaultTranslation(commandDescription).block()) {
+                commandDescription = LanguageService.getDefault(commandDescription).block();
             }
+
+            subcommandData.setDescriptionLocalization(locale, commandDescription);
+        }
+
+        // Translate Options
+        for (OptionData optionData : subcommandData.getOptions()) {
+            translateOption(optionData, locale);
+        }
+    }
+
+    private void translateOption(OptionData optionData, DiscordLocale locale) {
+        // Name translation
+        String optionName = optionData.getName();
+        if (optionName != null && optionName.matches(RegExUtil.ALLOWED_LANGUAGE_PATHS)) {
+            if (LanguageService.hasTranslation(locale, optionName).block()) {
+                optionName = LanguageService.getByLocale(locale, optionName).block();
+            } else if (LanguageService.hasDefaultTranslation(optionName).block()) {
+                optionName = LanguageService.getDefault(optionName).block();
+            }
+
+            optionData.setNameLocalization(locale, optionName);
+        }
+
+        // Description translation
+        String optionDescription = optionData.getDescription();
+        if (optionDescription != null && optionDescription.matches(RegExUtil.ALLOWED_LANGUAGE_PATHS)) {
+            if (LanguageService.hasTranslation(locale, optionDescription).block()) {
+                optionDescription = LanguageService.getByLocale(locale, optionDescription).block();
+            } else if (LanguageService.hasDefaultTranslation(optionDescription).block()) {
+                optionDescription = LanguageService.getDefault(optionDescription).block();
+            }
+
+            optionData.setDescriptionLocalization(locale, optionDescription);
         }
     }
 
