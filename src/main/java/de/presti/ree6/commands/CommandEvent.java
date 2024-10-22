@@ -77,7 +77,7 @@ public class CommandEvent {
      * @param arguments                    the given Arguments.
      * @param slashCommandInteractionEvent the {@link SlashCommandInteractionEvent} Entity.
      */
-    public CommandEvent(String command, @Nonnull Member member, @Nonnull Guild guild, @Nullable Message message, @Nonnull GuildMessageChannelUnion textChannel, @Nullable String[] arguments, @Nullable SlashCommandInteractionEvent slashCommandInteractionEvent) {
+    public CommandEvent(String command, @Nonnull Member member, @Nonnull Guild guild, @Nullable Message message, @Nonnull GuildMessageChannelUnion textChannel, @Nullable String[] arguments, @Nullable SlashCommandInteractionEvent slashCommandInteractionEvent, boolean isEphermal) {
         this.command = command;
         this.member = member;
         this.guild = guild;
@@ -85,6 +85,7 @@ public class CommandEvent {
         this.channel = textChannel;
         this.arguments = arguments;
         this.slashCommandInteractionEvent = slashCommandInteractionEvent;
+        setEphemeral(isEphermal);
     }
 
     /**
@@ -357,7 +358,7 @@ public class CommandEvent {
      * @return the {@link InteractionHook} Entity.
      */
     public InteractionHook getInteractionHook() {
-        if (isSlashCommand()) return getSlashCommandInteractionEvent().getHook().setEphemeral(true);
+        if (isSlashCommand()) return getSlashCommandInteractionEvent().getHook();
 
         return null;
     }

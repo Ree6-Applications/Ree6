@@ -588,7 +588,7 @@ public class CommandManager {
             String[] argumentsParsed = Arrays.copyOfRange(arguments, 1, arguments.length);
 
             // Perform the Command.
-            return command.onMonoPerform(new CommandEvent(commandAnnotation.name(), member, guild, message, textChannel, argumentsParsed, null)).block();
+            return command.onMonoPerform(new CommandEvent(commandAnnotation.name(), member, guild, message, textChannel, argumentsParsed, null, true)).block();
         });
     }
 
@@ -615,7 +615,7 @@ public class CommandManager {
 
         if (!annotation.allowAppInstall() && guild.isDetached()) return Mono.just(false);
 
-        CommandEvent commandEvent = new CommandEvent(annotation.name(), slashCommandInteractionEvent.getMember(), guild, null, messageChannel, null, slashCommandInteractionEvent);
+        CommandEvent commandEvent = new CommandEvent(annotation.name(), slashCommandInteractionEvent.getMember(), guild, null, messageChannel, null, slashCommandInteractionEvent, true);
 
         if (guild.isDetached()) {
             return command.onMonoPerform(commandEvent);
