@@ -69,90 +69,90 @@ public class Notifier implements ICommand {
                 StringBuilder end = new StringBuilder("\n");
 
                 switch (command) {
-                    case "instagram" -> {
+                    case "instagram" ->
+                            SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers(commandEvent.getGuild().getIdLong()).subscribe(users -> {
+                                for (String user : users) {
+                                    end.append(user).append("\n");
+                                }
 
-                        for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllInstagramUsers(commandEvent.getGuild().getIdLong())) {
-                            end.append(users).append("\n");
-                        }
+                                commandEvent.reply(commandEvent.getResource("message.instagramNotifier.list", end.toString()), 10);
+                            });
 
-                        commandEvent.reply(commandEvent.getResource("message.instagramNotifier.list", end.toString()), 10);
-                    }
+                    case "youtube" ->
+                            SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels(commandEvent.getGuild().getIdLong()).subscribe(userList -> {
+                                for (String users : userList) {
 
-                    case "youtube" -> {
+                                    ChannelResult channelResult = null;
 
-                        for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllYouTubeChannels(commandEvent.getGuild().getIdLong())) {
+                                    try {
+                                        channelResult = YouTubeAPIHandler.getInstance().isValidChannelId(users) ?
+                                                YouTubeAPIHandler.getInstance().getYouTubeChannelById(users) :
+                                                YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(users);
+                                    } catch (Exception ignore) {
+                                    }
 
-                            ChannelResult channelResult = null;
+                                    end.append(users);
 
-                            try {
-                                channelResult = YouTubeAPIHandler.getInstance().isValidChannelId(users) ?
-                                        YouTubeAPIHandler.getInstance().getYouTubeChannelById(users) :
-                                        YouTubeAPIHandler.getInstance().getYouTubeChannelBySearch(users);
-                            } catch (Exception ignore) {
-                            }
+                                    if (channelResult != null) {
+                                        end.append(" ").append("-").append(" ").append(channelResult.getTitle());
+                                    }
 
-                            end.append(users);
+                                    end.append("\n");
+                                }
 
-                            if (channelResult != null) {
-                                end.append(" ").append("-").append(" ").append(channelResult.getTitle());
-                            }
+                                commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.list", end.toString()), 10);
+                            });
 
-                            end.append("\n");
-                        }
+                    case "twitch" ->
+                            SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames(commandEvent.getGuild().getIdLong()).subscribe(users -> {
+                                for (String user : users) {
+                                    end.append(user).append("\n");
+                                }
 
-                        commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.list", end.toString()), 10);
-                    }
+                                commandEvent.reply(commandEvent.getResource("message.twitchNotifier.list", end.toString()), 10);
+                            });
 
-                    case "twitch" -> {
+                    case "twitter" ->
+                            SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames(commandEvent.getGuild().getIdLong()).subscribe(users -> {
+                                for (String user : users) {
+                                    end.append(user).append("\n");
+                                }
 
-                        for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTwitchNames(commandEvent.getGuild().getIdLong())) {
-                            end.append(users).append("\n");
-                        }
+                                commandEvent.reply(commandEvent.getResource("message.twitterNotifier.list", end.toString()), 10);
+                            });
 
-                        commandEvent.reply(commandEvent.getResource("message.twitchNotifier.list", end.toString()), 10);
-                    }
+                    case "tiktok" ->
+                            SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames(commandEvent.getGuild().getIdLong()).subscribe(users -> {
+                                for (String user : users) {
+                                    end.append(user);
+                                    try {
+                                        TikTokUser tikTokUser = TikTokWrapper.getUser(Long.parseLong(user), false);
+                                        end.append(" ").append("-").append(" ").append(tikTokUser.getName());
+                                    } catch (Exception ignore) {
+                                    }
+                                    end.append("\n");
+                                }
 
-                    case "twitter" -> {
+                                commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.list", end.toString()), 10);
+                            });
 
-                        for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTwitterNames(commandEvent.getGuild().getIdLong())) {
-                            end.append(users).append("\n");
-                        }
+                    case "reddit" ->
+                            SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits(commandEvent.getGuild().getIdLong()).subscribe(users -> {
+                                for (String user : users) {
+                                    end.append(user).append("\n");
+                                }
 
-                        commandEvent.reply(commandEvent.getResource("message.twitterNotifier.list", end.toString()), 10);
-                    }
+                                commandEvent.reply(commandEvent.getResource("message.redditNotifier.list", end.toString()), 10);
+                            });
 
-                    case "tiktok" -> {
+                    case "rss" ->
+                            SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls(commandEvent.getGuild().getIdLong()).subscribe(users -> {
+                                for (String user : users) {
+                                    end.append(user).append("\n");
+                                }
 
-                        for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllTikTokNames(commandEvent.getGuild().getIdLong())) {
-                            end.append(users);
-                            try {
-                                TikTokUser tikTokUser = TikTokWrapper.getUser(Long.parseLong(users), false);
-                                end.append(" ").append("-").append(" ").append(tikTokUser.getName());
-                            } catch (Exception ignore) {
-                            }
-                            end.append("\n");
-                        }
-
-                        commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.list", end.toString()), 10);
-                    }
-
-                    case "reddit" -> {
-
-                        for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllSubreddits(commandEvent.getGuild().getIdLong())) {
-                            end.append(users).append("\n");
-                        }
-
-                        commandEvent.reply(commandEvent.getResource("message.redditNotifier.list", end.toString()), 10);
-                    }
-
-                    case "rss" -> {
-
-                        for (String users : SQLSession.getSqlConnector().getSqlWorker().getAllRSSUrls(commandEvent.getGuild().getIdLong())) {
-                            end.append(users).append("\n");
-                        }
-
-                        commandEvent.reply(commandEvent.getResource("message.rssNotifier.list", end.toString()), 10);
-                    }
+                                commandEvent.reply(commandEvent.getResource("message.rssNotifier.list", end.toString()), 10);
+                            });
 
                     default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"));
                 }
@@ -161,7 +161,7 @@ public class Notifier implements ICommand {
                 switch (command) {
                     case "instagram" -> {
                         // Ignore this, because the Compiler would otherwise scream:
-                        // "OMG YOU CAN NOT INITIALIZE THE VARIABLE BELOW BECAUSE YOU CANT REACH IT!!!!"
+                        // "OMG YOU CANNOT INITIALIZE THE VARIABLE BELOW BECAUSE YOU CANT REACH IT!!!!"
                         if (true) {
                             commandEvent.reply("This feature is currently broken. Please wait for a fix.", 10);
                             return;
@@ -188,8 +188,8 @@ public class Notifier implements ICommand {
                         });
                         commandEvent.reply(commandEvent.getResource("message.instagramNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
-                            Main.getInstance().getNotifier().registerInstagramUser(name);
+                        if (!Main.getInstance().getNotifier().getInstagramSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getInstagramSonic().add(name);
                         }
                     }
 
@@ -240,8 +240,8 @@ public class Notifier implements ICommand {
                         });
                         commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isYouTubeRegistered(channelResult.getId())) {
-                            Main.getInstance().getNotifier().registerYouTubeChannel(channelResult.getId());
+                        if (!Main.getInstance().getNotifier().getYouTubeSonic().contains(channelResult.getId())) {
+                            Main.getInstance().getNotifier().getYouTubeSonic().add(channelResult.getId());
                         }
                     }
 
@@ -267,14 +267,14 @@ public class Notifier implements ICommand {
                         });
                         commandEvent.reply(commandEvent.getResource("message.twitchNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isTwitchRegistered(name)) {
-                            Main.getInstance().getNotifier().registerTwitchChannel(name);
+                        if (!Main.getInstance().getNotifier().getTwitchSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getTwitchSonic().add(name);
                         }
                     }
 
                     case "twitter" -> {
                         // Ignore this, because the Compiler would otherwise scream:
-                        // "OMG YOU CAN NOT INITIALIZE THE VARIABLE BELOW BECAUSE YOU CANT REACH IT!!!!"
+                        // "OMG YOU CANNOT INITIALIZE THE VARIABLE BELOW BECAUSE YOU CANT REACH IT!!!!"
                         if (true) {
                             commandEvent.reply("This feature is currently broken. Please wait for a fix.", 10);
                             return;
@@ -301,8 +301,8 @@ public class Notifier implements ICommand {
                         });
                         commandEvent.reply(commandEvent.getResource("message.twitterNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isTwitterRegistered(name)) {
-                            Main.getInstance().getNotifier().registerTwitterUser(name);
+                        if (!Main.getInstance().getNotifier().getTwitterSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getTwitterSonic().add(name);
                         }
                     }
 
@@ -337,8 +337,8 @@ public class Notifier implements ICommand {
                             });
                             commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.added", name), 5);
 
-                            if (!Main.getInstance().getNotifier().isTikTokUserRegistered(Long.parseLong(tikTokUser.getId()))) {
-                                Main.getInstance().getNotifier().registerTikTokUser(Long.parseLong(tikTokUser.getId()));
+                            if (!Main.getInstance().getNotifier().getTikTokSonic().contains(Long.parseLong(tikTokUser.getId()))) {
+                                Main.getInstance().getNotifier().getTikTokSonic().add(Long.parseLong(tikTokUser.getId()));
                             }
                         } catch (Exception e) {
                             commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.invalidUser", name), 5);
@@ -367,8 +367,8 @@ public class Notifier implements ICommand {
                         });
                         commandEvent.reply(commandEvent.getResource("message.redditNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isSubredditRegistered(name)) {
-                            Main.getInstance().getNotifier().registerSubreddit(name);
+                        if (!Main.getInstance().getNotifier().getRedditSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getRedditSonic().add(name);
                         }
                     }
 
@@ -395,8 +395,8 @@ public class Notifier implements ICommand {
                                 SQLSession.getSqlConnector().getSqlWorker().addRSSWebhook(commandEvent.getGuild().getIdLong(), channel.getIdLong(), w.getIdLong(), w.getToken(), name.toLowerCase()));
                         commandEvent.reply(commandEvent.getResource("message.rssNotifier.added", name), 5);
 
-                        if (!Main.getInstance().getNotifier().isRSSRegistered(name)) {
-                            Main.getInstance().getNotifier().registerRSS(name);
+                        if (!Main.getInstance().getNotifier().getRssSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getRedditSonic().add(name);
                         }
                     }
 
@@ -415,8 +415,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeInstagramWebhook(commandEvent.getGuild().getIdLong(), name);
                         commandEvent.reply(commandEvent.getResource("message.instagramNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isInstagramUserRegistered(name)) {
-                            Main.getInstance().getNotifier().unregisterInstagramUser(name);
+                        if (Main.getInstance().getNotifier().getInstagramSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getInstagramSonic().remove(name);
                         }
                     }
 
@@ -449,8 +449,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeYouTubeWebhook(commandEvent.getGuild().getIdLong(), channelResult.getId());
                         commandEvent.reply(commandEvent.getResource("message.youtubeNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isYouTubeRegistered(channelResult.getId())) {
-                            Main.getInstance().getNotifier().unregisterYouTubeChannel(channelResult.getId());
+                        if (Main.getInstance().getNotifier().getYouTubeSonic().contains(channelResult.getId())) {
+                            Main.getInstance().getNotifier().getYouTubeSonic().remove(channelResult.getId());
                         }
                     }
 
@@ -464,8 +464,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeTwitchWebhook(commandEvent.getGuild().getIdLong(), name);
                         commandEvent.reply(commandEvent.getResource("message.twitchNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isTwitchRegistered(name)) {
-                            Main.getInstance().getNotifier().unregisterTwitchChannel(name);
+                        if (Main.getInstance().getNotifier().getTwitchSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getTwitchSonic().remove(name);
                         }
                     }
 
@@ -479,8 +479,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeTwitterWebhook(commandEvent.getGuild().getIdLong(), name);
                         commandEvent.reply(commandEvent.getResource("message.twitterNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isTwitterRegistered(name)) {
-                            Main.getInstance().getNotifier().unregisterTwitterUser(name);
+                        if (Main.getInstance().getNotifier().getTwitterSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getTwitterSonic().remove(name);
                         }
                     }
 
@@ -499,8 +499,8 @@ public class Notifier implements ICommand {
 
                             commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.removed", name), 5);
 
-                            if (Main.getInstance().getNotifier().isTikTokUserRegistered(Long.parseLong(tikTokUser.getId()))) {
-                                Main.getInstance().getNotifier().unregisterTikTokUser(Long.parseLong(tikTokUser.getId()));
+                            if (Main.getInstance().getNotifier().getTikTokSonic().contains(Long.parseLong(tikTokUser.getId()))) {
+                                Main.getInstance().getNotifier().getTikTokSonic().remove(Long.parseLong(tikTokUser.getId()));
                             }
                         } catch (Exception e) {
                             commandEvent.reply(commandEvent.getResource("message.tiktokNotifier.invalidUser", name), 5);
@@ -517,8 +517,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeRedditWebhook(commandEvent.getGuild().getIdLong(), name);
                         commandEvent.reply(commandEvent.getResource("message.redditNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isSubredditRegistered(name)) {
-                            Main.getInstance().getNotifier().unregisterSubreddit(name);
+                        if (Main.getInstance().getNotifier().getRedditSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getRedditSonic().remove(name);
                         }
                     }
 
@@ -532,8 +532,8 @@ public class Notifier implements ICommand {
                         SQLSession.getSqlConnector().getSqlWorker().removeRSSWebhook(commandEvent.getGuild().getIdLong(), name);
                         commandEvent.reply(commandEvent.getResource("message.rssNotifier.removed", name), 5);
 
-                        if (Main.getInstance().getNotifier().isRSSRegistered(name)) {
-                            Main.getInstance().getNotifier().unregisterRSS(name);
+                        if (Main.getInstance().getNotifier().getRssSonic().contains(name)) {
+                            Main.getInstance().getNotifier().getRssSonic().remove(name);
                         }
                     }
 

@@ -1,17 +1,15 @@
 package de.presti.ree6.commands.impl.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-
-import java.awt.*;
 
 /**
  * Get the current list of songs.
@@ -37,7 +35,7 @@ public class SongList implements ICommand {
         em.setAuthor(commandEvent.getGuild().getJDA().getSelfUser().getName(), BotConfig.getWebsite(), commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
         em.setTitle(commandEvent.getResource("label.musicPlayer"));
         em.setThumbnail(commandEvent.getGuild().getJDA().getSelfUser().getEffectiveAvatarUrl());
-        em.setColor(Color.GREEN);
+        em.setColor(BotConfig.getMainColor());
         em.setDescription(Main.getInstance().getMusicWorker().getGuildAudioPlayer(commandEvent.getGuild()).getScheduler().getQueue().isEmpty() ?
                 commandEvent.getResource("message.music.songQueueEmpty") :
                 (end.length() > 4096 ? commandEvent.getResource("command.perform.errorWithException","Error (M-SL-01)") :

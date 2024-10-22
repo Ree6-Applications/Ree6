@@ -1,12 +1,11 @@
 package de.presti.ree6.commands.impl.fun;
 
 import com.google.gson.JsonObject;
-import de.presti.ree6.bot.BotWorker;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -27,7 +26,7 @@ public class DogImage implements ICommand {
         EmbedBuilder em = new EmbedBuilder();
 
         em.setTitle(commandEvent.getResource("label.randomDogImage"));
-        em.setColor(BotWorker.randomEmbedColor());
+        em.setColor(BotConfig.getMainColor());
         em.setImage(js.get("message").getAsString());
         em.setFooter(commandEvent.getResource("label.footerMessage", commandEvent.getMember().getEffectiveName(), BotConfig.getAdvertisement()), commandEvent.getMember().getEffectiveAvatarUrl());
 

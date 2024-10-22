@@ -38,13 +38,13 @@ public class Infractions implements ICommand {
             return;
         }
 
-        Warning warning = SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "FROM Warning WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong()));
-
-        if (warning != null) {
-            commandEvent.reply(commandEvent.getResource("message.infractions.success", member.getAsMention(), warning.getWarnings()));
-        } else {
-            commandEvent.reply(commandEvent.getResource("message.infractions.empty", member.getAsMention()));
-        }
+        SQLSession.getSqlConnector().getSqlWorker().getEntity(new Warning(), "FROM Warning WHERE guildUserId.guildId = :gid AND guildUserId.userId = :uid", Map.of("gid", commandEvent.getGuild().getIdLong(), "uid", member.getIdLong())).subscribe(warning -> {
+            if (warning.isPresent()) {
+                commandEvent.reply(commandEvent.getResource("message.infractions.success", member.getAsMention(), warning.get().getWarnings()));
+            } else {
+                commandEvent.reply(commandEvent.getResource("message.infractions.empty", member.getAsMention()));
+            }
+        });
     }
 
     /**

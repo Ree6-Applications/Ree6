@@ -14,8 +14,9 @@ import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
 import se.michaelthelin.spotify.model_objects.specification.*;
 import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 import se.michaelthelin.spotify.requests.data.albums.GetAlbumsTracksRequest;
+import se.michaelthelin.spotify.requests.data.artists.GetArtistsAlbumsRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistRequest;
-import se.michaelthelin.spotify.requests.data.tracks.GetTrackRequest;
+import se.michaelthelin.spotify.requests.data.shows.GetShowsEpisodesRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -226,6 +227,127 @@ public class SpotifyAPIHandler {
             log.error("Couldn't get Tracks from Playlist", e);
         }
         return tracks;
+    }
+
+    /**
+     * Get the Artist based on their ID.
+     *
+     * @param artistId The Artist ID.
+     * @return The Artist.
+     * @throws ParseException         if the response is not a Valid JSON.
+     * @throws SpotifyWebApiException if an error occurs.
+     * @throws IOException            if there was a network error.
+     */
+    public Artist getArtist(String artistId) throws ParseException, SpotifyWebApiException, IOException {
+        if (!isSpotifyConnected) return null;
+        return spotifyApi.getArtist(artistId).build().execute();
+    }
+
+    /**
+     * Get the Albums of an Artist.
+     *
+     * @param artistId The Artist ID.
+     * @return All Albums of the Artist.
+     * @throws ParseException         if the response is not a Valid JSON.
+     * @throws SpotifyWebApiException if an error occurs.
+     * @throws IOException            if there was a network error.
+     */
+    public ArrayList<AlbumSimplified> getArtistAlbums(String artistId) throws ParseException, SpotifyWebApiException, IOException {
+        if (!isSpotifyConnected) return new ArrayList<>();
+        ArrayList<AlbumSimplified> albums = new ArrayList<>();
+
+        if (retries.getOrDefault(artistId, 0) >= 3) return albums;
+
+        GetArtistsAlbumsRequest request = spotifyApi.getArtistsAlbums(artistId).build();
+        try {
+            Paging<AlbumSimplified> albumList = request.execute();
+
+            for (AlbumSimplified album : albumList.getItems()) {
+                if (album == null) continue;
+
+                albums.add(album);
+            }
+            retries.remove(artistId);
+        } catch (UnauthorizedException unauthorizedException) {
+            if (spotifyApi.getClientId() != null) {
+
+                try {
+                    isSpotifyConnected = false;
+                    retries.put(artistId, retries.getOrDefault(artistId, 0) + 1);
+                    initSpotify();
+                } catch (Exception exception) {
+                    Sentry.captureException(exception);
+                }
+
+                return getArtistAlbums(artistId);
+            } else {
+                log.error("Couldn't get Album from Artist", unauthorizedException);
+            }
+        } catch (ParseException | SpotifyWebApiException | IOException e) {
+            log.error("Couldn't get Album from Artist", e);
+        }
+
+        return albums;
+    }
+
+    /**
+     * Get a Podcast.
+     *
+     * @param podcastId The Podcast ID.
+     * @return The Podcast.
+     * @throws ParseException         if the response is not a Valid JSON.
+     * @throws SpotifyWebApiException if an error occurs.
+     * @throws IOException            if there was a network error.
+     */
+    public Show getPodcast(String podcastId) throws ParseException, SpotifyWebApiException, IOException {
+        if (!isSpotifyConnected) return null;
+        return spotifyApi.getShow(podcastId).build().execute();
+    }
+
+    /**
+     * Get all Podcast Episodes.
+     *
+     * @param podcastId The Podcast ID.
+     * @return The Podcast episodes.
+     * @throws ParseException         if the response is not a Valid JSON.
+     * @throws SpotifyWebApiException if an error occurs.
+     * @throws IOException            if there was a network error.
+     */
+    public ArrayList<EpisodeSimplified> getPodcastEpisodes(String podcastId) throws ParseException, SpotifyWebApiException, IOException {
+        if (!isSpotifyConnected) return new ArrayList<>();
+        ArrayList<EpisodeSimplified> episodes = new ArrayList<>();
+
+        if (retries.getOrDefault(podcastId, 0) >= 3) return episodes;
+
+        GetShowsEpisodesRequest request = spotifyApi.getShowEpisodes(podcastId).build();
+        try {
+            Paging<EpisodeSimplified> albumList = request.execute();
+
+            for (EpisodeSimplified episode : albumList.getItems()) {
+                if (episode == null) continue;
+
+                episodes.add(episode);
+            }
+            retries.remove(podcastId);
+        } catch (UnauthorizedException unauthorizedException) {
+            if (spotifyApi.getClientId() != null) {
+
+                try {
+                    isSpotifyConnected = false;
+                    retries.put(podcastId, retries.getOrDefault(podcastId, 0) + 1);
+                    initSpotify();
+                } catch (Exception exception) {
+                    Sentry.captureException(exception);
+                }
+
+                return getPodcastEpisodes(podcastId);
+            } else {
+                log.error("Couldn't get Episodes from Podcast", unauthorizedException);
+            }
+        } catch (ParseException | SpotifyWebApiException | IOException e) {
+            log.error("Couldn't get Episodes from Podcast", e);
+        }
+        return episodes;
     }
 
     /**

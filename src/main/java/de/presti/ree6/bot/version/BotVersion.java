@@ -13,19 +13,28 @@ public enum BotVersion {
     /**
      * Version for Development tests.
      */
-    DEVELOPMENT("bot.tokens.dev"),
+    DEVELOPMENT("Dev","bot.tokens.dev"),
     /**
      * Version for a not yet fully stable release.
      */
-    BETA("bot.tokens.beta"),
+    BETA("Beta", "bot.tokens.beta"),
     /**
      * Version for a stable release.
      */
-    RELEASE("bot.tokens.release");
+    RELEASE("Release", "bot.tokens.release");
+
+    /**
+     * The name of the Version.
+     */
+    final String name;
 
     /**
      * The Token-Path in the config file.
      */
     final String tokenPath;
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

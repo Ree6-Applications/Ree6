@@ -1,11 +1,10 @@
 package de.presti.ree6.events;
 
-import de.presti.ree6.actions.customevents.container.CustomEventContainer;
+import de.presti.ree6.module.actions.customevents.container.CustomEventContainer;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.custom.CustomEventAction;
 import de.presti.ree6.sql.entities.custom.CustomEventTyp;
 import de.presti.ree6.utils.data.CustomEventMapper;
-import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -32,6 +31,7 @@ public class CustomEvents implements EventListener {
 
     /**
      * Listens for all events.
+     *
      * @param event The event.
      */
     @Override
@@ -54,7 +54,8 @@ public class CustomEvents implements EventListener {
 
     /**
      * Run the cache entry for the given event.
-     * @param clazz The event class.
+     *
+     * @param clazz   The event class.
      * @param guildId The guild id.
      */
     public void runCacheEntry(Class<? extends GenericEvent> clazz, long guildId) {
@@ -67,29 +68,28 @@ public class CustomEvents implements EventListener {
 
     /**
      * Check for new CustomEvents.
-     * @param clazz The event class.
+     *
+     * @param clazz   The event class.
      * @param guildId The guild id.
      */
     public void checkForNew(Class<? extends GenericEvent> clazz, long guildId) {
         if (System.currentTimeMillis() - lastCheck < Duration.ofMinutes(1).toMillis()) return;
         lastCheck = System.currentTimeMillis();
-        ThreadUtil.createThread(x -> {
-            List<CustomEventContainer> list = SQLSession.getSqlConnector().getSqlWorker().getEntityList(new CustomEventAction(),
-                    "FROM CustomEventAction WHERE guildId=:gid",
-                    Map.of("gid", guildId)).stream().map(CustomEventContainer::new).toList();
+        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new CustomEventAction(),
+                "FROM CustomEventAction WHERE guildId=:gid",
+                Map.of("gid", guildId)).map(x -> x.stream().map(CustomEventContainer::new).toList()).subscribe(list -> {
+            CustomEventTyp typ = CustomEventMapper.getEventTyp(clazz);
 
             list.forEach(c -> {
-
-                CustomEventTyp typ = CustomEventMapper.getEventTyp(clazz);
-
                 if (cache.containsKey(typ) && !cache.get(typ).contains(c)) {
                     cache.get(typ).add(c);
                 } else {
                     cache.put(typ, List.of(c));
                 }
-            });
 
-            cache.values().forEach(entries -> entries.removeIf(c -> !list.contains(c)));
+                cache.values().forEach(entries -> entries.removeIf(z -> !list.contains(z)));
+            });
         });
+
     }
 }

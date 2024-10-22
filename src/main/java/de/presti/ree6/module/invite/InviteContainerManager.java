@@ -18,7 +18,6 @@ import java.util.Objects;
 /**
  * Utility class to contain every Invite and manage the Invites in our Database.
  */
-// TODO:: continue with the rework of this entire system
 @Slf4j
 public class InviteContainerManager implements IManager<InviteContainer> {
 
@@ -43,7 +42,8 @@ public class InviteContainerManager implements IManager<InviteContainer> {
 
     @Override
     public void load() {
-        replace(SQLSession.getSqlConnector().getSqlWorker().getEntityList(new de.presti.ree6.sql.entities.Invite(), "FROM Invite", null).stream().map(InviteContainer::new).toList());
+        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new de.presti.ree6.sql.entities.Invite(), "FROM Invite", null)
+                .subscribe(invites1 -> replace(invites1.stream().map(InviteContainer::new).toList()));
     }
 
     /**
@@ -53,8 +53,8 @@ public class InviteContainerManager implements IManager<InviteContainer> {
      */
     public void refreshGuild(long guildId) {
         invites.removeIf(x -> x.guildId == guildId);
-        getList().addAll(SQLSession.getSqlConnector().getSqlWorker().getEntityList(new de.presti.ree6.sql.entities.Invite(), "FROM Invite WHERE guildAndCode.guildId = :gid", Map.of("gid", guildId))
-                .stream().map(InviteContainer::new).toList());
+        SQLSession.getSqlConnector().getSqlWorker().getEntityList(new de.presti.ree6.sql.entities.Invite(), "FROM Invite WHERE guildAndCode.guildId = :gid", Map.of("gid", guildId))
+                .subscribe(invites1 -> replace(invites1.stream().map(InviteContainer::new).toList()));
     }
 
     /**
@@ -81,7 +81,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
 
         getList().add(inviteContainer);
         try {
-            SQLSession.getSqlConnector().getSqlWorker().updateEntity(new de.presti.ree6.sql.entities.Invite(inviteContainer.getGuildId(), inviteContainer.getCreatorId(), inviteContainer.getUses(), inviteContainer.getCode()));
+            SQLSession.getSqlConnector().getSqlWorker().updateEntity(new de.presti.ree6.sql.entities.Invite(inviteContainer.getGuildId(), inviteContainer.getCreatorId(), inviteContainer.getUses(), inviteContainer.getCode())).block();
         } catch (Exception ex) {
             log.error("[InviteManager] Error while Saving Invites: " + ex.getMessage());
         }
@@ -171,35 +171,37 @@ public class InviteContainerManager implements IManager<InviteContainer> {
             }
 
             // Go through every Invite of the Guild from our Database.
-            for (InviteContainer inv2 : getInvites(guild.getIdLong())) {
+            for (InviteContainer databaseInvite : getInvites(guild.getIdLong())) {
 
                 // Check if its correct invite.
-                if (inv.getCode().equalsIgnoreCase(inv2.getCode())) {
+                if (inv.getCode().equalsIgnoreCase(databaseInvite.getCode())) {
                     foundOne = true;
 
                     // Check if the Creator of the Invite isn't the same as in our Database.
-                    if (inv.getInviter().getIdLong() != inv2.getCreatorId()) {
+                    if (inv.getInviter().getIdLong() != databaseInvite.getCreatorId()) {
 
                         // Check if its Vanity Invite.
                         if (vanityInvite != null && inv.getCode().equalsIgnoreCase(vanityInvite.getCode())) {
                             // Correct the information.
-                            inv2.setVanity(true);
-                            inv2.setGuildId(guild.getIdLong());
-                            if (inv2.getCreatorId() == 0) {
-                                inv2.setCreatorId(guild.getOwnerIdLong());
+                            databaseInvite.setVanity(true);
+                            databaseInvite.setGuildId(guild.getIdLong());
+                            if (databaseInvite.getCreatorId() == 0) {
+                                databaseInvite.setCreatorId(guild.getOwnerIdLong());
                             }
                         } else {
                             // This should never be reached so, log it.
-                            log.warn("Detected a very weird Invite? Owner does not match database entry! Guild: " + guild.getName() + " (" + guild.getId() + ") Invite: " + inv.getInviter().getIdLong() + " Database: " + inv2.getCreatorId());
+                            log.warn("Detected a very weird Invite? Owner does not match database entry! Guild: " + guild.getName() + " (" + guild.getId() + ") Invite: " + inv.getInviter().getIdLong() + " Database: " + databaseInvite.getCreatorId());
                             break;
                         }
                     }
 
                     // Check if the Invite from Discord exactly one more usage than in our Database.
                     // If so, we most likely got the correct one.
-                    if (inv.getUses() - 1 == inv2.getUses()) {
-                        inv2.setVanity(vanityInvite != null && inv2.getCode().equalsIgnoreCase(vanityInvite.getCode()));
-                        return inv2;
+                    // Big Issue, if many users join at the same time the value updates quicker than Ree6 can react.
+                    // So -1 would not work at all.
+                    if (inv.getUses() - 1 == databaseInvite.getUses()) {
+                        databaseInvite.setVanity(vanityInvite != null && databaseInvite.getCode().equalsIgnoreCase(vanityInvite.getCode()));
+                        return databaseInvite;
                     }
                 }
             }

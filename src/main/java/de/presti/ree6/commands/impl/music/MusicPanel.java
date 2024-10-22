@@ -4,6 +4,7 @@ import best.azura.eventbus.handler.EventHandler;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import de.presti.ree6.api.events.MusicPlayerStateChangeEvent;
 import de.presti.ree6.audio.music.GuildMusicManager;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
@@ -11,7 +12,6 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.data.ArrayUtil;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -21,8 +21,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
-
-import java.awt.*;
 
 /**
  * Creates a small typeof UI to control music in a channel.
@@ -65,11 +63,11 @@ public class MusicPanel implements ICommand {
             embedBuilder1 = embedBuilder1
                     .setImage(audioTrackInfo1 != null && (audioTrackInfo1.artworkUrl != null && !audioTrackInfo1.artworkUrl.isBlank()) ? audioTrackInfo1.artworkUrl : "https://images.unsplash.com/photo-1546977463-943d58b78c19")
                     .setTitle("**" + (audioTrackInfo1 != null ? LanguageService.getByGuild(event.getGuild(), "message.music.songInfoSlim", audioTrackInfo1.title, audioTrackInfo1.author)
-                            : LanguageService.getByGuild(event.getGuild(), "message.music.notPlaying")) + "**");
+                            : LanguageService.getByGuild(event.getGuild(), "message.music.notPlaying")).block() + "**");
         } else if (event.getState() != MusicPlayerStateChangeEvent.State.QUEUE_ADD) {
             embedBuilder1 = embedBuilder1
                     .setImage("https://images.unsplash.com/photo-1546977463-943d58b78c19")
-                    .setTitle("**" + LanguageService.getByGuild(event.getGuild(), "message.music.notPlaying") + "**");
+                    .setTitle("**" + LanguageService.getByGuild(event.getGuild(), "message.music.notPlaying").block() + "**");
         }
 
         messageEditBuilder.setEmbeds(embedBuilder1.build());
@@ -95,7 +93,7 @@ public class MusicPanel implements ICommand {
                         guildMusicManager.getPlayer().getPlayingTrack().getInfo() : null;
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
-                .setColor(Color.MAGENTA)
+                .setColor(BotConfig.getMainColor())
                 .setImage(audioTrackInfo != null && (audioTrackInfo.artworkUrl != null && !audioTrackInfo.artworkUrl.isBlank()) ? audioTrackInfo.artworkUrl : "https://images.unsplash.com/photo-1546977463-943d58b78c19")
                 .setTitle("**" + (audioTrackInfo != null ? commandEvent.getResource("message.music.songInfoSlim", audioTrackInfo.title, audioTrackInfo.author)
                         : commandEvent.getResource("message.music.notPlaying")) + "**")

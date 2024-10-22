@@ -4,12 +4,11 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.game.core.GameManager;
-import de.presti.ree6.game.core.GameSession;
-import de.presti.ree6.game.core.base.GameInfo;
-import de.presti.ree6.game.core.base.GamePlayer;
-import de.presti.ree6.game.core.base.GameState;
-import de.presti.ree6.language.LanguageService;
+import de.presti.ree6.module.game.core.GameManager;
+import de.presti.ree6.module.game.core.GameSession;
+import de.presti.ree6.module.game.core.base.GameInfo;
+import de.presti.ree6.module.game.core.base.GamePlayer;
+import de.presti.ree6.module.game.core.base.GameState;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -23,7 +22,7 @@ import java.util.ArrayList;
 /**
  * Command used to access the Game System.
  */
-@Command(name = "game", description = "command.description.game", category = Category.FUN)
+@Command(name = "game", description = "command.description.game", category = Category.FUN, allowAppInstall = false)
 public class Game implements ICommand {
 
     /**
@@ -52,7 +51,7 @@ public class Game implements ICommand {
                 if (GameManager.getGameNames().stream().noneMatch(c -> c.equalsIgnoreCase(nameMapping.getAsString().trim()))) {
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append(commandEvent.getResource("message.game.availableGames")).append("```");
-                    GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append("- ").append(LanguageService.getByEvent(commandEvent,entryValue.getAnnotation(GameInfo.class).description())));
+                    GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append("- ").append(commandEvent.getResource(entryValue.getAnnotation(GameInfo.class).description())));
                     stringBuilder.append("```");
                     commandEvent.reply(stringBuilder.toString());
                     return;
@@ -61,7 +60,7 @@ public class Game implements ICommand {
                 ArrayList<User> participants = new ArrayList<>();
                 participants.add(commandEvent.getUser());
 
-                GamePlayer gamePlayer = new GamePlayer(commandEvent.getMember().getUser());
+                GamePlayer gamePlayer = new GamePlayer(commandEvent.getUser());
                 gamePlayer.setInteractionHook(commandEvent.getInteractionHook());
 
                 GameManager.createGameSession(GameManager.generateInvite(), nameMapping.getAsString(), commandEvent.getMember(),
@@ -85,8 +84,8 @@ public class Game implements ICommand {
                     return;
                 }
 
-                gameSession.getParticipants().add(commandEvent.getMember().getUser());
-                GamePlayer gamePlayer = new GamePlayer(commandEvent.getMember().getUser());
+                gameSession.getParticipants().add(commandEvent.getUser());
+                GamePlayer gamePlayer = new GamePlayer(commandEvent.getUser());
                 gamePlayer.setInteractionHook(commandEvent.getInteractionHook());
                 gameSession.getGame().joinGame(gamePlayer);
             }
@@ -94,7 +93,7 @@ public class Game implements ICommand {
             case "list" -> {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append(commandEvent.getResource("message.game.availableGames")).append("```");
-                GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append(" ").append("-").append(" ").append(LanguageService.getByEvent(commandEvent,entryValue.getAnnotation(GameInfo.class).description())));
+                GameManager.getGameCache().forEach((entry, entryValue) -> stringBuilder.append("\n").append(entry).append(" ").append("-").append(" ").append(commandEvent.getResource(entryValue.getAnnotation(GameInfo.class).description())));
                 stringBuilder.append("```");
                 commandEvent.reply(stringBuilder.toString());
             }
@@ -108,7 +107,7 @@ public class Game implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("game", LanguageService.getDefault("command.description.game"))
+        return new CommandDataImpl("game", "command.description.game")
                 .addSubcommands(new SubcommandData("create", "Create a new Game match.")
                         .addOptions(new OptionData(OptionType.STRING, "name", "The Game name.", true).addChoice("Blackjack", "blackjack").addChoice("Music Quiz", "musicquiz")),
                         new SubcommandData("join", "Join a Game match.")

@@ -4,8 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -62,7 +60,7 @@ public class Kick implements ICommand {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.KICK_MEMBERS.name()), 5);
         }
 
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        commandEvent.delete();
     }
 
     /**
@@ -70,7 +68,7 @@ public class Kick implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("kick", LanguageService.getDefault("command.description.kick"))
+        return new CommandDataImpl("kick", "command.description.kick")
                 .addOptions(new OptionData(OptionType.USER, "target", "Which User should be kicked.").setRequired(true))
                 .addOptions(new OptionData(OptionType.STRING, "reason", "The Reason why the User should be kicked.").setRequired(false))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.KICK_MEMBERS));

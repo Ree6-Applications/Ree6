@@ -4,7 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -56,7 +55,7 @@ public class Prefix implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("prefix", LanguageService.getDefault("command.description.prefix"))
+        return new CommandDataImpl("prefix", "command.description.prefix")
                 .addOptions(new OptionData(OptionType.STRING, "new-prefix", "What should the new Prefix be?").setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR, Permission.MANAGE_SERVER));
     }

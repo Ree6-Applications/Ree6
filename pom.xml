@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>3.1.13</version>
+    <version>4.0.0-alpha.4</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -18,6 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>dxssucuk</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <build.plugins.plugin.version>3.4.2</build.plugins.plugin.version>
     </properties>
 
     <repositories>
@@ -55,9 +56,9 @@
     <dependencies>
         <!-- Discord -->
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>io.github.JDA-Fork</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.1.2</version>
+            <version>55d824408c</version>
         </dependency>
         <!-- Fix for the failed Lookup until they release a version -->
         <dependency>
@@ -81,9 +82,9 @@
             <version>1.1.2</version>
         </dependency>
         <dependency>
-            <groupId>club.minnced</groupId>
+            <groupId>de.ree6</groupId>
             <artifactId>discord-webhooks</artifactId>
-            <version>0.8.4</version>
+            <version>f67bf93e5f</version>
         </dependency>
 
         <!-- Sentry and YAML -->
@@ -182,7 +183,7 @@
         <dependency>
             <groupId>de.ree6</groupId>
             <artifactId>Ree6-SQL</artifactId>
-            <version>da620ec7a5</version>
+            <version>7916908de2</version>
         </dependency>
 
         <!-- Logging -->
@@ -260,7 +261,6 @@
             <version>3.1.9</version>
         </dependency>
 
-
         <!-- HTTP Clients -->
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
@@ -285,6 +285,19 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.11.0</version>
+        </dependency>
+
+        <!-- Addons -->
+        <dependency>
+            <groupId>org.pf4j</groupId>
+            <artifactId>pf4j</artifactId>
+            <version>3.12.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -351,6 +364,9 @@
                     <includeOnlyProperties>
                         <includeOnlyProperty>^git.build.(time|version)$</includeOnlyProperty>
                         <includeOnlyProperty>^git.commit.id.(abbrev|full)$</includeOnlyProperty>
+                        <includeOnlyProperty>^git.dirty$</includeOnlyProperty>
+                        <includeOnlyProperty>^git.branch$</includeOnlyProperty>
+                        <includeOnlyProperty>^git.remote.origin.url$</includeOnlyProperty>
                     </includeOnlyProperties>
                     <commitIdGenerationMode>full</commitIdGenerationMode>
                     <dateFormat>ddMMyyyy</dateFormat>

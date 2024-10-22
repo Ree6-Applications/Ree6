@@ -63,7 +63,7 @@ public class Reactions implements ICommand {
                 }).queue(msg -> {
                     if (msg == null) return;
                     MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-                    messageCreateBuilder.setContent(LanguageService.getByGuild(commandEvent.getGuild(), "message.reactions.reactionNeeded", role.getAsRole().getAsMention()));
+                    messageCreateBuilder.setContent(LanguageService.getByGuild(commandEvent.getGuild(), "message.reactions.reactionNeeded", role.getAsRole().getAsMention()).block());
                     msg.reply(messageCreateBuilder.build()).queue();
                 });
 
@@ -85,15 +85,15 @@ public class Reactions implements ICommand {
                     return;
                 }
 
-                ReactionRole reactionRole = SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
+                SQLSession.getSqlConnector().getSqlWorker().getEntity(new ReactionRole(),
                         "FROM ReactionRole WHERE guildRoleId.guildId=:gid AND guildRoleId.roleId=:roleId AND messageId=:messageId",
-                        Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsRole().getIdLong(), "messageId", messageId));
+                        Map.of("gid", commandEvent.getGuild().getIdLong(), "roleId", role.getAsRole().getIdLong(), "messageId", messageId)).subscribe(reactionRole -> {
+                    if (reactionRole.isPresent()) {
+                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(reactionRole.get()).block();
 
-                if (reactionRole != null) {
-                    SQLSession.getSqlConnector().getSqlWorker().deleteEntity(reactionRole);
-
-                    commandEvent.reply(commandEvent.getResource("message.reactions.removed", role.getAsRole().getIdLong()), 5);
-                }
+                        commandEvent.reply(commandEvent.getResource("message.reactions.removed", role.getAsRole().getIdLong()), 5);
+                    }
+                });
             }
 
             default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
@@ -105,9 +105,9 @@ public class Reactions implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("reactions", LanguageService.getDefault("command.description.reactions"))
+        return new CommandDataImpl("reactions", "command.description.reactions")
                 .addSubcommands(new SubcommandData("remove", "Remove a reaction role.")
-                                .addOption(OptionType.STRING,"message", "The ID of the Message.", true)
+                                .addOption(OptionType.STRING, "message", "The ID of the Message.", true)
                                 .addOption(OptionType.ROLE, "role", "The Role to be given.", true),
                         new SubcommandData("add", "Add a reaction role.")
                                 .addOption(OptionType.STRING, "message", "The ID of the Message.", true)

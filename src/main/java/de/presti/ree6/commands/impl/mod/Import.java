@@ -10,7 +10,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.level.ChatUserLevel;
 import de.presti.ree6.utils.apis.AmariAPI;
@@ -71,19 +70,19 @@ public class Import implements ICommand {
                         JsonElement xp = player.getAsJsonObject().get("xp");
 
                         if (id.isJsonPrimitive() && xp.isJsonPrimitive()) {
-                            ChatUserLevel chatUserLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), id.getAsLong());
+                            SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), id.getAsLong()).subscribe(chatUserLevel -> {
+                                if (chatUserLevel != null && chatUserLevel.getExperience() > xp.getAsLong()) {
+                                    return;
+                                }
 
-                            if (chatUserLevel != null && chatUserLevel.getExperience() > xp.getAsLong()) {
-                                return;
-                            }
+                                if (chatUserLevel == null) {
+                                    chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getIdLong(), id.getAsLong(), xp.getAsLong());
+                                } else {
+                                    chatUserLevel.setExperience(xp.getAsLong());
+                                }
 
-                            if (chatUserLevel == null) {
-                                chatUserLevel = new ChatUserLevel(commandEvent.getGuild().getIdLong(), id.getAsLong(), xp.getAsLong());
-                            } else {
-                                chatUserLevel.setExperience(xp.getAsLong());
-                            }
-
-                            SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel);
+                                SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel).block();
+                            });
                         }
                     }
                 });
@@ -121,9 +120,8 @@ public class Import implements ICommand {
         try {
             Leaderboard leaderboard = AmariAPI.getAmari4J().getRawLeaderboard(commandEvent.getGuild().getId(), Integer.MAX_VALUE);
 
-            leaderboard.getMembers().forEach(member -> {
-                ChatUserLevel chatUserLevel = SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), Long.parseLong(member.getUserid()));
-
+            leaderboard.getMembers().forEach(member ->
+                    SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(commandEvent.getGuild().getIdLong(), Long.parseLong(member.getUserid())).subscribe(chatUserLevel -> {
                 if (chatUserLevel != null && chatUserLevel.getExperience() > member.getExperience()) {
                     return;
                 }
@@ -134,8 +132,8 @@ public class Import implements ICommand {
                     chatUserLevel.setExperience(member.getExperience());
                 }
 
-                SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel);
-            });
+                SQLSession.getSqlConnector().getSqlWorker().updateEntity(chatUserLevel).block();
+            }));
             commandEvent.reply(commandEvent.getResource("message.import.success", leaderboard.getCount()), 5);
         } catch (InvalidAPIKeyException | InvalidServerResponseException | RateLimitException e) {
             // TODO:: make some extra stuff for the rate-limit.
@@ -151,7 +149,8 @@ public class Import implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("import", LanguageService.getDefault("command.description.import")).addOption(OptionType.STRING, "bot", "The Bot you want to import data from.", true);
+        return new CommandDataImpl("import", "command.description.import")
+                .addOption(OptionType.STRING, "bot", "The Bot you want to import data from.", true);
     }
 
     /**

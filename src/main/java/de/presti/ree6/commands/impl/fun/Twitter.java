@@ -4,7 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -61,7 +60,7 @@ public class Twitter implements ICommand {
                     sendTwitterTweet(commandEvent.getMessage().getMentions().getMembers().get(0), stringBuilder.toString(), commandEvent);
                 }
             } else {
-                commandEvent.reply(commandEvent.getResource("message.default.usage","twitter @User Yourtexthere"), 5);
+                commandEvent.reply(commandEvent.getResource("message.default.usage", "twitter @User Yourtexthere"), 5);
             }
         }
     }
@@ -71,7 +70,7 @@ public class Twitter implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("twitter", LanguageService.getDefault("command.description.twitter"))
+        return new CommandDataImpl("twitter", "command.description.twitter")
                 .addOptions(new OptionData(OptionType.USER, "target", "The User that should tweet something!").setRequired(true))
                 .addOptions(new OptionData(OptionType.STRING, "content", "The Tweet Content!").setRequired(true));
     }
@@ -86,8 +85,9 @@ public class Twitter implements ICommand {
 
     /**
      * The method to create the Tweet.
-     * @param member The Member that should tweet.
-     * @param content The content of the Tweet.
+     *
+     * @param member       The Member that should tweet.
+     * @param content      The content of the Tweet.
      * @param commandEvent The CommandEvent.
      */
     public void sendTwitterTweet(Member member, String content, CommandEvent commandEvent) {
@@ -102,10 +102,14 @@ public class Twitter implements ICommand {
             MessageCreateBuilder createBuilder = new MessageCreateBuilder();
             createBuilder.addFiles(FileUpload.fromData(response.getEntity().getContent().readAllBytes(), "twitter.png"));
 
-            commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
+            if (!commandEvent.isDetached()) {
+                commandEvent.getChannel().sendMessage(createBuilder.build()).queue();
 
-            if (commandEvent.isSlashCommand())
-                commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).queue();
+                if (commandEvent.isSlashCommand())
+                    commandEvent.getInteractionHook().sendMessage(commandEvent.getResource("message.default.checkBelow")).queue();
+            } else {
+                commandEvent.reply(createBuilder.build());
+            }
         } catch (Exception ex) {
             commandEvent.reply(commandEvent.getResource("message.perform.error"));
             log.error("An error occurred while creating a Tweet!", ex);

@@ -4,8 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.sql.SQLSession;
-import de.presti.ree6.sql.entities.economy.MoneyHolder;
 import de.presti.ree6.utils.data.EconomyUtil;
 import de.presti.ree6.utils.others.RandomUtils;
 import net.dv8tion.jda.api.Permission;
@@ -21,7 +19,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 /**
  * Command to manage the player specific economy.
  */
-@Command(name = "money", description = "command.description.money", category = Category.ECONOMY)
+@Command(name = "money", description = "command.description.money.default", category = Category.ECONOMY)
 public class Money implements ICommand {
 
     @Override
@@ -47,14 +45,14 @@ public class Money implements ICommand {
 
                     double withdrawAmount = RandomUtils.round(amount.getAsDouble(), 2);
 
-                    MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getMember());
-
-                    if (EconomyUtil.hasEnoughMoney(moneyHolder, withdrawAmount, true)) {
-                        EconomyUtil.pay(moneyHolder, moneyHolder, withdrawAmount, true, false);
-                        commandEvent.reply(commandEvent.getResource("message.money.withdraw", EconomyUtil.formatMoney(withdrawAmount)), 5);
-                    } else {
-                        commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
-                    }
+                    EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder -> {
+                        if (EconomyUtil.hasEnoughMoney(moneyHolder, withdrawAmount, true)) {
+                            EconomyUtil.pay(moneyHolder, moneyHolder, withdrawAmount, true, false);
+                            commandEvent.reply(commandEvent.getResource("message.money.withdraw", EconomyUtil.formatMoney(withdrawAmount)), 5);
+                        } else {
+                            commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
+                        }
+                    });
                 }
                 case "deposit" -> {
                     if (amount == null) {
@@ -64,14 +62,14 @@ public class Money implements ICommand {
 
                     double depositAmount = RandomUtils.round(amount.getAsDouble(), 2);
 
-                    MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getMember());
-
-                    if (EconomyUtil.hasEnoughMoney(moneyHolder, depositAmount, false)) {
-                        EconomyUtil.pay(moneyHolder, moneyHolder, depositAmount, false, true);
-                        commandEvent.reply(commandEvent.getResource("message.money.deposit", EconomyUtil.formatMoney(depositAmount)), 5);
-                    } else {
-                        commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
-                    }
+                    EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder -> {
+                        if (EconomyUtil.hasEnoughMoney(moneyHolder, depositAmount, false)) {
+                            EconomyUtil.pay(moneyHolder, moneyHolder, depositAmount, false, true);
+                            commandEvent.reply(commandEvent.getResource("message.money.deposit", EconomyUtil.formatMoney(depositAmount)), 5);
+                        } else {
+                            commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
+                        }
+                    });
                 }
                 case "send" -> {
                     if (user == null || amount == null) {
@@ -88,14 +86,14 @@ public class Money implements ICommand {
 
                     double sendAmount = RandomUtils.round(amount.getAsDouble(), 2);
 
-                    MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getMember());
-                    MoneyHolder target = EconomyUtil.getMoneyHolder(member);
-
-                    if (EconomyUtil.pay(moneyHolder, target, sendAmount, true, true)) {
-                        commandEvent.reply(commandEvent.getResource("message.money.send", EconomyUtil.formatMoney(sendAmount), member.getAsMention()));
-                    } else {
-                        commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
-                    }
+                    EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder ->
+                            EconomyUtil.getMoneyHolder(member).subscribe(target -> {
+                                if (EconomyUtil.pay(moneyHolder, target, sendAmount, true, true)) {
+                                    commandEvent.reply(commandEvent.getResource("message.money.send", EconomyUtil.formatMoney(sendAmount), member.getAsMention()));
+                                } else {
+                                    commandEvent.reply(commandEvent.getResource("message.money.notEnoughMoney"), 5);
+                                }
+                            }));
                 }
                 default -> {
                     if (user != null) {
@@ -106,11 +104,13 @@ public class Money implements ICommand {
                             return;
                         }
 
-                        MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(member);
-                        commandEvent.reply(commandEvent.getResource("message.money.balance", member.getAsMention(), EconomyUtil.formatMoney(moneyHolder.getAmount()), EconomyUtil.formatMoney(moneyHolder.getBankAmount())));
+                        EconomyUtil.getMoneyHolder(member).subscribe(moneyHolder ->
+                                commandEvent.reply(commandEvent.getResource("message.money.balance", member.getAsMention(),
+                                        EconomyUtil.formatMoney(moneyHolder.getAmount()), EconomyUtil.formatMoney(moneyHolder.getBankAmount()))));
                     } else {
-                        MoneyHolder moneyHolder = EconomyUtil.getMoneyHolder(commandEvent.getMember());
-                        commandEvent.reply(commandEvent.getResource("message.money.balance", commandEvent.getMember().getAsMention(), EconomyUtil.formatMoney(moneyHolder.getAmount()), EconomyUtil.formatMoney(moneyHolder.getBankAmount())));
+                        EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder ->
+                                commandEvent.reply(commandEvent.getResource("message.money.balance", commandEvent.getMember().getAsMention(),
+                                        EconomyUtil.formatMoney(moneyHolder.getAmount()), EconomyUtil.formatMoney(moneyHolder.getBankAmount()))));
                     }
                 }
             }
@@ -140,22 +140,22 @@ public class Money implements ICommand {
 
             if (subcommandGroup.equals("admin")) {
                 switch (subcommand) {
-                    case "add" -> {
-                        EconomyUtil.pay(EconomyUtil.getMoneyHolder(commandEvent.getMember()),
-                                EconomyUtil.getMoneyHolder(member), optionAmount, false,
-                                transferToBank, true);
-                        commandEvent.reply(commandEvent.getResource("message.money.add", EconomyUtil.formatMoney(optionAmount), member.getAsMention()), 5);
-                    }
-                    case "set" -> {
-                        EconomyUtil.set(EconomyUtil.getMoneyHolder(member), optionAmount, transferToBank);
+                    case "add" -> EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder ->
+                            EconomyUtil.getMoneyHolder(member).subscribe(target -> {
+                                EconomyUtil.pay(moneyHolder, target, optionAmount, false, transferToBank, true);
+                                commandEvent.reply(commandEvent.getResource("message.money.add", EconomyUtil.formatMoney(optionAmount), member.getAsMention()), 5);
+                            }));
+                    case "set" -> EconomyUtil.getMoneyHolder(member).subscribe(moneyHolder -> {
+                        EconomyUtil.set(moneyHolder, optionAmount, transferToBank);
                         commandEvent.reply(commandEvent.getResource("message.money.set", member.getAsMention(), EconomyUtil.formatMoney(optionAmount)), 5);
-                    }
-                    case "remove" -> {
-                        EconomyUtil.pay(EconomyUtil.getMoneyHolder(commandEvent.getMember()),
-                                EconomyUtil.getMoneyHolder(member), -optionAmount, false,
-                                transferToBank, true);
-                        commandEvent.reply(commandEvent.getResource("message.money.remove", EconomyUtil.formatMoney(optionAmount), member.getAsMention()), 5);
-                    }
+                    });
+                    case "remove" -> EconomyUtil.getMoneyHolder(commandEvent.getMember()).subscribe(moneyHolder ->
+                            EconomyUtil.getMoneyHolder(member).subscribe(target -> {
+                                EconomyUtil.pay(moneyHolder, target, -optionAmount, false, transferToBank, true);
+                                commandEvent.reply(commandEvent.getResource("message.money.remove", EconomyUtil.formatMoney(optionAmount), member.getAsMention()), 5);
+                            }));
+
+                    default -> commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);
                 }
             } else {
                 commandEvent.reply(commandEvent.getResource("message.default.invalidOption"), 5);

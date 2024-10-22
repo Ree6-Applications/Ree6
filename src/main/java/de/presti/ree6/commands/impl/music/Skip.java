@@ -4,7 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -54,7 +53,8 @@ public class Skip implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("skip", LanguageService.getDefault("command.description.skip")).addOptions(new OptionData(OptionType.INTEGER, "amount", "The amount of songs that should be skipped!").setRequired(false));
+        return new CommandDataImpl("skip", "command.description.skip")
+                .addOptions(new OptionData(OptionType.INTEGER, "amount", "The amount of songs that should be skipped!").setRequired(false));
     }
 
     /**

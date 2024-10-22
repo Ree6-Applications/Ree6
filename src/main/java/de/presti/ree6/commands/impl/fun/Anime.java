@@ -3,13 +3,12 @@ package de.presti.ree6.commands.impl.fun;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.external.RequestUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -61,9 +60,10 @@ public class Anime implements ICommand {
 
     /**
      * Send the anime to the channel.
+     *
      * @param commandEvent the CommandEvent.
-     * @param message the Message.
-     * @param query the query.
+     * @param message      the Message.
+     * @param query        the query.
      */
     public void sendAnime(CommandEvent commandEvent, Message message, String query) {
         RequestUtility.Request request = RequestUtility.Request.builder()
@@ -131,6 +131,7 @@ public class Anime implements ICommand {
             em.setTitle(name, url);
             em.setThumbnail(thumbnailUrl);
             em.setDescription(description);
+            em.setColor(BotConfig.getMainColor());
             em.addField(":hourglass_flowing_sand: **" + commandEvent.getResource("label.status") + "**", status, true);
             em.addField(":dividers: **" + commandEvent.getResource("label.typ") + "**", type, true);
             em.addField(":arrow_right: **" + commandEvent.getResource("label.genres") + "**", genres, false);
@@ -141,7 +142,7 @@ public class Anime implements ICommand {
             em.addField(":trophy: **" + commandEvent.getResource("label.rank") + "**", "**TOP " + rank + "**", true);
             em.setFooter(commandEvent.getMember().getEffectiveName() + " - " + BotConfig.getAdvertisement(), commandEvent.getMember().getEffectiveAvatarUrl());
 
-            if (commandEvent.isSlashCommand()) {
+            if (commandEvent.isSlashCommand() && !commandEvent.isDetached()) {
                 message.editMessage(commandEvent.getResource("message.anime.found")).queue();
                 Main.getInstance().getCommandManager().sendMessage(em, commandEvent.getChannel(), null);
             } else {
@@ -157,7 +158,7 @@ public class Anime implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("anime", LanguageService.getDefault("command.description.anime"))
+        return new CommandDataImpl("anime", "command.description.anime")
                 .addOption(OptionType.STRING, "search", "The search query to search for.", true);
     }
 

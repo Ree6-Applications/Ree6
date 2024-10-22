@@ -2,12 +2,12 @@ package de.presti.ree6.commands.impl.music;
 
 import com.jagrosh.jlyrics.LyricsClient;
 import de.presti.ree6.audio.music.GuildMusicManager;
+import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
-import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -56,7 +56,8 @@ public class Lyrics implements ICommand {
 
                 EmbedBuilder eb = new EmbedBuilder()
                         .setAuthor(lyrics.getAuthor())
-                        .setTitle(lyrics.getTitle(), lyrics.getURL());
+                        .setTitle(lyrics.getTitle(), lyrics.getURL())
+                        .setColor(BotConfig.getMainColor());
                 if (lyrics.getContent().length() > 15000) {
                     commandEvent.reply(commandEvent.getResource("message.music.lyrics.foundUnlikely", "`" + FormatUtil.filter(title) + "`", lyrics.getURL()));
                 } else if (lyrics.getContent().length() > 2000) {

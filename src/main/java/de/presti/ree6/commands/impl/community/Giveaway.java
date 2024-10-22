@@ -4,7 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.RegExUtil;
@@ -100,9 +99,15 @@ public class Giveaway implements ICommand {
                             new de.presti.ree6.sql.entities.Giveaway(message.getIdLong(), commandEvent.getMember().getIdLong(),
                                     commandEvent.getGuild().getIdLong(), commandEvent.getChannel().getIdLong(), prize, winners, endTime);
 
-                    giveaway = SQLSession.getSqlConnector().getSqlWorker().updateEntity(giveaway);
-                    Main.getInstance().getGiveawayManager().add(giveaway);
-                    commandEvent.reply(commandEvent.getResource("message.giveaway.created", message.getId()));
+                    SQLSession.getSqlConnector().getSqlWorker().updateEntity(giveaway).subscribe(giveaway1 -> {
+                        if (giveaway1 == null) {
+                            commandEvent.reply(commandEvent.getResource("message.default.internalError"));
+                            return;
+                        }
+
+                        Main.getInstance().getGiveawayManager().add(giveaway1);
+                        commandEvent.reply(commandEvent.getResource("message.giveaway.created", message.getId()));
+                    });
                 });
             }
 
@@ -301,7 +306,7 @@ public class Giveaway implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("giveaway", LanguageService.getDefault("command.description.giveaway"))
+        return new CommandDataImpl("giveaway", "command.description.giveaway")
                 .addSubcommands(new SubcommandData("create", "Create a Giveaway.")
                                 .addOption(OptionType.STRING, "prize", "The Prize of the Giveaway.", true)
                                 .addOption(OptionType.INTEGER, "winners", "The amount of winners.", true)

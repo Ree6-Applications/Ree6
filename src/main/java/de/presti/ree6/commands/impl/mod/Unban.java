@@ -4,8 +4,6 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
-import de.presti.ree6.language.LanguageService;
-import de.presti.ree6.main.Main;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -62,7 +60,7 @@ public class Unban implements ICommand {
             commandEvent.reply(commandEvent.getResource("message.default.insufficientPermission", Permission.BAN_MEMBERS.name()), 5);
         }
 
-        Main.getInstance().getCommandManager().deleteMessage(commandEvent.getMessage(), commandEvent.getInteractionHook());
+        commandEvent.delete();
     }
 
     /**
@@ -70,7 +68,7 @@ public class Unban implements ICommand {
      */
     @Override
     public CommandData getCommandData() {
-        return new CommandDataImpl("unban", LanguageService.getDefault("command.description.unban"))
+        return new CommandDataImpl("unban", "command.description.unban")
                 .addOptions(new OptionData(OptionType.STRING, "id", "Which User should be unbanned.").setRequired(true))
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS));
     }
