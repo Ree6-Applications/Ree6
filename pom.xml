@@ -291,7 +291,7 @@
         <dependency>
             <groupId>org.pf4j</groupId>
             <artifactId>pf4j</artifactId>
-            <version>3.12.0</version>
+            <version>3.12.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
