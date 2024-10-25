@@ -103,11 +103,10 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                 .setTitle(LanguageService.getByGuild(member.getGuild(), "label.recording.start").block())
                 .build()).complete();
 
-        if (audioChannelUnion.getGuild().getSelfMember().hasPermission(Permission.VOICE_SET_STATUS)) {
-            if (audioChannelUnion.getType() == ChannelType.VOICE) {
-                LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.recording.name").subscribe(name ->
-                        audioChannelUnion.asVoiceChannel().modifyStatus(name).queue());
-            }
+        if (audioChannelUnion.getGuild().getSelfMember().hasPermission(Permission.VOICE_SET_STATUS) && audioChannelUnion.getType() == ChannelType.VOICE) {
+            LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.recording.name").subscribe(name ->
+                    audioChannelUnion.asVoiceChannel().modifyStatus(name).queue());
+
         }
     }
 
@@ -193,22 +192,22 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                     JsonParser.parseString(new Gson().toJson(participants)).getAsJsonArray());
 
             SQLSession.getSqlConnector().getSqlWorker().updateEntity(recording).doOnError(x ->
-                    audioChannelUnion.asGuildMessageChannel().sendMessage(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.error", "Upload failed").block()).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav")))
+                            audioChannelUnion.asGuildMessageChannel().sendMessage(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.error", "Upload failed").block()).setFiles(FileUpload.fromData(recording.getRecording(), "recording.wav")))
                     .subscribe(newRecording -> {
-                if (canTalk) {
-                    message.editMessageEmbeds(new EmbedBuilder()
-                                    .setDescription(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.stopped").block())
-                                    .setColor(BotConfig.getMainColor())
-                                    .setFooter(BotConfig.getAdvertisement(), audioChannelUnion.getGuild().getIconUrl())
-                                    .setTitle(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.recording.finished").block())
-                                    .build())
-                            .setActionRow(
-                                    new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.download").block(), ButtonStyle.LINK,
-                                            BotConfig.getRecordingUrl() + "?id=" + recording.getIdentifier(), true, Emoji.fromCustom("shiba", 941219375535509504L, true)),
-                                    Button.primary("r_recordingDownload:" + recording.getIdentifier(), Emoji.fromCustom("sip", 1011956355810209852L, false))
-                                            .withLabel(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.sendToChat").block()).withDisabled(!BotConfig.allowRecordingInChat())).complete();
-                }
-            });
+                        if (canTalk) {
+                            message.editMessageEmbeds(new EmbedBuilder()
+                                            .setDescription(LanguageService.getByGuild(audioChannelUnion.getGuild(), "message.recording.stopped").block())
+                                            .setColor(BotConfig.getMainColor())
+                                            .setFooter(BotConfig.getAdvertisement(), audioChannelUnion.getGuild().getIconUrl())
+                                            .setTitle(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.recording.finished").block())
+                                            .build())
+                                    .setActionRow(
+                                            new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.download").block(), ButtonStyle.LINK,
+                                                    BotConfig.getRecordingUrl() + "?id=" + recording.getIdentifier(), true, Emoji.fromCustom("shiba", 941219375535509504L, true)),
+                                            Button.primary("r_recordingDownload:" + recording.getIdentifier(), Emoji.fromCustom("sip", 1011956355810209852L, false))
+                                                    .withLabel(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.sendToChat").block()).withDisabled(!BotConfig.allowRecordingInChat())).complete();
+                        }
+                    });
             // Find a way to still notify that the bot couldn't send the audio.
         } catch (Exception ex) {
 

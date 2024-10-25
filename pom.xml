@@ -31,16 +31,6 @@
             <name>LavaLink Release</name>
             <url>https://maven.lavalink.dev/releases</url>
         </repository>
-        <!--<repository>
-            <id>lavalink-snapshot</id>
-            <name>LavaLink Devs</name>
-            <url>https://maven.lavalink.dev/snapshots</url>
-        </repository>-->
-        <!--<repository>
-            <id>bintray</id>
-            <name>bintray</name>
-            <url>https://jcenter.bintray.com</url>
-        </repository>-->
         <repository>
             <id>dv8tion</id>
             <name>m2-dv8tion</name>
@@ -60,17 +50,11 @@
             <artifactId>JDA</artifactId>
             <version>55d824408c</version>
         </dependency>
-        <!-- Fix for the failed Lookup until they release a version -->
         <dependency>
             <groupId>dev.arbjerg</groupId>
             <artifactId>lavaplayer</artifactId>
             <version>2.2.2</version>
         </dependency>
-        <!--<dependency>
-            <groupId>com.github.lavalink-devs.lavaplayer</groupId>
-            <artifactId>lavaplayer</artifactId>
-            <version>0ab6311a5f</version>
-        </dependency>-->
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>v2</artifactId>
