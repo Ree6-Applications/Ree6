@@ -56,4 +56,6 @@ public class RegExUtil {
      * For example, message.kick.default
      */
     public static final String ALLOWED_LANGUAGE_PATHS = "^(message\\.|label\\.|command\\.|game\\.|category\\.)\\S*";
+
+    public static final String ALLOWED_LANGUAGE_FILES = "^[a-z]{2}(-[A-Z]{2})?(.yml|.yaml)$";
 }

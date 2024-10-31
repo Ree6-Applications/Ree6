@@ -18,7 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>dxssucuk</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <build.plugins.plugin.version>3.4.2</build.plugins.plugin.version>
+        <buildplugin.version>3.4.2</buildplugin.version>
     </properties>
 
     <repositories>
@@ -114,7 +114,7 @@
         <dependency>
             <groupId>me.presti</groupId>
             <artifactId>YoutubeWrapper</artifactId>
-            <version>06fa0d7959</version>
+            <version>7df8f55711</version>
         </dependency>
         <dependency>
             <groupId>me.presti</groupId>
@@ -374,6 +374,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>${buildplugin.version}</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -386,6 +387,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>${buildplugin.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

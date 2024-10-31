@@ -4,6 +4,7 @@ import de.presti.ree6.bot.BotConfig;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Setting;
+import de.presti.ree6.utils.data.RegExUtil;
 import de.presti.ree6.utils.external.RequestUtility;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
@@ -48,8 +49,8 @@ public class LanguageService {
 
         try {
             for (File file : Objects.requireNonNull(languagePath.toFile().listFiles())) {
-                if (!file.getName().endsWith(".yml") && !file.getName().endsWith(".yaml")) {
-                    log.info("Skipping file {} because it's not a YAML file!", file.getName());
+                if (!file.getName().matches(RegExUtil.ALLOWED_LANGUAGE_FILES)) {
+                    log.info("Skipping file {} because the file name is invalid!", file.getName());
                     continue;
                 }
 
@@ -80,8 +81,15 @@ public class LanguageService {
 
         try {
             RequestUtility.requestJson(RequestUtility.Request.builder().url("https://api.github.com/repos/Ree6-Applications/Language/contents").build()).getAsJsonArray().forEach(jsonElement -> {
-                String language = jsonElement.getAsJsonObject().get("name").getAsString().replace(".yml", "");
+                String fileName = jsonElement.getAsJsonObject().get("name").getAsString();
+                String language = fileName.replace(".yml", "");
                 String download = jsonElement.getAsJsonObject().get("download_url").getAsString();
+
+                if (!fileName.matches(RegExUtil.ALLOWED_LANGUAGE_FILES)) {
+                    log.info("Skipping file {} because the file name is invalid!", fileName);
+                    return;
+                }
+
 
                 Path languageFile = Path.of("languages/", language + ".yml");
 

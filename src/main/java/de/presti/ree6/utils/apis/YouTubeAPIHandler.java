@@ -9,6 +9,7 @@ import de.presti.wrapper.entities.channel.ChannelShortResult;
 import de.presti.wrapper.entities.channel.ChannelVideoResult;
 import de.presti.wrapper.entities.search.ChannelSearchResult;
 import de.presti.wrapper.entities.search.SearchResult;
+import de.presti.wrapper.entities.search.SearchFilter;
 import io.sentry.Sentry;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +51,7 @@ public class YouTubeAPIHandler {
      * @throws Exception if there was a search problem.
      */
     public String searchYoutube(String search) throws Exception {
-        List<SearchResult> results = YouTubeWrapper.search(search, SearchResult.FILTER.VIDEO);
+        List<SearchResult> results = YouTubeWrapper.search(search, SearchFilter.VIDEO);
 
         if (!results.isEmpty()) {
             String videoId = results.get(0).getId();
@@ -114,7 +115,7 @@ public class YouTubeAPIHandler {
             return YouTubeWrapper.getChannel(channelName);
         }
 
-        List<SearchResult> searchResults = YouTubeWrapper.search(channelName, SearchResult.FILTER.CHANNEL);
+        List<SearchResult> searchResults = YouTubeWrapper.search(channelName, SearchFilter.CHANNEL);
 
         if (searchResults.isEmpty()) {
             return null;
