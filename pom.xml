@@ -136,7 +136,7 @@
         <dependency>
             <groupId>de.ree6</groupId>
             <artifactId>JLyrics</artifactId>
-            <version>765f7e0b88</version>
+            <version>623940ea99</version>
         </dependency>
         <dependency>
             <groupId>de.ree6</groupId>
