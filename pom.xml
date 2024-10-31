@@ -32,6 +32,11 @@
             <url>https://maven.lavalink.dev/releases</url>
         </repository>
         <repository>
+            <id>lavalink-snap</id>
+            <name>LavaLink Release</name>
+            <url>https://maven.lavalink.dev/snapshots</url>
+        </repository>
+        <repository>
             <id>dv8tion</id>
             <name>m2-dv8tion</name>
             <url>https://m2.dv8tion.net/releases</url>
@@ -58,7 +63,7 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>v2</artifactId>
-            <version>1.8.3</version>
+            <version>c358ae412eeae61f87b6f99acfa57e8b91cc9218-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
@@ -109,7 +114,7 @@
         <dependency>
             <groupId>me.presti</groupId>
             <artifactId>YoutubeWrapper</artifactId>
-            <version>1.2.1</version>
+            <version>06fa0d7959</version>
         </dependency>
         <dependency>
             <groupId>me.presti</groupId>

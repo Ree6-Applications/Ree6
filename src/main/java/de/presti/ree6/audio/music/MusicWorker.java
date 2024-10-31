@@ -20,6 +20,8 @@ import de.presti.ree6.utils.apis.SpotifyAPIHandler;
 import de.presti.ree6.utils.apis.YouTubeAPIHandler;
 import de.presti.ree6.utils.others.FormatUtil;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.YoutubeSourceOptions;;
+import dev.lavalink.youtube.clients.*;
 import io.sentry.Sentry;
 import lavalink.client.io.Link;
 import lavalink.client.io.jda.JdaLink;
@@ -74,7 +76,12 @@ public class MusicWorker {
             playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
             playerManager.registerSourceManager(new BandcampAudioSourceManager());
             playerManager.registerSourceManager(new VimeoAudioSourceManager());
-            playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+            //// playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+            YoutubeSourceOptions youtubeSourceOptions = new YoutubeSourceOptions()
+                    .setAllowDirectPlaylistIds(true)
+                    .setAllowDirectVideoIds(true)
+                    .setAllowSearch(false);
+            playerManager.registerSourceManager(new YoutubeAudioSourceManager(youtubeSourceOptions, new Music(), new Web(), new AndroidVr(), new WebEmbedded(), new TvHtml5Embedded()));
             playerManager.registerSourceManager(new HttpAudioSourceManager());
             try {
                 playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
