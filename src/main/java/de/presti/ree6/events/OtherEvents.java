@@ -528,6 +528,8 @@ public class OtherEvents extends ListenerAdapter {
 
         if (!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_HISTORY)) return;
 
+        if (!event.getGuild().getSelfMember().hasAccess(event.getGuildChannel())) return;
+
         event.retrieveMessage().queue(message -> {
 
             EmojiUnion emojiUnion = event.getReaction().getEmoji();

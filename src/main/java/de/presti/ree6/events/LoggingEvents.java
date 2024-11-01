@@ -54,6 +54,7 @@ import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -207,24 +208,25 @@ public class LoggingEvents extends ListenerAdapter {
                         wm2.setUsername(BotConfig.getBotName() + "-InviteLogs");
 
                         if (event.getUser().isBot()) {
-                            event.getGuild().retrieveAuditLogs().type(ActionType.BOT_ADD).limit(1).queue(auditLogEntries -> {
-                                if (auditLogEntries.isEmpty()) {
-                                    wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()).block());
-                                    return;
-                                }
-                                AuditLogEntry entry = auditLogEntries.get(0);
+                            List<AuditLogEntry> auditLogEntries = event.getGuild().retrieveAuditLogs().type(ActionType.BOT_ADD).limit(1).complete();
 
-                                if (entry.getUser() == null) {
-                                    wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()).block());
-                                    return;
-                                }
+                            if (auditLogEntries.isEmpty()) {
+                                wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()).block());
+                                return;
+                            }
 
-                                if (entry.getTargetId().equals(event.getUser().getId())) {
-                                    wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.found", event.getUser().getAsMention(), entry.getUser().getAsMention()).block());
-                                } else {
-                                    wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()).block());
-                                }
-                            });
+                            AuditLogEntry entry = auditLogEntries.get(0);
+
+                            if (entry.getUser() == null) {
+                                wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()).block());
+                                return;
+                            }
+
+                            if (entry.getTargetId().equals(event.getUser().getId())) {
+                                wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.found", event.getUser().getAsMention(), entry.getUser().getAsMention()).block());
+                            } else {
+                                wm2.append(LanguageService.getByEvent(event, "logging.joined.bot.notFound", event.getUser().getAsMention()).block());
+                            }
                         } else {
                             InviteContainer inviteContainer = Main.getInstance().getInviteContainerManager().getRightInvite(event.getGuild());
                             if (inviteContainer != null) {
