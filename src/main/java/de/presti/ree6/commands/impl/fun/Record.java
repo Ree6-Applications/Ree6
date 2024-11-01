@@ -37,6 +37,7 @@ public class Record implements ICommand {
                 } else {
                     commandEvent.getGuild().getAudioManager().closeAudioConnection();
                 }
+                commandEvent.getChannel().asVoiceChannel().modifyStatus("").queue();
                 commandEvent.reply(commandEvent.getResource("message.record.recordingStopped"));
             } else {
                 commandEvent.reply(commandEvent.getResource("message.default.alreadyInVoiceChannel"));

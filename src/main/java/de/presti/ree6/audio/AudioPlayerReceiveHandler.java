@@ -203,7 +203,7 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                                             .build())
                                     .setActionRow(
                                             new ButtonImpl("ree6RedirectButton", LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.download").block(), ButtonStyle.LINK,
-                                                    BotConfig.getRecordingUrl() + "?id=" + recording.getIdentifier(), true, Emoji.fromCustom("shiba", 941219375535509504L, true)),
+                                                    BotConfig.getRecordingUrl() + "?id=" + recording.getIdentifier(), false, Emoji.fromCustom("shiba", 941219375535509504L, true)),
                                             Button.primary("r_recordingDownload:" + recording.getIdentifier(), Emoji.fromCustom("sip", 1011956355810209852L, false))
                                                     .withLabel(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.sendToChat").block()).withDisabled(!BotConfig.allowRecordingInChat())).complete();
                         }
