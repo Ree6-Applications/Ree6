@@ -47,7 +47,6 @@ import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
-import net.dv8tion.jda.internal.utils.PermissionUtil;
 import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -527,7 +526,7 @@ public class OtherEvents extends ListenerAdapter {
 
         if (event.getMember() == null) return;
 
-        if (!PermissionUtil.checkPermission(event.getGuild().getSelfMember(), Permission.MESSAGE_HISTORY)) return;
+        if (!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_HISTORY)) return;
 
         event.retrieveMessage().queue(message -> {
 
