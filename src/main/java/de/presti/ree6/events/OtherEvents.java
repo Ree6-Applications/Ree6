@@ -258,6 +258,10 @@ public class OtherEvents extends ListenerAdapter {
                 }
             }
 
+            if (BotConfig.isModuleActive("temporalvoice")) {
+                checkCreationChannel(event.getGuild(), event.getMember(), event.getChannelJoined().getIdLong());
+            }
+
             if (!ArrayUtil.voiceJoined.containsKey(event.getMember()) && !event.getEntity().getUser().isBot()) {
                 GuildVoiceState voiceState = event.getVoiceState();
 
@@ -267,10 +271,6 @@ public class OtherEvents extends ListenerAdapter {
                 if (voiceState.isGuildDeafened() && BotConfig.shouldResetOnDeafenGlobal()) return;
 
                 ArrayUtil.voiceJoined.put(event.getMember(), System.currentTimeMillis());
-            }
-
-            if (BotConfig.isModuleActive("temporalvoice")) {
-                checkCreationChannel(event.getGuild(), event.getMember(), event.getChannelJoined().getIdLong());
             }
         } else if (event.getChannelJoined() == null) {
             doVoiceXPStuff(event.getMember());
