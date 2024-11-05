@@ -38,16 +38,28 @@ public class TranscriptUtil {
                                 <img class="rounded-full mr-3" src="%icon%">
                             </div>
                             <div class="flex-initial">
-                                <div> Opened: <span class="font-bold">%opened%</span> </div>
-                                <div> Transcript Generated:  <span class="font-bold">%closed%</span> </div>
+                                <div> Opened: <span class="font-bold date"><time dateTime="%opened%">%opened%</time></span> </div>
+                                <div> Transcript Generated:  <span class="font-bold date"><time dateTime="%closed%">%closed%</time></span> </div>
                                 <div> Total Messages: <span class="font-bold">%messages_count%</span> </div>
                             </div>
                         </div>
                         <div class="messages-container">
-                            %messages%
+%messages%
                         </div>
                     </div>
                 </body>
+                <script>
+                    document.querySelectorAll('time').forEach($e => {
+                    const date = new Date($e.dateTime);
+                        if ($e.classList.contains('short')) {
+                            // output the localized date
+                            $e.innerHTML = date.toLocaleTimeString();
+                        } else {
+                            // output the localized date and time
+                            $e.innerHTML = date.toLocaleString();
+                        }
+                    });
+                </script>
            </html>
            """;
 
@@ -56,7 +68,7 @@ public class TranscriptUtil {
      */
     public static final String messageTemplate = """
             <div class="message-breaker"/>
-            <div class="name font-bold">%name%<span class="date">%time%</span> </div>
+            <div class="name font-bold">%name%<span class="date"><time dateTime="%time%">%time%</time></span> </div>
             <div class="message">
                %message%
             </div>
@@ -77,7 +89,8 @@ public class TranscriptUtil {
             messageBuilder.append(messageTemplate
                     .replace("%name%", message.getAuthor().getName())
                     .replace("%time%", message.getTimeCreated().toString())
-                    .replace("%message%", message.getContentRaw()));
+                    .replace("%message%", message.getContentRaw()))
+                    .append("\n");
         }
 
         return template

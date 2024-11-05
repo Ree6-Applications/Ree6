@@ -155,7 +155,7 @@ public class OtherEvents extends ListenerAdapter {
                                     wmb.addFile("welcome.png", ImageCreationUtility.createJoinImage(event.getUser(), joinImage.get().getStringValue(),
                                             messageContent.replace("%user_mention%", event.getMember().getUser().getName())));
                                 } catch (IOException e) {
-                                    wmb.setContent(messageContent);
+                                    wmb.setContent(messageContent.replace("%user_mention%", event.getMember().getUser().getAsMention()));
                                     log.error("Error while creating join image!", e);
                                 }
                             } else {

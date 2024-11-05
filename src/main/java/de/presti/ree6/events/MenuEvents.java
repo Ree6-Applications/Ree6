@@ -173,8 +173,8 @@ public class MenuEvents extends ListenerAdapter {
                         webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
                         webhookMessageBuilder.addFile(event.getGuild().getId() + "_" + ticketEntity.getTicketCount() + "_transcript.html",
                                 TranscriptUtil.generateTranscript(event.getJDA(), event.getChannel().asTextChannel().getIterableHistory().reverse().stream().toList(),
-                                        event.getChannel().getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " "),
-                                        ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " ")).getBytes(StandardCharsets.UTF_8));
+                                        event.getChannel().getTimeCreated().toZonedDateTime().toString().trim(),
+                                        ZonedDateTime.now().toOffsetDateTime().toZonedDateTime().toString().trim()).getBytes(StandardCharsets.UTF_8));
 
                         WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), ticketEntity.getLogChannelWebhookId(), ticketEntity.getLogChannelWebhookToken(), WebhookUtil.WebhookTyp.TICKET);
 
