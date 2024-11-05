@@ -51,7 +51,7 @@
     <dependencies>
         <!-- Discord -->
         <dependency>
-            <groupId>io.github.JDA-Fork</groupId>
+            <groupId>io.github.freya022</groupId>
             <artifactId>JDA</artifactId>
             <version>e88cfadcb8</version>
         </dependency>
