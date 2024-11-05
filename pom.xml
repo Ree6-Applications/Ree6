@@ -53,7 +53,7 @@
         <dependency>
             <groupId>io.github.JDA-Fork</groupId>
             <artifactId>JDA</artifactId>
-            <version>55d824408c</version>
+            <version>e88cfadcb8</version>
         </dependency>
         <dependency>
             <groupId>dev.arbjerg</groupId>
