@@ -18,7 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>dxssucuk</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <buildplugin.version>3.4.2</buildplugin.version>
+        <buildplugin.version>3.7.1</buildplugin.version>
     </properties>
 
     <repositories>
