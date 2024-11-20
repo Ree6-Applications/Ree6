@@ -88,7 +88,7 @@ public class Unmute implements ICommand {
     public void unmuteMember(Member executor, Member member, CommandEvent commandEvent) {
 
         if (executor.canInteract(member) && commandEvent.getGuild().getSelfMember().canInteract(member)) {
-            member.removeTimeout().onErrorFlatMap(throwable -> {
+            member.removeTimeout().reason( "By " + commandEvent.getUser().getName() + "(" + commandEvent.getUser().getId() + ")").onErrorFlatMap(throwable -> {
                 commandEvent.reply(commandEvent.getResource("command.perform.errorWithException", throwable.getMessage()));
                 return null;
             }).queue(unused ->commandEvent.reply(commandEvent.getResource("message.unmute.success",member.getAsMention())));

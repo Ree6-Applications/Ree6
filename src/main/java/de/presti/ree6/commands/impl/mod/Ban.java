@@ -112,7 +112,7 @@ public class Ban implements ICommand {
 
         if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
             commandEvent.reply(commandEvent.getResource("message.ban.success", member.getUser().getName()), 5);
-            commandEvent.getGuild().ban(member, deleteTime, TimeUnit.DAYS).reason(reason).queue();
+            commandEvent.getGuild().ban(member, deleteTime, TimeUnit.DAYS).reason(reason + " - " + commandEvent.getUser().getName() + "(" + commandEvent.getUser().getId() + ")").queue();
         } else {
             if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
                 commandEvent.reply(commandEvent.getResource("message.ban.hierarchySelfError"), 5);

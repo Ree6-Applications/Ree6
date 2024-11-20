@@ -116,7 +116,7 @@ public class Mute implements ICommand {
         }
 
         if (executor.canInteract(member) && commandEvent.getGuild().getSelfMember().canInteract(member)) {
-            member.timeoutFor(duration).reason(reason).onErrorFlatMap(throwable -> {
+            member.timeoutFor(duration).reason(reason + " - " + commandEvent.getUser().getName() + "(" + commandEvent.getUser().getId() + ")").onErrorFlatMap(throwable -> {
                 commandEvent.reply(commandEvent.getResource("command.perform.errorWithException", throwable.getMessage()));
                 return null;
             }).queue(unused -> commandEvent.reply(commandEvent.getResource("message.mute.success",member.getAsMention(), duration.getSeconds())));

@@ -96,7 +96,7 @@ public class Kick implements ICommand {
 
         if (commandEvent.getGuild().getSelfMember().canInteract(member) && commandEvent.getMember().canInteract(member)) {
             commandEvent.reply(commandEvent.getResource("message.kick.success", member.getAsMention()), 5);
-            commandEvent.getGuild().kick(member).reason(reason).queue();
+            commandEvent.getGuild().kick(member).reason(reason + " - " + commandEvent.getUser().getName() + "(" + commandEvent.getUser().getId() + ")").queue();
         } else {
             if (commandEvent.getGuild().getSelfMember().canInteract(member)) {
                 commandEvent.reply(commandEvent.getResource("message.kick.hierarchySelfError"), 5);

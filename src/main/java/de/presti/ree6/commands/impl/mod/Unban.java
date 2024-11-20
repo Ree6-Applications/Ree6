@@ -33,7 +33,7 @@ public class Unban implements ICommand {
 
                 if (targetOption != null) {
                     try {
-                        commandEvent.getGuild().unban(UserSnowflake.fromId(targetOption.getAsString())).queue();
+                        commandEvent.getGuild().unban(UserSnowflake.fromId(targetOption.getAsString())).reason("By " + commandEvent.getUser().getName() + "(" + commandEvent.getUser().getId() + ")").queue();
                         commandEvent.reply(commandEvent.getResource("message.unban.success", "<@" + targetOption.getAsString() + ">"), 5);
                     } catch (Exception ignored) {
                         commandEvent.reply(commandEvent.getResource("message.unban.notFound", targetOption.getAsString()), 5);
