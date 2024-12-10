@@ -63,7 +63,7 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>v2</artifactId>
-            <version>c358ae412eeae61f87b6f99acfa57e8b91cc9218-SNAPSHOT</version>
+            <version>1.11.1</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
