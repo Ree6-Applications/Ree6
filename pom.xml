@@ -119,7 +119,7 @@
         <dependency>
             <groupId>me.presti</groupId>
             <artifactId>TikTokWrapper</artifactId>
-            <version>d9194fb3fa</version>
+            <version>1.0</version>
         </dependency>
 
         <!-- Music -->
