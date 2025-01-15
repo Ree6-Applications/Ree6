@@ -237,12 +237,12 @@
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
-            <version>3.1.9</version>
+            <version>3.1.10</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>3.1.9</version>
+            <version>3.1.10</version>
         </dependency>
 
         <!-- HTTP Clients -->
