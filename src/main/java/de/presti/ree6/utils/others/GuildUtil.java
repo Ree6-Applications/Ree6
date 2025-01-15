@@ -135,7 +135,7 @@ public class GuildUtil {
                                             LanguageService.getByGuild(guild, "message.brs.autoRole.deleted").subscribe(message ->
                                                     privateChannel.sendMessage(message).queue()));
 
-                                SQLSession.getSqlConnector().getSqlWorker().removeAutoRole(guild.getIdLong(), entry.getValue());
+                                SQLSession.getSqlConnector().getSqlWorker().removeVoiceLevelReward(guild.getIdLong(), entry.getValue());
                                 return;
                             }
 
@@ -194,7 +194,7 @@ public class GuildUtil {
                                             LanguageService.getByGuild(guild, "message.brs.autoRole.deleted").subscribe(message ->
                                                     privateChannel.sendMessage(message).queue()));
 
-                                SQLSession.getSqlConnector().getSqlWorker().removeAutoRole(guild.getIdLong(), entry.getValue());
+                                SQLSession.getSqlConnector().getSqlWorker().removeChatLevelReward(guild.getIdLong(), entry.getValue());
                                 return;
                             }
 
