@@ -37,6 +37,7 @@ import de.presti.ree6.utils.apis.Notifier;
 import de.presti.ree6.utils.apis.SpotifyAPIHandler;
 import de.presti.ree6.utils.config.Config;
 import de.presti.ree6.utils.data.ArrayUtil;
+import de.presti.ree6.utils.data.OptionParser;
 import de.presti.ree6.utils.external.RequestUtility;
 import de.presti.ree6.utils.oauth.CustomOAuth2Credential;
 import de.presti.ree6.utils.oauth.CustomOAuth2Util;
@@ -149,12 +150,15 @@ public class Main {
     /**
      * Main methode called when Application starts.
      *
-     * @param args Start Arguments.
+     * @param args Start Arguments.s
      */
     public static void main(String[] args) {
 
+        OptionParser cliArguments = new OptionParser(args, true);
+
         // To allow Image creation on CPU.
-        System.setProperty("java.awt.headless", "true");
+        if (!cliArguments.isEnabled("noHeadless"))
+            System.setProperty("java.awt.headless", "true");
 
         // Create the Main instance.
         instance = new Main();
@@ -166,7 +170,7 @@ public class Main {
         getInstance().setLoggerQueue(new LoggerQueue());
 
         // Create the Config System Instance.
-        getInstance().setConfig(new Config());
+        getInstance().setConfig(new Config(cliArguments.getValueOrDefault("config", "config.yml")));
 
         // Initialize the Config.
         getInstance().getConfig().init();
@@ -194,7 +198,7 @@ public class Main {
 
         log.info("Starting preparations of the Bot...");
 
-        if (Arrays.stream(args).noneMatch("--skip-download"::equalsIgnoreCase)) {
+        if (!cliArguments.isEnabled("skip-download")) {
             LanguageService.downloadLanguages();
             downloadMisc("storage");
         } else {
@@ -268,15 +272,13 @@ public class Main {
 
         // Create a new Instance of the Bot, as well as add the Events.
         try {
-            List<String> argList = Arrays.stream(args).map(String::toLowerCase).toList();
-
             int shards = getInstance().getConfig().getConfiguration().getInt("bot.misc.shards", 1);
 
             BotVersion version = BotVersion.RELEASE;
 
-            if (argList.contains("--dev")) {
+            if (cliArguments.isEnabled("dev")) {
                 version = BotVersion.DEVELOPMENT;
-            } else if (argList.contains("--beta")) {
+            } else if (cliArguments.isEnabled("beta")) {
                 version = BotVersion.BETA;
             }
 
@@ -310,7 +312,7 @@ public class Main {
                 }
             }
         } catch (Exception ex) {
-            log.error("Failed to load Music Module: " + ex.getMessage());
+            log.error("Failed to load Music Module: {}", ex.getMessage());
         }
 
         if (BotConfig.isModuleActive("music")) {
