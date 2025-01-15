@@ -58,7 +58,7 @@
         <dependency>
             <groupId>dev.arbjerg</groupId>
             <artifactId>lavaplayer</artifactId>
-            <version>2.2.2</version>
+            <version>78733ec</version>
         </dependency>
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
