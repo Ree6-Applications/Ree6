@@ -10,7 +10,7 @@
 
     <groupId>de.presti</groupId>
     <artifactId>Ree6</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -51,9 +51,9 @@
     <dependencies>
         <!-- Discord -->
         <dependency>
-            <groupId>io.github.freya022</groupId>
+            <groupId>io.github.JDA-Fork</groupId>
             <artifactId>JDA</artifactId>
-            <version>e88cfadcb8</version>
+            <version>82d7ab90d6</version>
         </dependency>
         <dependency>
             <groupId>dev.arbjerg</groupId>
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>v2</artifactId>
-            <version>c358ae412eeae61f87b6f99acfa57e8b91cc9218-SNAPSHOT</version>
+            <version>1.11.3</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
-            <version>7.16.0</version>
+            <version>7.20.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.Carleslc.Simple-YAML</groupId>
@@ -104,7 +104,7 @@
         <dependency>
             <groupId>com.github.twitch4j</groupId>
             <artifactId>twitch4j</artifactId>
-            <version>1.22.0</version>
+            <version>1.23.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.redouane59.twitter</groupId>
@@ -120,11 +120,6 @@
             <groupId>me.presti</groupId>
             <artifactId>TikTokWrapper</artifactId>
             <version>d9194fb3fa</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jwdeveloper.TikTok-Live-Java</groupId>
-            <artifactId>Client</artifactId>
-            <version>1.8.8-Release</version>
         </dependency>
 
         <!-- Music -->
@@ -148,7 +143,7 @@
         <dependency>
             <groupId>com.apptasticsoftware</groupId>
             <artifactId>rssreader</artifactId>
-            <version>3.8.2</version>
+            <version>3.9.1</version>
         </dependency>
         <dependency>
             <groupId>me.presti</groupId>
@@ -184,14 +179,14 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.12</version>
+            <version>1.5.15</version>
         </dependency>
 
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.34</version>
+            <version>1.18.36</version>
             <scope>provided</scope>
         </dependency>
 
@@ -215,7 +210,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.17.0</version>
+            <version>2.18.0</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -227,17 +222,17 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.18.1</version>
+            <version>2.18.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.18.1</version>
+            <version>2.18.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.18.1</version>
+            <version>2.18.2</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
@@ -306,7 +301,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.10.1</version>
+                    <version>3.11.2</version>
                     <inherited>false</inherited>
                     <executions>
                         <execution>
