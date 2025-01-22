@@ -10,8 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 @Slf4j
 public class YamlPluginDescriptorFinder implements PluginDescriptorFinder {
@@ -50,41 +51,27 @@ public class YamlPluginDescriptorFinder implements PluginDescriptorFinder {
     }
 
     protected YamlConfiguration readYaml(Path pluginPath) {
-        Path yamlPath = getYamlPath(pluginPath, propertiesFileName);
-        if (yamlPath == null) {
-            throw new PluginRuntimeException("Cannot find the properties path");
-        }
+        YamlConfiguration yamlConfiguration;
+        try (ZipFile zip = new ZipFile(pluginPath.toFile())) {
+            log.debug("Lookup plugin descriptor in '{}'", pluginPath);
+            ZipEntry pluginEntry = zip.getEntry("plugin.yml");
 
-        YamlConfiguration yamlConfiguration = null;
-        try {
-            log.debug("Lookup plugin descriptor in '{}'", yamlPath);
-            if (Files.notExists(yamlPath)) {
-                throw new PluginRuntimeException("Cannot find '{}' path", yamlPath);
+            if (pluginEntry == null) {
+                throw new PluginRuntimeException("Cannot find 'plugin.yml' in {}", pluginPath);
             }
 
-            try (InputStream input = Files.newInputStream(yamlPath)) {
+            try (InputStream input = zip.getInputStream(pluginEntry)) {
                 yamlConfiguration = YamlConfiguration.loadConfiguration(() -> input);
             } catch (IOException e) {
                 throw new PluginRuntimeException(e);
             }
+        } catch (IOException exception) {
+            throw new PluginRuntimeException(exception);
         } finally {
-            FileUtils.closePath(yamlPath);
+            FileUtils.closePath(pluginPath);
         }
 
         return yamlConfiguration;
-    }
-
-    protected Path getYamlPath(Path pluginPath, String propertiesFileName) {
-        if (Files.isDirectory(pluginPath)) {
-            return pluginPath.resolve(Paths.get(propertiesFileName));
-        }
-
-        // it's a zip or jar file
-        try {
-            return FileUtils.getPath(pluginPath, propertiesFileName);
-        } catch (IOException e) {
-            throw new PluginRuntimeException(e);
-        }
     }
 
     protected PluginDescriptor createPluginDescriptor(YamlConfiguration yamlConfiguration) {
