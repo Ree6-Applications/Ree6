@@ -1,6 +1,7 @@
 package de.presti.ree6.addons;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.pf4j.*;
 import org.pf4j.util.FileUtils;
 import org.pf4j.util.StringUtils;
@@ -8,6 +9,7 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -61,7 +63,8 @@ public class YamlPluginDescriptorFinder implements PluginDescriptorFinder {
             }
 
             try (InputStream input = zip.getInputStream(pluginEntry)) {
-                yamlConfiguration = YamlConfiguration.loadConfiguration(() -> input);
+                // Don't use the input stream directly YAML will cry.
+                yamlConfiguration = YamlConfiguration.loadConfigurationFromString(String.join("\n", IOUtils.readLines(input, StandardCharsets.UTF_8)));
             } catch (IOException e) {
                 throw new PluginRuntimeException(e);
             }
