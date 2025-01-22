@@ -19,7 +19,7 @@ import java.util.zip.ZipFile;
 @Slf4j
 public class YamlPluginDescriptorFinder implements PluginDescriptorFinder {
 
-    public static final String DEFAULT_PROPERTIES_FILE_NAME = "plugin.yml";
+    public static final String DEFAULT_YAML_FILE_NAME = "plugin.yml";
 
     public static final String PLUGIN_ID = "id";
     public static final String PLUGIN_DESCRIPTION = "description";
@@ -30,14 +30,14 @@ public class YamlPluginDescriptorFinder implements PluginDescriptorFinder {
     public static final String PLUGIN_REQUIRES = "requires";
     public static final String PLUGIN_LICENSE = "license";
 
-    protected String propertiesFileName;
+    protected String yamlFileName;
 
     public YamlPluginDescriptorFinder() {
-        this(DEFAULT_PROPERTIES_FILE_NAME);
+        this(DEFAULT_YAML_FILE_NAME);
     }
 
-    public YamlPluginDescriptorFinder(String propertiesFileName) {
-        this.propertiesFileName = propertiesFileName;
+    public YamlPluginDescriptorFinder(String yamlFileName) {
+        this.yamlFileName = yamlFileName;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class YamlPluginDescriptorFinder implements PluginDescriptorFinder {
         YamlConfiguration yamlConfiguration;
         try (ZipFile zip = new ZipFile(pluginPath.toFile())) {
             log.debug("Lookup plugin descriptor in '{}'", pluginPath);
-            ZipEntry pluginEntry = zip.getEntry("plugin.yml");
+            ZipEntry pluginEntry = zip.getEntry(yamlFileName);
 
             if (pluginEntry == null) {
                 throw new PluginRuntimeException("Cannot find 'plugin.yml' in {}", pluginPath);
