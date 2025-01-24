@@ -352,6 +352,7 @@ public class CommandManager {
 
         if (!commands.contains(command)) {
             commands.add(command);
+            log.info("Loaded Command {}", command.getClass().getSimpleName());
 
             Command commandAnnotation = command.getClass().getAnnotation(Command.class);
 
@@ -360,6 +361,8 @@ public class CommandManager {
 
             SettingsManager.getSettings().add(new Setting(-1,
                     "command_" + commandAnnotation.name().toLowerCase(), commandAnnotation.name(), true));
+        } else {
+            throw new CommandInitializerException(command.getClass());
         }
     }
 

@@ -29,7 +29,7 @@ public class CommandInitializerException extends ObjectStreamException {
      * @param commandClass the class.
      */
     public CommandInitializerException(Class<?> commandClass) {
-        this(commandClass != null ? commandClass.getName() : "Null!", commandClass == null ? "Class is null!" : Arrays.stream(commandClass.getInterfaces()).noneMatch(classname -> classname.isInstance(ICommand.class)) ? "Does not implement the ICommand Interface." : !commandClass.isAnnotationPresent(Command.class) ? "Command Annotation is not present." : commandClass.getAnnotation(Command.class).category() == null ? "It is not allowed to use NULL as Category!" : "Unknown Error!");
+        this(commandClass != null ? commandClass.getName() : "Null!", commandClass == null ? "Class is null!" : Arrays.stream(commandClass.getInterfaces()).noneMatch(classname -> classname.isInstance(ICommand.class)) ? "Does not implement the ICommand Interface." : !commandClass.isAnnotationPresent(Command.class) ? "Command Annotation is not present." : commandClass.getAnnotation(Command.class).category() == null ? "It is not allowed to use NULL as Category!" : "Already registered or unknown!");
     }
 
     /**
