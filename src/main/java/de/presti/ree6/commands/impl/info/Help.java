@@ -7,6 +7,7 @@ import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
+import de.presti.ree6.utils.data.RegExUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -97,11 +98,13 @@ public class Help implements ICommand {
 
                 SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").subscribe(setting -> {
                     for (ICommand cmd : Main.getInstance().getCommandManager().getCommands().stream().filter(command -> command.getClass().getAnnotation(Command.class).category() == category).toList()) {
+                        Command commandAnnotation = cmd.getClass().getAnnotation(Command.class);
+                        boolean isValidDescription = commandAnnotation.description().matches(RegExUtil.ALLOWED_LANGUAGE_PATHS);
                         end.append("``")
                                 .append(setting.get().getStringValue())
-                                .append(cmd.getClass().getAnnotation(Command.class).name())
+                                .append(commandAnnotation.name())
                                 .append("``\n")
-                                .append(commandEvent.getResource(cmd.getClass().getAnnotation(Command.class).description()))
+                                .append(isValidDescription ? commandEvent.getResource(commandAnnotation.description()) : commandAnnotation.description())
                                 .append("\n\n");
                     }
 

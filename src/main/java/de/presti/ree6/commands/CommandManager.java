@@ -36,6 +36,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -183,6 +184,17 @@ public class CommandManager {
         }
 
         return stringBuilder.toString();
+    }
+
+    /**
+     * Method used to add all Commands as SlashCommand on Discord.
+     *
+     * @param shardManager the Shard manager.
+     */
+    public void addSlashCommand(ShardManager shardManager)  {
+        for (JDA jda : shardManager.getShards()){
+            addSlashCommand(jda);
+        }
     }
 
     /**

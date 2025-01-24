@@ -381,11 +381,13 @@ public class Main {
             log.info("Starting all Plugins.");
             getInstance().getPluginManager().startPlugins();
 
+            boolean shouldUpdateCommands = false;
             log.info("Registering all Commands of plugins.");
             for (PluginWrapper plugin : getInstance().getPluginManager().getPlugins()) {
                 if (plugin.getPluginState() != PluginState.STARTED) continue;
                 List<ICommand> commands = getInstance().getPluginManager().getExtensions(ICommand.class, plugin.getPluginId());
                 log.info("Found {} commands in {}.", commands.size(), plugin.getPluginId());
+                if (!shouldUpdateCommands && !commands.isEmpty()) shouldUpdateCommands = true;
                 commands.forEach(command -> {
                     try {
                         getInstance().getCommandManager().addCommand(command);
@@ -393,6 +395,11 @@ public class Main {
                         log.warn("Failed to initialize command: {}", command.getClass().getSimpleName(), e);
                     }
                 });
+            }
+
+            if (shouldUpdateCommands) {
+                getInstance().getCommandManager().addSlashCommand(BotWorker.getShardManager());
+                log.info("Readding SlashCommands because of Plugin commands.");
             }
         }
 
