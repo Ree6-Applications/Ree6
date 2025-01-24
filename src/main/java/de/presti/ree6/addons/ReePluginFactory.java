@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.pf4j.DefaultPluginFactory;
 import org.pf4j.Plugin;
 import org.pf4j.PluginWrapper;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 
@@ -12,7 +13,7 @@ public class ReePluginFactory extends DefaultPluginFactory {
 
     @Override
     protected Plugin createInstance(Class<?> pluginClass, PluginWrapper pluginWrapper) {
-        ReePluginContext context = new ReePluginContext(pluginWrapper.getRuntimeMode());
+        ReePluginContext context = new ReePluginContext(pluginWrapper.getRuntimeMode(), LoggerFactory.getLogger(pluginClass));
         try {
             Constructor<?> constructor = pluginClass.getConstructor(ReePluginContext.class);
             return (Plugin) constructor.newInstance(context);

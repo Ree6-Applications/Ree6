@@ -57,6 +57,8 @@ import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import org.pf4j.PluginManager;
+import org.pf4j.PluginState;
+import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -289,7 +291,7 @@ public class Main {
             BotWorker.createBot(version, shards);
             getInstance().addEvents();
         } catch (Exception ex) {
-            log.error("[Main] Error while init: " + ex.getMessage());
+            log.error("[Main] Error while init: {}", ex.getMessage());
             Sentry.captureException(ex);
             System.exit(0);
             return;
@@ -380,15 +382,18 @@ public class Main {
             getInstance().getPluginManager().startPlugins();
 
             log.info("Registering all Commands of plugins.");
-            List<ICommand> commands = getInstance().getPluginManager().getExtensions(ICommand.class);
-            log.info("Found {} commands in all plugins.", commands.size());
-            commands.forEach(command -> {
-                try {
-                    getInstance().getCommandManager().addCommand(command);
-                } catch (CommandInitializerException e) {
-                    log.warn("Failed to initialize command: {}", command.getClass().getSimpleName(), e);
-                }
-            });
+            for (PluginWrapper plugin : getInstance().getPluginManager().getPlugins()) {
+                if (plugin.getPluginState() != PluginState.STARTED) continue;
+                List<ICommand> commands = getInstance().getPluginManager().getExtensions(ICommand.class, plugin.getPluginId());
+                log.info("Found {} commands in {}.", commands.size(), plugin.getPluginId());
+                commands.forEach(command -> {
+                    try {
+                        getInstance().getCommandManager().addCommand(command);
+                    } catch (CommandInitializerException e) {
+                        log.warn("Failed to initialize command: {}", command.getClass().getSimpleName(), e);
+                    }
+                });
+            }
         }
 
         // Create checker Thread.

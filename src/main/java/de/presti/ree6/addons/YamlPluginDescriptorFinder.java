@@ -42,7 +42,7 @@ public class YamlPluginDescriptorFinder implements PluginDescriptorFinder {
 
     @Override
     public boolean isApplicable(Path pluginPath) {
-        return Files.exists(pluginPath) && (Files.isDirectory(pluginPath) || FileUtils.isZipOrJarFile(pluginPath));
+        return Files.exists(pluginPath) && FileUtils.isZipOrJarFile(pluginPath);
     }
 
     @Override
