@@ -7,6 +7,7 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
@@ -35,9 +36,14 @@ public class Record implements ICommand {
                 if (handler != null) {
                     handler.endReceiving();
                 } else {
-                    commandEvent.getGuild().getAudioManager().closeAudioConnection();
+                    if (audioManager.getGuild().getSelfMember().hasPermission(Permission.VOICE_SET_STATUS) &&
+                            audioManager.isConnected() &&
+                            audioManager.getConnectedChannel().getType() == ChannelType.VOICE) {
+                        audioManager.getConnectedChannel().asVoiceChannel().modifyStatus("").queue();
+                    }
+                    audioManager.closeAudioConnection();
                 }
-                commandEvent.getChannel().asVoiceChannel().modifyStatus("").queue();
+
                 commandEvent.reply(commandEvent.getResource("message.record.recordingStopped"));
             } else {
                 commandEvent.reply(commandEvent.getResource("message.default.alreadyInVoiceChannel"));
@@ -56,8 +62,7 @@ public class Record implements ICommand {
         if (voiceState != null &&
                 voiceState.inAudioChannel() &&
                 voiceState.getChannel() != null &&
-                (voiceState.getChannel().getType() == ChannelType.VOICE ||
-                        voiceState.getChannel().getType() == ChannelType.STAGE)) {
+                voiceState.getChannel().getType().isAudio()) {
 
             AudioChannelUnion audioChannelUnion = voiceState.getChannel();
 

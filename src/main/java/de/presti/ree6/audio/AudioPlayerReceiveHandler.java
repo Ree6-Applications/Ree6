@@ -223,6 +223,10 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
             log.error("Something went wrong while converting a recording!", ex);
         }
 
+        if (audioChannelUnion.getGuild().getSelfMember().hasPermission(Permission.VOICE_SET_STATUS) && audioChannelUnion.getType() == ChannelType.VOICE) {
+            audioChannelUnion.asVoiceChannel().modifyStatus("").queue();
+        }
+
         audioChannelUnion.getGuild().getAudioManager().closeAudioConnection();
         audioChannelUnion.getGuild().getAudioManager().setReceivingHandler(null);
         queue.clear();
