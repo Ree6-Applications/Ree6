@@ -53,6 +53,9 @@ Ree6 has its own support Discord that you can join to help us reach the Partner 
 
 [![Discord](https://img.shields.io/discord/805149057004732457?logo=discord&style=for-the-badge)](https://support.ree6.de)
 
+# Wiki
+Please refer to our official [Wiki](https://wiki.ree6.de)
+
 # Disclaimer
 Please be aware that I'm a Student and can't work full-time on the Bot, and that I am paying for every costs that comes up to keep this Project alive! I'm thankful for every donation that I receive on [Ko-fi](https://ko-fi.com/presti).
 
