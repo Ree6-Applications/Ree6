@@ -23,8 +23,8 @@ public class OptionParser {
                 String key = arg.substring(2);
                 String value = "";
                 if (key.contains("=")) {
-                    key = key.split("=")[0];
                     value = key.substring(key.indexOf("=") + 1);
+                    key = key.split("=")[0];
                 }
                 this.options.put(key, value);
             }
