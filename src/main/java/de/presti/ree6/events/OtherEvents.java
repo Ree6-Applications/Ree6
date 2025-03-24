@@ -545,7 +545,7 @@ public class OtherEvents extends ListenerAdapter {
                 emojiId = reactionCode.replace(":", "").hashCode();
             }
 
-            if (message.getAuthor().getId().equalsIgnoreCase(event.getJDA().getSelfUser().getId())) {
+            if (message.getAuthor().getId().equalsIgnoreCase(event.getJDA().getSelfUser().getId()) && message.getEmbeds().isEmpty()) {
                 String messageContent = message.getContentRaw();
 
                 LanguageService.getByGuild(event.getGuild(), "message.reactions.reactionNeeded", "SPLIT_HERE").subscribe(translation -> {
@@ -567,6 +567,9 @@ public class OtherEvents extends ListenerAdapter {
                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole).block();
 
                             if (message.getMessageReference().getMessage() != null) {
+                                if (event.getEmoji().getType() == Emoji.Type.CUSTOM && event.getEmoji().asRich().canInteract(event.getMember())) {
+                                    return;
+                                }
                                 message.getMessageReference().getMessage().addReaction(event.getEmoji()).queue();
                             }
 
