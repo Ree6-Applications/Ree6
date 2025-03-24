@@ -24,7 +24,8 @@ body:
       label: Version
       description: What version of our software are you running?
       options:
-        - v2 (STS)
-        - v3 (Current)
+        - v4 (LTS)
+        - v3 (NO SUPPORT)
+        - v2 (NO SUPPORT)
     validations:
       required: true
