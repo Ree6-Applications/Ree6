@@ -104,6 +104,11 @@ public class Language {
             Message message = new Message();
             message.setMessage("Missing Language-Entry: " + key);
             sentryEvent.setMessage(message);
+            sentryEvent.addBreadcrumb("Language-Locale:" + locale);
+            sentryEvent.addBreadcrumb("Language-Name:" + name);
+            sentryEvent.addBreadcrumb("Language-Author:" + author);
+            sentryEvent.addBreadcrumb("Language-Version:" + version);
+            sentryEvent.addBreadcrumb("Language-DCLocale:" + discordLocale.getLocale());
             sentryEvent.setLevel(SentryLevel.ERROR);
             Sentry.captureEvent(sentryEvent);
 
@@ -118,6 +123,11 @@ public class Language {
             Message message = new Message();
             message.setMessage("Error while formatting language resource! (" + key + ")");
             sentryEvent.setMessage(message);
+            sentryEvent.addBreadcrumb("Language-Locale:" + locale);
+            sentryEvent.addBreadcrumb("Language-Name:" + name);
+            sentryEvent.addBreadcrumb("Language-Author:" + author);
+            sentryEvent.addBreadcrumb("Language-Version:" + version);
+            sentryEvent.addBreadcrumb("Language-DCLocale:" + discordLocale.getLocale());
             sentryEvent.setThrowable(e.getCause());
             sentryEvent.setLevel(SentryLevel.FATAL);
             Sentry.captureEvent(sentryEvent);

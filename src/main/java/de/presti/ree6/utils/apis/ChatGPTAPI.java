@@ -1,6 +1,7 @@
 package de.presti.ree6.utils.apis;
 
 import com.lilittlecat.chatgpt.offical.ChatGPT;
+import com.lilittlecat.chatgpt.offical.entity.ChatCompletionResponseBody;
 import com.lilittlecat.chatgpt.offical.entity.Message;
 import com.lilittlecat.chatgpt.offical.exception.BizException;
 import de.presti.ree6.language.LanguageService;
@@ -70,6 +71,8 @@ public class ChatGPTAPI {
 
         if (ArrayUtil.chatGPTMessages.containsKey(ids)) {
             messages = ArrayUtil.chatGPTMessages.get(ids);
+        } else {
+            messages.add(new Message("system", preDefinedInformation));
         }
 
         messages.add(new Message("user", message));
@@ -96,6 +99,12 @@ public class ChatGPTAPI {
     public static String getResponse(List<Message> messages) {
         if (!BotConfig.isModuleActive("ai")) return BotConfig.shouldHideModuleNotification() ? "" : "AI Module has been disabled!";
 
-        return chatGPT.ask(Main.getInstance().getConfig().getConfiguration().getString("openai.model", "gpt-3.5-turbo-0301"), messages);
+        ChatCompletionResponseBody response = chatGPT.askOriginal(Main.getInstance().getConfig().getConfiguration().getString("openai.model", "gpt-3.5-turbo-0301"), messages);
+
+        ChatCompletionResponseBody.Choice choice = response.getChoices().get(response.getChoices().size() - 1);
+
+        Message message = choice.getMessage();
+
+        return message.content;
     }
 }
