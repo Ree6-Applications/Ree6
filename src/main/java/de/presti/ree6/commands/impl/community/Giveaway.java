@@ -293,7 +293,7 @@ public class Giveaway implements ICommand {
 
             default -> {
                 StringBuilder stringBuilder = new StringBuilder();
-                for (de.presti.ree6.sql.entities.Giveaway giveaway : Main.getInstance().getGiveawayManager().getList()) {
+                for (de.presti.ree6.sql.entities.Giveaway giveaway : Main.getInstance().getGiveawayManager().getList().stream().filter(x -> x.guildId == commandEvent.getGuild().getIdLong()).toList()) {
                     stringBuilder.append(commandEvent.getResource("message.giveaway.list.entry", giveaway.getMessageId(), giveaway.getChannelId(), giveaway.getWinners(), giveaway.getPrize(), giveaway.getEnding()));
                 }
                 commandEvent.reply(commandEvent.getResource("message.giveaway.list.default", stringBuilder.length() == 6 ? "```None```" : stringBuilder));
