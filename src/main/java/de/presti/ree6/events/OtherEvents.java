@@ -567,7 +567,8 @@ public class OtherEvents extends ListenerAdapter {
                             SQLSession.getSqlConnector().getSqlWorker().updateEntity(reactionRole).block();
 
                             if (message.getMessageReference().getMessage() != null) {
-                                if (event.getEmoji().getType() == Emoji.Type.CUSTOM && event.getEmoji().asRich().canInteract(event.getMember())) {
+                                if (event.getEmoji().getType() == Emoji.Type.CUSTOM && !event.getEmoji().asRich().canInteract(event.getMember())) {
+                                    // Might not be the smartest move, either way I do not care enough to find a better solution to fixing this.
                                     return;
                                 }
                                 message.getMessageReference().getMessage().addReaction(event.getEmoji()).queue();
