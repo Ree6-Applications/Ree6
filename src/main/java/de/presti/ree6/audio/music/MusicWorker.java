@@ -81,7 +81,7 @@ public class MusicWorker {
                     .setAllowDirectPlaylistIds(true)
                     .setAllowDirectVideoIds(true)
                     .setAllowSearch(false);
-            playerManager.registerSourceManager(new YoutubeAudioSourceManager(youtubeSourceOptions, new Music(), new Web(), new AndroidVr(), new WebEmbedded(), new TvHtml5Embedded()));
+            playerManager.registerSourceManager(new YoutubeAudioSourceManager(youtubeSourceOptions, new Music(), new Web(), new MWeb(), new AndroidMusic(), new AndroidVr(), new WebEmbedded(), new TvHtml5Embedded()));
             playerManager.registerSourceManager(new HttpAudioSourceManager());
             try {
                 playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
