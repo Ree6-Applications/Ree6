@@ -61,9 +61,9 @@
             <version>2.2.3</version>
         </dependency>
         <dependency>
-            <groupId>dev.lavalink.youtube</groupId>
+            <groupId>com.github.lavalink-devs.youtube-source</groupId>
             <artifactId>v2</artifactId>
-            <version>1.13.0</version>
+            <version>0e5cfca4e8</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
