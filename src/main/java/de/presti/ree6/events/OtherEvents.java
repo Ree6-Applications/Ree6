@@ -457,7 +457,7 @@ public class OtherEvents extends ListenerAdapter {
                     if (moderated) {
                         Main.getInstance().getCommandManager().deleteMessageWithoutException(event.getMessage(), null);
 
-                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.blacklisted"), event.getChannel(), null);
+                        Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.blacklisted"), 5, event.getChannel(), null);
                     }
                 }
 
