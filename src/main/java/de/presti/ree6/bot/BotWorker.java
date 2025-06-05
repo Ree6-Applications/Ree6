@@ -118,7 +118,11 @@ public class BotWorker {
             gitRepository = prop.getProperty("git.remote.origin.url");
             gitDirty = Boolean.parseBoolean(prop.getProperty("git.dirty"));
         } catch (Exception ex) {
-            log.error("Failed to read git information from file!", ex);
+            if (BotConfig.isDebug()) {
+                log.error("Failed to read git information from file!", ex);
+            } else {
+                log.warn("Failed to read git information from file: {}", ex.getMessage());
+            }
         }
     }
 

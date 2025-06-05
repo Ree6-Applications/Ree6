@@ -723,14 +723,22 @@ public class CommandManager {
     public void sendMessage(MessageCreateData messageCreateData, int deleteSecond, MessageChannel messageChannel, InteractionHook interactionHook) {
         if (interactionHook == null) {
             if (messageChannel == null) return;
-            if (messageChannel.canTalk())
-                messageChannel.sendMessage(messageCreateData).delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                    if (message != null && message.getChannel().retrieveMessageById(message.getId()).complete() != null) {
-                        return message.delete();
-                    }
+            if (messageChannel.canTalk()) {
+                var messageAction = messageChannel.sendMessage(messageCreateData);
 
-                    return null;
-                }).queue();
+                if (deleteSecond > 0) {
+                    messageAction.delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
+                        if (message != null && message.getChannel().retrieveMessageById(message.getId()).complete() != null) {
+                            return message.delete();
+                        }
+
+                        return null;
+                    }).queue();
+                    return;
+                }
+
+                messageAction.queue();
+            }
         } else {
             interactionHook.sendMessage(messageCreateData).queue();
         }

@@ -161,6 +161,7 @@ public class Config {
                     .parent().path("debug").addDefault(false).commentSide("Should the Bot be in Debug Mode? This will enable more logging.")
                     .parent().path("defaultPrefix").addDefault("ree!").commentSide("The default Prefix of the Bot.")
                     .parent().path("textFont").addDefault("Verdana").commentSide("The Font that is being used in Images for the Text.")
+                    .parent().path("messagedBlockDeleteTime").addDefault(5).commentSide("The time in seconds after which the \"message blocked\" message should be deleted. -1 means never delete it.")
                     .parent().path("leveling").comment("Customize the leveling module in Ree6.").blankLine()
                     .path("resets").comment("""
                             When should Ree6 stop the current progress of the user?
@@ -200,7 +201,9 @@ public class Config {
                     .parent().path("games").addDefault(true).commentSide("Enable the Games module.")
                     .parent().path("reactionroles").addDefault(true).commentSide("Enable the reaction-roles module.")
                     .parent().path("slashcommands").addDefault(true).commentSide("Enable the slash-commands support.")
-                    .parent().path("messagecommands").addDefault(true).commentSide("Enable the message-commands support.");
+                    .parent().path("messagecommands").addDefault(true).commentSide("Enable the message-commands support.")
+                    .parent().parent().path("game").comment("Configure game related settings.").blankLine()
+                    .path("musicQuiz").path("playlistIds").addDefault(new String[] { "774kUuKDzLa8ieaSmi8IfS", "78TWH4kgrhIaLcphZTEXSJ", "041EEjr8FMkWlzbuKnSXYD", "0SRdjSDz4RsuozwHv1zhvr" });
 
             yamlFile.path("lavalink")
                     .comment("Lavalink Configuration, for lavalink support.").blankLine()

@@ -301,5 +301,13 @@ public class BotConfig {
         }
         return mainColor;
     }
+
+    /**
+     * Get the configured delay for moderation message deletion.
+     * @return the delay in seconds for moderation message deletion.
+     */
+    public static int getModerationMessageDeleteDelay() {
+        return Main.getInstance().getConfig().getConfiguration().getInt("bot.misc.messagedBlockDeleteTime", 5);
+    }
 }
 
