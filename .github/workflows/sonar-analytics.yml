@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build
-    if: secrets.SONAR_TOKEN != ''
+    if: github.repository_owner == 'Ree6-Applications'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
