@@ -41,7 +41,7 @@ jobs:
           images: ree6/bot
       
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6.16.0
+        uses: docker/build-push-action@v6.18.0
         with:
           platforms: linux/amd64,linux/arm64
           context: .
