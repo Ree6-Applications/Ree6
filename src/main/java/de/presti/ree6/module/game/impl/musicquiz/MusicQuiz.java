@@ -13,8 +13,6 @@ import de.presti.ree6.module.game.impl.musicquiz.entities.MusicQuizPlayer;
 import de.presti.ree6.module.game.impl.musicquiz.util.MusicQuizUtil;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.others.ThreadUtil;
-import lavalink.client.player.event.IPlayerEventListener;
-import lavalink.client.player.event.TrackEndEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
@@ -77,14 +75,9 @@ public class MusicQuiz implements IGame {
     Future<?> internalTimer;
 
     /**
-     * {@link IPlayerEventListener} to check if the song/timer is over.
+     * {@link MusicQuizListener} to check if the song/timer is over.
      */
-    IPlayerEventListener audioEventListener = event -> {
-        if (event instanceof TrackEndEvent trackEndEvent &&
-                trackEndEvent.getTrack().getInfo().title.equalsIgnoreCase("timer")) {
-            selectNextSong();
-        }
-    };
+    MusicQuizListener audioEventListener;
 
     /**
      * Constructor.
@@ -134,6 +127,7 @@ public class MusicQuiz implements IGame {
             return;
         }
 
+        audioEventListener = new MusicQuizListener(this);
         Main.getInstance().getMusicWorker().getGuildAudioPlayer(session.getGuild()).getPlayer().addListener(audioEventListener);
 
         session.setGameState(GameState.STARTED);
@@ -346,4 +340,21 @@ public class MusicQuiz implements IGame {
     public MusicQuizPlayer getParticipantByUserId(long userId) {
         return participants.stream().filter(c -> c.getRelatedUserId() == userId).findFirst().orElse(null);
     }
+    private class MusicQuizListener implements lavalink.client.player.event.IPlayerEventListener.IPlayerEventListener {
+
+        MusicQuiz musicQuiz;
+
+        public MusicQuizListener(MusicQuiz musicQuiz) {
+            this.musicQuiz = musicQuiz;
+        }
+
+        @Override
+        public void onEvent(de.ree6.lavalink.player.event.PlayerEvent event) {
+            if (event instanceof lavalink.client.player.event.TrackEndEvent trackEndEvent &&
+                    trackEndEvent.getTrack().getInfo().title.equalsIgnoreCase("timer")) {
+                musicQuiz.selectNextSong();
+            }
+        }
+    }
+
 }
