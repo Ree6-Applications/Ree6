@@ -136,7 +136,7 @@
         <dependency>
             <groupId>de.ree6</groupId>
             <artifactId>Lavalink-Client</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
 
         <!-- Third party APIs -->
