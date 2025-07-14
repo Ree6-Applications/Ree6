@@ -104,7 +104,7 @@
         <dependency>
             <groupId>com.github.twitch4j</groupId>
             <artifactId>twitch4j</artifactId>
-            <version>v1.25.0</version>
+            <version>1.25.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.redouane59.twitter</groupId>
@@ -194,7 +194,7 @@
         <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
-            <version>1.9.0</version>
+            <version>1.10.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-collections</groupId>
