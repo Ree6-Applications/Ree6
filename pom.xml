@@ -306,28 +306,6 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.openrewrite.maven</groupId>
-                    <artifactId>rewrite-maven-plugin</artifactId>
-                    <version>6.13.0</version>
-                    <configuration>
-                        <activeRecipes>
-                            <recipe>net.dv8tion.MigrateComponentsV2</recipe>
-                        </activeRecipes>
-                    </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.openrewrite.recipe</groupId>
-                            <artifactId>rewrite-java-dependencies</artifactId>
-                            <version>1.37.0</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>net.dv8tion</groupId>
-                            <artifactId>JDA</artifactId>
-                            <version>6.0.0-rc.1</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>3.12.0</version>
                     <inherited>false</inherited>
