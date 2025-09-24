@@ -135,9 +135,15 @@
         </dependency>
         <dependency>
             <groupId>de.ree6</groupId>
-            <artifactId>Lavalink-Client</artifactId>
-            <version>1.0.1</version>
+            <artifactId>Lavalink-Client-Old</artifactId>
+            <version>a8e9e49a57</version>
         </dependency>
+        <!-- New one doesn't have any built in support for JDA and neither do I have the time to actually do it so RIP -->
+        <!--<dependency>
+            <groupId>de.ree6</groupId>
+            <artifactId>Lavalink-Client</artifactId>
+            <version>d374363078</version>
+        </dependency>-->
 
         <!-- Third party APIs -->
         <dependency>

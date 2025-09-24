@@ -13,6 +13,7 @@ import de.presti.ree6.module.game.impl.musicquiz.entities.MusicQuizPlayer;
 import de.presti.ree6.module.game.impl.musicquiz.util.MusicQuizUtil;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.others.ThreadUtil;
+import lavalink.client.player.event.PlayerEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
@@ -340,7 +341,7 @@ public class MusicQuiz implements IGame {
     public MusicQuizPlayer getParticipantByUserId(long userId) {
         return participants.stream().filter(c -> c.getRelatedUserId() == userId).findFirst().orElse(null);
     }
-    private class MusicQuizListener implements lavalink.client.player.event.IPlayerEventListener.IPlayerEventListener {
+    private class MusicQuizListener implements lavalink.client.player.event.IPlayerEventListener {
 
         MusicQuiz musicQuiz;
 
@@ -349,7 +350,7 @@ public class MusicQuiz implements IGame {
         }
 
         @Override
-        public void onEvent(de.ree6.lavalink.player.event.PlayerEvent event) {
+        public void onEvent(PlayerEvent event) {
             if (event instanceof lavalink.client.player.event.TrackEndEvent trackEndEvent &&
                     trackEndEvent.getTrack().getInfo().title.equalsIgnoreCase("timer")) {
                 musicQuiz.selectNextSong();
