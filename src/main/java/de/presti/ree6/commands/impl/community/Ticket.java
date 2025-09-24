@@ -11,6 +11,9 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Tickets;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -18,8 +21,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
@@ -84,7 +85,7 @@ public class Ticket implements ICommand {
                             .setThumbnail(commandEvent.getGuild().getIconUrl())
                             .setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl())
                             .build());
-                    messageCreateBuilder.setActionRow(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket").block(), Emoji.fromUnicode("U+1F4E9")));
+                    messageCreateBuilder.setComponents(ActionRow.of(Button.of(ButtonStyle.PRIMARY, "re_ticket_open", LanguageService.getByGuild(commandEvent.getGuild(), "label.openTicket").block(), Emoji.fromUnicode("U+1F4E9"))));
                     Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), ticketChannel.getAsChannel().asTextChannel());
                 });
             });

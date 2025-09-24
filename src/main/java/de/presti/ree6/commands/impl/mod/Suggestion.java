@@ -10,6 +10,8 @@ import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.sql.entities.Suggestions;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -17,7 +19,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import reactor.core.scheduler.Schedulers;
@@ -96,7 +97,7 @@ public class Suggestion implements ICommand {
                     embedBuilder.setDescription(setting.get().getStringValue());
                     embedBuilder.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
                     messageCreateBuilder.setEmbeds(embedBuilder.build());
-                    messageCreateBuilder.setActionRow(Button.primary("re_suggestion", commandEvent.getResource("message.suggestion.suggestionMenuPlaceholder")));
+                    messageCreateBuilder.setComponents(ActionRow.of(Button.primary("re_suggestion", commandEvent.getResource("message.suggestion.suggestionMenuPlaceholder"))));
 
                     Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), messageChannel);
 

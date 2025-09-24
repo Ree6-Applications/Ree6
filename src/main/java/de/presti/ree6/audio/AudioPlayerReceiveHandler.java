@@ -12,16 +12,16 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -201,11 +201,11 @@ public class AudioPlayerReceiveHandler implements AudioReceiveHandler {
                                             .setFooter(BotConfig.getAdvertisement(), audioChannelUnion.getGuild().getIconUrl())
                                             .setTitle(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.recording.finished").block())
                                             .build())
-                                    .setActionRow(
+                                    .setComponents(ActionRow.of(
                                             Button.of(ButtonStyle.LINK, BotConfig.getRecordingUrl() + "?id=" + recording.getIdentifier(),
                                                     LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.download").block(), Emoji.fromCustom("shiba", 941219375535509504L, true)),
                                             Button.primary("r_recordingDownload:" + recording.getIdentifier(), Emoji.fromCustom("sip", 1011956355810209852L, false))
-                                                    .withLabel(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.sendToChat").block()).withDisabled(!BotConfig.allowRecordingInChat())).complete();
+                                                    .withLabel(LanguageService.getByGuild(audioChannelUnion.getGuild(), "label.sendToChat").block()).withDisabled(!BotConfig.allowRecordingInChat()))).complete();
                         }
                     });
             // Find a way to still notify that the bot couldn't send the audio.

@@ -5,8 +5,9 @@ import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.utils.others.RandomUtils;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 /**
@@ -21,8 +22,8 @@ public class Credits implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-        messageCreateBuilder.addActionRow(Button.link("https://www.ree6.de/#team", (RandomUtils.secureRandom.nextInt(10000) == 1562 ?
-                commandEvent.getResource("message.credits.easterEgg") : commandEvent.getResource("message.credits.default"))));
+        messageCreateBuilder.setComponents(ActionRow.of(Button.link("https://www.ree6.de/#team", (RandomUtils.secureRandom.nextInt(10000) == 1562 ?
+                commandEvent.getResource("message.credits.easterEgg") : commandEvent.getResource("message.credits.default")))));
         commandEvent.reply(messageCreateBuilder.build());
     }
 

@@ -10,9 +10,10 @@ import de.presti.ree6.commands.interfaces.ICommand;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 /**
@@ -49,7 +50,7 @@ public class SongInfo implements ICommand {
                 FormatUtil.formatTime(audioTrack.getPosition()), FormatUtil.formatTime(audioTrack.getDuration()), FormatUtil.volumeIcon(guildMusicManager.getPlayer().getVolume())));
         em.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
         messageCreateBuilder.setEmbeds(em.build());
-        if (audioTrack != null) messageCreateBuilder.addActionRow(Button.of(ButtonStyle.LINK, audioTrack.getInfo().uri, "Watch"));
+        if (audioTrack != null) messageCreateBuilder.setComponents(ActionRow.of(Button.of(ButtonStyle.LINK, audioTrack.getInfo().uri, "Watch")));
 
         commandEvent.reply(messageCreateBuilder.build(), 5);
     }

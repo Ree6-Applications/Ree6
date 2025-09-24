@@ -22,6 +22,13 @@ import io.github.redouane59.twitter.dto.user.UserV2;
 import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
@@ -33,17 +40,12 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
+import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
-import net.dv8tion.jda.internal.interactions.component.StringSelectMenuImpl;
+import net.dv8tion.jda.internal.components.selections.StringSelectMenuImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -51,8 +53,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -103,16 +103,24 @@ public class MenuEvents extends ListenerAdapter {
         switch (event.getComponentId()) {
             case "re_feedback" ->
                     LanguageService.getByGuild(event.getGuild(), "label.feedback").subscribe(modalString -> {
-                        Modal.Builder builder = Modal.create("re_feedback_modal", modalString);
-                        builder.addActionRow(TextInput.create("re_feedback_text", modalString, TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
-                        event.replyModal(builder.build()).queue();
+                        var modal = Modal.create("re_feedback_modal", modalString)
+                                .addComponents(Label.of(modalString, TextInput.create("re_feedback_text", TextInputStyle.PARAGRAPH)
+                                        .setRequired(true)
+                                        .setMaxLength(2042)
+                                        .setMinLength(16).build()))
+                                .build();
+                        event.replyModal(modal).queue();
                     });
 
             case "re_suggestion" ->
                     LanguageService.getByGuild(event.getGuild(), "label.suggestion").subscribe(modalString -> {
-                        Modal.Builder builder = Modal.create("re_suggestion_modal", modalString);
-                        builder.addActionRow(TextInput.create("re_suggestion_text", modalString, TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(2042).setMinLength(16).build());
-                        event.replyModal(builder.build()).queue();
+                        var modal = Modal.create("re_suggestion_modal", modalString)
+                                .addComponents(Label.of(modalString, TextInput.create("re_suggestion_text", TextInputStyle.PARAGRAPH)
+                                        .setRequired(true)
+                                        .setMaxLength(2042)
+                                        .setMinLength(16).build()))
+                                .build();
+                        event.replyModal(modal).queue();
                     });
 
             case "re_ticket_open" -> {
@@ -139,7 +147,7 @@ public class MenuEvents extends ListenerAdapter {
                                                     .setDescription(ticketMessage.get().getStringValue())
                                                     .setColor(BotConfig.getMainColor())
                                                     .setThumbnail(event.getMember().getEffectiveAvatarUrl()).setColor(BotConfig.getMainColor()).setTimestamp(Instant.now()).build());
-                                            messageCreateBuilder.addActionRow(Button.primary("re_ticket_close", LanguageService.getByGuild(event.getGuild(), "label.closeTicket").block()));
+                                            messageCreateBuilder.setComponents(ActionRow.of(Button.primary("re_ticket_close", LanguageService.getByGuild(event.getGuild(), "label.closeTicket").block())));
                                             Main.getInstance().getCommandManager().sendMessage(messageCreateBuilder.build(), channel);
                                             event.getHook().sendMessage(LanguageService.getByGuild(event.getGuild(), "message.ticket.created", channel.getAsMention()).block()).queue();
                                         });
@@ -299,9 +307,13 @@ public class MenuEvents extends ListenerAdapter {
             }
 
             case "re_music_add" -> {
-                Modal.Builder builder = Modal.create("re_music_add_modal", LanguageService.getByGuild(event.getGuild(), "label.queueAdd").block());
-                builder.addActionRow(TextInput.create("re_music_add_modal_song", LanguageService.getByGuild(event.getGuild(), "label.song").block(), TextInputStyle.PARAGRAPH).setRequired(true).setMaxLength(512).setMinLength(4).build());
-                event.replyModal(builder.build()).queue();
+                var modal = Modal.create("re_music_add_modal", LanguageService.getByGuild(event.getGuild(), "label.queueAdd").block())
+                        .addComponents(Label.of(LanguageService.getByGuild(event.getGuild(), "label.song").block(), TextInput.create("re_music_add_modal_song", TextInputStyle.PARAGRAPH)
+                                .setRequired(true)
+                                .setMaxLength(512)
+                                .setMinLength(4).build()))
+                        .build();
+                event.replyModal(modal).queue();
             }
         }
     }
@@ -847,7 +859,7 @@ public class MenuEvents extends ListenerAdapter {
     public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
         super.onStringSelectInteraction(event);
 
-        if (event.getInteraction().getComponent().getId() == null ||
+        if (event.getInteraction().getComponent().getCustomId() == null ||
                 event.getGuild() == null)
             return;
 
@@ -855,10 +867,10 @@ public class MenuEvents extends ListenerAdapter {
                 event.getMessage().getEmbeds().get(0) == null)
             return;
 
-        if (event.getInteraction().getValues().isEmpty() && !event.getInteraction().getComponent().getId().equals("setupAutoRole"))
+        if (event.getInteraction().getValues().isEmpty() && !event.getInteraction().getComponent().getCustomId().equals("setupAutoRole"))
             return;
 
-        switch (event.getInteraction().getComponent().getId()) {
+        switch (event.getInteraction().getComponent().getCustomId()) {
             case "setupAutoRole" -> {
                 if (checkPerms(event.getMember(), event.getChannel())) {
                     return;
@@ -909,12 +921,22 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "rewards" ->
                             LanguageService.getByGuild(event.getGuild(), "label.rewards").subscribe(rewardLabel -> {
-                                TextInput blackJackWin = TextInput.create("re_rewards_BlackJackWin", LanguageService.getByGuild(event.getGuild(), "label.blackJackWin").block(), TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
-                                TextInput musicQuizWin = TextInput.create("re_rewards_MusicQuizWin", LanguageService.getByGuild(event.getGuild(), "label.musicQuizWin").block(), TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
-                                TextInput musicQuizFeature = TextInput.create("re_rewards_MusicQuizFeature", LanguageService.getByGuild(event.getGuild(), "label.musicQuizFeatureGuess").block(), TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
-                                TextInput musicQuizArtist = TextInput.create("re_rewards_MusicQuizArtist", LanguageService.getByGuild(event.getGuild(), "label.musicQuizArtistGuess").block(), TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
-                                TextInput musicQuizTitle = TextInput.create("re_rewards_MusicQuizTitle", LanguageService.getByGuild(event.getGuild(), "label.musicQuizTitleGuess").block(), TextInputStyle.SHORT).setRequired(true).setMinLength(1).build();
-                                Modal modal = Modal.create("re_rewards_modal", rewardLabel).addActionRow(blackJackWin).addActionRow(musicQuizWin).addActionRow(musicQuizFeature).addActionRow(musicQuizArtist).addActionRow(musicQuizTitle).build();
+                                Label blackJackWin = Label.of(LanguageService.getByGuild(event.getGuild(), "label.blackJackWin").block(),
+                                        TextInput.create("re_rewards_BlackJackWin", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build());
+
+                                Label musicQuizWin = Label.of(LanguageService.getByGuild(event.getGuild(), "label.musicQuizWin").block(),
+                                        TextInput.create("re_rewards_MusicQuizWin", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build());
+
+                                Label musicQuizFeature = Label.of(LanguageService.getByGuild(event.getGuild(), "label.musicQuizFeatureGuess").block(),
+                                        TextInput.create("re_rewards_MusicQuizFeature", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build());
+
+                                Label musicQuizArtist = Label.of(LanguageService.getByGuild(event.getGuild(), "label.musicQuizArtistGuess").block(),
+                                        TextInput.create("re_rewards_MusicQuizArtist", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build());
+
+                                Label musicQuizTitle = Label.of(LanguageService.getByGuild(event.getGuild(), "label.musicQuizTitleGuess").block(),
+                                        TextInput.create("re_rewards_MusicQuizTitle", TextInputStyle.SHORT).setRequired(true).setMinLength(1).build());
+
+                                Modal modal = Modal.create("re_rewards_modal", rewardLabel).addComponents(blackJackWin, musicQuizWin, musicQuizFeature, musicQuizArtist, musicQuizTitle).build();
                                 event.replyModal(modal).queue();
                             });
 
@@ -926,7 +948,12 @@ public class MenuEvents extends ListenerAdapter {
 
                                 embedBuilder.setDescription(description);
 
-                                event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupLangMenu", LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired").block(), 1, 1, false, optionList)).queue();
+                                event.editMessageEmbeds(embedBuilder.build())
+                                        .setComponents(ActionRow.of(StringSelectMenu.create("setupLangMenu")
+                                                .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired").block())
+                                                .addOptions(optionList)
+                                                .setMinValues(1)
+                                                .setMaxValues(1).build())).queue();
                             });
 
                     case "log" -> LanguageService.getByGuild(event.getGuild(), "label.setup").subscribe(label -> {
@@ -939,7 +966,12 @@ public class MenuEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.setup.steps.auditLog").block());
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupLogMenu", LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired").block(), 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build())
+                                .setComponents(ActionRow.of(StringSelectMenu.create("setupLogMenu")
+                                        .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired").block())
+                                        .addOptions(optionList)
+                                        .setMinValues(1)
+                                        .setMaxValues(1).build())).queue();
                     });
 
                     case "welcome" -> LanguageService.getByGuild(event.getGuild(), "label.setup").subscribe(label -> {
@@ -953,7 +985,12 @@ public class MenuEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.setup.steps.welcome").block());
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupWelcomeMenu", LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired").block(), 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build())
+                                .setComponents(ActionRow.of(StringSelectMenu.create("setupWelcomeMenu")
+                                        .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired").block())
+                                        .addOptions(optionList)
+                                        .setMinValues(1)
+                                        .setMaxValues(1).build())).queue();
                     });
 
                     case "autorole" ->
@@ -975,7 +1012,12 @@ public class MenuEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.setup.steps.temporalVoice").block());
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTempVoiceMenu", LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired").block(), 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build())
+                                .setComponents(ActionRow.of(StringSelectMenu.create("setupTempVoiceMenu")
+                                        .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired").block())
+                                        .addOptions(optionList)
+                                        .setMinValues(1)
+                                        .setMaxValues(1).build())).queue();
                     });
 
                     case "statistics" ->
@@ -991,7 +1033,12 @@ public class MenuEvents extends ListenerAdapter {
 
                                 embedBuilder.setDescription(description);
 
-                                event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupStatisticsMenu", LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired").block(), 1, 1, false, optionList)).queue();
+                                event.editMessageEmbeds(embedBuilder.build())
+                                        .setComponents(ActionRow.of(StringSelectMenu.create("setupStatisticsMenu")
+                                                .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired").block())
+                                                .addOptions(optionList)
+                                                .setMinValues(1)
+                                                .setMaxValues(1).build())).queue();
                             });
 
                     case "tickets" -> LanguageService.getByGuild(event.getGuild(), "label.setup").subscribe(label -> {
@@ -1003,7 +1050,12 @@ public class MenuEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.ticket.setup").block());
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTicketsMenu", LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired").block(), 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build())
+                                .setComponents(ActionRow.of(StringSelectMenu.create("setupTicketsMenu")
+                                        .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "message.default.actionRequired").block())
+                                        .addOptions(optionList)
+                                        .setMinValues(1)
+                                        .setMaxValues(1).build())).queue();
                     });
 
                     default ->
@@ -1097,45 +1149,45 @@ public class MenuEvents extends ListenerAdapter {
 
                     case "statisticsSetupTwitch" ->
                             LanguageService.getByGuild(event.getGuild(), "label.channelName").subscribe(label -> {
-                                TextInput input = TextInput.create("twitchChannelName", label, TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Twitch Channel name here!").build();
+                                Label input = Label.of(label, TextInput.create("twitchChannelName", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Twitch Channel name here!").build());
 
-                                Modal modal = Modal.create("statisticsSetupTwitchModal", LanguageService.getByGuild(event.getGuild(), "label.setupTwitchStatistics").block()).addActionRow(input).build();
+                                Modal modal = Modal.create("statisticsSetupTwitchModal", LanguageService.getByGuild(event.getGuild(), "label.setupTwitchStatistics").block()).addComponents(input).build();
 
                                 event.replyModal(modal).queue();
                             });
 
                     case "statisticsSetupYouTube" ->
                             LanguageService.getByGuild(event.getGuild(), "label.channelName").subscribe(label -> {
-                                TextInput input = TextInput.create("youtubeChannelName", label, TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the YouTube Channel name here!").build();
+                                Label input = Label.of(label, TextInput.create("youtubeChannelName", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the YouTube Channel name here!").build());
 
-                                Modal modal = Modal.create("statisticsSetupYouTubeModal", LanguageService.getByGuild(event.getGuild(), "label.setupYoutubeStatistics").block()).addActionRow(input).build();
+                                Modal modal = Modal.create("statisticsSetupYouTubeModal", LanguageService.getByGuild(event.getGuild(), "label.setupYoutubeStatistics").block()).addComponents(input).build();
 
                                 event.replyModal(modal).queue();
                             });
 
                     case "statisticsSetupReddit" ->
                             LanguageService.getByGuild(event.getGuild(), "label.subreddit").subscribe(label -> {
-                                TextInput input = TextInput.create("subredditName", label, TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Subreddit name here!").build();
+                                Label input = Label.of(label, TextInput.create("subredditName", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Subreddit name here!").build());
 
-                                Modal modal = Modal.create("statisticsSetupRedditModal", LanguageService.getByGuild(event.getGuild(), "label.setupRedditStatistics").block()).addActionRow(input).build();
+                                Modal modal = Modal.create("statisticsSetupRedditModal", LanguageService.getByGuild(event.getGuild(), "label.setupRedditStatistics").block()).addComponents(input).build();
 
                                 event.replyModal(modal).queue();
                             });
 
                     case "statisticsSetupTwitter" ->
                             LanguageService.getByGuild(event.getGuild(), "label.name").subscribe(label -> {
-                                TextInput input = TextInput.create("twitterName", label, TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Twitter name here!").build();
+                                Label input = Label.of(label, TextInput.create("twitterName", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Twitter name here!").build());
 
-                                Modal modal = Modal.create("statisticsSetupTwitterModal", LanguageService.getByGuild(event.getGuild(), "label.setupTwitterStatistics").block()).addActionRow(input).build();
+                                Modal modal = Modal.create("statisticsSetupTwitterModal", LanguageService.getByGuild(event.getGuild(), "label.setupTwitterStatistics").block()).addComponents(input).build();
 
                                 event.replyModal(modal).queue();
                             });
 
                     case "statisticsSetupInstagram" ->
                             LanguageService.getByGuild(event.getGuild(), "label.name").subscribe(label -> {
-                                TextInput input = TextInput.create("instagramName", label, TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Instagram name here!").build();
+                                Label input = Label.of(label, TextInput.create("instagramName", TextInputStyle.SHORT).setMinLength(1).setMaxLength(50).setRequired(true).setPlaceholder("Enter the Instagram name here!").build());
 
-                                Modal modal = Modal.create("statisticsSetupInstagramModal", LanguageService.getByGuild(event.getGuild(), "label.setupInstagramStatistics").block()).addActionRow(input).build();
+                                Modal modal = Modal.create("statisticsSetupInstagramModal", LanguageService.getByGuild(event.getGuild(), "label.setupInstagramStatistics").block()).addComponents(input).build();
 
                                 event.replyModal(modal).queue();
                             });
@@ -1210,7 +1262,12 @@ public class MenuEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription(description);
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTempVoicechannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block(), 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build())
+                                .setComponents(ActionRow.of(StringSelectMenu.create("setupTempVoicechannel")
+                                        .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block())
+                                        .addOptions(optionList)
+                                        .setMinValues(1)
+                                        .setMaxValues(1).build())).queue();
                     });
                     return;
                 }
@@ -1259,7 +1316,12 @@ public class MenuEvents extends ListenerAdapter {
 
                                 embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.temporalVoice.setupDescription").block());
 
-                                event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupTempVoicechannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block(), 1, 1, false, optionList)).queue();
+                                event.editMessageEmbeds(embedBuilder.build())
+                                        .setComponents(ActionRow.of(StringSelectMenu.create("setupTempVoicechannel")
+                                                .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block())
+                                                .addOptions(optionList)
+                                                .setMinValues(1)
+                                                .setMaxValues(1).build())).queue();
                             });
 
                     case "tempVoiceDelete" ->
@@ -1336,7 +1398,12 @@ public class MenuEvents extends ListenerAdapter {
 
                                 embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupDescription").block());
 
-                                event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupLogChannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block(), 1, 1, false, optionList)).queue();
+                                event.editMessageEmbeds(embedBuilder.build())
+                                        .setComponents(ActionRow.of(StringSelectMenu.create("setupLogChannel")
+                                                .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block())
+                                                .addOptions(optionList)
+                                                .setMinValues(1)
+                                                .setMaxValues(1).build())).queue();
                             });
 
                     case "logDelete" ->
@@ -1386,7 +1453,12 @@ public class MenuEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.auditLog.setupDescription").block());
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupLogChannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block(), 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build())
+                                .setComponents(ActionRow.of(StringSelectMenu.create("setupLogChannel")
+                                        .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block())
+                                        .addOptions(optionList)
+                                        .setMinValues(1)
+                                        .setMaxValues(1).build())).queue();
                     });
                     return;
                 }
@@ -1437,7 +1509,12 @@ public class MenuEvents extends ListenerAdapter {
 
                                 embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.setupDescription").block());
 
-                                event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupWelcomeChannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block(), 1, 1, false, optionList)).queue();
+                                event.editMessageEmbeds(embedBuilder.build())
+                                        .setComponents(ActionRow.of(StringSelectMenu.create("setupWelcomeChannel")
+                                                .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block())
+                                                .addOptions(optionList)
+                                                .setMinValues(1)
+                                                .setMaxValues(1).build())).queue();
                             });
 
                     case "welcomeImage" ->
@@ -1493,7 +1570,12 @@ public class MenuEvents extends ListenerAdapter {
 
                         embedBuilder.setDescription(LanguageService.getByGuild(event.getGuild(), "message.welcome.setupDescription").block());
 
-                        event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupWelcomeChannel", LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block(), 1, 1, false, optionList)).queue();
+                        event.editMessageEmbeds(embedBuilder.build())
+                                .setComponents(ActionRow.of(StringSelectMenu.create("setupWelcomeChannel")
+                                        .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "label.selectChannel").block())
+                                        .addOptions(optionList)
+                                        .setMinValues(1)
+                                        .setMaxValues(1).build())).queue();
                     });
                     return;
                 }
@@ -1554,7 +1636,12 @@ public class MenuEvents extends ListenerAdapter {
 
             embedBuilder.setDescription(description);
 
-            event.editMessageEmbeds(embedBuilder.build()).setActionRow(new StringSelectMenuImpl("setupActionMenu", LanguageService.getByGuild(event.getGuild(), "message.setup.setupMenuPlaceholder").block(), 1, 1, false, optionList)).queue();
+            event.editMessageEmbeds(embedBuilder.build())
+                    .setComponents(ActionRow.of(StringSelectMenu.create("setupActionMenu")
+                            .setPlaceholder(LanguageService.getByGuild(event.getGuild(), "message.setup.setupMenuPlaceholder").block())
+                            .addOptions(optionList)
+                            .setMinValues(1)
+                            .setMaxValues(1).build())).queue();
         });
     }
 

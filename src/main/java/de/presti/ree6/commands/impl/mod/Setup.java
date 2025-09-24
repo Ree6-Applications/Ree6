@@ -14,6 +14,11 @@ import de.presti.ree6.sql.util.SettingsManager;
 import de.presti.ree6.utils.others.GuildUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.SelectMenu;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -27,11 +32,8 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.internal.components.selections.StringSelectMenuImpl;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
-import net.dv8tion.jda.internal.interactions.component.StringSelectMenuImpl;
 import reactor.core.publisher.Mono;
 
 import java.awt.*;
@@ -104,14 +106,19 @@ public class Setup implements ICommand {
                     optionList.add(SelectOption.of(commandEvent.getResource("label.ticketSystem"), "tickets"));
                     optionList.add(SelectOption.of(commandEvent.getResource("label.rewards"), "rewards"));
 
-                    SelectMenu selectMenu = new StringSelectMenuImpl("setupActionMenu", commandEvent.getResource("message.setup.setupMenuPlaceholder"), 1, 1, false, optionList);
+                    StringSelectMenu selectMenu = StringSelectMenu.create("setupActionMenu")
+                            .addOptions(optionList)
+                            .setPlaceholder(commandEvent.getResource("message.setup.setupMenuPlaceholder"))
+                            .setMinValues(1)
+                            .setMaxValues(1)
+                            .build();
 
                     if (commandEvent.isSlashCommand()) {
                         commandEvent.getInteractionHook().sendMessageEmbeds(embedBuilder.build())
-                                .addActionRow(selectMenu).queue();
+                                .setComponents(ActionRow.of(selectMenu)).queue();
                     } else {
                         commandEvent.getChannel().sendMessageEmbeds(embedBuilder.build())
-                                .addActionRow(selectMenu).queue();
+                                .setComponents(ActionRow.of(selectMenu)).queue();
                     }
                 } else if (commandEvent.getSubcommand().equalsIgnoreCase("autorole")) {
                     createAutoRoleSetupSelectMenu(commandEvent.getGuild(), commandEvent.getInteractionHook()).subscribe(menu -> {
@@ -120,12 +127,10 @@ public class Setup implements ICommand {
 
                         if (commandEvent.isSlashCommand()) {
                             commandEvent.getInteractionHook().sendMessageEmbeds(embed)
-                                    .addActionRow(menu)
-                                    .addActionRow(webinterface).queue();
+                                    .setComponents(ActionRow.of(menu), ActionRow.of(webinterface)).queue();
                         } else {
                             commandEvent.getChannel().sendMessageEmbeds(embed)
-                                    .addActionRow(menu)
-                                    .addActionRow(webinterface).queue();
+                                    .setComponents(ActionRow.of(menu), ActionRow.of(webinterface)).queue();
                         }
                     });
                 }
@@ -293,9 +298,14 @@ public class Setup implements ICommand {
                 }
             });
 
-            return new StringSelectMenuImpl("setupAutoRole", LanguageService.getByGuildOrInteractionHook(guild, interactionHook,
-                    "message.autoRole.setupPlaceholder").block(),
-                    0, Math.min(10, Math.max(1, optionList.size())), optionList.isEmpty(), optionList);
+            return StringSelectMenu.create("setupAutoRole")
+                    .addOptions(optionList)
+                    .setPlaceholder(LanguageService.getByGuildOrInteractionHook(guild, interactionHook,
+                            "message.autoRole.setupPlaceholder").block())
+                    .setMinValues(0)
+                    .setMaxValues(Math.min(10, Math.max(1, optionList.size())))
+                    .setDisabled(optionList.isEmpty())
+                    .build();
         });
     }
 

@@ -9,13 +9,14 @@ import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.SQLSession;
 import de.presti.ree6.utils.data.RegExUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
@@ -66,7 +67,7 @@ public class Help implements ICommand {
         em.setFooter(commandEvent.getGuild().getName() + " - " + BotConfig.getAdvertisement(), commandEvent.getGuild().getIconUrl());
 
         messageCreateBuilder
-                .addActionRow(
+                .setComponents(ActionRow.of(
                         Button.of(ButtonStyle.LINK, BotConfig.getInvite(), commandEvent.getResource("label.invite"),
                                 Emoji.fromCustom("re_icon_invite", 1019234807844175945L, false)),
                         Button.of(ButtonStyle.LINK, BotConfig.getSupport(), commandEvent.getResource("label.support"),
@@ -75,7 +76,7 @@ public class Help implements ICommand {
                                 Emoji.fromCustom("re_icon_github", 492259724079792138L, false)),
                         Button.of(ButtonStyle.SECONDARY, "re_feedback", commandEvent.getResource("label.feedback"),
                                 Emoji.fromCustom("kiss", 1012765976951009361L, true))
-                );
+                ));
 
         if (categoryString == null) {
             SQLSession.getSqlConnector().getSqlWorker().getSetting(commandEvent.getGuild().getIdLong(), "chatprefix").subscribe(setting -> {

@@ -15,10 +15,11 @@ import de.presti.ree6.utils.data.ArrayUtil;
 import de.presti.ree6.utils.others.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 
@@ -101,12 +102,12 @@ public class MusicPanel implements ICommand {
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
 
-        messageCreateBuilder.addActionRow(Button.of(ButtonStyle.SECONDARY, "re_music_play", FormatUtil.PLAY_EMOJI),
+        messageCreateBuilder.setComponents(ActionRow.of(Button.of(ButtonStyle.SECONDARY, "re_music_play", FormatUtil.PLAY_EMOJI),
                         Button.of(ButtonStyle.SECONDARY, "re_music_pause", FormatUtil.PAUSE_EMOJI),
                         Button.of(ButtonStyle.SECONDARY, "re_music_skip", FormatUtil.PLAY_EMOJI + FormatUtil.PLAY_EMOJI),
                         Button.of(ButtonStyle.SECONDARY, "re_music_loop", FormatUtil.LOOP_EMOJI),
-                        Button.of(ButtonStyle.SECONDARY, "re_music_shuffle", FormatUtil.SHUFFLE_EMOJI))
-                .addActionRow(Button.success("re_music_add", commandEvent.getResource("label.queueAdd")));
+                        Button.of(ButtonStyle.SECONDARY, "re_music_shuffle", FormatUtil.SHUFFLE_EMOJI)),
+                ActionRow.of(Button.success("re_music_add", commandEvent.getResource("label.queueAdd"))));
 
         Message message;
 

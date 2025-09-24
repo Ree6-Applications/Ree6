@@ -269,8 +269,6 @@ public class CommandManager {
                     commandData1.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
                 }
 
-                commandData1.setGuildOnly(true);
-
                 //noinspection ResultOfMethodCallIgnored
                 listUpdateAction.addCommands(commandData1);
             } else {

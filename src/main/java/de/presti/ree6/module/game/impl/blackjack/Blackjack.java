@@ -14,9 +14,10 @@ import de.presti.ree6.module.game.impl.blackjack.entities.BlackJackPlayer;
 import de.presti.ree6.module.game.impl.blackjack.util.BlackJackCardUtility;
 import de.presti.ree6.sql.SQLSession;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 
@@ -87,8 +88,8 @@ public class Blackjack implements IGame {
         embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.blackJackGame.welcome", session.getGameIdentifier()).block());
 
         messageCreateBuilder.setEmbeds(embedBuilder.build());
-        messageCreateBuilder.setActionRow(Button.primary("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame").block()).asDisabled(),
-                Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame").block()).asEnabled());
+        messageCreateBuilder.setComponents(ActionRow.of(Button.primary("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame").block()).asDisabled(),
+                Button.secondary("game_join:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.joinGame").block()).asEnabled()));
         session.getChannel().sendMessage(messageCreateBuilder.build()).queue(message -> menuMessage = message);
     }
 
@@ -151,7 +152,7 @@ public class Blackjack implements IGame {
             EmbedBuilder embedBuilder = new EmbedBuilder(messageEditBuilder.getEmbeds().get(0));
             embedBuilder.setDescription(LanguageService.getByGuild(session.getGuild(), "message.gameCore.minimalReached").block());
             messageEditBuilder.setEmbeds(embedBuilder.build());
-            messageEditBuilder.setActionRow(Button.success("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame").block()).asEnabled());
+            messageEditBuilder.setComponents(ActionRow.of(Button.success("game_start:" + session.getGameIdentifier(), LanguageService.getByGuild(session.getGuild(), "label.startGame").block()).asEnabled()));
             menuMessage.editMessage(messageEditBuilder.build()).queue();
 
             messageEditBuilder.clear();
@@ -350,8 +351,8 @@ public class Blackjack implements IGame {
         messageEditBuilder.setEmbeds(currentPlayerEmbed.build());
 
         if (addButtons) {
-            messageEditBuilder.setActionRow(Button.primary("game_blackjack_hit", LanguageService.getByGuild(session.getGuild(), "label.hit").block()),
-                    Button.success("game_blackjack_stand", LanguageService.getByGuild(session.getGuild(), "label.stand").block()));
+            messageEditBuilder.setComponents(ActionRow.of(Button.primary("game_blackjack_hit", LanguageService.getByGuild(session.getGuild(), "label.hit").block()),
+                    Button.success("game_blackjack_stand", LanguageService.getByGuild(session.getGuild(), "label.stand").block())));
         }
 
         currentPlayer.getInteractionHook().editOriginal(messageEditBuilder.build()).queue();

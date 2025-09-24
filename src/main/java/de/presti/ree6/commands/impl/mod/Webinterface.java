@@ -4,9 +4,10 @@ import de.presti.ree6.commands.Category;
 import de.presti.ree6.commands.CommandEvent;
 import de.presti.ree6.commands.interfaces.Command;
 import de.presti.ree6.commands.interfaces.ICommand;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import de.presti.ree6.bot.BotConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 /**
@@ -21,7 +22,7 @@ public class Webinterface implements ICommand {
     @Override
     public void onPerform(CommandEvent commandEvent) {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
-        messageCreateBuilder.addActionRow(Button.link(BotConfig.getWebinterface(), commandEvent.getResource("label.webinterface")));
+        messageCreateBuilder.setComponents(ActionRow.of(Button.link(BotConfig.getWebinterface(), commandEvent.getResource("label.webinterface"))));
         commandEvent.reply(messageCreateBuilder.build());
     }
 
