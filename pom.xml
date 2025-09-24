@@ -53,7 +53,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>6.0.0-rc.5</version>
+            <version>6.0.0-preview_DEV</version>
         </dependency>
         <dependency>
             <groupId>dev.arbjerg</groupId>
