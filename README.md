@@ -10,7 +10,7 @@
 </div>
 
 > [!WARNING]
-> Support for this version will be dropped soon.<br>
+> Support for this version has been completely dropped.<br>
 > For yor own safety please use a newer branch.<be>
 
 # What is Ree6?
