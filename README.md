@@ -9,6 +9,10 @@
   [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=DxsSucuk_Ree6&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=DxsSucuk_Ree6) [![Crowdin](https://badges.crowdin.net/ree6/localized.svg)](https://crowdin.com/project/ree6) [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/ree6/bot)](https://hub.docker.com/repository/docker/ree6/bot/tags)
 </div>
 
+> [!WARNING]
+> Searching for maintaners!<br>
+> Updates are VERY slow (quarterly at best).<br>
+
 # What is Ree6?
 Ree6 is an all-in-one Discord Bot maintained by Presti, which started as an alternative of Mee6 to provide a lot of features that are hidden behind a paywall or subscription.
 
