@@ -80,4 +80,4 @@ and <a href="https://www.yourkit.com/youmonitor/">YourKit YouMonitor</a>.
 
 # Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Ree6-Applications/Ree6&type=Date)](https://star-history.com/#Ree6-Applications/Ree6&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=Ree6-Applications/Ree6&type=Date&sealed_token=oW5i-wkTT2R-HckpYX8556b2S60YJf8gilwhowtlB2bCIpcdFimsBn8o1h3qcL1jtbZZrdvw2zoruXpu1NdE9AAO1yo-dQ12XEwwqpzC5EgmmStNXJwzbT8kSddN5qa7gVblSIjq5tk68EL2N5t1PChF3JMyNNE12AsnKllGTrye51MjqagcdJWrR1wo)](https://star-history.com/#Ree6-Applications/Ree6&Date)
