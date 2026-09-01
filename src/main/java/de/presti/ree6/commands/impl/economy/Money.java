@@ -167,26 +167,26 @@ public class Money implements ICommand {
     public CommandData getCommandData() {
         return new CommandDataImpl("money", "command.description.money.default")
                 .addSubcommands(new SubcommandData("withdraw", "Withdraw your money from your bank into your pockets!")
-                                .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to withdraw.", true).setMinValue(0.01).setMaxValue(Double.MAX_VALUE)),
+                                .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to withdraw.", true).setMinValue(0.01).setMaxValue(999999999)),
                         new SubcommandData("deposit", "Deposit your money from your pockets into your bank!")
-                                .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to deposit", true).setMinValue(0.01).setMaxValue(Double.MAX_VALUE)),
+                                .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to deposit", true).setMinValue(0.01).setMaxValue(999999999)),
                         new SubcommandData("send", "Send money to another user!")
                                 .addOption(OptionType.USER, "user", "The user you want to send money to.", true)
-                                .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to pay.", true).setMinValue(0.01).setMaxValue(Double.MAX_VALUE)),
+                                .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to pay.", true).setMinValue(0.01).setMaxValue(999999999)),
                         new SubcommandData("balance", "Check a users balance!")
                                 .addOption(OptionType.USER, "user", "The user you want to check the balance of.", false))
                 .addSubcommandGroups(new SubcommandGroupData("admin", "command.description.money.admin")
                         .addSubcommands(new SubcommandData("add", "Add money to a user!")
                                         .addOption(OptionType.USER, "user", "The user you want to add money to.", true)
-                                        .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to set.", true).setMinValue(0).setMaxValue(Double.MAX_VALUE))
+                                        .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to set.", true).setMinValue(0).setMaxValue(999999999))
                                         .addOption(OptionType.BOOLEAN, "bank", "If the money should be set in the bank.", false),
                                 new SubcommandData("set", "Set the money of a user!")
                                         .addOption(OptionType.USER, "user", "The user you want to set the money of.", true)
-                                        .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to set.", true).setMinValue(0).setMaxValue(Double.MAX_VALUE))
+                                        .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to set.", true).setMinValue(0).setMaxValue(999999999))
                                         .addOption(OptionType.BOOLEAN, "bank", "If the money should be set in the bank.", false),
                                 new SubcommandData("remove", "Remove money from a user!")
                                         .addOption(OptionType.USER, "user", "The user you want to remove money from.", true)
-                                        .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to set.", true).setMinValue(0).setMaxValue(Double.MAX_VALUE))
+                                        .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of money you want to set.", true).setMinValue(0).setMaxValue(999999999))
                                         .addOption(OptionType.BOOLEAN, "bank", "If the money should be set in the bank.", false)));
     }
 
