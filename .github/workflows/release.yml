@@ -22,7 +22,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Set project version.
-        run: mvn versions:set -DnewVersion=${{ github.ref_name }}-$(git rev-parse --short HEAD)
+        run: mvn versions:set -DnewVersion=${{ github.ref_name }}
       - name: Build with Maven
         run: mvn -B package --file pom.xml -Dtag=${{ github.ref_name }} && mvn -B package --file Ree6-Installer/pom.xml
       - name: Copy Artifacts
