@@ -6,15 +6,17 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Utility class used to store Data for a shorter period of time.
  */
-@SuppressWarnings("Java8MapApi")
 public class ArrayUtil {
 
     /**
@@ -27,47 +29,69 @@ public class ArrayUtil {
     }
 
     /**
+     * How many recently seen messages are kept around for the message-delete log.
+     */
+    private static final int MESSAGE_CACHE_SIZE = 5_000;
+
+    /**
+     * Create a thread-safe, size-bounded LRU map.
+     *
+     * @param maxSize the maximum number of entries to retain.
+     * @param <K>     the key type.
+     * @param <V>     the value type.
+     * @return the bounded {@link Map}.
+     */
+    private static <K, V> Map<K, V> boundedMap(int maxSize) {
+        return Collections.synchronizedMap(new LinkedHashMap<>(16, 0.75f, true) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+                return size() > maxSize;
+            }
+        });
+    }
+
+    /**
      * HashMap used to store conversations between the user and the ChatGPT implementation.
      * These are being stored guild specific so Ree6 will not continue a conversation in another guild.
      * While at the same time we store them in memory to protect users' privacy, since there is no actual
      * reason for us to keep these longer than the current application uptime.
      */
-    public static final Map<String, List<com.lilittlecat.chatgpt.offical.entity.Message>> chatGPTMessages = new HashMap<>();
+    public static final Map<String, List<com.lilittlecat.chatgpt.offical.entity.Message>> chatGPTMessages = new ConcurrentHashMap<>();
 
     /**
-     * HashMap used to store message contents and their IDs, to show the content when the message gets deleted.
+     * Bounded cache used to store message contents and their IDs, to show the content when the message gets deleted.
      */
-    public static final Map<String, Message> messageIDwithMessage = new HashMap<>();
+    public static final Map<String, Message> messageIDwithMessage = boundedMap(MESSAGE_CACHE_SIZE);
 
     /**
-     * HashMap used to store user Ids that are associated with a message to show the content when the message gets deleted.
+     * Bounded cache used to store user Ids that are associated with a message to show the content when the message gets deleted.
      */
-    public static final Map<String, User> messageIDwithUser = new HashMap<>();
+    public static final Map<String, User> messageIDwithUser = boundedMap(MESSAGE_CACHE_SIZE);
 
     /**
      * HashMap used to store user Ids and their VC join time, to track VoiceXP.
      */
-    public static final Map<Member, Long> voiceJoined = new HashMap<>();
+    public static final Map<Member, Long> voiceJoined = new ConcurrentHashMap<>();
 
     /**
      * HashMap used to store Guild ID and the message of a music Panel.
      */
-    public static final Map<Long, Message> musicPanelList = new HashMap<>();
+    public static final Map<Long, Message> musicPanelList = new ConcurrentHashMap<>();
 
     /**
-     * HashMap used to store a user's Ids, to keep them from spamming commands.
+     * Set used to store a user's Ids, to keep them from spamming commands.
      */
-    public static final List<String> commandCooldown = new ArrayList<>();
+    public static final Set<String> commandCooldown = ConcurrentHashMap.newKeySet();
 
     /**
-     * HashMap used to store a user's Ids, to keep them from earning XP with every message.
+     * Map of member ID to the epoch millisecond at which their chat-XP timeout expires.
      */
-    public static final List<Member> timeout = new ArrayList<>();
+    private static final Map<Long, Long> timeout = new ConcurrentHashMap<>();
 
     /**
-     * an Arraylist containing every temporal Voice-channel Id.
+     * a List containing every temporal Voice-channel Id.
      */
-    public static final List<String> temporalVoicechannel = new ArrayList<>();
+    public static final List<String> temporalVoicechannel = new CopyOnWriteArrayList<>();
 
     /**
      * String Array used to store answer options, for later use by the 8Ball command.
@@ -75,6 +99,53 @@ public class ArrayUtil {
     public static final String[] answers = new String[]{"message.8ball.answers.1", "message.8ball.answers.2", "message.8ball.answers.3", "message.8ball.answers.4", "message.8ball.answers.5",
             "message.8ball.answers.6", "message.8ball.answers.7", "message.8ball.answers.8", "message.8ball.answers.9", "message.8ball.answers.10", "message.8ball.answers.11", "message.8ball.answers.12", "message.8ball.answers.13",
             "message.8ball.answers.14", "message.8ball.answers.15", "message.8ball.answers.16", "message.8ball.answers.17", "message.8ball.answers.18", "message.8ball.answers.19", "message.8ball.answers.20"};
+
+    /**
+     * Check if the given Member is currently under the chat-XP timeout.
+     *
+     * @param member the Member to check.
+     * @return true, if they may not earn XP right now.
+     */
+    public static boolean isTimedOut(Member member) {
+        Long until = timeout.get(member.getIdLong());
+
+        if (until == null) return false;
+
+        if (until <= System.currentTimeMillis()) {
+            timeout.remove(member.getIdLong(), until);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Put the given Member under the chat-XP timeout for the given amount of milliseconds.
+     *
+     * @param member   the Member to time out.
+     * @param duration how long the timeout should last, in milliseconds.
+     * @return true, if the timeout was newly applied.
+     */
+    public static boolean applyTimeout(Member member, long duration) {
+        long now = System.currentTimeMillis();
+        boolean[] applied = {false};
+
+        timeout.compute(member.getIdLong(), (key, existing) -> {
+            if (existing != null && existing > now) return existing;
+            applied[0] = true;
+            return now + duration;
+        });
+
+        return applied[0];
+    }
+
+    /**
+     * Drop every expired chat-XP timeout.
+     */
+    public static void cleanupTimeouts() {
+        long now = System.currentTimeMillis();
+        timeout.values().removeIf(until -> until <= now);
+    }
 
     /**
      * Get a String fully of random Number by the given length.
@@ -99,11 +170,7 @@ public class ArrayUtil {
      * @return the {@link User} that send the Message.
      */
     public static User getUserFromMessageList(String id) {
-        if (!messageIDwithUser.containsKey(id)) {
-            return null;
-        } else {
-            return messageIDwithUser.get(id);
-        }
+        return messageIDwithUser.get(id);
     }
 
     /**
@@ -113,11 +180,7 @@ public class ArrayUtil {
      * @return the {@link Message} Entity of the deleted Message.
      */
     public static Message getMessageFromMessageList(String id) {
-        if (!messageIDwithMessage.containsKey(id)) {
-            return null;
-        } else {
-            return messageIDwithMessage.get(id);
-        }
+        return messageIDwithMessage.get(id);
     }
 
     /**
@@ -127,11 +190,7 @@ public class ArrayUtil {
      * @return the {@link Message} Entity of the deleted Message.
      */
     public static Message getMessageFromMessageListAndRemove(String id) {
-        if (!messageIDwithMessage.containsKey(id)) {
-            return null;
-        } else {
-            return messageIDwithMessage.remove(id);
-        }
+        return messageIDwithMessage.remove(id);
     }
 
     /**

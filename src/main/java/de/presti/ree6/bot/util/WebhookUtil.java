@@ -1,7 +1,9 @@
 package de.presti.ree6.bot.util;
 
 import club.minnced.discord.webhook.WebhookClient;
+import club.minnced.discord.webhook.WebhookClientBuilder;
 import club.minnced.discord.webhook.send.WebhookMessage;
+import okhttp3.OkHttpClient;
 import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.module.logger.LogMessage;
@@ -15,6 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Class to handle Webhook sends.
@@ -29,6 +34,56 @@ public class WebhookUtil {
      */
     private WebhookUtil() {
         throw new IllegalStateException("Utility class");
+    }
+
+    /**
+     * Shared HTTP client for every Webhook send.
+     */
+    private static final OkHttpClient HTTP_CLIENT = new OkHttpClient();
+
+    /**
+     * Shared scheduler used by the Webhook clients to honour rate limits.
+     */
+    private static final ScheduledExecutorService WEBHOOK_SCHEDULER =
+            Executors.newScheduledThreadPool(2, runnable -> {
+                Thread thread = new Thread(runnable, "Ree6-Webhook");
+                thread.setDaemon(true);
+                return thread;
+            });
+
+    /**
+     * Cache of Webhook clients, keyed by Webhook id.
+     */
+    private static final Map<Long, WebhookClient> CLIENTS = new ConcurrentHashMap<>();
+
+    /**
+     * Get (or lazily create) the shared {@link WebhookClient} for the given Webhook.
+     *
+     * @param webhookId    the ID of the Webhook.
+     * @param webhookToken the Auth-Token of the Webhook.
+     * @return the {@link WebhookClient}.
+     */
+    private static WebhookClient getClient(long webhookId, String webhookToken) {
+        return CLIENTS.compute(webhookId, (id, existing) -> {
+            if (existing != null && !existing.isShutdown()) return existing;
+
+            return new WebhookClientBuilder(id, webhookToken)
+                    .setHttpClient(HTTP_CLIENT)
+                    .setExecutorService(WEBHOOK_SCHEDULER)
+                    .setDaemon(true)
+                    .setWait(false)
+                    .build();
+        });
+    }
+
+    /**
+     * Drop a cached Webhook client, e.g. once the Webhook turned out to be invalid.
+     *
+     * @param webhookId the ID of the Webhook.
+     */
+    private static void invalidateClient(long webhookId) {
+        WebhookClient client = CLIENTS.remove(webhookId);
+        if (client != null) client.close();
     }
 
     /**
@@ -90,7 +145,7 @@ public class WebhookUtil {
     public static void sendWebhook(LogMessage loggerMessage, WebhookMessage message, long webhookId, String webhookToken, WebhookTyp typ) {
         Main.getInstance().logAnalytic("Received a Webhook to send. (Log-Typ: {})", typ == WebhookTyp.LOG ? loggerMessage != null ? loggerMessage.getType().name() : "NONE-LOG" : "NONE-LOG");
         // Check if the given data is valid.
-        if (webhookToken.contains("Not setup!") || webhookId == 0) return;
+        if (webhookToken == null || webhookToken.contains("Not setup!") || webhookId == 0) return;
 
         // Check if the given data is in the Database.
         if (typ == WebhookTyp.LOG) {
@@ -116,11 +171,15 @@ public class WebhookUtil {
 
     private static void sendWebhookMessage(LogMessage loggerMessage, WebhookMessage message, long webhookId, String webhookToken, WebhookTyp typ) {
         // Try sending a Webhook to the given data.
-        try (WebhookClient wcl = WebhookClient.withId(webhookId, webhookToken)) {
+        try {
+            WebhookClient wcl = getClient(webhookId, webhookToken);
+
             // Send the message and handle exceptions.
             wcl.send(message).exceptionally(throwable -> {
+                String throwableMessage = throwable.getMessage() == null ? "" : throwable.getMessage();
+
                 // If error 404 comes, that means that the webhook is invalid.
-                if (throwable.getMessage().contains("failure 404")) {
+                if (throwableMessage.contains("failure 404")) {
                     // Inform and delete invalid webhook.
                     switch (typ) {
                         case LOG ->
@@ -129,84 +188,75 @@ public class WebhookUtil {
                         case WELCOME ->
                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookWelcome(), "FROM WebhookWelcome WHERE webhookId = :cid AND token = :token",
                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(x -> {
-                                    if (x.isPresent())
-                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(x.get());
+                                    x.ifPresent(webhookWelcome -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookWelcome).subscribe());
                                 });
 
                         case YOUTUBE ->
                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookYouTube(), "FROM WebhookYouTube WHERE webhookId = :cid AND token = :token",
                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(x -> {
-                                    if (x.isPresent())
-                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(x.get());
+                                    x.ifPresent(webhookYouTube -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookYouTube).subscribe());
                                 });
 
                         case TWITTER ->
                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookTwitter(), "FROM WebhookTwitter WHERE webhookId = :cid AND token = :token",
                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(x -> {
-                                    if (x.isPresent())
-                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(x.get());
+                                    x.ifPresent(webhookTwitter -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookTwitter).subscribe());
                                 });
 
                         case TWITCH ->
                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookTwitch(), "FROM WebhookTwitch WHERE webhookId = :cid AND token = :token",
                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(x -> {
-                                    if (x.isPresent())
-                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(x.get());
+                                    x.ifPresent(webhookTwitch -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookTwitch).subscribe());
                                 });
 
                         case REDDIT ->
                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookReddit(), "FROM WebhookReddit WHERE webhookId = :cid AND token = :token",
                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(x -> {
-                                    if (x.isPresent())
-                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(x.get());
+                                    x.ifPresent(webhookReddit -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookReddit).subscribe());
                                 });
 
                         case SPOTIFY ->
                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookSpotify(), "FROM WebhookSpotify WHERE webhookId = :cid AND token = :token",
                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(x -> {
-                                    if (x.isPresent())
-                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(x.get());
+                                    x.ifPresent(webhookSpotify -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookSpotify).subscribe());
                                 });
 
                         case TIKTOK ->
                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookTikTok(), "FROM WebhookTikTok WHERE webhookId = :cid AND token = :token",
                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(x -> {
-                                    if (x.isPresent())
-                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(x.get());
+                                    x.ifPresent(webhookTikTok -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookTikTok).subscribe());
                                 });
 
                         case INSTAGRAM ->
                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new WebhookInstagram(), "FROM WebhookInstagram WHERE webhookId = :cid AND token = :token",
                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(x -> {
-                                    if (x.isPresent())
-                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(x.get());
+                                    x.ifPresent(webhookInstagram -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(webhookInstagram).subscribe());
                                 });
 
                         case RSS ->
                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new RSSFeed(), "FROM RSSFeed WHERE webhookId = :cid AND token = :token",
                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(x -> {
-                                    if (x.isPresent())
-                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(x.get());
+                                    x.ifPresent(rssFeed -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(rssFeed).subscribe());
                                 });
 
                         case SCHEDULE ->
                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new ScheduledMessage(), "FROM ScheduledMessage WHERE webhookId = :cid AND token = :token",
                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(x -> {
-                                    if (x.isPresent())
-                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(x.get());
+                                    x.ifPresent(scheduledMessage -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(scheduledMessage).subscribe());
                                 });
 
                         case TICKET ->
                                 SQLSession.getSqlConnector().getSqlWorker().getEntity(new Tickets(), "FROM Tickets WHERE logChannelWebhookId = :cid AND logChannelWebhookToken = :token",
                                         Map.of("cid", String.valueOf(webhookId), "token", webhookToken)).subscribe(x -> {
-                                    if (x.isPresent())
-                                        SQLSession.getSqlConnector().getSqlWorker().deleteEntity(x.get());
+                                    x.ifPresent(tickets -> SQLSession.getSqlConnector().getSqlWorker().deleteEntity(tickets).subscribe());
                                 });
                     }
+                    invalidateClient(webhookId);
                     log.error("[Webhook] Deleted invalid Webhook: {} - {}", webhookId, webhookToken);
-                } else if (throwable.getMessage().contains("failure 400")) {
-                    // If 404 inform that the Message had an invalid Body.
-                    log.error("[Webhook] Invalid Body with LogTyp: {}", loggerMessage.getType().name());
+                } else if (throwableMessage.contains("failure 400")) {
+                    // loggerMessage is null for every non-LOG typ.
+                    log.error("[Webhook] Invalid Body with LogTyp: {}",
+                            loggerMessage != null ? loggerMessage.getType().name() : typ.name());
                 }
                 return null;
             });

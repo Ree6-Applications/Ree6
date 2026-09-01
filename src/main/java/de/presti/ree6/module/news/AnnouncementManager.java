@@ -4,8 +4,9 @@ import de.presti.ree6.bot.BotConfig;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Announcement Manager used to store and manage announcements.
@@ -29,7 +30,7 @@ public class AnnouncementManager {
      * HashMap used to store guild ids and their received announcements.
      */
     @Getter
-    private static final HashMap<Long, List<String>> receivedAnnouncements = new HashMap<>();
+    private static final Map<Long, List<String>> receivedAnnouncements = new ConcurrentHashMap<>();
 
     /**
      * Method used to add an announcement to the list.

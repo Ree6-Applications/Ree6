@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Utility class to contain every Invite and manage the Invites in our Database.
@@ -28,7 +29,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
         load();
     }
 
-    private final ArrayList<InviteContainer> invites = new ArrayList<>();
+    private final List<InviteContainer> invites = new CopyOnWriteArrayList<>();
 
     /**
      * Get every InviteContainer of a Guild.
@@ -138,7 +139,7 @@ public class InviteContainerManager implements IManager<InviteContainer> {
             try {
                 VanityInvite vanityInvite = guild.retrieveVanityInvite().complete();
                 return new InviteImpl(null, vanityInvite.getCode(), true, Objects.requireNonNullElse(guild.getOwner(), guild.getSelfMember()).getUser(), 0, -1242525,
-                        true, OffsetDateTime.now(), vanityInvite.getUses(), null, new InviteImpl.GuildImpl(guild), null, null, Invite.InviteType.UNKNOWN);
+                        true, false, OffsetDateTime.now(), vanityInvite.getUses(), null, new InviteImpl.GuildImpl(guild), null, null, Invite.InviteType.UNKNOWN);
             } catch (Exception ex) {
                 log.error("[InviteManager] Error while retrieving Vanity Invite: " + ex.getMessage());
             }

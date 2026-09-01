@@ -13,6 +13,8 @@ import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class to manage Games.
@@ -32,13 +34,13 @@ public class GameManager {
      * The Key is the Name of the Game.
      */
     @Getter
-    private static final HashMap<String, Class<? extends IGame>> gameCache = new HashMap<>();
+    private static final Map<String, Class<? extends IGame>> gameCache = new ConcurrentHashMap<>();
 
     /**
      * A HashMap used to cache the GameSessions.
      * The Key is the ID of the Channel.
      */
-    private static final HashMap<String, GameSession> gameSessions = new HashMap<>();
+    private static final Map<String, GameSession> gameSessions = new ConcurrentHashMap<>();
 
     /**
      * Should be called to load all Games into the cache.

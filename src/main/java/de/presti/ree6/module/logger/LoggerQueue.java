@@ -16,8 +16,9 @@ import net.dv8tion.jda.api.Permission;
 import java.awt.*;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Internal LoggingQueue, created to merge LoggingMessages to prevent
@@ -28,7 +29,7 @@ public class LoggerQueue {
     /**
      * A List of every Log-Message.
      */
-    final ArrayList<LogMessage> logs = new ArrayList<>();
+    final List<LogMessage> logs = new CopyOnWriteArrayList<>();
 
     /**
      * Add a Logging Message into the List.
@@ -36,6 +37,10 @@ public class LoggerQueue {
      * @param loggerMessage the logging message.
      */
     public void add(LogMessage loggerMessage) {
+        if (loggerMessage.getGuild() == null) return;
+
+        if (loggerMessage instanceof LogMessageUser logMessageUser && logMessageUser.getUser() == null) return;
+
         if (!logs.contains(loggerMessage)) {
             logs.add(loggerMessage);
 
@@ -48,12 +53,6 @@ public class LoggerQueue {
 
             // For later to check if it has been modified or not.
             boolean modified = false;
-
-            // Stop if the Guild is null.
-            if (loggerMessage.getGuild() == null) return;
-
-            // Ignore if it is a Log Message related to a User but the User is null.
-            if (loggerMessage instanceof LogMessageUser logMessageUser && logMessageUser.getUser() == null) return;
 
             // Check if it's a VoiceChannel Join log.
             if (loggerMessage.getType() == LogTyp.VC_JOIN && loggerMessage instanceof LogMessageVoice logMessageVoice) {
@@ -466,16 +465,16 @@ public class LoggerQueue {
                 loggerMessage.setWebhookMessage(webhookMessageBuilder.build());
             }
 
-            // Create a new Thread for Log-Message to send.
-            ThreadUtil.createThread(x -> {
-                // If not canceled, send it.
-                if (!loggerMessage.isCanceled()) {
-                    WebhookUtil.sendWebhook(loggerMessage, loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode(), WebhookUtil.WebhookTyp.LOG);
+            ThreadUtil.schedule(() -> {
+                try {
+                    // If not canceled, send it.
+                    if (!loggerMessage.isCanceled()) {
+                        WebhookUtil.sendWebhook(loggerMessage, loggerMessage.getWebhookMessage(), loggerMessage.getId(), loggerMessage.getAuthCode(), WebhookUtil.WebhookTyp.LOG);
+                    }
+                } finally {
+                    logs.remove(loggerMessage);
                 }
-
-                // Remove it from the list.
-                logs.remove(loggerMessage);
-            }, null, Duration.ofSeconds(10), false, false);
+            }, Duration.ofSeconds(10));
         }
     }
 }

@@ -5,6 +5,7 @@ import de.presti.ree6.bot.BotWorker;
 import de.presti.ree6.main.Main;
 import de.presti.ree6.sql.entities.UserRankCard;
 import de.presti.ree6.sql.entities.level.UserLevel;
+import de.presti.ree6.utils.external.RequestUtility;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.User;
 
@@ -19,7 +20,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -41,10 +44,21 @@ public class ImageCreationUtility {
     private static BufferedImage rankBackgroundBase;
 
     /**
+     * How many rendered join backgrounds to keep around.
+     */
+    private static final int JOIN_BACKGROUND_CACHE_SIZE = 25;
+
+    /**
      * Cached Background Image, for performance.
      * Key is the hash of the Image and the value is the already created Image.
      */
-    private static final HashMap<String, BufferedImage> joinBackgroundBase = new HashMap<>();
+    private static final Map<String, BufferedImage> joinBackgroundBase =
+            Collections.synchronizedMap(new LinkedHashMap<>(16, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<String, BufferedImage> eldest) {
+                    return size() > JOIN_BACKGROUND_CACHE_SIZE;
+                }
+            });
 
     /**
      * Generate a Rank Image with Java native Graphics2D.
@@ -173,7 +187,7 @@ public class ImageCreationUtility {
         // Draw The current Experience and needed Experience for the next Level.
         graphics2D.setColor(BotConfig.getRankDetailColor());
         graphics2D.setFont(verdana40);
-        graphics2D.drawString(formattedExperience, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + formattedMaxExperience)) - 5 - graphics2D.getFontMetrics().stringWidth(formattedExperience + ""), 675);
+        graphics2D.drawString(formattedExperience, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + formattedMaxExperience)) - 5 - graphics2D.getFontMetrics().stringWidth(formattedExperience), 675);
         graphics2D.setColor(BotConfig.getRankDetailColor().darker());
         graphics2D.drawString("/" + formattedMaxExperience, (base.getWidth() - 800) - (graphics2D.getFontMetrics().stringWidth("/" + formattedMaxExperience)), 675);
 
@@ -346,7 +360,7 @@ public class ImageCreationUtility {
         BufferedImage userImage;
 
         // Generated a Circle Image with the Avatar of the User.
-        userImage = resize(ImageIO.read(new URL(user.getEffectiveAvatarUrl())), 128, 128);
+        userImage = resize(readRemoteImage(new URL(user.getEffectiveAvatarUrl())), 128, 128);
 
         // Create a new Graphics2D instance from the base.
         Graphics2D graphics2D = base.createGraphics();
@@ -379,6 +393,22 @@ public class ImageCreationUtility {
     }
 
     /**
+     * Read an image from a remote URL. Goes through {@link RequestUtility} so the request is subject
+     * to its timeouts, unlike {@code ImageIO.read(URL)}.
+     *
+     * @param url the URL to read from.
+     * @return the {@link BufferedImage}, or null if it could not be fetched or decoded.
+     * @throws IOException if the image could not be decoded.
+     */
+    public static BufferedImage readRemoteImage(URL url) throws IOException {
+        byte[] data = RequestUtility.requestBytes(RequestUtility.Request.builder().url(url.toString()).build());
+
+        if (data.length == 0) return null;
+
+        return ImageIO.read(new ByteArrayInputStream(data));
+    }
+
+    /**
      * Generated a Circle Shaped Version of the given Image.
      *
      * @param url the URL to the Image.
@@ -391,7 +421,7 @@ public class ImageCreationUtility {
 
         Main.getInstance().logAnalytic("Started User Image creation.");
 
-        BufferedImage mainImage = resize(ImageIO.read(url), 250, 250);
+        BufferedImage mainImage = resize(readRemoteImage(url), 250, 250);
 
         if (mainImage == null) return null;
 

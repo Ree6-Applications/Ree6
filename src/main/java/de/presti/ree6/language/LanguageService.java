@@ -25,10 +25,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Utility used to work with Languages.
@@ -39,7 +39,7 @@ public class LanguageService {
     /**
      * A Hashmap containing the locale as a key and the YamlConfiguration as value.
      */
-    public static final HashMap<DiscordLocale, Language> languageResources = new HashMap<>();
+    public static final Map<DiscordLocale, Language> languageResources = new ConcurrentHashMap<>();
 
     /**
      * Called to load every Language file into memory.
@@ -251,10 +251,17 @@ public class LanguageService {
         }
 
         return SQLSession.getSqlConnector().getSqlWorker().getSetting(guildId, "configuration_language")
-                .mapNotNull(setting -> getByLocale(setting.get().getStringValue(), key, parameter).block())
-                .mapNotNull(resource -> SQLSession.getSqlConnector().getSqlWorker().getSetting(guildId, "chatprefix").
-                        map(prefix -> resource.replace("{guild_prefix}", prefix.orElse(new Setting(-1, "chatprefix", "chatprefix", BotConfig.getDefaultPrefix()))
-                                .getStringValue())).block());
+                .flatMap(setting -> setting
+                        .map(value -> getByLocale(value.getStringValue(), key, parameter))
+                        .orElseGet(() -> getDefault(key, parameter)))
+                .flatMap(resource -> {
+                    if (!resource.contains("{guild_prefix}")) return Mono.just(resource);
+
+                    return SQLSession.getSqlConnector().getSqlWorker().getSetting(guildId, "chatprefix")
+                            .map(prefix -> resource.replace("{guild_prefix}",
+                                    prefix.orElse(new Setting(-1, "chatprefix", "chatprefix", BotConfig.getDefaultPrefix()))
+                                            .getStringValue()));
+                });
     }
 
     /**
@@ -270,14 +277,12 @@ public class LanguageService {
             return getByLocale(interaction.getUserLocale(), key, parameter);
         }
 
-        return getByLocale(interaction.getUserLocale(), key, parameter).mapNotNull(resource -> {
-            if (resource.contains("{guild_prefix}")) {
-                return SQLSession.getSqlConnector().getSqlWorker().getSetting(interaction.getGuild().getIdLong(), "chatprefix")
-                        .map(prefix -> resource.replace("{guild_prefix}", prefix.orElse(new Setting(-1, "chatprefix", "chatprefix", BotConfig.getDefaultPrefix()))
-                                .getStringValue())).block();
-            }
+        return getByLocale(interaction.getUserLocale(), key, parameter).flatMap(resource -> {
+            if (!resource.contains("{guild_prefix}")) return Mono.just(resource);
 
-            return resource;
+            return SQLSession.getSqlConnector().getSqlWorker().getSetting(interaction.getGuild().getIdLong(), "chatprefix")
+                    .map(prefix -> resource.replace("{guild_prefix}", prefix.orElse(new Setting(-1, "chatprefix", "chatprefix", BotConfig.getDefaultPrefix()))
+                            .getStringValue()));
         });
     }
 
@@ -313,14 +318,26 @@ public class LanguageService {
      * @return The String.
      */
     public static @NotNull Mono<String> getByLocale(@NotNull DiscordLocale discordLocale, @NotNull String key, @Nullable Object... parameters) {
-        return Mono.fromFuture(CompletableFuture.supplyAsync(() -> {
-            if (discordLocale == DiscordLocale.UNKNOWN) return getDefault(key, parameters).block();
+        return Mono.fromSupplier(() -> resolve(discordLocale, key, parameters));
+    }
 
-            Language language = languageResources.containsKey(discordLocale) ? languageResources.get(discordLocale) :
-                    languageResources.get(DiscordLocale.from(BotConfig.getDefaultLanguage()));
+    /**
+     * Resolve a language key against the in-memory language resources.
+     *
+     * @param discordLocale The locale of the Language file.
+     * @param key           The key of the String.
+     * @param parameters    The Parameters to replace placeholders in the String.
+     * @return The resolved String.
+     */
+    private static @NotNull String resolve(@NotNull DiscordLocale discordLocale, @NotNull String key, @Nullable Object... parameters) {
+        DiscordLocale locale = discordLocale == DiscordLocale.UNKNOWN
+                ? DiscordLocale.from(BotConfig.getDefaultLanguage())
+                : discordLocale;
 
-            return language != null ? language.getResource(key, parameters) : "Missing language resource!";
-        }));
+        Language language = languageResources.containsKey(locale) ? languageResources.get(locale) :
+                languageResources.get(DiscordLocale.from(BotConfig.getDefaultLanguage()));
+
+        return language != null ? language.getResource(key, parameters) : "Missing language resource!";
     }
 
     /**
@@ -331,11 +348,9 @@ public class LanguageService {
      * @return true, if the key is translated.
      */
     public static @NotNull Mono<Boolean> hasTranslation(@NotNull DiscordLocale discordLocale, @NotNull String key) {
-        return Mono.fromFuture(CompletableFuture.supplyAsync(() -> {
-            if (discordLocale == DiscordLocale.UNKNOWN) return false;
-
-            return languageResources.containsKey(discordLocale) && languageResources.get(discordLocale).resources.containsKey(key);
-        }));
+        return Mono.fromSupplier(() -> discordLocale != DiscordLocale.UNKNOWN
+                && languageResources.containsKey(discordLocale)
+                && languageResources.get(discordLocale).resources.containsKey(key));
     }
 
     /**

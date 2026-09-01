@@ -14,6 +14,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -25,9 +26,22 @@ import java.util.Scanner;
 public class RequestUtility {
 
     /**
+     * How long to wait for a connection to be established.
+     */
+    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
+
+    /**
+     * How long to wait for a whole Request to complete.
+     */
+    private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(30);
+
+    /**
      * HTTP Client used to send the Requests.
      */
-    private static final HttpClient CLIENT = HttpClient.newHttpClient();
+    private static final HttpClient CLIENT = HttpClient.newBuilder()
+            .connectTimeout(CONNECT_TIMEOUT)
+            .followRedirects(HttpClient.Redirect.NORMAL)
+            .build();
 
     /**
      * User-Agent for all the Requests.
@@ -44,6 +58,7 @@ public class RequestUtility {
 
         HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder()
                 .uri(request.getUri())
+                .timeout(REQUEST_TIMEOUT)
                 .header("User-Agent", USER_AGENT);
 
         if (request.getHeaders().isEmpty()) {
@@ -85,6 +100,9 @@ public class RequestUtility {
                 return httpResponse.body();
             }
 
+            try (InputStream ignored = httpResponse.body()) {
+                log.debug("Request to {} returned {}.", request.getUrl(), httpResponse.statusCode());
+            }
         } catch (Exception ex) {
             log.error("Couldn't send a Request!", ex);
         }

@@ -10,10 +10,10 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A Utility class used to create StreamActionContainers.
@@ -23,7 +23,7 @@ public class StreamActionContainerCreator {
     /**
      * A Cache for all StreamActions.
      */
-    private static final HashMap<String, Class<? extends IStreamAction>> cachedActions = new HashMap<>();
+    private static final Map<String, Class<? extends IStreamAction>> cachedActions = new ConcurrentHashMap<>();
 
     /**
      * Constructor should not be called, since it is a utility class that doesn't need an instance.

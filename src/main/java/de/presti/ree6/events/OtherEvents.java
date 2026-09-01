@@ -58,6 +58,8 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,6 +71,16 @@ import java.util.stream.IntStream;
  */
 @Slf4j
 public class OtherEvents extends ListenerAdapter {
+
+    /**
+     * How long a Member may not earn chat XP again after having earned some.
+     */
+    private static final Duration XP_TIMEOUT = Duration.ofSeconds(30);
+
+    /**
+     * Upper bound on how many messages a ticket transcript will contain.
+     */
+    private static final int TRANSCRIPT_MESSAGE_LIMIT = 1_000;
 
     /**
      * @inheritDoc
@@ -88,7 +100,10 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
-        SQLSession.getSqlConnector().getSqlWorker().createCommandSettings(event.getGuild().getIdLong());
+        long guildId = event.getGuild().getIdLong();
+        Mono.fromRunnable(() -> SQLSession.getSqlConnector().getSqlWorker().createCommandSettings(guildId))
+                .subscribeOn(Schedulers.boundedElastic())
+                .subscribe(null, throwable -> log.error("Failed to create the command settings for {}!", guildId, throwable));
     }
 
     /**
@@ -96,7 +111,10 @@ public class OtherEvents extends ListenerAdapter {
      */
     @Override
     public void onGuildLeave(@Nonnull GuildLeaveEvent event) {
-        SQLSession.getSqlConnector().getSqlWorker().deleteAllData(event.getGuild().getIdLong());
+        long guildId = event.getGuild().getIdLong();
+        Mono.fromRunnable(() -> SQLSession.getSqlConnector().getSqlWorker().deleteAllData(guildId))
+                .subscribeOn(Schedulers.boundedElastic())
+                .subscribe(null, throwable -> log.error("Failed to delete the data of {}!", guildId, throwable));
     }
 
     /**
@@ -231,13 +249,22 @@ public class OtherEvents extends ListenerAdapter {
                             webhookEmbedBuilder.setColor(BotConfig.getMainColor().getRGB());
 
                             webhookMessageBuilder.addEmbeds(webhookEmbedBuilder.build());
-                            webhookMessageBuilder.addFile(event.getGuild().getId() + "_" + ticketsEntity.getTicketCount() + "_transcript.html",
-                                    TranscriptUtil.generateTranscript(event.getJDA(), channel.getIterableHistory().reverse().stream().toList(),
-                                            channel.getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " "),
-                                            ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " ")).getBytes(StandardCharsets.UTF_8));
 
-                            WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), ticketsEntity.getLogChannelId(), ticketsEntity.getLogChannelWebhookToken(), WebhookUtil.WebhookTyp.TICKET);
-                            channel.delete().queue();
+                            channel.getIterableHistory().takeAsync(TRANSCRIPT_MESSAGE_LIMIT).thenAccept(history -> {
+                                List<Message> messages = new ArrayList<>(history);
+                                Collections.reverse(messages);
+
+                                webhookMessageBuilder.addFile(event.getGuild().getId() + "_" + ticketsEntity.getTicketCount() + "_transcript.html",
+                                        TranscriptUtil.generateTranscript(event.getJDA(), messages,
+                                                channel.getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " "),
+                                                ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)).replace("T", " ")).getBytes(StandardCharsets.UTF_8));
+
+                                WebhookUtil.sendWebhook(null, webhookMessageBuilder.build(), ticketsEntity.getLogChannelId(), ticketsEntity.getLogChannelWebhookToken(), WebhookUtil.WebhookTyp.TICKET);
+                                channel.delete().queue();
+                            }).exceptionally(throwable -> {
+                                log.error("Failed to build the ticket transcript for {}!", channel.getId(), throwable);
+                                return null;
+                            });
                         }
                     }
                 }
@@ -482,24 +509,21 @@ public class OtherEvents extends ListenerAdapter {
                     }
 
                     if (BotConfig.isModuleActive("level")) {
-                        if (!ArrayUtil.timeout.contains(event.getMember())) {
+                       if (ArrayUtil.applyTimeout(event.getMember(), XP_TIMEOUT.toMillis())) {
 
                             SQLSession.getSqlConnector().getSqlWorker().getChatLevelData(event.getGuild().getIdLong(), event.getMember().getIdLong()).subscribe(userLevel -> {
                                 if (userLevel.addExperience(RandomUtils.random.nextInt(15, 26))) {
                                     SQLSession.getSqlConnector().getSqlWorker().getSetting(event.getGuild().getIdLong(), "level_message").subscribe(z -> {
                                         if (z.isPresent() && z.get().getBooleanValue()) {
-                                            Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(),
-                                                    "message.levelUp", userLevel.getLevel(), LanguageService.getByGuild(event.getGuild(), "label.chat")
-                                                    , event.getMember().getAsMention()), event.getChannel());
+                                            LanguageService.getByGuild(event.getGuild(), "label.chat").subscribe(chatLabel ->
+                                                    Main.getInstance().getCommandManager().sendMessage(LanguageService.getByGuild(event.getGuild(),
+                                                            "message.levelUp", userLevel.getLevel(), chatLabel,
+                                                            event.getMember().getAsMention()), event.getChannel()));
                                         }
                                     });
                                 }
 
                                 SQLSession.getSqlConnector().getSqlWorker().addChatLevelData(event.getGuild().getIdLong(), userLevel);
-
-                                ArrayUtil.timeout.add(event.getMember());
-
-                                ThreadUtil.createThread(y -> ArrayUtil.timeout.remove(event.getMember()), Duration.ofSeconds(30), false, false);
                             });
                         }
 

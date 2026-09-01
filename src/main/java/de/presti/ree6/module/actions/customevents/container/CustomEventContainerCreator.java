@@ -10,10 +10,10 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A Utility class used to create CustomEventContainers.
@@ -23,7 +23,7 @@ public class CustomEventContainerCreator {
     /**
      * A Cache for all StreamActions.
      */
-    private static final HashMap<String, Class<? extends IEventAction>> cachedActions = new HashMap<>();
+    private static final Map<String, Class<? extends IEventAction>> cachedActions = new ConcurrentHashMap<>();
 
     /**
      * Constructor should not be called, since it is a utility class that doesn't need an instance.

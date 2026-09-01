@@ -482,6 +482,10 @@ public class Main {
         BotWorker.shutdown();
         log.info("[Main] JDA Instance has been shut down!");
 
+        log.info("[Main] Stopping worker Threads!");
+        ThreadUtil.shutdown();
+        log.info("[Main] Worker Threads stopped!");
+
         // Inform of how long it took.
         log.info("[Main] Everything has been shut down in {}ms!", System.currentTimeMillis() - start);
         log.info("[Main] Good bye!");
@@ -769,6 +773,8 @@ public class Main {
 
                         if (!Main.getInstance().getNotifier().getTwitchSubscription().containsKey(credential.getUserId())) {
                             PubSubSubscription[] subscriptions = new PubSubSubscription[3];
+
+                            // Need to figure out a solution for this, since this wont work in the future.
                             subscriptions[0] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForChannelPointsRedemptionEvents(originalCredential, twitchIntegrations.getChannelId());
                             subscriptions[1] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForSubscriptionEvents(originalCredential, twitchIntegrations.getChannelId());
                             subscriptions[2] = Main.getInstance().getNotifier().getTwitchClient().getPubSub().listenForFollowingEvents(originalCredential, twitchIntegrations.getChannelId());
@@ -784,24 +790,38 @@ public class Main {
             //endregion
 
             //region Fallback Temporal Voice check.
-            ArrayUtil.temporalVoicechannel.forEach(vc -> {
-                VoiceChannel voiceChannel = BotWorker.getShardManager().getVoiceChannelById(vc);
-                if (voiceChannel == null) {
-                    ArrayUtil.temporalVoicechannel.remove(vc);
-                } else {
-                    if (voiceChannel.getMembers().isEmpty()) {
-                        voiceChannel.delete().queue();
+            try {
+                ArrayUtil.temporalVoicechannel.forEach(vc -> {
+                    VoiceChannel voiceChannel = BotWorker.getShardManager().getVoiceChannelById(vc);
+                    if (voiceChannel == null) {
                         ArrayUtil.temporalVoicechannel.remove(vc);
                     } else {
-                        if (voiceChannel.getMembers().size() == 1) {
-                            if (voiceChannel.getMembers().get(0).getUser().isBot()) {
-                                voiceChannel.delete().queue();
-                                ArrayUtil.temporalVoicechannel.remove(vc);
+                        if (voiceChannel.getMembers().isEmpty()) {
+                            voiceChannel.delete().queue();
+                            ArrayUtil.temporalVoicechannel.remove(vc);
+                        } else {
+                            if (voiceChannel.getMembers().size() == 1) {
+                                if (voiceChannel.getMembers().get(0).getUser().isBot()) {
+                                    voiceChannel.delete().queue();
+                                    ArrayUtil.temporalVoicechannel.remove(vc);
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
+            } catch (Exception exception) {
+                log.error("Failed to run the temporal voice check!", exception);
+                Sentry.captureException(exception);
+            }
+            //endregion
+
+            //region Cleanup
+            try {
+                ArrayUtil.cleanupTimeouts();
+            } catch (Exception exception) {
+                log.error("Failed to clean up the chat XP timeouts!", exception);
+                Sentry.captureException(exception);
+            }
             //endregion
 
         }, null, Duration.ofMinutes(1), true, false);

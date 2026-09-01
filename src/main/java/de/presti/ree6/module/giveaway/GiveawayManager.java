@@ -8,9 +8,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Manager for the Giveaways.
@@ -27,7 +27,7 @@ public class GiveawayManager implements IManager<Giveaway> {
     /**
      * The List of Giveaways.
      */
-    private final List<Giveaway> giveaways = new ArrayList<>();
+    private final List<Giveaway> giveaways = new CopyOnWriteArrayList<>();
 
     /**
      * @inheritDoc

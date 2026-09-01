@@ -15,7 +15,8 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Steal money from other users.
@@ -26,7 +27,7 @@ public class Steal implements ICommand {
     /**
      * List of every User that is on cooldown.
      */
-    ArrayList<String> stealTimeout = new ArrayList<>();
+    Set<String> stealTimeout = ConcurrentHashMap.newKeySet();
 
     /**
      * @inheritDoc

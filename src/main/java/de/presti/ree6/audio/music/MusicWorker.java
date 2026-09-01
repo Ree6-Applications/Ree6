@@ -41,9 +41,9 @@ import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 
 /**
@@ -66,7 +66,7 @@ public class MusicWorker {
      * The constructor of the Music-worker.
      */
     public MusicWorker() {
-        musicManagers = new HashMap<>();
+        musicManagers = new ConcurrentHashMap<>();
         playerManager = BotConfig.shouldUseLavaLink() ? Main.getInstance().getLavalink().getAudioPlayerManager() : new DefaultAudioPlayerManager();
 
         // Register AudioSources if music module is active.

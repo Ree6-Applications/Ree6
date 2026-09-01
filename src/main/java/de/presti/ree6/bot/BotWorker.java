@@ -18,7 +18,10 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import java.awt.*;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Class to store information about the bot.
@@ -127,6 +130,40 @@ public class BotWorker {
     }
 
     /**
+     * Size of the pool that dispatches JDA events.
+     *
+     * @return the number of Threads to use.
+     */
+    private static int eventPoolSize() {
+        return Math.max(8, Runtime.getRuntime().availableProcessors() * 4);
+    }
+
+    /**
+     * Size of the pool that runs JDA RestAction callbacks.
+     *
+     * @return the number of Threads to use.
+     */
+    private static int callbackPoolSize() {
+        return Math.max(4, Runtime.getRuntime().availableProcessors() * 2);
+    }
+
+    /**
+     * Create a named daemon Thread-pool.
+     *
+     * @param name the name prefix of the created Threads.
+     * @param size the number of Threads.
+     * @return the {@link ExecutorService}.
+     */
+    private static ExecutorService createPool(String name, int size) {
+        AtomicInteger counter = new AtomicInteger();
+        return Executors.newFixedThreadPool(size, runnable -> {
+            Thread thread = new Thread(runnable, name + "-" + counter.incrementAndGet());
+            thread.setDaemon(true);
+            return thread;
+        });
+    }
+
+    /**
      * Create a new {@link net.dv8tion.jda.api.sharding.ShardManager} instance and set the rest information for later use.
      *
      * @param version1    the current Bot Version "typ".
@@ -148,7 +185,10 @@ public class BotWorker {
                         GatewayIntent.GUILD_INVITES, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.MESSAGE_CONTENT,
                         GatewayIntent.GUILD_WEBHOOKS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MODERATION)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .disableCache(CacheFlag.EMOJI, CacheFlag.ACTIVITY);
+                .disableCache(CacheFlag.EMOJI, CacheFlag.ACTIVITY)
+                // Keeps listeners off the gateway read thread and callbacks off ForkJoinPool.commonPool.
+                .setEventPool(createPool("Ree6-Events", eventPoolSize()), true)
+                .setCallbackPool(createPool("Ree6-Callbacks", callbackPoolSize()), true);
 
         if (BotConfig.shouldUseLavaLink()) {
             defaultShardManagerBuilder.addEventListeners(Main.getInstance().getLavalink());

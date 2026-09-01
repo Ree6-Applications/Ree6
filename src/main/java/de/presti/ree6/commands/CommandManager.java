@@ -35,6 +35,8 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.exceptions.ErrorHandler;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -631,7 +633,7 @@ public class CommandManager {
         CommandEvent commandEvent = new CommandEvent(annotation.name(), slashCommandInteractionEvent.getMember(), guild, null, messageChannel, null, slashCommandInteractionEvent, true);
 
         if (guild.isDetached()) {
-            return command.onMonoPerform(commandEvent);
+            return command.onMonoPerform(commandEvent).subscribeOn(Schedulers.boundedElastic());
         } else {
             return SQLSession.getSqlConnector().getSqlWorker().getSetting(slashCommandInteractionEvent.getGuild().getIdLong(), "command_" + annotation.name().toLowerCase()).publishOn(Schedulers.boundedElastic()).mapNotNull(setting -> {
                 if (annotation.category() != Category.HIDDEN && setting.isPresent() && !setting.get().getBooleanValue()) {
@@ -725,13 +727,9 @@ public class CommandManager {
                 var messageAction = messageChannel.sendMessage(messageCreateData);
 
                 if (deleteSecond > 0) {
-                    messageAction.delay(deleteSecond, TimeUnit.SECONDS).flatMap(message -> {
-                        if (message != null && message.getChannel().retrieveMessageById(message.getId()).complete() != null) {
-                            return message.delete();
-                        }
-
-                        return null;
-                    }).queue();
+                    messageAction.delay(deleteSecond, TimeUnit.SECONDS)
+                            .flatMap(Message::delete)
+                            .queue(null, new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE));
                     return;
                 }
 

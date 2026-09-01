@@ -13,7 +13,8 @@ import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A command to clear the Invite-Data stored.
@@ -24,7 +25,7 @@ public class ClearData implements ICommand {
     /**
      * A list of all timeout Ids, since it is not good to allow them to clear the Invite data every second.
      */
-    ArrayList<String> timeout = new ArrayList<>();
+    Set<String> timeout = ConcurrentHashMap.newKeySet();
 
     /**
      * @inheritDoc

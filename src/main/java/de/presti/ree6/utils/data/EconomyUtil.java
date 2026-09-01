@@ -151,6 +151,10 @@ public class EconomyUtil {
      * @return If the payment was successful.
      */
     public static boolean pay(MoneyHolder sender, MoneyHolder receiver, double amount, boolean fromBank, boolean toBank, boolean isSystem) {
+        if (sender == null || receiver == null || !Double.isFinite(amount) || amount <= 0) {
+            return false;
+        }
+
         if (!isSystem && !hasEnoughMoney(sender, amount, fromBank)) {
             return false;
         }

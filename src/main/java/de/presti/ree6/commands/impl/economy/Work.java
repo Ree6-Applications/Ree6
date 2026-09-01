@@ -11,7 +11,8 @@ import de.presti.ree6.utils.others.ThreadUtil;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Work for money.
@@ -22,7 +23,7 @@ public class Work implements ICommand {
     /**
      * List of every User that is on cooldown.
      */
-    ArrayList<String> workTimeout = new ArrayList<>();
+    Set<String> workTimeout = ConcurrentHashMap.newKeySet();
 
     /**
      * @inheritDoc
