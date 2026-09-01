@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build
-    if: github.repository_owner == 'Ree6-Applications'
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
